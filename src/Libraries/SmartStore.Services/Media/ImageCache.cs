@@ -19,21 +19,12 @@ namespace SmartStore.Services.Media
 
 		private readonly MediaSettings _mediaSettings;
 		private readonly string _thumbsRootDir;
-		private readonly IStoreContext _storeContext;
-		private readonly HttpContextBase _httpContext;
 		private readonly IMediaFileSystem _fileSystem;
 		private readonly IImageProcessor _imageProcessor;
 
-		public ImageCache(
-			MediaSettings mediaSettings, 
-			IStoreContext storeContext, 
-			HttpContextBase httpContext,
-			IMediaFileSystem fileSystem,
-			IImageProcessor imageProcessor)
+		public ImageCache(MediaSettings mediaSettings, IMediaFileSystem fileSystem, IImageProcessor imageProcessor)
         {
             _mediaSettings = mediaSettings;
-			_storeContext = storeContext;
-			_httpContext = httpContext;
 			_fileSystem = fileSystem;
 			_imageProcessor = imageProcessor;
 
@@ -61,25 +52,19 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-		public Task PutAsync(CachedImageResult cachedImage, byte[] buffer)
+		public async Task PutAsync(CachedImageResult cachedImage, byte[] buffer)
 		{
 			if (PreparePut(cachedImage, buffer))
 			{
 				var path = BuildPath(cachedImage.Path);
 
 				// save file
-				var t = _fileSystem.WriteAllBytesAsync(path, buffer);
-				t.ContinueWith(x =>
-				{
-					// Refresh info
-					cachedImage.Exists = true;
-					cachedImage.File = _fileSystem.GetFile(path);
-				});
+				await _fileSystem.WriteAllBytesAsync(path, buffer);
 
-				return t;
+				// Refresh info
+				cachedImage.Exists = true;
+				cachedImage.File = _fileSystem.GetFile(path);
 			}
-
-			return Task.FromResult(false);
 		}
 
 		private bool PreparePut(CachedImageResult cachedImage, byte[] buffer)
@@ -202,7 +187,7 @@ namespace SmartStore.Services.Media
 
 		public virtual void Clear()
         {
-            for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 10; i++)
             {
                 try
                 {

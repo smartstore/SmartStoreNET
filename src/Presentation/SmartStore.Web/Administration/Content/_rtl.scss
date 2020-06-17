@@ -254,6 +254,11 @@
 
 	.t-grid-header .t-header {
 		text-align: right;
+        
+        .t-grid-filter {
+            left: 0;
+            right: initial;
+        }
 	}
 
 	.t-grid-edit-row .t-numerictextbox {

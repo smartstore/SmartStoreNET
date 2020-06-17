@@ -91,12 +91,43 @@
     content: $content;
 }
 
-@mixin fontawesome($content, $size: inherit) {
+@mixin fontawesome($content, $size: $icon-font-size-base, $variant: $icon-font-variant-default) {
     display: inline-block;
-    font: normal normal normal 16px/1 'FontAwesome';
-    font-size: $size;
+    font-style: normal;
+    font-variant: normal;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
+    line-height: 1;
+
+    font-size: $size;
+    @include fontawesome-font($content, $variant);
+}
+
+@mixin fontawesome-font($content, $variant: $icon-font-variant-default) {
+    @if $fa-use-pro == false and $variant == "light" {
+        $variant: regular;
+    }
+    
+    @if $fa-use-pro == false and $variant == "regular" {
+        @if not(map-has-key($fa-free-regular-icons, $content)) {
+            $variant: solid;
+        }
+    }
+
+    @if $variant == "brand" {
+        font-family: $fa-font-family-brands;
+        font-weight: 400;
+    }
+    @else {
+        font-weight: map-get($icon-font-variants, $variant);
+        @if $fa-use-pro {
+            font-family: $fa-font-family-pro;
+        }
+        @else {
+            font-family: $fa-font-family-free;
+        }
+    }
+
     content: $content;
 }
 
@@ -128,6 +159,41 @@
 
 // Functions
 // ===============================================
+
+@function scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
+    $coords: (
+        0: 1,
+        19: 0.738,
+        34: 0.541,
+        47: 0.382,
+        56.5: 0.278,
+        65: 0.194,
+        73: 0.126,
+        80.2: 0.075,
+        86.1: 0.042,
+        91: 0.021,
+        95.2: 0.008,
+        98.2: 0.002,
+        100: 0
+    );
+
+    $hue: hue($start-color);
+    $saturation: saturation($start-color);
+    $lightness: lightness($start-color);
+    $stops: ();
+
+    @each $colorstop, $alpha in $coords {
+        $stop: hsla($hue, $saturation, $lightness, $alpha) percentage($colorstop/100);
+        $stops: append($stops, $stop, comma);
+    }
+
+    @if $radial == true {
+        @return radial-gradient(unquote(#{ $direction }), #{ $stops });
+    }
+    @else {
+        @return linear-gradient(unquote(#{ $direction }), #{ $stops });
+    }   
+}
 
 @function color-yiq-ex($color, $text-dark: $yiq-text-dark, $text-light: $yiq-text-light) {
 	$r: red($color);

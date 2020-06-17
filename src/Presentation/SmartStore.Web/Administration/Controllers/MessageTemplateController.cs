@@ -21,6 +21,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Email;
 using System.Threading.Tasks;
 using System.Web.Caching;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -197,7 +198,8 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
-        public ActionResult Edit(MessageTemplateModel model, bool continueEditing)
+        [ValidateInput(false)]
+        public ActionResult Edit(MessageTemplateModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
@@ -221,6 +223,8 @@ namespace SmartStore.Admin.Controllers
                 
 				// locales
                 UpdateLocales(messageTemplate, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, messageTemplate, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");

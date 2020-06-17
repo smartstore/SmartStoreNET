@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -98,7 +100,7 @@ namespace SmartStore.Services.Tasks
 				RetryOnDeadlockException);
 		}
 
-        public virtual IList<ScheduleTask> GetPendingTasks()
+        public async virtual Task<IList<ScheduleTask>> GetPendingTasksAsync()
         {
             var now = DateTime.UtcNow;
             var machineName = _env.MachineName;
@@ -116,8 +118,8 @@ namespace SmartStore.Services.Tasks
                         .FirstOrDefault()
                 });
 
-            var tasks = Retry.Run(
-                () => query.ToList(),
+            var tasks = await Retry.RunAsync(
+                () => query.ToListAsync(),
                 3, TimeSpan.FromMilliseconds(100),
                 RetryOnDeadlockException);
 

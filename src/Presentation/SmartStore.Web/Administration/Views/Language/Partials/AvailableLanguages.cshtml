@@ -72,7 +72,7 @@
 								    <a href="@Url.Action("Download", new { setId = language.Id })"
 								       class="btn btn-sm btn-warning download-language@(language.IsDownloadRunning ? " d-none" : "")"
 								       onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
-									    <i class="fa fa-refresh"></i>
+									    <i class="fa fa-sync"></i>
 									    <span>@T("Common.Refresh")</span>
 								    </a>
                                 }

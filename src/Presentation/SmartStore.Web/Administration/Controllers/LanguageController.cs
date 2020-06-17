@@ -177,7 +177,7 @@ namespace SmartStore.Admin.Controllers
 			model.TranslatedPercentage = resources.TranslatedPercentage;
             model.IsDownloadRunning = state != null && state.Id == resources.Id;
             model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(resources.UpdatedOn, DateTimeKind.Utc);
-            model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
+            model.UpdatedOnString = resources.UpdatedOn.RelativeFormat(true, "f");
             model.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
 
             if (language != null && lastImportInfos.TryGetValue(language.Id, out LastResourcesImportInfo info))
@@ -335,6 +335,8 @@ namespace SmartStore.Admin.Controllers
 
 			var lastImportInfos = GetLastResourcesImportInfos();
 			var languages = _languageService.GetAllLanguages(true);
+            var defaultLanguageId = _languageService.GetDefaultLanguageId();
+
             var model = languages.Select(x =>
 			{
 				var langModel = x.ToModel();
@@ -345,6 +347,11 @@ namespace SmartStore.Admin.Controllers
 					langModel.LastResourcesImportOn = info.ImportedOn;
 					langModel.LastResourcesImportOnString = langModel.LastResourcesImportOn.Value.RelativeFormat(false, "f");
 				}
+
+                if (x.Id == defaultLanguageId)
+                {
+                    ViewBag.DefaultLanguageNote = T("Admin.Configuration.Languages.DefaultLanguage.Note", langModel.Name).Text;
+                }
 
 				return langModel;
 			})
@@ -797,7 +804,7 @@ namespace SmartStore.Admin.Controllers
             }
             finally
             {
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
 
             return RedirectToAction("Edit", new { id = language.Id });
@@ -875,7 +882,7 @@ namespace SmartStore.Admin.Controllers
                     asyncState.Remove<LanguageDownloadState>();
                 }
 
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
         }
 
@@ -883,17 +890,14 @@ namespace SmartStore.Admin.Controllers
         {
             if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
             {
-                var ctx = new LanguageDownloadContext(setId);
-                ctx.AvailableResources = await CheckAvailableResources();
+				var ctx = new LanguageDownloadContext(setId)
+				{
+					AvailableResources = await CheckAvailableResources()
+				};
 
-                if (ctx.AvailableResources.Resources.Any())
+				if (ctx.AvailableResources.Resources.Any())
                 {
-                    var task = AsyncRunner.Run(
-                        (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
-                        ctx,
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        TaskScheduler.Default).ConfigureAwait(false);
+                    var task = AsyncRunner.Run((c, ct, obj) => DownloadCore(c, ct, obj as LanguageDownloadContext), ctx);
                 }
             }
 

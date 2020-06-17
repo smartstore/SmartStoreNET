@@ -12,7 +12,8 @@ namespace SmartStore.Data.Mapping.Catalog
             this.Property(c => c.Name).IsRequired().HasMaxLength(400);
 			this.Property(c => c.FullName).HasMaxLength(400);
 			this.Property(c => c.BottomDescription).IsMaxLength();
-			this.Property(c => c.Description).IsMaxLength();
+            this.Property(c => c.ExternalLink).HasMaxLength(255).IsOptional();
+            this.Property(c => c.Description).IsMaxLength();
             this.Property(c => c.MetaKeywords).HasMaxLength(400);
             this.Property(c => c.MetaTitle).HasMaxLength(400);
 			this.Property(c => c.PageSizeOptions).HasMaxLength(200).IsOptional();

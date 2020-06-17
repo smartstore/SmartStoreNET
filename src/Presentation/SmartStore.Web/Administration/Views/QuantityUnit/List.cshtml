@@ -19,23 +19,25 @@
 
 <div>
 	@(Html.Telerik().Grid<QuantityUnitModel>()
-		.Name("measure-unit-grid")
-		.BindTo(Model.Data)
-		.Columns(columns =>
-		{
-			columns.Bound(x => x.Name)
-				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-				.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-			columns.Bound(x => x.Description)
-				.Centered();
-			columns.Bound(x => x.DisplayOrder)
-				.Width(100)
-				.Centered();
-			columns.Bound(x => x.IsDefault)
-				.Template(item => @Html.SymbolForBool(item.IsDefault))
-				.ClientTemplate(@Html.SymbolForBool("IsDefault"))
-				.Width(100)
-				.Centered();
-		})
+        .Name("measure-unit-grid")
+        .BindTo(Model.Data)
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Name)
+                .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+            columns.Bound(x => x.NamePlural)
+                .Title(T("Common.Plural").Text);
+            columns.Bound(x => x.Description)
+                .Centered();
+            columns.Bound(x => x.DisplayOrder)
+                .Width(180)
+                .Centered();
+            columns.Bound(x => x.IsDefault)
+                .Template(item => @Html.SymbolForBool(item.IsDefault))
+                .ClientTemplate(@Html.SymbolForBool("IsDefault"))
+                .Width(180)
+                .Centered();
+        })
 	)
 </div>

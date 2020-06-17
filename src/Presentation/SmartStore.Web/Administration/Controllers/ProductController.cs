@@ -602,7 +602,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (product != null)
                 {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(product);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
                 }
                 else
                 {
@@ -692,7 +692,7 @@ namespace SmartStore.Admin.Controllers
 			if (product != null)
 			{
 				model.CopyProductModel.Id = product.Id;
-				model.CopyProductModel.Name = "{0} {1}".FormatInvariant(T("Admin.Common.CopyOf"), product.Name);
+				model.CopyProductModel.Name = T("Admin.Common.CopyOf", product.Name);
 				model.CopyProductModel.Published = true;
 				model.CopyProductModel.CopyImages = true;
 			}
@@ -1024,7 +1024,12 @@ namespace SmartStore.Admin.Controllers
 		{
 			var gridModel = new GridModel<ProductModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				gridModel.Data = Enumerable.Empty<ProductModel>();
+				NotifyAccessDenied();
+			}
+			else
 			{
 				var fields = new List<string> { "name" };
 				if (_searchSettings.SearchFields.Contains("sku"))
@@ -1063,17 +1068,17 @@ namespace SmartStore.Admin.Controllers
 				//_mediaSettings.CartThumbPictureSize
 				gridModel.Data = products.Select(x =>
 				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id,
-                        StockQuantity = x.StockQuantity,
-                        Price = x.Price,
-                        LimitedToStores = x.LimitedToStores
-                    };
+					var productModel = new ProductModel
+					{
+						Sku = x.Sku,
+						Published = x.Published,
+						ProductTypeLabelHint = x.ProductTypeLabelHint,
+						Name = x.Name,
+						Id = x.Id,
+						StockQuantity = x.StockQuantity,
+						Price = x.Price,
+						LimitedToStores = x.LimitedToStores
+					};
 
 					var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
 					productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
@@ -1087,12 +1092,6 @@ namespace SmartStore.Admin.Controllers
 				});
 
 				gridModel.Total = products.TotalCount;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
-				NotifyAccessDenied();
 			}
 
 			return new JsonResult
@@ -1556,8 +1555,10 @@ namespace SmartStore.Admin.Controllers
 
 				_categoryService.InsertProductCategory(productCategory);
 
-				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-					model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+				var mru = new TrimmedBuffer<string>(
+					_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+					model.Category, 
+					_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
 
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
 			}
@@ -1582,8 +1583,10 @@ namespace SmartStore.Admin.Controllers
 
 				if (categoryChanged)
 				{
-					var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-						model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+					var mru = new TrimmedBuffer<string>(
+						_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+						model.Category, 
+						_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
 
 					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
 				}
@@ -1664,8 +1667,10 @@ namespace SmartStore.Admin.Controllers
 
 				_manufacturerService.InsertProductManufacturer(productManufacturer);
 
-				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-					model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+				var mru = new TrimmedBuffer<string>(
+					_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+					model.Manufacturer, 
+					_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
 			}
@@ -1691,8 +1696,10 @@ namespace SmartStore.Admin.Controllers
 
 				if (manufacturerChanged)
 				{
-					var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-						model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+					var mru = new TrimmedBuffer<string>(
+						_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+						model.Manufacturer, 
+						_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
 					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
 				}

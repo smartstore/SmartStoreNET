@@ -56,8 +56,8 @@
 <div class="page product-details-page">
 	@{ Html.RenderWidget("productdetails_top"); }
 
-	<article class="pd page-body">
-		<div id="main-update-container" class="update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
+	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
+		<div id="main-update-container" class="update-container" data-url="@updateUrl">
 			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
             {
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
@@ -117,7 +117,7 @@
 						@if (Model.DisplayAdminLink)
 						{
 							<a class="btn btn-secondary btn-flat btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
-								<i class="fa fa-gear"></i>
+								<i class="fa fa-cog"></i>
 								<span>@T("Common.Catalog.EditProduct")</span>
 							</a>
 						}

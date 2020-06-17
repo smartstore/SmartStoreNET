@@ -257,7 +257,7 @@ namespace SmartStore.Services.DataExchange.Import
             var customer = _services.WorkContext.CurrentCustomer;
             var profile = ctx.Request.Profile;
             var logPath = profile.GetImportLogPath();
-			FileSystemHelper.Delete(logPath);
+			FileSystemHelper.DeleteFile(logPath);
 
 			using (var logger = new TraceLogger(logPath))
 			{

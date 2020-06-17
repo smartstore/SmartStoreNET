@@ -1,0 +1,15 @@
+﻿@{
+	var financingCosts = ViewBag.FinancingCosts as string;
+	var totalInclFinancingCosts = ViewBag.TotalInclFinancingCosts as string;
+}
+
+<table class="cart-summary mt-2">
+	<tr class="cart-summary-interest">
+		<td class="cart-summary-label">@T("Plugins.Payments.PayPalInstalments.FinancingCosts"):</td>
+		<td class="cart-summary-value" nowrap>@financingCosts</td>
+	</tr>
+	<tr class="cart-summary-total-incl-interest">
+		<td class="cart-summary-label">@T("Plugins.Payments.PayPalInstalments.TotalInclFinancingCosts"):</td>
+		<td class="cart-summary-value" nowrap>@totalInclFinancingCosts</td>
+	</tr>
+</table>

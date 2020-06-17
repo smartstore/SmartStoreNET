@@ -227,7 +227,17 @@ namespace SmartStore.Collections
 				if (GetPropValue("Metadata", value) is IDictionary<string, object> dict && dict.Count > 0)
 				{
 					writer.WritePropertyName("Metadata");
-					serializer.Serialize(writer, dict);
+
+					var typeNameHandling = serializer.TypeNameHandling;
+					try
+					{
+						serializer.TypeNameHandling = TypeNameHandling.All;
+						serializer.Serialize(writer, dict);
+					}
+					finally
+					{
+						serializer.TypeNameHandling = typeNameHandling;
+					}
 				}
 
 				// Children

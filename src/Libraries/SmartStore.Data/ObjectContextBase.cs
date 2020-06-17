@@ -42,7 +42,7 @@ namespace SmartStore.Data
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
 
-			if (_commandTimeoutInSeconds >= 0)
+			if (_commandTimeoutInSeconds >= 0 && DataSettings.Current.IsSqlServer)
 			{
 				Database.CommandTimeout = _commandTimeoutInSeconds;
 			}
@@ -168,13 +168,6 @@ namespace SmartStore.Data
             return this.Database.SqlQuery<TElement>(sql, parameters);
         }
 
-        /// <summary>
-        /// Executes the given DDL/DML command against the database.
-        /// </summary>
-        /// <param name="sql">The command string</param>
-        /// <param name="timeout">Timeout value, in seconds. A null value indicates that the default value of the underlying provider will be used</param>
-        /// <param name="parameters">The parameters to apply to the command string.</param>
-        /// <returns>The result returned by the database after executing the command.</returns>
         public int ExecuteSqlCommand(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters)
         {
             Guard.NotEmpty(sql, "sql");

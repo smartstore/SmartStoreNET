@@ -26,7 +26,7 @@
 	</div>
 
 	<div class="fileupload-buttons">
-		<button class="btn btn-danger remove@(Model.ShowRemoveButton ? "" : " hide")@(Model.Compact ? " btn-sm" : "")">
+		<button class="btn btn-danger remove@(Model.Compact ? " btn-sm" : "")" @Html.Attr("style", "display: none", !Model.ShowRemoveButton)>
 			<span>@Model.RemoveText</span>
 		</button>
 
@@ -39,7 +39,7 @@
 			<input type="file" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 		</span>
 
-		<button class="btn btn-outline-secondary cancel hide@(Model.Compact ? " btn-sm" : "")">
+		<button class="btn btn-outline-secondary cancel@(Model.Compact ? " btn-sm" : "")" style="display: none">
 			<span>@Model.CancelText</span>
 		</button>
 	</div>
@@ -56,5 +56,5 @@
 			onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
 			onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null")
 		});
-});
+    });
 </script>

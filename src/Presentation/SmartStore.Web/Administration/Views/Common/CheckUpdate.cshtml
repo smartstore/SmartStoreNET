@@ -6,7 +6,7 @@
 
 <div class="section-header">
 	<div class="title">
-		<i class="fa fa-level-up"></i>
+		<i class="fa fa-level-up-alt"></i>
 		@ViewBag.Title
 	</div>
 </div>
@@ -41,7 +41,7 @@
 				@Html.Raw(T("Admin.CheckUpdate.AutoUpdatePossibleInfo"))
 				<p class="mt-4">
 					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
-						<i class="fa fa-level-up"></i>
+						<i class="fa fa-level-up-alt"></i>
 						<span>@T("Admin.CheckUpdate.UpdateNow")</span>
 					</a>
 				</p>

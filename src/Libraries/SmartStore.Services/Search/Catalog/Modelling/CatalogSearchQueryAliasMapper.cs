@@ -16,12 +16,12 @@ namespace SmartStore.Services.Search.Modelling
 {
     public class CatalogSearchQueryAliasMapper : ICatalogSearchQueryAliasMapper
 	{
-		private const string ALL_ATTRIBUTE_ID_BY_ALIAS_KEY = "search.attribute.id.alias.mappings.all";
-		private const string ALL_ATTRIBUTE_ALIAS_BY_ID_KEY = "search.attribute.alias.id.mappings.all";
-		private const string ALL_COMMONFACET_ALIAS_BY_KIND_KEY = "search.commonfacet.alias.kind.mappings.all";
+		private const string ALL_ATTRIBUTE_ID_BY_ALIAS_KEY = "search:attribute.id.alias.mappings.all";
+		private const string ALL_ATTRIBUTE_ALIAS_BY_ID_KEY = "search:attribute.alias.id.mappings.all";
+		private const string ALL_COMMONFACET_ALIAS_BY_KIND_KEY = "search:commonfacet.alias.kind.mappings.all";
 
-		private const string ALL_VARIANT_ID_BY_ALIAS_KEY = "search.variant.id.alias.mappings.all";
-		private const string ALL_VARIANT_ALIAS_BY_ID_KEY = "search.variant.alias.id.mappings.all";
+		private const string ALL_VARIANT_ID_BY_ALIAS_KEY = "search:variant.id.alias.mappings.all";
+		private const string ALL_VARIANT_ALIAS_BY_ID_KEY = "search:variant.alias.id.mappings.all";
 
 		private readonly ICacheManager _cacheManager;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;

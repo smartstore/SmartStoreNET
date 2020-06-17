@@ -34,7 +34,11 @@
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touchevents) {
-                ctx.tooltip({ selector: '[data-toggle=tooltip], .tooltip-toggle', animation: false });
+                ctx.tooltip({
+                    selector: '[data-toggle=tooltip], .tooltip-toggle',
+                    animation: false,
+                    trigger: 'hover'
+                });
             }
         },
         // touch spin
@@ -102,6 +106,8 @@
 
         	ctx.find('.artlist-carousel > .artlist-grid').each(function (i, el) {
         		var list = $(this);
+                var slidesToShow = list.data("slides-to-show");
+                var slidesToScroll = list.data("slides-to-scroll");
 
         		list.slick({
 					infinite: false,
@@ -109,34 +115,49 @@
         			dots: true,
         			cssEase: 'ease-in-out',
         			speed: 300,
-        			useCSS: true,
+                    useCSS: true,
         			useTransform: true,
         			waitForAnimate: true,
         			prevArrow: '<button type="button" class="btn btn-secondary slick-prev"><i class="fa fa-chevron-left"></i></button>',
         			nextArrow: '<button type="button" class="btn btn-secondary slick-next"><i class="fa fa-chevron-right"></i></button>',
-        			respondTo: 'slider',
-        			slidesToShow: 6,
-        			slidesToScroll: 6,
+                    respondTo: 'slider',
+                    slidesToShow: slidesToShow || 6,
+                    slidesToScroll: slidesToScroll || 6,
         			responsive: [
 						{
 							breakpoint: 280,
-							settings: { slidesToShow: 1, slidesToScroll: 1 }
+                            settings: {
+                                slidesToShow: Math.min(slidesToShow || 1, 1),
+                                slidesToScroll: Math.min(slidesToScroll || 1, 1)
+                            }
 						},
 						{
 							breakpoint: 440,
-							settings: { slidesToShow: 2, slidesToScroll: 2 }
+                            settings: {
+                                slidesToShow: Math.min(slidesToShow || 2, 2),
+                                slidesToScroll: Math.min(slidesToScroll || 2, 2)
+                            }
 						},
 						{
 							breakpoint: 640,
-							settings: { slidesToShow: 3, slidesToScroll: 3 }
+                            settings: {
+                                slidesToShow: Math.min(slidesToShow || 3, 3),
+                                slidesToScroll: Math.min(slidesToScroll || 3, 3)
+                            }
 						},
 						{
 							breakpoint: 780,
-							settings: { slidesToShow: 4, slidesToScroll: 4 }
+                            settings: {
+                                slidesToShow: Math.min(slidesToShow || 4, 4),
+                                slidesToScroll: Math.min(slidesToScroll || 4, 4)
+                            }
 						},
 						{
 							breakpoint: 960,
-							settings: { slidesToShow: 5, slidesToScroll: 5 }
+                            settings: {
+                                slidesToShow: Math.min(slidesToShow || 5, 5),
+                                slidesToScroll: Math.min(slidesToScroll || 5, 5)
+                            }
 						},
         			]
         		});
@@ -159,8 +180,8 @@
     // TODO: reorganize > public.globalinit.js
     $(function () {
         // Init reveal on scroll with AOS library
-        if (typeof AOS !== 'undefined') {
-            AOS.init({ once: true });
+        if (typeof AOS !== 'undefined' && !$('body').hasClass('no-reveal')) {
+            AOS.init({ once: true, duration: 1000 });
         }
 
         if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {

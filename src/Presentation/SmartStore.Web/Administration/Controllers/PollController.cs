@@ -63,7 +63,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             model.AvailableLanguages = _languageService.GetAllLanguages(true)

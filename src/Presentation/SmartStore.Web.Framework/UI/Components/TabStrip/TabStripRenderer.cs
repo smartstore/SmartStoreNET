@@ -204,8 +204,7 @@ namespace SmartStore.Web.Framework.UI
 			if (tab.Id.IsEmpty())
 				return null;
 
-			var model = ViewContext.ViewData.Model as EntityModelBase;
-			if (model != null && model.Id == 0)
+			if (ViewContext.ViewData.Model is EntityModelBase model && model.Id == 0)
 			{
 				// it's a "create" operation: don't select
 				return null;
@@ -368,7 +367,7 @@ namespace SmartStore.Web.Framework.UI
 						writer.RenderEndTag(); // img
 					}
 
-					// caption
+					// Caption
 					writer.AddAttribute("class", "tab-caption");
 					writer.RenderBeginTag("span");
 					writer.WriteEncodedText(item.Text);
@@ -377,13 +376,7 @@ namespace SmartStore.Web.Framework.UI
 					// Badge
 					if (item.BadgeText.HasValue())
 					{
-						// caption
-						writer.AddAttribute("class", "tab-caption");
-						writer.RenderBeginTag("span");
-						writer.WriteEncodedText(item.Text);
-						writer.RenderEndTag(); // span > badge
-
-						// label/badge
+						// Label/badge
 						temp = "ml-2 badge";
 						temp += " badge-" + item.BadgeStyle.ToString().ToLower();
 						if (base.Component.Position == TabsPosition.Left)
@@ -396,7 +389,7 @@ namespace SmartStore.Web.Framework.UI
 						writer.RenderEndTag(); // span > badge
 					}
 
-					// nav link short summary for collapsed state
+					// Nav link short summary for collapsed state
 					if (this.Component.IsResponsive && item.Summary.HasValue())
 					{
 						writer.AddAttribute("class", "nav-link-summary");
@@ -415,8 +408,7 @@ namespace SmartStore.Web.Framework.UI
 
 		private string GetTabName(Tab tab)
 		{
-			object value;
-			if (tab.LinkHtmlAttributes.TryGetValue("data-tab-name", out value)) 
+			if (tab.LinkHtmlAttributes.TryGetValue("data-tab-name", out object value)) 
 			{
 				return value.ToString();
 			}

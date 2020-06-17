@@ -4,19 +4,16 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 
 namespace SmartStore.Services.Messages.Importer
 {
 	public class NewsLetterSubscriptionImporter : IEntityImporter
 	{
-		private readonly ICommonServices _services;
 		private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
 
-		public NewsLetterSubscriptionImporter(
-			ICommonServices services,
-			IRepository<NewsLetterSubscription> subscriptionRepository)
+		public NewsLetterSubscriptionImporter(IRepository<NewsLetterSubscription> subscriptionRepository)
 		{
-			_services = services;
 			_subscriptionRepository = subscriptionRepository;
 		}
 
@@ -39,9 +36,9 @@ namespace SmartStore.Services.Messages.Importer
 		public void Execute(ImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
-			var currentStoreId = _services.StoreContext.CurrentStore.Id;
+			var currentStoreId = context.Services.StoreContext.CurrentStore.Id;
 
-			using (var scope = new DbContextScope(ctx: _services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			using (var scope = new DbContextScope(ctx: context.Services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				var segmenter = context.DataSegmenter;
 
@@ -147,7 +144,9 @@ namespace SmartStore.Services.Messages.Importer
 					} // for
 
 					_subscriptionRepository.Context.SaveChanges();
-				} // while
+
+                    context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<NewsLetterSubscription>(context, batch));
+                } // while
 			}
 		}
 	}

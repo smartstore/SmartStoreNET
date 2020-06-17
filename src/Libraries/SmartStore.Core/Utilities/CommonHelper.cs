@@ -19,7 +19,20 @@ namespace SmartStore.Utilities
     public static partial class CommonHelper
     {
 		private static bool? _isDevEnvironment;
+
+		[ThreadStatic]
+		private static Random _random;
 		
+		private static Random GetRandomizer()
+		{
+			if (_random == null)
+			{
+				_random = new Random();
+			}
+
+			return _random;
+		}
+
 		/// <summary>
         /// Generate random digit code
         /// </summary>
@@ -27,19 +40,21 @@ namespace SmartStore.Utilities
         /// <returns>Result string</returns>
         public static string GenerateRandomDigitCode(int length)
         {
-            var random = new Random();
-            string str = string.Empty;
-            for (int i = 0; i < length; i++)
-                str = String.Concat(str, random.Next(10).ToString());
-            return str;
-        }
+			var buffer = new int[length];
+			for (int i = 0; i < length; ++i)
+			{
+				buffer[i] = GetRandomizer().Next(10);
+			}
+
+			return string.Join("", buffer);
+		}
 
 		/// <summary>
-		/// Returns an random interger number within a specified rage
+		/// Returns a random number within the range <paramref name="min"/> to <paramref name="max"/> - 1.
 		/// </summary>
 		/// <param name="min">Minimum number</param>
-		/// <param name="max">Maximum number</param>
-		/// <returns>Result</returns>
+		/// <param name="max">Maximum number (exclusive!).</param>
+		/// <returns>Random integer number.</returns>
 		public static int GenerateRandomInteger(int min = 0, int max = 2147483647)
 		{
 			var randomNumberBuffer = new byte[10];

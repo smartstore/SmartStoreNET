@@ -4,12 +4,12 @@
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web;
 
-<div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+<div class="pd-offer" @Html.Raw(!Model.ProductPrice.CallForPrice ? "itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\"" : "")>
 	<meta itemprop="itemCondition" content="http://schema.org/NewCondition" />
 
-	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
+	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)
 	{
-		if (Model.AddToCart.CustomerEntersPrice)
+		if (Model.AddToCart.CustomerEntersPrice && !Model.ProductPrice.HidePrices)
 		{
 			var dataDictCustomerPrice = new ViewDataDictionary();
 			dataDictCustomerPrice.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);

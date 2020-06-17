@@ -93,8 +93,7 @@ namespace SmartStore.ComponentModel
 
 		private static FastActivator[] GetActivatorsCore(Type type)
 		{
-			FastActivator[] activators;
-			if (!_activatorsCache.TryGetValue(type, out activators))
+			if (!_activatorsCache.TryGetValue(type, out FastActivator[] activators))
 			{
 				var candidates = GetCandidateConstructors(type);
 				activators = candidates.Select(c => new FastActivator(c)).ToArray();

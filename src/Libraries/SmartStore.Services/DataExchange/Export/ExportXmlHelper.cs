@@ -318,7 +318,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 			_writer.Write("Id", entity.Id.ToString());
 			_writer.Write("Name", (string)quantityUnit.Name);
-			_writer.Write("Description", (string)quantityUnit.Description);
+            _writer.Write("NamePlural", (string)quantityUnit.NamePlural);
+            _writer.Write("Description", (string)quantityUnit.Description);
 			_writer.Write("DisplayLocale", entity.DisplayLocale);
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("IsDefault", entity.IsDefault.ToString());

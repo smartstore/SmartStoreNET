@@ -1,0 +1,58 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+@if ($icon-font-size-base != 'inherit') {
+    // Specificity: DON'T combine these selectors!
+    .fa     { font-size: $icon-font-size-base; }
+    .fal    { font-size: $icon-font-size-base; }
+    .far    { font-size: $icon-font-size-base; }
+    .fas    { font-size: $icon-font-size-base; }
+    .fab    { font-size: $icon-font-size-base; }
+}
+
+@if $fa-use-pro == false {
+    // Shim for light icons
+    .fal {
+        font-family: $fa-font-family-free;
+    }
+    
+    // FontAwesome 5 Free contains all solid, a few regular and none of the light icons.
+    // First, we degrade all variants to solid...
+    .fal,
+    .far {
+        font-weight: 900;
+    }
+
+    // ...and revert the font-weight of all free regular icons (151 in v5.6.1) to 400.
+    // This way we can still use .fal or .far in our markup without determining the
+    // license. Our CSS will render solid icons when the light or regular variant does not exist.
+    @each $content, $name in $fa-free-regular-icons {
+        .fal.fa-#{$name}, 
+        .far.fa-#{$name} {
+            font-weight: 400;
+        }
+    }
+}
+@else {
+    @if $icon-font-weight-default != 900 {
+        // With a Pro license, the neutral .fa class prefix
+        // can refer to any variant to change all icon weights
+        // in one go.
+        .fa {
+            font-weight: $icon-font-weight-default;
+        }
+    }
+
+    .fas {
+        font-weight: map-get($icon-font-variants, solid);
+    }
+
+    .far {
+        font-weight: map-get($icon-font-variants, regular);
+    }
+
+    .fal {
+        font-weight: map-get($icon-font-variants, light);
+    }
+}

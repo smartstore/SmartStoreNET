@@ -71,6 +71,8 @@ namespace SmartStore.Web.Framework
 
 			if (grid.Sorting.Enabled)
 			{
+				grid.Sorting.OrderBy.Clear();
+
 				foreach (var sort in command.SortDescriptors)
 				{
 					var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
@@ -84,6 +86,8 @@ namespace SmartStore.Web.Framework
 
 			if (grid.Grouping.Enabled)
 			{
+				grid.Grouping.Groups.Clear();
+
 				foreach (var group in command.GroupDescriptors)
 				{
 					var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
@@ -97,6 +101,8 @@ namespace SmartStore.Web.Framework
 
 			if (grid.Filtering.Enabled)
 			{
+				grid.Filtering.Filters.Clear();
+
 				foreach (var filter in command.FilterDescriptors)
 				{
 					var compositeFilter = filter as CompositeFilterDescriptor;
@@ -117,20 +123,20 @@ namespace SmartStore.Web.Framework
 
 		public static IEnumerable<T> ForCommand<T>(this IEnumerable<T> current, GridCommand command)
 		{
-			var queryable = current.AsQueryable() as IQueryable;
+			var query = current.AsQueryable() as IQueryable;
 			if (command.FilterDescriptors.Any())
 			{
-				queryable = queryable.Where(command.FilterDescriptors.AsEnumerable()).AsQueryable() as IQueryable;
+				query = query.Where(command.FilterDescriptors.AsEnumerable()).AsQueryable() as IQueryable;
 			}
 
 			IList<SortDescriptor> temporarySortDescriptors = new List<SortDescriptor>();
 
-			if (!command.SortDescriptors.Any() && queryable.Provider.IsEntityFrameworkProvider())
+			if (!command.SortDescriptors.Any() && query.Provider.IsEntityFrameworkProvider())
 			{
 				// The Entity Framework provider demands OrderBy before calling Skip.
 				SortDescriptor sortDescriptor = new SortDescriptor
 				{
-					Member = GetFirstSortableProperty(queryable.ElementType)
+					Member = GetFirstSortableProperty(query.ElementType)
 				};
 				command.SortDescriptors.Add(sortDescriptor);
 				temporarySortDescriptors.Add(sortDescriptor);
@@ -153,10 +159,10 @@ namespace SmartStore.Web.Framework
 
 			if (command.SortDescriptors.Any())
 			{
-				queryable = queryable.Sort(command.SortDescriptors);
+				query = query.Sort(command.SortDescriptors);
 			}
 
-			return queryable as IQueryable<T>;
+			return query as IQueryable<T>;
 		}
 
 		public static IEnumerable<T> PagedForCommand<T>(this IEnumerable<T> current, GridCommand command)

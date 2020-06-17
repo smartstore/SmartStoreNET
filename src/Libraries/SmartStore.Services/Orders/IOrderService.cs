@@ -83,6 +83,7 @@ namespace SmartStore.Services.Orders
 		/// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
 		/// <param name="orderNumber">Filter by order number</param>
 		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
+        /// <param name="paymentMethods">Filter by payment method system names.</param>
 		/// <returns>Order query</returns>
 		IQueryable<Order> GetOrders(
 			int storeId,
@@ -94,7 +95,8 @@ namespace SmartStore.Services.Orders
 			int[] shippingStatusIds,
 			string billingEmail,
 			string orderNumber,
-			string billingName = null);
+			string billingName = null,
+            string[] paymentMethods = null);
 
         /// <summary>
         /// Search orders
@@ -112,10 +114,12 @@ namespace SmartStore.Services.Orders
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
 		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
+        /// <param name="paymentMethods">Filter by payment method system names.</param>
         /// <returns>Order collection</returns>
 		IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime,
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null);
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null,
+            string[] paymentMethods = null);
 
         /// <summary>
         /// Gets all orders by affiliate identifier
@@ -125,12 +129,6 @@ namespace SmartStore.Services.Orders
         /// <param name="pageSize">Page size</param>
         /// <returns>Orders</returns>
         IPagedList<Order> GetAllOrders(int affiliateId, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// Load all orders
-        /// </summary>
-        /// <returns>Order collection</returns>
-        IList<Order> LoadAllOrders();
 
         /// <summary>
         /// Gets all orders by affiliate identifier

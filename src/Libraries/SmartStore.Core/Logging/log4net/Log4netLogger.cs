@@ -74,13 +74,12 @@ namespace SmartStore.Core.Logging
 
 		protected internal void TryAddExtendedThreadInfo(LoggingEvent loggingEvent)
 		{
-			HttpRequest httpRequest = null;
+			var isAppInitialized = EngineContext.Current.IsFullyInitialized;
 
-			try
-			{
-				httpRequest = HttpContext.Current.Request;
-			}
-			catch
+			// Don't knowingly run into exception
+			var httpRequest = isAppInitialized ? HttpContext.Current.SafeGetHttpRequest() : null;
+
+			if (httpRequest == null)
 			{
 				loggingEvent.Properties["CustomerId"] = DBNull.Value;
 				loggingEvent.Properties["Url"] = DBNull.Value;
@@ -100,14 +99,12 @@ namespace SmartStore.Core.Logging
 			{
 				using (new ActionDisposable(() => props["sm:ThreadInfoAdded"] = true))
 				{
-					if (DataSettings.DatabaseIsInstalled() && EngineContext.Current.IsFullyInitialized)
+					if (DataSettings.DatabaseIsInstalled() && isAppInitialized)
 					{
 						var container = EngineContext.Current.ContainerManager;
 
-						IWorkContext workContext;
-
 						// CustomerId
-						if (container.TryResolve<IWorkContext>(null, out workContext))
+						if (container.TryResolve<IWorkContext>(null, out IWorkContext workContext))
 						{
 							try
 							{
@@ -119,10 +116,9 @@ namespace SmartStore.Core.Logging
 							}
 						}
 
-						IWebHelper webHelper;
 
 						// Url & stuff
-						if (container.TryResolve<IWebHelper>(null, out webHelper))
+						if (container.TryResolve<IWebHelper>(null, out IWebHelper webHelper))
 						{
 							try
 							{

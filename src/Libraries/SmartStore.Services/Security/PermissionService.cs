@@ -10,12 +10,11 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Security
 {
-	/// <summary>
-	/// Permission service
-	/// </summary>
-	public partial class PermissionService : IPermissionService
+    /// <summary>
+    /// Permission service
+    /// </summary>
+    public partial class PermissionService : IPermissionService
     {
-        #region Constants
         /// <summary>
         /// Cache key for storing a valie indicating whether a certain customer role has a permission
         /// </summary>
@@ -25,19 +24,11 @@ namespace SmartStore.Services.Security
         /// </remarks>
         private const string PERMISSIONS_ALLOWED_KEY = "permission:allowed-{0}-{1}";
         private const string PERMISSIONS_PATTERN_KEY = "permission:*";
-        #endregion
-
-        #region Fields
 
         private readonly IRepository<PermissionRecord> _permissionRecordRepository;
-		private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly ICustomerService _customerService;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
-
-        #endregion
-
-        #region Ctor
 
         /// <summary>
         /// Ctor
@@ -48,18 +39,15 @@ namespace SmartStore.Services.Security
         /// <param name="cacheManager">Cache manager</param>
         public PermissionService(
 			IRepository<PermissionRecord> permissionRecordRepository,
-			IRepository<CustomerRole> customerRoleRepository,
             ICustomerService customerService,
-            IWorkContext workContext, ICacheManager cacheManager)
+            IWorkContext workContext,
+            ICacheManager cacheManager)
         {
-            this._permissionRecordRepository = permissionRecordRepository;
-			this._customerRoleRepository = customerRoleRepository;
-            this._customerService = customerService;
-            this._workContext = workContext;
-            this._cacheManager = cacheManager;
+            _permissionRecordRepository = permissionRecordRepository;
+            _customerService = customerService;
+            _workContext = workContext;
+            _cacheManager = cacheManager;
         }
-
-        #endregion
 
         #region Utilities
 
@@ -71,15 +59,21 @@ namespace SmartStore.Services.Security
         /// <returns>true - authorized; otherwise, false</returns>
         protected virtual bool Authorize(string permissionRecordSystemName, CustomerRole customerRole)
         {
-            if (String.IsNullOrEmpty(permissionRecordSystemName))
+            if (string.IsNullOrEmpty(permissionRecordSystemName))
+            {
                 return false;
+            }
             
-            string key = string.Format(PERMISSIONS_ALLOWED_KEY, customerRole.Id, permissionRecordSystemName);
+            var key = string.Format(PERMISSIONS_ALLOWED_KEY, customerRole.Id, permissionRecordSystemName);
             return _cacheManager.Get(key, () =>
             {
                 foreach (var permission1 in customerRole.PermissionRecords)
+                {
                     if (permission1.SystemName.Equals(permissionRecordSystemName, StringComparison.InvariantCultureIgnoreCase))
+                    {
                         return true;
+                    }
+                }
 
                 return false;
             });
@@ -311,16 +305,20 @@ namespace SmartStore.Services.Security
         /// <returns>true - authorized; otherwise, false</returns>
         public virtual bool Authorize(string permissionRecordSystemName, Customer customer)
         {
-            if (String.IsNullOrEmpty(permissionRecordSystemName))
+            if (string.IsNullOrEmpty(permissionRecordSystemName))
+            {
                 return false;
+            }
 
             var customerRoles = customer.CustomerRoles.Where(cr => cr.Active);
             foreach (var role in customerRoles)
+            {
                 if (Authorize(permissionRecordSystemName, role))
-                    //yes, we have such permission
+                {
                     return true;
+                }
+            }
             
-            //no permission found
             return false;
         }
 

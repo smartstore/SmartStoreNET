@@ -201,7 +201,7 @@ namespace SmartStore.Web.Controllers
 				var currency = _services.WorkContext.WorkingCurrency;
 				var language = _services.WorkContext.WorkingLanguage;
 				var allowPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
-				var sllowShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
+				var allowShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 				var allowWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 				var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 				var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
@@ -226,7 +226,7 @@ namespace SmartStore.Web.Controllers
 				
 				if (settings.MapLegalInfo)
 				{
-					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
+					var shippingInfoUrl = _urlHelper.Topic("shippinginfo").ToString();
                     legalInfo = shippingInfoUrl.HasValue()
                         ? T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl)
                         : T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
@@ -315,7 +315,7 @@ namespace SmartStore.Web.Controllers
 						Customer = customer,
 						Store = store,
 						AllowPrices = allowPrices,
-						AllowShoppingCart = sllowShoppingCart,
+						AllowShoppingCart = allowShoppingCart,
 						AllowWishlist = allowWishlist,
 						TaxDisplayType = taxDisplayType
 					};

@@ -17,14 +17,14 @@
 				@if (Model.Id != 0)
                 {
 					<button type="button" id="ProfileImportButton" data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })" class="btn btn-secondary">
-						<i class="fa fa-gears"></i>
+						<i class="fa fa-cogs"></i>
 						<span>@T("Common.Import")</span>
 					</button>
                 }
 				@if (Model.LogFileExists)
                 {
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
-						<i class="fa fa-file-text-o"></i>
+						<i class="far fa-file-alt"></i>
 						<span>@T("Admin.Configuration.ActivityLog")</span>
 					</a>
                 }
@@ -36,7 +36,7 @@
 					<span>@T("Admin.Common.SaveContinue")</span>
 				</button>
 				<button type="submit" name="import-profile-delete" id="import-profile-delete" value="import-profile-delete" class="btn btn-danger">
-					<i class="fa fa-trash-o"></i>
+					<i class="far fa-trash-alt"></i>
 					<span>@T("Admin.Common.Delete")</span>
 				</button>
 			</div>

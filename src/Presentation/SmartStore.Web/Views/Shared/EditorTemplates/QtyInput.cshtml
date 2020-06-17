@@ -40,7 +40,7 @@
 			<div class="mf-dropdown" style="display: block">
 				<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")">
 					<span data-bind="value">@Model.EnteredQuantity</span>
-					<b><i class="fa fa-caret-down"></i></b>
+					<b><i class="fas fa-caret-down"></i></b>
 				</button>
 				@Html.DropDownListFor(model => Model.EnteredQuantity, Model.AllowedQuantities, new { @class = "form-control qty-dropdown noskin" })
 			</div>

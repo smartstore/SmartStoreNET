@@ -1,0 +1,53 @@
+﻿@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var headerText = root.GetItemText(T);
+    var rtl = WorkContext.WorkingLanguage.Rtl;
+}
+
+<div class="cms-menu cms-menu-listgroup" data-menu-name="@(Model.Name?.ToLower())">
+    <div class="card">
+        @if (headerText.HasValue())
+        {
+            <h5 class="card-header" style="border-bottom: none;">
+                @headerText
+            </h5>
+        }
+        <div class="list-group list-group-flush has-icons">
+		    @foreach (var node in Model.Root.Children.Where(x => x.Value.Visible))
+		    {
+                var item = node.Value;
+                var itemState = node.GetNodePathState(Model.Path);
+                var itemText = node.GetItemText(T);
+                var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+
+                var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+                attributes.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
+
+			    <a href="@item.Url" @Html.Attrs(attributes)>
+		            @if (hasIcons)
+                    {
+			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "") list-group-item-icon"></i>
+                    }
+                    else if (hasImages)
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                    }
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+                    @if (item.BadgeText.HasValue())
+                    {
+                        <span class="badge badge-pill badge-@item.BadgeStyle.ToString().ToLower() ml-auto">@Html.Raw(item.BadgeText)</span>
+                    }
+                </a>
+		    }
+        </div>
+    </div>
+</div>

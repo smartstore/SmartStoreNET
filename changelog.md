@@ -1,87 +1,192 @@
-﻿# Release Notes
+# Release Notes
+
+## SmartStore.NET 3.2.2
+
+### New Features
+* External category links: alternative links for categories in the main menu and in category listings.
+* Page Builder: multistore support for stories.
+* #1639 Shipping.ByTotal: Add option to calculate the shipping rate based on the net total instead of the gross total.
+* #1537 Implement "Ratenzahlung powered by PayPal" provider.
+* New Heidelpay payment plugin.
+* Shop-Connector: mapping of product SKUs that differ between client shops.
+* MegaMenu supports configuration of menu items
+ 
+
+### Improvements
+* Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.
+* Updated *MaxMind.GeoIP* library and country database
+* Removed HTML encoding for meta tags and document title.
+* #1662 Quantity Units: added field for name pluralization.
+* (SEO) combined SSL and canonical host 301 redirections to prevent successive redirects.
+* (SEO) Activated GZIP compression for all dynamic and static responses.
+* Set max. file upload size to 2 GB (globally)
+* (Dev) Added a sample block for the *Page Builder* in DevTools plugin.
+* Various other minor improvements.
+* PayPal PLUS: paying by instalments can be selected in payment wall.
+* Payone: send more information to API (e.g. shipping address) to stay as frictionless as possible for PSD2.
+* PageBuilder: Added keyboard shortcuts
+* #1582 Added structured data to reviews 
+* BMEcat: added support for import of specification attributes
+
+### Bugfixes
+* Fixed wrong XML sitemap index numbering.
+* #1646 Setting ManufacturerItemsToDisplayOnHomepage to 1 will not show any manufacturer.
+* #1647 All manufacturers page: link of last character missing in alphabetical letter list.
+* #1664 RTL: CMS menu issues in backend.
+* #1677 Page Builder: moving and resizing blocks via drag & drop didn't work correctly in RTL.
+* Do not adjust inventory twice when an order is cancelled and deleted.
+* #1500 Fallback to fixed VAT rate instead of rate by region for countries that are not subject to vat.
+* Fixed "The entity wrapper stored in the proxy does not reference the same proxy" when copying an export profile.
+* Various other minor fixes.
+* BMEcat: set TaxCategoryId & MainPictureId for newly imported products
+  
+
+
+## SmartStore.NET 3.2.1
+
+### Improvements
+* Implemented file range support for CachedFileResult
+* Sitemap should only include products visible for current customer, which is the search engine system customer
+* Fixed uniform spelling for query string parameter "returnUrl"
+* Fixed search engine issue (itemtype, "offers" required) on product detail page
+* Summernote: solved html formatting issues thanks to "Beautifier" library
+* Media middleware: simplified ETag generation & handling
+
+### Bugfixes
+
+* Mega Menu: Product rotator wasn't working
+* Tiny Image: Fixed periodic IOException
+* URL Rewriter: performance optimization
+* Fixed more menu for main catalog navigation
+* Fixed DateTime nor expressed as UTC in AzureFile & LocalFile
+* Content Slider: Fixed slide display bug on surface and other touch devices
+* Content Slider: Randomize slides > Value was stored in database but toggle button has always shown "off"
+* Page Builder: Fixed slider bug for list blocks (brand, category, products) in Firefox
+* Page Builder: fixes blurry background images in IOS
+* Output Cache: action widgets didn't render when they were part of a widgetzone within a donut child action
+* Multishop resolution failed under certain circumstances
+* Fixed menu issue "collection was modified, enumeration operation may not execute"
+* Fixed "The parameters dictionary contains a null entry for parameter 'catId' of non-nullable type 'System.Int32'"
+* Fixed discount coupon sometimes wasn't applied
+* Fixed "Value cannot be null. Parameter name: key" in order list
+* Fixed topic link resolving by system name in multistore environment
+* Async event consumers were not guaranteed to be awaited
+
 
 ## SmartStore.NET 3.2
 
 ### Highlights
-* (Perf) #1202 Search: update to Lucene.NET 4.8
-* (Perf) Huge performance increase in discount resolution and calculation
+* (NEW) **CMS Page Builder**: Create fascinating content that will boost your sales. No coding is required thanks to a powerful WYSIWYG editor which utilizes the revolutionary *CSS Grid* system (commercial plugin)
+* (NEW) **CMS Menu Builder**: Visual manager for all sorts of menus. Change existing menus or create your own and place them anywhere you want.
+* (Perf) **Faster MegaSearch** thanks to Lucene.NET 4.8
+* (Perf) **Huge performance increase** in discount resolution and calculation.
 
 ### New Features
 * **EmailReminder**:
 	* Reminders for open shopping carts
 	* Reminders for product reviews
 	* Reminders to visit the shop after a long absence
-* #1144 Enable multi server search index
-* Made Topic ACL enabled
-* Implemented paging & filtering for Topic grid
-* Topics: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
-* New storefront catalog options: **ShowSubCategoriesInSubPages**, **ShowDescriptionInSubPages** & **IncludeFeaturedProductsInSubPages** (Subpage = List index > 1 or any active filter).
-* New security option: Use invisible reCAPTCHA
-* **BeezUp**:
-	* #1459 Add option to only submit one category name per product
-	* Allow to specify export categories per product
-* Wallet: Allow customer to choose whether refund should be submitted to his wallet.
-* Added option to display preview pictures in product lists
-* Added option to add multiple file versions to product download section
-* Added options for alternating price display (in badges)
+* **Scheduling**
+	* Task execution history
+	* Web farms: tasks can run decidedly on each machine of a web farm
+	* #1144 MegaSearch: multi server search index
+* **Topics & Pages**
+	* Access control lists
+	* Grid paging & filtering
+	* New properties: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
+	* #1542: added options to set body CSS class and Html Id.
+* **MegaSearch**:
+	* Supports searching for forum posts.
+	* #1172 Option to display related search terms on search page.
+	* Command to continue a previously aborted search index rebuild.
+* **Import/export of**:
+	* Product tags
+	* Tier prices
+	* Product attribute options
+	* Product attribute combinations (update only)
 * **Forum**:
 	* Added option to display a captcha on forum pages when creating or replying to a topic.
 	* #417 Restrict forum groups to specific customer roles.
 	* Added published property to forum topic and post.
 	* Added voting for forum posts.
 	* Several performance improvements.
-* **MegaSearch**:
-	* Supports searching for forum posts.
-	* #1172 Option to display related search terms on search page.
-	* Command to continue a previously aborted search index rebuild.
-* **Import/export of**:
-	* Product tags.
-	* Tier prices.
-	* Product attribute options.
-	* Product attribute combinations (update only).
+* **BeezUp**:
+	* #1459 Add option to only submit one category name per product
+	* Allow to specify export categories per product
+* **Santander**:
+	* Added payment method for instalment purchase.
+	* Added financing calculator.
+* Updated icon library to **Font Awesome 5 Free** with the possibility to activate pro version in the frontend.
+* New storefront catalog options: **ShowSubCategoriesInSubPages**, **ShowDescriptionInSubPages** & **IncludeFeaturedProductsInSubPages** (Subpage = List index > 1 or any active filter).
+* New security option: Use **invisible reCAPTCHA**
+* Wallet: Allow customer to choose whether refund should be submitted to his wallet.
+* Added option to display preview pictures in product lists
+* Added option to add multiple file versions to product download section
+* Added options for alternating price display (in badges)
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
 * Viveum: Supports payment via "Virtual Account Brands" (e.g. PayPal).
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
 * BMEcat: Added export and import of product tags.
+* Web-API: Added endpoints for ProductSpecificationAttribute.
+* Trusted Shops: Added new Trustbadge display for mobile devices
+* (Dev) Added *sm:EfCommandTimeout* setting to web.config (was 30 sec. fixed, now configurable)
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
+* (Perf) Increased app startup speed by up to 20%.
 * (Perf) Ultra-fast file-based XML sitemap generation for extremely large catalogs (> 1M)
 	* At least 10x faster
 	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
 	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
+* (Dev) Enhanced pub/sub: new `IConsumer` marker interface for classes that contain one or more event message handlers. The generic `IConsumer<T>` implements `IConsumer` but has been marked as `Obsolete`.
+* Better protection against XSS attacks
+* Updated to Bootstrap version 4.1.3
 * **Debitoor**:
 	* Partially update customer instead of full update to avoid all fields being overwritten.
 	* #1540 Place company name in front of customer name (according to address format of the particular country).
+	* #1565 Add a button to manually create a draft invoice.
 * #1479 Show in messages the delivery time at the time of purchase
-* #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
+* #1184 Sort current shopping carts & current wishlists by `ShoppingCartItem.CreatedOn`.
 * #1106 BMECat: import & export support for product keywords
-* #1499 Added hint to forms indicating that fields with an asterisk (*)
+* #1499 Added hint to forms indicating that fields with an asterisk (*) are required
 * Added filter for newsletter subscriber export by working language
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
 * #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
 * OpenTrans: added customer number to parties
+* Do not filter cookie using resources if cookie usage has not yet been consented to.
+* #1563 QueuedMessagesClearTask: add a setting for the age of the mails to be deleted.
+* #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
+* PayPal PLUS: Up to 10 more third party payment methods are allowed by PayPal now.
+* #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
+* #1571 Compare products now shows all specification attribute options
+* #1539 Signing in is now allowed with e-mail and username 
+* Trusted Shops: Trustbadge won't be displayed in Popups & Iframes anymore
+* #1461 Admin Grid: filter dialog will be displayed entirely even when grid has no data to display
+* Lots of minor enhancements for both frontend and admin theme
+* Many other minor improvements
 
 ### Bugfixes
-* In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
+* In a multi-store environment, multiple topics with the same system name can now be resolved reliably.
 * **GMC**:
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
+	* Custom labels are now being exported
 * Media middleware: 0-byte files should be treated as missing.
-* Megamenu alpha/omega blends do not toggle correctly on touch devices
+* Megamenu alpha/omega blends do now toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated
 * Only display a zero search hits warning if at least one filter is activated
 * #1436 Do not display delivery time in customer order completed messages
 * "ArgumentNullException: The value must not be NULL" if a topic is password protected
 * Tax by region: Fixes after inserting a tax rate country column shows "Unavailable"
 * #1014 Switching to default language keeps specific URL alias of current page
-* Shipping by total: Fixes when inserting a record the country was not saved
-* #1460 Editing of the customer title is missing on customer and address pages in the backend
+* Shipping by total: When inserting a record the country now will be saved
+* #1460 Editing of the customer title was missing on customer and address pages in the backend
 * #1447 Checkout button payment methods (Amazon, PayPal Express) won't work in conjunction with mandatory checkout attributes
-* When creating a topic, the widget zone input shows System.String[]
+* Fixed Autofac circularity error
+* When creating a topic, the widget zone input has shown System.String[]
 * Switching the language always redirected to the home page if SEO friendly URLs was deactivated.
 * File upload of a checkout attribute was not stored on cart page.
 * Redirecting within checkout may have displayed an incorrect URL in the browser.
@@ -90,16 +195,27 @@
 * In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
-* #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
-* #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
-* #1468 Twitter authentication not working anymore.
+* #1504 Cart item price calculation was wrong if attribute combinations with text types were involved.
+* #1485 Dropdown list for product sorting didn't not work with Internet Explorer 11.
+* #1468 Twitter authentication wasn't working anymore.
 * Newsletter subscription didn't work when customer privacy setting DisplayGdprConsentOnForms was turned off
 * Fixed social media image detection
 * Fixed redirection of bots when several languages were active
 * Region cannot be selected in checkout when entering a billing or shipping address
 * Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
 * MegaMenu: Improved item rendering for third tier elements
-* Product display order on category and manufacturer pages sometimes wrong when using linq search.
+* Product display order on category and manufacturer pages was sometimes wrong when using linq search.
+* Debitoor: Wrong invoice total if a subtotal discount has been applied.
+* Import: Fixes invalid conversion "System.Double" to "SmartStore.Core.Domain.Catalog.QuantityControlType".
+* Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'".
+* #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
+* Fixed redirection to the homepage for pages which are loaded while the application is restarted.
+* #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
+* #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
+* Fixed the redirection to the homepage for pages which were loaded while the application was restarted
+* Fixes product feeds expect a different base price formatting.
+* #1369 Shopping cart shows "Discount code applied", although it is not applied due to a lower tier price.
+* Many other fixes...
 
 
 ## SmartStore.NET 3.1.5
@@ -358,7 +474,7 @@
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
 * #1176 Admin > Product Search: It ain't possible to search for parts of a product name
- 
+
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed
@@ -646,7 +762,8 @@
 * #495 Implement option to search product detail description by default
 
 ### Improvements
-* (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
+* (Perf) Implemented static caches for URL aliases and localized properties. Increases 
+*  and request speed by up to 30%.
 * (Perf) Significantly reduced number of database reads during product list rendering. Increases request speed by up to 10%.
 * (Perf) Implemented 2nd level cache for infrequently changed entities. Increases request speed by up to 10%.
 * TaskScheduler: Rewritten from scratch to be suitable for Web Farms
@@ -1266,7 +1383,7 @@
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
 ### Improvement
-    
+
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
     * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
     * [SMNET-30] - MessageTemplates teilweise auf Englisch

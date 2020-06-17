@@ -15,10 +15,10 @@ namespace SmartStore.Services.Catalog
 {
 	public partial class ManufacturerService : IManufacturerService
     {
-        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
-        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "SmartStore.productmanufacturer.allbyproductid-{0}-{1}-{2}";
-        private const string MANUFACTURERS_PATTERN_KEY = "SmartStore.manufacturer.*";
-        private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "SmartStore.productmanufacturer.*";
+        private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "productmanufacturer:allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
+        private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "productmanufacturer:allbyproductid-{0}-{1}-{2}";
+        private const string MANUFACTURERS_PATTERN_KEY = "manufacturer:*";
+        private const string PRODUCTMANUFACTURERS_PATTERN_KEY = "productmanufacturer:*";
 
         private readonly IRepository<Manufacturer> _manufacturerRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -121,6 +121,23 @@ namespace SmartStore.Services.Catalog
 			return _manufacturerRepository.GetByIdCached(manufacturerId, "db.manu.id-" + manufacturerId);
 		}
 
+        public virtual IList<Manufacturer> GetManufacturersByIds(int[] manufacturerIds)
+        {
+            if (manufacturerIds == null || !manufacturerIds.Any())
+            {
+                return new List<Manufacturer>();
+            }
+
+            var query = from m in _manufacturerRepository.Table
+                        where manufacturerIds.Contains(m.Id)
+                        select m;
+
+            var manufacturers = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return manufacturers.OrderBySequence(manufacturerIds).ToList();
+        }
+
         public virtual void InsertManufacturer(Manufacturer manufacturer)
         {
             if (manufacturer == null)
@@ -221,8 +238,6 @@ namespace SmartStore.Services.Catalog
 								orderby pm.DisplayOrder
 								select pm;
 
-					query = query.Include(x => x.Manufacturer.Picture);
-
 					if (!showHidden)
 					{
 						if (!QuerySettings.IgnoreMultiStore)
@@ -247,7 +262,9 @@ namespace SmartStore.Services.Catalog
 						query = query.OrderBy(pm => pm.DisplayOrder);
 					}
 
-					var productManufacturers = query.ToList();
+                    query = query.Include(x => x.Manufacturer.Picture);
+
+                    var productManufacturers = query.ToList();
 					return productManufacturers;
 				});
         }

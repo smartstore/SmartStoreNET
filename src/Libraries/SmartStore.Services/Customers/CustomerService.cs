@@ -20,6 +20,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
+using System.Threading.Tasks;
 
 namespace SmartStore.Services.Customers
 {
@@ -182,6 +183,11 @@ namespace SmartStore.Services.Customers
 				query = query.Where(c => c.Deleted == q.Deleted.Value);
 			}
 
+            if (q.Active.HasValue)
+            {
+                query = query.Where(c => c.Active == q.Active.Value);
+            }
+
 			if (q.IsSystemAccount.HasValue)
 			{
 				query = q.IsSystemAccount.Value == true
@@ -200,9 +206,9 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.Phone &&
-						z.Attribute.Value.Contains(q.Phone)))
+						z.Attribute.Value.Contains(q.Phone))
 					.Select(z => z.Customer);
 			}
 
@@ -211,9 +217,9 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-						z.Attribute.Value.Contains(q.ZipPostalCode)))
+						z.Attribute.Value.Contains(q.ZipPostalCode))
 					.Select(z => z.Customer);
 			}
 
@@ -523,7 +529,11 @@ namespace SmartStore.Services.Customers
             UpdateCustomer(customer);
         }
         
-        public virtual int DeleteGuestCustomers(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart, int maxItemsToDelete = 5000)
+        public virtual async Task<int> DeleteGuestCustomersAsync(
+			DateTime? registrationFrom, 
+			DateTime? registrationTo, 
+			bool onlyWithoutShoppingCart, 
+			int maxItemsToDelete = 5000)
         {
 			var ctx = _customerRepository.Context;
 
@@ -560,7 +570,7 @@ namespace SmartStore.Services.Customers
 				// no forum topics
 				query = JoinWith<ForumTopic>(query, x => x.CustomerId);
 
-				//don't delete system accounts
+				// don't delete system accounts
 				query = query.Where(c => !c.IsSystemAccount);
 
 				// only distinct items
@@ -571,7 +581,7 @@ namespace SmartStore.Services.Customers
 							select cGroup.FirstOrDefault();
 				query = query.OrderBy(c => c.Id);
 
-				var customers = query.Take(() => maxItemsToDelete).ToList();
+				var customers = await query.Take(() => maxItemsToDelete).ToListAsync();
 
 				int numberOfDeletedCustomers = 0;
 				foreach (var c in customers)
@@ -580,10 +590,9 @@ namespace SmartStore.Services.Customers
 					{
 						// delete attributes (using GenericAttributeService would incorporate caching... which is bad in long running processes)
 						var gaQuery = from ga in _gaRepository.Table
-									  where ga.EntityId == c.Id &&
-									  ga.KeyGroup == "Customer"
+									  where ga.EntityId == c.Id && ga.KeyGroup == "Customer"
 									  select ga;
-						var attributes = gaQuery.ToList();
+						var attributes = await gaQuery.ToListAsync();
 
 						_gaRepository.DeleteRange(attributes);
 						
@@ -596,7 +605,7 @@ namespace SmartStore.Services.Customers
 							// save changes all 1000th item
 							try
 							{
-								scope.Commit();
+								await ctx.SaveChangesAsync();
 							}
 							catch (Exception ex) 
 							{
@@ -611,7 +620,7 @@ namespace SmartStore.Services.Customers
 				}
 
 				// save the rest
-				scope.Commit();
+				await ctx.SaveChangesAsync();
 
 				return numberOfDeletedCustomers;
 			}

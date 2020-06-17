@@ -115,49 +115,14 @@ namespace SmartStore.ShippingByWeight.Services
 				.Where(x => x.ShippingMethodId == shippingMethodId && weight >= x.From && weight <= x.To)
 				.ToList();
 
-			//filter by store
-			var matchedByStore = new List<ShippingByWeightRecord>();
-			foreach (var sbw in existingRecords)
-			{
-				if (storeId == sbw.StoreId)
-					matchedByStore.Add(sbw);
-			}
+            //filter by store
+            var matchedByStore = existingRecords.Where(x => x.StoreId == storeId || x.StoreId == 0).ToList();
 
-			if (matchedByStore.Count == 0)
-			{
-				foreach (var sbw in existingRecords)
-				{
-					if (sbw.StoreId == 0)
-						matchedByStore.Add(sbw);
-				}
-			}
-
-			//filter by country
-			var matchedByCountry = new List<ShippingByWeightRecord>();
-			foreach (var sbw in matchedByStore)
-			{
-				if (countryId == sbw.CountryId)
-					matchedByCountry.Add(sbw);
-			}
-
-			if (matchedByCountry.Count == 0)
-			{
-				foreach (var sbw in matchedByStore)
-				{
-					if (sbw.CountryId == 0)
-						matchedByCountry.Add(sbw);
-				}
-			}
+            //filter by country
+            var matchedByCountry = matchedByStore.Where(x => x.CountryId == countryId || x.CountryId == 0).ToList();
 
             //filter by zip
-            var matchedByZip = new List<ShippingByWeightRecord>();
-            foreach (var sbt in matchedByCountry)
-            {
-                if ((zip.IsEmpty() && sbt.Zip.IsEmpty()) || (ZipMatches(zip, sbt.Zip)))
-                {
-                    matchedByZip.Add(sbt);
-                }
-            }
+            var matchedByZip = matchedByCountry.Where(x => (zip.IsEmpty() && x.Zip.IsEmpty()) || ZipMatches(zip, x.Zip)).ToList();
 
             return matchedByZip.LastOrDefault();
         }

@@ -85,6 +85,12 @@
       <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
         <Value>If you check this option, then your customers will be limited to shipping options configured here. Otherwise, they'll be able to choose any existing shipping options even if they're not configured here (zero shipping fee in this case).</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.CalculateTotalIncludingTax">
+        <Value>Calculate order total incl. tax</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CalculateTotalIncludingTax.Hint">
+        <Value>Specifies whether to calculate the order total including or excluding taxes.</Value>
+      </LocaleResource>
 
       <LocaleResource Name="Fields.BaseCharge">
         <Value>Base fee</Value>

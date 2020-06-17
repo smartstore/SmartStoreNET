@@ -539,7 +539,7 @@ namespace SmartStore.Services.Catalog
             }
 
             // Tier prices.
-            if (product.HasTierPrices && includeDiscounts && bundleItem == null)
+            if (product.HasTierPrices && includeDiscounts && !(bundleItem != null && bundleItem.Item != null))
             {
 				var tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
                 var discountAmountTest = GetDiscountAmount(product, customer, additionalCharge, quantity, out var appliedDiscountTest, bundleItem);
@@ -598,7 +598,7 @@ namespace SmartStore.Services.Catalog
 				{
 					var itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData, context);
 
-					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
+					result += decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
 
 				return result < decimal.Zero ? decimal.Zero : result;

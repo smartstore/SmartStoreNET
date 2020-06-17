@@ -1,12 +1,17 @@
-﻿@model NavigationModel
+﻿@model MenuModel
 
-@using SmartStore.Web.Models.Catalog;
 @using SmartStore.Collections;
 @using SmartStore.Web.Framework.UI;
 
 @{
     Layout = "";
+
     var currentNode = ViewBag.SelectedNode as TreeNode<MenuItem>;
+
+    if (Model.Root == null || currentNode == null)
+    {
+        return;
+    }
 }
 
 @functions {
@@ -32,8 +37,6 @@
         return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
     }
 }
-
-
 
 <div class="category-container">
 	@if (currentNode.Depth > 0)

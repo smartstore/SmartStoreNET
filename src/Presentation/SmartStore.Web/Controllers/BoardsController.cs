@@ -35,7 +35,7 @@ using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfig(SslRequirement.No)]
+    [RewriteUrl(SslRequirement.No)]
     public partial class BoardsController : PublicControllerBase
     {
         private readonly IForumService _forumService;
@@ -426,7 +426,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[Compress]
         public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -587,7 +586,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [Compress]
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -923,7 +921,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         [GdprConsent]
 		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
@@ -1089,7 +1086,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
         {
@@ -1315,7 +1311,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         [GdprConsent]
 		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
@@ -1478,7 +1473,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
         {
@@ -1732,7 +1726,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult InstantSearch(ForumSearchQuery query)
         {
             if (!_forumSettings.ForumsEnabled || string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
@@ -1784,7 +1778,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Search(ForumSearchQuery query)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -1877,7 +1871,7 @@ namespace SmartStore.Web.Controllers
         }
 
         // Ajax.
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult Search(ForumSearchQuery query, int[] renderedTopicIds)
         {
             if (!_forumSettings.ForumsEnabled || query.Term.IsEmpty() || query.Term.Length < _searchSettings.InstantSearchTermMinLength)

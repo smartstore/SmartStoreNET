@@ -80,10 +80,10 @@ namespace SmartStore.Admin.Models.Messages
     {
         public QueuedEmailValidator()
         {
-            RuleFor(x => x.Priority).NotEmpty().InclusiveBetween(0, 99999);
+            RuleFor(x => x.Priority).InclusiveBetween(0, 99999);
             RuleFor(x => x.From).NotEmpty();
             RuleFor(x => x.To).NotEmpty();
-            RuleFor(x => x.SentTries).NotEmpty().InclusiveBetween(0, 99999);
+            RuleFor(x => x.SentTries).InclusiveBetween(0, 99999);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -51,7 +50,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class CommonController : AdminControllerBase
     {
 		const string CHECKUPDATE_CACHEKEY_PREFIX = "admin:common:checkupdateresult";
@@ -69,11 +68,11 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly Lazy<IImageCache> _imageCache;
 		private readonly Lazy<IImportProfileService> _importProfileService;
+		private readonly Lazy<IIconExplorer> _iconExplorer;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IDbCache _dbCache;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ICommonServices _services;
-		private readonly Lazy<ISiteMapService> _siteMapService;
 
         public CommonController(
 			Lazy<IPaymentService> paymentService,
@@ -89,11 +88,11 @@ namespace SmartStore.Admin.Controllers
 			ILocalizationService localizationService,
             Lazy<IImageCache> imageCache,
 			Lazy<IImportProfileService> importProfileService,
+			Lazy<IIconExplorer> iconExplorer,
 			IGenericAttributeService genericAttributeService,
 			IDbCache dbCache,
 			ITaskScheduler taskScheduler,
-			ICommonServices services,
-			Lazy<ISiteMapService> siteMapService)
+			ICommonServices services)
         {
             _paymentService = paymentService;
             _shippingService = shippingService;
@@ -108,21 +107,19 @@ namespace SmartStore.Admin.Controllers
             _localizationService = localizationService;
             _imageCache = imageCache;
 			_importProfileService = importProfileService;
+			_iconExplorer = iconExplorer;
             _genericAttributeService = genericAttributeService;
 			_dbCache = dbCache;
 			_taskScheduler = taskScheduler;
 			_services = services;
-			_siteMapService = siteMapService;
         }
-
-        #region Navbar & Menu
 
 		[ChildActionOnly]
 		public ActionResult Navbar()
 		{
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
 
-			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().CustomerLoginType != CustomerLoginType.Email ? currentCustomer.Username : currentCustomer.Email;
 			ViewBag.Stores = _services.StoreService.GetAllStores();
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{
@@ -131,15 +128,6 @@ namespace SmartStore.Admin.Controllers
 
 			return PartialView();
 		}
-
-        [ChildActionOnly]
-        public ActionResult Menu()
-        {
-			var rootNode = _siteMapService.Value.GetRootNode("admin");
-            return PartialView(rootNode);
-        }
-
-		#endregion
 
 		#region CheckUpdate
 
@@ -281,6 +269,45 @@ namespace SmartStore.Admin.Controllers
 		#endregion
 
 		#region UI Helpers
+
+		[HttpPost]
+		public JsonResult SearchIcons(string term, string selected = null, int page = 1)
+		{
+			const int pageSize = 250;
+
+			var icons = _iconExplorer.Value.All.AsEnumerable();
+
+			if (term.HasValue())
+			{
+				icons = _iconExplorer.Value.FindIcons(term, true);
+			}
+
+			var result = new PagedList<IconDescription>(icons, page - 1, pageSize);
+
+			if (selected.HasValue() && term.IsEmpty())
+			{
+				var selIcon = _iconExplorer.Value.GetIconByName(selected);
+				if (!selIcon.IsPro && !result.Contains(selIcon))
+				{
+					result.Insert(0, selIcon);
+				}
+			}
+
+			return Json(new
+			{
+				results = result.Select(x => new
+				{
+					id = x.Name,
+					text = x.Name,
+					hasRegularStyle = x.HasRegularStyle,
+					isBrandIcon = x.IsBrandIcon,
+					isPro = x.IsPro,
+					label = x.Label,
+					styles = x.Styles
+				}),
+				pagination = new { more = result.HasNextPage }
+			});
+		}
 
 		[HttpPost]
 		public JsonResult SetSelectedTab(string navId, string tabId, string path)
@@ -851,7 +878,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance")]
         [FormValueRequired("delete-guests")]
-        public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
+        public async Task<ActionResult> MaintenanceDeleteGuests(MaintenanceModel model)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
@@ -862,7 +889,7 @@ namespace SmartStore.Admin.Controllers
             DateTime? endDateValue = (model.DeleteGuests.EndDate == null) ? null
 							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
 
-            model.DeleteGuests.NumberOfDeletedCustomers = _customerService.DeleteGuestCustomers(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
+            model.DeleteGuests.NumberOfDeletedCustomers = await _customerService.DeleteGuestCustomersAsync(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
 
             return View(model);
         }
@@ -910,7 +937,7 @@ namespace SmartStore.Admin.Controllers
 						if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc) &&
 							(!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
 						{
-							if (FileSystemHelper.Delete(fullPath))
+							if (FileSystemHelper.DeleteFile(fullPath))
 								++model.DeleteExportedFiles.NumberOfDeletedFiles;
 						}
 					}

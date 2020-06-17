@@ -13,7 +13,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.AmazonPay.Events
 {
-	public class EventConsumer : IConsumer<MessageModelCreatedEvent>, IConsumer<OrderPaidEvent>
+	public class EventConsumer : IConsumer
 	{
 		private readonly IPluginFinder _pluginFinder;
 		private readonly ICommonServices _services;

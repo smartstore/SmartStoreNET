@@ -31,7 +31,7 @@ namespace SmartStore.Core.IO
 		{
 			basePath = basePath.EmptyNull();
 
-			var pathIsAbsolute = FileSystemHelper.IsFullPath(basePath);
+			var pathIsAbsolute = PathHelper.IsAbsolutePhysicalPath(basePath);
 
 			NormalizeStoragePath(ref basePath, pathIsAbsolute);
 
@@ -517,7 +517,7 @@ namespace SmartStore.Core.IO
 
 			public DateTime LastUpdated
 			{
-				get { return _fileInfo.LastWriteTime; }
+				get { return _fileInfo.LastWriteTimeUtc; }
 			}
 
 			public string Extension
@@ -595,7 +595,7 @@ namespace SmartStore.Core.IO
 
 			public DateTime LastUpdated
 			{
-				get { return _directoryInfo.LastWriteTime; }
+				get { return _directoryInfo.LastWriteTimeUtc; }
 			}
 
 			public long Size

@@ -11,6 +11,30 @@ using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Plugins
 {
+	/// <summary>
+	/// Information about an assembly referenced by a plugin.
+	/// </summary>
+	public sealed class AssemblyReference
+	{
+		/// <summary>
+		/// File in ASP.NET temp folder
+		/// </summary>
+		public FileInfo File { get; internal set; }
+		/// <summary>
+		/// The original assembly file that a shadow copy was made from it
+		/// </summary>
+		public FileInfo OriginalFile { get; internal set; }
+		/// <summary>
+		/// The assembly that has been shadow copied and was loaded into the AppDomain
+		/// </summary>
+		public Assembly Assembly { get; internal set; }
+
+		/// <summary>
+		/// Exception thrown during activation/probing
+		/// </summary>
+		internal Exception ActivationException { get; set; }
+	}
+
 	[DataContract]
     public class PluginDescriptor : IComparable<PluginDescriptor>
     {
@@ -19,17 +43,16 @@ namespace SmartStore.Core.Plugins
 
         public PluginDescriptor()
         {
-            this.Version = new Version("1.0");
-            this.MinAppVersion = SmartStoreVersion.Version;
+            Version = new Version("1.0");
+            MinAppVersion = SmartStoreVersion.Version;
         }
 
 		// Unit tests
-		public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
+		public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginClrType)
 			: this()
 		{
-			this.ReferencedAssembly = referencedAssembly;
-			this.OriginalAssemblyFile = originalAssemblyFile;
-			this.PluginType = pluginType;
+			Assembly = new AssemblyReference { Assembly = referencedAssembly, OriginalFile = originalAssemblyFile, File = originalAssemblyFile };
+			PluginClrType = pluginClrType;
 		}
 
         /// <summary>
@@ -41,6 +64,12 @@ namespace SmartStore.Core.Plugins
         /// The physical path of the runtime plugin
         /// </summary>
 		public string PhysicalPath { get; set; }
+
+		/// <summary>
+		/// Gets the folder name
+		/// </summary>
+		[DataMember]
+		public string FolderName { get; internal set; }
 
 		/// <summary>
 		/// The virtual path of the runtime plugin
@@ -79,33 +108,23 @@ namespace SmartStore.Core.Plugins
         }
 
         /// <summary>
-        /// Plugin type
+        /// Plugin runtime type
         /// </summary>
-        public Type PluginType { get; set; }
-
-        /// <summary>
-        /// The assembly that has been shadow copied and was loaded into the AppDomain
-        /// </summary>
-        public Assembly ReferencedAssembly { get; internal set; }
-
-        /// <summary>
-        /// The original assembly file that a shadow copy was made from it
-        /// </summary>
-        public FileInfo OriginalAssemblyFile { get; internal set; }
+        public Type PluginClrType { get; set; }
 
 		/// <summary>
-		/// The list of assembly files found in the plugin folder, except the main plugin assembly.
+		/// The plugin assembly.
 		/// </summary>
-		public IEnumerable<FileInfo> ReferencedLocalAssemblyFiles { get; internal set; }
+		public AssemblyReference Assembly { get; internal set; } = new AssemblyReference();
 
 		/// <summary>
-		/// Gets any exception thrown during plugin activation & initializing
+		/// List of assemblies files found in the plugin folder, except the main plugin assembly.
 		/// </summary>
-		public Exception ActivationException { get; internal set; }
+		internal AssemblyReference[] ReferencedLocalAssemblies { get; set; } = new AssemblyReference[0];
 
-        /// <summary>
-        /// Gets or sets the plugin group
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the plugin group
+		/// </summary>
 		[DataMember]
 		public string Group { get; internal set; }
 
@@ -122,12 +141,6 @@ namespace SmartStore.Core.Plugins
         /// </summary>
 		[DataMember]
 		public string FriendlyName { get; set; }
-
-		/// <summary>
-		/// Gets the folder name
-		/// </summary>
-		[DataMember]
-		public string FolderName { get; internal set; }
 
         /// <summary>
         /// Gets or sets the system name
@@ -243,10 +256,10 @@ namespace SmartStore.Core.Plugins
         public T Instance<T>() where T : class, IPlugin
         {
             object instance;
-            if (!EngineContext.Current.ContainerManager.TryResolve(PluginType, null, out instance))
+            if (!EngineContext.Current.ContainerManager.TryResolve(PluginClrType, null, out instance))
             {
                 // Not registered
-                instance = EngineContext.Current.ContainerManager.ResolveUnregistered(PluginType);
+                instance = EngineContext.Current.ContainerManager.ResolveUnregistered(PluginClrType);
             }
 
             var typedInstance = instance as T;

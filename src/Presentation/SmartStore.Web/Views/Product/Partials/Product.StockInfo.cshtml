@@ -46,7 +46,7 @@
 		<div class="pd-stocksub">
 			@if (!Model.IsCurrentCustomerRegistered)
 			{
-				<a href='@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+				<a href="@Url.RouteUrl("Login", new { returnUrl = Request.RawUrl })" rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
 			}
 			else
 			{

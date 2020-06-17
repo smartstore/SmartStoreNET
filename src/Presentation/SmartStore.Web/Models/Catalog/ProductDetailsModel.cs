@@ -6,6 +6,7 @@ using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Media;
@@ -200,8 +201,9 @@ namespace SmartStore.Web.Models.Catalog
 			public int ProductId { get; set; }
 
 			public bool HidePrices { get; set; }
+            public bool ShowLoginNote { get; set; }
 
-			public bool DynamicPriceUpdate { get; set; }
+            public bool DynamicPriceUpdate { get; set; }
 			public bool BundleItemShowBasePrice { get; set; }
 
 			public string NoteWithDiscount { get; set; }
@@ -213,19 +215,19 @@ namespace SmartStore.Web.Models.Catalog
 			public bool IsGiftCard { get; set; }
 
 			[SmartResourceDisplayName("Products.GiftCard.RecipientName")]
-			[AllowHtml]
 			public string RecipientName { get; set; }
+
 			[SmartResourceDisplayName("Products.GiftCard.RecipientEmail")]
-			[AllowHtml]
 			public string RecipientEmail { get; set; }
+
 			[SmartResourceDisplayName("Products.GiftCard.SenderName")]
-			[AllowHtml]
 			public string SenderName { get; set; }
+
 			[SmartResourceDisplayName("Products.GiftCard.SenderEmail")]
-			[AllowHtml]
 			public string SenderEmail { get; set; }
+
 			[SmartResourceDisplayName("Products.GiftCard.Message")]
-			[AllowHtml]
+			[SanitizeHtml]
 			public string Message { get; set; }
 
 			public GiftCardType GiftCardType { get; set; }

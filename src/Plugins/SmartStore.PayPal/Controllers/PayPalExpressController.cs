@@ -38,7 +38,6 @@ namespace SmartStore.PayPal.Controllers
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICustomerService customerService,
 			IGenericAttributeService genericAttributeService) : base(
-				PayPalExpressProvider.SystemName,
 				paymentService,
 				orderService,
 				orderProcessingService)
@@ -50,7 +49,9 @@ namespace SmartStore.PayPal.Controllers
 			_genericAttributeService = genericAttributeService;
 		}
 
-		private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
+        protected override string ProviderSystemName => PayPalExpressProvider.SystemName;
+
+        private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
 		{
 			var expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-default.png";
             var cultureString = Services.WorkContext.WorkingLanguage.LanguageCulture;

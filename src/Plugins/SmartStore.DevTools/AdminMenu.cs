@@ -9,7 +9,7 @@ namespace SmartStore.DevTools
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Developer Tools")
-				.Icon("terminal")
+				.Icon("far fa-terminal")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
 				.ToItem();
 			
@@ -18,7 +18,7 @@ namespace SmartStore.DevTools
 			// uncomment to add to admin menu (see plugin sub-menu)
 			//var backendExtensionItem = new MenuItem().ToBuilder()
 			//	.Text("Backend extension")
-			//	.Icon("area-chart")
+			//	.Icon("chart-area")
 			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
 			//	.ToItem();
 			//pluginsNode.Append(backendExtensionItem);

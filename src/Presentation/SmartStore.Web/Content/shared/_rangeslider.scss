@@ -72,6 +72,7 @@
         height: 5px;
         border-radius: 1px;
         background-color: $custom-range-track-bg;
+        white-space: nowrap;
 
         &:after {
             position: absolute;

@@ -76,7 +76,7 @@ namespace SmartStore.Web.Controllers
 			return PartialView(model);
 		}
 
-		[HttpPost, ValidateInput(false)]
+		[HttpPost]
 		public ActionResult InstantSearch(CatalogSearchQuery query)
 		{
             if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
@@ -130,7 +130,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
 		}
 
-		[RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult Search(CatalogSearchQuery query)
 		{
 			var model = new SearchResultModel(query);

@@ -1,0 +1,63 @@
+﻿@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    var isFirst = true;
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var rtl = WorkContext.WorkingLanguage.Rtl;
+}
+
+<div class="cms-menu cms-menu-linklist" data-menu-name="@(Model.Name?.ToLower())">
+    <ul class="list-unstyled">
+        @foreach (var node in root.Children)
+        {
+            var item = node.Value;
+            if (!item.Visible)
+            {
+                continue;
+            }
+
+            var itemText = node.GetItemText(T);
+            var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+
+            if (item.IsGroupHeader)
+            {
+                if (!isFirst)
+                {
+                    <li><hr class="my-2" /></li>
+                }
+                if (itemText.HasValue() && item.Text != "[SKIP]")
+                {
+                    <li class="menu-header h5 mt-2">@itemText</li>
+                }
+                isFirst = false;
+                continue;
+            }
+
+            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+            attributes.PrependCssClass("menu-link");
+
+            <li>
+                <a href="@itemUrl" @Html.Attrs(attributes)>
+		            @if (hasIcons)
+		            {
+			            <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
+		            }
+                    else if (hasImages)
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                    }
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+                </a>
+            </li>
+
+            isFirst = false;
+        }
+    </ul>
+</div>

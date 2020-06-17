@@ -6,11 +6,11 @@
 $section-header-height: 70px;
 
 :root {
-    --content-padding-x: $content-padding-x / 2;
-    --content-padding-y: $content-padding-y;
+    --content-padding-x: #{$content-padding-x / 2};
+    --content-padding-y: #{$content-padding-y};
 
     @include media-breakpoint-up(lg) {
-        --content-padding-x: $content-padding-x;
+        --content-padding-x: #{$content-padding-x};
     }
 }
 
@@ -262,7 +262,7 @@ body {
 
 	&.sticky {
 		position: fixed;
-		z-index: 600;
+		z-index: $zindex-sticky;
 		left: var(--content-padding-x);
 		right: var(--content-padding-x);
         padding: calc(var(--content-padding-y) / 2)  var(--content-padding-x);
@@ -436,17 +436,29 @@ legend {
 		text-align: center;
 
 		&:hover {
-			color: $gray-600;
+			color: $gray-700;
 		}
 
 		> i {
-			font-size: 1.25rem;
+			font-size: 1rem; 
 		}
 	}
 
 	&:hover > .hint {
 		opacity: 1;
 	}
+
+    .col-form-label-sm + .hint {
+        width: 1rem;
+        margin-bottom: 0;
+        line-height: $input-line-height-sm;
+		padding-top: calc(#{$input-padding-y-sm} + #{$input-border-width});
+		padding-bottom: calc(#{$input-padding-y-sm} + #{$input-border-width});
+
+        > i {
+            font-size: inherit;
+        }
+    }
 }
 
 
@@ -486,11 +498,15 @@ legend {
 	left: 0;
 	right: 0;
 	top: 0;
-	width: 100%;
 	height: 3px;
-	z-index: 999;
+	z-index: $zindex-sticky + 1;
 	background-color: #ffab40;
 	transition: opacity .05s ease-in;
+
+    .sticky-header & {
+        left: var(--content-padding-x);
+        right: var(--content-padding-x);
+    }
 
 	&.busy {
 		opacity: 1;
@@ -931,18 +947,16 @@ a.admin-config-group[data-toggle=collapse] {
     position: relative;
 
     &:after {
-	    display: block;
-	    position: absolute;
-	    font-family: FontAwesome;
-	    font-size: 1.2rem;
-	    line-height: 1;
-	    content: "\f107";
+        @include fontawesome-font("\f107", regular);    // angle-down
+        display: block;
+        position: absolute;
+        font-size: 1.2rem;
+        line-height: 1;
         color: $body-color;
-	    //content: "\f077";
         right: 0;
-	    top: 50%;
-	    margin-top: -7px;
-	    transition: transform 0.25s ease-in-out;
+        top: 50%;
+        margin-top: -7px;
+        transition: transform 0.25s ease-in-out;
     }
 
     &.collapsed:after {
@@ -1389,6 +1403,33 @@ table.payment-method-features td {
 	}
 }
 
+//
+// Menus
+// --------------------------------------------------------------
+
+.menu-item-list {
+    .menu-item {
+        position: relative;
+        overflow: visible;
+        padding-left: 0px;
+
+        .item-commands {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            > .btn {
+                position: relative;
+            }
+        }
+
+        &:hover .item-commands {
+            opacity: 1;
+        }
+    }
+}
+
 
 //
 // Misc
@@ -1408,11 +1449,6 @@ table.payment-method-features td {
 		border: 1px solid #646464;
 	}
 }
-
-
-//
-// Misc
-// --------------------------------------------------------------
 
 .cke_chrome.cke_focus {
     border-color: $input-focus-border-color;

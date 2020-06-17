@@ -3,6 +3,7 @@ using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -11,16 +12,14 @@ namespace SmartStore.Web.Models.Common
     [Validator(typeof(ContactUsValidator))]
     public partial class ContactUsModel : ModelBase
     {
-        [AllowHtml]
         [SmartResourceDisplayName("ContactUs.Email")]
 		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         [SmartResourceDisplayName("ContactUs.Enquiry")]
         public string Enquiry { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("ContactUs.FullName")]
         public string FullName { get; set; }
 		public bool FullNameRequired { get; set; }

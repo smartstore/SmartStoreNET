@@ -4,6 +4,38 @@ var summernote_global_config;
 var summernote_image_upload_url;
 
 (function () {
+    var dom = $.summernote.dom;
+    var originalDomHtml = dom.html;
+
+    var beautifyOpts = {
+        indent_size: 2,
+        indent_with_tabs: true,
+        indent_char: " ",
+        max_preserve_newlines: "2",
+        preserve_newlines: true,
+        keep_array_indentation: false,
+        break_chained_methods: false,
+        indent_scripts: "normal",
+        brace_style: "collapse",
+        space_before_conditional: true,
+        unescape_strings: false,
+        jslint_happy: false,
+        end_with_newline: false,
+        wrap_line_length: "140",
+        indent_inner_html: true,
+        comma_first: false,
+        e4x: false,
+        indent_empty_lines: false
+    };
+
+    dom.html = function ($node, isNewlineOnBlock) {
+        var markup = dom.value($node);
+        if (isNewlineOnBlock) {
+            markup = window.html_beautify(markup, beautifyOpts);
+        }
+        return markup;
+    };
+
 	$.extend(true, $.summernote.lang, {
 		'en-US': {
 			attrs: {
@@ -45,7 +77,7 @@ var summernote_image_upload_url;
 			// if url doesn't match an URL schema, set http:// as default
 			return "http://" + url;
 		},
-		callbacks: {
+        callbacks: {
 			onFocus: function () {
 				$(this).next().addClass('focus');
 			},
@@ -57,16 +89,15 @@ var summernote_image_upload_url;
 
 					$(this).next().removeClass('focus');
 				}
-
 			},
 			onImageUpload: function (files) {
 				sendFile(files[0], this);
 			},
-			onBlurCodeview: function (code, e) {
+            onBlurCodeview: function (code, e) {
 				// Summernote does not update WYSIWYG content on codable blur,
 				// only when switched back to editor
-				$(this).val(code);
-			}
+                $(this).val(code);
+            }
 		},
 		toolbar: [
 			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear', 'cleaner']],
@@ -116,7 +147,7 @@ var summernote_image_upload_url;
 			'arrowsAlt': 'fa fa-arrows-alt',
 			'bold': 'fa fa-bold',
 			'caret': 'fa fa-caret-down',
-			'circle': 'fa fa-circle-thin',
+			'circle': 'far fa-circle',
 			'close': 'fa fa-times',
 			'code': 'fa fa-code',
 			'eraser': 'fa fa-eraser',
@@ -129,11 +160,11 @@ var summernote_image_upload_url;
 			'menuCheck': 'fa fa-check',
 			'minus': 'fa fa-minus',
 			'orderedlist': 'fa fa-list-ol',
-			'pencil': 'fa fa-pencil',
-			'picture': 'fa fa-picture-o',
+			'pencil': 'fa fa-pencil-alt',
+			'picture': 'far fa-image',
 			'question': 'fa fa-question',
 			'redo': 'fa fa-redo',
-			'square': 'fa fa-square-o',
+			'square': 'far fa-square',
 			'strikethrough': 'fa fa-strikethrough',
 			'subscript': 'fa fa-subscript',
 			'superscript': 'fa fa-superscript',
@@ -143,14 +174,15 @@ var summernote_image_upload_url;
 			'underline': 'fa fa-underline',
 			'undo': 'fa fa-undo',
 			'unorderedlist': 'fa fa-list-ul',
-			'video': 'fa fa-video-camera'
+			'video': 'fa fa-video'
 		},
 		codemirror: {
 			mode: "htmlmixed",
 			theme: "eclipse",
 			lineNumbers: true,
 			lineWrapping: false,
-			tabSize: 2,
+            tabSize: 2,
+            indentWithTabs: true,
 			smartIndent: true,
 			matchTags: true,
 			matchBrackets: true,
@@ -173,7 +205,7 @@ var summernote_image_upload_url;
 			}
 		},
 		imageAttributes: {
-			icon: '<i class="fa fa-pencil"/>',
+            icon: '<i class="fa fa-pencil-alt"/>',
 			removeEmpty: true, // true = remove attributes | false = leave empty if present
 			disableUpload: true // true = don't display Upload Options | Display Upload Options
 		}
@@ -224,8 +256,8 @@ var summernote_image_upload_url;
 
 		// Fix "CodeMirror too wide" issue
 		$(document).on('click', '.note-toolbar .btn-codeview', function (e) {
-			var wrapper = $(this).closest('.adminData');
-			if (wrapper.length) {
+            var wrapper = $(this).closest('.adminData');
+            if (wrapper.length) {
 				wrapper.css('overflow-x', $(this).is('.active') ? 'auto' : '');
 			}
 		});

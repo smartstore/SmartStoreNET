@@ -148,7 +148,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.Replace("/", "")
 				.Replace("-", "");
 
-			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
+			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
@@ -221,12 +221,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public virtual void UpdateExportProfile(ExportProfile profile)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
-			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
+			profile.FolderName = PathHelper.NormalizeAppRelativePath(profile.FolderName);
 
-            if (!FileSystemHelper.IsSafeRootPath(profile.FolderName))
+            if (!PathHelper.IsSafeAppRootPath(profile.FolderName))
             {
                 throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
             }
@@ -236,8 +235,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
 			if (!force && profile.IsSystemProfile)
 				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.CannotDeleteSystemProfile"));

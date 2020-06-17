@@ -6,20 +6,26 @@ namespace SmartStore.Web.Models.Entity
 {
 	public class EntityPickerModel : ModelBase
 	{
-		public string EntityType { get; set; }
+        public EntityPickerModel()
+        {
+            PageSize = 96;
+        }
+
+        public string EntityType { get; set; }
 		public bool HighligtSearchTerm { get; set; }
 		public string DisableIf { get; set; }
 		public string DisableIds { get; set; }
 		public string SearchTerm { get; set; }
 		public string ReturnField { get; set; }
 		public int MaxItems { get; set; }
-		public string PreselectedEntityIds { get; set; }
+		public string Selected { get; set; }
 		public int PageIndex { get; set; }
 		public int PageSize { get; set; }
+        public int LanguageId { get; set; }
 
-		public List<SearchResultModel> SearchResult { get; set; }
+        public List<SearchResultModel> SearchResult { get; set; }
 
-		#region SearchProperties
+		#region Search properties
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
 		public string ProductName { get; set; }

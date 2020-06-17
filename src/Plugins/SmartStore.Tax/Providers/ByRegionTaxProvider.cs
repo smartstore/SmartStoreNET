@@ -1,37 +1,32 @@
-﻿using System.Data.Entity.Migrations;
+﻿using System.Linq;
 using System.Web.Routing;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Plugins;
-using SmartStore.Tax.Data;
-using SmartStore.Tax.Data.Migrations;
-using SmartStore.Tax.Services;
-using SmartStore.Services.Localization;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Tax;
+using SmartStore.Tax.Services;
 
 namespace SmartStore.Tax
 {
-	[SystemName("Tax.CountryStateZip")]
+    [SystemName("Tax.CountryStateZip")]
 	[FriendlyName("Tax By Region")]
 	[DisplayOrder(10)]
 	public class ByRegionTaxProvider : ITaxProvider, IConfigurable
     {
         private readonly ITaxRateService _taxRateService;
-        private readonly TaxRateObjectContext _objectContext;
-        private readonly ILocalizationService _localizationService;
+        private readonly ISettingService _settingService;
+        private readonly TaxSettings _taxSettings;
 
-		public ByRegionTaxProvider(ITaxRateService taxRateService,
-            TaxRateObjectContext objectContext,
-            ILocalizationService localizationService)
+        public ByRegionTaxProvider(
+            ITaxRateService taxRateService,
+            ISettingService settingService,
+            TaxSettings taxSettings)
         {
-            this._taxRateService = taxRateService;
-            this._objectContext = objectContext;
-            _localizationService = localizationService;
+            _taxRateService = taxRateService;
+            _settingService = settingService;
+            _taxSettings = taxSettings;
         }
 
-        /// <summary>
-        /// Gets tax rate
-        /// </summary>
-        /// <param name="calculateTaxRequest">Tax calculation request</param>
-        /// <returns>Tax</returns>
         public CalculateTaxResult GetTaxRate(CalculateTaxRequest calculateTaxRequest)
         {
             var result = new CalculateTaxResult();
@@ -42,12 +37,26 @@ namespace SmartStore.Tax
                 return result;
             }
 
-            var taxRates = _taxRateService.GetAllTaxRates(calculateTaxRequest.TaxCategoryId,
-                calculateTaxRequest.Address.Country != null ? calculateTaxRequest.Address.Country.Id: 0,
-                calculateTaxRequest.Address.StateProvince != null ? calculateTaxRequest.Address.StateProvince.Id : 0, 
+            if (_taxSettings.EuVatEnabled)
+            {
+                if (!(calculateTaxRequest.Address.Country?.SubjectToVat ?? false))
+                {
+                    // Fallback to fixed rate (merchant country VAT rate).
+                    result.TaxRate = _settingService.GetSettingByKey<decimal>($"Tax.TaxProvider.FixedRate.TaxCategoryId{calculateTaxRequest.TaxCategoryId}");
+                    return result;
+                }
+            }
+            
+            var taxRates = _taxRateService.GetAllTaxRates(
+                calculateTaxRequest.TaxCategoryId,
+                calculateTaxRequest.Address.Country?.Id ?? 0,
+                calculateTaxRequest.Address.StateProvince?.Id ?? 0, 
                 calculateTaxRequest.Address.ZipPostalCode);
-            if (taxRates.Count > 0)
+
+            if (taxRates.Any())
+            {
                 result.TaxRate = taxRates[0].Percentage;
+            }
 
             return result;
         }
@@ -56,8 +65,7 @@ namespace SmartStore.Tax
         {
             actionName = "Configure";
             controllerName = "TaxByRegion";
-			routeValues = new RouteValueDictionary() { { "area", "SmartStore.Tax" } };
+			routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
         }
-
     }
 }

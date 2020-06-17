@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
-
-namespace SmartStore.Core.Domain.Catalog
+﻿namespace SmartStore.Core.Domain.Catalog
 {
-	public partial class ProductBundleItemData
+    public partial class ProductBundleItemData
 	{
 		public ProductBundleItemData(ProductBundleItem item)
 		{
-			Item = item;	// can be null... test with IsValid
+			Item = item;	// Can be null.
 		}
 
 		public ProductBundleItem Item { get; private set; }

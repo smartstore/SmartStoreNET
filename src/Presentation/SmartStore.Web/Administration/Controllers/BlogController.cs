@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Html;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -301,7 +302,7 @@ namespace SmartStore.Admin.Controllers
 					commentModel.CustomerId = blogComment.CustomerId;
 					commentModel.IpAddress = blogComment.IpAddress;
 					commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
-					commentModel.Comment = Core.Html.HtmlUtils.FormatText(blogComment.CommentText, false, true, false, false, false, false);
+					commentModel.Comment = HtmlUtils.ConvertPlainTextToHtml(blogComment.CommentText.HtmlEncode());
 
 					if (customer == null)
 						commentModel.CustomerName = "".NaIfEmpty();

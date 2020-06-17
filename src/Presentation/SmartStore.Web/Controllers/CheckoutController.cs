@@ -30,7 +30,7 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+    [RewriteUrl(SslRequirement.Yes)]
     public partial class CheckoutController : PublicControllerBase
     {
 		#region Fields
@@ -380,23 +380,6 @@ namespace SmartStore.Web.Controllers
 			return model;
         }
 
-        [NonAction]
-        protected bool IsMinimumOrderPlacementIntervalValid(Customer customer)
-        {
-            //prevent 2 orders being placed within an X seconds time frame
-            if (_orderSettings.MinimumOrderPlacementInterval == 0)
-                return true;
-
-			var lastOrder = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				 null, null, null, null, null, null, null, null, 0, 1)
-                .FirstOrDefault();
-			if (lastOrder == null)
-                return true;
-
-			var interval = DateTime.UtcNow - lastOrder.CreatedOnUtc;
-            return interval.TotalSeconds > _orderSettings.MinimumOrderPlacementInterval;
-        }
-
 		private bool IsValidPaymentForm(IPaymentMethod paymentMethod, FormCollection form)
 		{
 			var paymentControllerType = paymentMethod.GetControllerType();
@@ -610,37 +593,43 @@ namespace SmartStore.Web.Controllers
         
         public ActionResult ShippingMethod()
         {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
+            {
                 return RedirectToRoute("ShoppingCart");
+            }
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, store.Id);
 
                 return RedirectToAction("PaymentMethod");
             }
-                        
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
-            var checkoutState = _httpContext.GetCheckoutState();
-            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
-                checkoutState.CustomProperties["HasOnlyOneActiveShippingMethod"] = shippingOptions.Count == 1;
-            else
-                checkoutState.CustomProperties.Add("HasOnlyOneActiveShippingMethod", shippingOptions.Count == 1);
-            
-            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
+            var response = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
+            var options = response.ShippingOptions;
+            var state = _httpContext.GetCheckoutState();
+
+            if (state.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
             {
-                _genericAttributeService.SaveAttribute<ShippingOption>(
-                    _workContext.CurrentCustomer, 
-                    SystemCustomerAttributeNames.SelectedShippingOption, 
-                    shippingOptions.FirstOrDefault(), 
-                    _storeContext.CurrentStore.Id);
+                state.CustomProperties["HasOnlyOneActiveShippingMethod"] = options.Count == 1;
+            }
+            else
+            {
+                state.CustomProperties.Add("HasOnlyOneActiveShippingMethod", options.Count == 1);
+            }
+            
+            if (options.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption && response.Success)
+            {
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedShippingOption, options.FirstOrDefault(), store.Id);
 
 				var referrer = Services.WebHelper.GetUrlReferrer();
 				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
@@ -651,14 +640,12 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("PaymentMethod");
             }
 
-            //model
             var model = PrepareShippingMethodModel(cart);
             return View(model);
         }
 
         [HttpPost, ActionName("ShippingMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectShippingMethod(string shippingoption)
         {
             //validation
@@ -771,7 +758,6 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("PaymentMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
 			// validation
@@ -845,20 +831,23 @@ namespace SmartStore.Web.Controllers
 
             return View(model);
         }
+
         [HttpPost, ActionName("Confirm")]
-        [ValidateInput(false)]
         public ActionResult ConfirmOrder(FormCollection form)
         {
-			//validation
-			var storeId = _storeContext.CurrentStore.Id;
+			var store = _storeContext.CurrentStore;
 			var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
+            {
                 return RedirectToRoute("ShoppingCart");
+            }
 
-            if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             var model = new CheckoutConfirmModel();
 			PlaceOrderResult placeOrderResult = null;
@@ -869,21 +858,25 @@ namespace SmartStore.Web.Controllers
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
                 {
-                    //Check whether payment workflow is required
-					if (IsPaymentWorkflowRequired(cart))
-						return RedirectToAction("PaymentMethod");
+                    // Check whether payment workflow is required.
+                    if (IsPaymentWorkflowRequired(cart))
+                    {
+                        return RedirectToAction("PaymentMethod");
+                    }
 
 					processPaymentRequest = new ProcessPaymentRequest();
                 }
-                
-                //prevent 2 orders being placed within an X seconds time frame
-                if (!IsMinimumOrderPlacementIntervalValid(customer))
-                    throw new Exception(T("Checkout.MinOrderPlacementInterval"));
 
-                //place order
-				processPaymentRequest.StoreId = storeId;
+                // Prevent 2 orders being placed within an X seconds time frame.
+                if (!_orderProcessingService.IsMinimumOrderPlacementIntervalValid(customer, store))
+                {
+                    throw new Exception(T("Checkout.MinOrderPlacementInterval"));
+                }
+
+                // Place order.
+				processPaymentRequest.StoreId = store.Id;
                 processPaymentRequest.CustomerId = customer.Id;
-				processPaymentRequest.PaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, storeId);
+				processPaymentRequest.PaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
 
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
@@ -897,13 +890,13 @@ namespace SmartStore.Web.Controllers
 					model.Warnings.AddRange(placeOrderResult.Errors.Select(x => HtmlUtils.ConvertPlainTextToHtml(x)));
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-				Logger.Warn(exception, exception.Message);
+				Logger.Warn(ex, ex.Message);
 
-				if (!model.Warnings.Any(x => x == exception.Message))
+				if (!model.Warnings.Any(x => x == ex.Message))
 				{
-					model.Warnings.Add(exception.Message);
+					model.Warnings.Add(ex.Message);
 				}
             }
 
@@ -921,9 +914,9 @@ namespace SmartStore.Web.Controllers
 
 				_paymentService.PostProcessPayment(postProcessPaymentRequest);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 			finally
 			{
@@ -972,15 +965,10 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult CheckoutProgress(CheckoutProgressStep step)
         {
-            var model = new CheckoutProgressModel() {CheckoutProgressStep = step};
-
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
-
-            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
+            var model = new CheckoutProgressModel
             {
-                model.DisplayShippingOptions = false;
-            }
+                CheckoutProgressStep = step
+            };
 
             return PartialView(model);
         }

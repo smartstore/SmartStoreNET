@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class SecurityController : AdminControllerBase
 	{
 		#region Fields
@@ -34,9 +34,27 @@ namespace SmartStore.Admin.Controllers
             this._customerService = customerService;
 		}
 
-		#endregion 
+        #endregion
 
         #region Methods
+
+        // Ajax.
+        public ActionResult AllAccessPermissions(string selected)
+        {
+            var permissions = _permissionService.GetAllPermissionRecords();
+            var selectedArr = selected.SplitSafe(",");
+
+            var data = permissions
+                .Select(x => new
+                {
+                    id = x.SystemName,
+                    text = x.Name,  // TODO: localization.
+                    selected = selectedArr.Contains(x.SystemName)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult AccessDenied(string pageUrl)
         {

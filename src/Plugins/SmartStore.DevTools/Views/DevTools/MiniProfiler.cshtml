@@ -1,3 +1,8 @@
 ﻿@model dynamic
 
+@if (base.ViewContext.IsBareBonePage())
+{
+	return;
+}
+
 @StackExchange.Profiling.MiniProfiler.RenderIncludes(useExistingjQuery: true, showControls: true)

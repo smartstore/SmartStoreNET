@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web.Routing;
 using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
@@ -25,7 +27,8 @@ namespace SmartStore.Web.Framework.UI
             this.CloseOnEscapePress = true;
 			this.CloseOnBackdropClick = true;
 			this.RenderAtPageEnd = true;
-        }
+			this.BodyHtmlAttributes = new RouteValueDictionary();
+		}
 
         public override bool NameIsRequired
         {
@@ -59,5 +62,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool CloseOnBackdropClick { get; set; }
 
 		public bool RenderAtPageEnd { get; set; }
+
+		public IDictionary<string, object> BodyHtmlAttributes { get; set; }
 	}
 }

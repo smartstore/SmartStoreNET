@@ -1,0 +1,133 @@
+﻿@using SmartStore.Collections
+@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    var selectedEntityId = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
+        ? Model.SelectedNode.Parent.Value.EntityId
+        : Model.SelectedNode.Value.EntityId;
+
+    var renderMoreItem = false;
+    var rtl = WorkContext.WorkingLanguage.Rtl;
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var isFirst = true;
+}
+
+@functions {
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+    {
+        var liClasses = new List<string>();
+
+        liClasses.Add("nav-item");
+
+        if (node.Depth <= 1 && node.HasChildren)
+        {
+            liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+        }
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
+        {
+            liClasses.Add("expanded");
+        }
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            liClasses.Add("selected");
+        }
+
+        return liClasses.Count > 0 ? string.Join(" ", liClasses) : null;
+    }
+}
+
+<div class="cms-menu cms-menu-navbar" data-menu-name="@(Model.Name?.ToLower())">
+    <div class="megamenu-nav megamenu-nav--prev @(rtl ? "omega" : "alpha")">
+	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-left"></i></a>
+    </div>
+
+    <ul class="navbar-nav flex-row flex-nowrap" 
+        data-selected-entity-id="@selectedEntityId"
+        data-current-category-id="@CurrentCategoryId" 
+        data-current-product-id="@CurrentProductId"
+        data-current-manufacturer-id="@CurrentManufacturerId">
+
+        @foreach (var node in root.Children)
+        {
+            var item = node.Value;
+            if (!item.Visible || node.GetMetadata<bool>("spare", false))
+            {
+                if (node.GetMetadata<bool>("spare", false))
+                {
+                    renderMoreItem = true;
+                }
+                continue;
+            }
+
+            var itemState = node.GetNodePathState(Model.Path);
+            var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
+            var isDropDownActive = (isMegaMenuActive == null ? true : (bool)isMegaMenuActive) && node.HasChildren;
+            var itemText = node.GetItemText(T);
+            var itemUrl = item.GenerateUrl(this.Url);
+
+            if (item.IsGroupHeader)
+            {
+                if (!isFirst)
+                {
+                    <li><hr /></li>
+                }
+                if (itemText.HasValue() && item.Text != "[SKIP]")
+                {
+                    <li class="menu-header h4 mt-2">@itemText</li>
+                }
+                isFirst = false;
+                continue;
+            }
+
+            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
+            attributes.PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
+            if (isDropDownActive)
+            {
+                attributes["aria-expanded"] = "false";
+                attributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
+            }
+
+            <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.Id" data-id="@item.Id">
+                <a href="@itemUrl" @Html.Attrs(attributes)>
+                    @if (item.Icon.HasValue())
+                    {
+	                    <i class="@item.Icon"></i>
+                    }
+                    else if (item.ImageUrl.HasValue())
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl)" alt="" />
+                    }
+					<span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+                </a>
+                @if (item.BadgeText.HasValue())
+                {
+                    <label class="badge badge-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                }
+            </li>
+
+            isFirst = false;
+        }
+
+        @if (renderMoreItem)
+        {
+            <li class="nav-item dropdown" data-id="-1">
+                <a href="#" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu--1">
+                    @T("CatalogMenu.MoreLink")
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="megamenu-nav megamenu-nav--next @(rtl ? "alpha" : "omega")">
+	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-right"></i></a>
+    </div>
+</div>

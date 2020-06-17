@@ -1,0 +1,179 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuRecordModel
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.IsSystemMenu)
+@Html.ValidationSummary(false)
+
+@Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
+{
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+	
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "menu-edit", this.Html, this.Model));
+})
+
+@helper TabGeneral()
+{ 
+    <div class="adminContent mb-3">
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.SystemName)
+            </div>
+            <div class="adminData">
+				@Html.TextBoxFor(model => model.SystemName, Model.IsSystemMenu ? new { @readonly = "readonly" } : null )
+                @Html.ValidationMessageFor(model => model.SystemName)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </div>
+            <div class="adminData">
+				@Html.CheckBoxFor(model => model.Published, Model.IsSystemMenu ? new { @readonly = "readonly" } : null )
+                @Html.ValidationMessageFor(model => model.Published)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Template)
+            </div>
+            <div class="adminData">
+                <select id="@Html.IdFor(x => x.Template)" name="@Html.NameFor(x => x.Template)" data-tags="true" data-minimum-results-for-search="0"
+                        class="form-control" @Html.Attr("disabled", "disabled", Model.IsSystemMenu)>
+			        @if (Model.IsCustomTemplate)
+			        {
+				        <option value="@Model.Template" selected="selected">@Model.Template</option>
+			        }
+                    @foreach (var template in Model.AllTemplates)
+                    {
+                        <option value="@template.Value" @Html.Attr("selected", "selected", !Model.IsCustomTemplate && template.Selected)>@template.Text</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Template)
+            </div>
+        </div>
+        <div class="adminRow@(Model.IsSystemMenu ? " d-none" : "")">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.WidgetZone)
+            </div>
+            <div class="adminData">
+				@Html.EditorFor(model => model.WidgetZone)
+				@Html.ValidationMessageFor(model => model.WidgetZone)
+            </div>
+        </div>
+        <div class="adminRow@(Model.IsSystemMenu ? " d-none" : "")">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </div>
+            <div class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+            </div>
+        </div>
+    </div>
+    
+    @(Html.LocalizedEditor<MenuRecordModel, MenuRecordLocalizedModel>("menu-info-localized",
+            @<div class="adminContent">
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Title)
+                    </div>
+					<div class="adminData">
+						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+						@Html.EditorFor(model => model.Locales[item].Title)
+						@Html.ValidationMessageFor(model => model.Locales[item].Title)
+					</div>
+                </div>
+            </div>
+            ,
+            @<div class="adminContent">
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Title)
+                    </div>
+                    <div class="adminData">
+                        @Html.EditorFor(model => model.Title)
+                        @Html.ValidationMessageFor(model => model.Title)
+                    </div>
+                </div>
+            </div>
+        ))
+
+    if (Model.Id > 0)
+    {
+		<h4 class="h4 mt-5 mb-4">@T("Admin.ContentManagement.MenuLinks")</h4>
+		
+		<div id="menu-items-container" class="t-widget t-grid" style="overflow: visible !important">
+			<div class="t-toolbar t-grid-toolbar">
+				<button type="button" class="btn btn-flat btn-no-border btn-to-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-plus"></i>
+					<span>@T("Admin.ContentManagement.AddMenuItem")</span>
+				</button>
+				<div class="dropdown-menu @(WorkContext.WorkingLanguage.Rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
+					@foreach (var provider in Model.AllProviders)
+					{
+						<a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
+							<i class="fa fa-plus"></i>
+							<span>@provider.Text</span>
+						</a>
+					}
+				</div>
+			</div>
+
+            <div id="menu-items" class="menu-item-list">
+                @Html.Partial("ItemList", Model)
+            </div>
+        </div>
+    }
+}
+
+@helper TabStores()
+{
+	@Html.Partial("StoreSelector", Model)
+}
+
+@helper TabAcl()
+{
+	@Html.Partial("AclSelector", Model)
+}
+
+<script>
+    $(function () {
+        // Process item command.
+        $('#menu-items-container').on('click', '.menu-item-command:not(.disabled)', function (e) {
+            e.preventDefault();
+            var el = $(this);
+
+            switch (el.data('action')) {
+                case 'delete-item':
+					el.doAjax({
+						type: 'POST',
+						ask: @T("Admin.Common.AskToProceed").JsText,
+                        callbackSuccess: function (response) {
+                            if (!_.isEmpty(response)) {
+                                $('#menu-items').html(response);
+                            }
+						}
+					});
+                    break;
+                case 'move-item-up':
+                case 'move-item-down':
+                    el.doAjax({
+                        type: 'POST',
+                        callbackSuccess: function (response) {
+                            if (!_.isEmpty(response)) {
+                                $('#menu-items').html(response);
+                            }
+                        }
+                    });
+                    break;
+            }
+
+            return false;
+        });
+	});
+</script>

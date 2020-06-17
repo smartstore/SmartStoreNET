@@ -43,6 +43,12 @@ namespace SmartStore.Core.Domain.Catalog
 		public string BottomDescription { get; set; }
 
         /// <summary>
+        /// Gets or sets the external link expression. If set, any category menu item will navigate to the specified link.
+        /// </summary>
+        [DataMember]
+        public string ExternalLink { get; set; }
+
+        /// <summary>
 		/// Gets or sets a text displayed in a badge next to the category within menus
 		/// </summary>
         [DataMember]

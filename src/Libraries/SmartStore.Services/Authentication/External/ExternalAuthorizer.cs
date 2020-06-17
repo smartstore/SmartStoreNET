@@ -111,6 +111,7 @@ namespace SmartStore.Services.Authentication.External
                 result.AddError("Account is already assigned");
                 return result;
             }
+
             if (AccountDoesNotExistAndUserIsNotLoggedOn(userFound, userLoggedIn))
             {
                 ExternalAuthorizerHelper.StoreParametersForRoundTrip(parameters);
@@ -125,14 +126,14 @@ namespace SmartStore.Services.Authentication.External
 
                     bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                     var registrationRequest = new CustomerRegistrationRequest(currentCustomer, details.EmailAddress,
-                        _customerSettings.UsernamesEnabled ? details.UserName : details.EmailAddress, randomPassword, PasswordFormat.Clear, isApproved);
+                        _customerSettings.CustomerLoginType != CustomerLoginType.Email ? details.UserName : details.EmailAddress, randomPassword, PasswordFormat.Clear, isApproved);
                     var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                     if (registrationResult.Success)
                     {
 						// store other parameters (form fields)
-						if (!String.IsNullOrEmpty(details.FirstName))
+						if (details.FirstName.HasValue())
 							currentCustomer.FirstName = details.FirstName;
-                        if (!String.IsNullOrEmpty(details.LastName))
+                        if (details.LastName.HasValue())
 							currentCustomer.LastName = details.LastName;
 
 						userFound = currentCustomer;
@@ -152,27 +153,24 @@ namespace SmartStore.Services.Authentication.External
                         switch (_customerSettings.UserRegistrationType)
                         {
                             case UserRegistrationType.EmailValidation:
-                                {
-                                    // email validation message
-                                    _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
-									_messageFactory.SendCustomerEmailValidationMessage(currentCustomer, _workContext.WorkingLanguage.Id);
+                            {
+                                // email validation message
+                                _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
+								_messageFactory.SendCustomerEmailValidationMessage(currentCustomer, _workContext.WorkingLanguage.Id);
 
-                                    // result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredEmailValidation);
-                                }
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredEmailValidation);
+                            }
                             case UserRegistrationType.AdminApproval:
-                                {
-                                    // result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredAdminApproval);
-                                }
+                            {
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredAdminApproval);
+                            }
                             case UserRegistrationType.Standard:
-                                {
-									// send customer welcome message
-									_messageFactory.SendCustomerWelcomeMessage(currentCustomer, _workContext.WorkingLanguage.Id);
+                            {
+								// send customer welcome message
+								_messageFactory.SendCustomerWelcomeMessage(currentCustomer, _workContext.WorkingLanguage.Id);
 
-                                    //result
-                                    return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredStandard);
-                                }
+                                return new AuthorizationResult(OpenAuthenticationStatus.AutoRegisteredStandard);
+                            }
                             default:
                                 break;
                         }

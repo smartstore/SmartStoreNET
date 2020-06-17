@@ -185,7 +185,7 @@
 						option = $('select[name="@(Html.FieldNameFor(x => x.DeploymentType))"]').find('option[value="' + item.id + '"]');
 					}
 
-					html += '<i class="fa ' + option.attr('data-icon') + '"></i> ';
+					html += '<i class="' + option.attr('data-icon') + '"></i> ';
 					html += item.text;
 
 					html += '</div>';

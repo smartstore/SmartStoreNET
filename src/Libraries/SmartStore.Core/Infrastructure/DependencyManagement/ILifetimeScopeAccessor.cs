@@ -39,5 +39,14 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 		///		desirable to create a new scope, but use the existing, http context bound scope instead.
 		/// </remarks>
 		IDisposable BeginContextAwareScope();
+
+		/// <summary>
+		///		Creates a nested lifetime scope that services can be resolved from
+		/// </summary>
+		/// <param name="configurationAction">A configuration action that will execute during lifetime scope creation.</param>
+		/// <returns>
+		///		A new nested lifetime scope.
+		///	</returns>
+		ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction);
 	}
 }

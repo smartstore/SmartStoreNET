@@ -6,71 +6,70 @@
 @using SmartStore.Core.Domain.Catalog;
 
 @{
-    if (Model.AddToCart.DisableBuyButton && Model.AddToCart.DisableWishlistButton)
+    if (Model.AddToCart.DisableBuyButton && Model.AddToCart.DisableWishlistButton && !Model.ProductPrice.ShowLoginNote)
     {
         return;
-    }
-
-    var isBundleItem = Model.IsBundlePart;
-    var priceModel = Model.ProductPrice;
-
-    var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
-    var currentPriceValue = priceModel.PriceWithDiscountValue > 0 ? priceModel.PriceWithDiscountValue : priceModel.PriceValue;
-    var currentPriceLabel = priceModel.NoteWithDiscount;
-
-    var oldPrice1 = priceModel.OldPrice;
-    var oldPrice1Label = T("Products.Price.OldPrice").Text;
-
-    var oldPrice2 = priceModel.PriceWithDiscountValue < priceModel.PriceValue ? priceModel.Price : "";
-    var oldPrice2Label = priceModel.NoteWithoutDiscount;
-
-    var basePriceEnabled = isBundleItem ? priceModel.BundleItemShowBasePrice : Model.IsBasePriceEnabled;
-
-    if (oldPrice2.HasValue() && !oldPrice1.HasValue())
-    {
-        oldPrice1 = oldPrice2;
-        oldPrice2 = null;
-        oldPrice2Label = null;
-    }
-
-    if (priceModel.PriceValue == 0 && Model.DisplayTextForZeroPrices)
-    {
-        currentPrice = T("Products.Free").Text;
-        oldPrice1 = null;
-        oldPrice2 = null;
-        oldPrice2Label = null;
-    }
-
-    var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
-
-    var artPriceClasses = "pd-price";
-    if (isBundleItem)
-    {
-        artPriceClasses += " pd-price-sm";
-    }
-    if (priceModel.OldPrice.HasValue())
-    {
-        artPriceClasses += " pd-price--offer";
-    }
-    if (priceModel.CallForPrice)
-    {
-        artPriceClasses += " pd-price--call";
-    }
-
-    var badgeClasses = "";
-    if (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll || (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeFreeProductsOnly && priceModel.PriceValue == 0))
-    {
-        badgeClasses = Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll && priceModel.SavingAmount.HasValue() ?  "text-danger" : "text-success";
     }
 }
 
 <div class="pd-offer-price">
-	@if (priceModel.CallForPrice)
+	@if (Model.ProductPrice.ShowLoginNote)
+	{
+		<h4 class="pd-price pd-loginforprice">@T("Products.LoginForPrice")</h4>
+	}
+    else if (Model.ProductPrice.CallForPrice)
 	{
 		<h4 class="pd-price pd-callforprice">@T("Products.CallForPrice")</h4>
 	}
 	else
 	{
+        var isBundleItem = Model.IsBundlePart;
+        var priceModel = Model.ProductPrice;
+        var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
+        var currentPriceValue = priceModel.PriceWithDiscountValue > 0 ? priceModel.PriceWithDiscountValue : priceModel.PriceValue;
+        var currentPriceLabel = priceModel.NoteWithDiscount;
+
+        var oldPrice1 = priceModel.OldPrice;
+        var oldPrice1Label = T("Products.Price.OldPrice").Text;
+
+        var oldPrice2 = priceModel.PriceWithDiscountValue < priceModel.PriceValue ? priceModel.Price : "";
+        var oldPrice2Label = priceModel.NoteWithoutDiscount;
+
+        var basePriceEnabled = isBundleItem ? priceModel.BundleItemShowBasePrice : Model.IsBasePriceEnabled;
+
+        if (oldPrice2.HasValue() && !oldPrice1.HasValue())
+        {
+            oldPrice1 = oldPrice2;
+            oldPrice2 = null;
+            oldPrice2Label = null;
+        }
+
+        if (priceModel.PriceValue == 0 && Model.DisplayTextForZeroPrices)
+        {
+            currentPrice = T("Products.Free").Text;
+            oldPrice1 = null;
+            oldPrice2 = null;
+            oldPrice2Label = null;
+        }
+
+        var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
+
+        var artPriceClasses = "pd-price";
+        if (isBundleItem)
+        {
+            artPriceClasses += " pd-price-sm";
+        }
+        if (priceModel.OldPrice.HasValue())
+        {
+            artPriceClasses += " pd-price--offer";
+        }
+
+        var badgeClasses = "";
+        if (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll || (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeFreeProductsOnly && priceModel.PriceValue == 0))
+        {
+            badgeClasses = Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll && priceModel.SavingAmount.HasValue() ?  "text-danger" : "text-success";
+        }
+
 		<!-- Current price -->
 		<div class="pd-group clearfix">
 			<div class="row sm-gutters pd-price-group">

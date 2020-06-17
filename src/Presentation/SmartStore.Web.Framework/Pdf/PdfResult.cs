@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using SmartStore.Services.Pdf;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Pdf
 {
@@ -34,7 +35,7 @@ namespace SmartStore.Web.Framework.Pdf
 
 			if (FileName.HasValue())
 			{
-				response.AddHeader("Content-Disposition", "attachment; filename=\"{0}\"".FormatCurrent(SanitizeFileName(FileName)));
+				response.AddHeader("Content-Disposition", "attachment; filename=\"{0}\"".FormatCurrent(PathHelper.SanitizeFileName(FileName)));
 			}
 
 			response.AddHeader("Content-Type", ContentType);
@@ -48,15 +49,5 @@ namespace SmartStore.Web.Framework.Pdf
 			var response = PrepareResponse(context.HttpContext.Response);
 			response.OutputStream.Write(buffer, 0, buffer.Length);
 		}
-
-		private static string SanitizeFileName(string name)
-		{
-			string invalidChars = Regex.Escape(new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars()));
-			string invalidCharsPattern = string.Format(@"[{0}]+", invalidChars);
-
-			string result = Regex.Replace(name, invalidCharsPattern, "-");
-			return result;
-		}
-
 	}
 }

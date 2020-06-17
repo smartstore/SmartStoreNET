@@ -49,7 +49,7 @@ namespace SmartStore.Services.Topics
             if (topicId == 0)
                 return null;
 
-            return _topicRepository.GetById(topicId);
+            return _topicRepository.GetByIdCached(topicId, "db.topic.id-" + topicId);
         }
 
 		public virtual Topic GetTopicBySystemName(string systemName, int storeId = 0, bool checkPermission = true)
@@ -115,7 +115,7 @@ namespace SmartStore.Services.Topics
 
 			if (joinApplied)
 			{
-				// Only distinct categories (group by ID)
+				// Only distinct topics (group by ID)
 				query = from t in query
 						group t by t.Id into tGroup
 						orderby tGroup.Key

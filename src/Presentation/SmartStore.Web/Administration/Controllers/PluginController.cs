@@ -102,22 +102,22 @@ namespace SmartStore.Admin.Controllers
 				model.IsLicensable = true;
 				model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-				var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
-				if (license == null)
+				var cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+				if (cachedLicense == null)
 				{
-					// Licensed plugin has not been used yet -> Check state.
-					var unused = LicenseChecker.CheckState(pluginDescriptor.SystemName, url);
+                    // Licensed plugin has not been used yet -> Check state.
+                    model.LicenseState = LicenseChecker.CheckState(pluginDescriptor.SystemName, url);
 
 					// And try to get license data again.
-					license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+					cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
 				}
 
-				if (license != null)
+				if (cachedLicense != null)
 				{
 					// Licensed plugin has been used.
-					model.LicenseState = license.State;
-					model.TruncatedLicenseKey = license.TruncatedLicenseKey;
-					model.RemainingDemoUsageDays = license.RemainingDemoDays;
+					model.LicenseState = cachedLicense.State;
+					model.TruncatedLicenseKey = cachedLicense.TruncatedLicenseKey;
+					model.RemainingDemoUsageDays = cachedLicense.RemainingDemoDays;
 				}
 				else
 				{
@@ -125,7 +125,7 @@ namespace SmartStore.Admin.Controllers
 					model.HideLabel = true;
 				}
 
-				return license;
+				return cachedLicense;
 			}
 
 			return null;
@@ -323,9 +323,8 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			PermissionRecord requiredPermission = StandardPermissionProvider.AccessAdminPanel;
+			var requiredPermission = StandardPermissionProvider.AccessAdminPanel;
 			var listUrl2 = Url.Action("List");
-
 			var metadata = provider.Metadata;
 
 			if (metadata.ProviderType == typeof(IPaymentMethod))
@@ -333,7 +332,7 @@ namespace SmartStore.Admin.Controllers
 				requiredPermission = StandardPermissionProvider.ManagePaymentMethods;
 				listUrl2 = Url.Action("Providers", "Payment");
 			}
-			if (metadata.ProviderType == typeof(ITaxProvider))
+			else if (metadata.ProviderType == typeof(ITaxProvider))
 			{
 				requiredPermission = StandardPermissionProvider.ManageTaxSettings;
 				listUrl2 = Url.Action("Providers", "Tax");

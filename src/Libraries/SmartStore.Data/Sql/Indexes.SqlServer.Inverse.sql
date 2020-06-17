@@ -9,6 +9,3 @@ GO
 
 DROP INDEX [IX_LocalizedProperty_Key] ON [LocalizedProperty]
 GO
-
-DROP INDEX [IX_SeekExport1] ON [Product]
-GO

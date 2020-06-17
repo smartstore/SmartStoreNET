@@ -252,7 +252,7 @@ namespace SmartStore.Services.Search.Modelling
 
         protected virtual bool GetValueFor<T>(ForumSearchQuery query, string key, FacetGroupKind kind, out T value)
         {
-            return GetValueFor(_forumSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
+            return TryGetValueFor(_forumSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
         }
 
         protected virtual void AddDates(FacetDescriptor descriptor, DateTime? selectedFrom, DateTime? selectedTo)

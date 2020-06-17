@@ -1,14 +1,14 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Infrastructure.Installation;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Install
 {
-    [Validator(typeof(InstallValidator))]
+	[Validator(typeof(InstallValidator))]
     public partial class InstallModel : ModelBase
     {
         public InstallModel()
@@ -18,15 +18,11 @@ namespace SmartStore.Web.Models.Install
             this.AvailableMediaStorages = new List<SelectListItem>();
         }
 
-        [AllowHtml]
         public string AdminEmail { get; set; }
-        [AllowHtml]
         [DataType(DataType.Password)]
         public string AdminPassword { get; set; }
-        [AllowHtml]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
-
 
         [AllowHtml]
         public string DatabaseConnectionString { get; set; }
@@ -35,7 +31,7 @@ namespace SmartStore.Web.Models.Install
         public string SqlConnectionInfo { get; set; }
         [AllowHtml]
         public string SqlServerName { get; set; }
-        [AllowHtml]
+
         public string SqlDatabaseName { get; set; }
         [AllowHtml]
         public string SqlServerUsername { get; set; }
@@ -45,7 +41,6 @@ namespace SmartStore.Web.Models.Install
         public bool SqlServerCreateDatabase { get; set; }
 
         public bool UseCustomCollation { get; set; }
-        [AllowHtml]
         public string Collation { get; set; }
 
 

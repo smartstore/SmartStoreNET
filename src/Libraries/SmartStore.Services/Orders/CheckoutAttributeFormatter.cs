@@ -102,7 +102,7 @@ namespace SmartStore.Services.Orders
                                 attributeName = HttpUtility.HtmlEncode(attributeName);
 
                             caAttribute = string.Format("{0}: {1}", attributeName, 
-								HtmlUtils.FormatText(valueStr.EmptyNull().Replace(":", ""), false, true, false, false, false, false));
+								HtmlUtils.ConvertPlainTextToHtml(valueStr.EmptyNull().Replace(":", "").HtmlEncode()));
 
                             //we never encode multiline textbox input
                         }

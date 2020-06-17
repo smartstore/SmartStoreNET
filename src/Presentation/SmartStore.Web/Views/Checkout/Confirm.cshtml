@@ -9,9 +9,9 @@
 	Html.AddBodyCssClass("no-offcanvas-cart");
 
 	var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	var termsLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("conditionsofuse", true));
-	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("disclaimer", true));
-	var privacyLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("privacyinfo", true));
+	var termsLink = termsLinkTemplate.FormatInvariant(Url.Topic("conditionsofuse", true));
+	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.Topic("disclaimer", true));
+	var privacyLink = termsLinkTemplate.FormatInvariant(Url.Topic("privacyinfo", true));
 	var terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
 	var consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
@@ -97,14 +97,14 @@
 				</div>
 			}
 
-            <div class="confirm-order">
-                @if (Model.Warnings.Count > 0)
+            <div id="confirm-warnings" class="confirm-order">
+                @if (Model.Warnings.Any())
 				{
 					<div class="alert alert-danger mb-3">
 						<ul>
-							@for (int i = 0; i < Model.Warnings.Count; i++)
+							@foreach (var warning in Model.Warnings)
 							{
-								<li>@Html.Raw(Model.Warnings[i])</li>
+								<li>@Html.Raw(warning)</li>
 							}
 						</ul>
 					</div>
@@ -152,21 +152,30 @@
 {
 	<script>
         $(function () {
-        	$('#confirm-order-form').submit(function () {
-        		$('.btn-buy', this).attr('disabled', 'disabled');
-        	});
+            var buyButton = $(".btn-buy");
 
-        	var checkoutButton = $(".btn-buy");
-            checkoutButton.on("click", function () {
+            function setBuyButtonState(disable) {
+                buyButton.prop('disabled', disable);
+                buyButton.find('.fa')
+                    .removeClass('fa-angle-right fa-spinner fa-spin')
+                    .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
+            }
+
+            function processBuyButtonClick(customerAgreed, showThrobber) {
                 var termOfServiceOk = true,
                     userAgreementsOk = true,
-                    esdRevocationWaiverOk = true;
+                    esdRevocationWaiverOk = true,
+                    cartItems = $('#cart-items');
 
-                var cartItems = $('#cart-items');
-
-                $("#customercommenthidden").val($("#CustomerComment").val());
+                if (_.isTrue(customerAgreed)) {
+                    // Reverse apply. We do that just to indicate that no entered data is lost.
+                    $("#CustomerComment").val($("#customercommenthidden").val());                    
+                }
+                else {
+                    $("#customercommenthidden").val($("#CustomerComment").val());
+                }
                 
-				// terms of services
+				// Terms of services.
                 @if (Model.TermsOfServiceEnabled)
                 {
 					<text>
@@ -181,9 +190,12 @@
 					</text>
                 }
 
-                // agree user agreement for downloadable products
+                // Agree user agreement for downloadable products.
                 cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
-                    if (!$(this).is(':checked')) {
+                    if (_.isTrue(customerAgreed)) {
+                        $(this).prop('checked', true);
+                    }
+                    else if (!$(this).is(':checked')) {
                         userAgreementsOk = false;
                         displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
                         if (termOfServiceOk) {
@@ -193,12 +205,15 @@
                     }
                 });
 
-                // agree esd revocation waiver
+                // Agree ESD revocation waiver.
 				@if(Model.ShowEsdRevocationWaiverBox)
 				{
 					<text>
                     cartItems.find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
-                        if (!$(this).is(':checked')) {
+                        if (_.isTrue(customerAgreed)) {
+                            $(this).prop('checked', true);
+                        }
+                        else if (!$(this).is(':checked')) {
                             esdRevocationWaiverOk = false;
                             displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
                             if (termOfServiceOk) {
@@ -214,17 +229,61 @@
                     var submitOrderEvent = jQuery.Event('submitOrder');
                     submitOrderEvent.isOrderValid = true;
                     submitOrderEvent.isMobile = false;
+                    submitOrderEvent.disableBuyButton = false;
 
-                    $(this).trigger(submitOrderEvent);
+                    $(document).trigger(submitOrderEvent);
 
                     if (true === submitOrderEvent.isOrderValid) {
-                        checkoutButton.attr("disabled", "disabled");
-                        checkoutButton.find(".fa-angle-right")
-							.removeClass("fa-angle-right")
-							.addClass("fa-spinner fa-spin");
+                        try {
+                            setBuyButtonState(true);
+
+                            if (_.isTrue(showThrobber)) {
+                                $.throbber.show({ white: true, small: false, speed: 0, message: '@T("Checkout.OrderCompletes").ToString().EncodeJsString('"', false)' });
+                            }
+                        }
+                        catch (e) { }
 
                         $('#confirm-order-form').submit();
                     }
+                    else if (true === submitOrderEvent.disableBuyButton) {
+                        setBuyButtonState(true);
+                    }
+                }
+            }
+
+            // Buy button has been clicked.
+            buyButton.on("click", function () {
+                processBuyButtonClick(false);
+            });
+
+            // Simulate buy button click.
+            $(document).on('clickBuyButton', function (e) {
+                processBuyButtonClick(e.customerAgreed, e.showThrobber);
+            });
+
+            // Report error.
+            $(document).on('reportError', function (e) {
+                if (!_.isEmpty(e.message)) {
+                    var str = '<div class="alert alert-danger mb-3"><ul>';
+                    if (_.isArray(e.message)) {
+                        $.each(e.message, function (index, value) {
+                            str += '<li>' + value + '</li>';  
+                        });
+                    }
+                    else {
+                        str += '<li>' + e.message + '</li>';
+                    }
+                    str += '</ul></div>';
+
+                    var warnings = $('#confirm-warnings');
+                    warnings.html(str);
+
+                    try {
+                        setBuyButtonState(false);
+                        $.throbber.hide(true);
+                        $.scrollTo(warnings, 800, { offset: -20 });
+                    }
+                    catch (e) { }
                 }
             });
         });

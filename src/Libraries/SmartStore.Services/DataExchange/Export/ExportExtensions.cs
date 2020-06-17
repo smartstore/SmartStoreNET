@@ -140,11 +140,11 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (profile.FileNamePattern.Contains("%Profile.SeoName%"))
             {
-                sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""));
+                sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false, false).Replace("-", ""));
             }
             if (profile.FileNamePattern.Contains("%Store.SeoName%"))
             {
-                sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores");
+                sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false, true) : "allstores");
             }
             if (profile.FileNamePattern.Contains("%Random.Number%"))
             {
@@ -192,7 +192,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else
 				{
-					path = FileSystemHelper.ValidateRootPath(deployment.FileSystemPath);
+					path = PathHelper.NormalizeAppRelativePath(deployment.FileSystemPath);
 					path = CommonHelper.MapPath(path);
 				}
 			}
@@ -250,17 +250,17 @@ namespace SmartStore.Services.DataExchange.Export
 			switch (type)
 			{
 				case ExportDeploymentType.FileSystem:
-					return "fa-folder-open-o";
+					return "far fa-folder-open";
 				case ExportDeploymentType.Email:
-					return "fa-envelope-o";
+					return "far fa-envelope";
 				case ExportDeploymentType.Http:
-					return "fa-globe";
+					return "fa fa-globe";
 				case ExportDeploymentType.Ftp:
-					return "fa-files-o";
+					return "far fa-copy";
 				case ExportDeploymentType.PublicFolder:
-					return "fa-unlock";
+					return "fa fa-unlock";
 				default:
-					return "fa-question";
+					return "fa fa-question";
 			}
 		}
 	}

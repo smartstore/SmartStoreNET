@@ -1,0 +1,67 @@
+﻿@model MenuModel
+
+@using SmartStore.Collections;
+
+@{
+    Layout = "";
+
+    if (Model.Root == null)
+    {
+	    return;
+    }
+
+    var cutOffItems = Model.Root.Children
+        .Where(x => x.Value.Id != "brand" && x.GetMetadata<bool>("spare", false))
+        .ToList();
+}
+
+<div class="megamenu simple">
+    @{ Html.RenderPartial("Menus/Navbar"); }
+</div>
+
+<div class="megamenu-dropdown-container simple">
+    @foreach (var node in Model.Root.Children)
+    {
+        <div id="dropdown-menu-@node.Value.Id" data-id="@node.Value.Id">
+            @CreateDrilldownMenu(node.Children, true)
+        </div>
+    }
+
+    @if (cutOffItems.Any())
+    {
+        <div id="dropdown-menu--1" data-id="-1">
+            @CreateDrilldownMenu(cutOffItems, true)
+        </div>
+    }
+</div>
+
+@helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
+{
+    if (isRoot)
+    {
+        @Html.Raw("<div class='dropdown-menu'>")
+    }
+    
+    foreach (var node in nodes.Where(x => x.Value.Visible))
+	{
+		var item = node.Value;		
+		var itemUrl = item.GenerateUrl(this.Url);
+		var itemState = node.GetNodePathState(Model.Path);
+		
+        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' 
+           href="@itemUrl" id="dropdown-item-@item.Id" data-id="@item.Id">
+            <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
+        </a>
+    }
+    
+    if (isRoot)
+    {
+        @Html.Raw("</div>")
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".megamenu-container").megaMenu();
+    });
+</script>    

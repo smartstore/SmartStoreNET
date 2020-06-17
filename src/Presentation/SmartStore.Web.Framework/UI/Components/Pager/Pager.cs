@@ -30,14 +30,9 @@ namespace SmartStore.Web.Framework.UI
         Blog
     }
 
-    public class Pager : Component, INavigatable
+    public class Pager : NavigatableComponent
     {
         private ILocalizationService _localizationService;
-
-        private string _actionName;
-        private string _controllerName;
-        private string _routeName;
-        private string _url;
 
         private string _firstButtonText;
         private string _lastButtonText;
@@ -51,6 +46,7 @@ namespace SmartStore.Web.Framework.UI
         }
 
         public Pager(ILocalizationService localizationService)
+			: base()
         {
             _localizationService = localizationService;
 
@@ -63,7 +59,6 @@ namespace SmartStore.Web.Framework.UI
             this.MaxPagesToDisplay = 8;
             this.Alignment = PagerAlignment.Centered;
             this.Size = PagerSize.Medium;
-            this.RouteValues = new RouteValueDictionary();
             this.ModifiedParam = new ModifiedParameter("i");
         }
 
@@ -165,73 +160,6 @@ namespace SmartStore.Web.Framework.UI
             {
                 _currentPageText = value;
             }
-        }
-
-
-        public string ActionName
-        {
-            get
-            {
-                return _actionName;
-            }
-            set
-            {
-                _actionName = value;
-                _routeName = (string)(_url = null);
-            }
-        }
-
-        public string ControllerName
-        {
-            get
-            {
-                return _controllerName;
-            }
-            set
-            {
-                _controllerName = value;
-                _routeName = (string)(_url = null);
-            }
-        }
-
-        public string RouteName
-        {
-            get
-            {
-                return _routeName;
-            }
-            set
-            {
-                _routeName = value;
-                _controllerName = _actionName = (string)(_url = null);
-            }
-        }
-
-        public RouteValueDictionary RouteValues
-        {
-            get;
-            set;
-        }
-
-        public string Url
-        {
-            get
-            {
-                return _url;
-            }
-            set
-            {
-                _url = value;
-                _routeName = _controllerName = (string)(_actionName = null);
-                this.RouteValues.Clear();
-
-            }
-        }
-
-        public ModifiedParameter ModifiedParam
-        {
-            get;
-            private set;
         }
     }
 }

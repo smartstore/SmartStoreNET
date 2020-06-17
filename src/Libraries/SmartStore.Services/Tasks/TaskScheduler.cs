@@ -112,7 +112,7 @@ namespace SmartStore.Services.Tasks
 
 		private string GenerateAuthTokenCacheKey(string authToken)
 		{
-			return "Scheduler.AuthToken." + authToken;
+			return "Scheduler:AuthToken:" + authToken;
 		}
 
         public bool VerifyAuthToken(string authToken)

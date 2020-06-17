@@ -13,36 +13,6 @@
 		function (ctx) {
 			ctx.find("select:not(.noskin)").selectWrapper();
         },
-        // Range slider
-        function (ctx) {
-            return;
-            ctx.find("input[type=range]:not(.noskin)").rangeslider({
-                polyfill: false,
-                onInit: function () {
-                    $rangeEl = this.$range;
-                    // add value label to handle
-                    var $handle = $rangeEl.find('.rangeslider__handle');
-                    var handleValue = '<div class="rangeslider__handle__value">' + this.value + '</div>';
-                    $handle.append(handleValue);
-
-                    // get range index labels 
-                    var markers = this.$element.data('markers');
-                    if (markers) {
-                        markers = markers.split(',');
-
-                        // add labels
-                        $rangeEl.append('<div class="rangeslider__labels"></div>');
-                        $(markers).each(function (index, value) {
-                            $rangeEl.find('.rangeslider__labels').append('<span class="rangeslider__labels__label">' + value.trim() + '</span>');
-                        })
-                    }
-                },
-                onSlide: function (position, value) {
-                    var $handle = this.$range.find('.rangeslider__handle__value');
-                    $handle.text(this.value);
-                },
-            });
-        },
 		// tooltips
 		function (ctx) {
 			ctx.find(".cph").tooltip({
@@ -55,9 +25,10 @@
 		// switch
 		function (ctx) {
             ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox], .switcher > input[type=checkbox]").each(function (i, el) {
-				var wrap = $(el)
+				$(el)
 					.wrap('<label class="switch"></label>')
-					.after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>');
+                    .after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>')
+                    .parent().on('click', function (e) { if ($(el).is('[readonly]')) { e.preventDefault(); } });
 			});
 		},
 		// Telerik
@@ -88,7 +59,6 @@
         }
 	];
 
-
 	/* 
 	Helpful in AJAX scenarios, where jQuery plugins has to be applied 
 	to newly created html.
@@ -112,7 +82,8 @@
         });
 
         $("#page").tooltip({
-            selector: "a[rel=tooltip], .tooltip-toggle"
+            selector: "a[rel=tooltip], .tooltip-toggle",
+            trigger: 'hover'
         });
 
         // Temp only
@@ -165,6 +136,7 @@
                 if (sectionHeaderHasButtons === true) {
                     var y = $(this).scrollTop();
                     sectionHeader.toggleClass("sticky", y >= navbarHeight);
+                    $(document.body).toggleClass("sticky-header", y >= navbarHeight);
                 }
             }).trigger('resize');
         }

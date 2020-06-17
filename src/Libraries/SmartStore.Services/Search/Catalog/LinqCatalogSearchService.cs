@@ -131,7 +131,6 @@ namespace SmartStore.Services.Search
 		{
 			var ordered = false;
 			var utcNow = DateTime.UtcNow;
-            var isGroupingRequired = false;
             var categoryId = 0;
             var manufacturerId = 0;
 			var query = baseQuery ?? _productRepository.Table;
@@ -161,7 +160,6 @@ namespace SmartStore.Services.Search
 				}
 				else
 				{
-                    isGroupingRequired = true;
 					query = QueryCategories(query, categoryIds, null);
 				}
 			}
@@ -170,13 +168,11 @@ namespace SmartStore.Services.Search
             var notFeaturedCategoryIds = GetIdList(filters, "notfeaturedcategoryid");
             if (featuredCategoryIds.Any())
             {
-                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? featuredCategoryIds.First() : categoryId;
                 query = QueryCategories(query, featuredCategoryIds, true);
             }
             if (notFeaturedCategoryIds.Any())
             {
-                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? notFeaturedCategoryIds.First() : categoryId;
                 query = QueryCategories(query, notFeaturedCategoryIds, false);
             }
@@ -192,7 +188,6 @@ namespace SmartStore.Services.Search
 				}
 				else
 				{
-                    isGroupingRequired = true;
                     query = QueryManufacturers(query, manufacturerIds, null);
 				}
 			}
@@ -201,13 +196,11 @@ namespace SmartStore.Services.Search
             var notFeaturedManuIds = GetIdList(filters, "notfeaturedmanufacturerid");
             if (featuredManuIds.Any())
             {
-                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? featuredManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, featuredManuIds, true);
             }
             if (notFeaturedManuIds.Any())
             {
-                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? notFeaturedManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, notFeaturedManuIds, false);
             }
@@ -215,7 +208,6 @@ namespace SmartStore.Services.Search
 			var tagIds = GetIdList(filters, "tagid");
 			if (tagIds.Any())
 			{
-                isGroupingRequired = true;
                 query =
 					from p in query
 					from pt in p.ProductTags.Where(pt => tagIds.Contains(pt.Id))
@@ -227,7 +219,6 @@ namespace SmartStore.Services.Search
 				var roleIds = GetIdList(filters, "roleid");
 				if (roleIds.Any())
 				{
-                    isGroupingRequired = true;
                     query =
 						from p in query
 						join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
@@ -468,7 +459,6 @@ namespace SmartStore.Services.Search
 						var storeId = (int)filter.Term;
 						if (storeId != 0)
 						{
-                            isGroupingRequired = true;
                             query =
 								from p in query
 								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
@@ -482,15 +472,12 @@ namespace SmartStore.Services.Search
 
             #endregion
 
-            if (isGroupingRequired)
-            {
-                // Grouping is very slow if there are many products.
-                query =
-                    from p in query
-                    group p by p.Id into grp
-                    orderby grp.Key
-                    select grp.FirstOrDefault();
-            }
+            // Grouping is very slow if there are many products.
+            query =
+                from p in query
+                group p by p.Id into grp
+                orderby grp.Key
+                select grp.FirstOrDefault();
 
             #region Sorting
 

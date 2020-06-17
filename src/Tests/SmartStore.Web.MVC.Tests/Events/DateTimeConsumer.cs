@@ -3,7 +3,7 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Web.MVC.Tests.Events
 {
-    public class DateTimeConsumer : IConsumer<DateTime>
+    public class DateTimeConsumer : IConsumer
     {
         public void HandleEvent(DateTime eventMessage)
         {

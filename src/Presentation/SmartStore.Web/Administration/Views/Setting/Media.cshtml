@@ -6,7 +6,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-picture-o"></i>
+            <i class="far fa-image"></i>
             @T("Admin.Configuration.Settings.Media")
         </div>
         <div class="options">
@@ -183,7 +183,7 @@
 				@Html.DropDownListFor(model => model.StorageProvider, Model.AvailableStorageProvider)
 
 				<button type="button" id="MoveMediaButton" class="btn btn-danger mt-3" data-url="@Url.Action("ChangeMediaStorage")">
-					<i class="fa fa-fw fa-gears"></i>
+					<i class="fa fa-fw fa-cogs"></i>
 					<span>@(T("Admin.Common.MoveNow"))!</span>
 				</button>
 

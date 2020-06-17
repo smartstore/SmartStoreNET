@@ -246,7 +246,9 @@ namespace SmartStore.Services.Seo
 				{
 					if (languageIds.Length == 1)
 					{
-						query = query.Where(x => x.LanguageId == languageIds[0]);
+                        // Avoid "The LINQ expression node type 'ArrayIndex' is not supported in LINQ to Entities".
+                        var languageId = languageIds[0];
+                        query = query.Where(x => x.LanguageId == languageId);
 					}
 					else
 					{
@@ -309,7 +311,7 @@ namespace SmartStore.Services.Seo
 
 						return result;
 					}
-				});
+				}, independent: true);
 
 				var key = GenerateKey(entityId, entityName, languageId);
 				if (!allActiveSlugs.TryGetValue(key, out slug))
@@ -537,7 +539,7 @@ namespace SmartStore.Services.Seo
 
 					return dict;
 				}
-			});
+			}, independent: true);
 		}
 
 		/// <summary>

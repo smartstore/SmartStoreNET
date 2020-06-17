@@ -147,7 +147,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			try
 			{
-				return (string)_httpContext.Request.RequestContext.RouteData.DataTokens[OverriddenThemeNameKey];
+				return (string)_httpContext.Request?.RequestContext?.RouteData?.DataTokens[OverriddenThemeNameKey];
 			}
 			catch
 			{

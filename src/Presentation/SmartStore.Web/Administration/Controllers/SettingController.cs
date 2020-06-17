@@ -24,6 +24,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -79,7 +80,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<IMediaMover> _mediaMover;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
         private readonly Lazy<IForumSearchQueryAliasMapper> _forumSearchQueryAliasMapper;
-        private readonly Lazy<ISiteMapService> _siteMapService;
+        private readonly Lazy<IMenuService> _menuService;
 
         private StoreDependingSettingHelper _storeDependingSettings;
 
@@ -109,7 +110,7 @@ namespace SmartStore.Admin.Controllers
 			Lazy<IMediaMover> mediaMover,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
             Lazy<IForumSearchQueryAliasMapper> forumSearchQueryAliasMapper,
-            Lazy<ISiteMapService> siteMapService)
+            Lazy<IMenuService> menuService)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -132,7 +133,7 @@ namespace SmartStore.Admin.Controllers
 			_mediaMover = mediaMover;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
             _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
-            _siteMapService = siteMapService;
+            _menuService = menuService;
         }
 
 		#endregion
@@ -600,8 +601,7 @@ namespace SmartStore.Admin.Controllers
 			if (catalogSettings.MaxItemsToDisplayInCatalogMenu != model.MaxItemsToDisplayInCatalogMenu)
             {
                 // Clear cached navigation model.
-                var siteMap = _siteMapService.Value.GetSiteMap("catalog");
-                siteMap.ClearCache();
+                _menuService.Value.ClearCache("Main");
             }
 
             catalogSettings = model.ToEntity(catalogSettings);
@@ -1056,6 +1056,8 @@ namespace SmartStore.Admin.Controllers
 			// SEO.
 			var seoSettings = _services.Settings.LoadSetting<SeoSettings>(storeScope);
 			MiniMapper.Map(seoSettings, model.SeoSettings);
+			// Fix Disallows joined with comma in MiniMapper (we need NewLine).
+			model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _services.Settings, false);
 
@@ -1221,120 +1223,135 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ChangeEnryptionKey(GeneralCommonSettingsModel model)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            {
                 return AccessDeniedView();
+            }
 
             // Set page timeout to 5 minutes.
             Server.ScriptTimeout = 300;
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var securitySettings = _services.Settings.LoadSetting<SecuritySettings>(storeScope);
+            var oldEncryptionPrivateKey = securitySettings.EncryptionKey;
+            var newEncryptionPrivateKey = model.SecuritySettings.EncryptionKey.EmptyNull();
+
+            if (newEncryptionPrivateKey.IsEmpty() || newEncryptionPrivateKey.Length != 16)
+            {
+                NotifyError(T("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TooShort"));
+                return RedirectToAction("GeneralCommon");
+            }
+
+            if (oldEncryptionPrivateKey == newEncryptionPrivateKey)
+            {
+                NotifyError(T("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TheSame"));
+                return RedirectToAction("GeneralCommon");
+            }
 
             try
             {
-                if (model.SecuritySettings.EncryptionKey == null)
-                    model.SecuritySettings.EncryptionKey = "";
-
-                model.SecuritySettings.EncryptionKey = model.SecuritySettings.EncryptionKey.Trim();
-
-                var newEncryptionPrivateKey = model.SecuritySettings.EncryptionKey;
-                if (newEncryptionPrivateKey.IsEmpty() || newEncryptionPrivateKey.Length != 16)
-                    throw new SmartException(T("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TooShort"));
-
-                var oldEncryptionPrivateKey = securitySettings.EncryptionKey;
-                if (oldEncryptionPrivateKey == newEncryptionPrivateKey)
-                    throw new SmartException(T("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TheSame"));
-
                 // Update encrypted order info.
-                var orders = _orderService.LoadAllOrders();
-                foreach (var order in orders)
+                var orderQuery = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
+                orderQuery = orderQuery.OrderByDescending(x => x.CreatedOnUtc);
+                IPagedList<Order> orders = null;
+                var pageIndex = 0;
+
+                do
                 {
-                    // New credit card encryption.
-                    string decryptedCardType = _encryptionService.DecryptText(order.CardType, oldEncryptionPrivateKey);
-                    string decryptedCardName = _encryptionService.DecryptText(order.CardName, oldEncryptionPrivateKey);
-                    string decryptedCardNumber = _encryptionService.DecryptText(order.CardNumber, oldEncryptionPrivateKey);
-                    string decryptedMaskedCreditCardNumber = _encryptionService.DecryptText(order.MaskedCreditCardNumber, oldEncryptionPrivateKey);
-                    string decryptedCardCvv2 = _encryptionService.DecryptText(order.CardCvv2, oldEncryptionPrivateKey);
-                    string decryptedCardExpirationMonth = _encryptionService.DecryptText(order.CardExpirationMonth, oldEncryptionPrivateKey);
-                    string decryptedCardExpirationYear = _encryptionService.DecryptText(order.CardExpirationYear, oldEncryptionPrivateKey);
+                    orders = new PagedList<Order>(orderQuery, pageIndex++, 1000);
 
-                    string encryptedCardType = _encryptionService.EncryptText(decryptedCardType, newEncryptionPrivateKey);
-                    string encryptedCardName = _encryptionService.EncryptText(decryptedCardName, newEncryptionPrivateKey);
-                    string encryptedCardNumber = _encryptionService.EncryptText(decryptedCardNumber, newEncryptionPrivateKey);
-                    string encryptedMaskedCreditCardNumber = _encryptionService.EncryptText(decryptedMaskedCreditCardNumber, newEncryptionPrivateKey);
-                    string encryptedCardCvv2 = _encryptionService.EncryptText(decryptedCardCvv2, newEncryptionPrivateKey);
-                    string encryptedCardExpirationMonth = _encryptionService.EncryptText(decryptedCardExpirationMonth, newEncryptionPrivateKey);
-                    string encryptedCardExpirationYear = _encryptionService.EncryptText(decryptedCardExpirationYear, newEncryptionPrivateKey);
+                    foreach (var order in orders)
+                    {
+                        // New credit card encryption.
+                        string decryptedCardType = _encryptionService.DecryptText(order.CardType, oldEncryptionPrivateKey);
+                        string decryptedCardName = _encryptionService.DecryptText(order.CardName, oldEncryptionPrivateKey);
+                        string decryptedCardNumber = _encryptionService.DecryptText(order.CardNumber, oldEncryptionPrivateKey);
+                        string decryptedMaskedCreditCardNumber = _encryptionService.DecryptText(order.MaskedCreditCardNumber, oldEncryptionPrivateKey);
+                        string decryptedCardCvv2 = _encryptionService.DecryptText(order.CardCvv2, oldEncryptionPrivateKey);
+                        string decryptedCardExpirationMonth = _encryptionService.DecryptText(order.CardExpirationMonth, oldEncryptionPrivateKey);
+                        string decryptedCardExpirationYear = _encryptionService.DecryptText(order.CardExpirationYear, oldEncryptionPrivateKey);
 
-                    order.CardType = encryptedCardType;
-                    order.CardName = encryptedCardName;
-                    order.CardNumber = encryptedCardNumber;
-                    order.MaskedCreditCardNumber = encryptedMaskedCreditCardNumber;
-                    order.CardCvv2 = encryptedCardCvv2;
-                    order.CardExpirationMonth = encryptedCardExpirationMonth;
-                    order.CardExpirationYear = encryptedCardExpirationYear;
+                        string encryptedCardType = _encryptionService.EncryptText(decryptedCardType, newEncryptionPrivateKey);
+                        string encryptedCardName = _encryptionService.EncryptText(decryptedCardName, newEncryptionPrivateKey);
+                        string encryptedCardNumber = _encryptionService.EncryptText(decryptedCardNumber, newEncryptionPrivateKey);
+                        string encryptedMaskedCreditCardNumber = _encryptionService.EncryptText(decryptedMaskedCreditCardNumber, newEncryptionPrivateKey);
+                        string encryptedCardCvv2 = _encryptionService.EncryptText(decryptedCardCvv2, newEncryptionPrivateKey);
+                        string encryptedCardExpirationMonth = _encryptionService.EncryptText(decryptedCardExpirationMonth, newEncryptionPrivateKey);
+                        string encryptedCardExpirationYear = _encryptionService.EncryptText(decryptedCardExpirationYear, newEncryptionPrivateKey);
 
-                    // New direct debit encryption.
-                    string decryptedAccountHolder = _encryptionService.DecryptText(order.DirectDebitAccountHolder, oldEncryptionPrivateKey);
-                    string decryptedAccountNumber = _encryptionService.DecryptText(order.DirectDebitAccountNumber, oldEncryptionPrivateKey);
-                    string decryptedBankCode = _encryptionService.DecryptText(order.DirectDebitBankCode, oldEncryptionPrivateKey);
-                    string decryptedBankName = _encryptionService.DecryptText(order.DirectDebitBankName, oldEncryptionPrivateKey);
-                    string decryptedBic = _encryptionService.DecryptText(order.DirectDebitBIC, oldEncryptionPrivateKey);
-                    string decryptedCountry = _encryptionService.DecryptText(order.DirectDebitCountry, oldEncryptionPrivateKey);
-                    string decryptedIban = _encryptionService.DecryptText(order.DirectDebitIban, oldEncryptionPrivateKey);
+                        order.CardType = encryptedCardType;
+                        order.CardName = encryptedCardName;
+                        order.CardNumber = encryptedCardNumber;
+                        order.MaskedCreditCardNumber = encryptedMaskedCreditCardNumber;
+                        order.CardCvv2 = encryptedCardCvv2;
+                        order.CardExpirationMonth = encryptedCardExpirationMonth;
+                        order.CardExpirationYear = encryptedCardExpirationYear;
 
-                    string encryptedAccountHolder = _encryptionService.EncryptText(decryptedAccountHolder, newEncryptionPrivateKey);
-                    string encryptedAccountNumber = _encryptionService.EncryptText(decryptedAccountNumber, newEncryptionPrivateKey);
-                    string encryptedBankCode = _encryptionService.EncryptText(decryptedBankCode, newEncryptionPrivateKey);
-                    string encryptedBankName = _encryptionService.EncryptText(decryptedBankName, newEncryptionPrivateKey);
-                    string encryptedBic = _encryptionService.EncryptText(decryptedBic, newEncryptionPrivateKey);
-                    string encryptedCountry = _encryptionService.EncryptText(decryptedCountry, newEncryptionPrivateKey);
-                    string encryptedIban = _encryptionService.EncryptText(decryptedIban, newEncryptionPrivateKey);
+                        // New direct debit encryption.
+                        string decryptedAccountHolder = _encryptionService.DecryptText(order.DirectDebitAccountHolder, oldEncryptionPrivateKey);
+                        string decryptedAccountNumber = _encryptionService.DecryptText(order.DirectDebitAccountNumber, oldEncryptionPrivateKey);
+                        string decryptedBankCode = _encryptionService.DecryptText(order.DirectDebitBankCode, oldEncryptionPrivateKey);
+                        string decryptedBankName = _encryptionService.DecryptText(order.DirectDebitBankName, oldEncryptionPrivateKey);
+                        string decryptedBic = _encryptionService.DecryptText(order.DirectDebitBIC, oldEncryptionPrivateKey);
+                        string decryptedCountry = _encryptionService.DecryptText(order.DirectDebitCountry, oldEncryptionPrivateKey);
+                        string decryptedIban = _encryptionService.DecryptText(order.DirectDebitIban, oldEncryptionPrivateKey);
 
-                    order.DirectDebitAccountHolder = encryptedAccountHolder;
-                    order.DirectDebitAccountNumber = encryptedAccountNumber;
-                    order.DirectDebitBankCode = encryptedBankCode;
-                    order.DirectDebitBankName = encryptedBankName;
-                    order.DirectDebitBIC = encryptedBic;
-                    order.DirectDebitCountry = encryptedCountry;
-                    order.DirectDebitIban = encryptedIban;
+                        string encryptedAccountHolder = _encryptionService.EncryptText(decryptedAccountHolder, newEncryptionPrivateKey);
+                        string encryptedAccountNumber = _encryptionService.EncryptText(decryptedAccountNumber, newEncryptionPrivateKey);
+                        string encryptedBankCode = _encryptionService.EncryptText(decryptedBankCode, newEncryptionPrivateKey);
+                        string encryptedBankName = _encryptionService.EncryptText(decryptedBankName, newEncryptionPrivateKey);
+                        string encryptedBic = _encryptionService.EncryptText(decryptedBic, newEncryptionPrivateKey);
+                        string encryptedCountry = _encryptionService.EncryptText(decryptedCountry, newEncryptionPrivateKey);
+                        string encryptedIban = _encryptionService.EncryptText(decryptedIban, newEncryptionPrivateKey);
 
-                    _orderService.UpdateOrder(order);
+                        order.DirectDebitAccountHolder = encryptedAccountHolder;
+                        order.DirectDebitAccountNumber = encryptedAccountNumber;
+                        order.DirectDebitBankCode = encryptedBankCode;
+                        order.DirectDebitBankName = encryptedBankName;
+                        order.DirectDebitBIC = encryptedBic;
+                        order.DirectDebitCountry = encryptedCountry;
+                        order.DirectDebitIban = encryptedIban;
+
+                        _orderService.UpdateOrder(order);
+                    }
                 }
+                while (orders.HasNextPage);
 
-				// Update user information.
-				// Optimization - load only users with PasswordFormat.Encrypted.
+                // Update user information.
+                var customerQuery = _customerService.GetAllCustomersByPasswordFormat(PasswordFormat.Encrypted).SourceQuery;
+                PagedList<Customer> customers = null;
+                pageIndex = 0;
 
-				var query = _customerService.GetAllCustomersByPasswordFormat(PasswordFormat.Encrypted).SourceQuery;
+                do
+                {
+                    customers = new PagedList<Customer>(customerQuery, pageIndex++, 1000);
 
-				for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
-				{
-					var customers = new PagedList<Customer>(query, pageIndex, 1000);
+                    if (customers.Any())
+                    {
+                        foreach (var customer in customers)
+                        {
+                            var decryptedPassword = _encryptionService.DecryptText(customer.Password, oldEncryptionPrivateKey);
+                            var encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);
 
-					foreach (var customer in customers)
-					{
-						string decryptedPassword = _encryptionService.DecryptText(customer.Password, oldEncryptionPrivateKey);
-						string encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);
+                            customer.Password = encryptedPassword;
+                        }
 
-						customer.Password = encryptedPassword;
-					}
-
-					Services.DbContext.SaveChanges();
-
-					if (!customers.HasNextPage)
-						break;
-				}
+                        Services.DbContext.SaveChanges();
+                    }
+                }
+                while (customers.HasNextPage);
 
                 securitySettings.EncryptionKey = newEncryptionPrivateKey;
                 _services.Settings.SaveSetting(securitySettings);
 
                 NotifySuccess(T("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                NotifyError(exc);
+                NotifyError(ex);
+                Logger.Error(ex);
             }
 
-			return RedirectToAction("GeneralCommon");
+            return RedirectToAction("GeneralCommon");
         }
 
 		[HttpPost]
@@ -1554,7 +1571,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
             var fsettings = Services.Settings.LoadSetting<ForumSearchSettings>(storeScope);
 
@@ -1578,6 +1595,10 @@ namespace SmartStore.Admin.Controllers
             {
                 return Search();
             }
+
+            CategoryTreeChangeReason? categoriesChange = model.AvailabilityFacet.IncludeNotAvailable != settings.IncludeNotAvailable
+                ? CategoryTreeChangeReason.ElementCounts
+                : (CategoryTreeChangeReason?)null;
 
 			ModelState.Clear();
 			MiniMapper.Map(model, settings);
@@ -1653,9 +1674,15 @@ namespace SmartStore.Admin.Controllers
 			{
 				_catalogSearchQueryAliasMapper.Value.ClearCommonFacetCache();
 			}
+
             if (clearForumFacetCache)
             {
                 _forumSearchQueryAliasMapper.Value.ClearCommonFacetCache();
+            }
+
+            if (categoriesChange.HasValue)
+            {
+                Services.EventPublisher.Publish(new CategoryTreeChangedEvent(categoriesChange.Value));
             }
 
 			return NotifyAndRedirect("Search");

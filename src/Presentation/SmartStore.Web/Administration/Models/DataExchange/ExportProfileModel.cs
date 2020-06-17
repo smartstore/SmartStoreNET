@@ -221,8 +221,7 @@ namespace SmartStore.Admin.Models.DataExchange
                 .Must(x =>
                 {
                     // See ExportProfileService.UpdateExportProfile.
-                    x = FileSystemHelper.ValidateRootPath(x);
-                    return FileSystemHelper.IsSafeRootPath(x);
+                    return PathHelper.IsSafeAppRootPath(PathHelper.NormalizeAppRelativePath(x));
                 })
                 .WithMessage(T("Admin.DataExchange.Export.FolderName.Validate"));
 

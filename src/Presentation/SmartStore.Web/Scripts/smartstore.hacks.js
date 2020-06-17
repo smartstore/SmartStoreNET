@@ -18,17 +18,24 @@
 			// correctly anymore. We have to reposition it.
 			if ($.telerik && $.telerik.filtering) {
 				var showFilter = $.telerik.filtering.implementation.showFilter;
-				$.telerik.filtering.implementation.showFilter = function (e) {
-					// The filter button
-					var btn = $(e.currentTarget);
-					// Call the original func
-					showFilter.apply(this, [e]);
-					// The filter dropdown
-					var filter = btn.data('filter');
-					var grid = filter.parent();
-					filter.css({
-						left: (btn.offset().left - grid.offset().left) + "px"
-					});
+                $.telerik.filtering.implementation.showFilter = function (e) {
+                    // The filter button
+                    var btn = $(e.currentTarget);
+                    // Call the original func
+                    showFilter.apply(this, [e]);
+                    // The filter dropdown
+                    var filter = btn.data('filter');
+                    var grid = filter.parent();
+                    filter.css({
+                        left: (btn.offset().left - grid.offset().left) + "px"
+                    });
+
+                    // wrap with new relative element to circumvent cropping of filter dialog
+                    if (!grid.hasClass("wrapped")) {
+                        grid.addClass("wrapped")
+                            .css("position", "initial")
+                            .wrap("<div class='position-relative'></div>");
+                    }
 				};
 			}
 		}

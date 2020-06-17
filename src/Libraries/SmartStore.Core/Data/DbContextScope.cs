@@ -3,6 +3,7 @@ using SmartStore.Core.Infrastructure;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data
 {
@@ -89,7 +90,12 @@ namespace SmartStore.Core.Data
 			return _ctx.SaveChanges();
 		}
 
-        public void Dispose()
+		public async Task<int> CommitAsync()
+		{
+			return await _ctx.SaveChangesAsync();
+		}
+
+		public void Dispose()
         {
 			_ctx.AutoDetectChangesEnabled = _autoDetectChangesEnabled;
 			_ctx.ProxyCreationEnabled = _proxyCreationEnabled;

@@ -1,11 +1,13 @@
-﻿using SmartStore.Services.Tasks;
+﻿using System.Threading.Tasks;
+using System.Data.Entity;
+using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Messages
 {
     /// <summary>
     /// Represents a task for sending queued message 
     /// </summary>
-    public partial class QueuedMessagesSendTask : ITask
+    public partial class QueuedMessagesSendTask : AsyncTask
     {
         private readonly IQueuedEmailService _queuedEmailService;
 
@@ -14,7 +16,7 @@ namespace SmartStore.Services.Messages
             _queuedEmailService = queuedEmailService;
         }
 
-		public void Execute(TaskExecutionContext ctx)
+		public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
 			const int pageSize = 1000;
 			const int maxTries = 3;
@@ -30,11 +32,12 @@ namespace SmartStore.Services.Messages
 					UnsentOnly = true,
 					SendManually = false
 				};
-				var queuedEmails = _queuedEmailService.SearchEmails(q);
+
+				var queuedEmails = await _queuedEmailService.SearchEmails(q).LoadAsync();
 
 				foreach (var queuedEmail in queuedEmails)
 				{
-					_queuedEmailService.SendEmail(queuedEmail);
+					await _queuedEmailService.SendEmailAsync(queuedEmail);
 				}
 
 				if (!queuedEmails.HasNextPage)

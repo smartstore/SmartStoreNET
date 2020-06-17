@@ -11,7 +11,6 @@ namespace SmartStore.Core.Search
 	public enum AcquirementReason
 	{
 		Indexing,
-		Optimizing,
 		Deleting
 	}
 
@@ -98,9 +97,10 @@ namespace SmartStore.Core.Search
             Currencies.Clear();
             StoreMappings.Clear();
             CustomerRoleMappings.Clear();
-            DeliveryTimes.Clear();
             Manufacturers.Clear();
             Categories.Clear();
+            DeliveryTimes.Clear();
+            Translations.Clear();
             CustomProperties.Clear();
         }
 	}

@@ -459,7 +459,7 @@ namespace SmartStore.Admin.Controllers
 
 			// create zip from temp folder
 			var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
-			FileSystemHelper.Delete(tempZip);
+			FileSystemHelper.DeleteFile(tempZip);
 
 			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
 
@@ -469,7 +469,7 @@ namespace SmartStore.Admin.Controllers
 			Response.TransmitFile(tempZip);
 			Response.Flush();
 
-			FileSystemHelper.Delete(tempZip);
+			FileSystemHelper.DeleteFile(tempZip);
 			FileSystemHelper.ClearDirectory(tempDir, true);
 
 			Response.End();

@@ -5,7 +5,7 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="fa fa-envelope-o"></i>
+        <i class="far fa-envelope"></i>
         @T("Admin.Promotions.newsLetterSubscriptions")
     </div>
     <div class="options">
@@ -28,7 +28,7 @@
 		</div>
 	}
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-		<label>&nbsp;</label>
+		@Html.SmartLabel(string.Empty, string.Empty)
 		<button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions" class="btn btn-secondary btn-block">
 			<span>@T("Admin.Common.ApplyFilter")</span>
 		</button>

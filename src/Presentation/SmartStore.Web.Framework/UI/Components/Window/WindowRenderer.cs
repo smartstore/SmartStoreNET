@@ -123,7 +123,8 @@ namespace SmartStore.Web.Framework.UI
         {
             var win = base.Component;
 
-            writer.AddAttribute("class", "modal-body");
+			win.BodyHtmlAttributes.PrependCssClass("modal-body");
+			writer.AddAttributes(win.BodyHtmlAttributes);
             writer.RenderBeginTag("div");
 
 			if (win.Content != null)

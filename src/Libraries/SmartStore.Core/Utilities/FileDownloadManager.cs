@@ -104,10 +104,10 @@ namespace SmartStore.Utilities
 		/// <param name="items">Items to be downloaded</param>
 		public async Task DownloadAsync(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
 		{
-			await DownloadFiles(context, items);
+			await DownloadFilesAsync(context, items);
 		}
 
-		private async Task DownloadFiles(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
+		private async Task DownloadFilesAsync(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
 		{
 			try
 			{

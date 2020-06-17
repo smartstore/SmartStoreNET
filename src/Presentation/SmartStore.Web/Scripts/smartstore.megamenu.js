@@ -77,9 +77,9 @@
 
                     navElems.on("click", function (e) {
                         var link = $(this).find(".nav-link");
-                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+                        var openedMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                        if (opendMenuSelector != link.data("target")) {
+                        if (openedMenuSelector != link.data("target")) {
                             e.preventDefault();
                             closeNow($(".nav-item.active .nav-link"));
                             tryOpen(link);
@@ -134,7 +134,8 @@
                     });
                 }
 
-				function alignDrop(popper, drop, container) {
+                function alignDrop(popper, drop, container) {
+
 					var nav = $(".navbar-nav", container),
 						left,
 						right,
@@ -142,8 +143,15 @@
 						dropWidth = drop.width(),
 						containerWidth = container.width();
 
-					if (!rtl) {
-						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                    if (!rtl) {
+
+                        if (!Modernizr.touchevents) {
+                            left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                        }
+                        else {
+                            left = Math.ceil(popper.position().left + nav.position().left);
+                        }
+                        
 						right = "auto";
 
 						if (left < 0) {
@@ -155,8 +163,14 @@
 						}
 					}
 					else {
-						left = "auto";
-						right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        left = "auto";
+
+                        if (!Modernizr.touchevents) {
+                            right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        }
+                        else {
+                            right = Math.ceil(popper.position().right + nav.position().left);
+                        }
 
 						if (right < 0) {
 							right = 0;
@@ -179,14 +193,15 @@
 
 					// jQuery does not accept "!important"
 					drop[0].style.setProperty('left', left, 'important');
-					drop[0].style.setProperty('right', right, 'important');
+                    drop[0].style.setProperty('right', right, 'important');
 				}
 
                 // correct dropdown position
                 if (isSimple) {
-					var event = Modernizr.touchevents ? "click" : "mouseenter";
+                    var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
+                        
 						var navItem = $(this);
 						var targetSelector = navItem.find(".nav-link").data("target");
 						if (!targetSelector)
@@ -201,11 +216,6 @@
 				}
 
                 megamenuContainer.evenIfHidden(function (el) {
-                    var scrollCorrection = null;
-                    var lastVisibleElem = null;
-                    var firstVisibleElem = null;
-                    var isFirstItemVisible = true;
-                    var isLastItemVisible = false;
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
@@ -307,7 +317,7 @@
 						if (Modernizr.touchevents) {
 							navWidth = nav.width();
 							var offset = nav.position().left;
-							curMarginStart = rtl ? (offset - 1) * -1 : offset;
+                            curMarginStart = rtl ? (offset - 1) * -1 : offset;
 						}
 						else {
 							navWidth = megamenu.width();
@@ -333,13 +343,12 @@
 
                     // on touch
                     if (Modernizr.touchevents) {
-                        megamenu.tapstart(function () {
+                        megamenu.tapmove(function () {
                             closeNow($(".nav-item.active .nav-link"));
-                        }).tapmove(function () {
-							updateNavState();
+                            updateNavState();
                         });
                     }
-
+                    
                     function onPageResized() {
                     	updateNavState();
 
@@ -373,7 +382,9 @@
 
                 function initRotator(containerId) {
                     var container = $(containerId);
-                    var catId = container.data("id");
+                    var dropdownId = container.data("id") || 0;
+                    var entityId = container.data("entity-id") || 0;
+                    var entityName = container.data("entity-name") || 0;
                     var displayRotator = container.data("display-rotator");
 
                     // reinit slick product rotator
@@ -383,12 +394,14 @@
 							$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
                             applyCommonPlugins($(this).closest('.rotator-content'));
                         }
-						catch (err) { }
+                        catch (err) {
+                            console.log(err);
+                        }
                     });
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
-                    if (catId != null && displayRotator) {
-                        var rotatorColumn = $(".rotator-" + catId);
+                    if (displayRotator && entityId !== 0) {
+                        var rotatorColumn = $(".rotator-" + dropdownId);
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")
@@ -401,7 +414,7 @@
                                 cache: false,
                                 type: "POST",
                                 url: settings.productRotatorAjaxUrl,
-                                data: { "catId": catId },
+                                data: { "entityId": entityId, "entityName": entityName },
                                 success: function (data) {
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);

@@ -94,11 +94,6 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Search", action = "InstantSearch" },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("ChangeDevice",
-				"changedevice/{dontusemobileversion}",
-				new { controller = "Common", action = "ChangeDevice" },
-				new[] { "SmartStore.Web.Controllers" });
-
 			routes.MapLocalizedRoute("ChangeCurrency",
 				"changecurrency/{customercurrency}",
 				new { controller = "Common", action = "CurrencySelected" },

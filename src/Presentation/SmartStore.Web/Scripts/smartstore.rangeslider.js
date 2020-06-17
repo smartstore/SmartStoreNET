@@ -51,7 +51,7 @@
             var g = SmartStore.globalization,
                 nf = g.culture.numberFormat,
                 formatted = val.replace('.', nf["."]);
-            $(el.data('target')).val(formatted);
+            $(el.data('target')).val(formatted).trigger('change');
         }
 
         refreshBubblePosition(e, wrapper, el, bubble);

@@ -1,14 +1,14 @@
-﻿using SmartStore.Core.Domain.Customers;
+﻿using System;
+using System.Web;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Web.Framework.UI;
-using System;
-using System.Web;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class CookieConsentFilter : IActionFilter, IResultFilter
+    public class CookieConsentFilter : IActionFilter, IResultFilter
 	{
 		private readonly IUserAgent _userAgent;
 		private readonly ICommonServices _services;
@@ -92,33 +92,6 @@ namespace SmartStore.Web.Framework.Filters
 				{
 					// assume consent denied
 					viewBag.HasCookieConsent = false;
-				}
-			}
-
-			// supress action of widgets which are setting cookies
-			// TODO: What to do if cookies are set from scripts within topics???
-			if (consentCookie != null && consentCookie.Value != "true")
-			{
-				switch (controllerName)
-				{
-					case "AmazonPay":
-					case "AmazonPayCheckout":
-					case "AmazonPayShoppingCart":
-					case "WidgetsGoogleAnalytics":
-					case "ExternalAuthFacebook":
-					case "WidgetsETracker":
-						filterContext.Result = new EmptyResult();
-						break;
-					case "Product":
-						if (actionName == "ShareButton")
-						{
-							filterContext.Result = new EmptyResult();
-						}
-						break;
-
-					default:
-						//nothing to do here
-						break;
 				}
 			}
 		}

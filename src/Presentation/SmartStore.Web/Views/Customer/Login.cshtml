@@ -3,6 +3,7 @@
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Core;
 @using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Domain.Customers;
 
 @{
     Layout = "_Layout";
@@ -13,7 +14,7 @@
     if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
     {
         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-        registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
+        registerUrl = webHelper.ModifyQueryString(registerUrl, "returnUrl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
     }
 }
 
@@ -24,7 +25,7 @@
 
 	<div class="row mt-4">
 		<div class="col-12 col-md-7 col-lg-6 col-xl-5 order-md-last">
-			<div class="card shadow-sm p-5 mb-5 mb-md-0 login-box">
+			<div class="card shadow-sm p-4 mb-5 mb-md-0 login-box">
 				<h3 class="h4 mb-0">
 					@T("Account.Login.ReturningCustomer")
 				</h3>
@@ -35,71 +36,83 @@
 				}
 
 				<!-- SignIn Form -->
-				<form action="@ViewContext.HttpContext.Request.RawUrl" method="post">
-					@if (Model.UsernamesEnabled)
-					{
-						<div class="form-group">
-							<div class="input-group input-group-lg has-icon">
-								@Html.TextBoxFor(m => m.Username, new { @class = "username form-control", placeholder = Html.DisplayNameFor(m => m.Username) })
-								<span class="input-group-icon text-muted">
-									<i class="icm icm-user"></i>
-								</span>
-							</div>
-							@Html.ValidationMessageFor(m => m.Username)
-						</div>
-					}
-					else
-					{
-						<div class="form-group">
-							<div class="input-group input-group-lg has-icon">
-								@Html.TextBoxFor(m => m.Email, new { @class = "email form-control", type = "email", placeholder = Html.DisplayNameFor(m => m.Email) })
-								<span class="input-group-icon text-muted">
-									<i class="icm icm-envelope-open"></i>
-								</span>
-							</div>
-							@Html.ValidationMessageFor(m => m.Email)
-						</div>
-					}
+                <form action="@ViewContext.HttpContext.Request.RawUrl" method="post">
+                    @if (Model.CustomerLoginType == CustomerLoginType.Username)
+                    {
+                        <div class="form-group">
+                            <div class="input-group input-group-lg has-icon">
+                                @Html.TextBoxFor(m => m.Username, new { @class = "username form-control", placeholder = Html.DisplayNameFor(m => m.Username) })
+                                <span class="input-group-icon text-muted">
+                                    <i class="icm icm-user"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Username)
+                        </div>
+                    }
+                    else if (Model.CustomerLoginType == CustomerLoginType.Email)
+                    {
+                        <div class="form-group">
+                            <div class="input-group input-group-lg has-icon">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "email form-control", type = "email", placeholder = Html.DisplayNameFor(m => m.Email) })
+                                <span class="input-group-icon text-muted">
+                                    <i class="icm icm-envelope-open"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Email)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <div class="input-group input-group-lg has-icon">
+                                @Html.TextBoxFor(m => m.UsernameOrEmail, new { @class = "username form-control", placeholder = Html.DisplayNameFor(m => m.UsernameOrEmail) })
+                                <span class="input-group-icon text-muted">
+                                    <i class="icm icm-user"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.UsernameOrEmail)
+                        </div>
+                    }
 
-					<div class="form-group">
-						<div class="input-group input-group-lg has-icon">
-							<input type="password" class="password form-control" autocomplete="off"
-								   placeholder="@Html.DisplayNameFor(m => m.Password)"
-								   id="@Html.FieldIdFor(m => m.Password)"
-								   name="@Html.FieldNameFor(m => m.Password)"
-								   value="@(Model.Password.HasValue() ? Model.Password : null)" />
-							<span class="input-group-icon text-muted">
-								<i class="icm icm-shield"></i>
-							</span>
-						</div>
-						@Html.ValidationMessageFor(m => m.Password)
-					</div>
+                    <div class="form-group">
+                        <div class="input-group input-group-lg has-icon">
+                            <input type="password" class="password form-control" autocomplete="off"
+                                   placeholder="@Html.DisplayNameFor(m => m.Password)"
+                                   id="@Html.FieldIdFor(m => m.Password)"
+                                   name="@Html.FieldNameFor(m => m.Password)"
+                                   value="@(Model.Password.HasValue() ? Model.Password : null)" />
+                            <span class="input-group-icon text-muted">
+                                <i class="icm icm-shield"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </div>
 
-					<div class="form-group d-flex justify-content-between">
-						<div class="form-check">
-							@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
-							<label for="@Html.IdFor(m => m.RememberMe)" class="form-check-label">@T("Account.Login.Fields.RememberMe")</label>
-						</div>
-						<div class="forgot-password">
-							@Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
-						</div>
-					</div>
+                    <div class="form-group d-flex justify-content-between">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            <label for="@Html.IdFor(m => m.RememberMe)" class="form-check-label">@T("Account.Login.Fields.RememberMe")</label>
+                        </div>
+                        <div class="forgot-password">
+                            @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
+                        </div>
+                    </div>
 
-					@if (Model.DisplayCaptcha)
-					{
-						<div class="form-group captcha-box">
-							@Html.Raw(Html.GenerateCaptcha())
-						</div>
-					}
+                    @if (Model.DisplayCaptcha)
+                    {
+                        <div class="form-group captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    }
 
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary btn-lg btn-block btn-login">
-							@T("Account.Login.LoginButton")
-						</button>
-					</div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block btn-login">
+                            @T("Account.Login.LoginButton")
+                        </button>
+                    </div>
 
-					@{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
-				</form>
+                    @{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
+                </form>
 			</div>
 		</div>
 		<div class="col-12 col-md-5 col-lg-6 col-xl-7 order-md-first">

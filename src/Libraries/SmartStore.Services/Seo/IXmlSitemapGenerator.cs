@@ -1,6 +1,7 @@
 using SmartStore.Services.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SmartStore.Services.Seo
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Services.Seo
 		/// sitemap XML document at this index, but only when the sitemap is actually indexed (otherwise <c>null</c> is returned)
 		/// </param>
 		/// <returns>Sitemap partition</returns>
-		XmlSitemapPartition GetSitemapPart(int index = 0);
+		Task<XmlSitemapPartition> GetSitemapPartAsync(int index = 0);
 
 		/// <summary>
 		/// Rebuilds the collection of XML sitemap documents for a store/language combination. If there are less than 1.000 sitemap 
@@ -30,7 +31,7 @@ namespace SmartStore.Services.Seo
 		/// During rebuilding, requests are being served from the existing cache.
 		/// Once rebuild is completed, the cache is updated.
 		/// </remarks>
-		void Rebuild(XmlSitemapBuildContext ctx);
+		Task RebuildAsync(XmlSitemapBuildContext ctx);
 
 		/// <summary>
 		/// Determines whether a rebuild is already running.

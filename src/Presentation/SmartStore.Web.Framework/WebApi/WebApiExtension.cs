@@ -121,7 +121,7 @@ namespace SmartStore.Web.Framework.WebApi
 			try
 			{
 				foreach (var file in provider.FileData)
-					FileSystemHelper.Delete(file.LocalFileName);
+					FileSystemHelper.DeleteFile(file.LocalFileName);
 			}
 			catch { }
 		}

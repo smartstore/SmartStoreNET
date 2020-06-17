@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -14,7 +12,6 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
-using SmartStore.Services;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -36,18 +33,15 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Core.Events;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CustomerController : PublicControllerBase
+    public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 
-        private readonly ICommonServices _services;
         private readonly IAuthenticationService _authenticationService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly DateTimeSettings _dateTimeSettings;
@@ -88,14 +82,12 @@ namespace SmartStore.Web.Controllers
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 		private readonly PluginMediator _pluginMediator;
-		private readonly IEventPublisher _eventPublisher;
 
 		#endregion
 
 		#region Ctor
 
 		public CustomerController(
-            ICommonServices services,
             IAuthenticationService authenticationService,
             IDateTimeHelper dateTimeHelper,
             DateTimeSettings dateTimeSettings, TaxSettings taxSettings,
@@ -123,9 +115,8 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings,
             LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
-			PluginMediator pluginMediator, IEventPublisher eventPublisher)
+			PluginMediator pluginMediator)
         {
-            _services = services;
             _authenticationService = authenticationService;
             _dateTimeHelper = dateTimeHelper;
             _dateTimeSettings = dateTimeSettings;
@@ -166,7 +157,6 @@ namespace SmartStore.Web.Controllers
             _captchaSettings = captchaSettings;
             _externalAuthenticationSettings = externalAuthenticationSettings;
 			_pluginMediator = pluginMediator;
-			_eventPublisher = eventPublisher;
 		}
 
         #endregion
@@ -177,23 +167,6 @@ namespace SmartStore.Web.Controllers
         protected bool IsCurrentUserRegistered()
         {
             return _workContext.CurrentCustomer.IsRegistered();
-        }
-
-        [NonAction]
-        protected int GetUnreadPrivateMessages()
-        {
-            var result = 0;
-            var customer = _services.WorkContext.CurrentCustomer;
-            if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
-            {
-                var privateMessages = _forumService.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, 0, 1);
-                if (privateMessages.TotalCount > 0)
-                {
-                    result = privateMessages.TotalCount;
-                }
-            }
-
-            return result;
         }
 
         [NonAction]
@@ -273,7 +246,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				if (_customerSettings.UsernamesEnabled && !_customerSettings.AllowUsersToChangeUsernames)
+				if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && !_customerSettings.AllowUsersToChangeUsernames)
 				{
 					model.Username = customer.Username;
 				}
@@ -338,7 +311,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
@@ -433,27 +406,14 @@ namespace SmartStore.Web.Controllers
 
         #region Login / logout / register
         
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Login(bool? checkoutAsGuest)
         {
             var model = new LoginModel();
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.CustomerLoginType = _customerSettings.CustomerLoginType;
             model.CheckoutAsGuest = checkoutAsGuest ?? false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
-            
-            if (_customerSettings.PrefillLoginUsername.HasValue())
-            {
-                if (model.UsernamesEnabled)
-                    model.Username = _customerSettings.PrefillLoginUsername;
-                else
-                    model.Email = _customerSettings.PrefillLoginUsername;
-                
-            }
-            if (_customerSettings.PrefillLoginPwd.HasValue())
-            {
-                model.Password = _customerSettings.PrefillLoginPwd;
-            }
-
+           
             return View(model);
         }
 
@@ -469,16 +429,48 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.Username && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
                 }
 
-                if (_customerRegistrationService.ValidateCustomer(_customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password))
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.UsernameOrEmail && model.UsernameOrEmail != null)
                 {
-                    var customer = _customerSettings.UsernamesEnabled 
-						? _customerService.GetCustomerByUsername(model.Username) 
-						: _customerService.GetCustomerByEmail(model.Email);
+                    model.UsernameOrEmail = model.UsernameOrEmail.Trim();
+                }
+
+                var userNameOrEmail = String.Empty;
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+                {
+                    userNameOrEmail = model.Email;
+                }
+                else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+                {
+                    userNameOrEmail = model.Username;
+                }
+                else
+                {
+                    userNameOrEmail = model.UsernameOrEmail;
+                }
+
+                if (_customerRegistrationService.ValidateCustomer(userNameOrEmail, model.Password))
+                {
+                    Customer customer = null;
+
+                    if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+                    {
+                        customer = _customerService.GetCustomerByEmail(model.Email);
+                    }
+                    else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+                    {
+                        customer = _customerService.GetCustomerByUsername(model.Username);
+                    }
+                    else
+                    {
+                        customer = _customerService.GetCustomerByEmail(model.UsernameOrEmail);
+                        if (customer == null)
+                            customer = _customerService.GetCustomerByUsername(model.UsernameOrEmail);
+                    }
 
                     _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer);
 
@@ -486,7 +478,7 @@ namespace SmartStore.Web.Controllers
 
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-					_eventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
+					Services.EventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
 
 					// Redirect home where redirect to referrer would be confusing.
 					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm"))
@@ -503,13 +495,13 @@ namespace SmartStore.Web.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.CustomerLoginType = _customerSettings.CustomerLoginType;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
 
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
 		[GdprConsent]
 		public ActionResult Register()
         {
@@ -545,7 +537,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
 
@@ -605,19 +597,19 @@ namespace SmartStore.Web.Controllers
             // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
             
             if (ModelState.IsValid)
             {
-                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
                 }
 
                 bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer, model.Email,
-                    _customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
+                    _customerSettings.CustomerLoginType != CustomerLoginType.Email ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
 
                 if (registrationResult.Success)
@@ -709,7 +701,7 @@ namespace SmartStore.Web.Controllers
                                     Active = true,
                                     CreatedOnUtc = DateTime.UtcNow,
 									StoreId = _storeContext.CurrentStore.Id,
-                                    WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id
+                                    WorkingLanguageId = Services.WorkContext.WorkingLanguage.Id
                                 });
                             }
                         }
@@ -783,7 +775,7 @@ namespace SmartStore.Web.Controllers
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
                                 if (!String.IsNullOrEmpty(returnUrl))
-                                    redirectUrl = _webHelper.ModifyQueryString(redirectUrl, "returnurl=" + HttpUtility.UrlEncode(returnUrl), null);
+                                    redirectUrl = _webHelper.ModifyQueryString(redirectUrl, "returnUrl=" + HttpUtility.UrlEncode(returnUrl), null);
                                 return Redirect(redirectUrl);
                             }
                         default:
@@ -827,7 +819,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
 
@@ -884,13 +876,12 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult CheckUsernameAvailability(string username)
         {
             var usernameAvailable = false;
             var statusText = _localizationService.GetResource("Account.CheckUsernameAvailability.NotAvailable");
 
-            if (_customerSettings.UsernamesEnabled && username != null)
+            if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && username != null)
             {
                 username = username.Trim();
 
@@ -944,7 +935,7 @@ namespace SmartStore.Web.Controllers
 
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AccountActivation(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);
@@ -977,150 +968,7 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
-		[ChildActionOnly]
-		public ActionResult MyAccountMenu(string selectedItem = null)
-		{
-			var customer = _workContext.CurrentCustomer;
-			var menu = new List<MenuItem>();
-
-			// Info
-			menu.Add(new MenuItem
-			{
-				Id = "info",
-				Text = T("Account.CustomerInfo"),
-				Icon = "user-o",
-				Url = Url.Action("Info"),
-			});
-
-			// Addresses
-			menu.Add(new MenuItem
-			{
-				Id = "addresses",
-				Text = T("Account.CustomerAddresses"),
-				Icon = "address-book-o",
-				Url = Url.Action("Addresses"),
-			});
-
-			// Orders
-			menu.Add(new MenuItem
-			{
-				Id = "orders",
-				Text = T("Account.CustomerOrders"),
-				Icon = "file-text",
-				Url = Url.Action("Orders"),
-			});
-
-			// Return requests
-			if (_orderSettings.ReturnRequestsEnabled && _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount > 0)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "returnrequests",
-					Text = T("Account.CustomerReturnRequests"),
-					Icon = "truck",
-					Url = Url.Action("ReturnRequests"),
-				});
-			}
-
-			// Downloadable products
-			if (!_customerSettings.HideDownloadableProductsTab)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "downloads",
-					Text = T("Account.DownloadableProducts"),
-					Icon = "download",
-					Url = Url.Action("DownloadableProducts"),
-				});
-			}
-
-			// BackInStock subscriptions
-			if (!_customerSettings.HideBackInStockSubscriptionsTab)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "backinstock",
-					Text = T("Account.BackInStockSubscriptions"),
-					Icon = "bullhorn",
-					Url = Url.Action("BackInStockSubscriptions"),
-				});
-			}
-
-			// Reward points
-			if (_rewardPointsSettings.Enabled)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "rewardpoints",
-					Text = T("Account.RewardPoints"),
-					Icon = "certificate",
-					Url = Url.Action("RewardPoints"),
-				});
-			}
-
-			// Change password
-			menu.Add(new MenuItem
-			{
-				Id = "changepassword",
-				Text = T("Account.ChangePassword"),
-				Icon = "unlock-alt",
-				Url = Url.Action("ChangePassword"),
-			});
-
-			// Avatar
-			if (_customerSettings.AllowCustomersToUploadAvatars)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "avatar",
-					Text = T("Account.Avatar"),
-					Icon = "user-circle",
-					Url = Url.Action("Avatar"),
-				});
-			}
-
-			// Forum subscriptions
-			if (_forumSettings.ForumsEnabled && _forumSettings.AllowCustomersToManageSubscriptions)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "forumsubscriptions",
-					Text = T("Account.ForumSubscriptions"),
-					Icon = "bell",
-					Url = Url.Action("ForumSubscriptions"),
-				});
-			}
-
-			// Private messages
-			var numUnreadMessages = GetUnreadPrivateMessages();
-			if (_forumSettings.AllowPrivateMessages)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "privatemessages",
-					Text = T("PrivateMessages.Inbox"),
-					Icon = "envelope-o",
-					Url = Url.RouteUrl("PrivateMessages", new { tab = "inbox" }),
-					BadgeText = numUnreadMessages > 0 ? numUnreadMessages.ToString() : null,
-					BadgeStyle = BadgeStyle.Warning
-				});
-			}
-
-			var model = new MyAccountMenuModel
-			{
-				Root = new TreeNode<MenuItem>(new MenuItem { Id = "root" }, menu),
-				SelectedItemToken = selectedItem
-			};
-
-			// Event for plugins
-			var evt = new MenuCreatedEvent("MyAccount", model.Root, model.SelectedItemToken);
-			_services.EventPublisher.Publish(evt);
-			model.SelectedItemToken = evt.SelectedItemToken;
-
-			return PartialView(model);
-		}
-
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Info()
         {
             if (!IsCurrentUserRegistered())
@@ -1149,7 +997,7 @@ namespace SmartStore.Web.Controllers
 			{
 				ModelState.AddModelError("", "Email is not provided.");
 			}               
-            if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames && model.Username.IsEmpty())
+            if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames && model.Username.IsEmpty())
             {
 				ModelState.AddModelError("", "Username is not provided.");
             }
@@ -1162,7 +1010,7 @@ namespace SmartStore.Web.Controllers
                     customer.LastName = model.LastName;
 
                     // Username.
-                    if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
+                    if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (!customer.Username.Equals(model.Username.Trim(), StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -1179,7 +1027,7 @@ namespace SmartStore.Web.Controllers
                         // Change email.
                         _customerRegistrationService.SetEmail(customer, model.Email.Trim());
                         // Re-authenticate (if usernames are disabled).
-                        if (!_customerSettings.UsernamesEnabled)
+                        if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
                         {
                             _authenticationService.SignIn(customer, true);
                         }
@@ -1308,7 +1156,7 @@ namespace SmartStore.Web.Controllers
     
         #region Addresses
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Addresses()
         {
             if (!IsCurrentUserRegistered())
@@ -1327,7 +1175,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressDelete(int id)
         {
 			if (id < 1)
@@ -1351,7 +1199,7 @@ namespace SmartStore.Web.Controllers
 			return RedirectToAction("Addresses");
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressAdd()
         {
             if (!IsCurrentUserRegistered())
@@ -1397,7 +1245,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult AddressEdit(int id)
         {
 			if (id < 1)
@@ -1448,7 +1296,7 @@ namespace SmartStore.Web.Controllers
 
         #region Orders
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Orders(int? page)
         {
             if (!IsCurrentUserRegistered())
@@ -1500,7 +1348,7 @@ namespace SmartStore.Web.Controllers
 
         #region Return request
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult ReturnRequests()
         {
             if (!IsCurrentUserRegistered())
@@ -1542,7 +1390,7 @@ namespace SmartStore.Web.Controllers
 
         #region Downloable products
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult DownloadableProducts()
         {
             if (!IsCurrentUserRegistered())
@@ -1602,14 +1450,14 @@ namespace SmartStore.Web.Controllers
 			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
             {
-                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.OrderItemNotFound"));
+                NotifyError(T("Customer.UserAgreement.OrderItemNotFound"));
                 return RedirectToRoute("HomePage");
             }
 			
             var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
             {
-                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.ProductNotFound"));
+                NotifyError(T("Customer.UserAgreement.ProductNotFound"));
                 return RedirectToRoute("HomePage");
             }
 			
@@ -1625,7 +1473,7 @@ namespace SmartStore.Web.Controllers
 
         #region Reward points
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult RewardPoints()
         {
             if (!IsCurrentUserRegistered())
@@ -1659,7 +1507,7 @@ namespace SmartStore.Web.Controllers
 
         #region Change password
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult ChangePassword()
         {
             if (!IsCurrentUserRegistered())
@@ -1704,7 +1552,7 @@ namespace SmartStore.Web.Controllers
 
         #region Avatar
 
-        [RequireHttpsByConfig(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Avatar()
         {
             if (!IsCurrentUserRegistered())
@@ -1785,7 +1633,7 @@ namespace SmartStore.Web.Controllers
 
         #region Password recovery
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult PasswordRecovery()
         {
             var model = new PasswordRecoveryModel();
@@ -1822,7 +1670,7 @@ namespace SmartStore.Web.Controllers
         }
 
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult PasswordRecoveryConfirm(string token, string email)
         {
             var customer = _customerService.GetCustomerByEmail(email);

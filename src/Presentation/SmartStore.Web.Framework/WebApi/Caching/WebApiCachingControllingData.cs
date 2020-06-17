@@ -7,9 +7,9 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 {
 	public static class WebApiCachingControllingData
 	{
-		private static object _lock = new object();
+		private static readonly object _lock = new object();
 
-		public static string Key { get { return "WebApiControllingData"; } }
+		public static string Key { get; } = "WebApiControllingData";
 
 		public static void Remove()
 		{

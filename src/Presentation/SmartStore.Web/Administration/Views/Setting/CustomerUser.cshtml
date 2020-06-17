@@ -37,20 +37,24 @@
 @helper TabCustomerSettings()
 {
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(function () {
         	$('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberMethod)').change(function () {
-        		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@((int)CustomerNumberMethod.Disabled)');
+        		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@(CustomerNumberMethod.Disabled.ToString())');
+            }).trigger('change');
+
+            $('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerLoginType)').change(function () {
+                $('#pnlUsernamesEnabled').toggle($(this).val() !== '@(CustomerLoginType.Email.ToString())');
             }).trigger('change');
         });
     </script>
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.UsernamesEnabled)
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerLoginType)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.UsernamesEnabled, Html.CheckBoxFor(model => model.CustomerSettings.UsernamesEnabled, new { data_toggler_for = "#pnlUsernamesEnabled" }))
-                @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
+				@Html.DropDownListForEnum(model => model.CustomerSettings.CustomerLoginType)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerLoginType)
             </td>
         </tr>
 		<tbody id="pnlUsernamesEnabled">

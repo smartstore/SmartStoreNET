@@ -19,7 +19,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class TopicController : AdminControllerBase
     {
         private readonly ITopicService _topicService;
@@ -61,9 +61,8 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
-				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false);
+				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false, localized.LanguageId);
 				_urlRecordService.SaveSlug(topic, seName, localized.LanguageId);
-
 			}
         }
 
@@ -89,7 +88,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (topic != null)
 				{
-					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(topic);
+					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
 				}
 				else
 				{
@@ -224,7 +223,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(TopicModel model, bool continueEditing)
+        [ValidateInput(false)]
+        public ActionResult Create(TopicModel model, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
@@ -251,6 +251,8 @@ namespace SmartStore.Admin.Controllers
 				SaveStoreMappings(topic, model);
 				SaveAclMappings(topic, model);
 				UpdateLocales(topic, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
                 NotifySuccess(T("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
@@ -334,6 +336,11 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
+            else
+            {
+                // Chrome spat out an error message after validation with this rule .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
+                HttpContext.Response.AddHeader("X-XSS-Protection", "0");
+            }
 
 			// If we got this far, something failed, redisplay form.
 			model.Url = GetTopicUrl(topic);
@@ -347,16 +354,20 @@ namespace SmartStore.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
+            {
                 return AccessDeniedView();
+            }
 
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
-                return RedirectToAction("List");
+            {
+                return HttpNotFound();
+            }
 
             if (topic.IsSystemTopic)
             {
                 NotifyError(T("Admin.ContentManagement.Topics.CannotBeDeleted"));
-                return RedirectToAction("List");
+                return RedirectToAction("Edit", new { id = topic.Id });
             }
             
             _topicService.DeleteTopic(topic);
@@ -366,7 +377,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		// AJAX
-		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false)
+		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
 		{
 			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
 						where (includeWidgets || !x.RenderAsWidget)
@@ -393,6 +404,16 @@ namespace SmartStore.Admin.Controllers
 					labelTopic.SystemName = label;
 
 				topics.Insert(0, labelTopic);
+			}
+
+			if (includeHomePage)
+			{
+				topics.Insert(0, new Topic
+				{
+					Id = -10,
+					Title = T("Admin.ContentManagement.Homepage"),
+					SystemName = T("Admin.ContentManagement.Homepage"),
+				});
 			}
 
 			var list = from x in topics

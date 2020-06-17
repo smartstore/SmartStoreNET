@@ -23,21 +23,12 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-            switch (EngineContext.Current.Resolve<ForumSettings>().ForumEditor)
-            {
-                case EditorType.SimpleTextBox:
-                    {
-                        text = HtmlUtils.FormatText(text, false, true, false, false, false, false);
-                    }
-                    break;
-                case EditorType.BBCodeEditor:
-                    {
-                        text = HtmlUtils.FormatText(text, false, true, false, true, false, false);
-                    }
-                    break;
-                default:
-                    break;
-            }
+			text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+
+			if (EngineContext.Current.Resolve<ForumSettings>().ForumEditor == EditorType.BBCodeEditor)
+			{
+				text = BBCodeHelper.ToHtml(text);
+			}
 
             return text;
         }
@@ -83,8 +74,8 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-            return HtmlUtils.FormatText(text, false, true, false, false, false, false);
-        }
+			return HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+		}
 
         /// <summary>
         /// Formats the private message text
@@ -101,7 +92,8 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-            return HtmlUtils.FormatText(text, false, true, false, true, false, false);
+			text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+            return BBCodeHelper.ToHtml(text);
         }
         
         /// <summary>

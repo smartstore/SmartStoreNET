@@ -880,19 +880,48 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(OrderListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+            {
                 return AccessDeniedView();
+            }
 
-			var allStores = Services.StoreService.GetAllStores();
+            var allStores = Services.StoreService.GetAllStores();
+            var paymentMethods = _paymentService.LoadAllPaymentMethods();
 
-			model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
-			model.AvailableStores = allStores
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+            model.AvailableStores = allStores
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.AvailablePaymentMethods = paymentMethods
+                .Select(x => new SelectListItem
+                {
+                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty() ?? x.Metadata.SystemName,
+                    Value = x.Metadata.SystemName
+                })
+                .ToList();
+
+            var paymentMethodsCounts = model.AvailablePaymentMethods
+                .GroupBy(x => x.Text)
+                .Select(x => new { Name = x.Key.EmptyNull(), Count = x.Count() })
+                .ToDictionarySafe(x => x.Name, x => x.Count);                
+
+            model.AvailablePaymentMethods = model.AvailablePaymentMethods
+                .OrderBy(x => x.Text)
+                .Select(x =>
+                {
+                    if (paymentMethodsCounts[x.Text] > 1)
+                    {
+                        x.Text = "{0} ({1})".FormatInvariant(x.Text, x.Value);
+                    }
+
+                    return x;
+                })
+                .ToList();
+
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 
 			return View(model);
 		}
@@ -917,7 +946,7 @@ namespace SmartStore.Admin.Controllers
 				Provider<IPaymentMethod> paymentMethod = null;
 
 				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
-					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName, model.PaymentMethods.SplitSafe(","));
 
 				gridModel.Data = orders.Select(x =>
 				{
@@ -1034,7 +1063,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region Export / Import
 
-		[HttpPost, Compress]
+		[HttpPost]
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -1365,7 +1394,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            return RedirectToAction("Print", "Order", new { id = orderId, pdf = pdf, area = "" });
+            return RedirectToAction("Print", "Order", new { id = orderId, pdf, area = "" });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -1839,6 +1868,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, ProductVariantQuery query, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -2072,9 +2102,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var model = new ShipmentListModel();
-            model.DisplayPdfPackagingSlip = _pdfSettings.Enabled;
-            return View(model);
+			var model = new ShipmentListModel
+			{
+				DisplayPdfPackagingSlip = _pdfSettings.Enabled
+			};
+
+			return View(model);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
@@ -2220,7 +2253,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
 
-				return RedirectToAction("AddShipment", new { orderId = orderId });
+				return RedirectToAction("AddShipment", new { orderId });
 			}
         }
 
@@ -2559,13 +2592,13 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult BestsellersReport()
         {
-            var model = new BestsellersReportModel();
+			var model = new BestsellersReportModel
+			{
+				AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList(),
+				AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList()
+			};
 
-            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-
-            model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-
-            foreach (var c in _countryService.GetAllCountriesForBilling())
+			foreach (var c in _countryService.GetAllCountriesForBilling())
             {
                 model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
             }
@@ -2678,14 +2711,15 @@ namespace SmartStore.Admin.Controllers
         protected virtual IList<OrderAverageReportLineSummaryModel> GetOrderAverageReportModel()
         {
 			var urlHelper = new UrlHelper(Request.RequestContext);
-            var report = new List<OrderAverageReportLineSummary>();
+			var report = new List<OrderAverageReportLineSummary>
+			{
+				_orderReportService.OrderAverageReport(0, OrderStatus.Pending),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Processing),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Complete),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled)
+			};
 
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Pending));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Processing));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Complete));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled));
-
-            var model = report.Select(x =>
+			var model = report.Select(x =>
             {
                 return new OrderAverageReportLineSummaryModel()
                 {

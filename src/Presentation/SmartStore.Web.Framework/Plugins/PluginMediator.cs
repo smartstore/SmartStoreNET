@@ -24,33 +24,30 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public PluginMediator(ICommonServices services, IComponentContext ctx)
 		{
-			this._services = services;
-			this._ctx = ctx;
-
-			T = NullLocalizer.Instance;
+			_services = services;
+			_ctx = ctx;
 		}
 
-		public Localizer T { get; set; }
-
-		public string GetLocalizedFriendlyName(ProviderMetadata metadata, int languageId = 0, bool returnDefaultValue = true)
+		public string GetLocalizedFriendlyName(IProviderMetadata metadata, int languageId = 0, bool returnDefaultValue = true)
 		{
 			return GetLocalizedValue(metadata, "FriendlyName", x => x.FriendlyName, languageId, returnDefaultValue);
 		}
 
-		public string GetLocalizedDescription(ProviderMetadata metadata, int languageId = 0, bool returnDefaultValue = true)
+		public string GetLocalizedDescription(IProviderMetadata metadata, int languageId = 0, bool returnDefaultValue = true)
 		{
 			return GetLocalizedValue(metadata, "Description", x => x.Description, languageId, returnDefaultValue);
 		}
 
-		public string GetLocalizedValue(ProviderMetadata metadata,
+		public string GetLocalizedValue<TMetadata>(TMetadata metadata,
 			string propertyName,
-			Expression<Func<ProviderMetadata, string>> fallback,
+			Expression<Func<TMetadata, string>> fallback,
 			int languageId = 0,
-			bool returnDefaultValue = true)
+			bool returnDefaultValue = true) 
+			where TMetadata : IProviderMetadata
 		{
 			Guard.NotNull(metadata, nameof(metadata));
 
-			string systemName = metadata.SystemName;
+			var systemName = metadata.SystemName;
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 			string result = _services.Localization.GetResource(resourceName, languageId, false, "", true);
 
@@ -60,7 +57,7 @@ namespace SmartStore.Web.Framework.Plugins
 			return result;
 		}
 
-		public void SaveLocalizedValue(ProviderMetadata metadata, int languageId, string propertyName, string value)
+		public void SaveLocalizedValue(IProviderMetadata metadata, int languageId, string propertyName, string value)
 		{
 			Guard.NotNull(metadata, nameof(metadata));
 			Guard.IsPositive(languageId, nameof(languageId));
@@ -88,7 +85,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (value.HasValue())
 				{
 					// insert
-					resource = new LocaleStringResource()
+					resource = new LocaleStringResource
 					{
 						LanguageId = languageId,
 						ResourceName = resourceName,

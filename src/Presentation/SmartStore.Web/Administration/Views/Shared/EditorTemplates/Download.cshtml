@@ -5,58 +5,71 @@
 @using SmartStore.Utilities;
 
 @functions {
-    bool? _minimalMode = null;
-    string _fieldName = null;
-    int _entityId = 0;
-    string _entityName = null;
+	bool? _minimalMode = null;
+	string _fieldName = null;
+	int _entityId = 0;
+	string _entityName = null;
+	string _fileTypes = null;
 
-    private bool MinimalMode
-    {
-        get
-        {
-            if (!_minimalMode.HasValue)
-            {
-                _minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;
-            }
-            return _minimalMode.Value;
-        }
-    }
+	private bool MinimalMode
+	{
+		get
+		{
+			if (!_minimalMode.HasValue)
+			{
+				_minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;
+			}
+			return _minimalMode.Value;
+		}
+	}
 
-    private string FieldName
-    {
-        get
-        {
-            if (_fieldName == null)
-            {
-                _fieldName = ViewData.ContainsKey("fieldName") ? ViewData["fieldName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
-            }
-            return _fieldName;
-        }
-    }
+	private string FieldName
+	{
+		get
+		{
+			if (_fieldName == null)
+			{
+				_fieldName = ViewData.ContainsKey("fieldName") ? ViewData["fieldName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+			}
+			return _fieldName;
+		}
+	}
 
-    private int EntityId
-    {
-        get
-        {
-            if (_entityId == 0)
-            {
-                _entityId = ViewData.ContainsKey("entityId") ? ViewData["entityId"].Convert<int>() : 0;
-            }
-            return _entityId;
-        }
-    }
+	private int EntityId
+	{
+		get
+		{
+			if (_entityId == 0)
+			{
+				_entityId = ViewData.ContainsKey("entityId") ? ViewData["entityId"].Convert<int>() : 0;
+			}
+			return _entityId;
+		}
+	}
 
-    private string EntityName
-    {
-        get
-        {
-            if (_entityName == null)
-            {
-                _entityName = ViewData.ContainsKey("entityName") ? ViewData["entityName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
-            }
-            return _entityName;
-        }
-    }
+	private string EntityName
+	{
+		get
+		{
+			if (_entityName == null)
+			{
+				_entityName = ViewData.ContainsKey("entityName") ? ViewData["entityName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+			}
+			return _entityName;
+		}
+	}
+
+	private string FileTypes
+	{
+		get
+		{
+			if (_fileTypes == null)
+			{
+				_fileTypes = ViewData.ContainsKey("fileTypes") ? ViewData["fileTypes"].Convert<string>() : "";
+			}
+			return _fileTypes;
+		}
+	}
 }
 
 @{
@@ -103,7 +116,7 @@
 					{
 						<div class="dropdown-divider"></div>
 						<a href="#" class="dropdown-item remove-download">
-							<i class="fa fa-trash-o"></i>
+							<i class="far fa-trash-alt"></i>
 							<span>@T("Common.Remove")</span>
 						</a>
 					}
@@ -113,7 +126,7 @@
 		else if (hasFile)
 		{
 			<a href="#" class="btn btn-danger btn-icon remove-download" title='@T("Common.Remove")'>
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 			</a>
 		}
 	</div>

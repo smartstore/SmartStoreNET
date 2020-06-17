@@ -43,7 +43,7 @@ namespace SmartStore.Services.Tests.Tax
             //default tax address
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));

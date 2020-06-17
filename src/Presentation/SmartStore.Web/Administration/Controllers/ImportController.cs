@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Web.Mvc;
@@ -66,7 +67,7 @@ namespace SmartStore.Admin.Controllers
 			catch (Exception ex)
 			{
 				error = ex.ToAllMessages();
-				FileSystemHelper.Delete(path);
+				FileSystemHelper.DeleteFile(path);
 				return false;
 			}
 		}
@@ -397,7 +398,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					var importFileDestination = Path.Combine(profile.GetImportFolder(true, true), model.TempFileName);
 
-					FileSystemHelper.Copy(importFile, importFileDestination, true, true);
+					FileSystemHelper.CopyFile(importFile, importFileDestination, true, true);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
@@ -611,7 +612,7 @@ namespace SmartStore.Admin.Controllers
 					if (id == 0)
 					{
 						var path = Path.Combine(FileSystemHelper.TempDirTenant(), postedFile.FileName);
-						FileSystemHelper.Delete(path);
+						FileSystemHelper.DeleteFile(path);
 
 						success = postedFile.Stream.ToFile(path);
 						if (success)
@@ -733,9 +734,15 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
+        [HttpGet]
 		public ActionResult DownloadImportFile(int id, string name)
 		{
-			string message = null;
+            if (PathHelper.HasInvalidFileNameChars(name))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid file name.");
+            }
+
+            string message = null;
 
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
@@ -744,8 +751,10 @@ namespace SmartStore.Admin.Controllers
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
 
-					if (!System.IO.File.Exists(path))
-						path = Path.Combine(profile.GetImportFolder(false), name);
+                    if (!System.IO.File.Exists(path))
+                    {
+                        path = Path.Combine(profile.GetImportFolder(false), name);
+                    }
 
 					if (System.IO.File.Exists(path))
 					{
@@ -753,8 +762,10 @@ namespace SmartStore.Admin.Controllers
 						{
 							var stream = new FileStream(path, FileMode.Open);
 
-							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-							result.FileDownloadName = Path.GetFileName(path);
+							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path))
+							{
+								FileDownloadName = Path.GetFileName(path)
+							};
 
 							return result;
 						}
@@ -787,7 +798,7 @@ namespace SmartStore.Admin.Controllers
 				if (profile != null)
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
-					FileSystemHelper.Delete(path);
+					FileSystemHelper.DeleteFile(path);
 				}
 			}
 

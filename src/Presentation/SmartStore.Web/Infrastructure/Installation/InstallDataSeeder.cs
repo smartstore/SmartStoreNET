@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
@@ -18,6 +19,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
@@ -35,7 +37,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
 		#region Fields & Constants
 
@@ -105,10 +107,10 @@ namespace SmartStore.Web.Infrastructure.Installation
         private void PopulateLocaleResources() 
         {
             // Default primary language
-            var language = _ctx.Set<Language>().Single();
+            var language = _ctx.Set<Language>().First();
 
             var locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.LanguageCulture);
-            if (!System.IO.Directory.Exists(locPath))
+            if (!Directory.Exists(locPath))
             {
                 // Fallback to neutral language folder (de, en etc.)
 				locPath = CommonHelper.MapPath("~/App_Data/Localization/App/" + language.UniqueSeoCode);
@@ -120,7 +122,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.DetachAll(false);
 
 			// save resources
-			foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
+			foreach (var filePath in Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
 			{
 				var doc = new XmlDocument();
 				doc.Load(filePath);
@@ -224,12 +226,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)
         {
-			var adminUser = _ctx.Set<Customer>().Where(x => x.Email == _config.DefaultUserName).Single();
+            var encryptionService = new EncryptionService(new SecuritySettings());
+			var saltKey = encryptionService.CreateSaltKey(5);
+            var adminUser = _ctx.Set<Customer>().FirstOrDefault(x => x.Email == _config.DefaultUserName);
 
-			var encryptionService = new EncryptionService(new SecuritySettings());
-
-			string saltKey = encryptionService.CreateSaltKey(5);
-			adminUser.PasswordSalt = saltKey;
+            adminUser.PasswordSalt = saltKey;
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
 			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
@@ -258,7 +259,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				if (settingService != null)
 				{
 					var genericMethod = method.MakeGenericMethod(settingType);
-					int storeId = (settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0);
+					int storeId = settingType.Equals(typeof(ThemeSettings)) ? _defaultStoreId : 0;
 
 					genericMethod.Invoke(settingService, new object[] { setting, storeId });
 				}
@@ -340,6 +341,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 			SaveRange(topics);
 			PopulateUrlRecordsFor(topics);
 		}
+
+        private void PopulateMenus()
+        {
+            DataMigrator.CreateSystemMenus(_ctx);
+        }
 
         private void AddProductTag(Product product, string tag)
         {
@@ -480,10 +486,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsResources = new EfRepository<LocaleStringResource>(_ctx);
 					rsResources.AutoCommitEnabled = false;
 
-					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx));
-					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
+					var rsStore = new EfRepository<Store>(_ctx);
+					rsStore.AutoCommitEnabled = false;
 
+					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
+					var storeService = new StoreService(rsStore);
+					var storeContext = new WebStoreContext(new Lazy<IRepository<Store>>(() => rsStore), null, NullCache.Instance);
+                    
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
@@ -543,11 +552,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
-			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
+            Populate("PopulateQuantityUnits", _data.QuantityUnits());
+            Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);
-			Populate("PopulateSettings", PopulateSettings);
+            Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateProductTemplates", _data.ProductTemplates());
@@ -555,8 +565,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateManufacturerTemplates", PopulateManufacturerTemplates);
 			Populate("PopulateScheduleTasks", _data.ScheduleTasks());
 			Populate("PopulateLocaleResources", PopulateLocaleResources);
+            Populate("PopulateMenus", PopulateMenus);
 
-			if (_config.SeedSampleData)
+            if (_config.SeedSampleData)
             {
 				_logger.Info("Seeding sample data");
 

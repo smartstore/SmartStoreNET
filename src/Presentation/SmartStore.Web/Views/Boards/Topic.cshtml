@@ -28,21 +28,21 @@
             @if (Model.IsCustomerAllowedToEditTopic)
 			{
 				<a href="@Url.Action("TopicEdit", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
-					<i class="fa fa-pencil-square-o"></i>
+					<i class="far fa-edit"></i>
                     <span>@T("Forum.EditTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
 			{
 				<a href="@Url.Action("TopicDelete", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow" onclick='return confirm(@T("Common.AreYouSure").JsText);'>
-					<i class="fa fa-trash-o"></i>
+					<i class="far fa-trash-alt"></i>
 					<span>@T("Forum.DeleteTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToMoveTopic)
 			{
 				<a href="@Url.Action("TopicMove", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
-					<i class="fa fa-arrows"></i>
+					<i class="fa fa-arrows-alt"></i>
 					<span>@T("Forum.MoveTopic")</span>
 				</a>
 			}

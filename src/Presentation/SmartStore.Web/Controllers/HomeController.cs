@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Search;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
@@ -58,7 +54,7 @@ namespace SmartStore.Web.Controllers
 			_privacySettings = privacySettings;
 		}
 		
-        [RequireHttpsByConfig(SslRequirement.No)]
+        [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
 			return View();
@@ -69,11 +65,11 @@ namespace SmartStore.Web.Controllers
 			return View();
 		}
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
+			var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
             var model = new ContactUsModel
 			{
@@ -106,7 +102,7 @@ namespace SmartStore.Web.Controllers
 				var email = model.Email.Trim();
 				var fullName = model.FullName;
 				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
-				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
+				var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
 
 				// Required for some SMTP servers
 				EmailAddress sender = null;
@@ -137,7 +133,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult Sitemap()
 		{
             return RedirectPermanent(Services.StoreContext.CurrentStore.Url);

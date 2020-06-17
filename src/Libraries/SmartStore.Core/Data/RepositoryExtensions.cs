@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data
 {   
@@ -95,7 +96,57 @@ namespace SmartStore.Core.Data
 			return count;
 		}
 
-        public static IQueryable<T> Get<T>(
+		/// <summary>
+		/// Truncates the table asynchronously.
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="rs">The repository</param>
+		/// <param name="predicate">An optional filter</param>
+		/// <param name="cascade">
+		/// <c>false</c>: does not make any attempts to determine dependant entities, just deletes ONLY them (faster).
+		/// <c>true</c>: loads all entities into the context first and deletes them, along with their dependencies (slower).
+		/// </param>
+		/// <returns>The total number of affected entities</returns>
+		/// <remarks>
+		/// This method turns off auto detection, validation and hooking.
+		/// </remarks>
+		[SuppressMessage("ReSharper", "UnusedVariable")]
+		public async static Task<int> DeleteAllAsync<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null, bool cascade = false) where T : BaseEntity
+		{
+			var count = 0;
+
+			using (var scope = new DbContextScope(ctx: rs.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+			{
+				var query = rs.Table;
+				if (predicate != null)
+				{
+					query = query.Where(predicate);
+				}
+
+				if (cascade)
+				{
+					var records = query.ToList();
+					foreach (var chunk in records.Slice(500))
+					{
+						rs.DeleteRange(chunk.ToList());
+						count += await rs.Context.SaveChangesAsync();
+					}
+				}
+				else
+				{
+					var ids = query.Select(x => new { x.Id }).ToList();
+					foreach (var chunk in ids.Slice(500))
+					{
+						rs.DeleteRange(chunk.Select(x => x.Id));
+						count += await rs.Context.SaveChangesAsync();
+					}
+				}
+			}
+
+			return count;
+		}
+
+		public static IQueryable<T> Get<T>(
             this IRepository<T> rs,
             Expression<Func<T, bool>> predicate = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,

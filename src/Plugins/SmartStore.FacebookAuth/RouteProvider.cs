@@ -8,7 +8,7 @@ namespace SmartStore.FacebookAuth
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-			routes.MapRoute("SmartStore.FacebookAuth",
+			routes.MapRoute("SmartStore.FacebookAuth", 
 				 "Plugins/SmartStore.FacebookAuth/{action}",
 				 new { controller = "ExternalAuthFacebook" },
 				 new[] { "SmartStore.FacebookAuth.Controllers" }

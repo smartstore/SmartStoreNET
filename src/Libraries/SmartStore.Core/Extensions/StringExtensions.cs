@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AngleSharp.Dom;
 using AngleSharp.Parser.Html;
+using SmartStore.Core.Html;
 
 namespace SmartStore
 {
@@ -22,7 +23,7 @@ namespace SmartStore
         public const char LineFeed = '\n';
         public const char Tab = '\t';
 
-        private delegate void ActionLine(TextWriter textWriter, string line);
+		private delegate void ActionLine(TextWriter textWriter, string line);
 
         #region Char extensions
 
@@ -564,34 +565,7 @@ namespace SmartStore
 
 		public static string RemoveHtml(this string source)
 		{
-			if (source.IsEmpty())
-				return string.Empty;
-
-			var ignoreTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
-
-			var parser = new HtmlParser();
-			var doc = parser.Parse(source);
-
-			var treeWalker = doc.CreateTreeWalker(doc.Body, FilterSettings.Text);
-
-			var sb = new StringBuilder();
-
-			var node = treeWalker.ToNext();
-			while (node != null)
-			{
-				if (!ignoreTags.Contains(node.Parent.NodeName))
-				{
-					var text = node.TextContent;
-					if (text.HasValue())
-					{
-						sb.AppendLine(text);
-					}
-				}
-
-				node = treeWalker.ToNext();
-			}
-
-			return sb.ToString().HtmlDecode();
+			return HtmlUtils.StripTags(source).Trim().HtmlDecode();
 		}
 
 		/// <summary>
@@ -637,30 +611,29 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(value))
 				return new string[0];
 
-			// do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
+			// Do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
 			// an empty separator "" returns array with value.
 			if (separator == null)
 			{
-				separator = "|";
-
-				if (value.IndexOf(separator) < 0)
+				for (var i = 0; i < value.Length; i++)
 				{
-					if (value.IndexOf(';') > -1)
+					var c = value[i];
+					if (c == ';' || c == ',' || c == '|')
 					{
-						separator = ";";
+						return value.Split(new char[] { c }, StringSplitOptions.RemoveEmptyEntries);
 					}
-					else if (value.IndexOf(',') > -1)
+					if (c == '\r' && (i + 1) < value.Length & value[i + 1] == '\n')
 					{
-						separator = ",";
-					}
-					else if (value.IndexOf(Environment.NewLine) > -1)
-					{
-						separator = Environment.NewLine;
+						return value.GetLines(false, true).ToArray();
 					}
 				}
-			}
 
-			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+				return new string[] { value };
+			}
+			else
+			{
+				return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+			}
 		}
 
 		/// <summary>Splits a string into two strings</summary>
@@ -1113,11 +1086,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
 		{
-			if (preMatch == null)
-				throw new ArgumentNullException(nameof(preMatch));
-
-			if (postMatch == null)
-				throw new ArgumentNullException(nameof(postMatch));
+            Guard.NotNull(preMatch, nameof(preMatch));
+            Guard.NotNull(postMatch, nameof(postMatch));
 
 			if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(keywords))
 			{
@@ -1133,7 +1103,7 @@ namespace SmartStore
 			if (!string.IsNullOrWhiteSpace(pattern))
 			{
 				var rg = new Regex(pattern, RegexOptions.IgnoreCase);
-				input = rg.Replace(input, m => preMatch + m.Value + postMatch);
+				input = rg.Replace(input, m => preMatch + m.Value.EmptyNull().HtmlEncode() + postMatch);
 			}
 
 			return input;

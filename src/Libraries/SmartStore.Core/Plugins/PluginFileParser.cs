@@ -42,7 +42,9 @@ namespace SmartStore.Core.Plugins
 			"Sales",
 			"Design",
 			"Performance",
-            "Misc"
+			"B2B",
+			"Storefront",
+			"Law"
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
 

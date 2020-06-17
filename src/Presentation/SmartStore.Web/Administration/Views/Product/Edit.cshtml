@@ -17,7 +17,7 @@
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
 			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn btn-secondary">
-                <i class="fa fa-eye"></i>
+                <i class="far fa-eye"></i>
                 <span>@T("Admin.Common.Preview")</span>
             </button>
 			<button type="submit" value="save" class="btn btn-warning entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
@@ -28,11 +28,11 @@
 				@T("Admin.Common.SaveContinue")
 			</button>
 			<a href="#copyproduct-window" data-toggle="modal" class="btn btn-secondary">
-				<i class="fa fa-files-o"></i>
+				<i class="far fa-copy"></i>
 				<span>@T("Admin.Catalog.Products.Copy")</span>
 			</a>
 			<button type="submit" id="product-delete" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.Delete")</span>
 			</button>
 
@@ -89,7 +89,7 @@
 		</text>)
 	.FooterContent(@<text>
 		<button id="copyproduct" type="button" class="btn btn-primary">
-			<i class="fa fa-files-o"></i>
+			<i class="far fa-copy"></i>
 			<span>@T("Admin.Catalog.Products.Copy")</span>
 		</button>
 	</text>)

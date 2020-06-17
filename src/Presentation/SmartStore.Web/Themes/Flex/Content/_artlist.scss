@@ -565,6 +565,8 @@ $art-border-color:              #ddd;
     
     .art {
         border-bottom-color: $art-border-color;
+        display: flex;
+        flex-flow: column;
     }
 
     // Grid has always 2 cols per row at least, even on xs
@@ -584,6 +586,11 @@ $art-border-color:              #ddd;
     }
 
     .art-description {
+        // At least 2 lines height for description
+        height: ($art-font-size-sm * $art-line-height) * 2;
+    }
+    
+    &.artlist-boxed .art-price-block {
         // At least 2 lines height for description
         height: ($art-font-size-sm * $art-line-height) * 2;
     }
@@ -617,6 +624,13 @@ $art-border-color:              #ddd;
     .art-variant-info {
         padding-left: $grid-gutter-width / 2;
         padding-right: $grid-gutter-width / 2;
+    }
+
+    @include media-breakpoint-up(xs) {
+        &.artlist-1-col .art {
+            flex-basis: 100% !important;
+            max-width: initial !important;
+        }
     }
 
     @include media-breakpoint-up(sm) {

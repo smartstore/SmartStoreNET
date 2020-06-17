@@ -1,88 +1,19 @@
 ﻿@using SmartStore.Core;
 
-@{
-	var jsRoot = "~/Scripts/";
-	var vendorsRoot = "~/Content/vendors/";
-	var contentRoot = "~/Content/";
-
-	// add css assets
-	Html.AddCssFileParts(
-		contentRoot + "fontastic/fontastic.css",
-		vendorsRoot + "font-awesome/font-awesome.css",
-		vendorsRoot + "pnotify/css/pnotify.css",
-		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css");
-
-	Html.AppendScriptParts(ResourceLocation.Head,
-		vendorsRoot + "modernizr/modernizr.js",
-		vendorsRoot + "jquery/jquery-3.2.1.js"/*,
-		vendorsRoot + "jquery/jquery-migrate-3.0.0.js"*/);
-
-	Html.AppendScriptParts(ResourceLocation.Foot,
-		// Vendors
-		vendorsRoot + "underscore/underscore.js",
-		vendorsRoot + "underscore/underscore.string.js",
-		vendorsRoot + "jquery/jquery.addeasing.js",
-		vendorsRoot + "jquery-ui/effect.js",
-		vendorsRoot + "jquery-ui/effect-shake.js",
-		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
-		vendorsRoot + "jquery/jquery.validate.js",
-		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
-		vendorsRoot + "jquery/jquery.ba-outside-events.js",
-		vendorsRoot + "jquery/jquery.scrollTo.js",
-		vendorsRoot + "moment/moment.js",
-		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
-		vendorsRoot + "select2/js/select2.js",
-		vendorsRoot + "pnotify/js/pnotify.js",
-		vendorsRoot + "pnotify/js/pnotify.mobile.js",
-		vendorsRoot + "pnotify/js/pnotify.buttons.js",
-		vendorsRoot + "pnotify/js/pnotify.animate.js",
-		vendorsRoot + "slick/slick.js",
-		vendorsRoot + "touchspin/jquery.bootstrap-touchspin.js",
-		vendorsRoot + "aos/js/aos.js",
-		contentRoot + "bs4/js/bootstrap.bundle.js",
-		// Common
-		jsRoot + "underscore.mixins.js",
-		jsRoot + "smartstore.system.js",
-		jsRoot + "smartstore.touchevents.js",
-		jsRoot + "smartstore.jquery.utils.js",
-		jsRoot + "smartstore.globalization.js",
-		jsRoot + "jquery.validate.unobtrusive.custom.js",
-		jsRoot + "smartstore.viewport.js",
-		jsRoot + "smartstore.doajax.js",
-		jsRoot + "smartstore.eventbroker.js",
-		jsRoot + "smartstore.hacks.js",
-		jsRoot + "smartstore.common.js",
-		jsRoot + "smartstore.selectwrapper.js",
-		jsRoot + "smartstore.throbber.js",
-		jsRoot + "smartstore.thumbzoomer.js",
-		jsRoot + "smartstore.responsiveNav.js",
-		jsRoot + "smartstore.keynav.js",
-		jsRoot + "smartstore.articlelist.js",
-		jsRoot + "smartstore.megamenu.js",
-		jsRoot + "smartstore.offcanvas.js",
-		jsRoot + "smartstore.parallax.js",
-		// Shop
-		jsRoot + "public.common.js",
-		jsRoot + "public.search.js",
-		jsRoot + "public.offcanvas-cart.js",
-		jsRoot + "public.offcanvas-menu.js",
-		jsRoot + "public.product.js");
-
-	//Html.AddBodyCssClass(this.WorkContext.WorkingLanguage.Rtl ? "rtl" : "");
-}
 <!DOCTYPE html>
-<html @Html.LanguageAttributes() data-pnotify-firstpos1="140">
+<html @(Html.HtmlId()) @Html.LanguageAttributes() data-pnotify-firstpos1="140">
 <head>
 	<meta charset="utf-8">
-    <title itemprop="name">@Html.SmartTitle(true)</title>
+	<title itemprop="name">@Html.SmartTitle(true)</title>
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="@(Html.SmartMetaDescription())" />
-    <meta name="keywords" content="@(Html.SmartMetaKeywords())" />
-    <meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />
+	<meta name="description" content="@(Html.SmartMetaDescription())" />
+	<meta name="keywords" content="@(Html.SmartMetaKeywords())" />
+	<meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />
 
-    @*This is used so that themes can inject content into the header*@
+	@{ Html.RenderPartial("_Assets"); }
+
+	@*This is used so that themes can inject content into the header*@
 	@{ Html.RenderPartial("Head"); }
 
 	@Html.SmartMetaRobots()
@@ -90,36 +21,36 @@
 	@{ Html.RenderPartial("_ClientRes"); }
 	@{ Html.RenderPartial("_GoogleFonts"); }
 
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
-    @Html.SmartScripts(this.Url, ResourceLocation.Head)
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
+	@Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    @{ Html.RenderWidget("head_html_tag"); }
+	@{ Html.RenderWidget("head_html_tag"); }
 
-    @Html.CanonicalUrls()
+	@Html.CanonicalUrls()
 	@Html.LinkRels()
-	@{ 
+	@{
 		Html.RenderAction("RssHeaderLink", "News", new { area = "" });
 		Html.RenderAction("RssHeaderLink", "Blog", new { area = "" });
 	}
-    @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
+	@*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
 	@{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
-	
+
 	@Html.CustomHead()
 
 	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
 
 	@{ Html.RenderZone("head"); }
-    <!--Powered by SmartStore.NET - https://www.smartstore.com-->
+	<!--Powered by SmartStore.NET - https://www.smartstore.com-->
 </head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>
+<body class="@Html.BodyCssClass()" @(Html.BodyId())>
 	@{ Html.RenderZone("start"); }
-    @RenderBody()
+	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }
-	
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
-    @Html.SmartScripts(this.Url, ResourceLocation.Foot)
-	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "select2/js/i18n", "*.js", null)
-	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "moment/locale", "*.js", null)
+
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
+	@Html.SmartScripts(this.Url, ResourceLocation.Foot)
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, "~/Content/vendors/select2/js/i18n", "*.js", null)
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, "~/Content/vendors/moment/locale", "*.js", null)
 
 	@{ Html.RenderZone("end"); }
 </body>

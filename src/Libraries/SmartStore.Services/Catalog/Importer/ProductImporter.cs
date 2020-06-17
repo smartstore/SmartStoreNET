@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
@@ -269,6 +270,8 @@ namespace SmartStore.Services.Catalog.Importer
                         context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductTags");
                     }
                 }
+
+                context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Product>(context, batch));
             }
 
             // ===========================================================================
@@ -356,7 +359,11 @@ namespace SmartStore.Services.Catalog.Importer
                         row.SetProperty(context.Result, (x) => x.CustomerRoleId);
                         row.SetProperty(context.Result, (x) => x.Quantity);
                         row.SetProperty(context.Result, (x) => x.Price);
-                        row.SetProperty(context.Result, (x) => x.CalculationMethod);
+
+                        if (row.TryGetDataValue("CalculationMethod", out int calcMethod))
+                        {
+                            tierPrice.CalculationMethod = (TierPriceCalculationMethod)calcMethod;
+                        }
 
                         if (row.IsTransient)
                         {
@@ -383,7 +390,11 @@ namespace SmartStore.Services.Catalog.Importer
                 // Update has tier prices property for inserted records.
                 var insertedProductIds = new HashSet<int>(batch.Where(x => x.IsNew).Select(x => x.Entity.ProductId));
                 var products = _productService.GetProductsByIds(insertedProductIds.ToArray());
-                products.Each(x => _productService.UpdateHasTierPricesProperty(x));
+                if (products.Any())
+                {
+                    products.Each(x => _productService.UpdateHasTierPricesProperty(x));
+                    _productRepository.Context.SaveChanges();
+                }
             }
         }
 
@@ -585,7 +596,11 @@ namespace SmartStore.Services.Catalog.Importer
 
                 // Update lowest attribute combination price property.
                 var products = _productService.GetProductsByIds(lowestCombinationPriceProductIds.ToArray());
-                products.Each(x => _productService.UpdateLowestAttributeCombinationPriceProperty(x));
+                if (products.Any())
+                {
+                    products.Each(x => _productService.UpdateLowestAttributeCombinationPriceProperty(x));
+                    _productRepository.Context.SaveChanges();
+                }
             }
         }
 
@@ -598,6 +613,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_productRepository.AutoCommitEnabled = false;
 
 			var defaultTemplateId = templateViewPaths["Product"];
+            var hasNameColumn = context.DataSegmenter.HasColumn("Name");
             
             foreach (var row in batch)
 			{
@@ -657,7 +673,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				row.Initialize(product, name ?? product.Name);
 
-				if (!row.IsNew)
+				if (!row.IsNew && hasNameColumn)
 				{
 					if (!product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 					{
@@ -723,7 +739,6 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.OrderMinimumQuantity, 1);
 				row.SetProperty(context.Result, (x) => x.OrderMaximumQuantity, 100);
 				row.SetProperty(context.Result, (x) => x.QuantityStep, 1);
-				row.SetProperty(context.Result, (x) => x.QuantiyControlType);
 				row.SetProperty(context.Result, (x) => x.HideQuantityControl);
                 row.SetProperty(context.Result, (x) => x.AllowedQuantities);
 				row.SetProperty(context.Result, (x) => x.DisableBuyButton);
@@ -763,6 +778,11 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 				row.SetProperty(context.Result, (x) => x.CustomsTariffNumber);
 				row.SetProperty(context.Result, (x) => x.CountryOfOriginId);
+
+                if (row.TryGetDataValue("QuantiyControlType", out int qct))
+                {
+                    product.QuantiyControlType = (QuantityControlType)qct;
+                }
 
 				if (row.TryGetDataValue("ProductTemplateViewPath", out string tvp, row.IsTransient))
 				{
@@ -853,7 +873,7 @@ namespace SmartStore.Services.Catalog.Importer
 				// Collect required image file infos.
 				foreach (var urlOrPath in imageUrls)
 				{
-					var image = CreateDownloadImage(urlOrPath, seoName, ++imageNumber);
+					var image = CreateDownloadImage(context, urlOrPath, seoName, ++imageNumber);
 
 					if (image != null)
 						imageFiles.Add(image);

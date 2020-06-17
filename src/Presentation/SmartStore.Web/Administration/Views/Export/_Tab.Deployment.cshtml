@@ -40,7 +40,7 @@
 			<td class="adminData">
 				<div>
 					<button id="FileNamePatternExampleButton" type="button" class="btn btn-sm btn-secondary mr-3">
-						<i class="fa fa-refresh"></i>
+						<i class="fa fa-sync"></i>
 						<span>@T("Admin.DataExchange.Export.Deployment.UpdateExampleFileName")</span>
 					</button>
 					<span id="FileNamePatternExample">@Model.FileNamePatternExample</span>
@@ -144,7 +144,7 @@
 									<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
 								</div>
 								<div class="muted">
-									<i class="fa @(deployment.DeploymentType.GetIconClass())"></i>&nbsp;@deployment.DeploymentTypeName
+									<i class="@(deployment.DeploymentType.GetIconClass())"></i>&nbsp;@deployment.DeploymentTypeName
 								</div>
 							</td>
 							<td>

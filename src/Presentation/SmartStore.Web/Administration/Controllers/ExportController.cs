@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Web.Mvc;
@@ -30,6 +31,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -1013,7 +1015,7 @@ namespace SmartStore.Admin.Controllers
 				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
 				LogFileExists = System.IO.File.Exists(profile.GetExportLogPath()),
-				UsernamesEnabled = _customerSettings.Value.UsernamesEnabled
+				UsernamesEnabled = _customerSettings.Value.CustomerLoginType != CustomerLoginType.Email
 			};
 
 			return View(model);
@@ -1304,9 +1306,15 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
+        [HttpGet]
 		public ActionResult DownloadExportFile(int id, string name, bool? isDeployment)
 		{
-			string message = null;
+            if (PathHelper.HasInvalidFileNameChars(name))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid file name.");
+            }
+
+            string message = null;
 			string path = null;
 
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
@@ -1317,8 +1325,10 @@ namespace SmartStore.Admin.Controllers
 					if (deployment != null)
 					{
 						var deploymentFolder = deployment.GetDeploymentFolder();
-						if (deploymentFolder.HasValue())
-							path = Path.Combine(deploymentFolder, name);
+                        if (deploymentFolder.HasValue())
+                        {
+                            path = Path.Combine(deploymentFolder, name);
+                        }
 					}
 				}
 				else
@@ -1327,8 +1337,10 @@ namespace SmartStore.Admin.Controllers
 					if (profile != null)
 					{
 						path = Path.Combine(profile.GetExportFolder(true), name);
-						if (!System.IO.File.Exists(path))
-							path = Path.Combine(profile.GetExportFolder(false), name);
+                        if (!System.IO.File.Exists(path))
+                        {
+                            path = Path.Combine(profile.GetExportFolder(false), name);
+                        }
 					}
 				}
 

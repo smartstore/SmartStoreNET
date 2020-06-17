@@ -319,7 +319,7 @@ namespace SmartStore.Services.Localization
 			bool updateTouchedResources = true,
 			IList<Language> filterLanguages = null)
 		{
-			var directory = new DirectoryInfo(Path.Combine(pluginDescriptor.OriginalAssemblyFile.Directory.FullName, "Localization"));
+			var directory = new DirectoryInfo(Path.Combine(pluginDescriptor.Assembly.OriginalFile.Directory.FullName, "Localization"));
 
 			if (!directory.Exists)
 				return;

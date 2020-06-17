@@ -35,13 +35,13 @@ $mixed-megamenu-bg:             $megamenu-bg;
         font-weight: $font-weight-medium;
         font-size: $megamenu-navlink-font-size;
     }
-
+    
 	.dropdown-toggle:after {
 		border: none !important;
-		@include fontawesome("\f107");
+		@include fontawesome("\f107", $font-size-base);
 		width: auto;
 		height: auto;
-		vertical-align: initial;
+		vertical-align: middle;
 		margin-left: 0.15rem;
 	}
 }
@@ -136,7 +136,19 @@ $mixed-megamenu-bg:             $megamenu-bg;
     }
 }
 .touchevents .megamenu .nav-slider {
-	overflow-x: auto !important;
+    overflow-x: auto !important;
+}
+@include media-breakpoint-up(xl) {
+    .touchevents .megamenu .nav-slider {
+        overflow-x: auto !important;
+        overflow: -moz-scrollbars-none;
+        -ms-overflow-style: none;
+    }
+
+    .touchevents .megamenu .nav-slider::-webkit-scrollbar {
+        width: 0 !important;
+        height: 0 !important;
+    }
 }
 
 // horizontal navbar navigation buttons
@@ -152,11 +164,12 @@ $mixed-megamenu-bg:             $megamenu-bg;
     &.alpha {
         left: 0;
         a { padding-right: 10px; }
-    }  
+    }
+
     &.omega {
         right: 0;
         a { padding-left: 10px; }
-    }   
+    }
 
     .megamenu-nav-btn {
         border: none;
@@ -166,11 +179,11 @@ $mixed-megamenu-bg:             $megamenu-bg;
         padding: 0px;
         width: 40px;
         height: 98%;
-		box-shadow: none !important;
+        box-shadow: none !important;
     }
 
     i {
-        font-size: 38px;
+        font-size: 32px;
         transition: all .2s ease-in-out;
         height: 58px;
         line-height: 58px;
@@ -179,10 +192,10 @@ $mixed-megamenu-bg:             $megamenu-bg;
         padding: 0;
         margin: 0;
         display: inline-block;
-        opacity: 0.4;
+        opacity: 0.6;
 
-        &:hover { opacity: 0.6; }
-        &:active { opacity: 1; } 
+        &:hover { opacity: 0.85; }
+        &:active { opacity: 1; }
     }
 }
 .megamenu.megamenu-blend--next .megamenu-nav--next,

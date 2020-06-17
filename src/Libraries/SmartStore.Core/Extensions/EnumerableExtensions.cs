@@ -423,6 +423,36 @@ namespace SmartStore
             return count;
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Stack
+
+		public static bool TryPeek<T>(this Stack<T> stack, out T value)
+		{
+			value = default(T);
+
+			if (stack.Count > 0)
+			{
+				value = stack.Peek();
+				return true;
+			}
+
+			return false;
+		}
+
+		public static bool TryPop<T>(this Stack<T> stack, out T value)
+		{
+			value = default(T);
+
+			if (stack.Count > 0)
+			{
+				value = stack.Pop();
+				return true;
+			}
+
+			return false;
+		}
+
+		#endregion
+	}
 }

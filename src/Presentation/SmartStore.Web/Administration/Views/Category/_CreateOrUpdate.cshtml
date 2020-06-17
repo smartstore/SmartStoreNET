@@ -7,7 +7,7 @@
 
 @Html.SmartStore().TabStrip().Name("category-edit").OnAjaxSuccess("categoryEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
 
-	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil fa-lg fa-fw").Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil-alt fa-lg fa-fw").Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
 	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
@@ -32,6 +32,62 @@
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ExternalLink)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.ExternalLink)
+                    @Html.ValidationMessageFor(model => model.ExternalLink)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ParentCategoryId)
+                </td>
+                <td class="adminData">
+				    @Html.DropDownListFor(model => model.ParentCategoryId,
+				    Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
+					    new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
+				    },
+				    new
+				    {
+					    placeholder = "[" + T("Common.Unspecified") + "]",
+					    data_select = true,
+					    data_select_lazy = true,
+					    data_select_init_text = Model.ParentCategoryBreadcrumb,
+					    data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
+				    })
+                    @Html.ValidationMessageFor(model => model.ParentCategoryId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DisplayOrder)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.DisplayOrder)
+                    @Html.ValidationMessageFor(model => model.DisplayOrder)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Published)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.Published)
+                    @Html.ValidationMessageFor(model => model.Published)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowOnHomePage)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.ShowOnHomePage)
+                    @Html.ValidationMessageFor(model => model.ShowOnHomePage)
+                </td>
+            </tr>
 		</table>
 	}
 
@@ -81,7 +137,7 @@
                 </td>
                 <td class="adminData">
 					<button type="button" class="btn btn-secondary description-toggle-button">
-						<i class="fa fa-exchange"></i>
+						<i class="fa fa-exchange-alt"></i>
 						<span>@T("Admin.Catalog.Categories.DescriptionToggle")</span>
 					</button>
                 </td>
@@ -138,7 +194,7 @@
 				<td class="adminTitle"></td>
 				<td class="adminData">
 					<button type="button" class="btn btn-secondary description-toggle-button">
-						<i class="fa fa-exchange"></i>
+						<i class="fa fa-exchange-alt"></i>
 						<span>@T("Admin.Catalog.Categories.DescriptionToggle")</span>
 					</button>
 				</td>
@@ -175,51 +231,7 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ParentCategoryId)
-            </td>
-            <td class="adminData">
-				@Html.DropDownListFor(model => model.ParentCategoryId,
-				Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
-					new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
-				},
-				new
-				{
-					placeholder = "[" + T("Common.Unspecified") + "]",
-					data_select = true,
-					data_select_lazy = true,
-					data_select_init_text = Model.ParentCategoryBreadcrumb,
-					data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
-				})
-                @Html.ValidationMessageFor(model => model.ParentCategoryId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowOnHomePage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.ShowOnHomePage)
-                @Html.ValidationMessageFor(model => model.ShowOnHomePage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Published)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Published)
-                @Html.ValidationMessageFor(model => model.Published)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayOrder)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.DisplayOrder)
-                @Html.ValidationMessageFor(model => model.DisplayOrder)
-            </td>
+            <td colspan="2"><hr /></td>
         </tr>
         <tr>
             <td class="adminTitle">
@@ -256,6 +268,9 @@
                 @Html.EditorFor(x => x.PageSizeOptions)
                 @Html.ValidationMessageFor(model => model.PageSizeOptions)
             </td>
+        </tr>
+        <tr>
+            <td colspan="2"><hr /></td>
         </tr>
         <tr>
             <td class="adminTitle">

@@ -154,8 +154,7 @@ namespace SmartStore.Services.Media
 
 		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType)
 		{
-			var size = Size.Empty;
-			return ValidatePicture(pictureBinary, mimeType, out size);
+			return ValidatePicture(pictureBinary, mimeType, out _);
 		}
 
 		public virtual byte[] ValidatePicture(byte[] pictureBinary, string mimeType, out Size size)
@@ -208,14 +207,16 @@ namespace SmartStore.Services.Media
 		public virtual byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
+
+			var myStream = new MemoryStream(pictureBinary);
+
 			try
 			{
 				foreach (var picture in pictures)
 				{
-					var otherPictureBinary = LoadPictureBinary(picture);
+					myStream.Seek(0, SeekOrigin.Begin);
 
-					using (var myStream = new MemoryStream(pictureBinary))
-					using (var otherStream = new MemoryStream(otherPictureBinary))
+					using (var otherStream = OpenPictureStream(picture))
 					{
 						if (myStream.ContentsEqual(otherStream))
 						{
@@ -230,6 +231,10 @@ namespace SmartStore.Services.Media
 			catch
 			{
 				return null;
+			}
+			finally
+			{
+				myStream.Dispose();
 			}
 		}
 
@@ -269,7 +274,7 @@ namespace SmartStore.Services.Media
 						   {
 							   PictureId = id,
 							   CacheKey = cacheKey,
-							   Info = _cacheManager.Contains(cacheKey) ? _cacheManager.Get<PictureInfo>(cacheKey) : (PictureInfo)null
+							   Info = _cacheManager.Contains(cacheKey) ? _cacheManager.Get<PictureInfo>(cacheKey, independent: true) : (PictureInfo)null
 						   }).ToList();
 
 			var result = new Dictionary<int, PictureInfo>(allRequestedInfos.Count);
@@ -309,7 +314,7 @@ namespace SmartStore.Services.Media
 			var info = _cacheManager.Get(cacheKey, () =>
 			{
 				return CreatePictureInfo(GetPictureById(pictureId.GetValueOrDefault()));
-			});
+			}, independent: true);
 
 			return info;
 		}
@@ -323,7 +328,7 @@ namespace SmartStore.Services.Media
 			var info = _cacheManager.Get(cacheKey, () =>
 			{
 				return CreatePictureInfo(picture);
-			});
+			}, independent: true);
 
 			return info;
 		}
@@ -507,7 +512,7 @@ namespace SmartStore.Services.Media
 
 		public virtual string GetPictureSeName(string name)
 		{
-			return SeoHelper.GetSeName(name, true, false);
+			return SeoHelper.GetSeName(name, true, false, false);
 		}
 
 		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)

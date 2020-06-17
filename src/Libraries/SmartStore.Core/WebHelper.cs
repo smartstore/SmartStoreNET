@@ -47,13 +47,13 @@ namespace SmartStore.Core
 
         public virtual string GetUrlReferrer()
         {
-            return _httpContext?.Request?.UrlReferrer?.ToString() ?? string.Empty;
+            return _httpContext.SafeGetHttpRequest()?.UrlReferrer?.ToString() ?? string.Empty;
         }
 
 		public virtual string GetClientIdent()
  		{
  			var ipAddress = this.GetCurrentIpAddress();
- 			var userAgent = _httpContext.Request?.UserAgent.EmptyNull();
+ 			var userAgent = _httpContext.SafeGetHttpRequest()?.UserAgent.EmptyNull();
  
  			if (ipAddress.HasValue() && userAgent.HasValue())
  			{
@@ -70,12 +70,13 @@ namespace SmartStore.Core
 				return _ipAddress;
 			}
 
-			if (_httpContext == null && _httpContext.Request == null)
+			var httpRequest = _httpContext.SafeGetHttpRequest();
+			if (httpRequest == null)
 			{
 				return string.Empty;
 			}
 
-			var vars = _httpContext.Request.ServerVariables;
+			var vars = httpRequest.ServerVariables;
 
 			var keysToCheck = new string[]
 			{
@@ -90,29 +91,43 @@ namespace SmartStore.Core
 			};
 
 			string result = null;
+            IPAddress ipv6 = null;
 
 			foreach (var key in keysToCheck)
 			{
 				var ipString = vars[key];
-				if (ipString.HasValue())
+
+				if (!string.IsNullOrEmpty(ipString))
 				{
 					var arrStrings = ipString.Split(',');
-					// Take the last entry
-					ipString = arrStrings[arrStrings.Length - 1].Trim();
 
-					IPAddress address;
-					if (IPAddress.TryParse(ipString, out address))
-					{
-						result = ipString;
-						break;
-					}
+                    // Iterate list from end to start (IPv6 addresses usually have precedence)
+                    for (int i = arrStrings.Length - 1; i >= 0; i--)
+                    {
+                        ipString = arrStrings[i].Trim();
+
+                        if (IPAddress.TryParse(ipString, out var address))
+                        {
+                            if (address.AddressFamily == AddressFamily.InterNetworkV6)
+                            {
+                                ipv6 = address;
+                            }
+                            else
+                            {
+                                result = ipString;
+                                break;
+                            }
+                        }
+                    }
 				}
 			}
 
-			if (result == "::1")
-			{
-				result = "127.0.0.1";
-			}
+            if (string.IsNullOrEmpty(result) && ipv6 != null)
+            {
+                result = ipv6.ToString() == "::1" 
+                    ? "127.0.0.1"
+                    : ipv6.MapToIPv4().ToString();
+            }
 
 			return (_ipAddress = result.EmptyNull());
 		}
@@ -126,36 +141,37 @@ namespace SmartStore.Core
         public virtual string GetThisPageUrl(bool includeQueryString, bool useSsl)
         {
             string url = string.Empty;
-            if (_httpContext?.Request == null)
+			var httpRequest = _httpContext.SafeGetHttpRequest();
+
+			if (httpRequest == null)
                 return url;
 
             if (includeQueryString)
             {
-                bool appPathPossiblyAppended;
-                string storeHost = GetStoreHost(useSsl, out appPathPossiblyAppended).TrimEnd('/');
+				string storeHost = GetStoreHost(useSsl, out bool appPathPossiblyAppended).TrimEnd('/');
 
-                string rawUrl;
+				string rawUrl;
                 if (appPathPossiblyAppended)
                 {
-                    rawUrl = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
+                    rawUrl = httpRequest.AppRelativeCurrentExecutionFilePath.TrimStart('~');
 
-					if (_httpContext.Request.Url != null && _httpContext.Request.Url.Query != null)
+					if (httpRequest.Url != null && httpRequest.Url.Query != null)
 					{
-						rawUrl += _httpContext.Request.Url.Query;
+						rawUrl += httpRequest.Url.Query;
 					}
 				}
                 else
                 {
-                    rawUrl = _httpContext.Request.RawUrl;
+                    rawUrl = httpRequest.RawUrl;
                 }
                 
                 url = storeHost + rawUrl;
             }
             else
             {
-				if (_httpContext.Request.Url != null)
+				if (httpRequest.Url != null)
 				{
-					url = _httpContext.Request.Url.GetLeftPart(UriPartial.Path);
+					url = httpRequest.Url.GetLeftPart(UriPartial.Path);
 				}
             }
 
@@ -167,9 +183,10 @@ namespace SmartStore.Core
             if (!_isCurrentConnectionSecured.HasValue)
             {
                 _isCurrentConnectionSecured = false;
-                if (_httpContext?.Request != null)
+				var httpRequest = _httpContext.SafeGetHttpRequest();
+				if (httpRequest != null)
                 {
-                    _isCurrentConnectionSecured = _httpContext.Request.IsSecureConnection();
+                    _isCurrentConnectionSecured = httpRequest.IsSecureConnection();
                 }
             }
 
@@ -178,23 +195,7 @@ namespace SmartStore.Core
         
         public virtual string ServerVariables(string name)
         {
-            string result = string.Empty;
-
-            try
-            {
-				if (_httpContext != null && _httpContext.Request != null)
-				{
-					if (_httpContext.Request.ServerVariables[name] != null)
-					{
-						result = _httpContext.Request.ServerVariables[name];
-					}
-				}
-            }
-            catch
-            {
-                result = string.Empty;
-            }
-            return result;
+			return _httpContext.SafeGetHttpRequest()?.ServerVariables[name].EmptyNull();
         }
 
 	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
@@ -239,8 +240,7 @@ namespace SmartStore.Core
 
 				if (_currentStore == null)
 				{
-					IStoreContext storeContext;
-					if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
+					if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out IStoreContext storeContext)) // Unit test safe!
 					{
 						_currentStore = storeContext.CurrentStore;
 						if (_currentStore == null)
@@ -323,19 +323,18 @@ namespace SmartStore.Core
 
         public virtual string GetStoreLocation(bool useSsl)
         {
-            //return HostingEnvironment.ApplicationVirtualPath;
-
-            bool appPathPossiblyAppended;
-            string result = GetStoreHost(useSsl, out appPathPossiblyAppended);
+            string result = GetStoreHost(useSsl, out var appPathPossiblyAppended);
 
             if (result.EndsWith("/"))
             {
                 result = result.Substring(0, result.Length - 1);
             }
 
-            if ( _httpContext?.Request != null)
+			var httpRequest = _httpContext.SafeGetHttpRequest();
+
+            if (httpRequest != null)
             {
-                var appPath = _httpContext.Request.ApplicationPath;
+                var appPath = httpRequest.ApplicationPath;
                 if (!appPathPossiblyAppended && !result.EndsWith(appPath, StringComparison.OrdinalIgnoreCase))
                 {
                     // in a shared ssl scenario the user defined https url could contain
@@ -424,13 +423,12 @@ namespace SmartStore.Core
         
         public virtual T QueryString<T>(string name)
         {
-            string queryParam = null;
+			var queryParam = _httpContext.SafeGetHttpRequest()?.QueryString[name];
 
-            if (_httpContext != null && _httpContext.Request.QueryString[name] != null)
-                queryParam = _httpContext.Request.QueryString[name];
-
-            if (!String.IsNullOrEmpty(queryParam))
-                return queryParam.Convert<T>();
+			if (!string.IsNullOrEmpty(queryParam))
+			{
+				return queryParam.Convert<T>();
+			}              
 
             return default(T);
         }
@@ -499,10 +497,7 @@ namespace SmartStore.Core
 				File.Delete(Path.Combine(userCacheDir, "MVC-ControllerTypeCache.xml"));
 				File.Delete(Path.Combine(userCacheDir, "MVC-AreaRegistrationTypeCache.xml"));
 			}
-			catch
-			{
-
-			}
+			catch { }
 		}
 
 		private bool TryWriteBinFolder()
@@ -629,8 +624,9 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
+		/// <param name="protocol">Changes the protocol if passed.</param>
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
-		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false)
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false, string protocol = null)
 		{
 			Guard.NotEmpty(url, nameof(url));
 			Guard.NotNull(request, nameof(request));
@@ -645,10 +641,12 @@ namespace SmartStore.Core
 				return url;
 			}
 
+			protocol = protocol ?? request.Url.Scheme;
+
 			if (url.StartsWith("//"))
 			{
 				return enforceScheme 
-					? String.Concat(request.Url.Scheme, ":", url)
+					? String.Concat(protocol, ":", url)
 					: url;
 			}
 
@@ -657,7 +655,7 @@ namespace SmartStore.Core
 				url = VirtualPathUtility.ToAbsolute(url);
 			}
 
-			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			url = string.Format("{0}://{1}{2}", protocol, request.Url.Authority, url);
 			return url;
 		}
 

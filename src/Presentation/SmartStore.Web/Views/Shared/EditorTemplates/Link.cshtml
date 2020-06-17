@@ -1,0 +1,163 @@
+@using SmartStore.Services.Cms
+
+@functions
+{
+    private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
+}
+
+@{
+    var rtl = WorkContext.WorkingLanguage.Rtl;
+    var rnd = CommonHelper.GenerateRandomInteger();
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var link = this.CommonServices.Resolve<ILinkResolver>().Resolve(Value);
+    var hideQueryString = GetMetadata<bool>("hideQueryString");
+
+    var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
+    var allowedTypes = arr.Any()
+        ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
+        : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.File, LinkType.Url };
+
+    Html.AddScriptParts(true, "~/Scripts/smartstore.linkbuilder.js");
+}
+
+<div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@(Value != null ? link.Type.ToString().ToLower() : "")">
+    <div class="d-flex flex-nowrap input-group">
+        @* Template control that receives the link expression. *@
+        @Html.Hidden("", Value)
+
+        @* 1. prepend type selector. *@
+        <div class="input-group-prepend type-container">
+		    <button type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
+			    <i class="fa fa-link"></i>
+		    </button>
+            <div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
+                @foreach (var type in allowedTypes)
+                {
+                    var info = type.GetLinkTypeInfo();
+                    <a class="dropdown-item link-type" href="#" data-type="@type.ToString().ToLower()">
+                        <i class="fa-fw @info.Icon"></i>
+                        <span>@T(info.ResKey)</span>
+                    </a>
+                }
+            </div>
+        </div>
+
+        @* 2. main control. *@
+        @foreach (var type in allowedTypes)
+        {
+            var label = link.Type == type ? link.Label : string.Empty;
+            var value = link.Type == type && link.Value != null 
+                ? (type == LinkType.Topic ? link.Id.ToString() : link.Value.ToString()) 
+                : string.Empty;
+
+            <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
+                @if (type == LinkType.Product)
+                {
+                    <input type="text" class="form-control resettable product-picker-input" value="@label" readonly />
+                }
+                else if (type == LinkType.Category)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllCategories", "Category", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Manufacturer)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllManufacturers", "Manufacturer", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Topic)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllTopics", "Topic", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Url)
+                {
+                    <input type="text" class="form-control transferable resettable" value="@value" />
+                }
+                else if (type == LinkType.File)
+                {
+                    <input id="lb-file-url-@rnd" type="text" class="form-control transferable resettable" value="@label" readonly />
+                }
+            </div>
+        }
+
+        @* 3. append additional controls. *@
+        @if (allowedTypes.Contains(LinkType.Product))
+        {
+            <div class="input-group-append link-control@(link.Type == LinkType.Product ? "" : " hide")" data-type="product">
+		        @(Html.SmartStore().EntityPicker()
+                    .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
+                    .MaxItems(1)
+                    .AppendMode(false)
+                    .DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
+                    .Caption(T("Common.Search").Text.EncodeJsString('\'', false))
+                    .OnSelectionCompleted("lbPickerSelectionCompleted" + rnd.ToString()))
+            </div>
+        }
+
+        @if (allowedTypes.Contains(LinkType.File))
+        {
+            <div class="input-group-append link-control@(link.Type == LinkType.File ? "" : " hide")" data-type="file">
+                <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
+                    <i class="fa fa-upload"></i>
+                    <span>@(T("Common.BrowseFiles"))&hellip;</span>
+                </a>
+            </div>
+        }
+
+        @* 4. append additional buttons. *@
+        <div class="input-group-append">
+			<button type="button" class="btn btn-secondary btn-to-danger btn-reset" title="@T("Common.Remove")">
+				<i class="fa fa-times"></i>
+			</button>
+            @if (!hideQueryString)
+            {
+                <button type="button" class="btn btn-secondary btn-query-string@(link.Type == LinkType.Url ? " hide" : "")" 
+                        title="@T("Common.QueryString")" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-hashtag @(link.QueryString.HasValue() ? "text-success" : "text-muted")"></i>
+			    </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="px-2">
+                        <input type="text" class="form-control transferable resettable query-string" value="@link.QueryString" placeholder="@T("Common.QueryString")" style="width: 350px;" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#link-builder-@(rnd)').linkBuilder();
+    });
+
+    @if (allowedTypes.Contains(LinkType.Product))
+    {
+        <text>        
+            function lbPickerSelectionCompleted@(rnd)(ids, selectedItems) {
+                var cnt = $("#link-builder-@rnd");
+                var val = 'product:' + ids[0];
+                var qs = cnt.find(".query-string").val() || '';
+
+                while (qs.startsWith('?')) {
+                    qs = qs.substring(1);
+                }
+
+                if (!_.isEmpty(qs)) {
+                    val = val + '?' + qs;
+                }
+
+                $('#@id').val(val).trigger("change");
+                cnt.find(".product-picker-input").val(selectedItems[0].name);
+
+                return true;
+            }
+        </text>
+    }
+</script>

@@ -1,0 +1,58 @@
+@model IIcon
+
+@using Newtonsoft.Json;
+@using SmartStore.Web.Framework;
+
+@{
+	Html.AppendScriptParts(false, "~/Administration/Scripts/smartstore.iconchooser.js");
+
+	var iconExplorer = EngineContext.Current.Resolve<IIconExplorer>();
+}
+
+<div class="row xs-gutters fa-chooser">
+	<div class="col">
+		<select class="fa-icon-chooser noskin" 
+				id="@Html.IdFor(x => x.Icon)" 
+				name="@Html.NameFor(x => x.Icon)"
+				data-explorer-url="@Url.Action("SearchIcons", "Common", new { area = "admin" })"
+				data-icon-cols="2" 
+				data-placeholder="@T("Common.Unspecified")">
+			<option></option>
+			@if (Model.Icon.HasValue())
+			{
+				var selectedIcon = iconExplorer.GetIconByName(Model.Icon);
+
+				var icon = new
+				{
+					id = selectedIcon.Name,
+					text = selectedIcon.Name,
+					hasRegularStyle = selectedIcon.HasRegularStyle,
+					isBrandIcon = selectedIcon.IsBrandIcon,
+					styles = selectedIcon.Styles,
+					isCustom = selectedIcon.IsPro
+				};
+
+				<option value="@Model.Icon" data-icon='@JsonConvert.SerializeObject(icon)' selected="selected">
+					@Model.Icon
+				</option>
+			}
+		</select>
+	</div>
+
+	<div class="col-auto">
+		<div class="btn-group btn-group-toggle unselectable" data-toggle="buttons" id="@Html.IdFor(x => x.Style)">
+			<label class="btn btn-icon btn-secondary@(Model.Style == "fas" ? " active" : "")" title="Solid">
+				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fas" @(Model.Style == "fas" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle bg-dark" style="width:14px; height:14px; line-height:14px; vertical-align:-1px"></span>
+			</label>
+			<label class="btn btn-icon btn-secondary@(Model.Style == "far" ? " active" : "")" title="Regular">
+				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="far" @(Model.Style == "far" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle border border-dark" style="width:14px; height:14px; border-width: 2px !important; vertical-align:-1px"></span>
+			</label>
+			<label class="btn btn-icon btn-secondary@(Model.Style == "fal" ? " active" : "")" title="Light (Pro only)">
+				<input class="fa-chooser-style" type="radio" name="@Html.NameFor(x => x.Style)" value="fal" @(Model.Style == "fal" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle border border-gray" style="width:14px; height:14px; border-width: 1px !important; vertical-align:-1px"></span>
+			</label>
+		</div>
+	</div>
+</div>

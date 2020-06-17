@@ -62,21 +62,19 @@ namespace SmartStore.Services.Search
 
         protected virtual T GetValueFor<T>(string key)
         {
-            T value;
-            return GetValueFor(key, out value) ? value : default(T);
+            return TryGetValueFor(key, out T value) ? value : default;
         }
 
-        protected virtual bool GetValueFor<T>(string key, out T value)
+        protected virtual bool TryGetValueFor<T>(string key, out T value)
         {
             var strValue = _httpContext.Request?.Unvalidated.Form?[key] ?? _httpContext.Request?.Unvalidated.QueryString?[key];
 
             if (strValue.HasValue())
             {
-                value = strValue.Convert<T>();
-                return true;
+                return CommonHelper.TryConvert<T>(strValue, out value);
             }
 
-            value = default(T);
+            value = default;
             return false;
         }
 

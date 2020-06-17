@@ -7,7 +7,7 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Clickatell
 {
-	public class OrderPlacedEventConsumer : IConsumer<OrderPlacedEvent>
+	public class OrderPlacedEventConsumer : IConsumer
     {
 		private readonly ICommonServices _services;
 		private readonly ClickatellSettings _clickatellSettings;

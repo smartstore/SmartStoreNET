@@ -37,11 +37,13 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the manufacturer
         /// </summary>
+        [DataMember]
         public virtual Manufacturer Manufacturer { get; set; }
 
         /// <summary>
         /// Gets or sets the product
         /// </summary>
+        [DataMember]
         public virtual Product Product { get; set; }
     }
 

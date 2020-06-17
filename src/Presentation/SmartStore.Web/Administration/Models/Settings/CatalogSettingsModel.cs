@@ -300,6 +300,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment")]
         public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLoginForPriceNote")]
+        public bool ShowLoginForPriceNote { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueQuantity")]
         public bool ShowLinkedAttributeValueQuantity { get; set; }
 

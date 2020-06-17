@@ -38,10 +38,14 @@ namespace SmartStore.Core.Plugins
 					.Select(x => new FileInfo(Path.Combine(_shadowCopyDir.FullName, x)))
 					.ToArray();
 
-				foreach (var f in staleFiles)
+				// If that fails, then we will try to remove it the hard way by renaming it to .delete if it doesn't delete nicely
+				if (staleFiles.Length > 5)
 				{
-					// If that fails, then we will try to remove it the hard way by renaming it to .delete if it doesn't delete nicely
-					TryDeleteStaleFile(f);
+					staleFiles.AsParallel().ForAll(f => TryDeleteStaleFile(f));
+				}
+				else
+				{
+					staleFiles.Each(f => TryDeleteStaleFile(f));
 				}
 
 				return true;
@@ -132,14 +136,11 @@ namespace SmartStore.Core.Plugins
 
 			foreach (var p in plugins)
 			{
-				if (p.ReferencedLocalAssemblyFiles != null)
-				{
-					p.ReferencedLocalAssemblyFiles.Each(x => list.Add(x.Name));
-				}
+				p.ReferencedLocalAssemblies.Each(x => list.Add(x.OriginalFile.Name));
 
-				if (p.OriginalAssemblyFile != null)
+				if (p.Assembly.OriginalFile != null)
 				{
-					list.Add(p.OriginalAssemblyFile.Name);
+					list.Add(p.Assembly.OriginalFile.Name);
 				}
 			}
 
@@ -166,15 +167,12 @@ namespace SmartStore.Core.Plugins
 			// Add each *.dll, Description.txt, web.config to the hash
 			foreach (var p in plugins)
 			{
-				if (p.OriginalAssemblyFile != null)
+				if (p.Assembly.OriginalFile != null)
 				{
-					hashCombiner.Add(p.OriginalAssemblyFile);
+					hashCombiner.Add(p.Assembly.OriginalFile);
 				}
 
-				if (p.ReferencedLocalAssemblyFiles != null)
-				{
-					p.ReferencedLocalAssemblyFiles.Each(x => hashCombiner.Add(x));
-				}
+				p.ReferencedLocalAssemblies.Each(x => hashCombiner.Add(x.OriginalFile));
 
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "Description.txt"));
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "web.config"));

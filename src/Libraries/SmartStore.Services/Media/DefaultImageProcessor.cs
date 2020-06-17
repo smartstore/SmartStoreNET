@@ -9,6 +9,7 @@ using ImageProcessor.Imaging.Formats;
 using SmartStore.Core.Logging;
 using ImageProcessor.Configuration;
 using SmartStore.Core.Events;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
@@ -48,6 +49,7 @@ namespace SmartStore.Services.Media
 			ValidateQuery(query);
 
 			var watch = new Stopwatch();
+			byte[] inBuffer = null;
 
 			try
 			{
@@ -58,26 +60,34 @@ namespace SmartStore.Services.Media
 					var source = query.Source;
 					
 					// Load source
-					if (source is byte[])
+					if (source is byte[] b)
 					{
-						processor.Load((byte[])source);
+						inBuffer = b;
 					}
-					else if (source is Stream)
+					else if (source is Stream s)
 					{
-						processor.Load((Stream)source);
+						inBuffer = s.ToByteArray();
 					}
-					else if (source is Image)
+					else if (source is Image img)
 					{
-						processor.Load((Image)source);
+						processor.Load(img);
 					}
-					else if (source is string)
+					else if (source is string str)
 					{
-						// TODO: (mc) map virtual pathes
-						processor.Load((string)source);
+						var path = NormalizePath(str);
+						using (var fs = File.OpenRead(path))
+						{
+							inBuffer = fs.ToByteArray();
+						}
 					}
 					else
 					{
 						throw new ProcessImageException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), query);
+					}
+
+					if (inBuffer != null)
+					{
+						processor.Load(inBuffer);
 					}
 
 					// Pre-process event
@@ -87,24 +97,59 @@ namespace SmartStore.Services.Media
 					{
 						Query = query,
 						SourceWidth = processor.Image.Width,
-						SourceHeight = processor.Image.Height
+						SourceHeight = processor.Image.Height,
+						SourceMimeType = processor.CurrentImageFormat.MimeType
 					};
 
 					// Core processing
-					ProcessImageCore(query, processor);
+					ProcessImageCore(query, processor, out var fxApplied);
 					
 					// Create & prepare result
 					var outStream = new MemoryStream();
 					processor.Save(outStream);
 
+					var fmt = processor.CurrentImageFormat;
+					result.FileExtension = fmt.DefaultExtension == "jpeg" ? "jpg" : fmt.DefaultExtension;
+					result.MimeType = fmt.MimeType;
+
+					result.HasAppliedVisualEffects = fxApplied;
 					result.Width = processor.Image.Width;
 					result.Height = processor.Image.Height;
-					result.FileExtension = processor.CurrentImageFormat.DefaultExtension;
-					result.MimeType = processor.CurrentImageFormat.MimeType;
-					result.OutputStream = outStream;
+
+					if (inBuffer != null)
+					{
+						// Check whether it is more beneficial to return the source instead of the result.
+						// Prefer result only if its size is smaller than the source size.
+						// Result size may be larger if a high-compressed image has been uploaded.
+						// During image processing the source compression algorithm gets lost and the image may be larger in size
+						// after encoding with default encoders.
+						var compare =
+							// only when image was not altered visually...
+							!fxApplied
+							// ...size has not changed
+							&& result.Width == result.SourceWidth
+							&& result.Height == result.SourceHeight
+							// ...and format has not changed
+							&& result.MimeType == result.SourceMimeType;
+
+						if (compare && inBuffer.LongLength <= outStream.GetBuffer().LongLength)
+						{
+							// Source is smaller. Throw away result and get back to source.
+							outStream.Dispose();
+							result.OutputStream = new MemoryStream(inBuffer, 0, inBuffer.Length, true, true);
+						}
+					}
+
+					// Set output stream
+					if (result.OutputStream == null)
+					{
+						result.OutputStream = outStream;
+					}
 
 					// Post-process event
 					_eventPublisher.Publish(new ImageProcessedEvent(query, processor, result));
+
+					result.OutputStream.Position = 0;
 
 					result.ProcessTimeMs = watch.ElapsedMilliseconds;				
 
@@ -119,9 +164,9 @@ namespace SmartStore.Services.Media
 			}
 			finally
 			{
-				if (query.DisposeSource && query.Source is IDisposable)
+				if (query.DisposeSource && query.Source is IDisposable source)
 				{
-					((IDisposable)query.Source).Dispose();
+					source.Dispose();
 				}
 
 				watch.Stop();
@@ -134,8 +179,14 @@ namespace SmartStore.Services.Media
 		/// </summary>
 		/// <param name="query">Query</param>
 		/// <param name="processor">Processor instance</param>
-		protected virtual void ProcessImageCore(ProcessImageQuery query, ImageFactory processor)
+		/// <param name="fxApplied">
+		/// Should be true if any effect has been applied that potentially changes the image visually (like background color, contrast, sharpness etc.).
+		/// Resize and compression quality does NOT count as FX.
+		/// </param>
+		protected virtual void ProcessImageCore(ProcessImageQuery query, ImageFactory processor, out bool fxApplied)
 		{
+			fxApplied = false;
+
 			// Resize
 			var size = query.MaxWidth != null || query.MaxHeight != null
 				? new Size(query.MaxWidth ?? 0, query.MaxHeight ?? 0)
@@ -143,8 +194,17 @@ namespace SmartStore.Services.Media
 
 			if (!size.IsEmpty)
 			{
-				var scaleMode = ConvertScaleMode(query.ScaleMode);
-				processor.Resize(new ResizeLayer(size, resizeMode: scaleMode, upscale: false));
+				processor.Resize(new ResizeLayer(
+					size, 
+					resizeMode: ConvertScaleMode(query.ScaleMode),
+					anchorPosition: ConvertAnchorPosition(query.AnchorPosition), 
+					upscale: false));
+			}		
+
+			if (query.BackgroundColor.HasValue())
+			{
+				processor.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
+				fxApplied = true;
 			}
 
 			// Format
@@ -183,6 +243,21 @@ namespace SmartStore.Services.Media
 			}
 		}
 
+		private string NormalizePath(string path)
+		{
+			if (path.IsWebUrl())
+			{
+				throw new NotSupportedException($"Remote images cannot be processed: Path: {path}");
+			}
+
+			if (!PathHelper.IsAbsolutePhysicalPath(path))
+			{
+				path = CommonHelper.MapPath(path);
+			}
+
+			return path;
+		}
+
 		private void ValidateQuery(ProcessImageQuery query)
 		{
 			if (query.Source == null)
@@ -212,6 +287,31 @@ namespace SmartStore.Services.Media
 					return ResizeMode.Stretch;
 				default:
 					return ResizeMode.Max;
+			}
+		}
+
+		private AnchorPosition ConvertAnchorPosition(string anchor)
+		{
+			switch (anchor.EmptyNull().ToLower())
+			{
+				case "top":
+					return AnchorPosition.Top;
+				case "bottom":
+					return AnchorPosition.Bottom;
+				case "left":
+					return AnchorPosition.Left;
+				case "right":
+					return AnchorPosition.Right;
+				case "top-left":
+					return AnchorPosition.TopLeft;
+				case "top-right":
+					return AnchorPosition.TopRight;
+				case "bottom-left":
+					return AnchorPosition.BottomLeft;
+				case "bottom-right":
+					return AnchorPosition.BottomRight;
+				default:
+					return AnchorPosition.Center;
 			}
 		}
 	}

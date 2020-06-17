@@ -13,8 +13,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 	{
 		private readonly SassCheckedPathStack _sassCheckedPathStack;
 
-		private string _yoooooo;
-
 		public BundlingVirtualPathProvider(VirtualPathProvider previous)
 			: base(previous)
         {
@@ -49,15 +47,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				}
 			}
 
-			//if (virtualPath.Contains("slick.scss"))
-			//{
-			//	var xxx = true;
-			////	throw new Exception("dfsfs");
-			//}
-
-			//System.Diagnostics.Debug.WriteLine("VPATH: " + virtualPath);
-			_yoooooo += virtualPath + Environment.NewLine;
-
 			exists = base.FileExists(virtualPath);
 
 			if (exists && sassPath != null)
@@ -88,80 +77,20 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			return base.GetFile(virtualPath);
         }
 
-		public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
-		{
-			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-			if (styleResult.IsPreprocessor && !(styleResult.IsThemeVars || styleResult.IsModuleImports) && virtualPathDependencies != null)
-			{
-				// Exclude the special imports from the file dependencies list
-				return base.GetFileHash(virtualPath, ThemeHelper.RemoveVirtualImports(virtualPathDependencies.Cast<string>()));
-			}
-
-			return base.GetFileHash(virtualPath, virtualPathDependencies);
-		}
-
 		public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
-			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
-
-			if (styleResult == null || styleResult.IsCss)
+			if (ThemeHelper.IsStyleValidationRequest())
 			{
-				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-			}
-
-			if (styleResult.IsThemeVars || styleResult.IsModuleImports)
-			{
-				return null;
-			}
-
-			// Is Sass Or Less Or StyleBundle
-
-            var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();
-
-
-			// Exclude the special imports from the file dependencies list,
-			// 'cause this one cannot be monitored by the physical file system
-			var fileDependencies = ThemeHelper.RemoveVirtualImports(arrPathDependencies);
-
-			if (fileDependencies == arrPathDependencies)
-			{
-				// No themevars or moduleimports import... so no special considerations here
-				return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-			}
-
-			if (fileDependencies.Any())
-            {
-				string cacheKey = null;
-
-				var isThemeableAsset = (!styleResult.IsBundle && ThemeHelper.PathIsInheritableThemeFile(virtualPath))
-					|| (styleResult.IsBundle && fileDependencies.Any(x => ThemeHelper.PathIsInheritableThemeFile(x)));
-
-				if (isThemeableAsset)
+				var themeVarsPath = virtualPathDependencies.Cast<string>().FirstOrDefault(x => ThemeHelper.PathIsThemeVars(x));
+				if (themeVarsPath.HasValue())
 				{
-					var theme = ThemeHelper.ResolveCurrentTheme();
-					int storeId = ThemeHelper.ResolveCurrentStoreId();
-					// invalidate the cache when variables change
-					cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
-
-					if (styleResult.IsSass && (ThemeHelper.IsStyleValidationRequest()))
-					{
-						// Special case: ensure that cached validation result gets nuked in a while,
-						// when ThemeVariableService publishes the entity changed messages.
-						return new CacheDependency(new string[0], new string[] { cacheKey }, utcStart);
-					}
+					return base.GetCacheDependency(virtualPath, new[] { themeVarsPath }, utcStart);
 				}
+			}
 
-				var files = ThemingVirtualPathProvider.MapDependencyPaths(fileDependencies);
-
-				return new CacheDependency(
-					files, 
-					cacheKey == null ? new string[0] : new string[] { cacheKey }, 
-					utcStart);
-            }
-
-			return null;
+			return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
         }
-    }
+	}
 
 	internal class SassCheckedPathStack
 	{
@@ -200,7 +129,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				return false;
 			}
 
-			if (currentPath.StyleResult.IsExplicit && lastPath.StyleResult.IsExplicit && currentPath.FileName == lastPath.FileName)
+			if (currentPath.StyleResult.IsBaseImport && lastPath.StyleResult.IsBaseImport && currentPath.FileName == lastPath.FileName)
 			{
 				return true;
 			}
@@ -222,7 +151,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			}
 
 			// slick.(sass|css) > slick.scss
-			if (!currentPath.StyleResult.IsExplicit && _styleExtensions.Contains(currentPath.Extension) && currentPath.FileNameWithoutExtension == lastPath.FileNameWithoutExtension)
+			if (!currentPath.StyleResult.IsBaseImport && _styleExtensions.Contains(currentPath.Extension) && currentPath.FileNameWithoutExtension == lastPath.FileNameWithoutExtension)
 			{
 				return true;
 			}

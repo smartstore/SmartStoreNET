@@ -84,6 +84,12 @@
       <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
         <Value>Dem Kunden wird während des Checkouts kostenloser Versand als Fallback angeboten, wenn keine der festgelegten Bedingungen zutreffen. Aktivieren Sie diese Option, wenn das nicht gewünscht ist.</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.CalculateTotalIncludingTax">
+        <Value>Berechne Bestellwert inkl. Steuer</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CalculateTotalIncludingTax.Hint">
+        <Value>Legt fest, ob der Bestellwert zur Berechnung der Versandkosten inkl. oder exkl. Steuern berechnet werden soll.</Value>
+      </LocaleResource>
 
       <LocaleResource Name="Fields.BaseCharge">
         <Value>Basisgebühr</Value>

@@ -171,26 +171,26 @@ namespace SmartStore.Services.DataExchange.Import
 
 		object ICloneable.Clone()
 		{
-			return this.Clone();
+			return this.MemberwiseClone();
 		}
 
 		public SerializableImportResult Clone()
 		{
-			var result = new SerializableImportResult();
-			result.StartDateUtc = StartDateUtc;
-			result.EndDateUtc = EndDateUtc;
-			result.TotalRecords = TotalRecords;
-			result.SkippedRecords = SkippedRecords;
-			result.NewRecords = NewRecords;
-			result.ModifiedRecords = ModifiedRecords;
-			result.AffectedRecords = AffectedRecords;
-			result.Cancelled = Cancelled;
-			result.Warnings = Warnings;
-			result.Errors = Errors;
-			result.LastError = LastError;
+            var result = new SerializableImportResult();
+            result.StartDateUtc = StartDateUtc;
+            result.EndDateUtc = EndDateUtc;
+            result.TotalRecords = TotalRecords;
+            result.SkippedRecords = SkippedRecords;
+            result.NewRecords = NewRecords;
+            result.ModifiedRecords = ModifiedRecords;
+            result.AffectedRecords = AffectedRecords;
+            result.Cancelled = Cancelled;
+            result.Warnings = Warnings;
+            result.Errors = Errors;
+            result.LastError = LastError;
 
-			return result;
-		}
+            return result;
+        }
 	}
 
 

@@ -285,7 +285,5 @@ namespace SmartStore.Web.Framework.UI
             this.Item.ContentHtmlAttributes.Merge(attributes);
             return (this as TBuilder);
         }
-
     }
-
 }

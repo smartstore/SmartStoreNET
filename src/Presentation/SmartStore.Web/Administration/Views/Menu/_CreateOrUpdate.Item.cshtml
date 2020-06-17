@@ -1,0 +1,183 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuItemRecordModel
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.MenuId)
+@Html.HiddenFor(model => model.ProviderName)
+
+@Html.SmartStore().TabStrip().Name("menu-item-edit").Style(TabsStyle.Material).Items(x =>
+{
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
+	
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "menu-item-edit", this.Html, this.Model));
+})
+
+@helper TabGeneral()
+{ 
+    <div id="menu-item-container">
+        <div class="adminContent mb-3">
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ProviderName)
+                </div>
+                <div class="adminData">
+                    @Html.Editor("Model", "MenuItem." + Model.ProviderName, "Model")
+                    @Html.ValidationMessageFor(model => model.Model)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ParentItemId)
+                </div>
+                <div class="adminData">
+                    @Html.DropDownListFor(model => model.ParentItemId, Model.AllItems, T("Common.Unspecified"))
+                    @Html.ValidationMessageFor(model => model.ParentItemId)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Published)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.Published)
+                    @Html.ValidationMessageFor(model => model.Published)
+                </div>
+            </div>
+        </div>
+
+        <div class="@(Model.ProviderAppendsMultipleItems ? "d-none" : "")">
+        @(Html.LocalizedEditor<MenuItemRecordModel, MenuItemRecordLocalizedModel>("menu-item-localized",
+                @<div class="adminContent">
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].Title)
+                        </div>
+				        <div class="adminData">
+					        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+					        @Html.EditorFor(model => model.Locales[item].Title)
+					        @Html.ValidationMessageFor(model => model.Locales[item].Title)
+				        </div>
+                    </div>
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
+                        </div>
+				        <div class="adminData wide">
+                            @Html.TextAreaFor(model => Model.Locales[item].ShortDescription, new { rows = 1 })
+					        @Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
+				        </div>
+                    </div>
+                </div>
+                ,
+                @<div class="adminContent">
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Title)
+                        </div>
+                        <div class="adminData">
+                            @Html.TextBoxFor(model => Model.Title, new { placeholder = Model.TitlePlaceholder })
+                            @Html.ValidationMessageFor(model => model.Title)
+                        </div>
+                    </div>
+                    <div class="adminRow">
+                        <div class="adminTitle">
+                            @Html.SmartLabelFor(model => model.ShortDescription)
+                        </div>
+                        <div class="adminData wide">
+                            @Html.TextAreaFor(model => Model.ShortDescription, new { rows = 1 })
+                            @Html.ValidationMessageFor(model => model.ShortDescription)
+                        </div>
+                    </div>
+                </div>
+            ))
+        </div>
+
+        <div class="adminContent">
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.PermissionNames)
+                </div>
+                <div class="adminData wide">
+                    @Html.EditorFor(model => model.PermissionNames)
+                    @Html.ValidationMessageFor(model => model.PermissionNames)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DisplayOrder)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.DisplayOrder)
+                    @Html.ValidationMessageFor(model => model.DisplayOrder)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BeginGroup)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.BeginGroup)
+                    @Html.ValidationMessageFor(model => model.BeginGroup)
+                </div>
+            </div>
+            <div class="adminRow@(Model.ProviderAppendsMultipleItems ? " d-none" : "")">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Icon)
+                </div>
+                <div class="adminData">
+                    @Html.Partial("FontAwesomeIcon", Model)
+                    @Html.ValidationMessageFor(model => model.Icon)
+                </div>
+            </div>
+            @*For later use.
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowExpanded)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.ShowExpanded)
+                    @Html.ValidationMessageFor(model => model.ShowExpanded)
+                </div>
+            </div>*@
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NoFollow)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.NoFollow)
+                    @Html.ValidationMessageFor(model => model.NoFollow)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NewWindow)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.NewWindow)
+                    @Html.ValidationMessageFor(model => model.NewWindow)
+                </div>
+            </div>
+            <div class="adminRow@(Model.ProviderAppendsMultipleItems ? " d-none" : "")">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.HtmlId)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.HtmlId)
+                    @Html.ValidationMessageFor(model => model.HtmlId)
+                </div>
+            </div>
+            <div class="adminRow@(Model.ProviderAppendsMultipleItems ? " d-none" : "")">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CssClass)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.CssClass)
+                    @Html.ValidationMessageFor(model => model.CssClass)
+                </div>
+            </div>
+        </div>
+    </div>
+}

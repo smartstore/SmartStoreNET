@@ -51,7 +51,13 @@ Text suggestions:</div><ul>
 			<![CDATA[<p>Unfortunately Amazon Pay declined the payment for your order in our online shop. Please contact us.</p>]]>
 		</Value>
 	</LocaleResource>
-	<LocaleResource Name="AmazonPaymentsReports">
+    <LocaleResource Name="AuthenticationStatusFailureMessage">
+        <Value>There was a problem with your payment. Your order hasn't been placed, and you haven't been charged.</Value>
+    </LocaleResource>
+    <LocaleResource Name="AuthenticationStatusAbandonedMessage">
+        <Value>Something's wrong with your payment method. To place your order, try another.</Value>
+    </LocaleResource>
+    <LocaleResource Name="AmazonPaymentsReports">
 		<Value>Amazon Pay reports</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShippingToCountryNotAllowed">
@@ -111,7 +117,7 @@ Text suggestions:</div><ul>
 		<Value>Message type;Message ID;Authorization ID;Capture ID;Refund ID;Reference ID;State;State update;Fee;Authorized amount;Captured amount;Refunded amount;Capture now;Creation;Expiration</Value>
 	</LocaleResource>
 
-	<LocaleResource Name="UseSandbox">
+    <LocaleResource Name="UseSandbox">
 		<Value>Use Sandbox</Value>
 	</LocaleResource>
 	<LocaleResource Name="UseSandbox.Hint">

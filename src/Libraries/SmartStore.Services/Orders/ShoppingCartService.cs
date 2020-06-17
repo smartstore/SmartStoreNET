@@ -942,10 +942,16 @@ namespace SmartStore.Services.Orders
                         // if not found
                         if (!found)
                         {
-                            if (!string.IsNullOrEmpty(ca2.GetLocalized(a => a.TextPrompt)))
-                                warnings.Add(ca2.GetLocalized(a => a.TextPrompt));
+                            string textPrompt = ca2.GetLocalized(a => a.TextPrompt);
+
+                            if (textPrompt.HasValue())
+                            {
+                                warnings.Add(textPrompt);
+                            }
                             else
+                            {
                                 warnings.Add(T("ShoppingCart.SelectAttribute", ca2.GetLocalized(a => a.Name)));
+                            }
                         }
                     }
                 }

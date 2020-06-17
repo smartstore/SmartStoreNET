@@ -33,8 +33,8 @@ namespace SmartStore.Admin.Models.Settings
         {
 			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
-            public bool UsernamesEnabled { get; set; }
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerLoginType")]
+            public CustomerLoginType CustomerLoginType { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod")]
             public CustomerNumberMethod CustomerNumberMethod { get; set; }

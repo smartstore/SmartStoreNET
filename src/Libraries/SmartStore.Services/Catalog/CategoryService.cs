@@ -28,11 +28,11 @@ namespace SmartStore.Services.Catalog
 		internal const string CATEGORY_TREE_KEY = "category:tree-{0}-{1}-{2}";
 		internal const string CATEGORY_TREE_PATTERN_KEY = "category:tree-*";
 
-		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "category.byparent-{0}-{1}-{2}-{3}";
-		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
-		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "productcategory.allbyproductid-{0}-{1}-{2}-{3}";
-		private const string CATEGORIES_PATTERN_KEY = "category.*";
-		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory.*";
+		private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "category:byparent-{0}-{1}-{2}-{3}";
+		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "productcategory:allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
+		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "productcategory:allbyproductid-{0}-{1}-{2}-{3}";
+		private const string CATEGORIES_PATTERN_KEY = "category:*";
+		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory:*";
 
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
@@ -116,7 +116,7 @@ namespace SmartStore.Services.Catalog
             var category = GetCategoryById(categoryId);
             var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
+			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccessTo(category);
 
 			var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
 			categoryIds.Add(categoryId);
@@ -183,12 +183,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            AclRecord aclRecordToDelete;
-                            if (existingAclRecords.TryGetValue(customerRole.Id, out aclRecordToDelete))
-                            {
-                                _aclRepository.Delete(aclRecordToDelete);
-                            }
-                        }
+							if (existingAclRecords.TryGetValue(customerRole.Id, out var aclRecordToDelete))
+							{
+								_aclRepository.Delete(aclRecordToDelete);
+							}
+						}
                     }
                 }
 
@@ -241,12 +240,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            StoreMapping storeMappingToDelete;
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out storeMappingToDelete))
-                            {
-                                _storeMappingRepository.Delete(storeMappingToDelete);
-                            }
-                        }
+							if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
+							{
+								_storeMappingRepository.Delete(storeMappingToDelete);
+							}
+						}
                     }
                 }
 
@@ -273,12 +271,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            StoreMapping storeMappingToDelete;
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out storeMappingToDelete))
-                            {
-                                _storeMappingRepository.Delete(storeMappingToDelete);
-                            }
-                        }
+							if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
+							{
+								_storeMappingRepository.Delete(storeMappingToDelete);
+							}
+						}
                     }
                 }
 
@@ -432,6 +429,23 @@ namespace SmartStore.Services.Catalog
 
 			return _categoryRepository.GetByIdCached(categoryId, "db.category.id-" + categoryId);
 		}
+
+        public virtual IList<Category> GetCategoriesByIds(int[] categoryIds)
+        {
+            if (categoryIds == null || !categoryIds.Any())
+            {
+                return new List<Category>();
+            }
+
+            var query = from c in _categoryRepository.Table
+                        where categoryIds.Contains(c.Id)
+                        select c;
+
+            var categories = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return categories.OrderBySequence(categoryIds).ToList();
+        }
 
         public virtual void InsertCategory(Category category)
         {
@@ -760,6 +774,7 @@ namespace SmartStore.Services.Catalog
 								x.Id,
 								x.ParentCategoryId,
 								x.Name,
+                                x.ExternalLink,
 								x.Alias,
 								x.PictureId,
 								x.Published,
@@ -776,6 +791,7 @@ namespace SmartStore.Services.Catalog
 					Id = x.Id,
 					ParentCategoryId = x.ParentCategoryId,
 					Name = x.Name,
+                    ExternalLink = x.ExternalLink,
 					Alias = x.Alias,
 					PictureId = x.PictureId,
 					Published = x.Published,

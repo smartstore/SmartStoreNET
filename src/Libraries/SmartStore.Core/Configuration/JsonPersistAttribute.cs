@@ -11,6 +11,7 @@ namespace SmartStore.Core.Configuration
     /// into single properties.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+	[Obsolete]
     public class JsonPersistAttribute : Attribute
     {
     }

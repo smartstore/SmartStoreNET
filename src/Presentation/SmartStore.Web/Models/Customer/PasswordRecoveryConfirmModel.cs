@@ -1,23 +1,20 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Customer
 {
-    [Validator(typeof(PasswordRecoveryConfirmValidator))]
+	[Validator(typeof(PasswordRecoveryConfirmValidator))]
     public partial class PasswordRecoveryConfirmModel : ModelBase
     {
-        [AllowHtml]
         [DataType(DataType.Password)]
         [SmartResourceDisplayName("Account.PasswordRecovery.NewPassword")]
         public string NewPassword { get; set; }
 
-        [AllowHtml]
         [DataType(DataType.Password)]
         [SmartResourceDisplayName("Account.PasswordRecovery.ConfirmNewPassword")]
         public string ConfirmNewPassword { get; set; }

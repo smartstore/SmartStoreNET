@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
@@ -191,7 +192,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost, ActionName("Edit"), FormValueRequired("sendnow")]
-		public ActionResult SendNow(QueuedEmailModel queuedEmailModel)
+		public async Task<ActionResult> SendNow(QueuedEmailModel queuedEmailModel)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
 				return AccessDeniedView();
@@ -200,7 +201,7 @@ namespace SmartStore.Admin.Controllers
 			if (queuedEmail == null)
 				return RedirectToAction("List");
 
-			var result = _queuedEmailService.SendEmail(queuedEmail);
+			var result = await _queuedEmailService.SendEmailAsync(queuedEmail);
 
 			if (result)
 				NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));

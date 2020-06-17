@@ -13,6 +13,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
@@ -23,7 +24,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		public const string UrlRewriteCode = "urlrewrite";
 
 		public static readonly IAssetCache Null = new NullCache();
-		private static readonly object _lock = new object();
 		const string CacheKeyPrefix = "sm:AssetCacheEntry:";
 
 		private readonly bool _isEnabled;
@@ -81,10 +81,8 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
-			string themeName;
-			int storeId;
-			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
-			
+			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
+
 			if (CacheFolder.DirectoryExists(cacheDirectoryName))
 			{
 				try
@@ -92,10 +90,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					var deps = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.dependencies"));
 					var hash = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.hash"));
 
-					IEnumerable<string> parsedDeps;
-					string currentHash;
-
-					if (!TryValidate(virtualPath, deps, hash, out parsedDeps, out currentHash))
+					if (!TryValidate(virtualPath, deps, hash, out IEnumerable<string> parsedDeps, out string currentHash))
 					{
 						Logger.DebugFormat("Invalidating cached asset for '{0}' because it is not valid anymore.", virtualPath);
 						InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
@@ -106,7 +101,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					var content = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.css"));
 					if (content == null)
 					{
-						lock (_lock)
+						using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
 						{
 							InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
 							return null;
@@ -150,12 +145,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 			Guard.NotEmpty(content, nameof(content));
 
-			lock (_lock)
-			{
-				string themeName;
-				int storeId;
-				var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
+			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
 
+			using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
+			{
 				CacheFolder.CreateDirectory(cacheDirectoryName);
 
 				try
@@ -205,14 +198,11 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 		public void Clear()
 		{
-			lock (_lock)
+			if (_env.TenantFolder.DirectoryExists("AssetCache"))
 			{
-				if (_env.TenantFolder.DirectoryExists("AssetCache"))
-				{
-					_env.TenantFolder.TryDeleteDirectory("AssetCache");
-					// Remove the eviction observer also
-					HttpRuntime.Cache.RemoveByPattern(CacheKeyPrefix);
-				}
+				_env.TenantFolder.TryDeleteDirectory("AssetCache");
+				// Remove the eviction observer also
+				HttpRuntime.Cache.RemoveByPattern(CacheKeyPrefix);
 			}
 		}
 
@@ -220,12 +210,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		{
 			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
-			lock (_lock)
-			{
-				string themeName;
-				int storeId;
-				var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out themeName, out storeId);
+			var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
 
+			using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
+			{
 				if (CacheFolder.DirectoryExists(cacheDirectoryName))
 				{
 					return InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
@@ -233,6 +221,11 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 				return false;
 			}
+		}
+
+		private string BuildLockKey(string dirName)
+		{
+			return "AssetCache.Dir." + dirName;
 		}
 
 		/// <summary>

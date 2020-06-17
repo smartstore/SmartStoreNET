@@ -163,10 +163,10 @@ namespace SmartStore.Services.Blogs
             
             foreach (var blogPost in blogPostsAll)
             {
-                
                 var tags = blogPost.ParseTags().Select(x => SeoHelper.GetSeName(x,
                     _seoSettings.ConvertNonWesternChars,
                     _seoSettings.AllowUnicodeCharsInUrls,
+                    true,
                     _seoSettings.SeoNameCharConversion));
 
                 if (!String.IsNullOrEmpty(tags.FirstOrDefault(t => t.Equals(tag, StringComparison.InvariantCultureIgnoreCase))))

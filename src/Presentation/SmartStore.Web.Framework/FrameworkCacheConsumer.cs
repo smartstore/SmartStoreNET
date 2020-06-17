@@ -7,11 +7,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Core.Themes;
 using SmartStore.Utilities;
@@ -19,7 +16,7 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework
 {
-    public partial class FrameworkCacheConsumer : DbSaveHook<BaseEntity>, IConsumer<ThemeTouchedEvent>
+    public partial class FrameworkCacheConsumer : DbSaveHook<BaseEntity>, IConsumer
     {
         /// <summary>
         /// Key for ThemeVariables caching
@@ -40,18 +37,6 @@ namespace SmartStore.Web.Framework
         /// </remarks>
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "fw:customerroles:taxdisplaytypes-{0}-{1}";
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes*";
-
-		/// <summary>
-		/// Key for Topic SE names
-		/// </summary>
-		/// <remarks>
-		/// {0} : systemname
-		/// {1} : language id
-		/// {2} : store id
-		/// {3} : role ids
-		/// </remarks>
-		public const string TOPIC_SENAME_BY_SYSTEMNAME = "fw:topic:sename.bysystemname-{0}-{1}-{2}-{3}";
-		public const string TOPIC_SENAME_PATTERN_KEY = "fw:topic:sename*";
 
 		private readonly ICacheManager _cacheManager;
 		private readonly IAssetCache _assetCache;
@@ -81,26 +66,6 @@ namespace SmartStore.Web.Framework
 			else if (entry.Entity is CustomerRole)
 			{
 				_cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
-			}
-			else if (entry.Entity is UrlRecord ur)
-			{
-				var entityName = ur.EntityName.ToLowerInvariant();
-				if (entityName == "topic")
-				{
-					_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
-				}
-			}
-			else if (entry.Entity is StoreMapping sm)
-			{
-				var entityName = sm.EntityName.ToLowerInvariant();
-				if (entityName == "topic")
-				{
-					_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
-				}
-			}
-			else if (entry.Entity is Topic)
-			{
-				_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
 			}
 			else if (entry.Entity is Setting && entry.InitialState == EntityState.Modified)
 			{

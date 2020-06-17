@@ -8,7 +8,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
     var isInitialised = false;
     var viewport = ResponsiveBootstrapToolkit;
-    var selectedMenuItemId = 0;
+    var selectedEntityId = 0;
     var currentCategoryId = 0;
     var currentProductId = 0;
 	var currentManufacturerId = 0;
@@ -305,17 +305,17 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	    initMenu: function () {
 	        var nav = $(".megamenu .navbar-nav");
-	        selectedMenuItemId = nav.data("selected-menu-item");
+            selectedEntityId = nav.data("selected-entity-id") || 0;
 	        currentCategoryId = nav.data("current-category-id");
 	        currentProductId = nav.data("current-product-id");
 	        currentManufacturerId = nav.data("current-manufacturer-id");
 			publicStoreNavigationAllowed = menu.data("public-store-navigation-allowed");
 			
-			if (selectedMenuItemId == 0) {
+            if (selectedEntityId == 0) {
 				navigateToHomeLayer(false);
 			}
-			else {
-				navigateToMenuItem(selectedMenuItemId);
+            else {
+                navigateToMenuItem(selectedEntityId);
 			}
 	
 	        isInitialised = true;

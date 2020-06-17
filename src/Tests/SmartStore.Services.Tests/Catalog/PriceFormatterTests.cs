@@ -72,7 +72,7 @@ namespace SmartStore.Services.Tests.Catalog
 			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 			_currencyService = new CurrencyService(_currencyRepo, _storeMappingService,
                 _currencySettings, pluginFinder, null, this.ProviderManager, _storeContext);
             

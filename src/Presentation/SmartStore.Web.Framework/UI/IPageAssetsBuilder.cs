@@ -4,7 +4,6 @@ using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
 {
-    
     public partial interface IPageAssetsBuilder
     {
         void AddTitleParts(IEnumerable<string> parts, bool append = false);
@@ -13,6 +12,7 @@ namespace SmartStore.Web.Framework.UI
         void AddCanonicalUrlParts(IEnumerable<string> parts, bool append = false);
 		void AddCustomHeadParts(IEnumerable<string> parts, bool append = false);
         void AddBodyCssClass(string className);
+        void SetHtmlId(string htmlId);
         void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
         void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
 		void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes);
@@ -27,7 +27,8 @@ namespace SmartStore.Web.Framework.UI
         string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
 		string GenerateLinkRels();
 		string GenerateMetaRobots();
-	}
+        string GenerateHtmlId();
+    }
 
     public static class PageAssetsBuilderExtensions
     {

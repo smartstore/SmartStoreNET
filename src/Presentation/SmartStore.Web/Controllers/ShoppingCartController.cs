@@ -1084,6 +1084,7 @@ namespace SmartStore.Web.Controllers
                             item.AttributesXml, 
                             null,
                             serapator: ", ", 
+                            //htmlEncode: false,
                             renderPrices: false, 
                             renderGiftCardAttributes: false, 
                             allowHyperlinks: false)
@@ -1443,9 +1444,13 @@ namespace SmartStore.Web.Controllers
 			string key2 = "addtocart_{0}.AddToCart.EnteredQuantity".FormatWith(productId);
 
 			if (form.AllKeys.Contains(key1))
-				int.TryParse(form[key1], out quantity);
+            {
+                int.TryParse(form[key1], out quantity);
+            }
 			else if (form.AllKeys.Contains(key2))
-				int.TryParse(form[key2], out quantity);
+            {
+                int.TryParse(form[key2], out quantity);
+            }	
 
             #endregion
 
@@ -1600,7 +1605,7 @@ namespace SmartStore.Web.Controllers
         }
 
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Cart(ProductVariantQuery query)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
@@ -1679,7 +1684,7 @@ namespace SmartStore.Web.Controllers
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
-                totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
 				showCheckoutButtons = model.IsValidMinOrderSubtotal;
 			}
@@ -1696,7 +1701,6 @@ namespace SmartStore.Web.Controllers
 			});
         }
        
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("continueshopping")]
         public ActionResult ContinueShopping()
@@ -1705,7 +1709,6 @@ namespace SmartStore.Web.Controllers
 			return RedirectToReferrer(returnUrl);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
         public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
@@ -1742,7 +1745,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		// Ajax. Required for cart payment buttons.
-		[HttpPost, ValidateInput(false)]
+		[HttpPost]
 		public ActionResult SaveCartData(ProductVariantQuery query, bool? useRewardPoints)
 		{
 			var warnings = ValidateAndSaveCartData(query, useRewardPoints);
@@ -1754,48 +1757,65 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		[ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applydiscountcouponcode")]
         public ActionResult ApplyDiscountCoupon(string discountcouponcode, ProductVariantQuery query)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var model = new ShoppingCartModel();
+            model.DiscountBox.IsWarning = true;
+
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             ParseAndSaveCheckoutAttributes(cart, query);
 
-            var model = new ShoppingCartModel();
-			model.DiscountBox.IsWarning = true;
-
-			if (!String.IsNullOrWhiteSpace(discountcouponcode))
+            if (discountcouponcode.HasValue())
 			{
 				var discount = _discountService.GetDiscountByCouponCode(discountcouponcode);
 				var isDiscountValid = 
 					discount != null &&
 					discount.RequiresCouponCode &&
-					_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
+					_discountService.IsDiscountValid(discount, customer, discountcouponcode);
 
 				if (isDiscountValid)
 				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+                    var discountApplied = true;
+                    var oldCartTotal = (decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart);
 
-					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
-					model.DiscountBox.IsWarning = false;
-				}
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+
+                    if (oldCartTotal.HasValue)
+                    {
+                        var newCartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+                        discountApplied = oldCartTotal != newCartTotal;
+                    }
+
+                    if (discountApplied)
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
+                        model.DiscountBox.IsWarning = false;
+                    }
+                    else
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.NoMoreDiscount");
+
+                        _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
+                    }
+                }
 				else
 				{
 					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-				}
+                }
 			}
 			else
 			{
 				model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-			}
+            }
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applygiftcardcouponcode")]
         public ActionResult ApplyGiftCard(string giftcardcouponcode, ProductVariantQuery query)
@@ -1841,7 +1861,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applyrewardpoints")]
         public ActionResult ApplyRewardPoints(bool useRewardPoints, ProductVariantQuery query)
@@ -1860,7 +1879,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, ProductVariantQuery query)
@@ -1879,7 +1897,7 @@ namespace SmartStore.Web.Controllers
 
             if (cart.RequiresShipping())
             {
-				var shippingInfoUrl = Url.TopicUrl("ShippingInfo");
+				var shippingInfoUrl = Url.Topic("ShippingInfo").ToString();
 				if (shippingInfoUrl.HasValue())
 				{
 					model.EstimateShipping.ShippingInfoUrl = shippingInfoUrl;
@@ -2138,7 +2156,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removesubtotaldiscount", "removeordertotaldiscount", "removediscountcouponcode")]
         public ActionResult RemoveDiscountCoupon()
@@ -2153,7 +2170,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removegiftcard")]
         public ActionResult RemoveGiftardCode(int giftCardId)
@@ -2263,7 +2279,7 @@ namespace SmartStore.Web.Controllers
                     var model = new ShoppingCartModel();
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
-                    totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                    totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
 					showCheckoutButtons = model.IsValidMinOrderSubtotal;
 				}
             }
@@ -2335,7 +2351,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Wishlist
 
-		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		[RewriteUrl(SslRequirement.Yes)]
         public ActionResult Wishlist(Guid? customerGuid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
@@ -2352,7 +2368,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ValidateInput(false)]
 		[HttpPost, ActionName("Wishlist")]
 		[FormValueRequired("addtocartbutton")]
 		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
@@ -2464,7 +2479,7 @@ namespace SmartStore.Web.Controllers
                             cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
                             PrepareShoppingCartModel(model, cart);
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
-                            totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                            totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
                         }
@@ -2498,7 +2513,7 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        [RequireHttpsByConfig(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
 		[GdprConsent]
 		public ActionResult EmailWishlist()
         {
@@ -2551,7 +2566,7 @@ namespace SmartStore.Web.Controllers
 					_workContext.CurrentCustomer,
 					model.YourEmailAddress,
                     model.FriendEmail, 
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");
@@ -2566,21 +2581,5 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
-
-        // TODO: (mc) duplicate of output cache plugin method, find a place for it and remove duplicates
-        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
-        {
-            var viewContext = new ViewContext(
-                   ControllerContext,
-                   new WebFormView(ControllerContext, "tmp"),
-                   ViewData,
-                   TempData,
-                   TextWriter.Null
-            );
-
-            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
-
-            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
-        }
     }
 }

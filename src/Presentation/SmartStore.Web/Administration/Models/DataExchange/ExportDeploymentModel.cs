@@ -2,6 +2,7 @@
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Localization;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using System;
@@ -120,7 +121,7 @@ namespace SmartStore.Admin.Models.DataExchange
                         !x.IsCaseInsensitiveEqual("con") &&
                         x != "~/" &&
                         x != "~" &&
-                        x.IndexOfAny(Path.GetInvalidPathChars()) == -1;
+						!PathHelper.HasInvalidPathChars(x);
 
                     return isValidPath;
                 })

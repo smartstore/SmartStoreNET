@@ -85,7 +85,7 @@ namespace SmartStore.Services.Tests.Orders
             _services.Expect(x => x.StoreContext).Return(_storeContext);
             _services.Expect(x => x.WorkContext).Return(_workContext);
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 
 			_shoppingCartSettings = new ShoppingCartSettings();
 			_catalogSettings = new CatalogSettings();
@@ -133,12 +133,15 @@ namespace SmartStore.Services.Tests.Orders
             _giftCardService = MockRepository.GenerateMock<IGiftCardService>();
 
             //tax
-            _taxSettings = new TaxSettings();
-            _taxSettings.ShippingIsTaxable = true;
-            _taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
-			_taxSettings.PricesIncludeTax = false;
-			_taxSettings.TaxDisplayType = TaxDisplayType.IncludingTax;
-            _taxSettings.DefaultTaxAddressId = 10;
+            _taxSettings = new TaxSettings
+            {
+                ShippingPriceIncludesTax = false,
+                ShippingIsTaxable = true,
+                PaymentMethodAdditionalFeeIsTaxable = true,
+                PricesIncludeTax = false,
+                TaxDisplayType = TaxDisplayType.IncludingTax,
+                DefaultTaxAddressId = 10
+            };
 
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address { Id = _taxSettings.DefaultTaxAddressId });
@@ -789,11 +792,11 @@ namespace SmartStore.Services.Tests.Orders
         [Test]
         public void Can_get_shipping_total_discount_excluding_tax()
         {
-			var sci1 = new ShoppingCartItem()
+			var sci1 = new ShoppingCartItem
 			{
 				AttributesXml = "",
 				Quantity = 3,
-				Product = new Product()
+				Product = new Product
 				{
 					Id = 1,
 					Weight = 1.5M,
@@ -804,11 +807,11 @@ namespace SmartStore.Services.Tests.Orders
 					IsShipEnabled = true,
 				}
 			};
-			var sci2 = new ShoppingCartItem()
+			var sci2 = new ShoppingCartItem
 			{
 				AttributesXml = "",
 				Quantity = 4,
-				Product = new Product()
+				Product = new Product
 				{
 					Id = 2,
 					Weight = 11.5M,
@@ -821,11 +824,11 @@ namespace SmartStore.Services.Tests.Orders
 			};
 
 			//sci3 is not shippable
-			var sci3 = new ShoppingCartItem()
+			var sci3 = new ShoppingCartItem
 			{
 				AttributesXml = "",
 				Quantity = 5,
-				Product = new Product()
+				Product = new Product
 				{
 					Id = 3,
 					Weight = 11.5M,
@@ -847,7 +850,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
-			var discount1 = new Discount()
+			var discount1 = new Discount
 			{
 				Id = 1,
 				Name = "Discount 1",
@@ -858,13 +861,7 @@ namespace SmartStore.Services.Tests.Orders
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToShipping)).Return(new List<Discount>() { discount1 });
 
-
-			decimal taxRate = decimal.Zero;
-			Discount appliedDiscount = null;
-			decimal? shipping = null;
-
-
-			shipping = _orderTotalCalcService.GetShoppingCartShippingTotal(cart, false, out taxRate, out appliedDiscount);
+			var shipping = _orderTotalCalcService.GetShoppingCartShippingTotal(cart, false, out var taxRate, out var appliedDiscount);
 			appliedDiscount.ShouldNotBeNull();
 			appliedDiscount.Name.ShouldEqual("Discount 1");
 			shipping.ShouldNotBeNull();
@@ -965,7 +962,7 @@ namespace SmartStore.Services.Tests.Orders
         public void Can_get_tax_total()
         {
 			//customer
-			var customer = new Customer()
+			var customer = new Customer
 			{
 				Id = 10,
 			};
@@ -1031,11 +1028,10 @@ namespace SmartStore.Services.Tests.Orders
 			//1. shipping is taxable, payment fee is taxable
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
-			SortedDictionary<decimal, decimal> taxRates;
 
-			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(6.6);
+            _orderTotalCalcService.GetTaxTotal(cart, out SortedDictionary<decimal, decimal> taxRates).ShouldEqual(6.6m);
 
-			taxRates.ShouldNotBeNull();
+            taxRates.ShouldNotBeNull();
 			taxRates.Count.ShouldEqual(1);
 			taxRates.ContainsKey(10).ShouldBeTrue();
 			taxRates[10].ShouldEqual(6.6);

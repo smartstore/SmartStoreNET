@@ -333,7 +333,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
             {
-                FileSystemHelper.Delete(path);
+                FileSystemHelper.DeleteFile(path);
             }
         }
 
@@ -1786,8 +1786,8 @@ namespace SmartStore.Services.DataExchange.Export
 			var logPath = profile.GetExportLogPath();
 			var zipPath = profile.GetExportZipPath();
 
-            FileSystemHelper.Delete(logPath);
-			FileSystemHelper.Delete(zipPath);
+            FileSystemHelper.DeleteFile(logPath);
+			FileSystemHelper.DeleteFile(zipPath);
 			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 
 			using (var logger = new TraceLogger(logPath))

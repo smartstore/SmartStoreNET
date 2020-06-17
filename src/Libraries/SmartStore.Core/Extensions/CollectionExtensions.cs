@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Routing;
+using SmartStore.Collections;
 
 namespace SmartStore
 {
@@ -26,7 +23,22 @@ namespace SmartStore
 			}
         }
 
-        public static bool IsNullOrEmpty<T>(this ICollection<T> source)
+		public static SyncedCollection<T> AsSynchronized<T>(this ICollection<T> source)
+		{
+			return AsSynchronized(source, new object());
+		}
+
+		public static SyncedCollection<T> AsSynchronized<T>(this ICollection<T> source, object syncRoot)
+		{
+			if (source is SyncedCollection<T> sc)
+			{
+				return sc;
+			}
+
+			return new SyncedCollection<T>(source, syncRoot);
+		}
+
+		public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
             return source == null || source.Count == 0;
         }

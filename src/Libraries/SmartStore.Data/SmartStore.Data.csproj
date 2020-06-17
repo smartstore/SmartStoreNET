@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -66,9 +67,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Autofac, Version=4.9.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.9.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -94,9 +94,8 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Scripting.11.0.2100.61\lib\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -106,8 +105,8 @@
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -133,6 +132,9 @@
     <Compile Include="Caching\EfDbCache.cs" />
     <Compile Include="Caching\DbCacheEntry.cs" />
     <Compile Include="Caching\DbCachingPolicy.cs" />
+    <Compile Include="Caching\EfDbModelStore.cs" />
+    <Compile Include="Caching\EfMappingViewCacheFactory.cs" />
+    <Compile Include="Caching\EfMappingViewCache.cs" />
     <Compile Include="Caching\IDbCache.cs" />
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
@@ -652,6 +654,38 @@
     <Compile Include="Migrations\201811202204501_ProductIndexSeekExport.Designer.cs">
       <DependentUpon>201811202204501_ProductIndexSeekExport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.cs" />
+    <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.Designer.cs">
+      <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904110735029_Menus.cs" />
+    <Compile Include="Migrations\201904110735029_Menus.Designer.cs">
+      <DependentUpon>201904110735029_Menus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905020948354_WidgetTopics.cs" />
+    <Compile Include="Migrations\201905020948354_WidgetTopics.Designer.cs">
+      <DependentUpon>201905020948354_WidgetTopics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905101159134_V320Resources.cs" />
+    <Compile Include="Migrations\201905101159134_V320Resources.Designer.cs">
+      <DependentUpon>201905101159134_V320Resources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905271110370_V321Resources.cs" />
+    <Compile Include="Migrations\201905271110370_V321Resources.Designer.cs">
+      <DependentUpon>201905271110370_V321Resources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906252008551_QuantityUnitNamePlural.cs" />
+    <Compile Include="Migrations\201906252008551_QuantityUnitNamePlural.Designer.cs">
+      <DependentUpon>201906252008551_QuantityUnitNamePlural.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907032251575_CategoryExternalLink.cs" />
+    <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
+      <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908150749388_V322Resources.cs" />
+    <Compile Include="Migrations\201908150749388_V322Resources.Designer.cs">
+      <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1169,6 +1203,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811202204501_ProductIndexSeekExport.resx">
       <DependentUpon>201811202204501_ProductIndexSeekExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.resx">
+      <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904110735029_Menus.resx">
+      <DependentUpon>201904110735029_Menus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905020948354_WidgetTopics.resx">
+      <DependentUpon>201905020948354_WidgetTopics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905101159134_V320Resources.resx">
+      <DependentUpon>201905101159134_V320Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905271110370_V321Resources.resx">
+      <DependentUpon>201905271110370_V321Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906252008551_QuantityUnitNamePlural.resx">
+      <DependentUpon>201906252008551_QuantityUnitNamePlural.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907032251575_CategoryExternalLink.resx">
+      <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908150749388_V322Resources.resx">
+      <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

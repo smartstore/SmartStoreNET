@@ -32,7 +32,7 @@
     &:focus-within,
     &:focus,
     &.focus {
-        z-index: 1001;
+        z-index: $zindex-sticky - 1;
         border-color: $input-focus-border-color !important;
     }
 

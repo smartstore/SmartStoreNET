@@ -3,30 +3,33 @@
 @using SmartStore.Web.Framework.UI;
 @model ForumSearchResultModel
 @{   
-    Layout = "_Layout";
+    var suggestions = new string[0];
+    var encodedTerm = Model.Term.EmptyNull().HtmlEncode();
+    var encodedAttemptedTerm = Model.AttemptedTerm.EmptyNull().HtmlEncode();
 
-    if (Model.Term.HasValue())
+    if (encodedTerm.HasValue())
     {
-        Html.AddTitleParts(T("Search.PageTitle", "\"" + Model.Term + "\""));
+        Html.AddTitleParts(T("Search.PageTitle", "\"" + encodedTerm + "\""));
     }
     else
     {
         Html.AddTitleParts(T("Forum.Search"));
     }
 
-    var suggestions = new string[0];
     if (Model.TotalCount > 0)
     {
         suggestions = Model.SearchResult.SpellCheckerSuggestions;
     }
+
+    Layout = "_Layout";
 }
 
 <div class="page forum-search">
     <div class="page-title">
         <h1 class="h3">
-			@if (Model.Term.HasValue())
+			@if (encodedTerm.HasValue())
 			{
-				@T("Search.PageTitle", "<small class='search-term'>" + Model.Term + "</small>")
+				@T("Search.PageTitle", "<small class='search-term'>" + encodedTerm + "</small>")
 			}
 			else
 			{
@@ -48,10 +51,10 @@
                 @{ Html.RenderAction("SearchBox", "Boards"); }
             </div>
 
-		    @if (Model.AttemptedTerm.HasValue())
+		    @if (encodedAttemptedTerm.HasValue())
 		    {
 			    <div class="alert alert-warning">
-				    @T("Search.TermCorrectedHint", "<strong>\"" + Model.Term + "\"</strong>", "<strong>\"" + Model.AttemptedTerm + "\"</strong>")
+				    @T("Search.TermCorrectedHint", "<strong>\"" + encodedTerm + "\"</strong>", "<strong>\"" + encodedAttemptedTerm + "\"</strong>")
 			    </div>
 		    }
 
@@ -61,7 +64,7 @@
 				    @Model.Error
 			    </div>
 		    }
-		    else if (Model.TotalCount == 0 && Model.Term.HasValue())
+		    else if (Model.TotalCount == 0 && encodedTerm.HasValue())
 		    {
 			    <div class="alert alert-info">
 				    @T("Forum.SearchNoResultsText")
@@ -71,7 +74,7 @@
 		    @if (suggestions.Any())
 		    {
 			    <p class="search-suggestions">
-				    <strong>@(T(Model.AttemptedTerm.HasValue() || Model.TotalCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
+				    <strong>@(T(encodedAttemptedTerm.HasValue() || Model.TotalCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
 				    @{ 
 					    var links = string.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("BoardSearch", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
 				    }
@@ -134,7 +137,7 @@
         countHtml += "<span class='more-hits-sign'>+</span>";
     }
 
-    @T("Search.HitsFor", countHtml, "<b class='font-weight-medium'>{0}</b>".FormatInvariant(Model.Term.NaIfEmpty()))
+    @T("Search.HitsFor", countHtml, "<b class='font-weight-medium'>{0}</b>".FormatInvariant(Model.Term.NaIfEmpty().HtmlEncode()))
 }
 
 <script type="text/javascript">

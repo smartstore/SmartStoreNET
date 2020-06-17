@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Data.Caching
 {
@@ -192,13 +193,13 @@ namespace SmartStore.Data.Caching
 			key = HashKey(key);
 			var now = DateTime.UtcNow;
 
-			var entry = _cache.Get<DbCacheEntry>(key);
+			var entry = _cache.Get<DbCacheEntry>(key, independent: true);
 
 			if (entry != null)
 			{
 				if (entry.HasExpired(now))
 				{
-					lock (String.Intern(key))
+					using (KeyedLock.Lock(key))
 					{
 						InvalidateItemUnlocked(entry);
 					}
@@ -222,7 +223,7 @@ namespace SmartStore.Data.Caching
 
 			key = HashKey(key);
 
-			lock (String.Intern(key))
+			using (KeyedLock.Lock(key))
 			{
 				var entitySets = dependentEntitySets.Distinct().ToArray();
 				var entry =  new DbCacheEntry
@@ -290,7 +291,7 @@ namespace SmartStore.Data.Caching
 
 			Guard.NotEmpty(key, nameof(key));
 
-			lock (String.Intern(key))
+			using (KeyedLock.Lock(key))
 			{
 				InvalidateItemUnlocked(key);
 			}
@@ -305,7 +306,7 @@ namespace SmartStore.Data.Caching
 
 			if (_cache.Contains(key))
 			{
-				var entry = _cache.Get<DbCacheEntry>(key);
+				var entry = _cache.Get<DbCacheEntry>(key, true);
 				if (entry != null)
 				{
 					InvalidateItemUnlocked(entry);

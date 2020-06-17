@@ -10,6 +10,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -109,8 +110,16 @@ namespace SmartStore.Web.Framework.Theming
                 return _helper.Services.WorkContext;
             }
         }
-        
-        public override void InitHelpers()
+
+		public ILinkResolver LinkResolver
+		{
+			get
+			{
+				return _helper.LinkResolver;
+			}
+		}
+
+		public override void InitHelpers()
         {
             base.InitHelpers();
 
@@ -121,19 +130,19 @@ namespace SmartStore.Web.Framework.Theming
         public HelperResult RenderWrappedSection(string name, object wrapperHtmlAttributes)
         {
             Action<TextWriter> action = delegate(TextWriter tw)
-                                {
-                                    var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(wrapperHtmlAttributes);
-                                    var tagBuilder = new TagBuilder("div");
-                                    tagBuilder.MergeAttributes(htmlAttributes);
+            {
+                var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(wrapperHtmlAttributes);
+                var tagBuilder = new TagBuilder("div");
+                tagBuilder.MergeAttributes(htmlAttributes);
 
-                                    var section = this.RenderSection(name, false);
-                                    if (section != null)
-                                    {
-                                        tw.Write(tagBuilder.ToString(TagRenderMode.StartTag));
-                                        section.WriteTo(tw);
-                                        tw.Write(tagBuilder.ToString(TagRenderMode.EndTag));
-                                    }
-                                };
+                var section = this.RenderSection(name, false);
+                if (section != null)
+                {
+                    tw.Write(tagBuilder.ToString(TagRenderMode.StartTag));
+                    section.WriteTo(tw);
+                    tw.Write(tagBuilder.ToString(TagRenderMode.EndTag));
+                }
+            };
             return new HelperResult(action);
         }
 

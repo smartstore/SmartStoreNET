@@ -118,7 +118,7 @@
 					children: [
 						ui.button({
 							className: 'dropdown-toggle',
-							contents: ui.icon("fa fa-css3"),
+							contents: ui.icon("fab fa-css3"),
 							callback: function (btn) {
 								btn.data("placement", "bottom")
 									.data("trigger", 'hover')
@@ -160,7 +160,7 @@
 					children: [
 						ui.button({
 							className: 'dropdown-toggle',
-							contents: ui.icon("fa fa-css3 pr-1"),
+							contents: ui.icon("fab fa-css3 pr-1"),
 							callback: function (btn) {
 								btn.data("placement", "bottom");
 								btn.data("trigger", "hover");

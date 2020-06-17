@@ -32,10 +32,10 @@
 		&:not(:active):not(.active):focus,
 		&:not(:active):not(.active).focus {
 			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2em rgba($primary, .15);
+				box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($primary, .15);
 			}
 			@else {
-				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2em rgba($value, .4);
+				box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($value, .4);
 			}
 		}
 	}
@@ -68,7 +68,7 @@
 	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
 		> i {
 			//opacity: 0.6;
-			color: lighten($body-color, 20%);
+			color: lighten($body-color, 16%);
 		}
 	}
 }
@@ -79,6 +79,7 @@
 
 @import '../../Content/shared/_variables-shared.scss';
 @import '../../Content/shared/_mixins.scss';
+@import '../../Content/shared/_fa.scss';
 @import '../../Content/shared/_typo.scss';
 @import '../../Content/shared/_alert.scss';
 @import '../../Content/shared/_buttons.scss';
@@ -122,7 +123,7 @@
 
 
 //
-// Telerik adaptation:
+// Vendor adaptations:
 // Must come latest because of css
 // specificity.
 // --------------------------------------------------

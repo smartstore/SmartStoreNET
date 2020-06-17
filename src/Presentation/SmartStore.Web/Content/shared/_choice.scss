@@ -101,8 +101,7 @@
             text-align: center;
             vertical-align: middle;
 
-            font-family: FontAwesome;
-            content: "\f00c"; // check
+            @include fontawesome-font("\f00c", regular); // check
             color: #fff;
             font-size: 10px;
 

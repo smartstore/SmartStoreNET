@@ -54,7 +54,7 @@
 			@Html.SmartLabelFor(model => model.Password)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(model => model.Password)
+			@Html.EditorFor(model => model.Password, null, new { htmlAttributes = new { value = Model.Password } })
 			@Html.ValidationMessageFor(model => model.Password)
 		</td>
 	</tr>

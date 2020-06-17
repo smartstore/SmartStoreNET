@@ -1,0 +1,65 @@
+﻿@using SmartStore.PayPal.Services;
+@model FinancingOptions
+@{
+    var defaultOption = Model.GetDefaultOption(false);
+}
+<div class="paypal-promotion-details">
+    <div>
+        <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/instalments.png")" class="float-right m-1 ml-3"
+             alt="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" title="@T("Plugins.FriendlyName.Payments.PayPalInstalments")" />
+        <div>
+            <div class="h4">@T("Plugins.Payments.PayPalInstalments.PromotionDetailsTitle")</div>
+            <div>@Html.Raw(T("Plugins.Payments.PayPalInstalments.PromotionDetailsIntro"))</div>
+            <div class="font-weight-medium mt-1">@T("Plugins.Payments.PayPalInstalments.NetLoanAmount"): @Model.NetLoanAmount.ToString()</div>
+            <div class="card-deck card-cols-sm-1 card-cols-lg-2 mt-3">
+                @foreach (var option in Model.Qualified)
+                {
+                    <div class="card card-sm">
+                        <div class="card-header font-weight-medium">
+                            @(T("Plugins.Payments.PayPalInstalments.PlanX", option.Index)) @(defaultOption != null && defaultOption.Index == option.Index ? " *" : "")
+                        </div>
+                        <div class="card-body">
+                            <table class="w-100">
+                                <tr>
+                                    <td>@T("Plugins.Payments.PayPalInstalments.XMonthlyInstalmentsAmount", option.Term)</td>
+                                    <td class="text-right font-weight-medium text-nowrap">@(option.MonthlyPayment.ToString())</td>
+                                </tr>
+                                @*PayPal review: do not display last instalment.*@
+                                @*@if (option.MonthlyPayment.Amount != option.LastInstalment.Amount)
+                                {
+                                    <tr>
+                                        <td>@T("Plugins.Payments.PayPalInstalments.LastInstalment")</td>
+                                        <td class="text-right text-nowrap">@(option.LastInstalment.ToString())</td>
+                                    </tr>
+                                }*@
+                                <tr>
+                                    <td>@T("Plugins.Payments.PayPalInstalments.FixedNominalRate"):</td>
+                                    <td class="text-right text-nowrap">@(Math.Round(option.NominalRate, 2).ToString("0.00")) %</td>
+                                </tr>
+                                <tr>
+                                    <td>@T("Plugins.Payments.PayPalInstalments.AnnualPercentageRate"):</td>
+                                    <td class="text-right text-nowrap">@(Math.Round(option.AnnualPercentageRate, 2).ToString("0.00")) %</td>
+                                </tr>
+                                <tr>
+                                    <td>@T("Plugins.Payments.PayPalInstalments.InterestAmount"):</td>
+                                    <td class="text-right text-nowrap">@(option.TotalInterest.ToString())</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-medium">@T("Plugins.Payments.PayPalInstalments.TotalPayableAmount"):</td>
+                                    <td class="text-right font-weight-medium text-nowrap">@(option.TotalCost.ToString())</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="small">
+                @if (defaultOption != null)
+                {
+                    <div>* @T("Plugins.Payments.PayPalInstalments.RepresentativeExample").</div>
+                }
+                <div>@T("Plugins.Payments.PayPalInstalments.Lender"): @Html.Raw(Model.Lender)</div>
+            </div>
+        </div>
+    </div>
+</div>

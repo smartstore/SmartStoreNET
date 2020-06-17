@@ -1,0 +1,123 @@
+﻿@model MenuModel
+
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
+
+@{
+	if (Model.Root == null)
+	{
+		return;
+	}
+}
+
+@functions {
+	public string GetNodeLink(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node)
+	{
+		if (node.HasChildren)
+		{
+			return "javascript:void(0)";
+		}
+		return node.Value.GenerateUrl(this.ViewContext.RequestContext);
+	}
+}
+
+<ul class="navbar-nav">
+	@{
+		foreach (var node in Model.Root.Children)
+		{
+			var item = node.Value;
+
+			if (!item.Visible)
+			{
+				continue;
+			}
+
+			var imageUrl = item.ImageUrl;
+			if (!imageUrl.HasValue())
+			{
+				imageUrl = "~/Administration/Content/images/ap-default-white.png";
+			}
+
+			var itemText = node.GetItemText(T);
+			var itemUrl = GetNodeLink(node);
+
+			if (ViewBag.SelectedMenuItem == itemText)
+			{
+				//item.Selected = true;
+			}
+
+			<li data-id="nav-@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")@(item.Id == "dashboard" ? " dropdown d-none d-md-block" : "")">
+				<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
+					@if (item.Icon.HasValue())
+					{
+						<i class="icm icm-@item.Icon navbar-icon"></i>
+					}
+					else
+					{
+						<img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
+					}
+					<span class="navbar-label d-none d-lg-block">@itemText</span>
+				</a>
+				@if (node.HasChildren)
+				{
+					@CreateDropdown(node.Children, true)
+				}
+			</li>
+		}
+	}
+</ul>
+
+@helper CreateDropdown(IEnumerable<TreeNode<SmartStore.Web.Framework.UI.MenuItem>> nodes, bool isRoot)
+{
+	var isFirst = true;
+	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
+
+	<ul class='dropdown-menu'>
+		@foreach (var node in nodes)
+		{
+			var item = node.Value;
+
+			if (!item.Visible)
+			{
+				continue;
+			}
+
+			var itemText = node.GetItemText(T);
+
+			if (item.IsGroupHeader)
+			{
+				if (!isFirst)
+				{
+					<li class="dropdown-divider"></li>
+				}
+				if (item.Text.HasValue() && item.Text != "[SKIP]")
+				{
+					<li data-id="@item.Id" class="dropdown-header h6">@itemText</li>
+				}
+				isFirst = false;
+				continue;
+			}
+
+			<li data-id="@item.Id" @Html.Attr("class", "dropdown-group", node.HasChildren)>
+				<a class="dropdown-item" href="@GetNodeLink(node)">
+					@if (hasIcons)
+					{
+						var iconClass = "fa-fw";
+						if (node.Value.Icon.HasValue())
+						{
+							iconClass += " " + node.Value.Icon;
+						}
+						<i class='@iconClass'></i>
+					}
+					@itemText
+				</a>
+				@if (node.HasChildren)
+				{
+					@CreateDropdown(node.Children, false)
+				}
+			</li>
+
+			isFirst = false;
+		}
+	</ul>
+}

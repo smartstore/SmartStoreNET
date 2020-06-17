@@ -1,0 +1,78 @@
+﻿@{
+	var jsRoot = "~/Scripts/";
+	var vendorsRoot = "~/Content/vendors/";
+	var contentRoot = "~/Content/";
+
+	var cssParts = new List<string>
+	{
+		contentRoot + "fontastic/fontastic.css",
+		vendorsRoot + "pnotify/css/pnotify.css",
+		vendorsRoot + "pnotify/css/pnotify.mobile.css",
+		vendorsRoot + "pnotify/css/pnotify.buttons.css"
+	};
+
+	if (!GetThemeVariable<bool>("fa-use-pro"))
+	{
+		// TODO: (mc) make UI for FA5 CDN URL
+		cssParts.Insert(0, vendorsRoot + "fa5/css/all.css");
+	}
+
+	// add css assets
+	Html.AddCssFileParts(cssParts.ToArray());
+
+	Html.AppendScriptParts(ResourceLocation.Head,
+		vendorsRoot + "modernizr/modernizr.js",
+		vendorsRoot + "jquery/jquery-3.4.1.js"/*,
+		vendorsRoot + "jquery/jquery-migrate-3.0.0.js"*/);
+
+	Html.AppendScriptParts(ResourceLocation.Foot,
+		// Vendors
+		vendorsRoot + "underscore/underscore.js",
+		vendorsRoot + "underscore/underscore.string.js",
+		vendorsRoot + "jquery/jquery.addeasing.js",
+		vendorsRoot + "jquery-ui/effect.js",
+		vendorsRoot + "jquery-ui/effect-shake.js",
+		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
+		vendorsRoot + "jquery/jquery.validate.js",
+		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
+		vendorsRoot + "jquery/jquery.ba-outside-events.js",
+		vendorsRoot + "jquery/jquery.scrollTo.js",
+		vendorsRoot + "moment/moment.js",
+		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
+		vendorsRoot + "select2/js/select2.js",
+		vendorsRoot + "pnotify/js/pnotify.js",
+		vendorsRoot + "pnotify/js/pnotify.mobile.js",
+		vendorsRoot + "pnotify/js/pnotify.buttons.js",
+		vendorsRoot + "pnotify/js/pnotify.animate.js",
+		vendorsRoot + "slick/slick.js",
+		vendorsRoot + "touchspin/jquery.bootstrap-touchspin.js",
+		vendorsRoot + "aos/js/aos.js",
+		contentRoot + "bs4/js/bootstrap.bundle.js",
+		// Common
+		jsRoot + "underscore.mixins.js",
+		jsRoot + "smartstore.system.js",
+		jsRoot + "smartstore.touchevents.js",
+		jsRoot + "smartstore.jquery.utils.js",
+		jsRoot + "smartstore.globalization.js",
+		jsRoot + "jquery.validate.unobtrusive.custom.js",
+		jsRoot + "smartstore.viewport.js",
+		jsRoot + "smartstore.doajax.js",
+		jsRoot + "smartstore.eventbroker.js",
+		jsRoot + "smartstore.hacks.js",
+		jsRoot + "smartstore.common.js",
+		jsRoot + "smartstore.selectwrapper.js",
+		jsRoot + "smartstore.throbber.js",
+		jsRoot + "smartstore.thumbzoomer.js",
+		jsRoot + "smartstore.responsiveNav.js",
+		jsRoot + "smartstore.keynav.js",
+		jsRoot + "smartstore.articlelist.js",
+		jsRoot + "smartstore.megamenu.js",
+		jsRoot + "smartstore.offcanvas.js",
+		jsRoot + "smartstore.parallax.js",
+		// Shop
+		jsRoot + "public.common.js",
+		jsRoot + "public.search.js",
+		jsRoot + "public.offcanvas-cart.js",
+		jsRoot + "public.offcanvas-menu.js",
+		jsRoot + "public.product.js");
+}

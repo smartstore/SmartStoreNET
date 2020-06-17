@@ -39,7 +39,5 @@ namespace SmartStore.Web.Framework.UI
 				return _trail;
 			}
 		}
-
-
 	}
 }

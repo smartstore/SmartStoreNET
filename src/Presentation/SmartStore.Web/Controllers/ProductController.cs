@@ -113,7 +113,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Products
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		public ActionResult ProductDetails(int productId, string attributes, ProductVariantQuery query)
 		{
 			var product = _productService.GetProductById(productId);
@@ -170,26 +170,7 @@ namespace SmartStore.Web.Controllers
 			// Breadcrumb
 			if (_catalogSettings.CategoryBreadcrumbEnabled)
 			{
-				_helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
-
-                // Add trail of parent product if product has no category assigned.
-                var hasTrail = _breadcrumb.Trail?.Any() ?? false;
-                if (!hasTrail)
-                {
-                    var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
-                    if (parentGroupedProduct != null)
-                    {
-                        _helper.GetCategoryBreadCrumb(0, parentGroupedProduct.Id).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
-
-                        _breadcrumb.Track(new MenuItem
-                        {
-                            Text = parentGroupedProduct.GetLocalized(x => x.Name),
-                            Rtl = model.Name.CurrentLanguage.Rtl,
-                            EntityId = parentGroupedProduct.Id,
-                            Url = Url.RouteUrl("Product", new { SeName = parentGroupedProduct.GetSeName() })
-                        });
-                    }
-                }
+                _helper.GetCategoryBreadcrumb(_breadcrumb, ControllerContext, product);
 
 				_breadcrumb.Track(new MenuItem
 				{
@@ -506,7 +487,8 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
+        [ValidateInput(false)]
+        public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, ProductVariantQuery query, FormCollection form)
 		{
 			int quantity = 1;
 			int galleryStartIndex = -1;
@@ -693,7 +675,7 @@ namespace SmartStore.Web.Controllers
 		#region Product reviews
 
 		[ActionName("Reviews")]
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult Reviews(int id)
 		{
@@ -866,7 +848,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Ask product question
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult AskQuestion(int id)
 		{
@@ -914,7 +896,7 @@ namespace SmartStore.Web.Controllers
 					model.SenderEmail,
 					model.SenderName,
 					model.SenderPhone,
-					Core.Html.HtmlUtils.FormatText(model.Question, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Question.HtmlEncode()));
 
 				if (msg?.Email?.Id != null)
 				{
@@ -940,7 +922,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Email a friend
 
-		[RequireHttpsByConfig(SslRequirement.No)]
+		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult EmailAFriend(int id)
 		{
@@ -987,7 +969,7 @@ namespace SmartStore.Web.Controllers
 					product,
 					model.YourEmailAddress, 
 					model.FriendEmail,
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
 				model.ProductId = product.Id;
 				model.ProductName = product.GetLocalized(x => x.Name);

@@ -11,7 +11,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-bar-chart-o"></i>
+            <i class="far fa-chart-bar"></i>
             @T("Admin.Orders")
         </div>
         <div class="options d-flex">
@@ -37,10 +37,10 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = false })">
-						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
+						<i class="far fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 					</a>
 					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = true })">
-						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
+						<i class="far fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 					</a>
 				</div>
 			</div>
@@ -74,6 +74,10 @@
 			@Html.SmartLabelFor(model => model.OrderNumber)
 			@Html.EditorFor(model => Model.OrderNumber)
 		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.PaymentMethods)
+			@Html.DropDownList("PaymentMethods", Model.AvailablePaymentMethods, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -85,7 +89,6 @@
 		{
 			<div class="col-xl-3"></div>
 		}
-		<div class="col-xl-3"></div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.OrderStatusIds)
 			@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple", @class = "form-control" })
@@ -100,7 +103,7 @@
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
-			<label>&nbsp;</label>
+			@Html.SmartLabel(string.Empty, string.Empty)
 			<button type="submit" id="btnSearch" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
@@ -252,7 +255,8 @@
 				ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
 				StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
 				OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
-				OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val()
+                OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val(),
+                PaymentMethods: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentMethods)').val()).join(),
 			};
 			e.data = searchModel;
 		}

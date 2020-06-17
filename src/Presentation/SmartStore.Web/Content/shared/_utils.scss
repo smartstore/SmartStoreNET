@@ -93,6 +93,7 @@
 
 // Data binding 3d rotate
 // ------------------------------------------------------
+
 @keyframes data-binding {
 	0% {
 		transform: rotateY(0deg);
@@ -213,6 +214,17 @@ table th {
 
 
 //
+// Bootstrap additions
+// --------------------------------------------------
+
+.embed-responsive-16by10 {
+    &::before {
+        padding-top: percentage(10 / 16);
+    }
+}
+
+
+//
 // Bootstrap List group tweaks
 // ------------------------------------------------------
 
@@ -258,6 +270,20 @@ table th {
 
 .rounded-xl {
     border-radius: $border-radius-lg * 2 !important;
+}
+
+
+// Extra color utils
+// ------------------------------------------------------
+
+@each $g, $value in $grays {
+    .bg-gray-#{$g} {
+        background-color: $value !important;
+    }
+
+    .text-gray-#{$g} {
+        color: $value !important;
+    }
 }
 
 
@@ -347,6 +373,24 @@ table th {
 
 .flip-hv {
     transform: scale(-1, -1) !important;
+}
+
+
+// Parallax stuff
+// ------------------------------------------------------
+
+.parallax[data-parallax-type=content] {
+    will-change: transform;
+}
+
+
+// Animations
+// ------------------------------------------------------
+
+body.no-anims * {
+    transition-property: none !important;
+    transform: none !important;
+    animation: none !important;
 }
 
 

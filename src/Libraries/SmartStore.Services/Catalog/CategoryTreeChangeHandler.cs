@@ -35,7 +35,7 @@ namespace SmartStore.Services.Catalog
 		public CategoryTreeChangeReason Reason { get; private set; }
 	}
 
-	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer<IndexingCompletedEvent>
+	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer
 	{
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;
@@ -48,7 +48,7 @@ namespace SmartStore.Services.Catalog
 		// Visibility affecting category prop names
 		private static readonly string[] _a = new string[] { "LimitedToStores", "SubjectToAcl" };
 		// Data affecting category prop names
-		private static readonly string[] _d = new string[] { "Name", "Alias", "PictureId", "BadgeText", "BadgeStyle" };
+		private static readonly string[] _d = new string[] { "Name", "Alias", "ExternalLink", "PictureId", "BadgeText", "BadgeStyle" };
 
 		private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>
 		{
@@ -104,7 +104,7 @@ namespace SmartStore.Services.Catalog
 
 				if (modProps.Keys.Any(x => _h.Contains(x)))
 				{
-					// Hierarchy affecting properties has changed. Nuke every tree.
+					// Hierarchy affecting properties has changed. Nuke each tree.
 					cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
 					PublishEvent(CategoryTreeChangeReason.Hierarchy);
 					_invalidated = true;
@@ -145,6 +145,7 @@ namespace SmartStore.Services.Catalog
 								else
 								{
 									value.Name = category.Name;
+                                    value.ExternalLink = category.ExternalLink;
 									value.Alias = category.Alias;
 									value.PictureId = category.PictureId;
 									value.BadgeText = category.BadgeText;
@@ -258,7 +259,7 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		void IConsumer<IndexingCompletedEvent>.HandleEvent(IndexingCompletedEvent message)
+		public void HandleEvent(IndexingCompletedEvent message)
 		{
 			if (message.IndexInfo.IsModified)
 			{

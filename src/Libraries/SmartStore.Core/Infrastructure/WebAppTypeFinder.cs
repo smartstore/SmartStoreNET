@@ -95,7 +95,7 @@ namespace SmartStore.Core.Infrastructure
 				AppDomain.CurrentDomain.GetAssemblies().Select(x => x.FullName), 
 				StringComparer.OrdinalIgnoreCase);	
 
-			var pluginAssemblies = new HashSet<Assembly>(PluginManager.ReferencedPlugins.Select(x => x.ReferencedAssembly).Where(x => x != null));
+			var pluginAssemblies = new HashSet<Assembly>(PluginManager.ReferencedPlugins.Select(x => x.Assembly.Assembly));
 
 			foreach (var assembly in pluginAssemblies)
 			{

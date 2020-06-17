@@ -33,10 +33,11 @@ $aos-easing: (
 // Edit info (mc):
 //  - Removed root [data-aos]
 //  - body[data-aos-easing="#{$key}"] & >> body[data-aos-easing="#{$key}"] [data-aos]
+//	- prepended 'body' to second selector because of correct specifity 
 // ----------------------------------
 @each $key, $val in $aos-easing {
     body[data-aos-easing="#{$key}"] [data-aos],
-    [data-aos][data-aos-easing="#{$key}"] {
+    body [data-aos][data-aos-easing="#{$key}"] {
         transition-timing-function: $val;
     }
 }

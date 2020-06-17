@@ -520,7 +520,7 @@
 		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickProducts_Completed"))
 
-    if (Model.SelectedRuleSetIds.Any() || Model.HasAutomatedAssignments)
+    if (Model.ShowRuleApplyButton)
     {
 	    <button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
 		    <i class="fa fa-play"></i>

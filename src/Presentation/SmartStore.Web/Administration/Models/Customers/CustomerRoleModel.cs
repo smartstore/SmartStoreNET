@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Models.Customers
         [AdditionalMetadata("scope", RuleScope.Customer)]
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.AutomatedAssignmentRules")]
         public int[] SelectedRuleSetIds { get; set; }
-        public bool HasAutomatedAssignments { get; set; }
+        public bool ShowRuleApplyButton { get; set; }
 
         public TreeNode<IPermissionNode> PermissionTree { get; set; }
 

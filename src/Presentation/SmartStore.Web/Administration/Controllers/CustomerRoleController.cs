@@ -360,8 +360,12 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedRuleSetIds = role.RuleSets.Select(x => x.Id).ToArray();
 
-                var customerRoleMappingQuery = _customerService.GetCustomerRoleMappings(null, new[] { role.Id }, true, 0, int.MaxValue, false).SourceQuery;
-                model.HasAutomatedAssignments = customerRoleMappingQuery.Any();
+                model.ShowRuleApplyButton = model.SelectedRuleSetIds.Any();
+                if (!model.ShowRuleApplyButton)
+                {
+                    var customerRoleMappingQuery = _customerService.GetCustomerRoleMappings(null, new[] { role.Id }, true, 0, int.MaxValue, false).SourceQuery;
+                    model.ShowRuleApplyButton = customerRoleMappingQuery.Any();
+                }
             }
 
             model.TaxDisplayTypes = model.TaxDisplayType.HasValue

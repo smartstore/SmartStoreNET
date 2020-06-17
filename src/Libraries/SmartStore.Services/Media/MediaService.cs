@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -457,11 +458,29 @@ namespace SmartStore.Services.Media
             }
             else
             {
-                // Delete entity
-                _fileRepo.Delete(file);
+                try
+                {
+                    // Delete entity
+                    _fileRepo.Delete(file);
 
-                // Delete from storage
-                _storageProvider.Remove(file);
+                    // Delete from storage
+                    _storageProvider.Remove(file);
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.IsUniquenessViolationException())
+                    {
+                        throw _exceptionFactory.DeleteTrackedFile(file, ex);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 

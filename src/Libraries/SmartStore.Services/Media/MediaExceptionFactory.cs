@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Localization;
 using SmartStore.Utilities;
 
@@ -57,6 +58,16 @@ namespace SmartStore.Services.Media
     public sealed class MaxMediaFileSizeExceededException : SmartException
     {
         public MaxMediaFileSizeExceededException(string message) : base(message) { }
+    }
+
+    public sealed class DeleteTrackedFileException : SmartException
+    {
+        public DeleteTrackedFileException(string message, MediaFile file, Exception innerException) : base(message, innerException) 
+        {
+            File = file;
+        }
+
+        public MediaFile File { get; }
     }
 
     #endregion
@@ -119,8 +130,13 @@ namespace SmartStore.Services.Media
                 "Admin.Media.Exception.MaxFileSizeExceeded",
                 fileName.NaIfEmpty(),
                 Prettifier.BytesToString(fileSize),
-                Prettifier.BytesToString(maxSize))
-                );
+                Prettifier.BytesToString(maxSize)));
+        }
+
+        public DeleteTrackedFileException DeleteTrackedFile(MediaFile file, Exception innerException)
+        {
+            Guard.NotNull(file, nameof(file));
+            return new DeleteTrackedFileException($"Die Datei '{file.Name}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.", file, innerException); // TODO: (mm) Loc
         }
     }
 }

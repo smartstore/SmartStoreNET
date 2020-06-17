@@ -323,7 +323,7 @@ namespace SmartStore.Services.Media
             var allNodes = root.FlattenNodes(true).Reverse().ToArray();
             var result = new FolderDeleteResult();
 
-            using (new DbContextScope(autoDetectChanges: false, autoCommit: false))
+            using (new DbContextScope(autoDetectChanges: false))
             {
                 using (_folderService.BeginScope(true))
                 {
@@ -381,6 +381,11 @@ namespace SmartStore.Services.Media
                             try
                             {
                                 DeleteFile(file, true);
+                                numDeleted++;
+                            }
+                            catch (DeleteTrackedFileException)
+                            {
+                                trackedFiles.Add(file);
                             }
                             catch (IOException)
                             {
@@ -391,13 +396,13 @@ namespace SmartStore.Services.Media
                         {
                             DeleteFile(file, false);
                             file.FolderId = null;
+                            numDeleted++;
                         }
                         else if (strategy == FileHandling.MoveToRoot)
                         {
                             file.FolderId = albumId;
+                            numDeleted++;
                         }
-
-                        numDeleted++;
                     }
 
                     _fileRepo.Context.SaveChanges();
@@ -432,7 +437,7 @@ namespace SmartStore.Services.Media
                 // Don't delete folder if a containing file could not be deleted, 
                 // any tracked file was found or any of its child folders could not be deleted..
                 _folderService.DeleteFolder(folder);
-                _fileRepo.Context.SaveChanges();
+                //_fileRepo.Context.SaveChanges();
                 result.DeletedFolderIds.Add(folder.Id);
             }
 

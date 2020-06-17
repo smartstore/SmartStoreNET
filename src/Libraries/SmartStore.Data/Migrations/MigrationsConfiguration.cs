@@ -613,7 +613,7 @@
             builder.AddOrUpdate("Admin.Report.Registrations", "Registrations", "Registrierungen");
 
             builder.AddOrUpdate("Common.FileUploader.Upload", "To upload files drop them here or click.", "Zum Hochladen Dateien hier ablegen oder klicken.");
-            builder.AddOrUpdate("FileUploader.Dropzone.Message", "To upload files drop them here or click.", "Zum Hochladen Dateien hier ablegen oder klicken.");
+            builder.AddOrUpdate("FileUploader.Dropzone.Message", "To upload files drop them here or click", "Zum Hochladen Dateien hier ablegen oder klicken");
             builder.AddOrUpdate("FileUploader.MultiFiles.MainMediaFile", "Main media file", "Hauptbild");
             builder.AddOrUpdate("FileUploader.Preview.SetMainMedia.Title", "Set as main picture", "Zum Hauptbild machen");
             builder.AddOrUpdate("FileUploader.Preview.DeleteEntityMedia.Title", "Remove assignment", "Zuordnung entfernen");
@@ -897,7 +897,10 @@
             builder.AddOrUpdate("Admin.Packaging.Dialog.Upload", "Upload & Install package file", "Paket-Datei hochladen & installieren");
 
             builder.AddOrUpdate("Admin.Packaging.InstallSuccess.Theme", "Theme was uploaded and installed successfully. Please reload the list.", "Theme wurde hochgeladen und erfolgreich installiert. Bitte laden Sie die Liste neu.");
-            
+
+            builder.AddOrUpdate("Admin.Media.Exception.DeleteReferenzedFile",
+                "The file '{0}' is referenced by at least one entity. Permanently deleting referenced media files is not supported",
+                "Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.");            
         }
     }
 }

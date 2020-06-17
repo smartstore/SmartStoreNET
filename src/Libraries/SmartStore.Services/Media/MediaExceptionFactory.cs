@@ -62,7 +62,7 @@ namespace SmartStore.Services.Media
 
     public sealed class DeleteTrackedFileException : SmartException
     {
-        public DeleteTrackedFileException(string message, MediaFile file, Exception innerException) : base(message, innerException) 
+        public DeleteTrackedFileException(string message, MediaFile file, Exception innerException) : base(message, innerException)
         {
             File = file;
         }
@@ -136,7 +136,7 @@ namespace SmartStore.Services.Media
         public DeleteTrackedFileException DeleteTrackedFile(MediaFile file, Exception innerException)
         {
             Guard.NotNull(file, nameof(file));
-            return new DeleteTrackedFileException($"Die Datei '{file.Name}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.", file, innerException); // TODO: (mm) Loc
+            return new DeleteTrackedFileException(T("Admin.Media.Exception.DeleteReferenzedFile", file.Name), file, innerException);
         }
     }
 }

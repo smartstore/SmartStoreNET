@@ -92,30 +92,16 @@ SmartStore.Admin.Media = (function () {
 			_dialog.find(".remaining-file-counter .current-count").text(this.currentIndex + 1);
 			_dialog.find(".remaining-file-counter .total-count").text(this.queue.length);
 
-			// Display uploaded file.
-			var elIcon = _dupeFileDisplay.find(".file-icon");
-			var elImage = _dupeFileDisplay.find(".file-img");
-
-			if (!source.thumbUrl) {
-				// Dropzone couldn't fetch a preview for the file currently uploading.
-				var icon = SmartStore.media.getIconHint(dest);
-				elIcon.attr("class", "file-icon fa-4x " + icon.name).css("color", icon.color);
-				elImage.addClass("d-none");
-			}
-			else {
-				elIcon.attr("class", "file-icon");
-				elImage.attr("src", source.thumbUrl).removeClass("d-none");
-			}
-
 			refreshFileDisplay(_dupeFileDisplay, source);
-
-			// Display existing file.
-			existingFileDisplay.find(".file-img").attr("src", dest.thumbUrl);
 			refreshFileDisplay(existingFileDisplay, dest);
 		};
 
 		// Private functions.
 		var refreshFileDisplay = function (el, file) {
+			var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
+			el.find(".file-preview").html(preview.thumbHtml);
+			SmartStore.media.lazyLoadThumbnails(el);
+
 			el.find(".file-name").text(file.name);
 			//el.find(".file-date").text(moment(file.createdOn).format('L LTS'));
 			el.find(".file-size").text(_.formatFileSize(file.size));

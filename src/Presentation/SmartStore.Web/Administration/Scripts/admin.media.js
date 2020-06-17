@@ -7,6 +7,7 @@ SmartStore.Admin.Media = (function () {
 		var _dialog = null;
 		var _dupeFileDisplay = null;
 
+		// Public variables.
 		Object.defineProperty(this, 'currentConflict', {
 			get: function () {
 				return this.queue ? this.queue[this.currentIndex] : null;
@@ -75,7 +76,6 @@ SmartStore.Admin.Media = (function () {
 			}
 		};
 
-		// Private functions.
 		this.refresh = function (conflict) {
 			conflict = conflict || this.currentConflict;
 			if (!conflict)
@@ -87,6 +87,10 @@ SmartStore.Admin.Media = (function () {
 
 			// Display current filename in intro text.
 			_dialog.find(".intro .current-file").html('<b class="font-weight-medium">' + source.name + '</b>');
+
+			// Display remaining file count.
+			_dialog.find(".remaining-file-counter .current-count").text(this.currentIndex + 1);
+			_dialog.find(".remaining-file-counter .total-count").text(this.queue.length);
 
 			// Display uploaded file.
 			var elIcon = _dupeFileDisplay.find(".file-icon");
@@ -110,6 +114,7 @@ SmartStore.Admin.Media = (function () {
 			refreshFileDisplay(existingFileDisplay, dest);
 		};
 
+		// Private functions.
 		var refreshFileDisplay = function (el, file) {
 			el.find(".file-name").text(file.name);
 			//el.find(".file-date").text(moment(file.createdOn).format('L LTS'));

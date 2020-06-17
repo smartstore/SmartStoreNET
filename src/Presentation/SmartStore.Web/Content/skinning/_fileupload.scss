@@ -435,6 +435,11 @@
 
 // FileConflictResolutionDialog
 #duplicate-window {
+    .remaining-file-counter {
+        float: right;
+        padding-top: 10px;
+    }
+    
     .file-display {
         border: 1px solid $gray-400;
 

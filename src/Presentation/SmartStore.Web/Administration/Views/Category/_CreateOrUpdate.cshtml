@@ -294,15 +294,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SelectedRuleSetIds)
-                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SelectedStoreIds)
             </td>
             <td class="adminData">
@@ -452,9 +443,23 @@
 {
 	if (Model.Id > 0)
 	{
-        <div class="alert alert-info">
-            @T("Admin.Catalog.Categories.ProductListDescription")
+        <div class="adminContent">
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedRuleSetIds)
+                    @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+                </div>
+            </div>
         </div>
+        if (Model.SelectedRuleSetIds.Any())
+        {
+            <div class="alert alert-info">
+                @T("Admin.Catalog.Categories.ProductListDescription")
+            </div>
+        }
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
                 .Name("products-grid")
@@ -530,7 +535,7 @@
 	    $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
 	    togglePageSize();
 	
-		// toggle top\bottom description
+		// Toggle top\bottom description.
 		$('.description-toggle-button').click(function() {
 			$('.description-container').toggleClass("d-none");
         });

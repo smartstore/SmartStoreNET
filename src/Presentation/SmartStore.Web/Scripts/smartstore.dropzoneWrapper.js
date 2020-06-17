@@ -835,27 +835,19 @@
 
 	function setSingleFilePreviewIcon(fuContainer, typeFilter) {
 		var types = typeFilter.split(",");
+		var icon;
 
-		// Icon should be misc now (fall back & icon for typefilter === '*')
-		var icon = SmartStore.media.getIconHint({});
-
-		if (typeFilter !== '*') {
-			for (var type of types) {
-				if (type.indexOf('.') === 0) {
-					// Type should be a valid extension now.
-					icon = SmartStore.media.getIconHint({ ext: type });
-					if (icon.name !== "far fa-file") {
-						break;
-					}
-				} else {
-					// Type should be a valid media type now.
-					icon = SmartStore.media.getIconHint({ type: type });
-					if (icon.name !== "far fa-file") {
-						break;
-					}
-				}
-			}
+		for (var type of types) {
+			type = type.trim();
+			var o = {};
+			o[type[0] === '.' ? 'ext' : 'type'] = type;
+			icon = SmartStore.media.getIconHint(o);
+			if (!icon.isFallback) {
+				break;
+            }
 		}
+
+		icon = icon || SmartStore.media.getIconHint({});
 		
 		var html = '<i class="file-icon show fa-2x ' + icon.name + '"></i>';
 		fuContainer.find('.fileupload-thumb').addClass("empty").html(html);

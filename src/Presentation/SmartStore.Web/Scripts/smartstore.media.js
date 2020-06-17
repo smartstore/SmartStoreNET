@@ -37,7 +37,7 @@ SmartStore.media = (function () {
         "text": { name: "far fa-file-alt", color: "#607d8B", mediaType: 'text' },
         "bin": { name: "far fa-file", color: "#bbb", mediaType: 'bin' },
         // Rescue
-        "misc": { name: "far fa-file", color: "#bbb", mediaType: 'bin' },
+        "misc": { name: "far fa-file", color: "#bbb", mediaType: 'bin', isFallback: true }
     };
 
 	return {

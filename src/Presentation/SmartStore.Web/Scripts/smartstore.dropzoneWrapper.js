@@ -90,7 +90,7 @@
 				}
 				else {
 					// Set current filename as fu-message on init.
-					fuContainer.find(".fu-message").text(fuContainer.find(".fileupload-thumb").attr("data-current-filename"));
+					fuContainer.find(".fu-message").removeClass("empty").text(fuContainer.find(".fileupload-thumb").attr("data-current-filename"));
 					elRemove.show();
 				}
 			}

@@ -17,25 +17,20 @@
         display: none !important;
     }
 
-    .dropzone-file-info {
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
     .fu-message {
         cursor: pointer;
-        font-size: $h6-font-size;
-        font-weight: $font-weight-normal;
-        color: $gray-600;
     }
+
     // Xl display.
     &.xl {
         .fu-message {
-            font-size: $h5-font-size;
-            font-weight: $font-weight-medium;
+            font-size: $h5-font-size !important;
+        }
+
+        .dropzone-file-info,
+        .fileupload {
+            justify-content: center;
+            text-align: center;
         }
     }
 
@@ -123,18 +118,17 @@
 
     .fileupload,
     .fu-message {
-        align-self: center;
         font-weight: $font-weight-medium;
-        color: inherit;
         font-size: $font-size-base;
+        align-self: center;
+        color: inherit;
 
-        .xl & {
-            text-align: center;
+        &.empty {
+            font-size: $h6-font-size;
         }
     }
 
-    .dz-preview,
-    .dz-message {
+    .dz-preview, .dz-message {
         display: none;
     }
 
@@ -173,11 +167,12 @@
     }
 
     .fileupload-remove {
-        display: flex;
+        display: none;
         min-width: 1.25rem;
         width: 1.25rem;
         height: 1.25rem;
         transition: 0.2s;
+        text-align: center;
 
         &:hover {
             background-color: rgba($danger,.2);
@@ -336,7 +331,7 @@
         float: right;
         padding-top: 10px;
     }
-    
+
     .file-display {
         border: 1px solid $gray-400;
 

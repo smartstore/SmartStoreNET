@@ -460,10 +460,10 @@ namespace SmartStore.Services.Media
             {
                 try
                 {
-                    if (!force && file.Tracks.Any())
-                    {
-                        throw _exceptionFactory.DeleteTrackedFile(file, null);
-                    }
+                    //if (!force && file.Tracks.Any())
+                    //{
+                    //    throw _exceptionFactory.DeleteTrackedFile(file, null);
+                    //}
                     
                     // Delete entity
                     _fileRepo.Delete(file);

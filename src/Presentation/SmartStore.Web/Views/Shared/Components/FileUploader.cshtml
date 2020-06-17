@@ -22,7 +22,6 @@
 }
 
 <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
-
     <div class="dropzone-target">
         <div class="dropzone-file-info d-flex">
             <div class="fu-message text-truncate empty" title="@Model.UploadText">
@@ -35,7 +34,6 @@
                     @T("FileUploader.Dropzone.Message")
                 }
             </div>
-            @*TODO: Add confirm dialog*@
             @if (!Model.Multifile)
             {
                 <a href="#" class="fileupload-remove remove justify-content-center align-items-center pretty-link rounded-sm ml-2" title="@T("FileUploader.Dropzone.DictRemoveFile")">

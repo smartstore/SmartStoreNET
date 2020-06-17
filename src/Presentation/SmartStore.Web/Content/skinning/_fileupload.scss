@@ -124,7 +124,7 @@
         color: inherit;
 
         &.empty {
-            font-size: $h6-font-size;
+            font-size: $font-size-lg;
         }
     }
 
@@ -143,8 +143,9 @@
         min-width: 90px;
 
         .xl & {
-            width: 150px;
-            height: 150px;
+            min-width: 120px;
+            width: 120px;
+            height: 120px;
         }
 
         &.empty {
@@ -179,7 +180,6 @@
 
         > .fileupload-remove-icon {
             margin-top: -2px;
-            width: 12px;
         }
     }
 }

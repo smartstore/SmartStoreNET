@@ -594,7 +594,7 @@
 				e.preventDefault();				
 
 				setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
-				fuContainer.find('.fu-message').html(Res['FileUploader.Dropzone.DictDefaultMessage']);
+				fuContainer.find('.fu-message').html(Res['FileUploader.Dropzone.Message']);
 				fuContainer.find('.hidden').val(0).trigger('change');
 				$(this).removeClass("d-flex");
 

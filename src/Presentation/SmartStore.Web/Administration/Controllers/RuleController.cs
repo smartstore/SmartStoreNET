@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Customers;
@@ -90,7 +91,7 @@ namespace SmartStore.Admin.Controllers
                     selected = selectedArr.Contains(x.Id),
                     urlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
                     url = x.Id == -1
-                        ? Url.Action("Create", "Rule", new { area = "admin" })
+                        ? Url.Action("Create", "Rule", new { area = "admin", scope })
                         : Url.Action("Edit", "Rule", new { id = x.Id, area = "admin" })
                 })
                 .ToList();
@@ -137,11 +138,11 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.System.Rule.Create)]
-        public ActionResult Create()
+        public ActionResult Create(RuleScope? scope)
         {
             var model = new RuleSetModel();
 
-            PrepareModel(model, null);
+            PrepareModel(model, null, scope);
             PrepareTemplateViewBag(0);
 
             return View(model);
@@ -632,9 +633,9 @@ namespace SmartStore.Admin.Controllers
             //ViewBag.LanguageSeoCode = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
         }
 
-        private void PrepareModel(RuleSetModel model, RuleSetEntity entity)
+        private void PrepareModel(RuleSetModel model, RuleSetEntity entity, RuleScope? scope = null)
         {
-            var scopes = (entity?.Scope ?? RuleScope.Cart).ToSelectList();
+            var scopes = (entity?.Scope ?? scope ?? RuleScope.Cart).ToSelectList();
 
             model.Scopes = scopes
                 .Select(x =>
@@ -646,8 +647,8 @@ namespace SmartStore.Admin.Controllers
                         Selected = x.Selected
                     };
 
-                    var scope = (RuleScope)x.Value.ToInt();
-                    item.CustomProperties["Description"] = scope.GetLocalizedEnum(Services.Localization, Services.WorkContext, true);
+                    var ruleScope = (RuleScope)x.Value.ToInt();
+                    item.CustomProperties["Description"] = ruleScope.GetLocalizedEnum(Services.Localization, Services.WorkContext, true);
 
                     return item;
                 })

@@ -437,8 +437,8 @@
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Product", "Product", "Produkt");
 
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Cart.Hint",
-                "Rule to grant discounts to the customer or offer payment and shipping methods.",
-                "Regel, um dem Kunden Rabatte zu gewähren oder Zahl- und Versandarten anzubieten.");
+                "Rule to grant discounts to the customer or offer shipping and payment methods.",
+                "Regel, um dem Kunden Rabatte zu gewähren oder Versand- und Zahlarten anzubieten.");
 
             builder.AddOrUpdate("Enums.SmartStore.Rules.RuleScope.Customer.Hint",
                 "Rule to automatically assign customers to customer roles per scheduled task.",

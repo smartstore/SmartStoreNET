@@ -83,7 +83,7 @@
 
 				if (!currentFileId || currentFileId === 0 || !options.showRemoveButton) {
 					// If there's no file, there's no remove button.
-					elRemove.hide();
+					elRemove.removeClass("d-flex");
 
 					// Display icon according to type filter.
 					setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
@@ -91,7 +91,7 @@
 				else {
 					// Set current filename as fu-message on init.
 					fuContainer.find(".fu-message").removeClass("empty").text(fuContainer.find(".fileupload-thumb").attr("data-current-filename"));
-					elRemove.show();
+					elRemove.addClass("d-flex");
 				}
 			}
 
@@ -114,7 +114,7 @@
 				logEvent("addedfile", file);
 
 				setPreviewIcon(file, displayPreviewInList);
-				elRemove.show();
+				elRemove.addClass("d-flex");
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
@@ -547,7 +547,7 @@
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(files[0], fuContainer, options);
-					elRemove.show();
+					elRemove.addClass("d-flex");
 					if (options.onMediaSelected) options.onMediaSelected.apply(this, [files[0]]);
 				}
 				else {
@@ -591,12 +591,12 @@
 
 			// Remove uploaded file (single upload only).
 			elRemove.on('click', function (e) {
-				e.preventDefault();
+				e.preventDefault();				
 
 				setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
 				fuContainer.find('.fu-message').html(Res['FileUploader.Dropzone.DictDefaultMessage']);
 				fuContainer.find('.hidden').val(0).trigger('change');
-				$(this).hide();
+				$(this).removeClass("d-flex");
 
 				if (options.onFileRemove)
 					options.onFileRemove.apply(this, [e, el]);

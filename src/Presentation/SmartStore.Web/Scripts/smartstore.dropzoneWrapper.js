@@ -25,8 +25,7 @@
 	var activeFiles = 0;
 	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
 	var dialog = SmartStore.Admin ? SmartStore.Admin.Media.fileConflictResolutionDialog : null;
-	var file;
-
+	
 	$.fn.dropzoneWrapper = function (options) {
 		return this.each(function () {
 			var el = this, $el = $(this);
@@ -119,7 +118,10 @@
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
-					$(file.previewTemplate).find(".upload-status").append(progress);
+					$(file.previewTemplate)
+						.find(".upload-status")
+						.attr("data-uuid", file.upload.uuid)
+						.append(progress);
 				}
 				
 				// If file is a duplicate prevent it from being displayed in preview container.
@@ -215,7 +217,7 @@
 					// Multifile
 					// If there was an error returned by the server set file status accordingly.
 					if (response.length) {
-						for (fileResponse of response) {
+						for (var fileResponse of response) {
 							if (!fileResponse.success) {
 								file.status = Dropzone.ERROR;
 								file.media = fileResponse;
@@ -351,7 +353,7 @@
 					// MultiFile
 					var uploadedFiles = this.files;
 					
-					for (file of uploadedFiles) {
+					for (var file of uploadedFiles) {
 						// Only reset progress bar if there was an error (file is dupe) and the files must be processed again.
 						if (file.status === Dropzone.ERROR) {
 							dzResetProgressBar($(file.previewElement).find(".progress-bar"));
@@ -609,6 +611,13 @@
 				return false;
 			});
 
+			elStatusWindow.on('click', '.fu-item-canceled', function (e) {
+				var uuid = $(this).closest(".upload-status").attr("data-uuid");
+				var file = el.files.filter(file => file.upload.uuid === uuid)[0];
+				resetFileStatus(file);
+				el.processFile(file);
+			});
+			
 			elStatusWindow.on('uploadcanceled', function (e) {
 				cancelAllUploads(true);
 			});
@@ -646,7 +655,7 @@
 					$(this).hide();
 				}
 
-				for (file of currentlyUploading) {
+				for (var file of currentlyUploading) {
 					if (!file)
 						return;
 
@@ -656,18 +665,9 @@
 					}
 					else {
 						file.status = Dropzone.CANCELED;
-						var template = $(file.previewTemplate);
-						template.addClass("canceled");
-
-						/*
-						var icon = template.find(".upload-status > i");
-						icon.removeClass("d-none").addClass("fa-times-circle text-danger");
-						*/
-
-						var icon = template.find(".upload-status > .fu-item-canceled");
-						icon.removeClass("d-none");
-
-						template.find(".circular-progress").remove();
+						var template = $(file.previewTemplate).addClass("canceled");
+						template.find(".upload-status > .fu-item-canceled").removeClass("d-none");
+						template.find(".circular-progress").addClass("d-none");
 					}
 				}
 
@@ -757,10 +757,7 @@
 				return;
 			}
 
-			// Reset file status.
 			resetFileStatus(firstFile);
-
-			// Process first file. 
 			dropzone.processFile(firstFile);
 			resumeUpload = displayPreviewInList;
 
@@ -774,7 +771,7 @@
 		}
 		else {
 			// Reset file status.
-			for (file of dupeFiles) {
+			for (var file of dupeFiles) {
 				resetFileStatus(file);
 			}
 
@@ -791,8 +788,8 @@
 			}
 			else {
 				// Nicer display (queue like) if files are added singulary.
-				for (file of dupeFiles) {
-					dropzone.processFile(file);
+				for (var dupe of dupeFiles) {
+					dropzone.processFile(dupe);
 				}
 
 				resumeUpload = true;
@@ -892,12 +889,11 @@
 		var elStatusWindow = $(".fu-status-window");	// Status window is unique thus no need to pass it as a parameter.
 		if (elStatusWindow.length > 0) {
 			var el = $(file.previewElement);
-			var icon = el.find(".upload-status > i");
-			icon.addClass("d-none");
 			window.setCircularProgressValue(el, 0);
+			el.find(".upload-status > i").addClass("d-none");
+			el.find(".fu-item-canceled").addClass("d-none");
 			el.find(".circular-progress").removeClass("d-none");
-
-			//dzResetProgressBar(el.find(".progress-bar"));
+			el.removeClass("dz-processing dz-complete");
 		}
 	}
 

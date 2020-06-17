@@ -444,7 +444,7 @@ namespace SmartStore.Services.Media
             return ConvertMediaFile(file, pathData.Folder);
         }
 
-        public void DeleteFile(MediaFile file, bool permanent)
+        public void DeleteFile(MediaFile file, bool permanent, bool force = false)
         {
             Guard.NotNull(file, nameof(file));
 
@@ -460,6 +460,11 @@ namespace SmartStore.Services.Media
             {
                 try
                 {
+                    if (!force && file.Tracks.Any())
+                    {
+                        throw _exceptionFactory.DeleteTrackedFile(file, null);
+                    }
+                    
                     // Delete entity
                     _fileRepo.Delete(file);
 

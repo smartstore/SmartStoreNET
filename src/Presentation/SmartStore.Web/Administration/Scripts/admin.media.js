@@ -86,7 +86,7 @@ SmartStore.Admin.Media = (function () {
 			var dest = conflict.dest;
 
 			// Display current filename in intro text.
-			_dialog.find(".intro .current-file").html('<b class="font-weight-medium">' + source.name + '</b>');
+			_dialog.find(".intro .current-file").html('<b class="fwm">' + source.name + '</b>');
 
 			// Display remaining file count.
 			_dialog.find(".remaining-file-counter .current-count").text(this.currentIndex + 1);

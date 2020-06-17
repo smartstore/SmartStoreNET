@@ -284,7 +284,7 @@
 					.filter(file => file.media && file.media.dupe === true);
 
 				// Dupe file handling is 'replace' thus no need for assignment to entity (media IDs remain the same, while file was altered). 
-				if (fuContainer.data("resolution-type") === 1) {
+				if (parseInt(fuContainer.data("resolution-type")) === 1) {
 					// Update preview pic of replaced media file.
                     for (var newFile of files) {
                         var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.media.id + "']");
@@ -360,9 +360,6 @@
 				}
 
 				if (options.onCompleted) options.onCompleted.apply(this, [successFiles]);
-
-				// DEV
-				//$(".open-upload-summmary").show();
 			});
 
 			el.on("canceled", function (file) {
@@ -746,7 +743,7 @@
 			var firstFile = dupeFiles[0];
 
 			// Do nothing on skip.
-			if (resolutionType === "3") {
+			if (resolutionType === 3) {
 				dropzone.removeFile(firstFile);
 
 				if (dupeFiles[1]) {
@@ -782,7 +779,7 @@
 			}
 
 			// Do nothing on skip.
-			if (resolutionType === "3") {
+			if (resolutionType === 3) {
 				dropzone.emit("queuecomplete");
 				dialog.close();
 				return;

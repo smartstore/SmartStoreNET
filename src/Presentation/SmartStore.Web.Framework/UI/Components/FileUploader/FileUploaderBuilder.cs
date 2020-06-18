@@ -58,6 +58,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> Clickable(string value)
+		{
+			base.Component.Clickable = value;
+			return this;
+		}
+		
 		public FileUploaderBuilder<TModel> Multifile(bool value)
 		{
 			base.Component.Multifile = value;

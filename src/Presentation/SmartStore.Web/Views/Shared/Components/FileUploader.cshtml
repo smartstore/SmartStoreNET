@@ -151,7 +151,8 @@
             onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null"),
 			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
             maxFiles: @(Model.Multifile ? 100 : 1),
-			maxFilesSize: @maxFilesSize,
+            maxFilesSize: @maxFilesSize,
+            clickable: @Html.Raw(Model.Clickable.HasValue() ? Model.Clickable : "null"),
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
             showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),
 			showRemoveButtonAfterUpload: @(Model.ShowRemoveButtonAfterUpload ? "true" : "false" )

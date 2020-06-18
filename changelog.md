@@ -89,7 +89,8 @@
 	* Product tag count sometimes not up-to-date due to missing cache clearance.
 * **Debitoor**:
 	* Avoid errors due to invalid quantity unit Id of 0.
-	* #1952 rework quantity units. 
+	* #1952 rework quantity units.
+	* Sometimes the SKU was missing on invoices.
 * Multistore mapping was ignored for manufacturers in sitemap.
 * Categories limited to stores were not displayed in tree view.
 * Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.

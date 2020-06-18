@@ -188,7 +188,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	}
 
 	.modal-box-body {
-		align-items: center;
+		align-items: start;
 		flex-wrap: wrap;
 
 		> div + .modal-box-input {
@@ -207,6 +207,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 	.modal-box-center {
 		.modal-box-body {
 			flex-direction: column;
+			align-items: center;
 		}
 
 		.modal-box-message {

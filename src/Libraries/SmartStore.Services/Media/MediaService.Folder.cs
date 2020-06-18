@@ -369,7 +369,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var file in batch)
                     {
-                        if (strategy != FileHandling.MoveToRoot && file.Tracks.Any())
+                        if (strategy == FileHandling.Delete && file.Tracks.Any())
                         {
                             // Don't delete tracked files
                             trackedFiles.Add(file);

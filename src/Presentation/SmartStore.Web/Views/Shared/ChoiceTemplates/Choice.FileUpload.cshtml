@@ -21,7 +21,7 @@
 <div id="@containerId">
     <div class="fileupload-container">
         <div class="dropzone-container">
-            <div class="fileupload-thumb rounded" data-current-filename="@(Model.UploadedFileName)">
+            <div class="fileupload-thumb fu-filename rounded" data-current-filename="@(Model.UploadedFileName)">
                 <img class="file-img" title="icon" src="@thumbUrl">
             </div>
             <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
@@ -38,7 +38,7 @@
                     .OnUploadCompletedHandlerName("onFileUploaded" + clientId)
                     .OnFileRemoveHandlerName("onFileRemoved" + clientId)
                     .HasTemplatePreview(true)
-	             )
+                )
             </div>
         </div>
 
@@ -52,20 +52,16 @@
 </div>
 
 <script type="text/javascript">
-	window['onFileUploaded@(clientId)'] = function (file, result, progress) {
-		if (result.downloadGuid) {
-			setUploadedFile(result.downloadGuid, file.name, "@(containerId)");
-		}
+    window['onFileUploaded@(clientId)'] = function (file, result, progress) {
+        if (result.success && result.downloadGuid)
+            setUploadedFile(result.downloadGuid, file.name, "@(containerId)");
 
-		if (result.message) {
-			displayNotification(result.message, "success");
-		}
+        displayNotification(result.message, result.success ? "success" : "error");
 	};
 
 	window['onFileRemoved@(clientId)'] = function (e, el) {
-    @*    $('#@containerId .hidden').val('');
-        $('#@containerId .remove').removeClass("d-flex");
-    *@}
+        $('#@containerId .hidden').val('');
+    }
 
     function setUploadedFile(downloadGuid, fileName, containerId) {
         if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
@@ -75,11 +71,9 @@
         	var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
             $('#' + containerId + ' .fu-message').html(fileLink);
-            $('#@containerId .remove').addClass("d-flex");
+            //$(document).on("click", ".fileuploadattribute", function (e) {
+            //    e.stopPropagation();
+            //});
         }
     }
-
-    $(function () {
-        setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
-    });
 </script>

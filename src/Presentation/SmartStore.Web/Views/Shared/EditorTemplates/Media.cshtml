@@ -110,7 +110,7 @@
         @if (!MultiFile)
         {
             // Single file uploads have preview images.
-            <div class="fileupload-thumb rounded" data-current-filename="@(currentFile?.Name)">
+            <div class="fileupload-thumb fu-filename rounded" data-current-filename="@(currentFile?.Name)">
                 <img class="file-img" title="icon" src="@thumbUrl">
             </div>
             @Html.HiddenFor(x => x, new { @class = "hidden" })

@@ -514,6 +514,8 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToOrderSubTotal")
                 .Value("de", "Bezogen auf Zwischensumme");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Blog.NotifyAboutNewBlogComments.Hint")
+                .Value("de", "Der Administrator erhält eine Benachrichtigungen bei neuen Blogkommentaren.");
 
             builder.AddOrUpdate("ActivityLog.EditSettings", 
                 "The setting {0} has been changed. The new value is {1}.",

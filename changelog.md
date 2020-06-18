@@ -61,6 +61,7 @@
 * #1839 MegaSearch: Support exact value match for numeric range filters.
 * #1920 Hide option prizes if "Call for price" is enabled.
 * Debitoor: added an option to force a price type on invoices.
+* BeezUp: export product costs.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

@@ -506,15 +506,6 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        private void DeleteDupeFileInTrash(MediaFile dupe)
-        {
-            // A soft-deleted file cannot be a dupe. We gonna delete it once and for all.
-            using (new DbContextScope(ctx: _fileRepo.Context, autoCommit: true))
-            {
-                DeleteFile(dupe, true);
-            }
-        }
-
         protected Stream ProcessFile(
             ref MediaFile file, 
             MediaPathData pathData, 
@@ -524,25 +515,17 @@ namespace SmartStore.Services.Media
         {
             if (file != null)
             {
-                if (file.Deleted)
+                if (dupeFileHandling == DuplicateFileHandling.ThrowError)
                 {
-                    DeleteDupeFileInTrash(file);
-                    file = null;
+                    var fullPath = pathData.FullPath;
+                    CheckUniqueFileName(pathData);
+                    throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(file, pathData.Folder), pathData.FullPath);
                 }
-                else
+                else if (dupeFileHandling == DuplicateFileHandling.Rename)
                 {
-                    if (dupeFileHandling == DuplicateFileHandling.ThrowError)
+                    if (CheckUniqueFileName(pathData))
                     {
-                        var fullPath = pathData.FullPath;
-                        CheckUniqueFileName(pathData);
-                        throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(file, pathData.Folder), pathData.FullPath);
-                    }
-                    else if (dupeFileHandling == DuplicateFileHandling.Rename)
-                    {
-                        if (CheckUniqueFileName(pathData))
-                        {
-                            file = null;
-                        }
+                        file = null;
                     }
                 }
             }
@@ -550,6 +533,11 @@ namespace SmartStore.Services.Media
             if (file != null)
             {
                 ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+
+                // Restore file if soft-deleted
+                file.Deleted = false;
+
+                // Delete thumbnail
                 _imageCache.Delete(file);
             }
 
@@ -704,34 +692,26 @@ namespace SmartStore.Services.Media
             var dupe = dupeFileSelector();
             if (dupe != null)
             {
-                if (dupe.Deleted)
+                switch (dupeEntryHandling)
                 {
-                    DeleteDupeFileInTrash(dupe);
-                    dupe = null;
-                }
-                else
-                {
-                    switch (dupeEntryHandling)
-                    {
-                        case DuplicateEntryHandling.Skip:
-                            isDupe = true;
-                            uniqueFileNameChecker(destPathData);
-                            return dupe;
-                        case DuplicateEntryHandling.ThrowError:
-                            var fullPath = destPathData.FullPath;
-                            uniqueFileNameChecker(destPathData);
-                            throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(dupe), destPathData.FullPath);
-                        case DuplicateEntryHandling.Rename:
-                            uniqueFileNameChecker(destPathData);
-                            dupe = null;
-                            break;
-                        case DuplicateEntryHandling.Overwrite:
-                            if (file.FolderId == destPathData.Folder.Id)
-                            {
-                                throw new IOException(T("Admin.Media.Exception.Overwrite"));
-                            }
-                            break;
-                    }
+                    case DuplicateEntryHandling.Skip:
+                        isDupe = true;
+                        uniqueFileNameChecker(destPathData);
+                        return dupe;
+                    case DuplicateEntryHandling.ThrowError:
+                        var fullPath = destPathData.FullPath;
+                        uniqueFileNameChecker(destPathData);
+                        throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(dupe), destPathData.FullPath);
+                    case DuplicateEntryHandling.Rename:
+                        uniqueFileNameChecker(destPathData);
+                        dupe = null;
+                        break;
+                    case DuplicateEntryHandling.Overwrite:
+                        if (file.FolderId == destPathData.Folder.Id)
+                        {
+                            throw new IOException(T("Admin.Media.Exception.Overwrite"));
+                        }
+                        break;
                 }
             }
 
@@ -814,6 +794,7 @@ namespace SmartStore.Services.Media
                 }
 
                 scope.Commit();
+                _fileRepo.Context.DetachEntities<MediaTag>();
             }
         }
 
@@ -863,6 +844,8 @@ namespace SmartStore.Services.Media
             var destFileName = destPathData.FileName;
             var destFolderId = destPathData.Folder.Id;
             var folderChanged = destFolderId != file.FolderId;
+            var shouldRestore = false;
+
             nameChanged = !destFileName.IsCaseInsensitiveEqual(file.Name);
 
             if (file.FolderId.HasValue && folderChanged)
@@ -878,16 +861,22 @@ namespace SmartStore.Services.Media
             }
 
             // Check whether destination file exists
-            var dupe = _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
-            if (dupe != null)
+            if (!folderChanged && file.Deleted)
             {
-                if (dupe.Deleted)
+                // Special case where a file is moved from trash to its origin location.
+                // In this case the file should just be restored without any dupe check.
+                shouldRestore = true;
+            }
+            else
+            {
+                var dupe = _fileRepo.Table.FirstOrDefault(x => x.Name == destFileName && x.FolderId == destFolderId);
+                if (dupe != null)
                 {
-                    DeleteDupeFileInTrash(dupe);
-                    dupe = null;
-                }
-                else
-                {
+                    if (!folderChanged)
+                    {
+                        throw _exceptionFactory.IdenticalPaths(ConvertMediaFile(file, destPathData.Folder));
+                    }
+
                     switch (dupeFileHandling)
                     {
                         case DuplicateFileHandling.ThrowError:
@@ -909,7 +898,7 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            return folderChanged || nameChanged;
+            return folderChanged || nameChanged || shouldRestore;
         }
 
         #endregion

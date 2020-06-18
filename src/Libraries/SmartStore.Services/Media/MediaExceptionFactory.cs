@@ -138,5 +138,11 @@ namespace SmartStore.Services.Media
             Guard.NotNull(file, nameof(file));
             return new DeleteTrackedFileException(T("Admin.Media.Exception.DeleteReferenzedFile", file.Name), file, innerException);
         }
+
+        public InvalidOperationException IdenticalPaths(MediaFileInfo file)
+        {
+            Guard.NotNull(file, nameof(file));
+            return new InvalidOperationException("Der Quell- und Zieldateiname sind identisch. Pfad: {0}".FormatCurrent(file.Path)); // TODO: (mm) Loc
+        }
     }
 }

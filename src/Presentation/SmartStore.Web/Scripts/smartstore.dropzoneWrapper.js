@@ -81,17 +81,17 @@
 			if (opts.maxFiles === 1) {
 				var currentFileId = parseInt(fuContainer.find('.hidden').val());
 
-				if (!currentFileId || currentFileId === 0 || !options.showRemoveButton) {
-					// If there's no file, there's no remove button.
-					elRemove.removeClass("d-flex");
-
+				if (!currentFileId || currentFileId === 0) {
 					// Display icon according to type filter.
-					setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
+					setSingleFilePreviewIcon(fuContainer, $el.data("type-filter"));
+					fuContainer.find(".fu-message").addClass("empty");
 				}
 				else {
 					// Set current filename as fu-message on init.
-					fuContainer.find(".fu-message").removeClass("empty").text(fuContainer.find(".fileupload-thumb").attr("data-current-filename"));
-					elRemove.addClass("d-flex");
+					fuContainer.find(".fu-message").removeClass("empty").html(fuContainer.find(".fu-filename").data("current-filename"));
+
+					if (options.showRemoveButton)
+						elRemove.addClass("d-flex");
 				}
 			}
 
@@ -114,7 +114,7 @@
 				logEvent("addedfile", file);
 
 				setPreviewIcon(file, displayPreviewInList);
-				elRemove.addClass("d-flex");
+				displaySingleFilePreview(file, fuContainer, options);
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
@@ -560,7 +560,6 @@
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(files[0], fuContainer, options);
-					elRemove.addClass("d-flex");
 					if (options.onMediaSelected) options.onMediaSelected.apply(this, [files[0]]);
 				}
 				else {
@@ -893,14 +892,14 @@
 		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
 		fuContainer.find('.fileupload-thumb').removeClass("empty").html(preview.thumbHtml);
 		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fileupload-thumb'));
-		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
 		var id = file.downloadId ? file.downloadId : file.id;
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
 		fuContainer.find('.hidden').val(id).trigger('change');
 
+		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 		if (options.showRemoveButtonAfterUpload)
-			fuContainer.find('.remove').parent().show();
+			fuContainer.find('.remove').addClass("d-flex");
 	}
 
 	function setSingleFilePreviewIcon(fuContainer, typeFilter) {

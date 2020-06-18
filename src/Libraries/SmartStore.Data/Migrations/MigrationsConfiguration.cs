@@ -620,8 +620,8 @@
 
             builder.AddOrUpdate("FileUploader.StatusWindow.Uploading.File", "file is uploading", "Datei wird hochgeladen");
             builder.AddOrUpdate("FileUploader.StatusWindow.Uploading.Files", "files are uploading", "Dateien werden hochgeladen");
-            builder.AddOrUpdate("FileUploader.StatusWindow.Complete.File", "upload complete", "Upload abgeschloßen");
-            builder.AddOrUpdate("FileUploader.StatusWindow.Complete.Files", "uploads complete", "Uploads abgeschloßen");
+            builder.AddOrUpdate("FileUploader.StatusWindow.Complete.File", "upload complete", "Upload abgeschlossen");
+            builder.AddOrUpdate("FileUploader.StatusWindow.Complete.Files", "uploads complete", "Uploads abgeschlossen");
             builder.AddOrUpdate("FileUploader.StatusWindow.Canceled.File", "upload canceled", "Upload abgebrochen");
             builder.AddOrUpdate("FileUploader.StatusWindow.Canceled.Files", "uploads canceled", "Uploads abgebrochen");
             builder.AddOrUpdate("FileUploader.StatusWindow.Collapse.Title", "Minimize", "Minimieren");
@@ -900,7 +900,9 @@
 
             builder.AddOrUpdate("Admin.Media.Exception.DeleteReferenzedFile",
                 "The file '{0}' is referenced by at least one entity. Permanently deleting referenced media files is not supported",
-                "Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.");            
+                "Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.");
+
+            builder.AddOrUpdate("Common.Resume", "Resume", "Fortsetzen");
         }
     }
 }

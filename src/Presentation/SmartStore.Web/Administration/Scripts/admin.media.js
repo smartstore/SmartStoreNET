@@ -151,7 +151,7 @@ SmartStore.Admin.Media = (function () {
 					});
 
 					$(_dialog).on("click", ".btn-apply", function () {
-						_dialog.data('cancelled', false);
+						_dialog.data('canceled', false);
 						var applyToRemaining = _dialog.find('#apply-to-remaining').is(":checked");
 
 						if (_.isFunction(self.onResolve)) {
@@ -172,13 +172,14 @@ SmartStore.Admin.Media = (function () {
 					});
 
 					$(_dialog).on("click", ".btn-cancel", function () {
-						_dialog.data('cancelled', true);
+						_dialog.data('canceled', true);
+						self.queue = null;
 						self.close();
 					});
 
 					$(_dialog).on("hidden.bs.modal", function () {
 						if (_.isFunction(self.onComplete)) {
-							self.onComplete.apply(self, [_dialog.data('cancelled')]);
+							self.onComplete.apply(self, [_dialog.data('canceled')]);
                         }
 
 						_dialog.trigger("resolution-complete");

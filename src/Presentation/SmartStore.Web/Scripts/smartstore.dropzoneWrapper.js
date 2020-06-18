@@ -139,15 +139,22 @@
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(files.length);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Uploading.File' + (files.length === 1 ? "" : "s")]);
-					elStatusWindow.find(".flyout-commands").addClass("show");
-					elStatusWindow.attr("data-upload-in-progress", true);
+
+					var queuedFiles = el.getFilesWithStatus(Dropzone.QUEUED);
+					if (queuedFiles.length > 1) {
+						swapFlyoutCommands(true);
+						elStatusWindow.find(".flyout-commands").addClass("show");
+						elStatusWindow.attr("data-upload-in-progress", true);
+					}
 				}
 			});
 
 			el.on("processing", function (file) {
 				var currentProcessingCount = el.getFilesWithStatus(Dropzone.PROCESSING).length;
-
 				logEvent("processing", file, currentProcessingCount);
+
+				if (displayPreviewInList)
+					previewContainer.scrollTo(file.previewElement);
 
 				// Data attribute can be altered by MediaManager to specify the designated media folder.
 				this.options.url = $el.data("upload-url");
@@ -176,7 +183,7 @@
 						formData.append("typeFilter", type);
 					}
 				}
-				
+
 				if (options.onUploading) options.onUploading.apply(this, [file]);
 			});
 
@@ -338,9 +345,15 @@
 
 				// Status
 				if (elStatusWindow.length > 0) {
+					var canceledFiles = this.getFilesWithStatus(Dropzone.CANCELED);
+
 					elStatusWindow.find(".current-file-count").text(successFiles.length);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles.length === 1 ? "" : "s")]);
-					elStatusWindow.find(".flyout-commands").removeClass("show");
+
+					// Only hide commands if no uploads were canceled.
+					if (canceledFiles.length === 0) 
+						elStatusWindow.find(".flyout-commands").removeClass("show");
+
 					elStatusWindow.attr("data-upload-in-progress", false);
 				}
 
@@ -354,14 +367,14 @@
 					var uploadedFiles = this.files;
 					
 					for (var file of uploadedFiles) {
-						// Only reset progress bar if there was an error (file is dupe) and the files must be processed again.
+						// Only reset progress bar if there was an error (e.g. file is dupe) and the files must be processed again.
 						if (file.status === Dropzone.ERROR) {
 							dzResetProgressBar($(file.previewElement).find(".progress-bar"));
 						}
 					}
 				}
 
-				if (options.onCompleted) options.onCompleted.apply(this, [successFiles]);
+				if (options.onCompleted) options.onCompleted.apply(this, [successFiles, dupeFiles.length === 0]);
 			});
 
 			el.on("canceled", function (file) {
@@ -604,10 +617,9 @@
 				return false;
 			});
 
-			// Cancel all uploads.
-			elCancel.on('click', function (e) {
-				e.preventDefault();
-				cancelAllUploads(false);
+			elStatusWindow.on('click', '.flyout-commands .resume', function (e) {
+				resumeAllUploads();
+				swapFlyoutCommands(true);
 				return false;
 			});
 
@@ -616,10 +628,13 @@
 				var file = el.files.filter(file => file.upload.uuid === uuid)[0];
 				resetFileStatus(file);
 				el.processFile(file);
+				tryCLoseFlyoutCommands();
+				return false;
 			});
 			
-			elStatusWindow.on('uploadcanceled', function (e) {
-				cancelAllUploads(true);
+			elStatusWindow.on('uploadcanceled', function (e, removeFiles) {
+				console.log('uploadcanceled', removeFiles);
+				cancelAllUploads(removeFiles);
 			});
 
 			elStatusWindow.on('uploadresumed', function (e) {
@@ -637,18 +652,55 @@
 				}
 			});
 
-			function cancelAllUploads(removeFiles) {
 
+			function resumeAllUploads() {
+				var canceledFiles = el.getFilesWithStatus(Dropzone.CANCELED);
+
+				for (var file of canceledFiles) {
+					resetFileStatus(file);
+					el.processFile(file);
+				}
+
+				tryCLoseFlyoutCommands();
+			}
+
+			function tryCLoseFlyoutCommands() {
+				// If only one upload is in progress hide commands.
+				var currentlyUploading = el.getFilesWithStatus(Dropzone.QUEUED);
+
+				if (currentlyUploading.length === 0) {
+					elStatusWindow.find(".flyout-commands").removeClass("show");
+					elStatusWindow.attr("data-upload-in-progress", false);
+				}
+			}
+
+			// TODO: Better name e.g. showCancelInFlyoutCommands
+			function swapFlyoutCommands(showCancel) {
+				var cancel = elStatusWindow.find(".flyout-commands .cancel");
+				var resume = elStatusWindow.find(".flyout-commands .resume");
+
+				if (showCancel) {
+					cancel.removeClass("d-none");
+					resume.addClass("d-none");
+				}
+				else {
+					cancel.addClass("d-none");
+					resume.removeClass("d-none");
+				}
+			}
+
+			function cancelAllUploads(removeFiles) {
 				var currentlyUploading = el.getFilesWithStatus(Dropzone.QUEUED);
 				
-				// Add currently uploading file to queued files.
-				currentlyUploading.push(el.getFilesWithStatus(Dropzone.UPLOADING)[0]);
-
+				// Files which are already in progress, can'tbe canceled.
+				//currentlyUploading.push(el.getFilesWithStatus(Dropzone.UPLOADING)[0]);
+				
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(currentlyUploading.length);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Canceled.File' + (currentlyUploading.length === 1 ? "" : "s")]);
-					elStatusWindow.find(".flyout-commands").removeClass("show");
+					swapFlyoutCommands(false);
+
 					elStatusWindow.data("data-upload-in-progress", false);
 				}
 				else {
@@ -661,9 +713,8 @@
 
 					if (removeFiles) {
 						el.removeFile(file);
-						//el.cancelUpload(file);
 					}
-					else {
+					else if (file.status !== Dropzone.UPLOADING) {
 						file.status = Dropzone.CANCELED;
 						var template = $(file.previewTemplate).addClass("canceled");
 						template.find(".upload-status > .fu-item-canceled").removeClass("d-none");
@@ -683,15 +734,16 @@
 				if (el.getFilesWithStatus(Dropzone.UPLOADING).length === 0) {
 					el.removeAllFiles();
 				}
+				return false;
 			});
 
 			$(document).one("resolution-complete", "#duplicate-window", function () {
-				if (options.onCompleted) {
+				if (options.onCompleted && dialog.queue) {
 					var files = {};
 					for (var file of dialog.queue) {
 						files[file.dest.id] = file.dest;
 					}
-						
+
 					options.onCompleted.apply(this, [files, true]);
 				}
 			});
@@ -798,12 +850,26 @@
 			dialog.close();
 		}
 
-		if (resumeUpload) {
+		var queuedFiles = dropzone.getFilesWithStatus(Dropzone.QUEUED);
+
+		if (resumeUpload && queuedFiles.length > 0) {
 			// Files are being uplodad again. So display cancel bar again.
-			$(".fu-status-window")
+			var elStatusWindow = $(".fu-status-window");
+			elStatusWindow
 				.attr("data-upload-in-progress", true)
 				.find(".flyout-commands")
 				.addClass("show");
+
+			var canceledFiles = dropzone.getFilesWithStatus(Dropzone.CANCELED);
+
+			if (canceledFiles.length) {
+				elStatusWindow.find(".flyout-commands .resume").removeClass("d-none");
+				elStatusWindow.find(".flyout-commands .cancel").addClass("d-none");
+			}
+			else {
+				elStatusWindow.find(".flyout-commands .resume").addClass("d-none");
+				elStatusWindow.find(".flyout-commands .cancel").removeClass("d-none");
+			}
 		}
 
 		fuContainer.data("resolution-type", "");
@@ -815,7 +881,11 @@
 			// All pending files must be removed from dropzone.
 			var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
 			var dropzone = Dropzone.forElement(fuContainer[0]);
-			dropzone.removeAllFiles();
+			var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
+
+			for (var file of errorFiles) {
+				dropzone.removeFile(file);
+			}
 		}
 	}
 
@@ -885,7 +955,7 @@
 			el.find(".upload-status > i").addClass("d-none");
 			el.find(".fu-item-canceled").addClass("d-none");
 			el.find(".circular-progress").removeClass("d-none");
-			el.removeClass("dz-processing dz-complete");
+			el.removeClass("dz-processing dz-complete canceled");
 		}
 	}
 

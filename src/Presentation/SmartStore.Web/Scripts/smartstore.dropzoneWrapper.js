@@ -53,7 +53,7 @@
 			var opts = {
 				url: $el.data('upload-url'),
 				//clickable: elDropzone[0],
-				clickable: options.clickable ? options.clickable : elDropzone.find(".fu-message")[0],
+				clickable: options.clickableElement ? options.clickableElement : elDropzone.find(".fu-message")[0],
 				//autoQueue: false,
 				//autoProcessQueue: false,
 				parallelUploads: 1,

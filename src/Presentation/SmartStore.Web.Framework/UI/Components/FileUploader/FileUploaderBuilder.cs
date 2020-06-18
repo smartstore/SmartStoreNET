@@ -58,9 +58,9 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
-		public FileUploaderBuilder<TModel> Clickable(string value)
+		public FileUploaderBuilder<TModel> ClickableElement(string value)
 		{
-			base.Component.Clickable = value;
+			base.Component.ClickableElement = value;
 			return this;
 		}
 		

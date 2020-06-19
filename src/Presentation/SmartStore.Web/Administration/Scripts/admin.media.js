@@ -215,17 +215,17 @@ SmartStore.Admin.Media = (function () {
 				var mediaType = SmartStore.media.getIconHint(stub).mediaType;
 
 				var file = {
-					thumbUrl: dzfile.dataURL,
+					thumbUrl: dzfile.dataURL ? dzfile.dataURL : null,
 					name: dzfile.name,
 					title: title,
 					ext: ext,
 					mime: dzfile.type,
 					type: mediaType,
 					createdOn: dzfile.lastModifiedDate,
-					width: dzfile.width,
-					height: dzfile.height,
 					size: dzfile.size,
-					dimensions: dzfile.width + ", " + dzfile.height
+					width: dzfile.width ? dzfile.width : null,
+					height: dzfile.height ? dzfile.height : null,
+					dimensions: dzfile.width && dzfile.height ? dzfile.width + ", " + dzfile.height : null
 				};
 
 				return { source: file, dest: dzfile.media };

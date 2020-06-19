@@ -220,32 +220,29 @@
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(response, fuContainer, options);
 				}
-				else {
-					// Multifile
-					// If there was an error returned by the server set file status accordingly.
-					if (response.length) {
-						for (var fileResponse of response) {
-							if (!fileResponse.success) {
-								file.status = Dropzone.ERROR;
-								file.media = fileResponse;
-							}
+				else if (displayPreviewInList) {
+					var template = $(file.previewTemplate);
+					template.removeClass("dz-image-preview");
+					var icon = template.find(".upload-status > i");
+					icon.removeClass("d-none");
+					template.find(".circular-progress").addClass("d-none");
+				}
+
+				// If there was an error returned by the server set file status accordingly.
+				if (response.length) {
+					for (var fileResponse of response) {
+						if (!fileResponse.success) {
+							file.status = Dropzone.ERROR;
+							file.media = fileResponse;
 						}
 					}
-					else if (!response.success) {
-						file.status = Dropzone.ERROR;
-						file.media = response;
-					}
-					else {
-						file.media = response;
-					}
-
-					if (displayPreviewInList) {
-						var template = $(file.previewTemplate);
-						template.removeClass("dz-image-preview");
-						var icon = template.find(".upload-status > i");
-						icon.removeClass("d-none");
-						template.find(".circular-progress").addClass("d-none");
-					}
+				}
+				else if (!response.success) {
+					file.status = Dropzone.ERROR;
+					file.media = response;
+				}
+				else {
+					file.media = response;
 				}
 
 				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file, response, progress]);
@@ -276,12 +273,6 @@
 
 			el.on("complete", function (file) {
 				logEvent("complete", file);
-
-				if (opts.maxFiles === 1) {
-					// Reset dropzone for single file uploads, so other files can be uploaded again.
-					this.removeAllFiles(true); 
-				}
-
 				//if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file]);
 			});
 
@@ -298,7 +289,6 @@
                     for (var newFile of files) {
                         var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.media.id + "']");
 						elCurrentFile.find("img").attr("src", newFile.dataURL);
-
 						this.removeFile(newFile);
 					}
 				}
@@ -339,7 +329,8 @@
 						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
 						callerId: elDropzone.find(".fileupload").attr("id"),
 						onResolve: dupeFileHandlerCallback,
-						onComplete: dupeFileHandlerCompletedCallback
+						onComplete: dupeFileHandlerCompletedCallback,
+						isSingleFileUpload: options.maxFiles === 1
 					});
 				}
 
@@ -871,20 +862,27 @@
 			}
 		}
 
+		// Reset resolution type.
 		fuContainer.data("resolution-type", "");
 		return;
 	}
 
 	function dupeFileHandlerCompletedCallback(isCanceled) {
+		var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
+		var dropzone = Dropzone.forElement(fuContainer[0]);
+
 		if (isCanceled) {
 			// All pending files must be removed from dropzone.
-			var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
-			var dropzone = Dropzone.forElement(fuContainer[0]);
 			var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
 
 			for (var file of errorFiles) {
 				dropzone.removeFile(file);
 			}
+		}
+
+		if (dropzone.options.maxFiles === 1) {
+			// Reset dropzone for single file uploads, so other files can be uploaded again.
+			dropzone.removeAllFiles(true);
 		}
 	}
 

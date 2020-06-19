@@ -35,6 +35,7 @@ SmartStore.Admin.Media = (function () {
 			// Public variables.
 			this.currentIndex = 0;
 			this.callerId = opts.callerId;
+			this.isSingleFileUpload = opts.isSingleFileUpload;
 			this.queue = opts.queue;
 			this.onResolve = opts.onResolve || _.noop; // return params => self, dupeFileHandlingType, saveSelection, files
 			this.onComplete = opts.onComplete || _.noop; // return params => self, isCanceled
@@ -137,6 +138,11 @@ SmartStore.Admin.Media = (function () {
 					$("body").append($(response));
 					_dialog = $("#duplicate-window");
 					_dupeFileDisplay = _dialog.find(".dupe-file-display");
+
+					if (self.isSingleFileUpload) {
+						_dialog.find("#apply-to-remaining").parent().hide();
+						_dialog.find(".remaining-file-counter").hide();
+					}
 
 					// Listen to change events of radio group (dupe handling type) and display name of renamed file accordingly.
 					$(_dialog).on("change", 'input[name=resolution-type]', function (e) {

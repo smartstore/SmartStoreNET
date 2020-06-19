@@ -77,10 +77,9 @@ namespace SmartStore.Services.Media
     public class FolderDeleteResult
     {
         public HashSet<int> DeletedFolderIds { get; set; } = new HashSet<int>();
-        public int NumDeletedFiles { get; set; }
-        public int NumTrackedFiles { get; set; }
-        public IList<MediaFileInfo> LockedFiles { get; set; }
-        public int NumLockedFiles { get; set; }
+        public IList<string> DeletedFileNames { get; set; } = new List<string>();
+        public IList<string> TrackedFileNames { get; set; } = new List<string>();
+        public IList<string> LockedFileNames { get; set; } = new List<string>();
     }
 
     public class FileOperationResult

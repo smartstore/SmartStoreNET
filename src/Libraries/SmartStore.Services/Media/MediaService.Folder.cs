@@ -348,9 +348,7 @@ namespace SmartStore.Services.Media
             TreeNode<MediaFolderNode> root,
             FolderDeleteResult result,
             FileHandling strategy)
-        {
-            int numDeleted = 0;
-            
+        {            
             // (perf) We gonna check file tracks, so we should preload all tracks.
             _fileRepo.Context.LoadCollection(folder, (MediaFolder x) => x.Files, false, q => q.Include(f => f.Tracks));
 
@@ -380,8 +378,8 @@ namespace SmartStore.Services.Media
                         {
                             try
                             {
+                                result.DeletedFileNames.Add(file.Name);
                                 DeleteFile(file, true);
-                                numDeleted++;
                             }
                             catch (DeleteTrackedFileException)
                             {
@@ -396,12 +394,12 @@ namespace SmartStore.Services.Media
                         {
                             DeleteFile(file, false);
                             file.FolderId = null;
-                            numDeleted++;
+                            result.DeletedFileNames.Add(file.Name);
                         }
                         else if (strategy == FileHandling.MoveToRoot)
                         {
                             file.FolderId = albumId;
-                            numDeleted++;
+                            result.DeletedFileNames.Add(file.Name);
                         }
                     }
 
@@ -441,9 +439,8 @@ namespace SmartStore.Services.Media
                 result.DeletedFolderIds.Add(folder.Id);
             }
 
-            result.NumDeletedFiles += numDeleted;
-            result.NumLockedFiles += lockedFiles.Count;
-            result.NumTrackedFiles += trackedFiles.Count;
+            result.LockedFileNames = lockedFiles.Select(x => x.Name).ToList();
+            result.TrackedFileNames = trackedFiles.Select(x => x.Name).ToList();
         }
 
         #endregion

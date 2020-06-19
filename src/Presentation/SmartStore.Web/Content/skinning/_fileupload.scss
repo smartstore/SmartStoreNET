@@ -75,6 +75,10 @@
         }
     }
 
+    & .customer-avatar-lg {
+        display: block;
+    }
+
     .empty {
         font-weight: $font-weight-light !important;
         color: $gray-600 !important;

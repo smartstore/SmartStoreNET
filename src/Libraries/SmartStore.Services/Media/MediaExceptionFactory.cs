@@ -142,7 +142,7 @@ namespace SmartStore.Services.Media
         public InvalidOperationException IdenticalPaths(MediaFileInfo file)
         {
             Guard.NotNull(file, nameof(file));
-            return new InvalidOperationException("Der Quell- und Zieldateiname sind identisch. Pfad: {0}".FormatCurrent(file.Path)); // TODO: (mm) Loc
+            return new InvalidOperationException(T("Admin.Media.Exception.FileNamesIdentical", file.Path));
         }
     }
 }

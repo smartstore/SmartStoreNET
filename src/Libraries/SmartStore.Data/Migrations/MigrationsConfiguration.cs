@@ -905,6 +905,10 @@
                 "Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.");
 
             builder.AddOrUpdate("Common.Resume", "Resume", "Fortsetzen");
+
+            builder.AddOrUpdate("Admin.Media.Exception.FileNamesIdentical",
+                "The source and destination file names are identical. Path: {0}",
+                "Der Quell- und Zieldateiname sind identisch. Pfad: {0}");
         }
     }
 }

@@ -132,7 +132,11 @@ namespace SmartStore.Web
                 if (customerSettings.AllowCustomersToUploadAvatars)
                 {
                     var avatarId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId, genericAttributeService);
-                    model.PictureUrl = mediaService.GetUrl(avatarId, mediaSettings.AvatarPictureSize, null, false);
+                    if (avatarId > 0)
+                    {
+                        model.PictureId = avatarId;
+                        model.PictureUrl = mediaService.GetUrl(avatarId, mediaSettings.AvatarPictureSize, null, false);
+                    }
                 }
 
                 if (model.PictureUrl.IsEmpty())

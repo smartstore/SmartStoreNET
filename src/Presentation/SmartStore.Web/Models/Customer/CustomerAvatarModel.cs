@@ -5,6 +5,7 @@ namespace SmartStore.Web.Models.Customer
     public partial class CustomerAvatarModel : ModelBase
     {
         public bool Large { get; set; }
+        public int? PictureId { get; set; }
         public string PictureUrl { get; set; }
         public string LinkUrl { get; set; }
         public string AvatarColor { get; set; }

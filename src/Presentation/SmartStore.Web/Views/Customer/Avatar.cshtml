@@ -1,24 +1,25 @@
-﻿@using SmartStore.Web.Models.Customer;
-@using SmartStore.Web.Framework.UI;
+﻿@model CustomerAvatarEditModel
 
-@model CustomerAvatarEditModel
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Services.Media;
 
 @{
-	Layout = "_MyAccount";
-	ViewBag.PageClassToken = "avatar";
-	ViewBag.PageTitle = T("Account.Avatar").Text;
+    Layout = "_MyAccount";
+    ViewBag.PageClassToken = "avatar";
+    ViewBag.PageTitle = T("Account.Avatar").Text;
 
-	Html.AddTitleParts(T("PageTitle.Account").Text);
+    Html.AddTitleParts(T("PageTitle.Account").Text);
 
     // TODO: Have some better function to get file id
-    var fileId = Model?.Avatar?.PictureUrl != null ? int.Parse(Model.Avatar.PictureUrl.Substring(Model.Avatar.PictureUrl.IndexOf("/media/") + 7).Split('/')[0]) : 0;
+    var fileId = Model?.Avatar?.PictureId ?? 0;
     var mediaService = this.CommonServices.MediaService;
-    var currentFile = fileId != 0 ? mediaService.GetFileById(fileId) : null;
+    var currentFile = mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
 }
 
 @if (!ViewData.ModelState.IsValid)
 {
-	@Html.ValidationSummary(true)
+    @Html.ValidationSummary(true)
 }
 
 <div id="AvatarUploadContainer">

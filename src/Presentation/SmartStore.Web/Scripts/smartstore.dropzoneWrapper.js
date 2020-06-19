@@ -31,11 +31,11 @@
 			var el = this, $el = $(this);
 
 			var elDropzone = $el.closest('.dropzone-target'),
-				fuContainer = $el.closest('.fileupload-container');
+				fuContainer = $el.closest('.fu-container');
 
 			if (!fuContainer.length) {
-				$el.closest('.dropzone-container').wrap('<div class="fileupload-container h-100"></div>');
-				fuContainer = $el.closest('.fileupload-container');
+				$el.closest('.dropzone-container').wrap('<div class="fu-container h-100"></div>');
+				fuContainer = $el.closest('.fu-container');
 			}
 
 			var elRemove = fuContainer.find('.remove'),
@@ -337,7 +337,7 @@
 					// Open duplicate file handler dialog.
 					dialog.open({
 						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
-						callerId: elDropzone.find(".fileupload").attr("id"),
+						callerId: elDropzone.find(".fu-fileupload").attr("id"),
 						onResolve: dupeFileHandlerCallback,
 						onComplete: dupeFileHandlerCompletedCallback,
 						isSingleFileUpload: options.maxFiles === 1
@@ -643,7 +643,7 @@
 				if (dupeFiles.length !== 0 && !dialog.isOpen) {
 					dialog.open({
 						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
-						callerId: elDropzone.find(".fileupload").attr("id"),
+						callerId: elDropzone.find(".fu-fileupload").attr("id"),
 						onResolve: dupeFileHandlerCallback,
 						onComplete: dupeFileHandlerCompletedCallback
 					});
@@ -748,7 +748,7 @@
 	};
 
 	// Global events
-	var fuContainer = $('.fileupload-container');
+	var fuContainer = $('.fu-container');
 
 	// Highlight dropzone element when a file is dragged into it.
 	fuContainer.on("dragover", function (e) {
@@ -759,7 +759,7 @@
 		el.addClass("dz-highlight");
 
 	}).on("dragleave", function (e) {
-		if ($(e.relatedTarget).closest('.fileupload-container').length === 0) {
+		if ($(e.relatedTarget).closest('.fu-container').length === 0) {
 			var el = $(this);
 			if (!el.hasClass("dz-highlight"))
 				return;
@@ -776,7 +776,7 @@
 
 	// Callback function for duplicate file handling dialog.
 	function dupeFileHandlerCallback(resolutionType, remainingFiles) {
-		var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
+		var fuContainer = $("#" + this.callerId).closest(".fu-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
 		var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);
 		var displayPreviewInList = fuContainer.find(".preview-container").data("display-list-items");
@@ -875,7 +875,7 @@
 	}
 
 	function dupeFileHandlerCompletedCallback(isCanceled) {
-		var fuContainer = $("#" + this.callerId).closest(".fileupload-container");
+		var fuContainer = $("#" + this.callerId).closest(".fu-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
 
 		if (isCanceled) {
@@ -895,8 +895,8 @@
 
 	function displaySingleFilePreview(file, fuContainer, options) {
 		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
-		fuContainer.find('.fileupload-thumb').removeClass("empty").html(preview.thumbHtml);
-		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fileupload-thumb'));
+		fuContainer.find('.fu-thumb').removeClass("empty").html(preview.thumbHtml);
+		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fu-thumb'));
 
 		var id = file.downloadId ? file.downloadId : file.id;
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
@@ -931,7 +931,7 @@
 		icon = icon || SmartStore.media.getIconHint({});
 		
 		var html = '<i class="file-icon show fa-2x ' + icon.name + '"></i>';
-		fuContainer.find('.fileupload-thumb').addClass("empty").html(html);
+		fuContainer.find('.fu-thumb').addClass("empty").html(html);
 		fuContainer.find('.fu-message').addClass("empty");
 	}
 

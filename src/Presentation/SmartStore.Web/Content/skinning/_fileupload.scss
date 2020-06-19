@@ -3,7 +3,7 @@
 
 /* File Upload
 ------------------------------------*/
-.fileupload-container {
+.fu-container {
     position: relative;
 
     &.dz-highlight .dropzone-container,
@@ -28,7 +28,7 @@
         }
 
         .dropzone-file-info,
-        .fileupload {
+        .fu-fileupload {
             justify-content: center;
             text-align: center;
         }
@@ -39,13 +39,13 @@
             padding: 10px;
         }
 
-        .fileupload-buttons .btn {
+        .fu-buttons .btn {
             @extend .btn-sm;
         }
     }
 
     // Progress bars.
-    .fileupload-progress:not(.list) {
+    .fu-progress:not(.list) {
         position: absolute;
         left: 0;
         bottom: -1px;
@@ -120,7 +120,7 @@
         padding: 20px;
     }
 
-    .fileupload,
+    .fu-fileupload,
     .fu-message {
         font-weight: $font-weight-medium;
         font-size: $font-size-base;
@@ -136,7 +136,7 @@
         display: none;
     }
 
-    .fileupload-thumb {
+    .fu-thumb {
         position: relative;
         margin: 0.5rem;
         display: flex;
@@ -166,12 +166,12 @@
         }
     }
 
-    .fileupload-controls {
+    .fu-controls {
         flex-grow: 1;
         overflow: hidden;
     }
 
-    .fileupload-remove {
+    .fu-remove {
         display: none;
         min-width: 1.25rem;
         width: 1.25rem;
@@ -182,13 +182,13 @@
             background-color: rgba($danger,.2);
         }
 
-        > .fileupload-remove-icon {
+        > .fu-remove-icon {
             margin-top: -2px;
         }
     }
 }
 
-.mfu-image-preview {
+.fu-image-preview {
     margin: 0 10px 10px 0;
     position: relative;
     border: 1px solid $gray-400;
@@ -304,17 +304,17 @@
     }
 }
 
-.fileupload {
+.fu-fileupload {
     .btn.cancel {
         display: none;
     }
 
-    .fileinput-button {
+    .file-input-button {
         position: relative;
         overflow: hidden;
     }
 
-    .fileinput-button input {
+    .file-input-button input {
         position: absolute;
         left: 0;
         top: 0;

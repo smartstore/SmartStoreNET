@@ -140,18 +140,18 @@
 	</div>
 
 	<!-- Main Panel -->
-	<div class="col panel-upload fileupload-container">
+	<div class="col panel-upload fu-container">
 
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap dropzone-container panel-file@(initiallyShowUrlPanel ? " hide": "")">
 
-			<div class="fileupload-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
+			<div class="fu-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
 				<img class="file-img" title="icon" src="@thumbUrl">
 			</div>
 
 			<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
-			<div class="fileupload-controls">
+			<div class="fu-controls">
 				@(Html.SmartStore().FileUploader()
 					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
 					.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
@@ -187,7 +187,7 @@
 			</div>
 		}
 
-		<div class="fileupload-progress">
+		<div class="fu-progress">
 			<!-- The single upload progress bar -->
 			<div class="progress">
 				<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>

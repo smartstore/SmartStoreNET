@@ -22,14 +22,14 @@
 }
 
 <div id="AvatarUploadContainer">
-    <div class="fileupload-container">
+    <div class="fu-container">
         <div class="dropzone-container">
             <div class="avatar-container fu-filename m-2 h-100" data-current-filename="@(currentFile?.Name)">
                 @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
             </div>
             @Html.HiddenFor(x => fileId, new { @class = "hidden" })
 
-            <div class="fileupload-controls ml-3">
+            <div class="fu-controls ml-3">
                 @(Html.SmartStore().FileUploader()
                     .Name("uploadedFile")
                     .UploadUrl(Url.Action("UploadAvatar", "Customer"))
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="fileupload-progress">
+        <div class="fu-progress">
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
             </div>

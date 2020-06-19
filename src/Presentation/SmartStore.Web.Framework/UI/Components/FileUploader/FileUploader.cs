@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public FileUploader(Localizer localizer)
         {
-			HtmlAttributes.AppendCssClass("fileupload");
+			HtmlAttributes.AppendCssClass("fu-fileupload");
 			HtmlAttributes.Add("data-accept", "gif,jpeg,jpg,png");
 			HtmlAttributes.Add("data-show-remove-after-upload", "false");
 			

@@ -36,8 +36,8 @@
             </div>
             @if (!Model.Multifile)
             {
-                <a href="#" class="fileupload-remove remove justify-content-center align-items-center pretty-link rounded-sm ml-2" title="@T("FileUploader.Dropzone.DictRemoveFile")">
-                    <i class="fileupload-remove-icon fs-h6 p-0 text-danger">&times;</i>
+                <a href="#" class="fu-remove remove justify-content-center align-items-center pretty-link rounded-sm ml-2" title="@T("FileUploader.Dropzone.DictRemoveFile")">
+                    <i class="fu-remove-icon fs-h6 p-0 text-danger">&times;</i>
                 </a>
             }
         </div>
@@ -53,7 +53,7 @@
 
             @if (Model.ShowBrowseMedia)
             {
-                <div class="fileupload-buttons">
+                <div class="fu-buttons">
                     @{ Html.RenderWidget("file_uploader"); }
                 </div>
             }
@@ -81,7 +81,7 @@
                 entityMediaId = entityMediaFile.Id;
             }
 
-            <div class="mfu-image-preview dz-processing dz-image-preview dz-success dz-complete shadow-sm"
+            <div class="fu-image-preview dz-processing dz-image-preview dz-success dz-complete shadow-sm"
                  data-display-order="@file.DisplayOrder"
                  data-media-id="@file.MediaFileId"
                  data-media-name="@file.MediaFile.Name"
@@ -98,7 +98,7 @@
     </div>
 
     <div class="file-preview-template d-none">
-        <div class="mfu-image-preview dz-processing dz-image-preview dz-success dz-complete shadow-sm">
+        <div class="fu-image-preview dz-processing dz-image-preview dz-success dz-complete shadow-sm">
             @FilePreviewTemplate("", "")
         </div>
     </div>
@@ -129,7 +129,7 @@
         </div>
     </div>
 
-    <div class="fileupload-progress">
+    <div class="fu-progress">
         <!-- The file progress bar -->
         <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>

@@ -115,7 +115,6 @@
 				logEvent("addedfile", file);
 
 				setPreviewIcon(file, displayPreviewInList);
-				displaySingleFilePreview(file, fuContainer, options);
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);

@@ -11,7 +11,6 @@
 
     Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    // TODO: Have some better function to get file id
     var fileId = Model?.Avatar?.PictureId ?? 0;
     var mediaService = this.CommonServices.MediaService;
     var currentFile = mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
@@ -32,18 +31,18 @@
 
             <div class="fileupload-controls ml-3">
                 @(Html.SmartStore().FileUploader()
-                        .Name("uploadedFile")
-                        .UploadUrl(Url.Action("UploadAvatar", "Customer"))
-                        .TypeFilter("image")
-                        .ShowBrowseMedia(false)
-                        .ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
-                        .ShowRemoveButtonAfterUpload(true)
-                        .UploadText(T("Common.FileUploader.Upload"))
-                        .OnUploadCompletedHandlerName("onAvatarUploaded")
-                        .OnFileRemoveHandlerName("onAvatarRemoved")
-                        .Multifile(false)
-                        .HasTemplatePreview(true)
-	                 )
+                    .Name("uploadedFile")
+                    .UploadUrl(Url.Action("UploadAvatar", "Customer"))
+                    .TypeFilter("image")
+                    .ShowBrowseMedia(false)
+                    .ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
+                    .ShowRemoveButtonAfterUpload(true)
+                    .UploadText(T("Common.FileUploader.Upload"))
+                    .OnUploadCompletedHandlerName("onAvatarUploaded")
+                    .OnFileRemoveHandlerName("onAvatarRemoved")
+                    .Multifile(false)
+                    .HasTemplatePreview(true)
+	                )
             </div>
         </div>
 
@@ -66,6 +65,9 @@
             $(".avatar-img")
 				.attr("src", response.avatarUrl)
                 .removeClass("d-none");
+
+            // Display name.
+            $(".fu-message").html(file.name);
         }
 	};
 

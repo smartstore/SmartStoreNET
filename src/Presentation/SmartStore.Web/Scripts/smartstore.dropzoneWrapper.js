@@ -277,8 +277,9 @@
 
 				// Reset dropzone for single file uploads, so other files can be uploaded again.
 				// (opts.maxFiles === 1 && file.media && file.media.dupe === false) > Reset for SingleFileUploads if there are no dupes.
-				// !file.media.dupe	> Some upload actions might not set dupe because they are not uploading to MM.
-				if ((opts.maxFiles === 1 && file.media && file.media.dupe === false) || !file.media.dupe) {
+				// !file.media	> Some upload actions might not set media because they are not uploading to MM. 
+				// TODO: !file.media doesn't feel right. Better give control to the action by returning a corresponding value
+				if ((opts.maxFiles === 1 && file.media && file.media.dupe === false) || !file.media) {
 					this.removeAllFiles(true);
 				}
 
@@ -631,7 +632,6 @@
 			});
 			
 			elStatusWindow.on('uploadcanceled', function (e, removeFiles) {
-				console.log('uploadcanceled', removeFiles);
 				cancelAllUploads(removeFiles);
 			});
 

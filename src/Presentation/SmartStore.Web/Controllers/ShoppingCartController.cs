@@ -1285,8 +1285,14 @@ namespace SmartStore.Web.Controllers
 
                     _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
+                    var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+
                     return Json(new
                     {
+                        id = download.MediaFileId,
+                        name = mediaFile.Name,
+                        type = mediaFile.MediaType,
+                        thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
                         success = true,
                         message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
                         downloadGuid = download.DownloadGuid,
@@ -1595,8 +1601,14 @@ namespace SmartStore.Web.Controllers
 
             _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
+            var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+
             return Json(new
             {
+                id = download.MediaFileId,
+                name = mediaFile.Name,
+                type = mediaFile.MediaType,
+                thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
                 downloadGuid = download.DownloadGuid,

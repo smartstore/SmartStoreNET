@@ -54,6 +54,7 @@
 				url: $el.data('upload-url'),
 				//clickable: elDropzone[0],
 				clickable: options.clickableElement ? options.clickableElement : elDropzone.find(".fu-message")[0],
+				hiddenInputContainer: fuContainer[0],
 				//autoQueue: false,
 				//autoProcessQueue: false,
 				parallelUploads: 1,
@@ -903,7 +904,7 @@
 		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
 		if (options.downloadEnabled) {
-			$(document).on("click", '.dz-hidden-input', function (e) {
+			fuContainer.on("click", '.dz-hidden-input', function (e) {
 				if (!fuContainer.find('.fu-message').hasClass("empty"))
 					e.preventDefault();
 			});

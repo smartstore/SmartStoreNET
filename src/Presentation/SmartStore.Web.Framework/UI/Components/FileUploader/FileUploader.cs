@@ -40,6 +40,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool ShowBrowseMedia { get; set; }
 		public bool HasTemplatePreview { get; set; }
 		public string ClickableElement { get; set; }
+		public bool DownloadEnabled{ get; set; }
 
 		public bool Multifile { get; set; }
 		public string TypeFilter { get; set; }

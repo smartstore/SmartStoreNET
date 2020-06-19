@@ -273,6 +273,14 @@
 
 			el.on("complete", function (file) {
 				logEvent("complete", file);
+
+				// Reset dropzone for single file uploads, so other files can be uploaded again.
+				// (opts.maxFiles === 1 && file.media && file.media.dupe === false) > Reset for SingleFileUploads if there are no dupes.
+				// !file.media.dupe	> Some upload actions might not set dupe because they are not uploading to MM.
+				if ((opts.maxFiles === 1 && file.media && file.media.dupe === false) || !file.media.dupe) {
+					this.removeAllFiles(true);
+				}
+
 				//if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file]);
 			});
 
@@ -595,7 +603,6 @@
 			// Remove uploaded file (single upload only).
 			elRemove.on('click', function (e) {
 				e.preventDefault();				
-
 				setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
 				fuContainer.find('.fu-message').html(Res['FileUploader.Dropzone.Message']);
 				fuContainer.find('.hidden').val(0).trigger('change');
@@ -641,7 +648,6 @@
 					});
 				}
 			});
-
 
 			function resumeAllUploads() {
 				var canceledFiles = el.getFilesWithStatus(Dropzone.CANCELED);
@@ -894,8 +900,15 @@
 		var id = file.downloadId ? file.downloadId : file.id;
 		// TODO: .find('.hidden') doesn't seems safe. Do it better.
 		fuContainer.find('.hidden').val(id).trigger('change');
-
 		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
+
+		if (options.downloadEnabled) {
+			$(document).on("click", '.dz-hidden-input', function (e) {
+				if (!fuContainer.find('.fu-message').hasClass("empty"))
+					e.preventDefault();
+			});
+		}
+		
 		if (options.showRemoveButtonAfterUpload)
 			fuContainer.find('.remove').addClass("d-flex");
 	}

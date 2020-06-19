@@ -37,7 +37,9 @@
                     .UploadText(T("Common.FileUploader.Upload"))
                     .OnUploadCompletedHandlerName("onFileUploaded" + clientId)
                     .OnFileRemoveHandlerName("onFileRemoved" + clientId)
+                    .Multifile(false)
                     .HasTemplatePreview(true)
+                    .DownloadEnabled(true)
                 )
             </div>
         </div>

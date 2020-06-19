@@ -155,7 +155,8 @@
             clickableElement: @Html.Raw(Model.ClickableElement.HasValue() ? Model.ClickableElement : "null"),
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
             showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),
-			showRemoveButtonAfterUpload: @(Model.ShowRemoveButtonAfterUpload ? "true" : "false" )
+            showRemoveButtonAfterUpload: @(Model.ShowRemoveButtonAfterUpload ? "true" : "false" ),
+            downloadEnabled: @(Model.DownloadEnabled ? "true" : "false" )
         });
     });
 </script>

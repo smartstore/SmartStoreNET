@@ -58,6 +58,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> DownloadEnabled(bool value)
+		{
+			base.Component.DownloadEnabled = value;
+			return this;
+		}
+
 		public FileUploaderBuilder<TModel> ClickableElement(string value)
 		{
 			base.Component.ClickableElement = value;

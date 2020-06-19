@@ -57,17 +57,20 @@
                     }
                 </select>
             </div>
-            <div class="col-10">
-                <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
-                    <span>@T("Admin.Rules.AddGroup")</span>
-                </button>
-                @if (Model.IsSubGroup)
-                {
-                    <button type="button" class="btn btn-outline-secondary btn-to-danger r-delete-group float-right">
-                        <span>@T("Admin.Rules.DeleteGroup")</span>
+            @if (Model.Provider.Scope != RuleScope.Product)
+            {
+                <div class="col-10">
+                    <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
+                        <span>@T("Admin.Rules.AddGroup")</span>
                     </button>
-                }
-            </div>
+                    @if (Model.IsSubGroup)
+                    {
+                        <button type="button" class="btn btn-outline-secondary btn-to-danger r-delete-group float-right">
+                            <span>@T("Admin.Rules.DeleteGroup")</span>
+                        </button>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>

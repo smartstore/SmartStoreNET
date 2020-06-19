@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Modelling
 
         public string ExtraCssClasses { get; set; }
 
-        public LocalizedValue<string> LocalizedTitle { get; set; }
-        public LocalizedValue<string> LocalizedAlt { get; set; }
+        public LocalizedValue<string> Title { get; set; }
+        public LocalizedValue<string> Alt { get; set; }
     }
 }

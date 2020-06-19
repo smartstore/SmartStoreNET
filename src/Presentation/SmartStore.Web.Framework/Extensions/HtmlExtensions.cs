@@ -970,8 +970,8 @@ namespace SmartStore.Web.Framework
 			var model = new MediaTemplateModel(file, renderViewer)
             {
                 ExtraCssClasses = extraCssClasses,
-				LocalizedTitle = f?.GetLocalized(x => x.Title),
-				LocalizedAlt = f?.GetLocalized(x => x.Alt)
+				Title = f?.GetLocalized(x => x.Title),
+				Alt = f?.GetLocalized(x => x.Alt)
 			};
 
             return helper.Partial("MediaTemplates/" + file.MediaType, model);

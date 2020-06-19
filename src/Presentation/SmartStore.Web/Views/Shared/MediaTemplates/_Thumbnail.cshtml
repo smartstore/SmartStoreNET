@@ -5,11 +5,11 @@
 }
 <figure class="file-figure">
     <i class="file-icon show fa-fw @iconHint.Name" style="color: @iconHint.Color"></i>
-    <picture class="file-thumb" data-type="@Model.File.MediaType">
+    @* Title must be on the Picture attribute, otherwise it's covered by the CSS play-video symbol. *@
+    <picture class="file-thumb" data-type="@Model.File.MediaType" title="@Model.LocalizedTitle">
         <img class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 
-                alt="@Model.File.File.Alt" 
-                title="@Model.File.File.Title"
-                data-src="@Model.File.ThumbUrl" />
+             alt="@Model.LocalizedAlt" 
+             data-src="@Model.File.ThumbUrl" />
     </picture>
 </figure>
 @functions {

@@ -1,8 +1,9 @@
-﻿using SmartStore.Services.Media;
+﻿using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework.Modelling
 {
-    public class MediaTemplateModel : EntityModelBase
+    public partial class MediaTemplateModel : EntityModelBase
     {
         public MediaTemplateModel(MediaFileInfo file, bool renderViewer)
         {
@@ -17,5 +18,8 @@ namespace SmartStore.Web.Framework.Modelling
         public bool RenderViewer { get; private set; }
 
         public string ExtraCssClasses { get; set; }
+
+        public LocalizedValue<string> LocalizedTitle { get; set; }
+        public LocalizedValue<string> LocalizedAlt { get; set; }
     }
 }

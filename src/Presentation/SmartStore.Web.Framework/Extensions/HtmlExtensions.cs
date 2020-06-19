@@ -408,7 +408,6 @@ namespace SmartStore.Web.Framework
             Expression<Func<TModel, TEnum>> expression,
             string optionLabel = null) where TEnum : struct
         {
-
             return htmlHelper.DropDownListForEnum(expression, null, optionLabel);
         }
 
@@ -966,10 +965,14 @@ namespace SmartStore.Web.Framework
                 file.ThumbSize = size;
             }
 
-            var model = new MediaTemplateModel(file, renderViewer)
+			var f = file?.File;
+
+			var model = new MediaTemplateModel(file, renderViewer)
             {
-                ExtraCssClasses = extraCssClasses
-            };
+                ExtraCssClasses = extraCssClasses,
+				LocalizedTitle = f?.GetLocalized(x => x.Title),
+				LocalizedAlt = f?.GetLocalized(x => x.Alt)
+			};
 
             return helper.Partial("MediaTemplates/" + file.MediaType, model);
         }

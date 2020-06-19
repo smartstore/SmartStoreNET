@@ -85,10 +85,11 @@ SmartStore.media = (function () {
                 o.thumbHtml = '<img class="' + imgCssClasses + '" title="' + file.title + '" src="' + file.thumbUrl + '" />';
             }
             else {
+                // Title must be on the Picture attribute, otherwise it's covered by the CSS play-video symbol.
                 o.thumbHtml = '<figure class="file-figure">'
                     + '<i class="' + iconCssClasses + iconHint.name + '" style="color: ' + iconHint.color + '"></i>'
-                    + '<picture class="file-thumb" data-type="' + file.type + '">'
-                    + '<img class="' + imgCssClasses + '" title="' + file.title + '" data-src="' + file.thumbUrl + '" />'
+                    + '<picture class="file-thumb" data-type="' + file.type + '" title="' + file.title + '">'
+                    + '<img class="' + imgCssClasses + '" data-src="' + file.thumbUrl + '" />'
                     + '</picture>'
                     + '</figure>';
             }

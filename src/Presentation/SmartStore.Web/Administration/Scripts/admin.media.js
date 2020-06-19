@@ -82,6 +82,9 @@ SmartStore.Admin.Media = (function () {
 			if (!conflict)
 				return;
 
+			// Enable apply button.
+			_dialog.find(".btn-apply").removeClass("disabled");
+
 			var existingFileDisplay = _dialog.find(".existing-file-display");
 			var source = conflict.source;
 			var dest = conflict.dest;
@@ -159,6 +162,9 @@ SmartStore.Admin.Media = (function () {
 					$(_dialog).on("click", ".btn-apply", function () {
 						_dialog.data('canceled', false);
 						var applyToRemaining = _dialog.find('#apply-to-remaining').is(":checked");
+
+						// Display apply button until current item is processed & next item is called by refresh (prevents double clicks while the server is still busy).
+						$(this).addClass("disabled");
 
 						if (_.isFunction(self.onResolve)) {
 							var start = self.currentIndex;

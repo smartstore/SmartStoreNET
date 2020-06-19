@@ -14,7 +14,7 @@
 				@dialogInfo
 			</div>
 			<div class="adminContent fileupload-container">
-				<div>	
+				<div class="dropzone-container">	
 					<div class="fileupload-thumb"></div>
 				
 					@(Html.SmartStore().FileUploader()
@@ -22,6 +22,7 @@
 						.UploadUrl(Url.Action("UploadPackage", "Packaging"))
 						.TypeFilter(".nupkg")
 						.Multifile(false)
+						.HasTemplatePreview(true)
 						.ShowBrowseMedia(false)
 						.ShowRemoveButton(false)
 						.ShowRemoveButtonAfterUpload(false)

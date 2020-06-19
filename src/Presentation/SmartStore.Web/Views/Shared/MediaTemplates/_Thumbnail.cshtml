@@ -4,7 +4,7 @@
     dynamic iconHint = GetIconHint(Model.File.MediaType);
 }
 <figure class="file-figure">
-    <i class="file-icon show fa-fw @iconHint.Name" style="color: @iconHint.Color"></i>
+    <i class="file-icon show fa-5x fa-fw @iconHint.Name" style="color: @iconHint.Color"></i>
     @* Title must be on the Picture attribute, otherwise it's covered by the CSS play-video symbol. *@
     <picture class="file-thumb" data-type="@Model.File.MediaType" title="@Model.LocalizedTitle">
         <img class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 

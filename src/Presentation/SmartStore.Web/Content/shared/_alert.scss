@@ -20,6 +20,8 @@
 		bottom: 0;
 		width: 3rem;
 		z-index: 1;
+		border-top-left-radius: $alert-border-radius;
+		border-bottom-left-radius: $alert-border-radius;
 	}
 
 	&:after {

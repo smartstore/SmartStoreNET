@@ -253,7 +253,7 @@ namespace SmartStore.Services.Media
                         if (track.Album.IsEmpty())
                             continue; // cannot track without album
 
-                        if ((albumNode ?? _folderService.FindAlbum(file).Value).CanDetectTracks == false)
+                        if ((albumNode ?? _folderService.FindAlbum(file)?.Value)?.CanDetectTracks == false)
                             continue; // should not track in albums that do not support track detection
 
                         // add or remove the track from file

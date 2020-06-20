@@ -589,12 +589,17 @@ namespace SmartStore.Services.Media
             outStream = null;
             size = Size.Empty;
 
-            var originalSize = ImageHeader.GetDimensions(inStream, file.MimeType);
+            var originalSize = Size.Empty;
+            try
+            {
+                originalSize = ImageHeader.GetDimensions(inStream, file.MimeType);
+            }
+            catch { }
 
             if (!_imageProcessor.IsSupportedImage(file.Extension))
             {
                 outStream = inStream;
-                size = originalSize; // e.g.: image/svg+xml
+                size = originalSize;
                 return true;
             }    
 

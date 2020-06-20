@@ -1587,36 +1587,46 @@ table.payment-method-features td {
 }
 
 .ruleset {
-    border: 1px solid rgba(0,0,0, 0.15);
+    --r-border-color: var(--warning);
+    border: 1px solid rgba(#000, 0.15);
     border-radius: 6px;
-    border-left: 3px solid var(--warning);
+    border-left: 3px solid var(--r-border-color);
     background-color: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &.hover {
+        border-color: var(--r-border-color);
+    }
 }
 
 .ruleset .ruleset {
-    border-left-color: var(--primary);
-    background-color: rgba(0,0,0, 0.04);
-    box-shadow: 0 1rem 2.25rem rgba(50, 50, 93, 0.03), 0 0.3125rem 1rem rgba(0, 0, 0, 0.12) !important;
+    --r-border-color: var(--primary);
+    background-color: rgba(#000, 0.04);
+    box-shadow: 0 0 .75rem 0 rgba(#000, .05), 0 0.3125rem 1rem rgba(#000, 0);
+
+    &.hover {
+        box-shadow: 0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+    }
 }
 
 .ruleset .ruleset .ruleset {
-    border-left-color: var(--success);
+    --r-border-color: var(--success);
     background-color: #fff;
 }
 
 .ruleset .ruleset .ruleset .ruleset {
-    border-left-color: var(--indigo);
-    background-color: rgba(0,0,0, 0.04);
+    --r-border-color: var(--indigo);
+    background-color: rgba(#000, 0.04);
 }
 
 .ruleset .ruleset .ruleset .ruleset .ruleset {
-    border-left-color: var(--info);
+    --r-border-color: var(--info);
     background-color: #fff;
 }
 
 .ruleset .ruleset .ruleset .ruleset .ruleset {
-    border-left-color: var(--gray);
-    background-color: rgba(0,0,0, 0.04);
+    --r-border-color: var(--gray);
+    background-color: rgba(#000, 0.04);
 }
 
 .ruleset-header {
@@ -1628,6 +1638,10 @@ table.payment-method-features td {
 
 .ruleset-footer {
     margin: 1rem;
+}
+
+.rule-operator > .dropdown-menu {
+    min-width: 100%
 }
 
 

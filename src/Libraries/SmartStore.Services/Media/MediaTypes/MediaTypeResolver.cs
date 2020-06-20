@@ -85,7 +85,7 @@ namespace SmartStore.Services.Media
                 }
                 else
                 {
-                    extensions.AddRange(GetExtensionMediaTypeMap().Where(x => x.Value == filter).Select(x => x.Key));
+                    extensions.AddRange(GetExtensionMediaTypeMap().Where(x => filter == "*" || x.Value == filter).Select(x => x.Key));
                 }
             }
 

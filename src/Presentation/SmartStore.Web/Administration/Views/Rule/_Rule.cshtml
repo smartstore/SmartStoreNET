@@ -7,14 +7,14 @@
 }
 
 <div class="rule row xs-gutters" data-rule-id="@Model.Id" data-has-error="@error.HasValue().ToString().ToLower()">
-    <div class="col-2">
+    <div class="col-4 col-md-3 col-xl-2">
         @{ Html.RenderPartial("_Rule.Descriptor", Model); }
     </div>
-    <div class="col-2">
+    <div class="col-4 col-md-3 col-xl-2">
         @{ Html.RenderPartial("_Rule.Operator", Model); }
     </div>
-    <div class="col-8">
-        <div class="input-group">
+    <div class="col-4 col-md-6 col-xl-8">
+        <div class="input-group flex-nowrap">
             @{ 
                 try
                 {

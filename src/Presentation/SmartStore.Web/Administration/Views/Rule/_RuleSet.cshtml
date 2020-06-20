@@ -37,7 +37,7 @@
 
     <div class="ruleset-footer">
         <div class="row xs-gutters x-mt-3">
-            <div class="col-2">
+            <div class="col-4 col-md-3 col-xl-2">
                 <select class="form-control r-add-rule">
                     <option>@T("Admin.Rules.AddCondition")</option>
                     @foreach (var grp in Model.Provider.RuleDescriptors.GroupBy(x => x.GroupKey))
@@ -57,11 +57,15 @@
                     }
                 </select>
             </div>
-            @if (Model.Provider.Scope != RuleScope.Product)
-            {
-                <div class="col-10">
-                    <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
-                        <span>@T("Admin.Rules.AddGroup")</span>
+            
+			<div class="col-8 col-md-9 col-xl-10">
+                <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
+                    <span>@T("Admin.Rules.AddGroup")</span>
+                </button>
+                @if (Model.IsSubGroup)
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-to-danger r-delete-group float-right">
+                        <span>@T("Admin.Rules.DeleteGroup")</span>
                     </button>
                     @if (Model.IsSubGroup)
                     {

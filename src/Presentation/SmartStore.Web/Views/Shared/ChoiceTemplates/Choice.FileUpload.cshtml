@@ -21,7 +21,7 @@
     <div class="fu-container">
         <div class="dropzone-container">
             <div class="fu-thumb fu-filename rounded" data-current-filename="@(Model.UploadedFileName)"></div>
-            <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
+            <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" data-fileupload="true" />
             <div class="fu-controls">
                 @(Html.SmartStore().FileUploader()
                     .Name(clientId)
@@ -57,7 +57,7 @@
         }
 	};
 
-	window['onFileRemoved@(clientId)'] = function (e, el) {
+    window['onFileRemoved@(clientId)'] = function (e, el) {
         $('#@containerId .hidden').val('');
     }
 

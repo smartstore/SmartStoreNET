@@ -21,18 +21,23 @@ img.slick-loading {
 .gal-box {
     .slick-arrow,
     .gal-arrow {
-        font-size: 2rem;
+        font-size: 1.25rem;
     }
     
     .slick-arrow.slick-disabled,
     .gal-arrow.gal-disabled {
         opacity: 0.2;
         background: transparent !important;
+        border-color: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+        cursor: default;
     }
 
     .gal-nav .gal-arrow {
         line-height: 1;
         padding: 0;
+        margin: 3px 0;
     }
 }
 

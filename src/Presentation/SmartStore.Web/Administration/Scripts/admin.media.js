@@ -98,6 +98,9 @@ SmartStore.Admin.Media = (function () {
 
 			refreshFileDisplay(_dupeFileDisplay, source);
 			refreshFileDisplay(existingFileDisplay, dest);
+
+			// Trigger change to display changed filename immediately.
+			$("input[name=resolution-type]:checked").trigger("change");
 		};
 
 		// Private functions.
@@ -107,6 +110,7 @@ SmartStore.Admin.Media = (function () {
 			SmartStore.media.lazyLoadThumbnails(el);
 
 			el.find(".file-name").text(file.name);
+			el.find(".file-name").attr("title", file.name);
 			//el.find(".file-date").text(moment(file.createdOn).format('L LTS'));
 			el.find(".file-size").text(_.formatFileSize(file.size));
 
@@ -181,12 +185,14 @@ SmartStore.Admin.Media = (function () {
 
 							self.onResolve.apply(self, [self.resolutionType, slice]);
 						}
+						return false;
 					});
 
 					$(_dialog).on("click", ".btn-cancel", function () {
 						_dialog.data('canceled', true);
 						self.queue = null;
 						self.close();
+						return false;
 					});
 
 					$(_dialog).on("hidden.bs.modal", function () {

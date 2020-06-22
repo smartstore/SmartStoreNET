@@ -88,6 +88,9 @@
 					fuContainer.find(".fu-message").addClass("empty");
 				}
 				else {
+					// Load thumbnail.
+					SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fu-thumb'));
+
 					// Set current filename as fu-message on init.
 					fuContainer.find(".fu-message").removeClass("empty").html(fuContainer.find(".fu-filename").data("current-filename"));
 
@@ -263,7 +266,10 @@
 					assignableFileIds += response.id + ",";
 				}
 
-				if (files.length) {
+				if (files.length === 1) {
+					assignableFiles.push(files[0]);
+				}
+				else if (files.length) {
 					assignableFiles = files;
 				}
 				else {
@@ -277,8 +283,9 @@
 				// Reset dropzone for single file uploads, so other files can be uploaded again.
 				// (opts.maxFiles === 1 && file.media && file.media.dupe === false) > Reset for SingleFileUploads if there are no dupes.
 				// !file.media	> Some upload actions might not set media because they are not uploading to MM. 
+				// !file.status === Dropzone.ERROR > If file upload fails there's also no media
 				// TODO: !file.media doesn't feel right. Better give control to the action by returning a corresponding value
-				if ((opts.maxFiles === 1 && file.media && file.media.dupe === false) || !file.media) {
+				if ((opts.maxFiles === 1 && file.media && !file.media.dupe) || (!file.media && !file.status === Dropzone.ERROR)) {
 					this.removeAllFiles(true);
 				}
 
@@ -308,9 +315,12 @@
 					//sortMediaFiles();
 				}
 				else {
-					// Duplicate handling user decision wasn't done yet.
-					assignableFileIds = "";
-					assignableFiles = [];
+					// Duplicate resolution may not be done yet.
+					if (!dialog.isOpen && dupeFiles.length > 0) {
+						assignableFileIds = "";
+						assignableFiles.length = 0;
+						//assignableFiles = [];
+					}
 				}
 			});
 
@@ -345,13 +355,12 @@
 
 				// Status
 				if (elStatusWindow.length > 0) {
-					var canceledFiles = this.getFilesWithStatus(Dropzone.CANCELED);
-
-					elStatusWindow.find(".current-file-count").text(successFiles.length);
+					elStatusWindow.find(".current-file-count").text(successFiles.length ? successFiles.length : 0);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles.length === 1 ? "" : "s")]);
-
+					
 					// Only hide commands if no uploads were canceled.
-					if (canceledFiles.length === 0) 
+					var canceledFiles = this.getFilesWithStatus(Dropzone.CANCELED);
+					if (canceledFiles.length === 0)
 						elStatusWindow.find(".flyout-commands").removeClass("show");
 
 					elStatusWindow.attr("data-upload-in-progress", false);
@@ -416,6 +425,7 @@
 				}
 
 				displayNotification(errMessage, "error");
+
 				this.removeFile(file);
 				
 				if (options.onError) options.onError.apply(this, [file, errMessage]);
@@ -460,7 +470,6 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
-
 							$.each(response.response, function (i, value) {
 								var file = assignableFiles.find(x => x.media.id === value.MediaFileId);
 
@@ -483,7 +492,7 @@
 										.attr("data-media-id", value.MediaFileId)
 										.attr("data-media-name", value.Name)
 										.attr("data-entity-media-id", value.ProductMediaFileId)
-										.removeClass("d-none");
+										.removeClass("d-none dz-processing");
 
 									elPreview.find(".fu-file-info-name").html(file.name);
 
@@ -496,8 +505,12 @@
 								else {
 									console.log("Error when adding preview element.", value.Name.toLowerCase());
 								}
+
+								dzResetProgressBar($(file.previewElement).find(".progress-bar"));
 							});
 
+							assignableFileIds = "";
+							assignableFiles.length = 0;
 							sortMediaFiles();
 						}
 					});

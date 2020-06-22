@@ -91,21 +91,18 @@ namespace SmartStore.Admin.Controllers
                     o.uniquePath = newPath;
                     o.createdOn = dupe.CreatedOn.ToString();
                     o.lastUpdated = dupe.LastUpdated.ToString();
-                    //o.dimensions = dupe.Dimensions.Width + " x " + dupe.Dimensions.Height;
-
+                    
                     result.Add(o);
                 }
                 catch (DeniedMediaTypeException)
                 {
                     throw;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    result.Add(new { errMessage = ex.Message });
+                    throw;
                 }
             }
-
-            // TODO: (mm) (mc) display error notification for every failed file
 
             return Json(result.Count == 1 ? result[0] : result);
         }

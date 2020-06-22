@@ -97,11 +97,10 @@
 }
 
 @{
-	var random = CommonHelper.GenerateRandomInteger();
-	var mediaService = this.CommonServices.MediaService;
+    var random = CommonHelper.GenerateRandomInteger();
+    var mediaService = this.CommonServices.MediaService;
     var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
     var currentFile = Model != null ? mediaService.GetFileById((int)Model) : null;
-    var thumbUrl = Model != null ? Url.Media(Model, mediaSettings.ProductThumbPictureSize) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 }
 
 <div class="fu-container@(MultiFile ? " xl" : "")">
@@ -111,9 +110,9 @@
         {
             // Single file uploads have preview images.
             <div class="fu-thumb fu-filename rounded" data-current-filename="@(currentFile?.Name)">
-                <img class="file-img" title="icon" src="@thumbUrl">
+                @Html.MediaThumbnail(currentFile, 250)
             </div>
-            @Html.HiddenFor(x => x, new { @class = "hidden" })
+            @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : 0 })
         }
 
         <div class="fu-controls">

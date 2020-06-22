@@ -144,6 +144,8 @@
         width: 90px;
         height: 90px;
         min-width: 90px;
+        border: 1px solid rgba(#000, 0.1);
+        box-shadow: $box-shadow-sm-var;
 
         .xl & {
             min-width: 120px;
@@ -162,8 +164,6 @@
         .file-img {
             max-width: 100%;
             max-height: 100%;
-            border: 1px solid rgba(#000, 0.1);
-            box-shadow: $box-shadow-sm-var;
         }
     }
 
@@ -273,7 +273,7 @@
         }
     }
 
-    &:hover:not(.sortable-ghost) {
+    &:hover:not(.sortable-ghost):not(.dz-processing) {
         border: 1px solid $gray-400;
 
         .toolbar {

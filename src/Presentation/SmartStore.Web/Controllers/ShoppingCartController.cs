@@ -97,6 +97,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICompareProductsService _compareProductsService;
 		private readonly ProductUrlHelper _productUrlHelper;
         private readonly RewardPointsSettings _rewardPointsSettings;
+        private readonly MediaExceptionFactory _exceptionFactory;
 
         #endregion
 
@@ -149,7 +150,8 @@ namespace SmartStore.Web.Controllers
 			MeasureSettings measureSettings,
             ICompareProductsService compareProductsService,
 			ProductUrlHelper productUrlHelper,
-			RewardPointsSettings rewardPointsSettings)
+			RewardPointsSettings rewardPointsSettings,
+            MediaExceptionFactory exceptionFactory)
         {
             _productService = productService;
             _workContext = workContext;
@@ -199,6 +201,7 @@ namespace SmartStore.Web.Controllers
             _compareProductsService = compareProductsService;
 			_productUrlHelper = productUrlHelper;
             _rewardPointsSettings = rewardPointsSettings;
+            _exceptionFactory = exceptionFactory;
         }
 
         #endregion
@@ -1261,15 +1264,10 @@ namespace SmartStore.Web.Controllers
             var postedFile = Request.ToPostedFileResult();
             if (postedFile != null && postedFile.FileName.HasValue())
             {
-                int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                if (postedFile.Size > fileMaxSize)
+                int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
+                if (postedFile.Size > maxFileSize)
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
-                        downloadGuid = Guid.Empty
-                    });
+                    throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
                 }
                 else
                 {
@@ -1578,15 +1576,10 @@ namespace SmartStore.Web.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-            int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-			if (postedFile.Size > fileMaxSize)
+            int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
+            if (postedFile.Size > maxFileSize)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
-                    downloadGuid = Guid.Empty,
-                });
+                throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
             }
 
             var download = new Download

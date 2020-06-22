@@ -51,10 +51,10 @@
 
 <script type="text/javascript">
     window['onFileUploaded@(clientId)'] = function (file, result, progress) {
-        if (result.success && result.downloadGuid)
+        if (result.success && result.downloadGuid) {
             setUploadedFile(result.downloadGuid, file.name, "@(containerId)");
-
-        displayNotification(result.message, result.success ? "success" : "error");
+            displayNotification(result.message, "success");
+        }
 	};
 
 	window['onFileRemoved@(clientId)'] = function (e, el) {

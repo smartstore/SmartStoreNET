@@ -909,6 +909,8 @@
             builder.AddOrUpdate("Admin.Media.Exception.FileNamesIdentical",
                 "The source and destination file names are identical. Path: {0}",
                 "Der Quell- und Zieldateiname sind identisch. Pfad: {0}");
+
+            builder.Delete("ShoppingCart.MaximumUploadedFileSize");
         }
     }
 }

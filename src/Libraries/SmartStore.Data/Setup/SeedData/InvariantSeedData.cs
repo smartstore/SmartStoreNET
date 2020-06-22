@@ -802,8 +802,24 @@ namespace SmartStore.Data.Setup
                     Type = "SmartStore.Services.Seo.RebuildXmlSitemapTask, SmartStore.Services",
                     Enabled = true,
                     StopOnError = false
-                }
-            };
+                },
+				new ScheduleTask
+				{
+					Name = "Update assignments of customers to customer roles",
+					CronExpression = "15 2 * * *", // At 02:15
+                    Type = "SmartStore.Services.Customers.TargetGroupEvaluatorTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false
+				},
+				new ScheduleTask
+				{
+					Name = "Update assignments of products to categories",
+					CronExpression = "20 2 * * *", // At 02:20
+                    Type = "SmartStore.Services.Catalog.ProductRuleEvaluatorTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false
+				}
+			};
 			this.Alter(entities);
 			return entities;
 		}

@@ -50,6 +50,7 @@ namespace SmartStore.Data.Migrations
         {
             try
             {
+                // Note, core scheduled tasks must always be added to the installation as well!
                 context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
                     new ScheduleTask
                     {

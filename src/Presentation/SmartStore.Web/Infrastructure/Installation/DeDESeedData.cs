@@ -2298,7 +2298,15 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services", x =>
                     {
                         x.Name = "Temporäre Dateien bereinigen";
-                    });
+                    })
+                .Alter("SmartStore.Services.Customers.TargetGroupEvaluatorTask, SmartStore.Services", x =>
+                {
+                    x.Name = "Zuordnungen von Kunden zu Kundengruppen aktualisieren";
+                })
+                .Alter("SmartStore.Services.Catalog.ProductRuleEvaluatorTask, SmartStore.Services", x =>
+                {
+                    x.Name = "Zuordnungen von Produkten zu Warengruppen aktualisieren";
+                });
         }
 
         protected override void Alter(IList<SpecificationAttribute> entities)

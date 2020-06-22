@@ -113,6 +113,7 @@ namespace SmartStore.Data.Migrations
             var defaultLang = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First();
             var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");
 
+            // Note, core scheduled tasks must always be added to the installation as well!
             context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
                 new ScheduleTask
                 {

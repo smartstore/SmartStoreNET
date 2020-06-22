@@ -188,7 +188,7 @@
     }
 }
 
-.fu-image-preview {
+.fu-file-preview {
     margin: 0 10px 10px 0;
     position: relative;
     border: 1px solid $gray-400;
@@ -253,7 +253,7 @@
         background-color: rgba($indigo, 0.7);
 
         .drag-gripper {
-            width: 0;
+            width: fit-content;
             cursor: move;
             z-index: 10;
 

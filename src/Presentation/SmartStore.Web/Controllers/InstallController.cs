@@ -225,8 +225,8 @@ namespace SmartStore.Web.Controllers
 				model.AvailableAppLanguages.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual("en")).Selected = true;
 			}
 
-            model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB"), Selected = true });
-            model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS") });
+			model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS"), Selected = true });
+			model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB") });
 
             return View(model);
         }

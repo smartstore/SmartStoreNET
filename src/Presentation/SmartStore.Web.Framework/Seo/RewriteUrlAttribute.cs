@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
@@ -40,7 +41,7 @@ namespace SmartStore.Web.Framework.Seo
 			if (!string.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-			if (!DataSettings.DatabaseIsInstalled())
+			if (!DataSettings.DatabaseIsInstalled() || !HostingEnvironment.IsHosted)
                 return;
 
 			var currentStore = StoreContext.Value.CurrentStore;

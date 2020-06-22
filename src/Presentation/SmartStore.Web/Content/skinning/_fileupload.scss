@@ -144,8 +144,6 @@
         width: 90px;
         height: 90px;
         min-width: 90px;
-        border: 1px solid rgba(#000, 0.1);
-        box-shadow: $box-shadow-sm-var;
 
         .xl & {
             min-width: 120px;
@@ -164,6 +162,8 @@
         .file-img {
             max-width: 100%;
             max-height: 100%;
+            border: 1px solid rgba(#000, 0.1);
+            box-shadow: $box-shadow-sm-var;
         }
     }
 
@@ -251,7 +251,7 @@
             }
         }
 
-        > .fu-file-info > .fu-file-info-name {
+        .fu-file-info-name {
             z-index: 2;
             padding: 0 0.5rem;
             text-shadow: 1px 1px 1px rgba(#000, 0.5);
@@ -263,7 +263,7 @@
             margin-bottom: .75rem;
         }
 
-        > .fu-preview-control-menu {
+        .fu-preview-control-menu {
             z-index: 5;
             margin-top: -6px;
 
@@ -273,7 +273,7 @@
         }
     }
 
-    &:hover:not(.sortable-ghost):not(.dz-processing) {
+    &:hover:not(.sortable-ghost) {
         border: 1px solid $gray-400;
 
         .toolbar {
@@ -288,6 +288,15 @@
         .fu-file-info-container {
             opacity: 1;
             backdrop-filter: blur(2px);
+        }
+    }
+
+    &.dz-processing:hover {
+        // TODO: Finish the job ;-)
+        .fu-preview-control-menu,
+        .drag-gripper {
+            opacity: 0;
+            display: none;
         }
     }
 

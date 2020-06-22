@@ -160,7 +160,10 @@ SmartStore.Admin.Media = (function () {
 							fileName = uniquePath.substr(uniquePath.lastIndexOf("/") + 1);
 						}
 
-						_dupeFileDisplay.find(".file-name").text(fileName);
+						_dupeFileDisplay
+							.find(".file-name")
+							.attr("title", fileName)
+							.text(fileName);
 					});
 
 					$(_dialog).on("click", ".btn-apply", function () {

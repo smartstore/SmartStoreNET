@@ -911,6 +911,7 @@
 
             builder.Delete("ShoppingCart.MaximumUploadedFileSize");
             builder.Delete("Admin.Help.NopCommerceNote");
+
+            builder.AddOrUpdate("Common.FileUploader.UploadAvatar", "To upload an avatar image drop files here or click.", "Zum hochladen eines Avatarbildes Dateien hier plazieren oder klicken.");
         }
     }
-}

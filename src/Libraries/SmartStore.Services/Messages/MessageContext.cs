@@ -47,8 +47,8 @@ namespace SmartStore.Services.Messages
 		/// </summary>
 		public int? StoreId { get; set; }
 
-		internal Language Language { get; set; }
-		internal Store Store { get; set; }
+		public Language Language { get; set; }
+		public Store Store { get; set; }
 		public EmailAccount EmailAccount { get; internal set; }
 
 		public bool TestMode { get; set; }

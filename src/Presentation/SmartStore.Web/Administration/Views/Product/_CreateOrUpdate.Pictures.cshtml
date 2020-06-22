@@ -63,19 +63,12 @@ else
 				var el = $(this).closest('.dz-image-preview');
                 var previewContainer = $(this).closest(".preview-container");
 
-				// Insert choosen media file at beginning of the list & trigger sort so dropzoneWrapper > sortMediaFiles can send new order to server.
+				// Insert choosen media file at beginning of the list
 				el.insertBefore(previewContainer.find('.dz-image-preview').first());
-				previewContainer.trigger("sort", { item : el });
 
-				// Move badge.
-                var badge = previewContainer.find(".main-pic-badge");
-                el.append(badge);
-
-				// Update preview pic in upper right corner of product detail page.
+				// Update preview pic in upper left corner of product detail page.
                 var productThumb = $(".section-header .title > img");
                 productThumb.attr("src", el.find("img").attr("src"));
-
-				return false;
 			});
 		});
 </script>

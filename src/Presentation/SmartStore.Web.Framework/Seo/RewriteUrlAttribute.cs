@@ -177,7 +177,7 @@ namespace SmartStore.Web.Framework.Seo
 				return false;
 
 			// Don't try to fix root path
-			if (context.ControllerContext.HttpContext.Request.RawUrl == "/")
+			if (context.ControllerContext.HttpContext.Request.Path == "/")
 				return false;
 
 			bool rewritten = false;

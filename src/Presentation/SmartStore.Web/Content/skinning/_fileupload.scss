@@ -198,6 +198,19 @@
     justify-content: center;
     overflow: hidden;
 
+    .main-pic-badge {
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        right: 0;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;        
+    }
+
+    &:first-child .main-pic-badge {
+        display: block;
+    }
+
     .file-figure {
         min-width: $file-thumbnail-min-size;
         max-width: $file-thumbnail-max-width;
@@ -302,14 +315,6 @@
 
     &.sortable-ghost .toolbar {
         visibility: hidden;
-    }
-
-    .main-pic-badge {
-        z-index: 1000;
-        position: absolute;
-        right: 0;
-        border-top-left-radius: 0;
-        border-bottom-right-radius: 0;
     }
 }
 

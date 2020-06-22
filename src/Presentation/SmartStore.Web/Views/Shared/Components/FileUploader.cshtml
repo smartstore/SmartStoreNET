@@ -87,10 +87,7 @@
                  data-media-name="@file.MediaFile.Name"
                  @Html.Attr("data-entity-media-id", entityMediaId.ToString(), entityMediaId != 0)>
 
-                @if (isMainPic)
-                {
-                    <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
-                }
+                 <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
 
                 @FilePreviewTemplate(previewUrl, file.MediaFile.Name)
             </div>

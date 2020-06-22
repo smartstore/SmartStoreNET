@@ -650,7 +650,6 @@
             builder.AddOrUpdate("FileUploader.Dropzone.DictMaxFilesExceeded", "You can not upload any more files.", "Sie können keine weiteren Dateien hochladen.");
 
             builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Delete.Success", "The assignment was successfully removed.", "Die Zuordnung wurde erfolgreich entfernt.");
-            builder.AddOrUpdate("Admin.Catalog.Products.ProductPictures.Sort.Success", "The new order of your product images has been saved successfully.", "Die neue Anordnung Ihrer Produktbilder wurde erfolgreich gespeichert.");
 
             builder.AddOrUpdate("Common.Entity.Customer", "Customer", "Kunde");
             builder.AddOrUpdate("Common.Entity.ProductAttributeOption", "Product attribute options set", "Produktattribut-Options-Set");
@@ -911,6 +910,7 @@
                 "Der Quell- und Zieldateiname sind identisch. Pfad: {0}");
 
             builder.Delete("ShoppingCart.MaximumUploadedFileSize");
+            builder.Delete("Admin.Help.NopCommerceNote");
         }
     }
 }

@@ -289,7 +289,8 @@ namespace SmartStore.Services.Media
             var q = new MediaSearchQuery
             {
                 FolderId = pathData.Folder.Id,
-                Term = string.Concat(pathData.FileTitle, "*.", pathData.Extension)
+                Term = string.Concat(pathData.FileTitle, "*.", pathData.Extension),
+                Deleted = null
             };
 
             var query = _searcher.PrepareQuery(q, MediaLoadFlags.AsNoTracking).Select(x => x.Name);

@@ -94,10 +94,6 @@ namespace SmartStore.Admin.Controllers
                     
                     result.Add(o);
                 }
-                catch (DeniedMediaTypeException)
-                {
-                    throw;
-                }
                 catch (Exception)
                 {
                     throw;

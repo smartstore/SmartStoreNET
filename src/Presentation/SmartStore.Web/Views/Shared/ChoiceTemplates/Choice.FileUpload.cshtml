@@ -15,17 +15,13 @@
 
     var mediaService = this.CommonServices.MediaService;
     var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-    var thumbUrl = Model != null ? Url.Media(Model.Id, mediaSettings.ProductThumbPictureSize) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 }
 
 <div id="@containerId">
     <div class="fu-container">
         <div class="dropzone-container">
-            <div class="fu-thumb fu-filename rounded" data-current-filename="@(Model.UploadedFileName)">
-                <img class="file-img" title="icon" src="@thumbUrl">
-            </div>
+            <div class="fu-thumb fu-filename rounded" data-current-filename="@(Model.UploadedFileName)"></div>
             <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
-
             <div class="fu-controls">
                 @(Html.SmartStore().FileUploader()
                     .Name(clientId)

@@ -85,7 +85,6 @@
 				if (!currentFileId || currentFileId === 0) {
 					// Display icon according to type filter.
 					setSingleFilePreviewIcon(fuContainer, $el.data("type-filter"));
-					fuContainer.find(".fu-message").addClass("empty");
 				}
 				else {
 					// Load thumbnail.
@@ -116,8 +115,6 @@
 
 			el.on("addedfile", function (file) {
 				logEvent("addedfile", file);
-
-				setPreviewIcon(file, displayPreviewInList);
 
 				if (displayPreviewInList) {
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
@@ -240,12 +237,10 @@
 						}
 					}
 				}
-				else if (!response.success) {
-					file.status = Dropzone.ERROR;
-					file.media = response;
-				}
 				else {
 					file.media = response;
+
+					if (!response.success) file.status = Dropzone.ERROR;
 				}
 
 				if (options.onUploadCompleted) options.onUploadCompleted.apply(this, [file, response, progress]);
@@ -546,28 +541,6 @@
 						}
 					});
 				}
-			}
-
-			function setPreviewIcon(file, small) {
-				var el = $(file.previewTemplate);
-				var elIcon = el.find('.file-icon');
-				var elImage = el.find('.file-figure > img').addClass("hide");
-
-				// Convert dz file property to sm file property if not already set.
-				if (!file.mime)
-					file.mime = file.type;
-				
-				var icon = SmartStore.media.getIconHint(file);
-
-				elIcon.attr("class", "file-icon show " + icon.name + (small ? " fa-2x" : " fa-4x")).css("color", icon.color);
-
-				if (small)
-					return;
-
-				elImage.one('load', function () {
-					elImage.removeClass('hide');
-					elIcon.removeClass('show');
-				});
 			}
 
 			fuContainer.on("mediaselected", function (e, files) {
@@ -971,7 +944,8 @@
 		}
 
 		// Reset sidebar item status here.
-		var elStatusWindow = $(".fu-status-window");	// Status window is unique thus no need to pass it as a parameter.
+		// Status window is unique thus no need to pass it as a parameter.
+		var elStatusWindow = $(".fu-status-window");	
 		if (elStatusWindow.length > 0) {
 			var el = $(file.previewElement);
 			window.setCircularProgressValue(el, 0);

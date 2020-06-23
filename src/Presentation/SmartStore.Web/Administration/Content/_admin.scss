@@ -366,17 +366,6 @@ body {
 
     .dropdown-menu {
         margin-top: -2px;
-        opacity: 0;
-        transform: translateY(-10px);
-        display: block;
-        visibility: hidden;
-        transition: opacity 0.28s ease, transform 0.28s ease-out;
-
-        &.show {
-            visibility: visible;
-            transform: translateY(0);
-            opacity: 1;
-        }
     }
 
     #navbar-menu .nav-item > .dropdown-menu {

@@ -110,3 +110,23 @@
 		opacity: 0.8;
 	}
 }
+
+
+// Animate dropdown menus in navbars
+// ==============================================================
+
+.navbar .dropdown-menu {
+    opacity: 0;
+    transform: translateY(-16px);
+    display: block;
+    visibility: hidden;
+    transition-property: transform, opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: cubic-bezier(0,.1,.1,1);
+
+    &.show {
+        visibility: visible;
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

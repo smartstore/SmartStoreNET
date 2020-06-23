@@ -65,6 +65,7 @@ else
 
 				// Insert choosen media file at beginning of the list
 				el.insertBefore(previewContainer.find('.dz-image-preview').first());
+				previewContainer.trigger("sort", { item: el });
 
 				// Update preview pic in upper left corner of product detail page.
                 var productThumb = $(".section-header .title > img");

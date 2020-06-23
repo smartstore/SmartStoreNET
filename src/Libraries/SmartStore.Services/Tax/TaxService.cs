@@ -710,23 +710,25 @@ namespace SmartStore.Services.Tax
             name = string.Empty;
             address = string.Empty;
 
-            if (vatNumber == null)
-                vatNumber = string.Empty;
-            vatNumber = vatNumber.Trim().Replace(" ", "");
+            vatNumber = vatNumber.EmptyNull().Replace(" ", "");
 
             if (twoLetterIsoCode == null)
+            {
                 twoLetterIsoCode = string.Empty;
+            }
             if (!String.IsNullOrEmpty(twoLetterIsoCode))
-                //The service returns INVALID_INPUT for country codes that are not uppercase.
+            {
+                // The service returns INVALID_INPUT for country codes that are not uppercase.
                 twoLetterIsoCode = twoLetterIsoCode.ToUpper();
+            }
 
-            EuropaCheckVatService.checkVatService s = null;
+            EuropeCheckVatService.checkVatService s = null;
 
             try
             {
                 bool valid;
 
-                s = new EuropaCheckVatService.checkVatService();
+                s = new EuropeCheckVatService.checkVatService();
                 s.checkVat(ref twoLetterIsoCode, ref vatNumber, out valid, out name, out address);
                 exception = null;
                 return valid ? VatNumberStatus.Valid : VatNumberStatus.Invalid;

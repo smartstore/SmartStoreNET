@@ -746,7 +746,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\SettingService.cs" />
     <Compile Include="Catalog\SpecificationAttributeService.cs" />
-    <Compile Include="Web References\EuropaCheckVatService\Reference.cs">
+    <Compile Include="Web References\EuropeCheckVatService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -774,31 +774,31 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Web References\EuropaCheckVatService\checkVatService.wsdl">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web References\EuropaCheckVatService\matchCode.datasource">
+    <None Include="Web References\EuropeCheckVatService\checkVatService.wsdl" />
+    <None Include="Web References\EuropeCheckVatService\matchCode.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\EuropaCheckVatService\Reference.map">
+    <None Include="Web References\EuropeCheckVatService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl">
+    <WebReferenceUrl Include="https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl">
       <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\EuropaCheckVatService\</RelPath>
-      <UpdateFromURL>http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl</UpdateFromURL>
+      <RelPath>Web References\EuropeCheckVatService\</RelPath>
+      <UpdateFromURL>https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
+      <CachedSettingsPropName>SmartStore_Services_EuropeCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Cart\Readme.txt">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

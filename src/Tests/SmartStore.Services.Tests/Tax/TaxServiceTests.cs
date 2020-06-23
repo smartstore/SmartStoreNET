@@ -146,16 +146,15 @@ namespace SmartStore.Services.Tests.Tax
         [Test]
         public void Can_do_VAT_check()
         {
-            string name, address;
-            Exception exception;
+            Exception ex;
 
-            VatNumberStatus vatNumberStatus1 = _taxService.DoVatCheck("DE", "814160246", out name, out address, out exception);
-            exception.ShouldBeNull();
+            VatNumberStatus vatNumberStatus1 = _taxService.DoVatCheck("DE", "814160246", out var _, out var _, out ex);
+            ex.ShouldBeNull();
 			vatNumberStatus1.ShouldEqual(VatNumberStatus.Valid);
             
-            VatNumberStatus vatNumberStatus2 = _taxService.DoVatCheck("DE", "000000000", out name, out address, out exception);
+            VatNumberStatus vatNumberStatus2 = _taxService.DoVatCheck("DE", "000000000", out var _, out var _, out ex);
             vatNumberStatus2.ShouldEqual(VatNumberStatus.Invalid);
-            exception.ShouldBeNull();
+            ex.ShouldBeNull();
         }
     }
 }

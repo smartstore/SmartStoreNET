@@ -243,7 +243,7 @@ SmartStore.Admin.Media = (function () {
 					dimensions: dzfile.width && dzfile.height ? dzfile.width + ", " + dzfile.height : null
 				};
 
-				return { source: file, dest: dzfile.media };
+				return { source: file, dest: dzfile.media, original: dzfile };
 			});
 		},
 		fileConflictResolutionDialog: new FileConflictResolutionDialog()

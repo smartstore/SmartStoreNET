@@ -22,7 +22,6 @@
 (function ($) {
 	var assignableFiles = [];
 	var assignableFileIds = "";
-	var activeFiles = 0;
 	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
 	var dialog = SmartStore.Admin ? SmartStore.Admin.Media.fileConflictResolutionDialog : null;
 	
@@ -132,9 +131,7 @@
 
 			el.on("addedfiles", function (files) {
 				logEvent("addedfiles", files);
-				if (Array.isArray(files))
-					activeFiles = files.filter(file => file.accepted === true).length;
-
+				
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(files.length);
@@ -265,7 +262,7 @@
 					assignableFiles.push(files[0]);
 				}
 				else if (files.length) {
-					assignableFiles = files;
+					assignableFiles = assignableFiles.concat(files);
 				}
 				else {
 					assignableFiles.push(files);
@@ -289,10 +286,7 @@
 
 			el.on("completemultiple", function (files) {
 				logEvent("completemultiple", files);
-				logEvent("completemultiple", " > activeFiles, assignableFiles.length, assignableFileIds", activeFiles, assignableFiles.length, assignableFileIds);
-
-				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR)
-					.filter(file => file.media && file.media.dupe === true);
+				logEvent("completemultiple", " > assignableFiles.length, assignableFileIds", assignableFiles.length, assignableFileIds);
 
 				// Dupe file handling is 'replace' thus no need for assignment to entity (media IDs remain the same, while file was altered). 
 				if (parseInt(fuContainer.data("resolution-type")) === 1) {
@@ -301,20 +295,6 @@
                         var elCurrentFile = previewContainer.find(".dz-image-preview[data-media-id='" + newFile.media.id + "']");
 						elCurrentFile.find("img").attr("src", newFile.dataURL);
 						this.removeFile(newFile);
-					}
-				}
-
-				if (activeFiles === assignableFiles.length && dupeFiles.length === 0) {
-					assignFilesToEntity(assignableFiles, assignableFileIds);
-					// Has to be done after success of assignFilesToEntity
-					//sortMediaFiles();
-				}
-				else {
-					// Duplicate resolution may not be done yet.
-					if (!dialog.isOpen && dupeFiles.length > 0) {
-						assignableFileIds = "";
-						assignableFiles.length = 0;
-						//assignableFiles = [];
 					}
 				}
 			});
@@ -346,8 +326,19 @@
 						onComplete: dupeFileHandlerCompletedCallback,
 						isSingleFileUpload: options.maxFiles === 1
 					});
-				}
+				} 
 
+				if (dupeFiles.length === 0) {
+					assignFilesToEntity(assignableFiles, assignableFileIds, true);
+				}
+				else {
+					// Duplicate resolution may not be done yet.
+					if (!dialog.isOpen && dupeFiles.length > 0) {
+						assignableFileIds = "";
+						assignableFiles.length = 0;
+					}
+				}
+				
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(successFiles.length ? successFiles.length : 0);
@@ -450,7 +441,7 @@
 				}
 			});
 
-			function assignFilesToEntity(assignableFiles, assignableFileIds) {
+			function assignFilesToEntity(assignableFiles, assignableFileIds, clearAssignableFiles) {
 				if ($el.data('assignment-url') &&
 					$el.data('entity-id') &&
 					assignableFileIds !== "" &&
@@ -473,7 +464,6 @@
 									var name = value.Name;
 									var extension = name.substring(name.lastIndexOf("."), name.length);
 									name = name.substring(0, name.lastIndexOf("-")) + extension;
-
 									file = assignableFiles.find(x => x.name.toLowerCase() === name.toLowerCase());
 								}
 
@@ -498,16 +488,17 @@
 									elPreview.append('<span class="main-pic-badge badge badge-success">Main media file</span>');
 
 									previewContainer.append(elPreview);
+									dzResetProgressBar(elPreview.find(".progress-bar"));
 								}
 								else {
 									console.log("Error when adding preview element.", value.Name.toLowerCase());
 								}
-
-								dzResetProgressBar($(file.previewElement).find(".progress-bar"));
 							});
 
-							assignableFileIds = "";
-							assignableFiles.length = 0;
+							if (clearAssignableFiles) {
+								assignableFileIds = "";
+								assignableFiles.length = 0;
+							}
 							sortMediaFiles();
 						}
 					});
@@ -736,6 +727,30 @@
 
 					options.onCompleted.apply(this, [files, true]);
 				}
+
+				if (dialog.queue) {
+					var fileIds = "";
+					var filesToAssign = [];
+
+					for (var f of el.files) {
+						if (assignableFileIds.indexOf(f.media.id) === -1) {
+							fileIds += f.media.id + ",";
+							filesToAssign.push(f);
+						}
+					}
+
+					var skippedFiles = dialog.queue.filter(x => x.resolutionType === 3);
+					if (skippedFiles.length) {
+						
+						for (var skipped of skippedFiles) {
+							fileIds += skipped.dest.id + ",";
+							filesToAssign.push(skipped.original);
+						}
+					}
+
+					if (fileIds !== "")
+						assignFilesToEntity(filesToAssign, fileIds, false);
+				}
 			});
 		});
 	};
@@ -778,7 +793,6 @@
 		// Store user decision where it can be accessed by other events (e.g. dropzone > sending).
 		fuContainer.data("resolution-type", resolutionType);
 
-		// Get all duplicate files.
 		var dupeFiles = errorFiles.filter(file => file.media && file.media.dupe === true);
 
 		if (!applyToRemaining) {
@@ -786,8 +800,9 @@
 
 			// Do nothing on skip.
 			if (resolutionType === 3) {
-				dropzone.removeFile(firstFile);
-
+				//dropzone.removeFile(firstFile);
+				firstFile.media.dupe = false;
+				
 				if (dupeFiles[1]) {
 					dialog.next();
 				}
@@ -870,7 +885,7 @@
 	function dupeFileHandlerCompletedCallback(isCanceled) {
 		var fuContainer = $("#" + this.callerId).closest(".fu-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
-
+		
 		if (isCanceled) {
 			// All pending files must be removed from dropzone.
 			var errorFiles = dropzone.getFilesWithStatus(Dropzone.ERROR);

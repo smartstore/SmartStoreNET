@@ -5,20 +5,20 @@
 @using SmartStore.Services.Media;
 
 @{
-	Html.AddScriptParts(true, "~/bundles/fileuploader");
+    Html.AddScriptParts(true, "~/bundles/fileuploader");
 
-	if (!Model.Name.HasValue())
-	{
-		Model.Name = "upload-" + CommonHelper.GenerateRandomInteger();
-	}
+    if (!Model.Name.HasValue())
+    {
+        Model.Name = "upload-" + CommonHelper.GenerateRandomInteger();
+    }
 
-	if (!Model.HtmlAttributes.ContainsKey("id"))
-	{
-		Model.Id = Model.Name;
-	}
+    if (!Model.HtmlAttributes.ContainsKey("id"))
+    {
+        Model.Id = Model.Name;
+    }
 
-	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-	var maxFilesSize = mediaSettings.MaxUploadFileSize;
+    var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+    var maxFilesSize = mediaSettings.MaxUploadFileSize;
 }
 
 <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
@@ -87,8 +87,6 @@
                  data-media-name="@file.MediaFile.Name"
                  @Html.Attr("data-entity-media-id", entityMediaId.ToString(), entityMediaId != 0)>
 
-                 <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
-
                 @FilePreviewTemplate(previewUrl, file.MediaFile.Name)
             </div>
         }
@@ -103,6 +101,8 @@
 
 @helper FilePreviewTemplate(string previewUrl, string fileName)
 {
+    <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
+
     <figure class="file-figure d-flex m-0 align-items-center justify-content-center">
         <i class="file-icon fa-fw show d-none"></i>
         <img class="file-img" data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
@@ -147,7 +147,7 @@
 			onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
             onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null"),
 			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
-            maxFiles: @(Model.Multifile ? 100 : 1),
+            maxFiles: @(Model.Multifile ? 500 : 1),
             maxFilesSize: @maxFilesSize,
             clickableElement: @Html.Raw(Model.ClickableElement.HasValue() ? Model.ClickableElement : "null"),
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",

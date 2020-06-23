@@ -2196,12 +2196,12 @@ namespace SmartStore.Admin.Controllers
 				using (var scope = new DbContextScope(ctx: Services.DbContext, validateOnSave: false, autoDetectChanges: false, autoCommit: false))
 				{
 					var files = _productService.GetProductPicturesByProductId(entityId).ToList();
-					var arr = pictures.SplitSafe(",");
+					var pictureIds = new HashSet<int>(pictures.SplitSafe(",").Select(x => Convert.ToInt32(x)));
 					var ordinal = 5;
 
-					foreach (var id in arr)
+					foreach (var id in pictureIds)
 					{
-						var productPicture = files.Where(x => x.Id == Convert.ToInt32(id)).FirstOrDefault();
+						var productPicture = files.Where(x => x.Id == id).FirstOrDefault();
 						if (productPicture != null)
 						{
 							productPicture.DisplayOrder = ordinal;

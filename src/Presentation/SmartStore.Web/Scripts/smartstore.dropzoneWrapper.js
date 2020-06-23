@@ -116,12 +116,16 @@
 				logEvent("addedfile", file);
 
 				if (displayPreviewInList) {
+					// Status window.
 					var progress = window.createCircularSpinner(36, true, 6, null, null, true, true, true);
 					$(file.previewTemplate)
 						.find(".upload-status")
 						.attr("data-uuid", file.upload.uuid)
 						.append(progress);
-				}
+				} else if (opts.maxFiles !== 1) {
+					// Entity assignment preview.
+					$(file.previewTemplate).find(".fu-file-info-name").html(file.name);
+                }
 				
 				// If file is a duplicate prevent it from being displayed in preview container.
 				if (preCheckForDuplicates(file.name, previewContainer)) {
@@ -484,8 +488,6 @@
                                     elPreview
                                         .find('img')
                                         .attr('src', file.dataURL || file.media.thumbUrl);
-
-									elPreview.append('<span class="main-pic-badge badge badge-success">Main media file</span>');
 
 									previewContainer.append(elPreview);
 									dzResetProgressBar(elPreview.find(".progress-bar"));

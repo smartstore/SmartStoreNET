@@ -102,6 +102,11 @@ namespace SmartStore.Core.Fakes
             get { return ""; }
         }
 
+        public override string Path
+        {
+            get { return _url?.AbsolutePath ?? ApplicationPath ?? "/"; }
+        }
+
         public override string ApplicationPath
         {
             get

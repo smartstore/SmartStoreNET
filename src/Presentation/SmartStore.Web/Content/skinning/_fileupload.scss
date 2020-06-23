@@ -75,7 +75,7 @@
         }
     }
 
-    & .customer-avatar-lg {
+    .customer-avatar-lg {
         display: block;
     }
 
@@ -154,7 +154,7 @@
         &.empty {
             border: 2px dashed $gray-400;
 
-            & > i {
+            .file-icon {
                 color: rgba(#000, 0.12);
             }
         }
@@ -182,7 +182,7 @@
             background-color: rgba($danger, .2);
         }
 
-        > .fu-remove-icon {
+        .fu-remove-icon {
             margin-top: -2px;
         }
     }
@@ -220,12 +220,11 @@
             display: none;
         }
 
-        & > img {
+        .file-img {
             height: auto;
             max-width: 100%;
             max-height: $file-thumbnail-min-size;
             object-fit: contain;
-            //padding: 10px;
         }
     }
 
@@ -257,7 +256,7 @@
             cursor: move;
             z-index: 10;
 
-            > .drag-icon {
+            .drag-icon {
                 width: 2.75rem;
                 height: 2.75rem;
                 line-height: 2.75rem;

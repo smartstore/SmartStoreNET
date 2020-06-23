@@ -489,11 +489,13 @@
 										.attr("data-entity-media-id", value.ProductMediaFileId)
 										.removeClass("d-none dz-processing");
 
-									elPreview.find(".fu-file-info-name").html(file.name);
+									elPreview.find(".fu-file-info-name").html(value.Name);
 
                                     elPreview
                                         .find('img')
                                         .attr('src', file.dataURL || file.media.thumbUrl);
+
+									elPreview.append('<span class="main-pic-badge badge badge-success">Main media file</span>');
 
 									previewContainer.append(elPreview);
 								}
@@ -537,6 +539,12 @@
 								var preview = $(".dz-image-preview[data-media-id='" + value.MediaFileId + "']");
 								preview.attr("data-display-order", value.DisplayOrder);
 								preview.attr("data-entity-media-id", value.EntityMediaId);
+
+								if (index === 0) {
+									// Update preview pic in upper left corner of product detail page.
+									var productThumb = $(".section-header .title > img");
+									productThumb.attr("src", preview.find("img").attr("src"));
+                                }
 							});
 						}
 					});

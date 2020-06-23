@@ -41,7 +41,7 @@ namespace SmartStore.Web.Framework.Seo
 			if (!string.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-			if (!DataSettings.DatabaseIsInstalled() || !HostingEnvironment.IsHosted)
+			if (HostingEnvironment.IsHosted && !DataSettings.DatabaseIsInstalled())
                 return;
 
 			var currentStore = StoreContext.Value.CurrentStore;

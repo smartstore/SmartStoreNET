@@ -204,7 +204,7 @@
         z-index: 1000;
         right: 0;
         border-top-left-radius: 0;
-        border-bottom-right-radius: 0;        
+        border-bottom-right-radius: 0;
     }
 
     &:first-child .main-pic-badge {
@@ -221,9 +221,9 @@
         }
 
         .file-img {
-            height: auto;
             max-width: 100%;
             max-height: $file-thumbnail-min-size;
+            height: $file-thumbnail-min-size;
             object-fit: contain;
         }
     }
@@ -303,12 +303,9 @@
         }
     }
 
-    &.dz-processing:hover {
-        // TODO: Finish the job ;-)
-        .fu-preview-control-menu,
-        .drag-gripper {
-            opacity: 0;
-            display: none;
+    &:not(.dz-success), &.dz-processing {
+        .drag-gripper, .fu-preview-control-menu {
+            visibility: hidden !important;
         }
     }
 

@@ -20,7 +20,6 @@
 			
 			// Update product data and gallery
             $(el).on('change', ':input', function (e) {
-                console.log(this, e)
 				var ctx = $(this).closest('.update-container');
                 var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
                 var isFileUpload = $(this).data("fileupload");

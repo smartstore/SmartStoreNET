@@ -22,7 +22,6 @@
 (function ($) {
 	var assignableFiles = [];
 	var assignableFileIds = "";
-	var canUploadMoreFiles = true;	// TODO: investigate!!! This can be done better.
 	var dialog = SmartStore.Admin ? SmartStore.Admin.Media.fileConflictResolutionDialog : null;
 	
 	$.fn.dropzoneWrapper = function (options) {
@@ -40,8 +39,7 @@
 			var elRemove = fuContainer.find('.remove'),
 				elProgressBar = fuContainer.find('.progress-bar'),
 				elStatusWindow = $(".fu-status-window"),
-				previewContainer = fuContainer.find(".preview-container"),
-				elCancel = fuContainer.find('.cancel');
+				previewContainer = fuContainer.find(".preview-container");
 
 			var displayPreviewInList = previewContainer.data("display-list-items");
 
@@ -51,11 +49,8 @@
 			// Dropzone init params.
 			var opts = {
 				url: $el.data('upload-url'),
-				//clickable: elDropzone[0],
 				clickable: options.clickableElement ? options.clickableElement : elDropzone.find(".fu-message")[0],
 				hiddenInputContainer: fuContainer[0],
-				//autoQueue: false,
-				//autoProcessQueue: false,
 				parallelUploads: 1,
 				uploadMultiple: true,
 				acceptedFiles: $el.data('accept'),
@@ -112,8 +107,12 @@
 			options = $.extend({}, opts, options);
 			el = new Dropzone(fuContainer[0], options);
 
+			// BEGIN: Dropzone events.
 			el.on("addedfile", function (file) {
 				logEvent("addedfile", file);
+
+				if (opts.maxFiles !== 1) 
+					setPreviewIcon(file, displayPreviewInList);
 
 				if (displayPreviewInList) {
 					// Status window.
@@ -125,11 +124,11 @@
 				} else if (opts.maxFiles !== 1) {
 					// Entity assignment preview.
 					$(file.previewTemplate).find(".fu-file-info-name").html(file.name);
-                }
-				
-				// If file is a duplicate prevent it from being displayed in preview container.
-				if (preCheckForDuplicates(file.name, previewContainer)) {
-					$(file.previewTemplate).addClass("d-none");
+
+					// If file is a duplicate prevent it from being displayed in preview container.
+					if (preCheckForDuplicates(file.name, previewContainer)) {
+						$(file.previewTemplate).addClass("d-none");
+					}
 				}
 			});
 
@@ -145,7 +144,8 @@
 					if (queuedFiles.length > 1) {
 						swapFlyoutCommands(true);
 						elStatusWindow.find(".flyout-commands").addClass("show");
-						elStatusWindow.attr("data-upload-in-progress", true);
+						elStatusWindow.data("upload-in-progress", true);
+						elStatusWindow.data("files-in-queue", true);
 					}
 				}
 			});
@@ -347,13 +347,15 @@
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(successFiles.length ? successFiles.length : 0);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Complete.File' + (successFiles.length === 1 ? "" : "s")]);
-					
+
 					// Only hide commands if no uploads were canceled.
 					var canceledFiles = this.getFilesWithStatus(Dropzone.CANCELED);
-					if (canceledFiles.length === 0)
+					if (canceledFiles.length === 0) {
 						elStatusWindow.find(".flyout-commands").removeClass("show");
+					}
 
-					elStatusWindow.attr("data-upload-in-progress", false);
+					elStatusWindow.data("files-in-queue", canceledFiles.length !== 0);
+					elStatusWindow.data("upload-in-progress", false);	
 				}
 
 				// Reset progressbar when queue is complete.
@@ -427,24 +429,14 @@
 			
 			el.on("drop", function (files) {
 				logEvent("drop", files);
-				// Reset canUploadMoreFiles if new files have been added.
-				canUploadMoreFiles = true;
 			});
 
 			el.on("maxfilesexceeded", function (file) {
 				logEvent("maxfilesexceeded", file);
-
-				// Only for singleupload.
-				if (opts.maxFiles === 1) {
-					// Remove all files which may have been dropped for single uploads. Only accept the first file.
-					if (canUploadMoreFiles) {
-						this.removeAllFiles();
-						this.addFile(file);
-						canUploadMoreFiles = false;
-					}
-				}
 			});
+			// END: Dropzone events.
 
+			// Calls server function to assign current uploads to the entity.
 			function assignFilesToEntity(assignableFiles, assignableFileIds, clearAssignableFiles) {
 				if ($el.data('assignment-url') &&
 					$el.data('entity-id') &&
@@ -507,6 +499,7 @@
 				}
 			}
 
+			// Calls server function after sorting, to save current sort order.
 			function sortMediaFiles() {
 				if ($el.data('sort-url') && $el.data('entity-id')) {
 					var items = previewContainer.find('.dz-image-preview');
@@ -544,6 +537,30 @@
 				}
 			}
 
+			// Sets file icon for files in preview containers (in multifile & status window).
+			function setPreviewIcon(file, small) {
+				var el = $(file.previewTemplate);
+				var elIcon = el.find('.file-icon');
+				var elImage = el.find('.file-figure > img').addClass("hide");
+
+				// Convert dz file property to sm file property if not already set.
+				if (!file.mime)
+					file.mime = file.type;
+
+				var icon = SmartStore.media.getIconHint(file);
+
+				elIcon.attr("class", "file-icon show " + icon.name + (small ? " fa-2x" : " fa-4x")).css("color", icon.color);
+
+				if (small)
+					return;
+
+				elImage.one('load', function () {
+					elImage.removeClass('hide');
+					elIcon.removeClass('show');
+				});
+			}
+
+			// Is called after files were selected by the MediaManager plugin.
 			fuContainer.on("mediaselected", function (e, files) {
 				if (opts.maxFiles === 1) {
 					displaySingleFilePreview(files[0], fuContainer, options);
@@ -561,9 +578,8 @@
 				}
 			});
 
-			// Deleting.
-			$(fuContainer).on("click", ".delete-entity-picture", function (e) {
-
+			// Deletes a media file assignment of an entity (multifile upload).
+			fuContainer.on("click", ".delete-entity-picture", function (e) {
 				var previewThumb = $(this).closest('.dz-image-preview');
 				var entityMediaFileId = previewThumb.data("entity-media-id");
 				var mediaFileId = previewThumb.data("media-id");
@@ -575,7 +591,6 @@
 					url: $el.data('remove-url'),
 					data: { id: entityMediaFileId },
 					success: function () {
-						previewThumb.tooltip("hide");
 						previewThumb.remove();
 
 						// File must be removed from dropzone if it was added in current queue.
@@ -588,7 +603,7 @@
 				return false;
 			});
 
-			// Remove uploaded file (single upload only).
+			// Remove uploaded file (singlefile upload).
 			elRemove.on('click', function (e) {
 				e.preventDefault();				
 				setSingleFilePreviewIcon(fuContainer, $el.attr("data-type-filter"));
@@ -602,6 +617,7 @@
 				return false;
 			});
 
+			// BEGIN: Status window in MediaManager plugin.
 			elStatusWindow.on('click', '.flyout-commands .resume', function (e) {
 				resumeAllUploads();
 				swapFlyoutCommands(true);
@@ -621,21 +637,6 @@
 				cancelAllUploads(removeFiles);
 			});
 
-			elStatusWindow.on('uploadresumed', function (e) {
-				var dupeFiles = el.getFilesWithStatus(Dropzone.ERROR)
-					.filter(file => file.media && file.media.dupe === true);
-
-				// TODO: DRY > make function and pass dupeFiles as param
-				if (dupeFiles.length !== 0 && !dialog.isOpen) {
-					dialog.open({
-						queue: SmartStore.Admin.Media.convertDropzoneFileQueue(dupeFiles),
-						callerId: elDropzone.find(".fu-fileupload").attr("id"),
-						onResolve: dupeFileHandlerCallback,
-						onComplete: dupeFileHandlerCompletedCallback
-					});
-				}
-			});
-
 			function resumeAllUploads() {
 				var canceledFiles = el.getFilesWithStatus(Dropzone.CANCELED);
 
@@ -653,11 +654,10 @@
 
 				if (currentlyUploading.length === 0) {
 					elStatusWindow.find(".flyout-commands").removeClass("show");
-					elStatusWindow.attr("data-upload-in-progress", false);
+					elStatusWindow.data("upload-in-progress", false);
 				}
 			}
 
-			// TODO: Better name e.g. showCancelInFlyoutCommands
 			function swapFlyoutCommands(showCancel) {
 				var cancel = elStatusWindow.find(".flyout-commands .cancel");
 				var resume = elStatusWindow.find(".flyout-commands .resume");
@@ -675,33 +675,35 @@
 			function cancelAllUploads(removeFiles) {
 				var currentlyUploading = el.getFilesWithStatus(Dropzone.QUEUED);
 				
-				// Files which are already in progress, can'tbe canceled.
-				//currentlyUploading.push(el.getFilesWithStatus(Dropzone.UPLOADING)[0]);
-				
 				// Status
 				if (elStatusWindow.length > 0) {
 					elStatusWindow.find(".current-file-count").text(currentlyUploading.length);
 					elStatusWindow.find(".current-file-text").text(Res['FileUploader.StatusWindow.Canceled.File' + (currentlyUploading.length === 1 ? "" : "s")]);
 					swapFlyoutCommands(false);
-
-					elStatusWindow.data("data-upload-in-progress", false);
+					elStatusWindow.data("upload-in-progress", false);
 				}
 				else {
 					$(this).hide();
 				}
 
-				for (var file of currentlyUploading) {
-					if (!file)
-						return;
-
-					if (removeFiles) {
-						el.removeFile(file);
+				if (removeFiles) {
+					for (var s of el.getFilesWithStatus(Dropzone.SUCCESS)) {
+						el.removeFile(s);
 					}
-					else if (file.status !== Dropzone.UPLOADING) {
-						file.status = Dropzone.CANCELED;
-						var template = $(file.previewTemplate).addClass("canceled");
-						template.find(".upload-status > .fu-item-canceled").removeClass("d-none");
-						template.find(".circular-progress").addClass("d-none");
+
+					elStatusWindow.data("upload-in-progress", currentlyUploading.length !== 0);
+				}
+				else {
+					for (var file of currentlyUploading) {
+						if (!file)
+							return;
+
+						if (file.status !== Dropzone.UPLOADING) {
+							file.status = Dropzone.CANCELED;
+							var template = $(file.previewTemplate).addClass("canceled");
+							template.find(".upload-status > .fu-item-canceled").removeClass("d-none");
+							template.find(".circular-progress").addClass("d-none");
+						}
 					}
 				}
 
@@ -710,17 +712,13 @@
 
 				el.emit("queuecomplete");
 			}
-
-			// On preview container close (StatusWindow)
-			$(document).on("click", ".fu-status-window .close-status-window", function () {
-				// Only reset dropzone if there are no more files uploading. Else uploads will be canceled by uploadcanceled event.
-				if (el.getFilesWithStatus(Dropzone.UPLOADING).length === 0) {
-					el.removeAllFiles();
-				}
-				return false;
-			});
+			// END: Status window in MediaManager plugin.
 
 			$(document).one("resolution-complete", "#duplicate-window", function () {
+				// Singlefileupload needs no resolution complete handling.
+				if (opts.maxFiles === 1)
+					return;
+
 				if (options.onCompleted && dialog.queue) {
 					var files = {};
 					for (var file of dialog.queue) {
@@ -729,6 +727,10 @@
 
 					options.onCompleted.apply(this, [files, true]);
 				}
+
+				// Status window won't assign any entities.
+				if (displayPreviewInList)
+					return;
 
 				if (dialog.queue) {
 					var fileIds = "";
@@ -760,7 +762,7 @@
 	// Global events
 	var fuContainer = $('.fu-container');
 
-	// Highlight dropzone element when a file is dragged into it.
+	// Highlights dropzone element when a file is dragged into it.
 	fuContainer.on("dragover", function (e) {
 		var el = $(this);
 		if (el.hasClass("dz-highlight"))
@@ -784,7 +786,8 @@
 		el.removeClass("dz-highlight");
 	});
 
-	// Callback function for duplicate file handling dialog.
+	// Callback function for duplicate file resolution dialog. Will be called after each click on apply.
+	// remainingFiles: either all files (if apply to remaining was checked) or the one file of the current resolution.
 	function dupeFileHandlerCallback(resolutionType, remainingFiles) {
 		var fuContainer = $("#" + this.callerId).closest(".fu-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
@@ -863,7 +866,7 @@
 			// Files are being uplodad again. So display cancel bar again.
 			var elStatusWindow = $(".fu-status-window");
 			elStatusWindow
-				.attr("data-upload-in-progress", true)
+				.data("upload-in-progress", true)
 				.find(".flyout-commands")
 				.addClass("show");
 
@@ -884,6 +887,7 @@
 		return;
 	}
 
+	// Callback function for duplicate file resolution dialog. Will be called after duplicate queue was completely resolved.
 	function dupeFileHandlerCompletedCallback(isCanceled) {
 		var fuContainer = $("#" + this.callerId).closest(".fu-container");
 		var dropzone = Dropzone.forElement(fuContainer[0]);
@@ -903,13 +907,13 @@
 		}
 	}
 
+	// Sets the preview image of a single file upload control after upload or selection (by MM plugin).
 	function displaySingleFilePreview(file, fuContainer, options) {
 		var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
 		fuContainer.find('.fu-thumb').removeClass("empty").html(preview.thumbHtml);
 		SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fu-thumb'));
 
 		var id = file.downloadId ? file.downloadId : file.id;
-		// TODO: .find('.hidden') doesn't seems safe. Do it better.
 		fuContainer.find('.hidden').val(id).trigger('change');
 		fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
@@ -924,6 +928,7 @@
 			fuContainer.find('.remove').addClass("d-flex");
 	}
 
+	// Sets the file icon for an empty single file upload control.
 	function setSingleFilePreviewIcon(fuContainer, typeFilter) {
 		var types = typeFilter.split(",");
 		var icon;
@@ -945,6 +950,7 @@
 		fuContainer.find('.fu-message').addClass("empty");
 	}
 
+	// Checks for duplicates before uploading so the UI can sort them out before being displayed in preview container.
 	function preCheckForDuplicates(addFileName, previewContainer) {
 		var files = previewContainer.find(".dz-image-preview");
 
@@ -960,6 +966,7 @@
 		return dupe.length === 1;
 	}
 
+	// Resets file status of dz-file to initial state & circular progress of a file in status window in MM plugin.
 	function resetFileStatus(file) {
 		if (file.status === Dropzone.SUCCESS) {
 			file.status = undefined;
@@ -968,7 +975,7 @@
 			file.media = null;
 		}
 
-		// Reset sidebar item status here.
+		// Reset status window item status here.
 		// Status window is unique thus no need to pass it as a parameter.
 		var elStatusWindow = $(".fu-status-window");	
 		if (elStatusWindow.length > 0) {
@@ -981,6 +988,7 @@
 		}
 	}
 
+	// Resets the progress bar. Don't confuse it with the circular progress in status window in MM plugin.
 	function dzResetProgressBar(elProgressBar) {
 		_.delay(function () {
 			// Remove transition for reset.
@@ -997,6 +1005,7 @@
 		}, 300);
 	}
 
+	// Logs any dropzone event. Can be invoked by get parameter where value is the event you want to be logged (e.g. logEvents=error || logEvents=success, to log every event use logEvents=all)
 	function logEvent() {
 		var keyValues = getQueryStrings();
 

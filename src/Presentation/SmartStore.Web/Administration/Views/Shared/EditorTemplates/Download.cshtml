@@ -3,7 +3,6 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
 @using SmartStore.Core.Domain.Media;
-@using SmartStore.Services.Media;
 
 @functions {
 	bool? _minimalMode = null;
@@ -154,17 +153,13 @@
 			<div class="fu-controls">
 				@(Html.SmartStore().FileUploader()
 					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
-					.HtmlAttribute("data-fallback-url", mediaService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 					.DeleteUrl(Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" }))
 					.Multifile(false)
 					.Path(Path)
-					//.IconCssClass(MinimalMode ? "fa fa-upload" : "")
-					//.ButtonOutlineStyle(hasFile)
 					.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
 					.HasTemplatePreview(true)
 					.ShowRemoveButton(false)
 					.ShowRemoveButtonAfterUpload(false)
-					.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 					.OnMediaSelectedHandlerName("onMediaSelected_" + random)
 				)
 			</div>
@@ -197,13 +192,6 @@
 </div>
 
 <script>
-    window['onUploadCompleted_@random'] = function (file, response, progress) {
-        if (response.html && response.clientCtrlId) {
-            var el = $("#" + response.clientCtrlId);
-            //el.closest('.download-editor').replaceWith($(response.html));
-		}
-	}
-
     window['onMediaSelected_@random'] = function (file) {
 		// Create download for selected MediaFile.
 		$.ajax({

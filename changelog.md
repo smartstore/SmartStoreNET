@@ -4,6 +4,9 @@
 ### Highlights
 * (NEW) **Granular permissions**: Extensive permission management based on customer groups via tree view. Supports inheritance to allow or deny entire permission ranges.
 * (NEW) **Granular permissions**: All permissions of a customer directly visible on the customer edit page.
+* (NEW) **Personalized product recommendations**: Replaces homepage products dynamically with personalized product recommendation based on customer interests.
+* (NEW) **New Dashboard  with charts**: New dashboard overview displays relevant data like 'Incomplete Orders' or 'Registered Customers' as charts. 
+* (NEW) **Geo Blocker**: Restricts store access based on users country or IP address.
 
 ### Breaking changes
 * *Install\UninstallPermissions* has been removed from *IPermissionService*. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
@@ -43,6 +46,7 @@
 * #1116 Add new field for product condition.
 * #1790 ACL support for manufacturers.
 * #1616 Add new field for tracking URL to shipment entity to better track shipments.
+* (Page Builder) Added a Page Builder block to display blog posts.
 
 ### Improvements
 * #1663 Make MeasureDimension and MeasureWeight localizable.
@@ -66,6 +70,7 @@
 * BeezUp: export product costs.
 * #1915 RTL: fixed alignment of product art badge.
 * #1738 Sending of mails to customers uses generic message template now.
+* #1805 UI: Added XmlSitemap settings to backend
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.

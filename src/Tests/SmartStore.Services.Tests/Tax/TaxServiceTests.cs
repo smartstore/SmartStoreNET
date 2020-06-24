@@ -148,6 +148,7 @@ namespace SmartStore.Services.Tests.Tax
         {
             Exception ex;
 
+            // Check VAT of DB Vertrieb GmbH (Deutsche Bahn).
             VatNumberStatus vatNumberStatus1 = _taxService.DoVatCheck("DE", "814160246", out var _, out var _, out ex);
             ex.ShouldBeNull();
 			vatNumberStatus1.ShouldEqual(VatNumberStatus.Valid);

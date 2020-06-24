@@ -65,7 +65,7 @@
 * Debitoor: added an option to force a price type on invoices.
 * BeezUp: export product costs.
 * #1915 RTL: fixed alignment of product art badge.
-* #1738 Sending of mails uses generic message template now.
+* #1738 Sending of mails to customers uses generic message template now.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.
@@ -80,6 +80,8 @@
 * **Page Builder**:
 	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
 	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
+	* #1684 Edit Mode rendering bug in Mac Safari
+	* #1836 Added "Order" property to page uilder block to control rendering order of blocks in HTML output
 * **PayPal**:
 	* Fixed rare exception "Unsupported Media Type" (415) in PayPal PLUS.
 	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
@@ -121,6 +123,7 @@
 * Structured data: Replace length with depth property.
 * #1701 'View All' button from the offcanvas manufacturer menu causes 404 on mobile.
 * Added missing sitemap task.
+* #1696 Product downloads: Browser freezes when editing changelogs
 
 
 ## SmartStore.NET 3.2.2

@@ -542,8 +542,7 @@ namespace SmartStore.Services.Orders
         /// <param name="orderSubTotal">Order subtotal</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Order discount</returns>
-        public virtual decimal GetOrderSubtotalDiscount(Customer customer,
-            decimal orderSubTotal, out Discount appliedDiscount)
+        public virtual decimal GetOrderSubtotalDiscount(Customer customer, decimal orderSubTotal, out Discount appliedDiscount)
         {
             appliedDiscount = null;
             decimal discountAmount = decimal.Zero;

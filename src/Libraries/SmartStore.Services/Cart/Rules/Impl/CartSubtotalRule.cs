@@ -11,9 +11,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private int _reentrancyNum = 0;
 
-        public CartSubtotalRule(
-            IShoppingCartService shoppingCartService,
-            IOrderTotalCalculationService orderTotalCalculationService)
+        public CartSubtotalRule(IShoppingCartService shoppingCartService, IOrderTotalCalculationService orderTotalCalculationService)
         {
             _shoppingCartService = shoppingCartService;
             _orderTotalCalculationService = orderTotalCalculationService;

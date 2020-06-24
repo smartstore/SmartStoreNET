@@ -13,6 +13,8 @@
 * The wrong name of API endpoint *LocalizedPropertys* has been corrected and renamed to *LocalizedProperties*.
 
 ### New Features
+* DEV: Added Visual Studio extension to create Smartstore Plugins
+* CookieManager
 * #1805 Added XML Sitemap settings to backend UI.
 * #1598 Add published property to ProductTag entity.
 * #1669 Apply percentage discounts also on tier prices.
@@ -62,6 +64,8 @@
 * #1920 Hide option prizes if "Call for price" is enabled.
 * Debitoor: added an option to force a price type on invoices.
 * BeezUp: export product costs.
+* #1915 RTL: fixed alignment of product art badge.
+* #1738 Sending of mails uses generic message template now.
 
 ### Bugfixes
 * Export: Fixed KeyNotFoundException when batch size was 1.
@@ -114,6 +118,9 @@
 * #1743 Avoid redirecting to the account activation page when trying to log in for the first time.
 * #1895 The checkout button disappears when moving a product from the shopping cart to the wishlist.
 * Menu builder: in case of system menus the template can changes accidentally when saving.
+* Structured data: Replace length with depth property.
+* #1701 'View All' button from the offcanvas manufacturer menu causes 404 on mobile.
+* Added missing sitemap task.
 
 
 ## SmartStore.NET 3.2.2

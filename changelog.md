@@ -6,7 +6,7 @@
 * (NEW) **Rule Builder**: Powerful rule system for visual business rule creation
   * Dozens of predefined rules out-of-the-box
   * Supports logical operators (AND/OR) and unlimited grouping/nesting
-  * Cart rules: can be applied to tier prices, discounts, shipping and payment methods
+  * Cart rules: can be applied to discounts, shipping and payment methods
   * Customer rules: used to auto-assign customers to customer groups for 1-to-1 content targeting
   * Product rules: used to auto-assign products to categories based on filter definitions (e.g. price, brand, color, stock etc.)
 * (NEW) **New permission (ACL) system**: Granular tree-based permission management based on customer groups. Supports inheritance to allow or deny entire permission ranges

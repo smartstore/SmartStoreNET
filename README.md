@@ -30,18 +30,17 @@
 </p>
 <br/>
 
-Smartstore.NET is a free, open source, full-featured e-commerce solution for companies of any size. It is web standards compliant and incorporates the newest Microsoft web technology stack.
+Smartstore is a free, open source, full-featured e-commerce solution for companies of any size. It is web standards compliant and incorporates the newest Microsoft web technology stack.
 
-**Smartstore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and many more.
+**Smartstore includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and many more.
 
-A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling, etc. makes Smartstore.NET a powerful all-in-one solution fulfilling all your needs.
+A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling, etc. makes Smartstore a powerful all-in-one solution fulfilling all your needs.
 
 <br/>
 <p align="center">
   <img src="assets/sm4-devices.png" alt="Smartstore.NET Demoshop" />
 </p>
-
-**Smartstore.NET delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
+**Smartstoredelivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
 
 The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
@@ -63,22 +62,27 @@ The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 
 * A powerful theming engine lets you create themes & skins with minimum effort thanks to theme inheritance
 * Point&Click Theme configuration
 * Highly professional search framework based on Lucene.NET, delivering ultra fast faceted search results
-* Consistent and sophisticated use of modern components such as `jQuery`, `Bootstrap 4`, `Sass` & more in the front and back end.
+* Powerful and lightning-fast media manager
+* Powerful rule system for visual business rule creation
+* Consistent and sophisticated use of modern components such as `Bootstrap 4`, `Vue.js`, `jQuery` `Sass` & more in the front and back end.
 * Easy shop management thanks to modern and clean UI
 
 ### Features
 
-* NEW: CMS Page Builder
-* NEW: CMS Menu Builder
-* Multi-Store support
+* NEW: Media Manager
+* NEW: Rule Builder
 * Unlimited number of products and categories
+* Multi-Store support
 * Product Bundles
 * RESTful WebApi
 * Multi-language and RTL support
+* CMS Page Builder
+* CMS Menu Builder
 * Modern, clean, SEO-optimized and fully responsive Theme based on Bootstrap 4
 * Ultra fast search framework with faceted search support
-* Extremely scalable thanks to output caching, REDIS & Microsoft Azure support.
-* Trusted Shops precertification
+* Extremely scalable thanks to output caching, REDIS & Microsoft Azure support
+* NEW: Tree-based permission management (ACL) with inheritance support
+* *Trusted Shops* precertification
 * 100% compliant with German jurisdiction
 * Sales-, Customer- & Inventory-management
 * Comprehensive CRM features
@@ -94,18 +98,25 @@ The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 
 
 ## Project Status
 
-Smartstore.NET V3.2.0 has been released on 10 May, 2019. The highlights are:
+Smartstore.NET V4.0.0 has been released on 25 June, 2020. The highlights are:
 
-* (NEW) **Page Builder**: Create fascinating content that will boost your sales. No coding is required thanks to a powerful WYSIWYG editor which utilizes the revolutionary *CSS Grid* system (commercial plugin)
-* (NEW) **Menu Builder**: Visual manager for all sorts of menus. Change existing menus or create your own and place them anywhere you want.
-* (Perf) **Faster MegaSearch** thanks to Lucene.NET 4.8
-* (Perf) **Huge performance increase** in discount resolution and calculation.
+* **Media Manager**: Powerful and lightning-fast explorer/manager for media files (commercial plugin exclusively bundled with Pro Edition)
+* **Rule Builder**: Powerful rule system for visual business rule creation
+  * Dozens of predefined rules out-of-the-box
+  * Supports logical operators (AND/OR) and unlimited grouping/nesting
+  * Cart rules: can be applied to discounts, shipping and payment methods
+  * Customer rules: used to auto-assign customers to customer groups for 1-to-1 content targeting
+  * Product rules: used to auto-assign products to categories based on filter definitions (e.g. price, brand, color, stock etc.)
+* **New permission (ACL) system**: Granular tree-based permission management based on customer groups. Supports inheritance to allow or deny entire permission ranges
+* **Personalized product recommendations**: Replaces homepage products dynamically with personalized product recommendations based on customer interests. (commercial plugin)
+* **Geo Blocker**: Restricts shop access based on visitor country or IP address ranges (commercial plugin)
+* **Dashboard with charts**: New dashboard widgets display key data like orders, customers, bestsellers etc. in nice graphical charts. 
 
 
 
 ## Try it online
 
-We have set up a live online demo for you so you are able to test Smartstore.NET without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
+We have set up a live online demo for you so you are able to test Smartstore without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
 
 * [**Frontend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
 * [**Backend**](http://backend.smartstore.net/en/login) (User: demo, PWD: 1234)
@@ -119,7 +130,7 @@ We have set up a live online demo for you so you are able to test Smartstore.NET
 * Fire up your browser and follow the installation instructions
 * Enjoy ;-)
 
-NOTE: Smartstore.NET 3 requires [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=52685) which is already pre-installed on most systems. If, nevertheless, it is missing on your web server, just download and execute the installer or ask your hosting provider to do that for you.
+NOTE: Smartstore 4 requires [Visual C++ Redistributable für Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=52685) which is already pre-installed on most systems. If, nevertheless, it is missing on your web server, just download and execute the installer or ask your hosting provider to do that for you.
 
 ### System requirements
 
@@ -133,4 +144,4 @@ NOTE: Smartstore.NET 3 requires [Visual C++ Redistributable für Visual Studio 2
 
 ## License
 
-Smartstore.NET Community Edition is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).
+Smartstore Community Edition is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).

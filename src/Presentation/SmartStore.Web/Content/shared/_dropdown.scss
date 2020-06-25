@@ -115,7 +115,7 @@
 // Animate dropdown menus in navbars
 // ==============================================================
 
-.navbar .dropdown-menu {
+.navbar.navbar-slide .dropdown-menu {
     opacity: 0;
     transform: translateY(-16px);
     display: block;

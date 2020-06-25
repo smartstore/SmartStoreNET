@@ -485,7 +485,7 @@
 									dzResetProgressBar(elPreview.find(".progress-bar"));
 								}
 								else {
-									console.log("Error when adding preview element.", value.Name.toLowerCase());
+									console.log("Error while adding preview element.", value.Name.toLowerCase());
 								}
 							});
 

@@ -15,7 +15,7 @@ namespace SmartStore.Data.Setup
 		private readonly SmartObjectContext _ctx;
 		private readonly DbSet<Language> _languages;
 		private readonly DbSet<LocaleStringResource> _resources;
-		
+
 		public LocaleResourcesMigrator(SmartObjectContext ctx)
 		{
 			Guard.NotNull(ctx, nameof(ctx));
@@ -105,7 +105,7 @@ namespace SmartStore.Data.Setup
 								db.ResourceValue = entry.Value;
 								continue;
 							}
-							
+
 							// UPDATE action
 							if (updateTouchedResources || !db.IsTouched.GetValueOrDefault())
 							{
@@ -127,6 +127,7 @@ namespace SmartStore.Data.Setup
 				// save now
 				int affectedRows = _ctx.SaveChanges();
 
+				_ctx.DetachEntities<Language>();
 				_ctx.DetachEntities<LocaleStringResource>();
 			}
 		}

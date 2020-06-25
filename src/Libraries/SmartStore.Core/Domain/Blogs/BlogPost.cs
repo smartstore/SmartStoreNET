@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
@@ -15,10 +16,16 @@ namespace SmartStore.Core.Domain.Blogs
     {
         private ICollection<BlogComment> _blogComments;
 
-		/// <summary>
-		/// Gets or sets the language identifier
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets a value indicating whether the blog post comments are allowed 
+        /// </summary>
+        [DataMember]
+        public bool IsPublished { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language identifier
+        /// </summary>
+        [DataMember]
 		public int LanguageId { get; set; }
 
 		/// <summary>
@@ -27,10 +34,56 @@ namespace SmartStore.Core.Domain.Blogs
 		[DataMember]
 		public string Title { get; set; }
 
+        /// <summary>
+        /// Defines the preview display type of the picture
+        /// </summary>
+        [DataMember]
+        public PreviewDisplayType PreviewDisplayType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the media file identifier
+        /// </summary>
+        [DataMember]
+        public int? MediaFileId { get; set; }
+
 		/// <summary>
-		/// Gets or sets the blog post title
+		/// Gets or sets the media file.
+		/// </summary>
+		public virtual MediaFile MediaFile { get; set; }
+
+		/// <summary>
+		/// Gets or sets the preview media file identifier
 		/// </summary>
 		[DataMember]
+        public int? PreviewMediaFileId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the preview media file.
+		/// </summary>
+		public virtual MediaFile PreviewMediaFile { get; set; }
+
+		/// <summary>
+		/// Gets or sets background for the blog post
+		/// </summary>
+		[DataMember]
+        public string SectionBg { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the blog post has a background image
+        /// </summary>
+        [DataMember]
+        public bool DisplayTagsInPreview { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blog post intro
+        /// </summary>
+        [DataMember]
+        public string Intro { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blog post title
+        /// </summary>
+        [DataMember]
 		public string Body { get; set; }
 
 		/// <summary>
@@ -62,10 +115,10 @@ namespace SmartStore.Core.Domain.Blogs
 		[DataMember]
 		public string Tags { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog post start date and time
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the blog post start date and time
+        /// </summary>
+        [DataMember]
 		public DateTime? StartDateUtc { get; set; }
 
 		/// <summary>
@@ -119,5 +172,38 @@ namespace SmartStore.Core.Domain.Blogs
 		/// </summary>
 		[DataMember]
 		public virtual Language Language { get; set; }
+    }
+
+    public enum PreviewDisplayType
+    {
+        /// <summary>
+        /// No picture will be displayed
+        /// </summary>
+        Bare = 0,
+
+        /// <summary>
+        /// The detail picture will be displayed
+        /// </summary>
+        Default = 10,
+
+        /// <summary>
+        /// The preview picture will be displayed
+        /// </summary>
+        Preview = 20,
+
+        /// <summary>
+        /// The detail picture will be displayed under the section background
+        /// </summary>
+        DefaultSectionBg = 30,
+
+        /// <summary>
+        /// The preview picture will be displayed under the section background
+        /// </summary>
+        PreviewSectionBg = 40,
+
+        /// <summary>
+        /// The section background will be displayed
+        /// </summary>
+        SectionBg = 50
     }
 }

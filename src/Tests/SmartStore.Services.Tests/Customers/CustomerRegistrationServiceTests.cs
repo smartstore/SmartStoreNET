@@ -25,6 +25,7 @@ namespace SmartStore.Services.Tests.Customers
     {
         IRepository<Customer> _customerRepo;
         IRepository<CustomerRole> _customerRoleRepo;
+        IRepository<CustomerRoleMapping> _customerRoleMappingRepo;
         IRepository<GenericAttribute> _genericAttributeRepo;
 		IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
         IRepository<ShoppingCartItem> _shoppingCartItemRepo;
@@ -35,7 +36,7 @@ namespace SmartStore.Services.Tests.Customers
         CustomerSettings _customerSettings;
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IEventPublisher _eventPublisher;
-        RewardPointsSettings _rewardPointsSettings;
+        Lazy<RewardPointsSettings> _rewardPointsSettings;
         SecuritySettings _securitySettings;
 		IStoreContext _storeContext;
 		ICommonServices _services;
@@ -50,10 +51,10 @@ namespace SmartStore.Services.Tests.Customers
             {
                 EncryptionKey = "273ece6f97dd844d"
             };
-            _rewardPointsSettings = new RewardPointsSettings()
+            _rewardPointsSettings = new Lazy<RewardPointsSettings>(() => new RewardPointsSettings
             {
                 Enabled = false,
-            };
+            });
 
             _encryptionService = new EncryptionService(_securitySettings);
             _customerRepo = MockRepository.GenerateMock<IRepository<Customer>>();
@@ -116,6 +117,7 @@ namespace SmartStore.Services.Tests.Customers
             _customerRepo.Expect(x => x.Table).Return(new List<Customer> { customer1, customer2, customer3, customer4, customer5 }.AsQueryable());
 
             _customerRoleRepo = MockRepository.GenerateMock<IRepository<CustomerRole>>();
+            _customerRoleMappingRepo = MockRepository.GenerateMock<IRepository<CustomerRoleMapping>>();
             _genericAttributeRepo = MockRepository.GenerateMock<IRepository<GenericAttribute>>();
 			_rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
             _shoppingCartItemRepo = MockRepository.GenerateMock<IRepository<ShoppingCartItem>>();
@@ -137,6 +139,7 @@ namespace SmartStore.Services.Tests.Customers
 			_customerService = new CustomerService(
 				_customerRepo, 
 				_customerRoleRepo,
+                _customerRoleMappingRepo,
                 _genericAttributeRepo, 
 				_rewardPointsHistoryRepo, 
                 _shoppingCartItemRepo,
@@ -149,7 +152,7 @@ namespace SmartStore.Services.Tests.Customers
 				_gdprTool);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
-                _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);
+                _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings.Value, _customerSettings, _storeContext, _eventPublisher);
         }
 
         //[Test]
@@ -214,11 +217,15 @@ namespace SmartStore.Services.Tests.Customers
 
         private void AddCustomerToRegisteredRole(Customer customer)
         {
-            customer.CustomerRoles.Add(new CustomerRole()
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
             {
-                Active =  true,
-                IsSystemRole = true,
-                SystemName = SystemCustomerRoleNames.Registered
+                CustomerId = customer.Id,
+                CustomerRole = new CustomerRole
+                {
+                    Active = true,
+                    IsSystemRole = true,
+                    SystemName = SystemCustomerRoleNames.Registered
+                }
             });
         }
     }

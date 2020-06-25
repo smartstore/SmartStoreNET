@@ -1,0 +1,21 @@
+﻿@model DeliveryTimeModel
+@{        
+	ViewBag.Title = T("Admin.Configuration.DeliveryTime.EditDeliveryTimeDetails").Text;
+	Layout = "_AdminPopupLayout";
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Configuration.DeliveryTime.EditDeliveryTimeDetails")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" id="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+        </div>
+    </div>
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
+}

@@ -76,7 +76,12 @@
 @import "../../../Content/shared/_sortable-grip.scss";
 @import '../../../Content/shared/_choice.scss';
 @import "../../../Content/shared/_offcanvas.scss";
+@import "../../../Content/shared/_sections.scss";
+@import "../../../Content/shared/_bg.scss";
+@import "../../../Content/shared/_box.scss";
 @import "../../../Content/shared/_utils.scss";
+@import '../../../Content/shared/_switch.scss';
+@import '../../../Content/shared/_media.scss';
 
 
 //
@@ -106,6 +111,7 @@
 @import "_text-expander.scss";
 @import "_search.scss";
 @import "_blog.scss";
+@import "_news.scss";
 @import "_forum.scss";
 @import "_login.scss";
 @import "_rating.scss";

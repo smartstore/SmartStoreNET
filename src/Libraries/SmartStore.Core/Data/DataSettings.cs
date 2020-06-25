@@ -5,8 +5,6 @@ using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Hosting;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 

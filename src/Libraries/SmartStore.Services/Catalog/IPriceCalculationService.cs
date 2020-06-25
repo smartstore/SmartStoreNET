@@ -12,14 +12,15 @@ namespace SmartStore.Services.Catalog
 	/// </summary>
 	public partial interface IPriceCalculationService
     {
-		/// <summary>
-		/// Creates a price calculation context
-		/// </summary>
-		/// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
-		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
-		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
-		/// <returns>Price calculation context</returns>
-		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null);
+        /// <summary>
+        /// Creates a price calculation context
+        /// </summary>
+        /// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
+        /// <param name="customer">Customer, <c>null</c> to use current customer.</param>
+        /// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
+        /// <param name="includeHidden">Indicates whether to load hidden records.</param>
+        /// <returns>Price calculation context</returns>
+        PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null, bool includeHidden = true);
 
 		/// <summary>
 		/// Get product special price (is valid)
@@ -189,6 +190,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="appliedDiscount">Applied discount</param>
 		/// <param name="bundleItem">A product bundle item</param>
 		/// <param name="context">Object with cargo data for better performance</param>
+        /// <param name="finalPrice">Final product price without discount.</param>
 		/// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(Product product,
 			Customer customer,
@@ -196,7 +198,8 @@ namespace SmartStore.Services.Catalog
 			int quantity,
 			out Discount appliedDiscount,
 			ProductBundleItemData bundleItem = null,
-			PriceCalculationContext context = null);
+			PriceCalculationContext context = null,
+            decimal? finalPrice = null);
 
 
         /// <summary>

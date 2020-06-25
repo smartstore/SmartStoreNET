@@ -1,33 +1,33 @@
 ﻿@using SmartStore.Web.Models.Common;
 @model CommentModel
 
-<div class="row sm-gutters comment-item">
-	<div class="col comment-avatar-col">
+<div class="row comment-item">
+	<div class="col-auto comment-avatar-col">
         @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
 	</div>
 	<div class="col comment-content-col">
 		<div class="comment-content">
-			<div class="comment-meta">
-				<span class="comment-time text-muted">
-					@Model.CreatedOnPretty
-				</span>
-				<span class="px-2 text-muted">|</span>
-				@if (Model.AllowViewingProfiles)
-				{
-					<a class="comment-user" href="@Url.RouteUrl("CustomerProfile", new { id = Model.CustomerId })" rel="nofollow">@(Model.CustomerName)</a>
-				}
-				else
-				{
-					<span class="comment-user font-weight-medium">@(Model.CustomerName)</span>
-				}
-			</div>
+            <div class="comment-meta">
+                @if (Model.AllowViewingProfiles)
+                {
+                    <a class="comment-user" href="@Url.RouteUrl("CustomerProfile", new { id = Model.CustomerId })" rel="nofollow">@(Model.CustomerName)</a>
+                }
+                else
+                {
+                    <span class="comment-user font-weight-medium">@(Model.CustomerName)</span>
+                }
+                <span class="px-2 text-muted">|</span>
+                <span class="comment-time text-muted">
+                    @Model.CreatedOnPretty
+                </span>
+            </div>
 			@if (Model.CommentTitle.HasValue())
 			{
-				<h5 class="comment-title mt-2" dir="auto">
+				<h5 class="comment-title fs-h6 font-weight-bold mt-2" dir="auto">
 					@Html.Raw(Model.CommentTitle)
 				</h5>
 			}
-			<p class="comment-body text-body mt-2 mb-0" dir="auto">
+			<p class="comment-body fs-h6 mt-3 mb-0" dir="auto">
 				@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(Model.CommentText, false, true, false, false, false, false))
 			</p>
 		</div>

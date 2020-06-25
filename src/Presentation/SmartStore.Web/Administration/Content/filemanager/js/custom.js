@@ -34,24 +34,17 @@ function FileSelected(file) {
      * 
      */
 
-	var p = (window.opener || window.parent);
+    var f = {
+        url: file.fullPath,
+        dir: file.path,
+        path: file.path.trimEnd('/') + '/' + file.name,
+        name: file.name,
+        ext: file.ext,
+        size: file.size,
+        lastUpdated: file.time
+    };
 
-	// Set the value of field sent to Fileman via URL param "field".
-	var fieldId = RoxyUtils.GetUrlParam('field');
-	//opener.document.getElementById(fieldId).value = file.fullPath;
-	p.window.jQuery('#' + fieldId).val(file.fullPath).trigger('change').trigger('input');
-
-	//// Set the source of an image which id is sent to Fileman via URL param "img".
-	// opener.document.getElementById(RoxyUtils.GetUrlParam('img')).src = file.fullPath;
-
-	// Close file manager if it's opened in separate window. 
-	if (window.opener) {
-		self.close();
-	}
-	else {
-		// We put the modal dialog's ID in "mid"
-		p.window.closePopup(RoxyUtils.GetUrlParam('mid'));
-	}
+    window.postMessage([f], window.location.origin);
 }
 
 function GetSelectedValue() {

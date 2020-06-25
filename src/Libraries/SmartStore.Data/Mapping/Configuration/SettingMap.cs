@@ -7,10 +7,13 @@ namespace SmartStore.Data.Mapping.Configuration
     {
         public SettingMap()
         {
-            this.ToTable("Setting");
-            this.HasKey(s => s.Id);
-            this.Property(s => s.Name).IsRequired().HasMaxLength(200);
-            this.Property(s => s.Value).IsRequired().IsMaxLength(); //.HasMaxLength(2000);
+            ToTable("Setting");
+            HasKey(x => x.Id);
+            Property(x => x.Name).IsRequired().HasMaxLength(400);
+            Property(x => x.Value).IsRequired().IsMaxLength(); //.HasMaxLength(2000);
+
+            HasIndex(x => x.Name).HasName("IX_Setting_Name");
+            HasIndex(x => x.StoreId).HasName("IX_Setting_StoreId");
         }
     }
 }

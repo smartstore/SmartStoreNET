@@ -56,3 +56,28 @@
         font-weight: map-get($icon-font-variants, light);
     }
 }
+
+
+// Icon groups / overlays
+// ------------------------------------
+
+.fa-group {
+    position: relative;
+    display: inline-block;
+    font-size: 18px;
+    //color: var(--dark);
+    color: inherit;
+    line-height: 1.2;
+    margin-right: 12px;
+}
+
+.fa-overlay {
+    position: absolute;
+    display: inline-block;
+    right: -2px;
+    bottom: 0;
+    font-size: 10px;
+    //color: #222;
+    color: var(--dark);
+    text-shadow: -1px -1px 1px rgba(#fff, 1);
+}

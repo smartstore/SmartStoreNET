@@ -1,25 +1,29 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
-using System.Linq;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Topics
 {
     [Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector, IAclSelector
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
     {       
         public TopicModel()
         {
 			WidgetWrapContent = true;
 			Locales = new List<TopicLocalizedModel>();
-            AvailableTitleTags = new List<SelectListItem>(); 
+            AvailableTitleTags = new List<SelectListItem>();
+            MenuLinks = new Dictionary<string, string>();
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h3", Value = "h3" });
@@ -30,18 +34,25 @@ namespace SmartStore.Admin.Models.Topics
             AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
 
-		// ACL
-		public bool SubjectToAcl { get; set; }
-		public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
-		public int[] SelectedCustomerRoleIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
+        // ACL.
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public int[] SelectedCustomerRoleIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
 
@@ -126,6 +137,9 @@ namespace SmartStore.Admin.Models.Topics
 		public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.MenuLinks")]
+        public Dictionary<string, string> MenuLinks { get; set; }
     }
 
     public class TopicLocalizedModel : ILocalizedModelLocal
@@ -172,6 +186,17 @@ namespace SmartStore.Admin.Models.Topics
             RuleFor(x => x.HtmlId)
                 .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
                 .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
+        }
+    }
+
+    public class TopicMapper :
+        IMapper<Topic, TopicModel>
+    {
+        public void Map(Topic from, TopicModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+            to.WidgetWrapContent = from.WidgetWrapContent ?? true;
         }
     }
 }

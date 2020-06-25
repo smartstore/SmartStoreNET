@@ -4,7 +4,7 @@
 // SmartStore CI colors
 // --------------------------------------------------
 
-$sm-orange1:	#f7a833;
+$sm-orange1:	#ee9B00;
 $sm-orange2:	#e77c00;
 $sm-green1:		#009e74;
 $sm-bluegreen:	#2c8d8a;
@@ -75,13 +75,12 @@ $info:		$sm-bluegreen;
 $warning:	$orange;
 $danger:	$red;
 $light:		$gray-100;
-$dark:		$sm-red3;
+$dark:		$gray-900;
 
 $theme-colors: ( 
 	"gray": $gray-700,
 	"primary-dark": $sm-blue2,
-	"warning-dark": $sm-orange2,
-	"danger-dark": $sm-red2
+	"warning-dark": $sm-orange2
 );
 
 $body-color:	$gray-800;
@@ -115,10 +114,13 @@ $headings-font-weight:			400;
 
 // Shadows
 
-$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
-$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
+$box-shadow-sm-var:             0 0 .75rem 0 rgba(#000, .05);
+$box-shadow-var:                0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg-var:             0 1rem 3rem rgba(#000, .125);
 
+$box-shadow-sm:                 var(--box-shadow);
+$box-shadow:                    var(--box-shadow);
+$box-shadow-lg:                 var(--box-shadow);
 
 // Tables
 
@@ -159,7 +161,7 @@ $btn-border-radius-lg:          $input-border-radius-lg; //.1875rem;
 $btn-border-radius-sm:          $input-border-radius-sm; //.125rem;
 $btn-disabled-opacity:			0.5;
 
-$dropdown-box-shadow:			$box-shadow; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
+$dropdown-box-shadow:			$box-shadow-var; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
 $dropdown-border-color:			rgba(#000, 0.05); 
 $dropdown-link-color:			$body-color; //$gray-800;
 $dropdown-link-hover-color:		darken($dropdown-link-color, 5%);
@@ -175,17 +177,20 @@ $popover-box-shadow:			$dropdown-box-shadow;
 $popover-border-color:			$dropdown-border-color;
 
 $alert-padding-y:				1rem;
-$alert-border-radius: 0;
+//$alert-border-radius:			0;
 
 $nav-tabs-border-color:			#e1e4e8;
 $nav-tabs-link-active-color:	$gray-900;
+
+$nav-pills-link-active-color:   #fff;
+$nav-pills-link-active-bg:      $primary;
 
 $component-active-bg:			lighten($primary, 36%);
 $component-active-color:		inherit;
 
 
 $modal-content-border-width:        0;
-$modal-backdrop-opacity:            .55;
+$modal-backdrop-opacity:            .75;
 $modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
 $modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .12), 0 15px 35px rgba(#32325d, .27), 0 5px 15px rgba(#000, .25);
 
@@ -231,3 +236,18 @@ $custom-range-thumb-box-shadow:             0 1px .25rem rgba($primary, .2);
 $custom-range-thumb-focus-box-shadow:       0 0 0 1px $body-bg, 0 0 0 3px $input-btn-focus-color;
 $custom-range-thumb-focus-box-shadow-width: 1px; // For focus box shadow issue in IE/Edge
 $custom-range-thumb-active-bg:              lighten($primary, 20%);
+
+
+// Dashboard
+$chart-color-danger: lighten($danger, 40%);
+$chart-color-danger-dark: lighten($danger, 15%);
+$chart-color-danger-light: lighten($danger, 55%);
+$chart-color-warning: lighten($warning, 25%);
+$chart-color-warning-dark: lighten($warning, 10%);
+$chart-color-warning-light: lighten($warning, 40%);
+$chart-color-success: lighten($success, 50%);
+$chart-color-success-dark: lighten($success, 10%);
+$chart-color-success-light: lighten($success, 65%);
+$chart-color-primary: lighten($primary, 35%);
+$chart-color-primary-dark: lighten($primary, 15%);
+$chart-color-primary-light: lighten($primary, 50%);

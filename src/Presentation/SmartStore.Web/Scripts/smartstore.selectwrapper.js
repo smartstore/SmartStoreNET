@@ -26,7 +26,20 @@
 				callback(data);
 			}
 		});
-	}
+    }
+
+    function initLoad(select, url) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function (data) {
+                _.each(data, function (item) {
+                    var option = new Option(item.text, item.id, item.selected, item.selected);
+                    select.append(option);
+                });
+            }
+        });
+    }
 
 	$.fn.select2.amd.define('select2/data/lazyAdapter', [
 			'select2/data/array',
@@ -123,7 +136,71 @@
 
 			return LazyAdapter;
 		}
-	);
+    );
+
+    $.fn.select2.amd.define('select2/data/remoteAdapter', [ 'select2/data/array', 'select2/utils' ],
+        function (ArrayData, Utils) {
+
+            function RemoteAdapter($element, options) {
+                this._url = options.get('remoteUrl');
+                this._global = options.get('remoteGlobal') || false;
+                this._cachedPage = null;
+                this._load = true;
+
+                RemoteAdapter.__super__.constructor.call(this, $element, options);
+            }
+
+            Utils.Extend(RemoteAdapter, ArrayData);
+
+            RemoteAdapter.prototype.query = function (params, callback) {
+                params.page = params.page || 0;
+                params.term = params.term || '';
+
+                if (this._load || params.term.length > 0) {
+
+                    // Avoid loading first page multiple times.
+                    if (params.page === 0 && params.term.length === 0 && this._cachedPage) {
+                        callback({
+                            results: this._cachedPage,
+                            pagination: { more: true }
+                        });
+                        return;
+                    }
+
+                    var self = this;
+
+                    $.ajax({
+                        type: 'GET',
+                        url: this._url,
+                        global: this._global,
+                        dataType: 'json',
+                        cache: false,
+                        timeout: 5000,
+                        data: { page: params.page, term: params.term },
+                        success: function (data, status, jqXHR) {
+                            self._load = data.hasMoreData || params.term.length > 0;
+                            self._cachedPage = null;
+
+                            if (data.hasMoreData && params.page === 0 && params.term.length === 0) {
+                                self._cachedPage = data.results;
+                            }
+
+                            callback({
+                                results: data.results,
+                                pagination: { more: data.hasMoreData }
+                            });
+                        }
+                    });
+                }
+                else {
+                    // No more data. Remove "Search..." list item.
+                    this.container.$results.find('.loading-results').remove();
+                }
+            };
+
+            return RemoteAdapter;
+        }
+    );
 
     $.fn.selectWrapper = function (options) {
         if (options && !_.str.isBlank(options.resetDataUrl) && lists[options.resetDataUrl]) {
@@ -163,7 +240,7 @@
                 firstOption.text("");
             }
 
-            if (placeholder && !hasOptionLabel) {
+            if (placeholder && !hasOptionLabel && !sel.is('[multiple=multiple]')) {
                 // create empty first option
                 // "allowClear" doesn't work otherwise.
                 firstOption = $('<option></option>').prependTo(sel);
@@ -175,43 +252,91 @@
                 firstOption.text("");
             }
 
+            function attr(name, value) {
+                if (value && value.length > 0) {
+                    return ' ' + name + '="' + $('<div/>').text(value).html() + '"';
+                }
+                return '';
+            }
+
             function renderSelectItem(item, isResult) {
                 try {
                     var option = $(item.element),
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
-                        hint = option.data('hint'),
-                        icon = option.data('icon');
-                    
+                        text = item.text,
+                        title = '',
+                        preHtml = '',
+                        postHtml = '',
+                        classes = '',
+                        hint = item.hint || option.attr('data-hint'),
+                        description = item.description || option.attr('data-description'),
+                        icon = option.data('icon'),
+                        truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
+                        appendHint = !isResult && hint && hint.length > 0;
+
+                    if (truncateText || appendHint) {
+                        title = text;
+                        if (appendHint) {
+                            title += ' [' + hint + ']';
+                        }
+                    }
+
+                    if (truncateText) {
+                        text = text.substring(0, options.maxTextLength) + '…';
+                    }
+
+                    if (isResult) {
+                        if (!_.isEmpty(item.id) && !_.isEmpty(item.url)) {
+                            if (item.id === '-1') {
+                                // Item is a link to open add-entity page.
+                                classes += ' select2-item-link prevent-selection';
+                            }
+                            else {
+                                // Add small item button to open detail page.
+                                preHtml += '<span class="select2-item-btn float-right">';
+                                preHtml += '<a href="' + item.url.replace('__id__', item.id) + '" class="btn btn-flat btn-icon btn-light prevent-selection"' + attr('title', item.urlTitle) + '>';
+                                preHtml += '<i class="fa fa-link fa-fw prevent-selection" /></a>';
+                                preHtml += '</span>';
+                            }
+                        }
+
+                        if (!_.isEmpty(description)) {
+                            postHtml += '<span class="select2-item-description muted">' + description + '</span>'
+                        }
+                    }
+
                     if (imageUrl) {
-                        return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><img class="choice-item-img" src="' + imageUrl + '" />' + text + '</span>' + postHtml);
                     }
                     else if (color) {
-                        return $('<span class="choice-item"><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
+                        return $(preHtml + '<span class="choice-item' + classes + '"' + attr('title', title) + '><span class="choice-item-color" style="background-color: ' + color + '"></span>' + text + '</span>' + postHtml);
                     }
                     else if (hint && isResult) {
-                        return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"><span' + attr('title', title) + '>' + text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>' + postHtml);
                     }
                     else if (icon) {
-                        var html = ['<span class="choice-item">'];
+                        var html = ['<span class="choice-item' + classes + '"' + attr('title', title) + '>'];
                         var icons = _.isArray(icon) ? icon : [icon];
                         var len = (isResult ? 2 : 0) || icons.length;
 
                         for (i = 0; i < len; i++) {
                             var iconClass = (i < icons.length ? icons[i] + " " : "far ") + "fa-fw mr-2 fs-h6";
-                            html.push('<i class="' + iconClass + '" />');
+                            html.push('<i class="' + iconClass + '" style="width: unset;" />');
                         }
 
-                        html.push(item.text);
+                        html.push(text);
                         html.push('</span>');
 
                         return html;
                     }
                     else {
-                        return $('<span class="select2-option">' + item.text + '</span>');
+                        return $(preHtml + '<span class="select2-option' + classes + '"' + attr('title', title) + '>' + text + '</span>' + postHtml);
                     }
                 }
-                catch (e) { }
+                catch (e) {
+                    console.log(e);
+                }
 
                 return item.text;
             }
@@ -281,8 +406,21 @@
             }
 
             if (opts.lazy && opts.lazy.url) {
-                // url specified: load data remotely (lazily on first open)...
+                if (opts.initLoad || sel.data('select-init-load')) {
+                    initLoad(sel, opts.lazy.url);
+                }
+
+                // url specified: load data remotely (lazily on first open)...               
                 opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
+            }
+            else if (sel.data('remote-url')) {
+                opts.ajax = {};
+
+                if (opts.initLoad || sel.data('select-init-load')) {
+                    initLoad(sel, sel.data('remote-url'));
+                }
+
+                opts.dataAdapter = $.fn.select2.amd.require('select2/data/remoteAdapter');
             }
             else if (opts.ajax && opts.init && opts.init.text && sel.find('option[value="' + opts.init.text + '"]').length === 0) {
                 // In AJAX mode: add initial option when missing

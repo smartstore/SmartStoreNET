@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -150,362 +149,14 @@
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
+    <Compile Include="Mapping\Media\MediaFolderMap.cs" />
+    <Compile Include="Mapping\Media\MediaTrackMap.cs" />
+    <Compile Include="Mapping\Media\MediaTagMap.cs" />
+    <Compile Include="Mapping\Rules\RuleEntityMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskHistoryMap.cs" />
-    <Compile Include="Migrations\201403112331027_Initial.cs" />
-    <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
-      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403210038385_AclPerf.cs" />
-    <Compile Include="Migrations\201403210038385_AclPerf.Designer.cs">
-      <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.cs" />
-    <Compile Include="Migrations\201403211655284_CurrencyMorePrecision.Designer.cs">
-      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403251610279_AboutPage.cs" />
-    <Compile Include="Migrations\201403251610279_AboutPage.Designer.cs">
-      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403262015448_ImportExcel.cs" />
-    <Compile Include="Migrations\201403262015448_ImportExcel.Designer.cs">
-      <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201404032144400_Packaging.cs" />
-    <Compile Include="Migrations\201404032144400_Packaging.Designer.cs">
-      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201404101903014_AttributeCombinationPrice.cs" />
-    <Compile Include="Migrations\201404101903014_AttributeCombinationPrice.Designer.cs">
-      <DependentUpon>201404101903014_AttributeCombinationPrice.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201404170814451_BundleYouSaveLabelFix.cs" />
-    <Compile Include="Migrations\201404170814451_BundleYouSaveLabelFix.Designer.cs">
-      <DependentUpon>201404170814451_BundleYouSaveLabelFix.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201404232319321_LessValidation.cs" />
-    <Compile Include="Migrations\201404232319321_LessValidation.Designer.cs">
-      <DependentUpon>201404232319321_LessValidation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201404292222025_FixMaxLength.cs" />
-    <Compile Include="Migrations\201404292222025_FixMaxLength.Designer.cs">
-      <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.cs" />
-    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.Designer.cs">
-      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405071457441_FixRes1.cs" />
-    <Compile Include="Migrations\201405071457441_FixRes1.Designer.cs">
-      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405282243489_TaskUpdate.cs" />
-    <Compile Include="Migrations\201405282243489_TaskUpdate.Designer.cs">
-      <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.cs" />
-    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.Designer.cs">
-      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406262150229_Providers.cs" />
-    <Compile Include="Migrations\201406262150229_Providers.Designer.cs">
-      <DependentUpon>201406262150229_Providers.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201407191010096_BetterReturnRequest.cs" />
-    <Compile Include="Migrations\201407191010096_BetterReturnRequest.Designer.cs">
-      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408071158147_MultistorePoll.cs" />
-    <Compile Include="Migrations\201408071158147_MultistorePoll.Designer.cs">
-      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.cs" />
-    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.Designer.cs">
-      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201409150936394_CustomerNameFormat.cs" />
-    <Compile Include="Migrations\201409150936394_CustomerNameFormat.Designer.cs">
-      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201410091620122_NewRes.cs" />
-    <Compile Include="Migrations\201410091620122_NewRes.Designer.cs">
-      <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201411182201537_EuEsd.cs" />
-    <Compile Include="Migrations\201411182201537_EuEsd.Designer.cs">
-      <DependentUpon>201411182201537_EuEsd.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201411182202431_V21Final.cs" />
-    <Compile Include="Migrations\201411182202431_V21Final.Designer.cs">
-      <DependentUpon>201411182202431_V21Final.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412081934318_V211.cs" />
-    <Compile Include="Migrations\201412081934318_V211.Designer.cs">
-      <DependentUpon>201412081934318_V211.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201501191849483_WidgetWrapContent.cs" />
-    <Compile Include="Migrations\201501191849483_WidgetWrapContent.Designer.cs">
-      <DependentUpon>201501191849483_WidgetWrapContent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.cs" />
-    <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
-      <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.cs" />
-    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.Designer.cs">
-      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502202248081_NewIndexesV22.cs" />
-    <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
-      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.cs" />
-    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.Designer.cs">
-      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201503032227054_V22Res.cs" />
-    <Compile Include="Migrations\201503032227054_V22Res.Designer.cs">
-      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201503101851123_PdfConverterUser.cs" />
-    <Compile Include="Migrations\201503101851123_PdfConverterUser.Designer.cs">
-      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502120858030_Licensing.cs" />
-    <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
-      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201504131412183_NewCategoryProperties.cs" />
-    <Compile Include="Migrations\201504131412183_NewCategoryProperties.Designer.cs">
-      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201504171629262_V22Final.cs" />
-    <Compile Include="Migrations\201504171629262_V22Final.Designer.cs">
-      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201504232202590_AutoUpdateRes.cs" />
-    <Compile Include="Migrations\201504232202590_AutoUpdateRes.Designer.cs">
-      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.cs" />
-    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.Designer.cs">
-      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201504290937512_SendEmailsManually.cs" />
-    <Compile Include="Migrations\201504290937512_SendEmailsManually.Designer.cs">
-      <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.cs" />
-    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.Designer.cs">
-      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505061813010_CountryMultistore.cs" />
-    <Compile Include="Migrations\201505061813010_CountryMultistore.Designer.cs">
-      <DependentUpon>201505061813010_CountryMultistore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505272236124_V222.cs" />
-    <Compile Include="Migrations\201505272236124_V222.Designer.cs">
-      <DependentUpon>201505272236124_V222.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.cs" />
-    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.Designer.cs">
-      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.cs" />
-    <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.Designer.cs">
-      <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201506261018157_Merge.cs" />
-    <Compile Include="Migrations\201506261018157_Merge.Designer.cs">
-      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.cs" />
-    <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.Designer.cs">
-      <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.cs" />
-    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.Designer.cs">
-      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.cs" />
-    <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.Designer.cs">
-      <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507092146153_DownloadGuidIndex.cs" />
-    <Compile Include="Migrations\201507092146153_DownloadGuidIndex.Designer.cs">
-      <DependentUpon>201507092146153_DownloadGuidIndex.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507102159496_TransientMedia.cs" />
-    <Compile Include="Migrations\201507102159496_TransientMedia.Designer.cs">
-      <DependentUpon>201507102159496_TransientMedia.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507141647299_CustomerTablePerf.cs" />
-    <Compile Include="Migrations\201507141647299_CustomerTablePerf.Designer.cs">
-      <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.cs" />
-    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.Designer.cs">
-      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507210952098_PaymentMethodDescription.cs" />
-    <Compile Include="Migrations\201507210952098_PaymentMethodDescription.Designer.cs">
-      <DependentUpon>201507210952098_PaymentMethodDescription.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507242008201_WebScheduler.cs" />
-    <Compile Include="Migrations\201507242008201_WebScheduler.Designer.cs">
-      <DependentUpon>201507242008201_WebScheduler.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507250039446_Merge2.cs" />
-    <Compile Include="Migrations\201507250039446_Merge2.Designer.cs">
-      <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508042207146_RemoveKeepAlive.cs" />
-    <Compile Include="Migrations\201508042207146_RemoveKeepAlive.Designer.cs">
-      <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508121735397_AddSyncMapping.cs" />
-    <Compile Include="Migrations\201508121735397_AddSyncMapping.Designer.cs">
-      <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508142203054_CronExpressions.cs" />
-    <Compile Include="Migrations\201508142203054_CronExpressions.Designer.cs">
-      <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509031112324_Merge3.cs" />
-    <Compile Include="Migrations\201509031112324_Merge3.Designer.cs">
-      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508091512101_ExportFramework.cs" />
-    <Compile Include="Migrations\201508091512101_ExportFramework.Designer.cs">
-      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508211346171_Merge1.cs" />
-    <Compile Include="Migrations\201508211346171_Merge1.Designer.cs">
-      <DependentUpon>201508211346171_Merge1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509021536425_ExportFramework1.cs" />
-    <Compile Include="Migrations\201509021536425_ExportFramework1.Designer.cs">
-      <DependentUpon>201509021536425_ExportFramework1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509150931528_ExportFramework2.cs" />
-    <Compile Include="Migrations\201509150931528_ExportFramework2.Designer.cs">
-      <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201511271019577_ExportFramework3.cs" />
-    <Compile Include="Migrations\201511271019577_ExportFramework3.Designer.cs">
-      <DependentUpon>201511271019577_ExportFramework3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201512151526290_ImportFramework.cs" />
-    <Compile Include="Migrations\201512151526290_ImportFramework.Designer.cs">
-      <DependentUpon>201512151526290_ImportFramework.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601262000441_ImportFramework1.cs" />
-    <Compile Include="Migrations\201601262000441_ImportFramework1.Designer.cs">
-      <DependentUpon>201601262000441_ImportFramework1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603121451066_ThirdPartyEmailHandOver.cs" />
-    <Compile Include="Migrations\201603121451066_ThirdPartyEmailHandOver.Designer.cs">
-      <DependentUpon>201603121451066_ThirdPartyEmailHandOver.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605020640016_GtinMpnIndex.cs" />
-    <Compile Include="Migrations\201605020640016_GtinMpnIndex.Designer.cs">
-      <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.cs" />
-    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.Designer.cs">
-      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605111140288_ImportExtraData.cs" />
-    <Compile Include="Migrations\201605111140288_ImportExtraData.Designer.cs">
-      <DependentUpon>201605111140288_ImportExtraData.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605191216116_CheckoutAttributeMultiStore.cs" />
-    <Compile Include="Migrations\201605191216116_CheckoutAttributeMultiStore.Designer.cs">
-      <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605201911421_ExportRevision.cs" />
-    <Compile Include="Migrations\201605201911421_ExportRevision.Designer.cs">
-      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201606241315549_AddressEnhancement.cs" />
-    <Compile Include="Migrations\201606241315549_AddressEnhancement.Designer.cs">
-      <DependentUpon>201606241315549_AddressEnhancement.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201607111649138_FixExportDeploymentIsPublic.cs" />
-    <Compile Include="Migrations\201607111649138_FixExportDeploymentIsPublic.Designer.cs">
-      <DependentUpon>201607111649138_FixExportDeploymentIsPublic.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201608110948010_MediaStorageData.cs" />
-    <Compile Include="Migrations\201608110948010_MediaStorageData.Designer.cs">
-      <DependentUpon>201608110948010_MediaStorageData.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201609201852449_log4net.cs" />
-    <Compile Include="Migrations\201609201852449_log4net.Designer.cs">
-      <DependentUpon>201609201852449_log4net.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201609281549565_CategoryBadges.cs" />
-    <Compile Include="Migrations\201609281549565_CategoryBadges.Designer.cs">
-      <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201611261017137_Search.cs" />
-    <Compile Include="Migrations\201611261017137_Search.Designer.cs">
-      <DependentUpon>201611261017137_Search.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612061904083_ListPaging.cs" />
-    <Compile Include="Migrations\201612061904083_ListPaging.Designer.cs">
-      <DependentUpon>201612061904083_ListPaging.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701121659419_PictureSize.cs" />
-    <Compile Include="Migrations\201701121659419_PictureSize.Designer.cs">
-      <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701251835419_SpecificationAttributeAlias.cs" />
-    <Compile Include="Migrations\201701251835419_SpecificationAttributeAlias.Designer.cs">
-      <DependentUpon>201701251835419_SpecificationAttributeAlias.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702061557351_DefaultDeliveryTime.cs" />
-    <Compile Include="Migrations\201702061557351_DefaultDeliveryTime.Designer.cs">
-      <DependentUpon>201702061557351_DefaultDeliveryTime.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702081502539_QuantityEnhancements.cs" />
-    <Compile Include="Migrations\201702081502539_QuantityEnhancements.Designer.cs">
-      <DependentUpon>201702081502539_QuantityEnhancements.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702091426405_ProductSellingAbroad.cs" />
-    <Compile Include="Migrations\201702091426405_ProductSellingAbroad.Designer.cs">
-      <DependentUpon>201702091426405_ProductSellingAbroad.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702141336312_VariantAttributeValuePictures.cs" />
-    <Compile Include="Migrations\201702141336312_VariantAttributeValuePictures.Designer.cs">
-      <DependentUpon>201702141336312_VariantAttributeValuePictures.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.cs" />
-    <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.Designer.cs">
-      <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.cs" />
-    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.Designer.cs">
-      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703161013248_FacetTemplateHint.cs" />
-    <Compile Include="Migrations\201703161013248_FacetTemplateHint.Designer.cs">
-      <DependentUpon>201703161013248_FacetTemplateHint.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201704031946479_SpecificationAttributeAllowFiltering.cs" />
-    <Compile Include="Migrations\201704031946479_SpecificationAttributeAllowFiltering.Designer.cs">
-      <DependentUpon>201704031946479_SpecificationAttributeAllowFiltering.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201705032238367_RenameColorSquaresRgb.cs" />
-    <Compile Include="Migrations\201705032238367_RenameColorSquaresRgb.Designer.cs">
-      <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201705102339006_V3Final.cs" />
-    <Compile Include="Migrations\201705102339006_V3Final.Designer.cs">
-      <DependentUpon>201705102339006_V3Final.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201705281903241_MoreIndexes.cs" />
     <Compile Include="Migrations\201705281903241_MoreIndexes.Designer.cs">
       <DependentUpon>201705281903241_MoreIndexes.cs</DependentUpon>
@@ -682,15 +333,162 @@
     <Compile Include="Migrations\201907032251575_CategoryExternalLink.Designer.cs">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907250103367_RuleSystem.cs" />
+    <Compile Include="Migrations\201907250103367_RuleSystem.Designer.cs">
+      <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908050758298_MoveFurtherCustomerFields.cs" />
+    <Compile Include="Migrations\201908050758298_MoveFurtherCustomerFields.Designer.cs">
+      <DependentUpon>201908050758298_MoveFurtherCustomerFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201908150749388_V322Resources.cs" />
     <Compile Include="Migrations\201908150749388_V322Resources.Designer.cs">
       <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907221803421_GranularPermissions.cs" />
+    <Compile Include="Migrations\201907221803421_GranularPermissions.Designer.cs">
+      <DependentUpon>201907221803421_GranularPermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908211821559_Merge5.cs" />
+    <Compile Include="Migrations\201908211821559_Merge5.Designer.cs">
+      <DependentUpon>201908211821559_Merge5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908211825244_ProductTagPublished.cs" />
+    <Compile Include="Migrations\201908211825244_ProductTagPublished.Designer.cs">
+      <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908261226350_MenuItemMultistore.cs" />
+    <Compile Include="Migrations\201908261226350_MenuItemMultistore.Designer.cs">
+      <DependentUpon>201908261226350_MenuItemMultistore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909291043284_BlogAndNewsItemPictures.cs" />
+    <Compile Include="Migrations\201909291043284_BlogAndNewsItemPictures.Designer.cs">
+      <DependentUpon>201909291043284_BlogAndNewsItemPictures.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910021805242_RemoveOldPermissions.cs" />
+    <Compile Include="Migrations\201910021805242_RemoveOldPermissions.Designer.cs">
+      <DependentUpon>201910021805242_RemoveOldPermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910162004581_Merge6.cs" />
+    <Compile Include="Migrations\201910162004581_Merge6.Designer.cs">
+      <DependentUpon>201910162004581_Merge6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911090805330_ProductVisibility.cs" />
+    <Compile Include="Migrations\201911090805330_ProductVisibility.Designer.cs">
+      <DependentUpon>201911090805330_ProductVisibility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911120909434_Merge7.cs" />
+    <Compile Include="Migrations\201911120909434_Merge7.Designer.cs">
+      <DependentUpon>201911120909434_Merge7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911141820264_ScheduleTaskPriority.cs" />
+    <Compile Include="Migrations\201911141820264_ScheduleTaskPriority.Designer.cs">
+      <DependentUpon>201911141820264_ScheduleTaskPriority.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912051209105_MessageTemplateEmailAddress.cs" />
+    <Compile Include="Migrations\201912051209105_MessageTemplateEmailAddress.Designer.cs">
+      <DependentUpon>201912051209105_MessageTemplateEmailAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912111821362_AddNewPermissions.cs" />
+    <Compile Include="Migrations\201912111821362_AddNewPermissions.Designer.cs">
+      <DependentUpon>201912111821362_AddNewPermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001141118171_SpecificationAttributeColorAndPicture.cs" />
+    <Compile Include="Migrations\202001141118171_SpecificationAttributeColorAndPicture.Designer.cs">
+      <DependentUpon>202001141118171_SpecificationAttributeColorAndPicture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001221054109_ManufacturerBottomDescription.cs" />
+    <Compile Include="Migrations\202001221054109_ManufacturerBottomDescription.Designer.cs">
+      <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001301039020_DiscountRuleSets.cs" />
+    <Compile Include="Migrations\202001301039020_DiscountRuleSets.Designer.cs">
+      <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002172101120_PictureMediaRename.cs" />
+    <Compile Include="Migrations\202002172101120_PictureMediaRename.Designer.cs">
+      <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002180228163_PictureMediaRename1.cs" />
+    <Compile Include="Migrations\202002180228163_PictureMediaRename1.Designer.cs">
+      <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002280005340_MediaManager.cs" />
+    <Compile Include="Migrations\202002280005340_MediaManager.Designer.cs">
+      <DependentUpon>202002280005340_MediaManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.cs" />
+    <Compile Include="Migrations\202002191252074_RemoveDiscountRequirements.Designer.cs">
+      <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002211011108_GenericMessageTemplate.cs" />
+    <Compile Include="Migrations\202002211011108_GenericMessageTemplate.Designer.cs">
+      <DependentUpon>202002211011108_GenericMessageTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002241354543_ProductCondition.cs" />
+    <Compile Include="Migrations\202002241354543_ProductCondition.Designer.cs">
+      <DependentUpon>202002241354543_ProductCondition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002251510114_ManufacturerSubjectToAcl.cs" />
+    <Compile Include="Migrations\202002251510114_ManufacturerSubjectToAcl.Designer.cs">
+      <DependentUpon>202002251510114_ManufacturerSubjectToAcl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002271206204_ShipmentTrackingUrl.cs" />
+    <Compile Include="Migrations\202002271206204_ShipmentTrackingUrl.Designer.cs">
+      <DependentUpon>202002271206204_ShipmentTrackingUrl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003022018038_Merge8.cs" />
+    <Compile Include="Migrations\202003022018038_Merge8.Designer.cs">
+      <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003052100521_CustomerRoleMappings.cs" />
+    <Compile Include="Migrations\202003052100521_CustomerRoleMappings.Designer.cs">
+      <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003112359492_MediaManager2.cs" />
+    <Compile Include="Migrations\202003112359492_MediaManager2.Designer.cs">
+      <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003251118391_CategoryRuleSets.cs" />
+    <Compile Include="Migrations\202003251118391_CategoryRuleSets.Designer.cs">
+      <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003171812584_CookieManager.cs" />
+    <Compile Include="Migrations\202003171812584_CookieManager.Designer.cs">
+      <DependentUpon>202003171812584_CookieManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003311314082_CookieManagerCountries.cs" />
+    <Compile Include="Migrations\202003311314082_CookieManagerCountries.Designer.cs">
+      <DependentUpon>202003311314082_CookieManagerCountries.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004301922188_RemoveCustomerCustomerRoles.cs" />
+    <Compile Include="Migrations\202004301922188_RemoveCustomerCustomerRoles.Designer.cs">
+      <DependentUpon>202004301922188_RemoveCustomerCustomerRoles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005111006305_CampaignSubjectToAcl.cs" />
+    <Compile Include="Migrations\202005111006305_CampaignSubjectToAcl.Designer.cs">
+      <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005201826512_MediaManager3.cs" />
+    <Compile Include="Migrations\202005201826512_MediaManager3.Designer.cs">
+      <DependentUpon>202005201826512_MediaManager3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202006250801086_V400Resources.cs" />
+    <Compile Include="Migrations\202006250801086_V400Resources.Designer.cs">
+      <DependentUpon>202006250801086_V400Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
-    <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Products.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Manufacturers.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Categories.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Variants.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.SpecificationAttributes.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.ActivityLogTypes.cs" />
+    <Compile Include="Setup\SeedData\InvariantSeedData.Countries.cs" />
+    <Compile Include="Setup\SeedDbMigrationEvent.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
@@ -751,7 +549,6 @@
     <Compile Include="Mapping\Directory\CountryMap.cs" />
     <Compile Include="Mapping\Discounts\DiscountUsageHistoryMap.cs" />
     <Compile Include="Mapping\Discounts\DiscountMap.cs" />
-    <Compile Include="Mapping\Discounts\DiscountRequirementMap.cs" />
     <Compile Include="Mapping\Forums\ForumGroupMap.cs" />
     <Compile Include="Mapping\Forums\ForumMap.cs" />
     <Compile Include="Mapping\Forums\ForumPostMap.cs" />
@@ -795,8 +592,8 @@
     <Compile Include="Mapping\Catalog\ProductVariantAttributeValueMap.cs" />
     <Compile Include="Mapping\Catalog\ProductVariantAttributeCombinationMap.cs" />
     <Compile Include="Mapping\Catalog\ProductVariantAttributeMap.cs" />
-    <Compile Include="Mapping\Media\PictureMap.cs" />
-    <Compile Include="Mapping\Catalog\ProductPictureMap.cs" />
+    <Compile Include="Mapping\Media\MediaFileMap.cs" />
+    <Compile Include="Mapping\Catalog\ProductMediaFileMap.cs" />
     <Compile Include="Mapping\Catalog\ManufacturerMap.cs" />
     <Compile Include="Mapping\Catalog\ProductManufacturerMap.cs" />
     <Compile Include="Mapping\Catalog\ProductCategoryMap.cs" />
@@ -814,7 +611,9 @@
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DataMigrator.cs" />
+    <Compile Include="Utilities\FastPager.cs" />
     <Compile Include="Utilities\MessageTemplateConverter.cs" />
+    <Compile Include="Utilities\SqlBlobStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -827,272 +626,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403112331027_Initial.resx">
-      <DependentUpon>201403112331027_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201403210038385_AclPerf.resx">
-      <DependentUpon>201403210038385_AclPerf.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403211655284_CurrencyMorePrecision.resx">
-      <DependentUpon>201403211655284_CurrencyMorePrecision.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403251610279_AboutPage.resx">
-      <DependentUpon>201403251610279_AboutPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403262015448_ImportExcel.resx">
-      <DependentUpon>201403262015448_ImportExcel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201404032144400_Packaging.resx">
-      <DependentUpon>201404032144400_Packaging.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201404101903014_AttributeCombinationPrice.resx">
-      <DependentUpon>201404101903014_AttributeCombinationPrice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201404170814451_BundleYouSaveLabelFix.resx">
-      <DependentUpon>201404170814451_BundleYouSaveLabelFix.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201404232319321_LessValidation.resx">
-      <DependentUpon>201404232319321_LessValidation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201404292222025_FixMaxLength.resx">
-      <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405080948530_ProductBulkEditInfo.resx">
-      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405071457441_FixRes1.resx">
-      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405282243489_TaskUpdate.resx">
-      <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406122329031_ContentDeliveryNetwork.resx">
-      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406262150229_Providers.resx">
-      <DependentUpon>201406262150229_Providers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407191010096_BetterReturnRequest.resx">
-      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408071158147_MultistorePoll.resx">
-      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408291450443_CheckoutCommmentBox.resx">
-      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201409150936394_CustomerNameFormat.resx">
-      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201410091620122_NewRes.resx">
-      <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411182201537_EuEsd.resx">
-      <DependentUpon>201411182201537_EuEsd.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411182202431_V21Final.resx">
-      <DependentUpon>201411182202431_V21Final.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412081934318_V211.resx">
-      <DependentUpon>201412081934318_V211.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501191849483_WidgetWrapContent.resx">
-      <DependentUpon>201501191849483_WidgetWrapContent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
-      <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.resx">
-      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
-      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502280342294_LocalizedPropertyIndex.resx">
-      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201503032227054_V22Res.resx">
-      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201503101851123_PdfConverterUser.resx">
-      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
-      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201504131412183_NewCategoryProperties.resx">
-      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201504171629262_V22Final.resx">
-      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201504232202590_AutoUpdateRes.resx">
-      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201504270946381_TempFileCleanupTask.resx">
-      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201504290937512_SendEmailsManually.resx">
-      <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505052021483_PdfConverterRoleFix.resx">
-      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505061813010_CountryMultistore.resx">
-      <DependentUpon>201505061813010_CountryMultistore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505272236124_V222.resx">
-      <DependentUpon>201505272236124_V222.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506181858349_AclRecordCustomerRole.resx">
-      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506211043073_PaymentShippingRestrictions.resx">
-      <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506261018157_Merge.resx">
-      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.resx">
-      <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507132241575_QueuedEmailAttachments.resx">
-      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507072138058_MessageTemplateAttachments.resx">
-      <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507092146153_DownloadGuidIndex.resx">
-      <DependentUpon>201507092146153_DownloadGuidIndex.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507102159496_TransientMedia.resx">
-      <DependentUpon>201507102159496_TransientMedia.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507141647299_CustomerTablePerf.resx">
-      <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507200832223_SortFilterHomepageProducts.resx">
-      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507210952098_PaymentMethodDescription.resx">
-      <DependentUpon>201507210952098_PaymentMethodDescription.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507242008201_WebScheduler.resx">
-      <DependentUpon>201507242008201_WebScheduler.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507250039446_Merge2.resx">
-      <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508042207146_RemoveKeepAlive.resx">
-      <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508121735397_AddSyncMapping.resx">
-      <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508142203054_CronExpressions.resx">
-      <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509031112324_Merge3.resx">
-      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508091512101_ExportFramework.resx">
-      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508211346171_Merge1.resx">
-      <DependentUpon>201508211346171_Merge1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509021536425_ExportFramework1.resx">
-      <DependentUpon>201509021536425_ExportFramework1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509150931528_ExportFramework2.resx">
-      <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511271019577_ExportFramework3.resx">
-      <DependentUpon>201511271019577_ExportFramework3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512151526290_ImportFramework.resx">
-      <DependentUpon>201512151526290_ImportFramework.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601262000441_ImportFramework1.resx">
-      <DependentUpon>201601262000441_ImportFramework1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603121451066_ThirdPartyEmailHandOver.resx">
-      <DependentUpon>201603121451066_ThirdPartyEmailHandOver.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605020640016_GtinMpnIndex.resx">
-      <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605061916117_SwapColumnMappingValues.resx">
-      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605111140288_ImportExtraData.resx">
-      <DependentUpon>201605111140288_ImportExtraData.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605191216116_CheckoutAttributeMultiStore.resx">
-      <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605201911421_ExportRevision.resx">
-      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606241315549_AddressEnhancement.resx">
-      <DependentUpon>201606241315549_AddressEnhancement.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201607111649138_FixExportDeploymentIsPublic.resx">
-      <DependentUpon>201607111649138_FixExportDeploymentIsPublic.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608110948010_MediaStorageData.resx">
-      <DependentUpon>201608110948010_MediaStorageData.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201609201852449_log4net.resx">
-      <DependentUpon>201609201852449_log4net.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201609281549565_CategoryBadges.resx">
-      <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201611261017137_Search.resx">
-      <DependentUpon>201611261017137_Search.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612061904083_ListPaging.resx">
-      <DependentUpon>201612061904083_ListPaging.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701121659419_PictureSize.resx">
-      <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701251835419_SpecificationAttributeAlias.resx">
-      <DependentUpon>201701251835419_SpecificationAttributeAlias.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702061557351_DefaultDeliveryTime.resx">
-      <DependentUpon>201702061557351_DefaultDeliveryTime.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702081502539_QuantityEnhancements.resx">
-      <DependentUpon>201702081502539_QuantityEnhancements.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702091426405_ProductSellingAbroad.resx">
-      <DependentUpon>201702091426405_ProductSellingAbroad.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702141336312_VariantAttributeValuePictures.resx">
-      <DependentUpon>201702141336312_VariantAttributeValuePictures.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702202112266_VariantAttributeAllowFiltering.resx">
-      <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703021146527_ProductAttributeOptionsSet.resx">
-      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703161013248_FacetTemplateHint.resx">
-      <DependentUpon>201703161013248_FacetTemplateHint.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704031946479_SpecificationAttributeAllowFiltering.resx">
-      <DependentUpon>201704031946479_SpecificationAttributeAllowFiltering.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705032238367_RenameColorSquaresRgb.resx">
-      <DependentUpon>201705032238367_RenameColorSquaresRgb.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705102339006_V3Final.resx">
-      <DependentUpon>201705102339006_V3Final.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705281903241_MoreIndexes.resx">
       <DependentUpon>201705281903241_MoreIndexes.cs</DependentUpon>
     </EmbeddedResource>
@@ -1225,8 +758,113 @@
     <EmbeddedResource Include="Migrations\201907032251575_CategoryExternalLink.resx">
       <DependentUpon>201907032251575_CategoryExternalLink.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907250103367_RuleSystem.resx">
+      <DependentUpon>201907250103367_RuleSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907221803421_GranularPermissions.resx">
+      <DependentUpon>201907221803421_GranularPermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908050758298_MoveFurtherCustomerFields.resx">
+      <DependentUpon>201908050758298_MoveFurtherCustomerFields.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908150749388_V322Resources.resx">
       <DependentUpon>201908150749388_V322Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908211821559_Merge5.resx">
+      <DependentUpon>201908211821559_Merge5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908211825244_ProductTagPublished.resx">
+      <DependentUpon>201908211825244_ProductTagPublished.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908261226350_MenuItemMultistore.resx">
+      <DependentUpon>201908261226350_MenuItemMultistore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909291043284_BlogAndNewsItemPictures.resx">
+      <DependentUpon>201909291043284_BlogAndNewsItemPictures.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910021805242_RemoveOldPermissions.resx">
+      <DependentUpon>201910021805242_RemoveOldPermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910162004581_Merge6.resx">
+      <DependentUpon>201910162004581_Merge6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911090805330_ProductVisibility.resx">
+      <DependentUpon>201911090805330_ProductVisibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911120909434_Merge7.resx">
+      <DependentUpon>201911120909434_Merge7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911141820264_ScheduleTaskPriority.resx">
+      <DependentUpon>201911141820264_ScheduleTaskPriority.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912051209105_MessageTemplateEmailAddress.resx">
+      <DependentUpon>201912051209105_MessageTemplateEmailAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912111821362_AddNewPermissions.resx">
+      <DependentUpon>201912111821362_AddNewPermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001141118171_SpecificationAttributeColorAndPicture.resx">
+      <DependentUpon>202001141118171_SpecificationAttributeColorAndPicture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001221054109_ManufacturerBottomDescription.resx">
+      <DependentUpon>202001221054109_ManufacturerBottomDescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001301039020_DiscountRuleSets.resx">
+      <DependentUpon>202001301039020_DiscountRuleSets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002172101120_PictureMediaRename.resx">
+      <DependentUpon>202002172101120_PictureMediaRename.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002180228163_PictureMediaRename1.resx">
+      <DependentUpon>202002180228163_PictureMediaRename1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002280005340_MediaManager.resx">
+      <DependentUpon>202002280005340_MediaManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002191252074_RemoveDiscountRequirements.resx">
+      <DependentUpon>202002191252074_RemoveDiscountRequirements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002211011108_GenericMessageTemplate.resx">
+      <DependentUpon>202002211011108_GenericMessageTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002241354543_ProductCondition.resx">
+      <DependentUpon>202002241354543_ProductCondition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002251510114_ManufacturerSubjectToAcl.resx">
+      <DependentUpon>202002251510114_ManufacturerSubjectToAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002271206204_ShipmentTrackingUrl.resx">
+      <DependentUpon>202002271206204_ShipmentTrackingUrl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003022018038_Merge8.resx">
+      <DependentUpon>202003022018038_Merge8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003052100521_CustomerRoleMappings.resx">
+      <DependentUpon>202003052100521_CustomerRoleMappings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003112359492_MediaManager2.resx">
+      <DependentUpon>202003112359492_MediaManager2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003251118391_CategoryRuleSets.resx">
+      <DependentUpon>202003251118391_CategoryRuleSets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003171812584_CookieManager.resx">
+      <DependentUpon>202003171812584_CookieManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003311314082_CookieManagerCountries.resx">
+      <DependentUpon>202003311314082_CookieManagerCountries.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004301922188_RemoveCustomerCustomerRoles.resx">
+      <DependentUpon>202004301922188_RemoveCustomerCustomerRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005111006305_CampaignSubjectToAcl.resx">
+      <DependentUpon>202005111006305_CampaignSubjectToAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005201826512_MediaManager3.resx">
+      <DependentUpon>202005201826512_MediaManager3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006250801086_V400Resources.resx">
+      <DependentUpon>202006250801086_V400Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

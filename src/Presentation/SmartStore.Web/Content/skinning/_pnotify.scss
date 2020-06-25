@@ -7,9 +7,15 @@
 
 .alert.ui-pnotify-container {
     padding-left: 70px !important;
-    //background: #fff !important;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
+    box-shadow: 0 6px 12px rgba(#000, 0.175) !important;
     border-width: 1px;
+    min-height: 75px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    padding-right: 1.5rem;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
 
@@ -43,6 +49,7 @@
     .alert-danger &     { @include bubble('right', 'center', 8, $danger, $danger); }
 
     > span {
+        display: none;
         position: absolute;
         left: 0;
         width: 100%;
@@ -76,13 +83,21 @@
 
 .ui-pnotify-closer, 
 .ui-pnotify-sticker {
-    width: 16px;
     opacity: .35;
 	margin: 0;
-	padding-left: 2px;
-	position: relative;
-	top: -5px;
-	left: 5px;
+	position: absolute;
+    width: 20px;
+    text-align: center;
+	top: 5px;
+	right: 3px;
+    outline: 0;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.ui-pnotify-sticker {
+    font-size: 10px;
+    top: 24px;
 }
 
 .ui-pnotify-closer:hover, 

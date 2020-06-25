@@ -1,0 +1,6 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var id = string.Concat("rule-value-", Model.Id);
+}
+<input type="text" id="@id" name="@id" class="form-control" value="@Model.RawValue" />

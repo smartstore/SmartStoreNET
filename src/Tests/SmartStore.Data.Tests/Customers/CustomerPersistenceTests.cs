@@ -44,9 +44,10 @@ namespace SmartStore.Data.Tests.Customers
         public void Can_save_and_load_customer_with_customerRoles()
         {
             var customer = GetTestCustomer();
-            customer.CustomerRoles.Add
-            (
-                new CustomerRole()
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRole = new CustomerRole
                 {
                     Name = "Administrators",
                     FreeShipping = true,
@@ -55,15 +56,14 @@ namespace SmartStore.Data.Tests.Customers
                     IsSystemRole = true,
                     SystemName = "Administrators"
                 }
-            );
-
+            });
 
             var fromDb = SaveAndLoadEntity(customer);
             fromDb.ShouldNotBeNull();
 
-            fromDb.CustomerRoles.ShouldNotBeNull();
-            (fromDb.CustomerRoles.Count == 1).ShouldBeTrue();
-            fromDb.CustomerRoles.First().Name.ShouldEqual("Administrators");
+            fromDb.CustomerRoleMappings.ShouldNotBeNull();
+            (fromDb.CustomerRoleMappings.Count == 1).ShouldBeTrue();
+            fromDb.CustomerRoleMappings.First().CustomerRole.Name.ShouldEqual("Administrators");
         }
 
         [Test]

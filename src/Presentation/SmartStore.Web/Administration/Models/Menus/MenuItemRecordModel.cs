@@ -2,10 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using FluentValidation;
 using FluentValidation.Attributes;
-using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
@@ -63,11 +61,32 @@ namespace SmartStore.Admin.Models.Menus
 
         public string Style { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.IconColor")]
+        public string IconColor { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.HtmlId")]
         public string HtmlId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.CssClass")]
         public string CssClass { get; set; }
+
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
+        // ACL.
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public int[] SelectedCustomerRoleIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
         public IList<MenuItemRecordLocalizedModel> Locales { get; set; }
     }

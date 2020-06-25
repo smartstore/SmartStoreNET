@@ -1,0 +1,36 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var resource = GetResourceFor(Model.Operator, false);
+}
+
+<div id="rule-operator@(Model.Id)" class="btn-group d-block rule-operator" role="group" data-value="@Model.Operator">
+    <button type="button" class="btn btn-outline-secondary btn-to-primary fwn btn-block dropdown-toggle d-flex align-items-center justify-content-between" data-toggle="dropdown" title="@resource">
+        <span class="text-truncate">@resource</span>
+    </button>
+    <div class="dropdown-menu">
+        @foreach (var op in Model.Descriptor.Operators)
+        {
+            <a href="javascript:void(0)" class="dropdown-item" data-value="@op.Operator" title="@GetResourceFor(op, true)">@GetResourceFor(op, false)</a>
+        }
+    </div>
+</div>
+@functions
+{
+    private string GetResourceFor(RuleOperator op, bool hint)
+    {
+        if (hint && !Model.Descriptor.IsComparingSequences)
+        {
+            return string.Empty;
+        }
+
+        var typeName = op.GetType().Name;
+        var key = string.Concat(
+            "Admin.Rules.RuleOperator.",
+            Model.Descriptor.IsComparingSequences ? "Sequence." : "",
+            typeName,
+            hint ? ".Hint" : "");
+
+        return CommonServices.Localization.GetResource(key, 0, false, typeName, hint);
+    }
+}

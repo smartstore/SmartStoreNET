@@ -3,7 +3,12 @@
 @* Please keep in mind that this layout view is also referenced and used by plugins! *@
 
 @{
-	Layout = "_AdminRoot";
+    Layout = "_AdminRoot";
+    var hasLeftSideBar = IsSectionDefined("SideBarLeft");
+    if (hasLeftSideBar)
+    {
+		Html.AddBodyCssClass("has-left-sidebar");
+    }
 }
 
 @if (ViewBag.RefreshPage == true)
@@ -58,6 +63,13 @@
 				</div>
 			</header>
 		}
+
+		@if (hasLeftSideBar)
+        {
+			<aside class="sidebar-left">
+				@RenderSection("SideBarLeft")
+			</aside>
+        }
 
 		@{ Html.RenderZone("beforemaincontent"); }
 

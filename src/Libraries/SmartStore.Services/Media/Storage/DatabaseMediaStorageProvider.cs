@@ -1,9 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.Data.Common;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.IO;
 using System.Threading.Tasks;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
+using SmartStore.Data;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Media.Storage
 {
@@ -12,15 +18,35 @@ namespace SmartStore.Services.Media.Storage
 	[DisplayOrder(0)]
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
+		class MediaStorageBlobStream : SqlBlobStream
+		{
+			public MediaStorageBlobStream(
+				IDbConnectionFactory connectionFactory,
+				string connectionString,
+				int mediaStorageId)
+				: base(connectionFactory, connectionString, "MediaStorage", "Data", "Id", mediaStorageId)
+			{
+			}
+		}
+
 		private readonly IDbContext _dbContext;
-		private readonly IRepository<MediaStorage> _mediaStorageRepository;
+		private readonly IRepository<MediaStorage> _mediaStorageRepo;
+		private readonly IRepository<MediaFile> _mediaFileRepo;
+		private readonly Lazy<IEfDataProvider> _dataProvider;
+
+		private readonly bool _isSqlServer;
 
 		public DatabaseMediaStorageProvider(
 			IDbContext dbContext,
-			IRepository<MediaStorage> mediaStorageRepository)
+			IRepository<MediaStorage> mediaStorageRepo,
+			IRepository<MediaFile> mediaFileRepo,
+			Lazy<IEfDataProvider> dataProvider)
 		{
 			_dbContext = dbContext;
-			_mediaStorageRepository = mediaStorageRepository;
+			_mediaStorageRepo = mediaStorageRepo;
+			_mediaFileRepo = mediaFileRepo;
+			_dataProvider = dataProvider;
+			_isSqlServer = DataSettings.Current.IsSqlServer;
 		}
 
 		public static string SystemName
@@ -28,129 +54,207 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
-		public Stream OpenRead(MediaItem media)
+		private Stream CreateBlobStream(int mediaStorageId)
 		{
-			Guard.NotNull(media, nameof(media));
-
-			return media.Entity?.MediaStorage?.Data?.ToStream();
+			return new MediaStorageBlobStream(_dataProvider.Value.GetConnectionFactory(), DataSettings.Current.DataConnectionString, mediaStorageId);
 		}
 
-		public byte[] Load(MediaItem media)
-		{
-			Guard.NotNull(media, nameof(media));
+		public bool IsCloudStorage { get; } = false;
 
-			return media.Entity?.MediaStorage?.Data ?? new byte[0];
+		public string GetPublicUrl(MediaFile mediaFile)
+		{
+			return null;
 		}
 
-		public Task<byte[]> LoadAsync(MediaItem media)
+		public long GetSize(MediaFile mediaFile)
 		{
-			return Task.FromResult(Load(media));
-		}
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-		public void Save(MediaItem media, byte[] data)
-		{
-			Guard.NotNull(media, nameof(media));
-
-			if (data == null || data.LongLength == 0)
+			var id = mediaFile.MediaStorageId ?? 0;
+			if (id == 0)
 			{
-				// remove media storage if any
-				if ((media.Entity.MediaStorageId ?? 0) != 0 && media.Entity != null && media.Entity.MediaStorage != null)
+				return 0;
+			}
+
+			if (_isSqlServer)
+			{
+				using (var stream = CreateBlobStream(id))
 				{
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
+					return stream.Length;
 				}
 			}
 			else
 			{
-				if (media.Entity.MediaStorage == null)
-				{
-					// entity has no media storage -> insert
-					var newStorage = new MediaStorage { Data = data };
-
-					_mediaStorageRepository.Insert(newStorage);
-
-					if (newStorage.Id == 0)
-					{
-						// actually we should never get here
-						_dbContext.SaveChanges();
-					}
-
-					media.Entity.MediaStorageId = newStorage.Id;
-
-					//// Required because during import the ChangeTracker doesn't treat media.Entity as changed entry.
-					//_dbContext.ChangeState((BaseEntity)media.Entity, System.Data.Entity.EntityState.Modified);
-
-					_dbContext.SaveChanges();
-				}
-				else
-				{
-					// update existing media storage
-					media.Entity.MediaStorage.Data = data;
-
-					_mediaStorageRepository.Update(media.Entity.MediaStorage);
-				}
+				return mediaFile.MediaStorage?.Data?.LongLength ?? 0;
 			}
 		}
 
-		public Task SaveAsync(MediaItem media, byte[] data)
+		public Stream OpenRead(MediaFile mediaFile)
 		{
-			Save(media, data);
-			return Task.FromResult(0);
-		}
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-		public void Remove(params MediaItem[] medias)
-		{
-			foreach (var media in medias)
+			if (_isSqlServer)
 			{
-				if ((media.Entity.MediaStorageId ?? 0) != 0)
+				if (mediaFile.MediaStorageId > 0)
 				{
-					// this also nulls media.Entity.MediaStorageId
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
+					return CreateBlobStream(mediaFile.MediaStorageId.Value);
 				}
+
+				return null;
+			}
+			else
+			{
+				return mediaFile.MediaStorage?.Data?.ToStream();
 			}
 		}
 
+		public byte[] Load(MediaFile mediaFile)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
+			if (mediaFile.MediaStorageId == null)
+			{
+				return new byte[0];
+			}
+
+			using (var stream = CreateBlobStream(mediaFile.MediaStorageId.Value))
+			{
+				return stream.ToByteArray();
+			}
+		}
+
+		public async Task<byte[]> LoadAsync(MediaFile mediaFile)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			if (mediaFile.MediaStorageId == null)
+			{
+				return new byte[0];
+			}
+
+			using (var stream = CreateBlobStream(mediaFile.MediaStorageId.Value))
+			{
+				return await stream.ToByteArrayAsync();
+			}
+		}
+
+		public void Save(MediaFile mediaFile, Stream stream)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			if (_isSqlServer)
+			{
+				SaveFast(mediaFile, stream);
+			}
+			else
+			{
+				byte[] buffer;
+				using (stream ?? new MemoryStream())
+				{
+					buffer = stream.ToByteArray();
+				}
+				mediaFile.ApplyBlob(buffer);
+			}
+
+			_mediaFileRepo.Update(mediaFile);
+		}
+
+		public async Task SaveAsync(MediaFile mediaFile, Stream stream)
+		{
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			if (_isSqlServer)
+			{
+				SaveFast(mediaFile, stream);
+			}
+			else
+			{
+				byte[] buffer;
+				using (stream ?? new MemoryStream())
+				{
+					buffer = await stream.ToByteArrayAsync();
+				}
+				mediaFile.ApplyBlob(buffer);
+			}
+
+			_mediaFileRepo.Update(mediaFile);
+		}
+
+		private int SaveFast(MediaFile mediaFile, Stream stream)
+		{
+			var sql = "INSERT INTO [MediaStorage] (Data) Values(@p0)";
+			var storageId = ((DbContext)_dbContext).InsertInto(sql, stream);
+			mediaFile.MediaStorageId = storageId;
+
+			return storageId;
+		}
+
+		public void Remove(params MediaFile[] mediaFiles)
+		{
+			using (var scope = new DbContextScope(ctx: _mediaFileRepo.Context, autoCommit: false))
+			{
+				foreach (var media in mediaFiles)
+				{
+					media.ApplyBlob(null);
+				}
+
+				scope.Commit();
+			}
+		}
+
+		public void ChangeExtension(MediaFile mediaFile, string extension)
+		{
+			// Do nothing
+		}
+
+		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaFile mediaFile)
 		{
 			Guard.NotNull(target, nameof(target));
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (media.Entity.MediaStorage != null)
+			if (mediaFile.MediaStorageId != null)
 			{
-				// let target store data (into a file for example)
-				target.Receive(context, media, media.Entity.MediaStorage.Data);
+				// Let target store data (into a file for example)
+				target.Receive(context, mediaFile, OpenRead(mediaFile));	
 
-				// remove picture binary from DB
+				// Remove picture binary from DB
 				try
 				{
-					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
+					mediaFile.MediaStorageId = null;
+					mediaFile.MediaStorage = null;
+					_mediaFileRepo.Update(mediaFile);
 				}
 				catch { }
-
-				media.Entity.MediaStorageId = null;
-
+				
 				context.ShrinkDatabase = true;
 			}
 		}
 
-		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
+		public void Receive(MediaMoverContext context, MediaFile mediaFile, Stream stream)
 		{
 			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(media, nameof(media));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			// store data for later bulk commit
-			if (data != null && data.LongLength > 0)
+			// Store data for later bulk commit
+			if (stream != null && stream.Length > 0)
 			{
-				// requires autoDetectChanges set to true or remove explicit entity detaching
-				media.Entity.MediaStorage = new MediaStorage { Data = data };
+				// Requires AutoDetectChanges set to true or remove explicit entity detaching
+				Save(mediaFile, stream);
 			}
 		}
 
-		public Task ReceiveAsync(MediaMoverContext context, MediaItem media, byte[] data)
+		public async Task ReceiveAsync(MediaMoverContext context, MediaFile mediaFile, Stream stream)
 		{
-			Receive(context, media, data);
-			return Task.FromResult(0);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(mediaFile, nameof(mediaFile));
+
+			// Store data for later bulk commit
+			if (stream != null && stream.Length > 0)
+			{
+				// Requires AutoDetectChanges set to true or remove explicit entity detaching
+				await SaveAsync(mediaFile, stream);
+			}
 		}
 
 		public void OnCompleted(MediaMoverContext context, bool succeeded)

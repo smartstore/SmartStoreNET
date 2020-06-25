@@ -3,6 +3,7 @@ using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Utilities
 {
@@ -125,14 +126,13 @@ namespace SmartStore.Utilities
 			{
 
 				int currentValue = min;
-				int tempMax = 0;
-				int radix = 1;
+                int radix = 1;
 
 				while (m_isForward || radix != 0)
 				{
-					tempMax = GetNextMaximum(currentValue, max, radix);
+                    int tempMax = GetNextMaximum(currentValue, max, radix);
 
-					if (tempMax >= currentValue)
+                    if (tempMax >= currentValue)
 					{
 						pattern += prefix + ParseRange(currentValue, tempMax, radix);
 						if (!(!m_isForward && radix == 1))
@@ -293,7 +293,9 @@ namespace SmartStore.Utilities
 			{
 				if (IsMetachar(input[i]))
 				{
-					var sb = new StringBuilder("^");
+                    var psb = PooledStringBuilder.Rent("^");
+                    var sb = (StringBuilder)psb;
+
 					char ch = input[i];
 					int lastpos;
 
@@ -342,7 +344,7 @@ namespace SmartStore.Utilities
 					} while (i < input.Length);
 
 					sb.Append('$');
-					return sb.ToString();
+					return psb.ToStringAndReturn();
 				}
 			}
 

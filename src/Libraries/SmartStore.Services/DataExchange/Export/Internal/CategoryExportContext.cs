@@ -3,50 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services.DataExchange.Export.Internal
 {
-	internal class CategoryExportContext
+    internal class CategoryExportContext
 	{
 		protected List<int> _categoryIds;
-		protected List<int> _pictureIds;
+		protected List<int> _fileIds;
 
 		private Func<int[], Multimap<int, ProductCategory>> _funcProductCategories;
-		private Func<int[], IList<Picture>> _funcPictures;
+		private Func<int[], IList<MediaFileInfo>> _funcFiles;
 
 		private LazyMultimap<ProductCategory> _productCategories;
-		private LazyMultimap<Picture> _pictures;
+		private LazyMultimap<MediaFileInfo> _files;
 
 		public CategoryExportContext(
 			IEnumerable<Category> categories,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
-			Func<int[], IList<Picture>> pictures)
+			Func<int[], IList<MediaFileInfo>> files)
 		{
 			if (categories == null)
 			{
 				_categoryIds = new List<int>();
-				_pictureIds = new List<int>();
+				_fileIds = new List<int>();
 			}
 			else
 			{
 				_categoryIds = new List<int>(categories.Select(x => x.Id));
-				_pictureIds = new List<int>(categories.Where(x => (x.PictureId ?? 0) != 0).Select(x => x.PictureId ?? 0));
+				_fileIds = categories.Select(x => x.MediaFileId ?? 0)
+                    .Where(x => x != 0)
+                    .Distinct()
+                    .ToList();
 			}
 
 			_funcProductCategories = productCategories;
-			_funcPictures = pictures;
+			_funcFiles = files;
 		}
 
 		public void Clear()
 		{
-			if (_productCategories != null)
-				_productCategories.Clear();
-			if (_pictures != null)
-				_pictures.Clear();
+    		_productCategories?.Clear();
+			_files?.Clear();
 
-			_categoryIds.Clear();
-			_pictureIds.Clear();
+			_categoryIds?.Clear();
+			_fileIds?.Clear();
 		}
 
 		public LazyMultimap<ProductCategory> ProductCategories
@@ -61,15 +62,15 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			}
 		}
 
-		public LazyMultimap<Picture> Pictures
+		public LazyMultimap<MediaFileInfo> Files
 		{
 			get
 			{
-				if (_pictures == null)
+				if (_files == null)
 				{
-					_pictures = new LazyMultimap<Picture>(keys => _funcPictures(keys).ToMultimap(x => x.Id, x => x), _pictureIds);
+					_files = new LazyMultimap<MediaFileInfo>(keys => _funcFiles(keys).ToMultimap(x => x.Id, x => x), _fileIds);
 				}
-				return _pictures;
+				return _files;
 			}
 		}
 	}

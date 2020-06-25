@@ -1,50 +1,50 @@
 ﻿@model List<FeedItemModel>
 
-<div class="marketplace-feed">
-	<div class="marketplace-feed-title">
-		<i class="fa fa-rss"></i>
-		@T("Admin.Marketplace.News")
-	</div>
+<div class="report sticky-report pb-4">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.Marketplace.News")</div>
+    </div>
+    @if (!Model.Any())
+    {
+        <p class="muted">@T("Admin.Marketplace.ComingSoon")</p>
+        return;
+    }
 
-	@if (!Model.Any())
-	{
-		<p class="muted">@T("Admin.Marketplace.ComingSoon")</p>
-		return;
-	}
+    @if (!ViewData.ModelState.IsValid)
+    {
+        @Html.ValidationSummary(true)
+        return;
+    }
 
-	@if (!ViewData.ModelState.IsValid)
-	{
-		@Html.ValidationSummary(true)
-		return;
-	}
+    <div class="marketplace-feed-body">
+        @foreach (var item in Model.Take(5))
+        {
+            <div class="marketplace-feed-item">
+                <div class="marketplace-feed-item-title">
+                    @if (item.Link.HasValue())
+                    {
+                        <a href="@item.Link" target="MarketplaceWindow"><strong>@item.Title</strong></a>
+                    }
+                    else
+                    {
+                        <strong>@item.Title</strong>
+                    }
+                </div>
 
-	<div class="marketplace-feed-body">
-		@foreach (var item in Model.Take(6))
-		{
-			<div class="marketplace-feed-item">
-				<div class="marketplace-feed-item-title">
-					@if (item.Link.HasValue())
-					{
-						<a href="@item.Link" target="MarketplaceWindow"><strong>@item.Title</strong></a>
-					}
-					else
-					{
-						<strong>@item.Title</strong>
-					}
-				</div>
+                <div>
+                    <span class="muted">@item.PublishDate - </span> @item.Summary
+                    @if (item.Link.HasValue())
+                    {
+                        <a href="@item.Link">@T("Common.MoreInfo").Text.ToLower()...</a>
+                    }
+                </div>
+            </div>
+        }
 
-				<div>
-					<span class="muted">@item.PublishDate - </span> @item.Summary
-					@if (item.Link.HasValue())
-					{
-						<a href="@item.Link">@T("Common.MoreInfo").Text.ToLower()...</a>
-					}
-				</div>
-			</div>
-		}
-	</div>
-
-	<a class="btn btn-primary btn-block" href="http://community.smartstore.com/marketplace/" target="MarketplaceWindow">
-		<span>@T("Admin.Marketplace.Visit")</span>
-	</a>
+    </div>
+    <div class="marketplace-feed-body">
+    <a class="btn btn-primary btn-block btn-3d" href="http://community.smartstore.com/marketplace/" target="MarketplaceWindow">
+        <span>@T("Admin.Marketplace.Visit")</span>
+    </a>
+    </div>
 </div>

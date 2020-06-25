@@ -5,17 +5,20 @@ using System.Web.Mvc;
 using System.Linq;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector, IAclSelector
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
 	{
         public ProductModel()
         {
@@ -57,10 +60,13 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
 		public string AssociatedToProductName { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.VisibleIndividually")]
-		public bool VisibleIndividually { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Visibility")]
+        public ProductVisibility Visibility { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Condition")]
+        public ProductCondition Condition { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTemplate")]
 		[AllowHtml]
 		public int ProductTemplateId { get; set; }
 		public IList<SelectListItem> AvailableProductTemplates { get; set; }
@@ -159,8 +165,10 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Download")]
 		[UIHint("Download")]
 		public int? DownloadId { get; set; }
+		public string DownloadThumbUrl { get; set; }
+		public Download CurrentDownload { get; set; }
 
-        [SmartResourceDisplayName("Common.Download.Version")]
+		[SmartResourceDisplayName("Common.Download.Version")]
         public string DownloadFileVersion { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.UnlimitedDownloads")]
@@ -353,40 +361,44 @@ namespace SmartStore.Admin.Models.Catalog
 
         public IList<ProductLocalizedModel> Locales { get; set; }
 
-        // ACL (customer roles)
-        public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        // ACL (customer roles).
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
 
-        //categories
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
         public int NumberOfAvailableCategories { get; set; }
-
-        //manufacturers
         public int NumberOfAvailableManufacturers { get; set; }
-
-		//product attributes
 		public int NumberOfAvailableProductAttributes { get; set; }
 
-        //pictures
+        //Pictures.
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasPreviewPicture")]
         public bool HasPreviewPicture { get; set; }
         public ProductPictureModel AddPictureModel { get; set; }
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
-        
-        //discounts
-        public List<Discount> AvailableDiscounts { get; set; }
-		public int[] SelectedDiscountIds { get; set; }
 
-		//add specification attribute model
+		public IList<ProductMediaFile> ProductMediaFiles { get; set; }
+
+		[UIHint("Discounts")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("discountType", DiscountType.AssignedToSkus)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
+        public int[] SelectedDiscountIds { get; set; }
+
         public AddProductSpecificationAttributeModel AddSpecificationAttributeModel { get; set; }
 
-        //copy product
         public CopyProductModel CopyProductModel { get; set; }
 
 		//BasePrice
@@ -451,7 +463,7 @@ namespace SmartStore.Admin.Models.Catalog
         {
             public int ProductId { get; set; }
 
-            [UIHint("Picture")]
+            [UIHint("Media"), AdditionalMetadata("album", "catalog")]
             [SmartResourceDisplayName("Admin.Catalog.Products.Pictures.Fields.Picture")]
             public int PictureId { get; set; }
 
@@ -460,7 +472,9 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
-        }
+
+			public ProductMediaFile ProductMediaFile { get; set; }
+		}
         
         public class ProductCategoryModel : EntityModelBase
         {
@@ -477,6 +491,9 @@ namespace SmartStore.Admin.Models.Catalog
 
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
+
+            [SmartResourceDisplayName("Admin.Rules.AddedByRule")]
+            public bool IsSystemMapping { get; set; }
         }
 
         public class ProductManufacturerModel : EntityModelBase
@@ -684,7 +701,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string Color { get; set; }
 			public bool IsListTypeAttribute { get; set; }
 
-            [UIHint("Picture")]
+            [UIHint("Media"), AdditionalMetadata("album", "catalog")]
             [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
             public int PictureId { get; set; }
             
@@ -814,7 +831,17 @@ namespace SmartStore.Admin.Models.Catalog
                 .NotNull()  // Nullable required for IsTaxExempt.
                 .NotEqual(0)
                 .When(x => !x.IsTaxExempt);
-        }
+
+			RuleFor(x => x.DownloadFileVersion)
+				.NotEmpty()
+				.When(x => x.DownloadId != null && x.DownloadId != 0)
+				.WithMessage(T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
+
+			RuleFor(x => x.NewVersion)
+				.NotEmpty()
+				.When(x => x.NewVersionDownloadId != null && x.NewVersionDownloadId != 0)
+				.WithMessage(T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
+		}
     }
 
 	public partial class ProductVariantAttributeValueModelValidator : AbstractValidator<ProductModel.ProductVariantAttributeValueModel>
@@ -825,4 +852,14 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Quantity).GreaterThanOrEqualTo(1).When(x => x.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage);
 		}
 	}
+
+    public class ProductMapper : 
+        IMapper<Product, ProductModel>
+    {
+        public void Map(Product from, ProductModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+		}
+    }
 }

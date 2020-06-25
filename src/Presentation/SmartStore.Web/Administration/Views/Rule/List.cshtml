@@ -1,0 +1,52 @@
+﻿@model RuleSetListModel
+
+@using SmartStore.Admin.Models.Rules
+@using Telerik.Web.Mvc.UI
+@{
+    ViewBag.Title = T("Common.Rules").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="far fa-clock"></i>
+        @T("Common.Rules")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
+    </div>
+</div>
+
+<div>
+    @(Html.Telerik().Grid<RuleSetModel>()
+        .Name("ruleset-grid")
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.Name)
+				.ClientTemplate(
+                    "<div><a href=\"Edit/<#= Id #>\"><#= Name #></a></div>" + 
+                    "<div class='muted'><#= Description #></div>");
+            columns.Bound(x => x.ScopeName)
+                .Width(200);
+            columns.Bound(x => x.IsActive)
+                .ClientTemplate(@Html.SymbolForBool("IsActive"))
+                .Centered()
+                .Width(200);
+        })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Rule"))
+        .ClientEvents(events => events.OnRowDataBound("onRowDataBound"))
+        .PreserveGridState()
+        .EnableCustomBinding(true)
+    )
+</div>
+
+<script>
+    function onRowDataBound(e) {
+	    if (!e.dataItem.IsActive) {
+		    $(e.row).find('td').wrapInner('<span class="muted" />');
+	    }
+    }
+</script>

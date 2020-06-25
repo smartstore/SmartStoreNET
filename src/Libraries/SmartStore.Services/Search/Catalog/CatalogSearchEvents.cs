@@ -4,13 +4,15 @@ namespace SmartStore.Services.Search
 {
     public class CatalogSearchingEvent
 	{
-        public CatalogSearchingEvent(CatalogSearchQuery query)
+        public CatalogSearchingEvent(CatalogSearchQuery query, bool direct)
         {
 			Guard.NotNull(query, nameof(query));
 
 			Query = query;
+            Direct = direct;
 		}
 
+        public bool Direct { get; private set; }
         public CatalogSearchQuery Query { get; private set; }
     }
 
@@ -26,6 +28,6 @@ namespace SmartStore.Services.Search
 		}
 
 		public CatalogSearchQuery Query { get; private set; }
-		public CatalogSearchResult Result { get; private set; }
+		public CatalogSearchResult Result { get; set; }
 	}
 }

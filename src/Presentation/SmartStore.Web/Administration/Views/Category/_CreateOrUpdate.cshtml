@@ -1,7 +1,4 @@
 ﻿@model CategoryModel
-
-@using Telerik.Web.Mvc.UI;
-
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
@@ -10,20 +7,16 @@
 	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil-alt fa-lg fa-fw").Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
 	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
-	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Icon("fa fa-users fa-lg fa-fw").Content(TabAcl());
-	x.Add().Text(T("Admin.Common.Stores").Text).Icon("fa fa-globe fa-lg fa-fw").Content(TabStores());
 
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {
-	if (Model.Id != 0)
-	{
-		<table class="adminContent">
-			<tr>
+		<table class="adminContent mb-2">
+			@if (Model.Id != 0)
+			{
+            <tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
@@ -32,6 +25,7 @@
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
+			}
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.ExternalLink)
@@ -56,7 +50,7 @@
 					    data_select = true,
 					    data_select_lazy = true,
 					    data_select_init_text = Model.ParentCategoryBreadcrumb,
-					    data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
+					    data_select_url = Url.Action("AllCategories", "Category", new { selectedIds = Model.ParentCategoryId })
 				    })
                     @Html.ValidationMessageFor(model => model.ParentCategoryId)
                 </td>
@@ -89,7 +83,6 @@
                 </td>
             </tr>
 		</table>
-	}
 
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
 		@<table class="adminContent">
@@ -290,6 +283,43 @@
                 @Html.ValidationMessageFor(model => model.CategoryTemplateId)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedDiscountIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedDiscountIds)
+                @Html.ValidationMessageFor(model => model.SelectedDiscountIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds)
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+
+	            <div class="mt-4">
+		            <div class="alert alert-danger">
+			            @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
+		            </div>
+		            <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
+			            <i class="fa fa-bolt"></i>
+			            <span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
+		            </a>
+	            </div>
+            </td>
+        </tr>
 		@if (Model.CreatedOn.HasValue)
 		{
 			<tr>
@@ -413,57 +443,72 @@
 {
 	if (Model.Id > 0)
 	{
+        <div class="adminContent">
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedRuleSetIds)
+                    @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+                </div>
+            </div>
+        </div>
+        if (Model.SelectedRuleSetIds.Any())
+        {
+            <div class="alert alert-info">
+                @T("Admin.Catalog.Categories.ProductListDescription")
+            </div>
+        }
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
-					.Name("products-grid")
-					.DataKeys(keys => { keys.Add(x => x.Id); })
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax()
-							.Select("ProductList", "Category", new { categoryId = Model.Id })
-							.Update("ProductUpdate", "Category")
-							.Delete("ProductDelete", "Category");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.ProductName)
-							.ReadOnly()
-							.Width("50%")
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Sku)
-							.Width("20%")
-							.ReadOnly();
-						columns.Bound(x => x.Published)
-							.ReadOnly()
-							.Width("5%")
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.IsFeaturedProduct)
-							.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
-							.Width("5%")
-							.Centered();
-						columns.Bound(x => x.DisplayOrder1)
-							.Width("5%")
-							.Centered();
-						columns.Command(commands =>
-						{
-							commands.Edit().Localize(T);
-							commands.Delete().Localize(T);
-						})
-						.HtmlAttributes(new { align = "right" })
-						.Width("15%");
-					})
-					.ToolBar(commands => commands.Template(CategoryProductsGridCommands))
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
+                .Name("products-grid")
+                .DataKeys(keys => { keys.Add(x => x.Id); })
+                .DataBinding(dataBinding =>
+                {
+                    dataBinding.Ajax()
+                        .Select("ProductList", "Category", new { categoryId = Model.Id })
+                        .Update("ProductUpdate", "Category")
+                        .Delete("ProductDelete", "Category");
+                })
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.ProductName)
+                        .ReadOnly()
+                        .ClientTemplate(Html.LabeledProductName("ProductId", "ProductName"));
+                    columns.Bound(x => x.Sku)
+                        .ReadOnly();
+                    columns.Bound(x => x.Published)
+                        .ReadOnly()
+                        .ClientTemplate(Html.SymbolForBool("Published"))
+                        .Centered();
+                    columns.Bound(x => x.IsFeaturedProduct)
+                        .ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
+                        .Centered();
+                    columns.Bound(x => x.DisplayOrder1)
+                        .Centered();
+			        columns.Bound(x => x.IsSystemMapping)
+                        .ReadOnly()
+					    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+					    .Centered();
+                    columns.Command(commands =>
+                    {
+                        commands.Edit().Localize(T);
+                        commands.Delete().Localize(T);
+                    })
+                    .HtmlAttributes(new { align = "right" });
+                })
+                .ToolBar(commands => commands.Template(CategoryProductsGridCommands))
+                .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+                .PreserveGridState()
+                .EnableCustomBinding(true))
 		</div>
 	}
 	else
 	{
-		<p class="muted">
+		<div class="alert alert-warning">
 			@T("Admin.SaveBeforeEdit")
-		</p>
+		</div>
 	}
 }
 
@@ -474,47 +519,14 @@
 		.HtmlAttribute("class", "t-button t-grid-add")
 		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
 		.OnSelectionCompleted("PickProducts_Completed"))
-}
 
-@helper TabDiscounts()
-{
-	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0)
-	{
-		foreach (var discount in Model.AvailableDiscounts)
-		{
-			<div class="custom-control custom-checkbox mb-1">
-				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
-					   class="custom-control-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
-				<label class="custom-control-label" for="discount-@discount.Id">@discount.Name</label>	
-			</div>
-		}
-	}
-	else
-	{
-		<div class="alert alert-info">
-			@T("Admin.Promotions.Discounts.NoDiscountsAvailable")
-		</div>
-	}
-}
-
-@helper TabAcl()
-{    
-    @Html.Partial("AclSelector", Model)
-	
-	<div class="mt-4">
-		<div class="alert alert-danger">
-			@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
-		</div>
-		<a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
-			<i class="fa fa-bolt"></i>
-			<span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
-		</a>
-	</div>
-}
-
-@helper TabStores()
-{
-    @Html.Partial("StoreSelector", Model)
+    if (Model.ShowRuleApplyButton)
+    {
+	    <button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
+		    <i class="fa fa-play"></i>
+		    <span>@T("Admin.Rules.ReapplyRules")</span>
+	    </button>
+    }
 }
 
 <script>
@@ -526,10 +538,15 @@
 	    $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
 	    togglePageSize();
 	
-		// toggle top\bottom description
+		// Toggle top\bottom description.
 		$('.description-toggle-button').click(function() {
 			$('.description-container').toggleClass("d-none");
-		});
+        });
+
+        // Reapply rules.
+        $('#btnReapplyRules').on('click', function () {
+    		$(this).doPostData({ });
+        });
 	});
 
 	function PickProducts_Completed(ids) {

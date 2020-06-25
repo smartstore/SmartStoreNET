@@ -10,6 +10,7 @@ using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Common;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Templating.Liquid
 {
@@ -34,7 +35,8 @@ namespace SmartStore.Templating.Liquid
 
 			return JsonConvert.SerializeObject(input, new JsonSerializerSettings
 			{
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ContractResolver = SmartContractResolver.Instance,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 			});
 		}
 

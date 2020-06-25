@@ -8,10 +8,12 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Topics
 {
-    public partial class TopicService : ITopicService
+    public partial class TopicService : ITopicService, IXmlSitemapPublisher
     {
 		private readonly ICommonServices _services;
 		private readonly IRepository<Topic> _topicRepository;
@@ -24,7 +26,8 @@ namespace SmartStore.Services.Topics
 			IRepository<Topic> topicRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IStoreMappingService storeMappingService,
-			IRepository<AclRecord> aclRepository)
+			IRepository<AclRecord> aclRepository,
+			SeoSettings seoSettings)
         {
 			_services = services;
 			_topicRepository = topicRepository;
@@ -101,7 +104,7 @@ namespace SmartStore.Services.Topics
 			// ACL (access control list)
 			if (!showHidden && !QuerySettings.IgnoreAcl)
 			{
-				var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
 				query = from c in query
 						join a in _aclRepository.Table
@@ -140,5 +143,43 @@ namespace SmartStore.Services.Topics
 
 			_topicRepository.Update(topic);
         }
-    }
+
+        #region XML Sitemap
+
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesTopics)
+				return null;
+			
+			var query = GetAllTopics(context.RequestStoreId).AlterQuery(q =>
+			{
+				return q.Where(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			}).SourceQuery;
+
+			return new TopicXmlSitemapResult { Query = query };
+		}
+
+		class TopicXmlSitemapResult : XmlSitemapProvider
+		{
+			public IQueryable<Topic> Query { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var topics = Query.Select(x => new { x.Id }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow };
+				}
+			}
+
+			public override int Order => 200;
+		}
+
+		#endregion
+	}
 }

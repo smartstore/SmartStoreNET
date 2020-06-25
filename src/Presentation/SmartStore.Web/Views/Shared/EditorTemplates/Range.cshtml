@@ -32,7 +32,7 @@
 	var invariantValue = ViewData.Model.Convert<decimal>().ToString(CultureInfo.InvariantCulture);
 }
 
-<div class="@containerCssClass" data-format="@format">
+<div class="@containerCssClass" data-format="@Html.Raw(format)">
 	@Html.Hidden(string.Empty, ViewData.Model)
 	<input type="range" class="@sliderCssClass" data-target="#@id" min="@min" max="@max" step="@step" value="@invariantValue" />
 
@@ -46,7 +46,7 @@
 		<div class="range-ticks">
 			@foreach (var tick in ticks)
 			{
-				<div class="range-tick" data-value="@tick"></div>
+				<div class="range-tick" data-value="@Html.Raw(tick)"></div>
 			}
 		</div>
 	}

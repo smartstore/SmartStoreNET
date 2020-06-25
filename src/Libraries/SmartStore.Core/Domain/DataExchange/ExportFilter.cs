@@ -6,10 +6,15 @@ namespace SmartStore.Core.Domain.DataExchange
 	[Serializable]
 	public class ExportFilter
 	{
-		/// <summary>
-		/// Store identifier; 0 to load all records
-		/// </summary>
-		public int StoreId { get; set; }
+        public ExportFilter()
+        {
+            Visibility = ProductVisibility.Full;
+        }
+
+        /// <summary>
+        /// Store identifier; 0 to load all records
+        /// </summary>
+        public int StoreId { get; set; }
 
 		/// <summary>
 		/// Entity created from
@@ -93,14 +98,19 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// </summary>
 		public ProductType? ProductType { get; set; }
 
-		#endregion
+        /// <summary>
+        /// Filter by visibility.
+        /// </summary>
+        public ProductVisibility? Visibility { get; set; }
 
-		#region Order
+        #endregion
 
-		/// <summary>
-		/// Filter by order status
-		/// </summary>
-		public int[] OrderStatusIds { get; set; }
+        #region Order
+
+        /// <summary>
+        /// Filter by order status
+        /// </summary>
+        public int[] OrderStatusIds { get; set; }
 
 		/// <summary>
 		/// Filter by payment status

@@ -4,15 +4,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-	[Validator(typeof(ManufacturerValidator))]
-    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
+    [Validator(typeof(ManufacturerValidator))]
+    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>
 	{
         public ManufacturerModel()
         {
@@ -29,6 +32,10 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Description")]
         [AllowHtml]
         public string Description { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.ManufacturerTemplate")]
         [AllowHtml]
@@ -51,7 +58,7 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Media"), AdditionalMetadata("album", "catalog")]
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Picture")]
         public int? PictureId { get; set; }
 
@@ -81,14 +88,29 @@ namespace SmartStore.Admin.Models.Catalog
         
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // ACL.
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public int[] SelectedCustomerRoleIds { get; set; }
 
-		public List<Discount> AvailableDiscounts { get; set; }
-		public int[] SelectedDiscountIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
+
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
+        [UIHint("Discounts")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("discountType", DiscountType.AssignedToManufacturers)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
+        public int[] SelectedDiscountIds { get; set; }
 
 		#region Nested classes
 
@@ -134,7 +156,11 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Description")]
         [AllowHtml]
-        public string Description {get;set;}
+        public string Description { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
         [AllowHtml]
@@ -160,4 +186,22 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
+
+    public class ManufacturerMapper :
+        IMapper<Manufacturer, ManufacturerModel>,
+        IMapper<ManufacturerModel, Manufacturer>
+    {
+        public void Map(Manufacturer from, ManufacturerModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+            to.PictureId = from.MediaFileId;
+        }
+
+        public void Map(ManufacturerModel from, Manufacturer to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId.ZeroToNull();
+        }
+    }
 }

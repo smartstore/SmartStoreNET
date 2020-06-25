@@ -1,0 +1,60 @@
+﻿@model BlogPostListModel
+@using SmartStore.Web.Models.Blogs;
+@using SmartStore.Web.Framework.UI;
+
+@if (Model.BlogPosts.Count == 0)
+{
+    return;
+}
+
+<div class="page-title row">
+    <div class="col">
+        <div class="heading">
+            <h3 class="heading-title">
+                @if (!Model.PagingFilteringContext.Tag.HasValue())
+                {
+                    if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
+                    {
+                        @T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToNativeString("MMMM"))
+                    }
+                    else
+                    {
+                        if (Model.BlogHeading.HasValue())
+                        {
+                            @Model.BlogHeading
+                        }
+                        else
+                        {
+                            @T("Blog");
+                        }
+                    }
+                }
+                else
+                {
+                    @T("Blog.TaggedWith", Model.PagingFilteringContext.Tag)
+                }
+            </h3>
+        </div>
+    </div>
+
+    <div class="col-auto text-right">
+        @if (Model.RssToLinkButton)
+        {
+            <a class="btn btn-warning" href="@Url.RouteUrl("Blog")" title="@T("SmartStore.Blog.Button.Hint")">
+                <i class="fa fa-blog"></i>
+                <span>@T("SmartStore.Blog.Button")</span>
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-warning" href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" title="@T("Blog.RSS.Hint")">
+                <i class="fa fa-rss"></i>
+                <span>@T("Blog.RSS")</span>
+            </a>
+        }
+    </div>
+
+
+</div>
+
+

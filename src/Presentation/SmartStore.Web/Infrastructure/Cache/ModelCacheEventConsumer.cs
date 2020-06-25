@@ -19,16 +19,17 @@ namespace SmartStore.Web.Infrastructure.Cache
 {
 	public partial class ModelCacheEventConsumer : IDbSaveHook
 	{
-		/// <summary>
-		/// Key for ManufacturerNavigationModel caching
-		/// </summary>
-		/// <remarks>
-		/// {0} : value indicating whether a default picture is displayed in case if no real picture exists
-		/// {1} : language id
-		/// {2} : current store ID
-		/// {3} : items to display
-		/// </remarks>
-		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}-{3}";
+        /// <summary>
+        /// Key for ManufacturerNavigationModel caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : value indicating whether a default picture is displayed in case if no real picture exists
+        /// {1} : language id
+        /// {2} : current store ID
+        /// {3} : customer role IDs
+        /// {4} : items to display
+        /// </remarks>
+        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "pres:manufacturer:navigation-{0}-{1}-{2}-{3}-{4}";
 		public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "pres:manufacturer:navigation*";
 
 		/// <summary>
@@ -375,7 +376,7 @@ namespace SmartStore.Web.Infrastructure.Cache
 				_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
 			}
-			else if (entity is Picture)
+			else if (entity is MediaFile)
 			{
 				_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 			}

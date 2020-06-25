@@ -40,6 +40,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 				return View(model);
 			}
+
 			return new EmptyResult();
 		}
 
@@ -52,6 +53,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 				return GetActionResult(model);
 			}
+
 			return new EmptyResult();
 		}
     }

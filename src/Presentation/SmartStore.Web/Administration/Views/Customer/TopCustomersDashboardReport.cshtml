@@ -1,0 +1,66 @@
+﻿@model TopCustomersDashboardReportModel
+
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.TopCustomers")</div>
+        <nav class="ml-auto">
+            <div class="nav btn-group" role="tablist">
+                <a class="btn btn-secondary btn-dashboard nav-item nav-link active" id="customers-quantity-tab" data-toggle="tab" href="#customers-quantity" role="tab" aria-controls="customers-quantity" aria-selected="true">@T("Admin.SalesReport.ByQuantity")</a>
+                <a class="btn btn-secondary btn-dashboard nav-item nav-link" id="customers-amount-tab" data-toggle="tab" href="#customers-amount" role="tab" aria-controls="customers-amount" aria-selected="false">@T("Admin.SalesReport.ByAmount")</a>
+            </div>
+        </nav>
+    </div>
+    <div class="tab-content" id="customers-tabcontent">
+        <div class="tab-pane fade show active" id="customers-quantity" role="tabpanel" aria-labelledby="customers-quantity-tab">
+            <div class="table-responsive table-dashboard table-hover table-prevent-overflow">
+                <table class="table table-3 small">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                            <th class="display-row text-center">@T("Account.CustomerOrders")</th>
+                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.TopCustomersByQuantity)
+                        {
+                            <tr>
+                                <td class="display-row" title="@x.CustomerDisplayName">
+                                    @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
+                                </td>
+
+                                <td class="display-row text-center font-weight-medium" title="@x.OrderCount">@x.OrderCount</td>
+                                <td class="display-row text-right" title="@x.OrderTotal">@x.OrderTotal</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="customers-amount" role="tabpanel" aria-labelledby="customers-amount-tab">
+            <div class="table-responsive table-dashboard table-hover table-prevent-overflow">
+                <table class="table table-3 small">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
+                            <th class="display-row text-center">@T("Account.CustomerOrders")</th>
+                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesExcludeTax")">@T("Common.Amount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.TopCustomersByAmount)
+                        {
+                            <tr>
+                                <td class="display-row" title="@x.CustomerDisplayName">
+                                    @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
+                                </td>
+                                <td class="display-row text-center" title="@x.OrderCount">@x.OrderCount</td>
+                                <td class="display-row text-right font-weight-medium" title="@x.OrderTotal">@x.OrderTotal</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

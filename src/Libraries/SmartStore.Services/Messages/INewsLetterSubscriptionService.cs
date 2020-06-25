@@ -59,14 +59,21 @@ namespace SmartStore.Services.Messages
 		NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email, int storeId = 0);
 
         /// <summary>
-        /// Gets the newsletter subscription list
+        /// Gets a list of newsletter subscriptions including associated customers.
         /// </summary>
-        /// <param name="email">Email to search or string. Empty to load all records.</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-		/// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
-		/// <param name="storeId">The store identifier</param>
-        /// <returns>NewsLetterSubscription entity list</returns>
-		IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email, int pageIndex, int pageSize, bool showHidden = false, int storeId = 0);
+        /// <param name="email">Filter by email.</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+		/// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded.</param>
+		/// <param name="storeIds">Filter by store identifiers.</param>
+        /// <<param name="customerRolesIds">Filter by customer role identifiers.</param>
+        /// <returns>List of newsletter scubscribers.</returns>
+        IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscriptions(
+            string email,
+            int pageIndex,
+            int pageSize,
+            bool showHidden = false,
+            int[] storeIds = null,
+            int[] customerRolesIds = null);
     }
 }

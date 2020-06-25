@@ -40,19 +40,23 @@
                 continue;
             }
 
-            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
-            attributes.PrependCssClass("menu-link");
+            var attrs = item.GetCombinedAttributes().PrependCssClass("menu-link");
 
             <li>
-                <a href="@itemUrl" @Html.Attrs(attributes)>
-		            @if (hasIcons)
-		            {
-			            <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
-		            }
+                <a href="@itemUrl" @Html.Attrs(attrs)>
+                    @if (hasIcons)
+                    {
+                        <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : " fas")"></i>
+                    }
+                    else if (hasImages && item.ImageUrl.HasValue())
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl)" alt="" />
+                    }
                     else if (hasImages)
                     {
-                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                        <i class="fa-fw fas"></i>
                     }
+
                     <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
                 </a>
             </li>

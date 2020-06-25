@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Core.Search
 {
@@ -164,13 +166,19 @@ namespace SmartStore.Core.Search
 
 		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
 		{
-            Guard.NotNegative(maxSuggestions, nameof(maxSuggestions));
 			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
 			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 
-			ResultFlags = ResultFlags | SearchResultFlags.WithSuggestions;
+            if (maxSuggestions > 0)
+            {
+                ResultFlags = ResultFlags | SearchResultFlags.WithSuggestions;
+            }
+            else
+            {
+                ResultFlags &= ~SearchResultFlags.WithSuggestions;
+            }
 
-			SpellCheckerMaxSuggestions = maxSuggestions;
+			SpellCheckerMaxSuggestions = Math.Max(maxSuggestions, 0);
 			SpellCheckerMinQueryLength = minQueryLength;
 			SpellCheckerMaxHitCount = maxHitCount;
 
@@ -252,9 +260,10 @@ namespace SmartStore.Core.Search
 
 		public override string ToString()
 		{
-			var sb = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
-			if (Term.HasValue())
+            if (Term.HasValue())
 			{
 				var fields = (Fields != null && Fields.Length > 0 ? string.Join(", ", Fields) : "".NaIfEmpty());
 
@@ -278,7 +287,27 @@ namespace SmartStore.Core.Search
 				sb.Append(filter.ToString());
 			}
 
-			return sb.ToString();
+			return psb.ToStringAndReturn();
 		}
-	}
+
+        #region Utilities
+
+        protected TQuery CreateFilter(string fieldName, params int[] values)
+        {
+            var len = values?.Length ?? 0;
+            if (len > 0)
+            {
+                if (len == 1)
+                {
+                    return WithFilter(SearchFilter.ByField(fieldName, values[0]).Mandatory().ExactMatch().NotAnalyzed());
+                }
+
+                return WithFilter(SearchFilter.Combined(values.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
+            }
+
+            return this as TQuery;
+        }
+
+        #endregion
+    }
 }

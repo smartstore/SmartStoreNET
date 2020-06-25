@@ -1,10 +1,12 @@
 ﻿@model ShipmentModel
-@using Telerik.Web.Mvc.UI;
 @{    
     ViewBag.Title = T("Admin.Orders.Shipments.ViewDetails").Text;
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.OrderId)
+
     <div class="section-header">
         <div class="title">
             @T("Admin.Orders.Shipments.ViewDetails") - @Model.Id @Html.ActionLink("(" + T("Admin.Orders.Shipments.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
@@ -17,6 +19,13 @@
 					<span>@T("Admin.Orders.Shipments.PrintPackagingSlip")</span>
 				</a>
             }
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
             <button type="submit" id="shipment-delete" class="btn btn-danger">
 				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.Delete")</span>
@@ -32,15 +41,24 @@
                 @Html.SmartLabelFor(model => model.TrackingNumber)
             </td>
             <td class="adminData">
+				@Html.EditorFor(model => model.TrackingNumber)
+                @Html.ValidationMessageFor(model => model.TrackingNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingUrl)
+            </td>
+            <td class="adminData">
 				<div class="input-group">
-					@Html.EditorFor(model => model.TrackingNumber)
+					@Html.EditorFor(model => model.TrackingUrl)
 					<span class="input-group-append">
-						<button type="submit" id="settrackingnumber" name="settrackingnumber" class="btn btn-outline-secondary" value="settrackingnumber">
-							<i class="far fa-edit"></i>
-							<span>@T("Admin.Orders.Shipments.TrackingNumber.Button")</span>
-						</button>
+                        <a id="btn-tracking-url" href="@Model.TrackingUrl" target="_blank" class="btn btn-secondary" title="@T("Common.OpenUrl")">
+                            <i class="fa fa-link"></i>
+                        </a>
 					</span>
 				</div>
+                @Html.ValidationMessageFor(model => model.TrackingUrl)
             </td>
         </tr>
         <tr>
@@ -59,10 +77,17 @@
             </td>
             <td class="adminData">
 				<div class="form-control-plaintext">
-					@Model.ShippedDate
+					@if (Model.ShippedDate.HasValue)
+					{
+						@Model.ShippedDate.ToString()
+					}
+					else
+					{
+						<span class="text-muted">@T("Admin.Orders.Shipments.ShippedDate.NotYet")</span>
+					}
 					@if (Model.CanShip)
 					{
-						<button type="submit" id="setasshipped" name="setasshipped" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.ShippedDate.Button")">
+						<button id="btn-setasshipped" type="button" class="btn btn-sm btn-secondary ml-2 align-text-top" data-url="@Url.Action("SetAsShipped", new { id = Model.Id })">
 							<i class="fa fa-check"></i>
 							<span>@T("Admin.Orders.Shipments.ShippedDate.Button")</span>
 						</button>
@@ -76,10 +101,17 @@
             </td>
             <td class="adminData">
 				<div class="form-control-plaintext">
-					@Model.DeliveryDate
+					@if (Model.DeliveryDate.HasValue)
+					{
+						@Model.DeliveryDate.Value.ToString()
+					}
+					else
+					{
+						<span class="text-muted">@T("Admin.Orders.Shipments.DeliveryDate.NotYet")</span>
+					}
 					@if (Model.CanDeliver)
 					{
-						<button type="submit" id="setasdelivered" name="setasdelivered" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.DeliveryDate.Button")">
+						<button id="btn-setasdelivered" type="button" class="btn btn-sm btn-secondary ml-2 align-text-top" data-url="@Url.Action("SetAsDelivered", new { id = Model.Id })">
 							<i class="fa fa-check"></i>
 							<span>@T("Admin.Orders.Shipments.DeliveryDate.Button")</span>
 						</button>
@@ -113,8 +145,7 @@
 						<td style="width: 70%;">
 							<div>
 								@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
-
-								@if (!String.IsNullOrEmpty(item.AttributeInfo))
+								@if (item.AttributeInfo.HasValue())
 								{
 									<br />
 									@Html.Raw(item.AttributeInfo)
@@ -135,4 +166,23 @@
 		</table>
 	</div>
 }
+
 @Html.DeleteConfirmation("DeleteShipment", "shipment-delete")
+
+<script>
+    $(function () {
+
+        // Toggle open URL button.
+        $('#@Html.FieldIdFor(model => model.TrackingUrl)').change(function () {
+            var url = $(this).val() || '';
+            $('#btn-tracking-url').attr('href', url).toggleClass('disabled', _.isEmpty(url));
+        }).trigger('change');
+
+        // Set as shipped or delivered.
+		$('#btn-setasshipped, #btn-setasdelivered').on('click', function (e) {
+			e.preventDefault();
+			$(this).doPostData({ });
+			return false;
+		});
+	});
+</script>

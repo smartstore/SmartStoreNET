@@ -1,0 +1,58 @@
+﻿@model List<DashboardChartReportModel>
+@using SmartStore.Admin.Models.Dashboard
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+    Html.AddScriptParts("~/bundles/charting");
+    Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
+}
+
+<div class="report chart-colors" id="customers-report">
+    <div class="report-title-row">
+        <div class="report-title pr-3">@T("Admin.Report.CustomerRegistrations")</div>
+
+        <div class="pl-1 fs-h5 pr-3">
+            <span id="customer-quantity-total" class="text-muted text-nowrap"></span>
+        </div>
+
+        <div class="fs-h6 font-weight-medium">
+            <span id="customers-delta-percentage"></span><span id="customers-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
+        </div>
+
+        <div class="btn-group btn-group-toggle ml-auto flex-wrap" data-toggle="buttons">
+            <label class="btn btn-secondary btn-dashboard active">
+                <input type="radio" name="customers-toggle" data-period="0" autocomplete="off" checked>
+                @T("Admin.Report.Today")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="1" autocomplete="off">
+                @T("Admin.Report.Yesterday")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="2" autocomplete="off">
+                @T("Admin.Report.LastWeek")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="3" autocomplete="off">
+                @T("Admin.Report.LastMonth")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="customers-toggle" data-period="4" autocomplete="off">
+                @T("Admin.Report.ThisYear")
+            </label>
+        </div>
+    </div>
+    <div class="canvas-container w-100 h-100 mt-2" style="min-height: 400px; max-height: 400px">
+        <canvas id="customers-chart"></canvas>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        SmartStore.Admin.Charts.Create.CustomersChart(
+        @Html.Raw(jsonData),
+            '@T("Admin.Report.CustomerRegistrations")',
+            '@T("Admin.Report.Registrations")'
+        );
+    });
+</script>

@@ -109,23 +109,43 @@ namespace SmartStore.Services.Common
 				{
 					if (Family == "Chrome")
 					{
-						_supportsWebP = Major.ToInt() >= 49;
+						_supportsWebP = Major.ToInt() >= 32;
 					}
 					else if (Family.StartsWith("Chrome Mobile"))
 					{
-						_supportsWebP = Major.ToInt() >= 61;
+						_supportsWebP = Major.ToInt() >= 79;
+					}
+					else if (Family == "Firefox")
+					{
+						_supportsWebP = Major.ToInt() >= 65;
+					}
+					else if (Family.StartsWith("Firefox Mobile"))
+					{
+						_supportsWebP = Major.ToInt() >= 68;
+					}
+					else if (Family == "Edge")
+					{
+						_supportsWebP = Major.ToInt() >= 18;
 					}
 					else if (Family == "Opera")
 					{
-						_supportsWebP = Major.ToInt() >= 48;
+						_supportsWebP = Major.ToInt() >= 19;
 					}
 					else if (Family == "Opera Mini")
 					{
 						_supportsWebP = true;
 					}
-					else if (Family == "Android")
+					else if (Family.StartsWith("Android"))
 					{
-						_supportsWebP = Major.ToInt() >= 5 || (Major.ToInt() == 4 && Minor.ToInt() >= 4);
+						_supportsWebP = Major.ToInt() >= 5 || (Major.ToInt() == 4 && Minor.ToInt() >= 2);
+					}
+					else if (Family.StartsWith("Samsung Internet"))
+					{
+						_supportsWebP = Major.ToInt() >= 4;
+					}
+					else if (Family.StartsWith("Baidu"))
+					{
+						_supportsWebP = Major.ToInt() >= 8 || (Major.ToInt() == 7 && Minor.ToInt() >= 12);
 					}
 					else
 					{

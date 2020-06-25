@@ -4,7 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Rules;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -12,7 +16,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>, IStoreSelector, IAclSelector
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>
     {
         public CategoryModel()
         {
@@ -78,7 +82,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Parent")]
         public int? ParentCategoryId { get; set; }
 
-        [UIHint("Picture")]
+        [UIHint("Media"), AdditionalMetadata("album", "catalog")]
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Picture")]
         public int? PictureId { get; set; }
 
@@ -113,26 +117,42 @@ namespace SmartStore.Admin.Models.Catalog
 
         public string Breadcrumb { get; set; }
 
-        // ACL
-        public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        // ACL.
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
+        public bool SubjectToAcl { get; set; }
+
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
 
         public string ParentCategoryBreadcrumb { get; set; }
 
-        // discounts
-        public List<Discount> AvailableDiscounts { get; set; }
+        [UIHint("Discounts")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("discountType", DiscountType.AssignedToCategories)]
+        [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
         public int[] SelectedDiscountIds { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
         public string DefaultViewMode { get; set; }
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
+
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Product)]
+        [SmartResourceDisplayName("Admin.Catalog.Categories.AutomatedAssignmentRules")]
+        public int[] SelectedRuleSetIds { get; set; }
+        public bool ShowRuleApplyButton { get; set; }
 
         #region Nested classes
 
@@ -158,11 +178,14 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
+            // We don't name it DisplayOrder because Telerik has a small bug 
+            // "if we have one more editor with the same name on a page, it doesn't allow editing".
+            // In our case it's category.DisplayOrder.
             [SmartResourceDisplayName("Common.DisplayOrder")]
-            //we don't name it DisplayOrder because Telerik has a small bug 
-            //"if we have one more editor with the same name on a page, it doesn't allow editing"
-            //in our case it's category.DisplayOrder
             public int DisplayOrder1 { get; set; }
+
+            [SmartResourceDisplayName("Admin.Rules.AddedByRule")]
+            public bool IsSystemMapping { get; set; }
         }
 
         #endregion
@@ -215,4 +238,22 @@ namespace SmartStore.Admin.Models.Catalog
 			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
+
+    public class CategoryMapper :
+        IMapper<Category, CategoryModel>,
+        IMapper<CategoryModel, Category>
+    {
+        public void Map(Category from, CategoryModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.SeName = from.GetSeName(0, true, false);
+            to.PictureId = from.MediaFileId;
+        }
+
+        public void Map(CategoryModel from, Category to)
+        {
+            MiniMapper.Map(from, to);
+            to.MediaFileId = from.PictureId.ZeroToNull();
+        }
+    }
 }

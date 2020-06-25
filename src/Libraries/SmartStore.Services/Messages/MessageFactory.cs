@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
@@ -26,7 +24,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-	public partial class MessageFactory : IMessageFactory
+    public partial class MessageFactory : IMessageFactory
 	{
 		const string LoremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
 
@@ -39,7 +37,7 @@ namespace SmartStore.Services.Messages
 		private readonly ILanguageService _languageService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly EmailAccountSettings _emailAccountSettings;
-		private readonly IDownloadService _downloadService;
+		private readonly IMediaService _mediaService;
 
 		public MessageFactory(
 			ICommonServices services,
@@ -51,7 +49,7 @@ namespace SmartStore.Services.Messages
 			ILanguageService languageService,
 			IEmailAccountService emailAccountService,
 			EmailAccountSettings emailAccountSettings,
-			IDownloadService downloadService)
+            IMediaService mediaService)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
@@ -62,14 +60,11 @@ namespace SmartStore.Services.Messages
 			_languageService = languageService;
 			_emailAccountService = emailAccountService;
 			_emailAccountSettings = emailAccountSettings;
-			_downloadService = downloadService;
-
-			T = NullLocalizer.Instance;
-			Logger = NullLogger.Instance;
+			_mediaService = mediaService;
 		}
 
-		public Localizer T { get; set; }
-		public ILogger Logger { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+		public ILogger Logger { get; set; } = NullLogger.Instance;
 
 		public virtual CreateMessageResult CreateMessage(MessageContext messageContext, bool queue, params object[] modelParts)
 		{
@@ -271,7 +266,7 @@ namespace SmartStore.Services.Messages
 			var messageTemplate = messageContext.MessageTemplate;
 			var languageId = messageContext.Language.Id;
 
-			// create attachments if any
+			// Create attachments if any.
 			var fileIds = (new int?[]
 				{
 					messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId),
@@ -280,19 +275,20 @@ namespace SmartStore.Services.Messages
 				})
 				.Where(x => x.HasValue)
 				.Select(x => x.Value)
+                .Distinct()
 				.ToArray();
 
 			if (fileIds.Any())
 			{
-				var files = _downloadService.GetDownloadsByIds(fileIds);
+                var files = _mediaService.GetFilesByIds(fileIds, MediaLoadFlags.WithBlob);
 				foreach (var file in files)
 				{
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment
 					{
 						StorageLocation = EmailAttachmentStorageLocation.FileReference,
-						FileId = file.Id,
-						Name = (file.Filename.NullEmpty() ?? file.Id.ToString()) + file.Extension.EmptyNull(),
-						MimeType = file.ContentType.NullEmpty() ?? "application/octet-stream"
+						MediaFileId = file.Id,
+						Name = file.Name,
+						MimeType = file.MimeType
 					});
 				}
 			}
@@ -434,7 +430,7 @@ namespace SmartStore.Services.Messages
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
 				{ "BlogComment", () => GetRandomEntity<BlogComment>(x => true) },
-				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && !x.IsSystemProduct && x.VisibleIndividually && x.Published) },
+				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && !x.IsSystemProduct && x.Visibility != ProductVisibility.Hidden && x.Published) },
 				{ "Customer", () => GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email)) },
 				{ "Order", () => GetRandomEntity<Order>(x => !x.Deleted) },
 				{ "Shipment", () => GetRandomEntity<Shipment>(x => !x.Order.Deleted) },
@@ -448,7 +444,7 @@ namespace SmartStore.Services.Messages
 				{ "ForumPost", () => GetRandomEntity<ForumPost>(x => true) },
 				{ "PrivateMessage", () => GetRandomEntity<PrivateMessage>(x => true) },
 				{ "GiftCard", () => GetRandomEntity<GiftCard>(x => true) },
-				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && !x.Product.IsSystemProduct && x.Product.VisibleIndividually && x.Product.Published) },
+				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && !x.Product.IsSystemProduct && x.Product.Visibility != ProductVisibility.Hidden && x.Product.Published) },
 				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) },
 				{ "WalletHistory", () => GetRandomEntity<WalletHistory>(x => true) }
 			};

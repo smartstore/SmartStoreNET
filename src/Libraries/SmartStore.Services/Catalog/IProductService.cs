@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -13,13 +15,24 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial interface IProductService
     {
-		#region Products
+        #region Products
+        /// <summary>
+        /// Get count of all products
+        /// </summary>
+        /// <returns>Count</returns>
+        int CountAllProducts();
 
-		/// <summary>
-		/// Delete a product
-		/// </summary>
-		/// <param name="product">Product</param>
-		void DeleteProduct(Product product);
+        /// <summary>
+        /// Get count of all product variant combinations
+        /// </summary>
+        /// <returns>Count</returns>
+        int CountAllProductVariants();
+
+        /// <summary>
+        /// Delete a product
+        /// </summary>
+        /// <param name="product">Product</param>
+        void DeleteProduct(Product product);
 
         /// <summary>
         /// Gets all products displayed on the home page
@@ -146,12 +159,13 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         void UpdateHasDiscountsApplied(Product product);
 
-		/// <summary>
-		/// Get product tags by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Map of product tags</returns>
-		Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds);
+        /// <summary>
+        /// Get product tags by product identifiers
+        /// </summary>
+        /// <param name="productIds">Product identifiers</param>
+        /// <param name="includeHidden">Whether to include hidden product tags.</param>
+        /// <returns>Map of product tags</returns>
+        Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds, bool includeHidden = false);
 
         /// <summary>
         /// Gets products that are assigned to group products.
@@ -318,41 +332,46 @@ namespace SmartStore.Services.Catalog
         /// Deletes a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void DeleteProductPicture(ProductPicture productPicture);
+        void DeleteProductPicture(ProductMediaFile productPicture);
 
         /// <summary>
         /// Gets a product pictures by product identifier
         /// </summary>
         /// <param name="productId">The product identifier</param>
+        /// <param name="numberOfPictures">Number of pictures to return. By default value of 0, all pictures are returned.</param>
         /// <returns>Product pictures</returns>
-        IList<ProductPicture> GetProductPicturesByProductId(int productId);
+        IList<ProductMediaFile> GetProductPicturesByProductId(int productId, int numberOfPictures = 0);
 
-		/// <summary>
-		/// Get product pictures by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <param name="onlyFirstPicture">Whether to only load the first picture for each product</param>
-		/// <returns>Product pictures</returns>
-		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
+        /// <summary>
+        /// Get product pictures by product identifiers.
+        /// </summary>
+        /// <param name="productIds">Product identifiers.</param>
+        /// <param name="maxPicturesPerProduct">Maximum number of pictures to load.</param>
+        /// <param name="flags">Eager loading flags.</param>
+        /// <returns>Product pictures.</returns>
+        Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(
+            int[] productIds,
+            int? maxPicturesPerProduct = null,
+            MediaLoadFlags flags = MediaLoadFlags.None);
 
         /// <summary>
         /// Gets a product picture
         /// </summary>
         /// <param name="productPictureId">Product picture identifier</param>
         /// <returns>Product picture</returns>
-        ProductPicture GetProductPictureById(int productPictureId);
+        ProductMediaFile GetProductPictureById(int productPictureId);
 
         /// <summary>
         /// Inserts a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void InsertProductPicture(ProductPicture productPicture);
+        void InsertProductPicture(ProductMediaFile productPicture);
 
         /// <summary>
         /// Updates a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        void UpdateProductPicture(ProductPicture productPicture);
+        void UpdateProductPicture(ProductMediaFile productPicture);
 
         #endregion
 

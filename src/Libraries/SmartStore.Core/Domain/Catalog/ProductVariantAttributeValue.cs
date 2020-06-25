@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -32,14 +33,14 @@ namespace SmartStore.Core.Domain.Catalog
 		public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the Picture Id
+        /// Gets or sets the media file id
         /// </summary>
 		[DataMember]
-        public int PictureId { get; set; }
+        public int MediaFileId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the color RGB value (used with "Boxes" attribute type)
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the color RGB value (used with "Boxes" attribute type)
+		/// </summary>
 		[DataMember]
 		public string Color { get; set; }
 

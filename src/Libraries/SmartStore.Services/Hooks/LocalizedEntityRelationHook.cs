@@ -91,7 +91,12 @@ namespace SmartStore.Services.Hooks
 			}
 		}
 
-		public override void OnAfterSaveCompleted()
+        public override void OnAfterSave(IHookedEntity entry)
+        {
+            // Do not remove, otherwise OnAfterSaveCompleted is not called!
+        }
+
+        public override void OnAfterSaveCompleted()
 		{
 			if (_toDelete.Count == 0)
 				return;

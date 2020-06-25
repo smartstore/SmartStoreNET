@@ -148,11 +148,12 @@
 	position: relative;
 	height: 0;
 	width: 100%;
-	padding-top: 100%;
+    padding-top: calc(var(--img-aspect-ratio, 1) * 100%);
 	text-decoration: none !important;
 	outline: none !important;
 
-	> img {
+    > img,
+    > figure {
 		position: absolute;
 		max-width: 100%;
 		max-height: 100%;
@@ -260,16 +261,45 @@ table th {
     border-color: rgba(#000, 0.12) !important;
 }
 
+.rounded, 
+.rounded-top, 
+.rounded-right, 
+.rounded-bottom, 
+.rounded-left {
+    --border-radius: #{$border-radius};
+    --border-radius-inner: calc(#{$border-radius} - 1px);
+}
+
 .rounded-sm {
+    --border-radius: #{$border-radius-sm};
+    --border-radius-inner: calc(#{$border-radius-sm} - 1px);
     border-radius: $border-radius-sm !important;
 }
 
 .rounded-lg {
+    --border-radius: #{$border-radius-lg};
+    --border-radius-inner: calc(#{$border-radius-lg} - 1px);
     border-radius: $border-radius-lg !important;
 }
 
 .rounded-xl {
+    --border-radius: #{$border-radius-lg * 2};
+    --border-radius-inner: calc(#{$border-radius-lg * 2} - 2px);
     border-radius: $border-radius-lg * 2 !important;
+}
+
+.rounded-circle {
+    --border-radius: 50%;
+}
+
+.rounded-pill {
+    --border-radius: 50rem;
+    --border-radius-inner: calc(50rem - 1px);
+    border-radius: 50rem;
+}
+
+.rounded-0 {
+    --border-radius: 0;
 }
 
 
@@ -288,6 +318,46 @@ table th {
 
 
 //
+// Shadows
+// --------------------------------------------------
+
+.shadow,
+.shadow-sm,
+.shadow-lg,
+:root {
+    --shadow-color-rgb: 0,0,0;
+    --shadow-color-intensity: 1;
+}
+
+.shadow {
+    --box-shadow: #{$box-shadow-var};
+}
+
+.shadow-sm {
+    --box-shadow: #{$box-shadow-sm-var};
+}
+
+.shadow-lg {
+    --box-shadow: #{$box-shadow-lg-var};
+}
+
+@each $color, $value in $theme-colors {
+    @if $color != "secondary" and $color != "light" { 
+        .shadow-#{$color} { 
+            $c: mix($value, #000, 50%);
+            --lightness: #{lightness($value)};
+            --shadow-color-intensity: 1.25 !important;
+            --shadow-color-rgb: #{red($c)}, #{green($c)}, #{blue($c)} !important;
+        }
+    }
+}
+
+.shadow-light {
+    box-shadow: 0 0 20px 0 rgba(#000, .08);
+}
+
+
+//
 // Some shims
 // ------------------------------------------------------
 
@@ -300,8 +370,13 @@ table th {
 }
 
 .animated {
-    animation-duration: 1s;
+    animation-duration: 0.5s;
     animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+    from  { opacity: 0; transform: translate3d(0, 20px, 0); }
+    to    { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes fadeInDown {
@@ -321,6 +396,7 @@ table th {
 
 .fadeOutLeft    { animation-name: fadeOutLeft; }
 .fadeOutRight   { animation-name: fadeOutRight; }
+.fadeInUp		{ animation-name: fadeInUp; }
 .fadeInDown     { animation-name: fadeInDown; }
 
 //
@@ -360,37 +436,102 @@ table th {
 
 
 //
-// Flip
+// Flip & Rotate
 // --------------------------------------------------
 
 .flip-h {
-    transform: scale(-1, 1) !important;
+    transform: scale(-1, 1) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 .flip-v {
-    transform: scale(1, -1) !important;
+    transform: scale(1, -1) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 .flip-hv {
-    transform: scale(-1, -1) !important;
+    transform: scale(-1, -1) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-90 {
+    transform: rotate(90deg) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-180 {
+    transform: rotate(180deg) translate(var(--offset-x, 0), var(--offset-y, 0));
+}
+
+.rotate-270 {
+    transform: rotate(270deg) translate(var(--offset-x, 0), var(--offset-y, 0));
 }
 
 
 // Parallax stuff
 // ------------------------------------------------------
 
-.parallax[data-parallax-type=content] {
+html:not(.edge) .parallax[data-parallax-type=content] {
     will-change: transform;
+
+    &.parallax-smooth {
+        transition: transform 0.15s cubic-bezier(.25,.57,.63,.8);
+    }
 }
 
 
 // Animations
 // ------------------------------------------------------
 
-body.no-anims * {
+.no-anims,
+.no-anims * {
     transition-property: none !important;
-    transform: none !important;
+    transition-duration: 0 !important;
     animation: none !important;
+    //transform: none !important;
+}
+
+
+//
+// Gloss effect
+// --------------------------------------------------
+
+.gloss {
+    overflow: hidden;
+    position: relative;
+
+    &:before {
+        pointer-events: none;
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background: linear-gradient(0deg, rgba(#fff,0), rgba(#fff,.1) 10%, rgba(#fff,0));
+        transition: transform .8s, opacity 0s;
+        //transition-timing-function: cubic-bezier(0.56, 0.83, 0.45, 0.99);
+        transform: scale3d(1.8, 1.3, 1) rotate3d(0,0,1,45deg) translate3d(0,-120%,0);
+        opacity: 0;
+        z-index: 100;
+    }
+
+    &.active:before, &.gloss-hover:hover:before, &.gloss-focus:focus:before {
+        transform: scale3d(1.8, 1.3, 1) rotate3d(0,0,1,45deg) translate3d(0,240%,0);
+        opacity: 1;
+    }
+
+    &.gloss-tall:before {
+        width: 142%;
+    }
+
+    &.gloss-wide:before {
+        transform: scale3d(1.8, 1.3, 1) rotate3d(0,0,1,45deg) translate3d(0,-240%,0);
+    }
+
+    &.gloss-fast:before {
+        transition: transform .5s, opacity 0s;
+    }
+
+    &.gloss-back:before {
+        opacity: 1;
+    }
 }
 
 

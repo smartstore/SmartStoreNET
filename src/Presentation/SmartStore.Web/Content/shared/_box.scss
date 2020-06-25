@@ -1,0 +1,133 @@
+﻿/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+.box-scale,
+.box-rise {
+    will-change: transform, box-shadow;
+    transition-property: transform, box-shadow;
+    transition-duration: $box-transition-duration;
+    transition-timing-function: $box-transition-timing;
+    z-index: 1;
+}
+
+.box-scale:hover {
+    transform: scale($box-scale-factor);
+    z-index: 2;
+}
+
+.box-rise:hover {
+    transform: translateY(-8px);
+    z-index: 2;
+
+    &.shadow-sm,
+    &.shadow,
+    &.shadow-lg {
+        box-shadow: var(--box-shadow) !important;
+    }
+
+    &.shadow-sm {
+        --box-shadow: #{$box-shadow};
+    }
+
+    &.shadow {
+        --box-shadow: #{$box-shadow-lg};
+    }
+
+    /*&.shadow,
+    &.shadow-sm {
+        box-shadow: 0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                    0 12px 16px -10px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
+                    0 20px 40px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.2)) !important;
+    }*/
+
+    &.shadow-lg {
+        --box-shadow: 0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                    0 8px 16px -4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                    0 24px 28px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
+                    0 38px 56px -12px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.18));
+    }
+}
+
+
+// 
+// Flat boxes
+// -----------------------------------------------
+
+.box-flat {
+    transition-property: transform, color, box-shadow, background-color, background-image;
+    transition-duration: $box-transition-duration;
+    transition-timing-function: $box-transition-timing;
+
+    &:not(:hover) {
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+        color: $body-color;
+
+        // Handle gradients smoothly
+        .bg-overlay:not(.bg-divider) { 
+            opacity: 0 !important;
+        }
+    }
+
+    &.box-flat-inverse:hover,
+    &.box-flat-inverse:hover .g-icon > i {
+        color: $yiq-text-light !important; 
+    }
+}
+
+
+// 
+// Box image
+// -----------------------------------------------
+
+.box-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.box-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.box-img-left .box-img,
+.box-img-right .box-img {
+    height: 100%;
+}
+
+.box-img-scale,
+.box-img-scale-rev {
+    transition: transform 0.8s $box-transition-timing;
+    backface-visibility: hidden;
+    will-change: transform;
+}
+
+.box-img-scale {
+    transform: scale3d(1, 1, 1);
+}
+
+.box-img-scale-rev {
+    transform: scale3d($box-scale-factor, $box-scale-factor, $box-scale-factor);
+}
+
+.box-img-left,
+.box-img-right {
+    flex-flow: row;
+}
+
+.box-img-top,
+.box-img-bottom {
+    flex-flow: column;
+}
+
+.box-img-background .g-block-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}

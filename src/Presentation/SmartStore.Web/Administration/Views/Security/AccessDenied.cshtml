@@ -1,3 +1,18 @@
-﻿<div class="alert alert-danger">
-	<p>@T("Admin.AccessDenied.Description")</p>
+﻿@{
+    object message = null;
+    if (!TempData.TryGetValue("UnauthorizedMessage", out message))
+    {
+        message = T("Admin.AccessDenied.Description").Text;
+    }
+
+    ViewBag.Title = T("Admin.AccessDenied.Title").Text;
+}
+<div class="section-header">
+    <div class="title">
+		<i class="fa-fw fa fa-lock"></i>
+        @T("Admin.AccessDenied.Title")
+    </div>
+</div>
+<div class="alert alert-danger">
+	@Html.Raw(message)
 </div>

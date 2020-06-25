@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
@@ -11,17 +11,17 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -31,75 +31,81 @@ using Telerik.Web.Mvc.UI;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class CategoryController : AdminControllerBase
     {
         #region Fields
 
         private readonly ICategoryService _categoryService;
         private readonly ICategoryTemplateService _categoryTemplateService;
-        private readonly IManufacturerService _manufacturerService;
-        private readonly IProductService _productService; 
-        private readonly ICustomerService _customerService;
+        private readonly IProductService _productService;
         private readonly IUrlRecordService _urlRecordService;
-        private readonly IPictureService _pictureService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizationService _localizationService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IDiscountService _discountService;
-        private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
-		private readonly IStoreService _storeService;
-		private readonly IStoreMappingService _storeMappingService;
+        private readonly IStoreService _storeService;
+        private readonly IStoreMappingService _storeMappingService;
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
-		private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IRuleStorage _ruleStorage;
+        private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
-		private readonly IEventPublisher _eventPublisher;
+        private readonly IEventPublisher _eventPublisher;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
+        private readonly Lazy<ITaskScheduler> _taskScheduler;
+        private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
 
         #endregion
 
         #region Constructors
 
-        public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
-            IManufacturerService manufacturerService, IProductService productService, 
-            ICustomerService customerService,
-            IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
-            ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
-            IDiscountService discountService, IPermissionService permissionService,
-			IAclService aclService, IStoreService storeService, IStoreMappingService storeMappingService,
+        public CategoryController(
+            ICategoryService categoryService,
+            ICategoryTemplateService categoryTemplateService,
+            IProductService productService,
+            IUrlRecordService urlRecordService,
+            ILanguageService languageService,
+            ILocalizationService localizationService,
+            ILocalizedEntityService localizedEntityService,
+            IDiscountService discountService,
+            IAclService aclService,
+            IStoreService storeService,
+            IStoreMappingService storeMappingService,
             IWorkContext workContext,
             ICustomerActivityService customerActivityService,
-			IDateTimeHelper dateTimeHelper,
-			AdminAreaSettings adminAreaSettings,
+            IRuleStorage ruleStorage,
+            IDateTimeHelper dateTimeHelper,
+            AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
             IEventPublisher eventPublisher,
-            Lazy<IGenericAttributeService> genericAttributeService)
+            Lazy<IGenericAttributeService> genericAttributeService,
+            Lazy<ITaskScheduler> taskScheduler,
+            Lazy<IScheduleTaskService> scheduleTaskService)
         {
-            this._categoryService = categoryService;
-            this._categoryTemplateService = categoryTemplateService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-            this._customerService = customerService;
-            this._urlRecordService = urlRecordService;
-            this._pictureService = pictureService;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._localizedEntityService = localizedEntityService;
-            this._discountService = discountService;
-            this._permissionService = permissionService;
-            this._aclService = aclService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._workContext = workContext;
-            this._customerActivityService = customerActivityService;
-			this._dateTimeHelper = dateTimeHelper;
-            this._adminAreaSettings = adminAreaSettings;
-            this._catalogSettings = catalogSettings;
-			this._eventPublisher = eventPublisher;
+            _categoryService = categoryService;
+            _categoryTemplateService = categoryTemplateService;
+            _productService = productService;
+            _urlRecordService = urlRecordService;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _localizedEntityService = localizedEntityService;
+            _discountService = discountService;
+            _aclService = aclService;
+            _storeService = storeService;
+            _storeMappingService = storeMappingService;
+            _workContext = workContext;
+            _customerActivityService = customerActivityService;
+            _ruleStorage = ruleStorage;
+            _dateTimeHelper = dateTimeHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _catalogSettings = catalogSettings;
+            _eventPublisher = eventPublisher;
             _genericAttributeService = genericAttributeService;
+            _taskScheduler = taskScheduler;
+            _scheduleTaskService = scheduleTaskService;
         }
 
         #endregion
@@ -112,9 +118,9 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(category, x => x.Name, localized.Name, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(category, x => x.FullName, localized.FullName, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(category, x => x.FullName, localized.FullName, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(category, x => x.Description, localized.Description, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(category, x => x.BottomDescription, localized.BottomDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(category, x => x.BottomDescription, localized.BottomDescription, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(category, x => x.BadgeText, localized.BadgeText, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
@@ -124,12 +130,6 @@ namespace SmartStore.Admin.Controllers
                 var seName = category.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
                 _urlRecordService.SaveSlug(category, seName, localized.LanguageId);
             }
-        }
-
-        [NonAction]
-        protected void UpdatePictureSeoNames(Category category)
-        {
-			_pictureService.SetSeoFilename(category.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(category.Name));
         }
 
         [NonAction]
@@ -150,77 +150,46 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected void PrepareCategoryModel(CategoryModel model, Category category, bool excludeProperties)
+        protected void PrepareCategoryModel(CategoryModel model, Category category)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(model, nameof(model));
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-            var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
-            model.AvailableDiscounts = discounts.ToList();
-
-            if (!excludeProperties)
+            if (category != null)
             {
+                model.CreatedOn = _dateTimeHelper.ConvertToUserTime(category.CreatedOnUtc, DateTimeKind.Utc);
+                model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
                 model.SelectedDiscountIds = category.AppliedDiscounts.Select(d => d.Id).ToArray();
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
+                model.SelectedRuleSetIds = category.RuleSets.Select(x => x.Id).ToArray();
+
+                model.ShowRuleApplyButton = model.SelectedRuleSetIds.Any();
+                if (!model.ShowRuleApplyButton)
+                {
+                    var productCategoriesQuery = _categoryService.GetProductCategoriesByCategoryId(category.Id, 0, int.MaxValue, true).SourceQuery;
+                    model.ShowRuleApplyButton = productCategoriesQuery.Any(x => x.IsSystemMapping);
+                }
             }
 
-			if (category != null)
-			{
-				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(category.CreatedOnUtc, DateTimeKind.Utc);
-				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
-			}
-
             model.AvailableDefaultViewModes.Add(
-                new SelectListItem { Value = "grid", Text = _localizationService.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
+                new SelectListItem { Value = "grid", Text = T("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
             );
             model.AvailableDefaultViewModes.Add(
-                new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
+                new SelectListItem { Value = "list", Text = T("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
             );
 
-			// add available badges
-			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Secondary", Selected = model.BadgeStyle == 0 });
+            // Add available badges.
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Secondary", Selected = model.BadgeStyle == 0 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Primary", Selected = model.BadgeStyle == 1 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Success", Selected = model.BadgeStyle == 2 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "3", Text = "Info", Selected = model.BadgeStyle == 3 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "4", Text = "Warning", Selected = model.BadgeStyle == 4 });
             model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Danger", Selected = model.BadgeStyle == 5 });
-			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "6", Text = "Light", Selected = model.BadgeStyle == 6 });
-			model.AvailableBadgeStyles.Add(new SelectListItem { Value = "7", Text = "Dark", Selected = model.BadgeStyle == 7});
-		}
-
-        [NonAction]
-        private void PrepareAclModel(CategoryModel model, Category category, bool excludeProperties)
-        {
-			Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
-            {
-                if (category != null)
-                {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
-                }
-                else
-                {
-                    model.SelectedCustomerRoleIds = new int[0];
-                }
-            }
-
-			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-		}
-
-		[NonAction]
-		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
-		{
-			Guard.NotNull(model, nameof(model));
-
-			if (!excludeProperties)
-			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(category);
-			}
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-		}
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "6", Text = "Light", Selected = model.BadgeStyle == 6 });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "7", Text = "Dark", Selected = model.BadgeStyle == 7 });
+        }
 
         #endregion
 
@@ -231,80 +200,68 @@ namespace SmartStore.Admin.Controllers
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
 
             if (customerChoice != null && customerChoice.Equals("Tree"))
+            {
                 return RedirectToAction("Tree");
+            }
 
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("Tree"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
             }
-            
-            var allStores = _storeService.GetAllStores();
-			var model = new CategoryListModel
-			{
-				GridPageSize = _adminAreaSettings.GridPageSize
-			};
 
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            var model = new CategoryListModel
+            {
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                GridPageSize = _adminAreaSettings.GridPageSize
+            };
 
             return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult List(GridCommand command, CategoryListModel model)
         {
-			var gridModel = new GridModel<CategoryModel>();
-			
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, false, model.SearchStoreId);
-				gridModel.Data = categories.Select(x =>
-				{
-					var categoryModel = x.ToModel();
-					categoryModel.Breadcrumb = x.GetCategoryPath(
-						_categoryService, 
-						languageId: _workContext.WorkingLanguage.Id, 
-						aliasPattern: "<span class='badge badge-secondary'>{0}</span>");
-					return categoryModel;
-				});
+            var gridModel = new GridModel<CategoryModel>();
 
-				gridModel.Total = categories.TotalCount;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<CategoryModel>();
+            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, false, model.SearchStoreId);
+            gridModel.Data = categories.Select(x =>
+            {
+                var categoryModel = x.ToModel();
+                categoryModel.Breadcrumb = x.GetCategoryPath(
+                    _categoryService,
+                    languageId: _workContext.WorkingLanguage.Id,
+                    aliasPattern: "<span class='badge badge-secondary'>{0}</span>").NaIfEmpty();
+                return categoryModel;
+            });
 
-				NotifyAccessDenied();
-			}
+            gridModel.Total = categories.TotalCount;
 
-			return new JsonResult
+            return new JsonResult
             {
                 Data = gridModel
             };
         }
 
 		// Ajax
-		public ActionResult AllCategories(string label, int selectedId)
+		public ActionResult AllCategories(string label, string selectedIds)
         {
-			var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
-			var categories = categoryTree.Flatten(false);
+            var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
+            var categories = categoryTree.Flatten(false);
+            var selectedArr = selectedIds.ToIntArray();
 
-			if (label.HasValue())
+            if (label.HasValue())
             {
-				categories = (new[] { new Category { Name = label, Id = 0 } }).Concat(categories);
+                categories = (new[] { new Category { Name = label, Id = 0 } }).Concat(categories);
 
-			}
+            }
 
 			var query = 
 				from c in categories
@@ -312,104 +269,99 @@ namespace SmartStore.Admin.Controllers
 				{ 
 					id = c.Id.ToString(),
 					text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"), 
-					selected = c.Id == selectedId
+					selected = selectedArr.Contains(c.Id)
 				};
 
-			var mainList = query.ToList();
+            var mainList = query.ToList();
 
-			var mruList = new TrimmedBuffer<string>(
-				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-				_catalogSettings.MostRecentlyUsedCategoriesMaxSize)
-				.Reverse()
-				.Select(x =>
-				{
-					var item = categoryTree.SelectNodeById(x.ToInt());
-					if (item != null)
-					{
-						return new
-						{
-							id = x,
-							text = _categoryService.GetCategoryPath(item, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"),
-							selected = false
-						};
-					}
+            var mruList = new TrimmedBuffer<string>(
+                _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+                _catalogSettings.MostRecentlyUsedCategoriesMaxSize)
+                .Reverse()
+                .Select(x =>
+                {
+                    var item = categoryTree.SelectNodeById(x.ToInt());
+                    if (item != null)
+                    {
+                        return new
+                        {
+                            id = x,
+                            text = _categoryService.GetCategoryPath(item, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"),
+                            selected = false
+                        };
+                    }
 
-					return null;
-				})
-				.Where(x => x != null)
-				.ToList();
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToList();
 
-			object data = mainList;
-			if (mruList.Count > 0)
-			{
-				data = new List<object>
-				{
-					new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
-					new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Categories").Text, ["children"] = mainList, ["main"] = true }
-				};
-			}
+            object data = mainList;
+            if (mruList.Count > 0)
+            {
+                data = new List<object>
+                {
+                    new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
+                    new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Categories").Text, ["children"] = mainList, ["main"] = true }
+                };
+            }
 
-			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult Tree()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
             if (customerChoice == null || customerChoice.Equals("List"))
             {
-                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
+                _genericAttributeService.Value.SaveAttribute(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
             }
-            
-            var allStores = _storeService.GetAllStores();
-			var model = new CategoryTreeModel();
 
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            var model = new CategoryTreeModel
+            {
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                CanEdit = Services.Permissions.Authorize(Permissions.Catalog.Category.Update)
+            };
 
-			return View(model);
+            return View(model);
         }
 
-        // Ajax
+        // Ajax.
         [AcceptVerbs(HttpVerbs.Post)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
-			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
+            var parentCategories = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true);
 
-			var parentCategories = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true);
+            if (parentId == 0 && model.SearchStoreId != 0)
+            {
+                for (int i = parentCategories.Count - 1; i >= 0; --i)
+                {
+                    var category = parentCategories[i];
+                    if (!category.LimitedToStores || (category.LimitedToStores && !_storeMappingService.GetStoresIdsWithAccess(category).Contains(model.SearchStoreId)))
+                    {
+                        parentCategories.Remove(category);
+                    }
+                }
+            }
 
-			if (parentId == 0 && model.SearchStoreId != 0)
-			{
-				for (int i = parentCategories.Count - 1; i >= 0; --i)
-				{
-					var category = parentCategories[i];
-					if (!category.LimitedToStores || (category.LimitedToStores && !_storeMappingService.GetStoresIdsWithAccess(category).Contains(model.SearchStoreId)))
-					{
-						parentCategories.Remove(category);
-					}
-				}
-			}
+            var children = parentCategories.Select(x =>
+            {
+                var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
+                string text = childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name;
 
-			var children = parentCategories.Select(x =>
-			{
-				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
-				string text = (childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name);
-
-				var item = new TreeViewItem
-				{
-					Text = x.Alias.HasValue() ? "{0} <span class='badge badge-secondary'>{1}</span>".FormatCurrent(text, x.Alias) : text,
-					Encoded = x.Alias.IsEmpty(),
-					Value = x.Id.ToString(),
-					LoadOnDemand = (childCount > 0),
-					Enabled = true,
-					ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
-					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
-				};
+                var item = new TreeViewItem
+                {
+                    Text = x.Alias.HasValue() ? "{0} <span class='badge badge-secondary'>{1}</span>".FormatCurrent(text, x.Alias) : text,
+                    Encoded = x.Alias.IsEmpty(),
+                    Value = x.Id.ToString(),
+                    LoadOnDemand = childCount > 0,
+                    Enabled = true,
+                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
+                    Url = Url.Action("Edit", "Category", new { id = x.Id })
+                };
 
                 return item;
             });
@@ -417,7 +369,8 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = children };
         }
 
-        //ajax
+        // Ajax.
+        [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult TreeDrop(int item, int destinationitem, string position)
         {
             var categoryItem = _categoryService.GetCategoryById(item);
@@ -480,19 +433,15 @@ namespace SmartStore.Admin.Controllers
 
         #region Create / Edit / Delete
 
+        [Permission(Permissions.Catalog.Category.Create)]
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var model = new CategoryModel();
 
-			AddLocales(_languageService, model.Locales);
+            AddLocales(_languageService, model.Locales);
 
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, null, true);
-			PrepareAclModel(model, null, false);
-			PrepareStoresMappingModel(model, null, false);
+            PrepareCategoryModel(model, null);
 
             model.Published = true;
 
@@ -500,106 +449,99 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		[ValidateInput(false)]
+        [ValidateInput(false)]
+        [Permission(Permissions.Catalog.Category.Create)]
         public ActionResult Create(CategoryModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
                 var category = model.ToEntity();
 
-				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
-
                 _categoryService.InsertCategory(category);
-                
-				//search engine name
+
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
-                
-				//locales
+
                 UpdateLocales(category, model);
-                
-				//discounts
+
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {
                     if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+                    {
                         category.AppliedDiscounts.Add(discount);
+                    }
                 }
-                _categoryService.UpdateCategory(category);
 
-                //update "HasDiscountsApplied" property
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(category, model.SelectedRuleSetIds);
+                }
+
+                _categoryService.UpdateCategory(category);
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                //update picture seo file name
-                UpdatePictureSeoNames(category);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
+                SaveStoreMappings(category, model.SelectedStoreIds);
 
-                // ACL (customer roles)
-                SaveAclMappings(category, model);
+                _eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
-				// Stores
-				SaveStoreMappings(category, model);
+                _customerActivityService.InsertActivity("AddNewCategory", T("ActivityLog.AddNewCategory"), category.Name);
 
-				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
-
-                //activity log
-                _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
-
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Added"));
+                NotifySuccess(T("Admin.Catalog.Categories.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("Index");
             }
 
-            //If we got this far, something failed, redisplay form
-            //templates
+            // If we got this far, something failed, redisplay form.
             PrepareTemplatesModel(model);
-            //parent categories
             if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
 
-            PrepareCategoryModel(model, null, true);
-            //ACL
-            PrepareAclModel(model, null, true);
-			//Stores
-			PrepareStoresMappingModel(model, null, true);
+            PrepareCategoryModel(model, null);
+
             return View(model);
         }
 
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var category = _categoryService.GetCategoryById(id);
             if (category == null || category.Deleted)
+            {
                 return RedirectToAction("Index");
+            }
 
             var model = category.ToModel();
 
-			//parent categories
-			if (model.ParentCategoryId.HasValue)
+            if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
-
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = category.GetLocalized(x => x.Name, languageId, false, false);
-				locale.FullName = category.GetLocalized(x => x.FullName, languageId, false, false);
+                locale.FullName = category.GetLocalized(x => x.FullName, languageId, false, false);
                 locale.Description = category.GetLocalized(x => x.Description, languageId, false, false);
-				locale.BottomDescription = category.GetLocalized(x => x.BottomDescription, languageId, false, false);
+                locale.BottomDescription = category.GetLocalized(x => x.BottomDescription, languageId, false, false);
                 locale.BadgeText = category.GetLocalized(x => x.BadgeText, languageId, false, false);
                 locale.MetaKeywords = category.GetLocalized(x => x.MetaKeywords, languageId, false, false);
                 locale.MetaDescription = category.GetLocalized(x => x.MetaDescription, languageId, false, false);
@@ -608,103 +550,89 @@ namespace SmartStore.Admin.Controllers
             });
 
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, category, false);
-            PrepareAclModel(model, category, false);
-			PrepareStoresMappingModel(model, category, false);
+            PrepareCategoryModel(model, category);
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		[ValidateInput(false)]
+        [ValidateInput(false)]
+        [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult Edit(CategoryModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
             var category = _categoryService.GetCategoryById(model.Id);
             if (category == null || category.Deleted)
+            {
                 return RedirectToAction("Index");
+            }
 
             if (ModelState.IsValid)
             {
                 category = model.ToEntity(category);
-				category.ParentCategoryId = model.ParentCategoryId ?? 0;
-
-				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
+                category.ParentCategoryId = model.ParentCategoryId ?? 0;
 
                 _categoryService.UpdateCategory(category);
 
-                //search engine name
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
 
-                //locales
                 UpdateLocales(category, model);
 
-                //discounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {
                     if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
                     {
-                        //new role
                         if (category.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() == 0)
                             category.AppliedDiscounts.Add(discount);
                     }
                     else
                     {
-                        //removed role
                         if (category.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() > 0)
                             category.AppliedDiscounts.Remove(discount);
                     }
                 }
+
+                // Add\remove assigned rule sets.
+                _ruleStorage.ApplyRuleSetMappings(category, model.SelectedRuleSetIds);
+
                 _categoryService.UpdateCategory(category);
 
-                // update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                // update picture seo file name
-                UpdatePictureSeoNames(category);
+                SaveAclMappings(category, model.SelectedCustomerRoleIds);
+                SaveStoreMappings(category, model.SelectedStoreIds);
 
-                // ACL
-                SaveAclMappings(category, model);
+                _eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
-				// Stores
-				SaveStoreMappings(category, model);
-
-				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
-
-                //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
                 NotifySuccess(T("Admin.Catalog.Categories.Updated"));
                 return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("Index");
             }
 
-
-            //If we got this far, something failed, redisplay form
-            //parent categories
+            // If we got this far, something failed, redisplay form.
             if (model.ParentCategoryId.HasValue)
             {
                 var parentCategory = _categoryService.GetCategoryTree(model.ParentCategoryId.Value, true);
                 if (parentCategory != null)
+                {
                     model.ParentCategoryBreadcrumb = _categoryService.GetCategoryPath(parentCategory);
+                }
                 else
+                {
                     model.ParentCategoryId = 0;
+                }
             }
-            //templates
+
             PrepareTemplatesModel(model);
-            PrepareCategoryModel(model, category, true);
-            //ACL
-            PrepareAclModel(model, category, true);
-			//Stores
-			PrepareStoresMappingModel(model, category, true);
+            PrepareCategoryModel(model, category);
 
             return View(model);
         }
 
         [ValidateInput(false)]
+        [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult InheritAclIntoChildren(int categoryId)
         {
             _categoryService.InheritAclIntoChildren(categoryId, false, true, false);
@@ -713,6 +641,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ValidateInput(false)]
+        [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult InheritStoresIntoChildren(int categoryId)
         {
             _categoryService.InheritStoresIntoChildren(categoryId, false, true, false);
@@ -721,16 +650,14 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult Delete(int id, string deleteType)
+        [Permission(Permissions.Catalog.Category.Delete)]
+        public ActionResult Delete(int id, string deleteType)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-			
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
                 return RedirectToAction("Index");
 
-			_categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
+            _categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
 
             _customerActivityService.InsertActivity("DeleteCategory", _localizationService.GetResource("ActivityLog.DeleteCategory"), category.Name);
 
@@ -738,130 +665,140 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-
         #endregion
 
         #region Products
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Catalog.Category.Read)]
         public ActionResult ProductList(GridCommand command, int categoryId)
         {
-			var model = new GridModel<CategoryModel.CategoryProductModel>();
+            var model = new GridModel<CategoryModel.CategoryProductModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, command.Page - 1, command.PageSize, true);
+            var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, command.Page - 1, command.PageSize, true);
 
-				var products = _productService.GetProductsByIds(productCategories.Select(x => x.ProductId).ToArray());
+            var products = _productService.GetProductsByIds(productCategories.Select(x => x.ProductId).ToArray());
 
-				model.Data = productCategories.Select(x =>
-				{
-					var productModel = new CategoryModel.CategoryProductModel
-					{
-						Id = x.Id,
-						CategoryId = x.CategoryId,
-						ProductId = x.ProductId,
-						IsFeaturedProduct = x.IsFeaturedProduct,
-						DisplayOrder1 = x.DisplayOrder
-					};
+            model.Data = productCategories.Select(x =>
+            {
+                var productModel = new CategoryModel.CategoryProductModel
+                {
+                    Id = x.Id,
+                    CategoryId = x.CategoryId,
+                    ProductId = x.ProductId,
+                    IsFeaturedProduct = x.IsFeaturedProduct,
+                    DisplayOrder1 = x.DisplayOrder,
+                    IsSystemMapping = x.IsSystemMapping
+                };
 
-					var product = products.FirstOrDefault(y => y.Id == x.ProductId);
+                var product = products.FirstOrDefault(y => y.Id == x.ProductId);
 
-					if (product != null)
-					{
-						productModel.ProductName = product.Name;
-						productModel.Sku = product.Sku;
-						productModel.ProductTypeName = product.GetProductTypeLabel(_localizationService);
-						productModel.ProductTypeLabelHint = product.ProductTypeLabelHint;
-						productModel.Published = product.Published;
-					}
+                if (product != null)
+                {
+                    productModel.ProductName = product.Name;
+                    productModel.Sku = product.Sku;
+                    productModel.ProductTypeName = product.GetProductTypeLabel(_localizationService);
+                    productModel.ProductTypeLabelHint = product.ProductTypeLabelHint;
+                    productModel.Published = product.Published;
+                }
 
-					return productModel;
-				});
+                return productModel;
+            });
 
-				model.Total = productCategories.TotalCount;
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<CategoryModel.CategoryProductModel>();
+            model.Total = productCategories.TotalCount;
 
-				NotifyAccessDenied();
-			}
-
-			return new JsonResult
+            return new JsonResult
             {
                 Data = model
             };
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Catalog.Category.EditProduct)]
         public ActionResult ProductUpdate(GridCommand command, CategoryModel.CategoryProductModel model)
         {
-			var productCategory = _categoryService.GetProductCategoryById(model.Id);
+            var productCategory = _categoryService.GetProductCategoryById(model.Id);
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
-				productCategory.DisplayOrder = model.DisplayOrder1;
+            productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+            productCategory.DisplayOrder = model.DisplayOrder1;
 
-				_categoryService.UpdateProductCategory(productCategory);
-			}
+            _categoryService.UpdateProductCategory(productCategory);
+
 
             return ProductList(command, productCategory.CategoryId);
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Catalog.Category.EditProduct)]
         public ActionResult ProductDelete(int id, GridCommand command)
         {
-			var productCategory = _categoryService.GetProductCategoryById(id);
-			var categoryId = productCategory.CategoryId;
+            var productCategory = _categoryService.GetProductCategoryById(id);
+            var categoryId = productCategory.CategoryId;
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				_categoryService.DeleteProductCategory(productCategory);
-			}
+            _categoryService.DeleteProductCategory(productCategory);
 
             return ProductList(command, categoryId);
         }
 
-		[HttpPost]
-		public ActionResult ProductAdd(int categoryId, int[] selectedProductIds)
-		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var products = _productService.GetProductsByIds(selectedProductIds);
-				ProductCategory productCategory = null;
-				var maxDisplayOrder = -1;
+        [HttpPost]
+        [Permission(Permissions.Catalog.Category.EditProduct)]
+        public ActionResult ProductAdd(int categoryId, int[] selectedProductIds)
+        {
+            var products = _productService.GetProductsByIds(selectedProductIds);
+            ProductCategory productCategory = null;
+            var maxDisplayOrder = -1;
 
-				foreach (var product in products)
-				{
-					var existingProductCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, 0, int.MaxValue, true);
+            foreach (var product in products)
+            {
+                var existingProductCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, 0, int.MaxValue, true);
 
-					if (existingProductCategories.FindProductCategory(product.Id, categoryId) == null)
-					{
-						if (maxDisplayOrder == -1 && (productCategory = existingProductCategories.OrderByDescending(x => x.DisplayOrder).FirstOrDefault()) != null)
-						{
-							maxDisplayOrder = productCategory.DisplayOrder;
-						}
+                if (existingProductCategories.FindProductCategory(product.Id, categoryId) == null)
+                {
+                    if (maxDisplayOrder == -1 && (productCategory = existingProductCategories.OrderByDescending(x => x.DisplayOrder).FirstOrDefault()) != null)
+                    {
+                        maxDisplayOrder = productCategory.DisplayOrder;
+                    }
 
-						_categoryService.InsertProductCategory(new ProductCategory
-						{
-							CategoryId = categoryId,
-							ProductId = product.Id,
-							IsFeaturedProduct = false,
-							DisplayOrder = ++maxDisplayOrder
-						});
-					}
-				}
-			}
-			else
-			{
-				NotifyAccessDenied();
-			}
+                    _categoryService.InsertProductCategory(new ProductCategory
+                    {
+                        CategoryId = categoryId,
+                        ProductId = product.Id,
+                        IsFeaturedProduct = false,
+                        DisplayOrder = ++maxDisplayOrder
+                    });
+                }
+            }
 
-			return new EmptyResult();
-		}
+            return new EmptyResult();
+        }
 
-		#endregion
-	}
+        [HttpPost]
+        public ActionResult ApplyRules(int id)
+        {
+            var category = _categoryService.GetCategoryById(id);
+            if (category == null || category.Deleted)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var task = _scheduleTaskService.Value.GetTaskByType<ProductRuleEvaluatorTask>();
+            if (task != null)
+            {
+                _taskScheduler.Value.RunSingleTask(task.Id, new Dictionary<string, string>
+                {
+                    { "CategoryIds", category.Id.ToString() }
+                });
+
+                NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+            }
+            else
+            {
+                NotifyError(T("Admin.System.ScheduleTasks.TaskNotFound", nameof(ProductRuleEvaluatorTask)));
+            }
+
+            return RedirectToAction("Edit", new { id = category.Id });
+        }
+
+        #endregion
+    }
 }

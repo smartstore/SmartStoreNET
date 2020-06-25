@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -9,20 +8,18 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -31,7 +28,7 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CatalogHelper
+    public partial class CatalogHelper
 	{
 		public void MapListActions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
 		{
@@ -160,8 +157,8 @@ namespace SmartStore.Web.Controllers
 			{
 				settings = new ProductSummaryMappingSettings();
 			}
-			
-			using (_services.Chronometer.Step("MapProductSummaryModel"))
+
+            using (_services.Chronometer.Step("MapProductSummaryModel"))
 			{
 				var model = new ProductSummaryModel(products)
 				{
@@ -182,7 +179,7 @@ namespace SmartStore.Web.Controllers
 					ShowBrand = settings.MapManufacturers,
 					ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
 					CompareEnabled = _catalogSettings.CompareProductsEnabled,
-					WishlistEnabled = _permissionService.Value.Authorize(StandardPermissionProvider.EnableWishlist),
+					WishlistEnabled = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist),
 					BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
 					ThumbSize = settings.ThumbnailSize,
 					ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
@@ -200,9 +197,9 @@ namespace SmartStore.Web.Controllers
 				var customer = _services.WorkContext.CurrentCustomer;
 				var currency = _services.WorkContext.WorkingCurrency;
 				var language = _services.WorkContext.WorkingLanguage;
-				var allowPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
-				var allowShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
-				var allowWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+				var allowPrices = _services.Permissions.Authorize(Permissions.Catalog.DisplayPrice);
+				var allowShoppingCart = _services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart);
+				var allowWishlist = _services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
 				var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 				var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
 				var prefetchTranslations = settings.PrefetchTranslations == true || (settings.PrefetchTranslations == null && _performanceSettings.AlwaysPrefetchTranslations);
@@ -306,7 +303,6 @@ namespace SmartStore.Web.Controllers
 					{
 						BatchContext = batchContext,
 						CachedManufacturerModels = cachedManufacturerModels,
-						PictureInfos = _pictureService.GetPictureInfos(products),
 						Currency = currency,
 						LegalInfo = legalInfo,
 						Model = model,
@@ -320,7 +316,18 @@ namespace SmartStore.Web.Controllers
 						TaxDisplayType = taxDisplayType
 					};
 
-					foreach (var product in products)
+                    if (settings.MapPictures)
+                    {
+                        var fileIds = products
+                            .Select(x => x.MainPictureId ?? 0)
+                            .Where(x => x != 0)
+                            .Distinct()
+                            .ToArray();
+
+                        mapItemContext.MediaFiles = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+                    }
+
+                    foreach (var product in products)
 					{
 						MapProductSummaryItem(product, mapItemContext);
 					}
@@ -381,10 +388,7 @@ namespace SmartStore.Web.Controllers
 			// (Color) Attributes
 			if (settings.MapColorAttributes || settings.MapAttributes)
 			{
-				#region Map (color) attributes
-
 				var attributes = ctx.BatchContext.Attributes.GetOrLoad(contextProduct.Id);
-
 				var cachedAttributeNames = new Dictionary<int, LocalizedValue<string>>();
 
 				// Color squares
@@ -440,32 +444,27 @@ namespace SmartStore.Web.Controllers
 						});
 					}
 				}
-
-				#endregion
 			}
 
 			// Picture
 			if (settings.MapPictures)
 			{
-				#region Map product picture
-
-				var pictureInfo = ctx.PictureInfos.Get(product.MainPictureId.GetValueOrDefault());
-				var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 				var thumbSize = model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize;
 
-				item.Picture = new PictureModel
+                ctx.MediaFiles.TryGetValue(product.MainPictureId ?? 0, out var file);
+
+                item.Picture = new PictureModel
 				{
-					PictureId = pictureInfo?.Id ?? 0,
+					PictureId = file?.Id ?? 0,
 					Size = thumbSize,
-					ImageUrl = _pictureService.GetUrl(pictureInfo, thumbSize, fallbackType),
-					FullSizeImageUrl = _pictureService.GetUrl(pictureInfo, 0, FallbackPictureType.NoFallback),
-					FullSizeImageWidth = pictureInfo?.Width,
-					FullSizeImageHeight = pictureInfo?.Height,
+					ImageUrl = _mediaService.GetUrl(file, thumbSize, null, !_catalogSettings.HideProductDefaultPictures),
+					FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, !_catalogSettings.HideProductDefaultPictures),
+					FullSizeImageWidth = file?.Dimensions.Width,
+					FullSizeImageHeight = file?.Dimensions.Height,
 					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
 					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
+                    File = file
 				};
-
-				#endregion
 			}
 
 			// Manufacturers
@@ -501,8 +500,6 @@ namespace SmartStore.Web.Controllers
 			item.HideDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 			if (model.ShowDeliveryTimes && !item.HideDeliveryTime)
 			{
-				#region Delivery Time
-
 				// We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
 				//item.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
 				//item.DisplayDeliveryTimeAccordingToStock = contextProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
@@ -546,8 +543,6 @@ namespace SmartStore.Web.Controllers
                             : T("Products.Availability.Backordering");
 					}
 				}
-
-				#endregion
 			}
 			
 			item.LegalInfo = ctx.LegalInfo;
@@ -575,7 +570,9 @@ namespace SmartStore.Web.Controllers
 
 			if (model.ShowWeight && contextProduct.Weight > 0)
 			{
-				item.Weight = "{0} {1}".FormatCurrent(contextProduct.Weight.ToString("N2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name);
+                var measureWeightName = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+
+                item.Weight = "{0} {1}".FormatCurrent(contextProduct.Weight.ToString("N2"), measureWeightName);
 			}
 
 			// New Badge
@@ -713,14 +710,14 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// Calculate saving.
-			var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
+			var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, batchContext);
 			finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
 			finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscount, ctx.Currency);
 
 			var finalPriceWithoutDiscount = finalPrice;
 			if (_catalogSettings.PriceDisplayType != PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 			{
-				finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+				finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, batchContext);
 				finalPriceWithoutDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithoutDiscount, out taxRate);
 				finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
 			}
@@ -781,16 +778,21 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		private class MapProductSummaryItemContext
-		{
-			public ProductSummaryModel Model { get; set; }
+        private class MapProductSummaryItemContext
+        {
+            public MapProductSummaryItemContext()
+            {
+                MediaFiles = new Dictionary<int, MediaFileInfo>();
+            }
+
+            public ProductSummaryModel Model { get; set; }
 			public ProductSummaryMappingSettings Settings { get; set; }
 			public ProductExportContext BatchContext { get; set; }
             public ProductExportContext AssociatedProductBatchContext { get; set; }
             public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
-			public IDictionary<int, PictureInfo> PictureInfos { get; set; }
-			public Dictionary<string, LocalizedString> Resources { get; set; }
+            public Dictionary<int, MediaFileInfo> MediaFiles { get; set; }
+            public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
 			public Customer Customer { get; set; }
 			public Store Store { get; set; }

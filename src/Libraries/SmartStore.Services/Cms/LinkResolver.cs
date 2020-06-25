@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -69,7 +70,7 @@ namespace SmartStore.Services.Cms
 
 			if (roles == null)
             {
-                roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
+                roles = _services.WorkContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole);
             }
 
             if (languageId == 0)
@@ -127,21 +128,21 @@ namespace SmartStore.Services.Cms
 							GetEntityData<Category>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
-								Published = x.Published,
+                                Published = x.Published,
 								Deleted = x.Deleted,
 								SubjectToAcl = x.SubjectToAcl,
 								LimitedToStores = x.LimitedToStores,
-                                PictureId = x.PictureId
+                                PictureId = x.MediaFileId
 							});
 							break;
 						case LinkType.Manufacturer:
 							GetEntityData<Manufacturer>(d2, storeId, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
-								Published = x.Published,
+                                Published = x.Published,
 								Deleted = x.Deleted,
 								LimitedToStores = x.LimitedToStores,
-                                PictureId = x.PictureId
+                                PictureId = x.MediaFileId
 							});
 							break;
 						case LinkType.Topic:
@@ -197,7 +198,8 @@ namespace SmartStore.Services.Cms
             return result;
         }
 
-		private bool TokenizeExpression(string expression, out string type, out string path, out string query)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TokenizeExpression(string expression, out string type, out string path, out string query)
 		{
 			type = null;
 			path = null;
@@ -352,7 +354,7 @@ namespace SmartStore.Services.Cms
 				
                 if (data.Type == LinkType.Topic)
                 {
-                    data.Label = GetLocalized(data.Id, entityName, "ShortTitle", languageId, null)
+                    data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
                         ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
                         ?? summary.ShortTitle.NullEmpty()
                         ?? summary.Title.NullEmpty()

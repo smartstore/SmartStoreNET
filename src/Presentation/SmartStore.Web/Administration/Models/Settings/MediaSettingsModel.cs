@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class MediaSettingsModel : ModelBase
+    [Validator(typeof(MediaSettingsValidator))]
+    public class MediaSettingsModel : ModelBase
     {
         public MediaSettingsModel()
         {
@@ -54,6 +57,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaximumImageSize")]
         public int MaximumImageSize { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaxUploadFileSize")]
+        public long MaxUploadFileSize { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned")]
+        public bool MakeFilesTransientWhenOrphaned { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.DefaultPictureZoomEnabled")]
         public bool DefaultPictureZoomEnabled { get; set; }
 
@@ -63,8 +72,38 @@ namespace SmartStore.Admin.Models.Settings
 
         public List<SelectListItem> AvailablePictureZoomTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
+        #region Media types
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Image")]
+        public string ImageTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Video")]
+        public string VideoTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Audio")]
+        public string AudioTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Document")]
+        public string DocumentTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Text")]
+        public string TextTypes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.Type.Bin")]
+        public string BinTypes { get; set; }
+
+        #endregion
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
 		public string StorageProvider { get; set; }
 		public List<SelectListItem> AvailableStorageProvider { get; set; }
 	}
+
+    public partial class MediaSettingsValidator : AbstractValidator<MediaSettingsModel>
+    {
+        public MediaSettingsValidator()
+        {
+            RuleFor(x => x.MaxUploadFileSize).GreaterThan(0);
+        }
+    }
 }

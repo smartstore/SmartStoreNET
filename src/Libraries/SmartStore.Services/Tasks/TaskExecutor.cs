@@ -179,6 +179,8 @@ namespace SmartStore.Services.Tasks
                     // Remove from AsyncState.
                     if (stateName.HasValue())
                     {
+                        // We don't just remove the cancellation token, but the whole state (along with the token)
+                        // for the case that a state was registered during task execution.
                         _asyncState.Remove<ScheduleTask>(stateName);
                     }
                 }

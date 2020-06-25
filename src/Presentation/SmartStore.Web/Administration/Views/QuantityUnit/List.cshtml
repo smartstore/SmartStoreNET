@@ -1,31 +1,24 @@
-﻿@model Telerik.Web.Mvc.GridModel<QuantityUnitModel>
-@using Telerik.Web.Mvc.UI
-@{
+﻿@{
     ViewBag.Title = T("Admin.Configuration.QuantityUnit").Text;
 }
 
 <div class="section-header">
     <div class="title">
-		<i class="fa fa-gift"></i>
-        @T("Admin.Configuration.QuantityUnit")
-    </div>
-    <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary">
-            <i class="fa fa-plus"></i>
-            <span>@T("Admin.Common.AddNew")</span>
-        </a>
+		<i class="fas fa-box-open"></i>
+        <span>@T("Admin.Configuration.QuantityUnit")</span>
     </div>
 </div>
 
 <div>
 	@(Html.Telerik().Grid<QuantityUnitModel>()
-        .Name("measure-unit-grid")
-        .BindTo(Model.Data)
+        .Name("quantity-unit-grid")
+        .DataKeys(x =>
+        {
+            x.Add(y => y.Id);
+        })
         .Columns(columns =>
         {
-            columns.Bound(x => x.Name)
-                .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+            columns.Bound(x => x.Name);
             columns.Bound(x => x.NamePlural)
                 .Title(T("Common.Plural").Text);
             columns.Bound(x => x.Description)
@@ -34,10 +27,50 @@
                 .Width(180)
                 .Centered();
             columns.Bound(x => x.IsDefault)
-                .Template(item => @Html.SymbolForBool(item.IsDefault))
-                .ClientTemplate(@Html.SymbolForBool("IsDefault"))
+                .ClientTemplate(Html.SymbolForBool("IsDefault"))
                 .Width(180)
                 .Centered();
+            columns.Command(commands =>
+            {
+                commands.Custom("edit-quantity-unit").Text(T("Common.Edit"));
+                commands.Delete().Localize(T);
+            }).Width(180)
+            .HtmlAttributes(new { align = "right", @class = "omega" });
         })
-	)
+        .ToolBar(commands => commands.Template(QuantityUnitGridCommands))
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax()
+                .Select("List", "QuantityUnit")
+				.Delete("DeleteQuantityUnit", "QuantityUnit");
+		})
+		.EnableCustomBinding(true))
 </div>
+
+@helper QuantityUnitGridCommands(Grid<QuantityUnitModel> grid)
+{
+	<button type="submit" id="btnAddNew" name="btnAddNew" class="btn" onclick="javascript:openPopup('@(Url.Action("CreateQuantityUnitPopup", "QuantityUnit", new { btnId = "btnRefresh" }))'); return false;">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Configuration.QuantityUnit.AddQuantityUnit")</span>
+	</button>
+	<input type="submit" id="btnRefresh" name="btnRefresh" class="d-none" />
+}
+
+<script>
+	$(function() {
+		$('#btnRefresh').click(function () {
+			$('#quantity-unit-grid').data('tGrid').ajaxRequest();
+			return false;
+		});
+
+		$('#quantity-unit-grid').on('click', '.t-grid-edit-quantity-unit', function (e) {
+			e.preventDefault();
+			var tr = $(this).closest('tr');
+			var id = $('#quantity-unit-grid').data('tGrid').dataItem(tr).Id;
+			var href = "@Url.Content("~/Admin/QuantityUnit/EditQuantityUnitPopup/")" + id + "?btnId=btnRefresh";
+			
+			openPopup(href);
+			return false;
+		});
+	});
+</script>

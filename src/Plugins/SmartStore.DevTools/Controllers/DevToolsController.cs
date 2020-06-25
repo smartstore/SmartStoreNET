@@ -1,8 +1,9 @@
 ﻿using System.Web.Mvc;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Security;
 using SmartStore.DevTools.Blocks;
 using SmartStore.DevTools.Models;
-using SmartStore.Services;
-using SmartStore.Services.Cms.Blocks;
+using SmartStore.DevTools.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -12,41 +13,49 @@ namespace SmartStore.DevTools.Controllers
 {
     public class DevToolsController : SmartController
     {
-        private readonly ICommonServices _services;
-
-        public DevToolsController(ICommonServices services)
-        {
-            _services = services;
-        }
-
-        [LoadSetting, ChildActionOnly]
+        [AdminAuthorize, Permission(DevToolsPermissions.Read)]
+        [ChildActionOnly, LoadSetting]
         public ActionResult Configure(ProfilerSettings settings)
         {
-            return View(settings);
+            var model = MiniMapper.Map<ProfilerSettings, ConfigurationModel>(settings);
+
+            return View(model);
         }
 
-        [SaveSetting(false), HttpPost, ChildActionOnly, ActionName("Configure")]
-        public ActionResult ConfigurePost(ProfilerSettings settings)
+        [AdminAuthorize, Permission(DevToolsPermissions.Update)]
+        [HttpPost, ChildActionOnly, SaveSetting]
+        public ActionResult Configure(ConfigurationModel model, ProfilerSettings settings)
         {
-			return RedirectToConfiguration("SmartStore.DevTools");
+            if (!ModelState.IsValid)
+            {
+                return Configure(settings);
+            }
+
+            ModelState.Clear();
+            MiniMapper.Map(model, settings);
+
+            return RedirectToConfiguration("SmartStore.DevTools");
         }
 
+        [ChildActionOnly]
         public ActionResult MiniProfiler()
         {
             return View();
         }
 
+        [ChildActionOnly]
         public ActionResult MachineName()
         {
-            ViewBag.EnvironmentIdentifier = _services.ApplicationEnvironment.EnvironmentIdentifier;
+            ViewBag.EnvironmentIdentifier = Services.ApplicationEnvironment.EnvironmentIdentifier;
 
             return View();
         }
-        
+
+        [ChildActionOnly]
         public ActionResult WidgetZone(string widgetZone)
         {
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<ProfilerSettings>(storeScope);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<ProfilerSettings>(storeScope);
 
             if (settings.DisplayWidgetZones)
             { 

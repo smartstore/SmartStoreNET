@@ -177,27 +177,27 @@ namespace SmartStore.Services.Customers
 
             request.Customer.Active = request.IsApproved;
 
-			if (_customerSettings.RegisterCustomerRoleId != 0)
+            var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+            if (registeredRole == null)
+            {
+                throw new SmartException(T("Admin.Customers.CustomerRoles.CannotFoundRole", "Registered"));
+            }
+
+            if (_customerSettings.RegisterCustomerRoleId != 0)
 			{
 				var customerRole = _customerService.GetCustomerRoleById(_customerSettings.RegisterCustomerRoleId);
-				request.Customer.CustomerRoles.Add(customerRole);
+                if (customerRole != null && customerRole.Id != registeredRole.Id)
+                {
+                    _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = request.Customer.Id, CustomerRoleId = customerRole.Id });
+                }
 			}
 
-			// Add to 'Registered' role
-			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
-			if (registeredRole == null)
-			{
-				throw new SmartException(T("Admin.Customers.CustomerRoles.CannotFoundRole", "Registered"));
-			}
+			// Add to 'Registered' role.
+            _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = request.Customer.Id, CustomerRoleId = registeredRole.Id });
 
-            request.Customer.CustomerRoles.Add(registeredRole);
-
-            // Remove from 'Guests' role
-            var guestRole = request.Customer.CustomerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Guests);
-			if (guestRole != null)
-			{
-				request.Customer.CustomerRoles.Remove(guestRole);
-			}
+            // Remove from 'Guests' role.
+            var mappings = request.Customer.CustomerRoleMappings.Where(x => !x.IsSystemMapping && x.CustomerRole.SystemName == SystemCustomerRoleNames.Guests).ToList();
+            mappings.Each(x => _customerService.DeleteCustomerRoleMapping(x));
 
 			// Add reward points for customer registration (if enabled)
 			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForRegistration > 0)

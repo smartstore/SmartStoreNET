@@ -24,7 +24,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
 
@@ -296,8 +296,6 @@ namespace SmartStore.Web.Controllers
             {
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
                     continue;
-
-				var paymentMethod = allPaymentMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(pm.Metadata.SystemName));
                 
                 var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel
                 {
@@ -308,7 +306,7 @@ namespace SmartStore.Web.Controllers
 					RequiresInteraction = pm.Value.RequiresInteraction
                 };
 
-				if (paymentMethod != null)
+				if (allPaymentMethods.TryGetValue(pm.Metadata.SystemName, out var paymentMethod))
 				{
 					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
 				}

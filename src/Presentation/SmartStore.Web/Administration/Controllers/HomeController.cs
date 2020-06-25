@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
@@ -24,16 +25,23 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly CommonSettings _commonSettings;
 		private readonly Lazy<IUserAgent> _userAgent;
+        private readonly CustomerController _customerController;
 
         #endregion
 
         #region Ctor
 
-		public HomeController(ICommonServices services, CommonSettings commonSettings, Lazy<IUserAgent> userAgent)
+		public HomeController(
+            ICommonServices services,
+            CommonSettings commonSettings,
+            Lazy<IUserAgent> userAgent,
+            CustomerController customerController
+            )
         {
-            this._commonSettings = commonSettings;
-			this._services = services;
-			this._userAgent = userAgent;
+            _commonSettings = commonSettings;
+			_services = services;
+			_userAgent = userAgent;
+            _customerController = customerController;
         }
 
         #endregion
@@ -42,6 +50,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Index()
         {
+			Debug.WriteLine("--------------------------");
             return View();
         }
 
@@ -89,13 +98,16 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MarketplaceFeed()
 		{
+			var watch = new Stopwatch();
+			watch.Start();
+
 			var result = _services.Cache.Get("admin:marketplacefeed", () => {
 				try
 				{
 					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
 					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = 3000;
-					request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+					request.UserAgent = "Smartstore {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 
 					using (WebResponse response = request.GetResponse())
 					{
@@ -137,6 +149,9 @@ namespace SmartStore.Admin.Controllers
 				ModelState.AddModelError("", result.First().Summary);
 			}
 
+			watch.Stop();
+			Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
+
 			return PartialView(result);
 		}
 
@@ -147,7 +162,6 @@ namespace SmartStore.Admin.Controllers
 			_services.Settings.SaveSetting(_commonSettings);
             return Content("Setting changed");
         }
-
         #endregion
     }
 }

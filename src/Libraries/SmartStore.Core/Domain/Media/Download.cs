@@ -11,7 +11,7 @@ namespace SmartStore.Core.Domain.Media
     /// Represents a download
     /// </summary>
     [DataContract]
-	public partial class Download : BaseEntity, ITransient, IHasMedia
+	public partial class Download : BaseEntity, ITransient
 	{		
 		/// <summary>
         /// Gets or sets a GUID
@@ -33,36 +33,6 @@ namespace SmartStore.Core.Domain.Media
 		public string DownloadUrl { get; set; }
 
 		/// <summary>
-		/// Gets or sets the download binary
-		/// </summary>
-		[Obsolete("Use property MediaStorage instead")]
-		public byte[] DownloadBinary { get; set; }
-
-        /// <summary>
-        /// The mime-type of the download
-        /// </summary>
-		[DataMember]
-		public string ContentType { get; set; }
-
-        /// <summary>
-        /// The filename of the download
-        /// </summary>
-		[DataMember]
-		public string Filename { get; set; }
-
-        /// <summary>
-        /// Gets or sets the extension
-        /// </summary>
-		[DataMember]
-		public string Extension { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the download is new
-        /// </summary>
-		[DataMember]
-		public bool IsNew { get; set; }
-
-		/// <summary>
 		/// Gets or sets a value indicating whether the entity transient/preliminary
 		/// </summary>
 		[DataMember]
@@ -76,16 +46,17 @@ namespace SmartStore.Core.Domain.Media
 		[Index("IX_UpdatedOn_IsTransient", 0)]
 		public DateTime UpdatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the media storage identifier
-		/// </summary>
-		[DataMember]
-		public int? MediaStorageId { get; set; }
+        /// <summary>
+        /// Gets or sets the media file identifier
+        /// </summary>
+        [DataMember]
+        public int? MediaFileId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the media storage
-		/// </summary>
-		public virtual MediaStorage MediaStorage { get; set; }
+        /// <summary>
+        /// Gets or sets the media file
+        /// </summary>
+        [DataMember]
+        public virtual MediaFile MediaFile { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating the corresponding entity id

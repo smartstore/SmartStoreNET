@@ -148,7 +148,7 @@ namespace SmartStore.Services.Tax
 			}
 
 			// It's EU: check VAT number status
-			var vatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+			var vatStatus = (VatNumberStatus)customer.VatNumberStatusId;
 			// companies with invalid VAT numbers are assumed to be consumers
 			return vatStatus != VatNumberStatus.Valid;
 		}
@@ -710,23 +710,25 @@ namespace SmartStore.Services.Tax
             name = string.Empty;
             address = string.Empty;
 
-            if (vatNumber == null)
-                vatNumber = string.Empty;
-            vatNumber = vatNumber.Trim().Replace(" ", "");
+            vatNumber = vatNumber.EmptyNull().Replace(" ", "");
 
             if (twoLetterIsoCode == null)
+            {
                 twoLetterIsoCode = string.Empty;
+            }
             if (!String.IsNullOrEmpty(twoLetterIsoCode))
-                //The service returns INVALID_INPUT for country codes that are not uppercase.
+            {
+                // The service returns INVALID_INPUT for country codes that are not uppercase.
                 twoLetterIsoCode = twoLetterIsoCode.ToUpper();
+            }
 
-            EuropaCheckVatService.checkVatService s = null;
+            EuropeCheckVatService.checkVatService s = null;
 
             try
             {
                 bool valid;
 
-                s = new EuropaCheckVatService.checkVatService();
+                s = new EuropeCheckVatService.checkVatService();
                 s.checkVat(ref twoLetterIsoCode, ref vatNumber, out valid, out name, out address);
                 exception = null;
                 return valid ? VatNumberStatus.Valid : VatNumberStatus.Invalid;
@@ -764,7 +766,7 @@ namespace SmartStore.Services.Tax
                 if (customer.IsTaxExempt)
                     return true;
 
-                if (customer.CustomerRoles.Where(cr => cr.Active).Any(cr => cr.TaxExempt))
+                if (customer.CustomerRoleMappings.Select(rm => rm.CustomerRole).Where(cr => cr.Active).Any(cr => cr.TaxExempt))
                     return true;
             }
 
@@ -816,7 +818,7 @@ namespace SmartStore.Services.Tax
                 if (address.CountryId == _taxSettings.EuVatShopCountryId)
                     return false;
 
-                var customerVatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+                var customerVatStatus = (VatNumberStatus)customer.VatNumberStatusId;
                 return customerVatStatus == VatNumberStatus.Valid && _taxSettings.EuVatAllowVatExemption;
             }
         }

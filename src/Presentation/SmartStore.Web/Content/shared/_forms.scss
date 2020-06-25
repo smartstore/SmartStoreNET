@@ -5,13 +5,20 @@
 // Forms
 // ------------------------------------------------------
 
+input, 
+textarea, 
+select {
+    // Overwrite UserAgent stylesheet (400)
+    font-weight: $font-weight-normal;
+}
+
 fieldset.content-group {
     margin-bottom: 2rem;
 
     > legend {
         position: relative;
         font-size: $h5-font-size;
-        font-weight: 400;
+        font-weight: $font-weight-normal;
         color: $gray-500;
         text-transform: uppercase;
         margin-bottom: 1.2rem;
@@ -30,7 +37,13 @@ fieldset.content-group {
         > span {
             position: relative;
             display: inline-block;
-            background: $body-bg;
+            @if alpha($body-bg) == 0 {
+                background: $site-bg;
+            }
+            @else {
+                background: $body-bg;
+            }
+            
             padding-right: 1rem;
             z-index: 1;
         }
@@ -67,10 +80,17 @@ fieldset.content-group {
 		left: 0;
 		z-index: 10;
 		width: $input-height;
-		height: $input-height;
+		height: 100%;
 		line-height: $input-height;
 		text-align: center;
 		vertical-align: middle;
+
+        :before {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
 	}
 
 	&.has-icon-right .input-group-icon {

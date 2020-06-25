@@ -71,7 +71,7 @@
 						</tr>
 
 						@if (order.PurchaseOrderNumber.HasValue())
-						{ 
+						{
 							<tr>
 								<td class="label">@T("Order.PurchaseOrderNumber"):</td>
 								<td class="value">@order.PurchaseOrderNumber</td>
@@ -82,14 +82,57 @@
 							<td class="label">@T("Common.Date"):</td>
 							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>
 						</tr>
+						@if (order.ShippingMethod.HasValue())
+						{
+							<tr>
+								<td class="label">@T("Order.ShippingMethod"):</td>
+								<td class="value">@order.ShippingMethod</td>
+							</tr>
+						}
 						<tr>
 							<td class="label">@T("Order.PaymentMethod"):</td>
 							<td class="value">@order.PaymentMethod</td>
 						</tr>
-						<tr>
-							<td class="label">@T("Order.ShippingMethod"):</td>
-							<td class="value">@order.ShippingMethod</td>
-						</tr>
+
+						@if (order.PaymentMethodSystemName.Equals("Payments.DirectDebit"))
+						{
+							if (order.DirectDebitAccountHolder.HasValue())
+							{
+								<tr>
+									<td class="label">&nbsp;</td>
+									<td class="value">@order.DirectDebitAccountHolder</td>
+								</tr>
+							}
+							if (order.DirectDebitAccountNumber.HasValue())
+							{
+								<tr>
+									<td class="label">&nbsp;</td>
+									<td class="value">@order.DirectDebitAccountNumber</td>
+								</tr>
+							}
+							if (order.DirectDebitBankName.HasValue())
+							{
+								<tr>
+									<td class="label">&nbsp;</td>
+									<td class="value">@order.DirectDebitBankName</td>
+								</tr>
+							}
+							if (order.DirectDebitIban.HasValue())
+							{
+								<tr>
+									<td class="label">&nbsp;</td>
+									<td class="value">@order.DirectDebitIban</td>
+								</tr>
+							}
+							if (order.DirectDebitBIC.HasValue())
+							{
+								<tr>
+									<td class="label">&nbsp;</td>
+									<td class="value">@order.DirectDebitBIC</td>
+								</tr>
+							}
+						}
+
 					</table>
 
 					@{ Html.RenderWidget("invoice_orderinfotable_after", order); }

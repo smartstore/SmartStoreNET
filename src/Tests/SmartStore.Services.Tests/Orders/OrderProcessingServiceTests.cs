@@ -8,7 +8,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -16,10 +15,10 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Affiliates;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -38,7 +37,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class OrderProcessingServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -62,7 +61,6 @@ namespace SmartStore.Services.Tests.Orders
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
-        ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
 		IRepository<StoreMapping> _storeMappingRepository;
 		IOrderService _orderService;
@@ -86,7 +84,6 @@ namespace SmartStore.Services.Tests.Orders
         CatalogSettings _catalogSettings;
 		IOrderProcessingService _orderProcessingService;
         IEventPublisher _eventPublisher;
-        CurrencySettings _currencySettings;
 		IAffiliateService _affiliateService;
 		ISettingService _settingService;
 		IDownloadService _downloadService;
@@ -95,7 +92,7 @@ namespace SmartStore.Services.Tests.Orders
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
-		ITypeFinder _typeFinder;
+        ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
         public new void SetUp()
@@ -124,7 +121,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
-			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -132,7 +129,6 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
-            _logger = new NullLogger();
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
@@ -142,12 +138,10 @@ namespace SmartStore.Services.Tests.Orders
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _shippingSettings,
-				_eventPublisher,
-				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder,
-				_services);
+				_services,
+                _cartRuleProvider);
 
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
@@ -210,8 +204,6 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _currencySettings = new CurrencySettings();
-
             _orderProcessingService = new OrderProcessingService(_orderService, _webHelper,
                 _localizationService, _languageService,
                 _productService, _paymentService,
@@ -226,7 +218,7 @@ namespace SmartStore.Services.Tests.Orders
 				_newsLetterSubscriptionService,
 				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
-                _currencySettings, _shoppingCartSettings,
+                _shoppingCartSettings,
                 _catalogSettings);
         }
         

@@ -36,8 +36,8 @@ namespace SmartStore.Admin.Models.Stores
 		public string Hosts { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.StoreLogo")]
-		[UIHint("Picture")]
-		public int LogoPictureId { get; set; }
+		[UIHint("Media"), AdditionalMetadata("album", "file")]
+		public int LogoMediaFileId { get; set; }
 
 		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
@@ -96,6 +96,11 @@ namespace SmartStore.Admin.Models.Stores
 
             RuleFor(x => x.Url)
                 .Must(x => x.HasValue() && x.IsWebUrl())
+                .WithMessage(T("Admin.Validation.Url"));
+
+            RuleFor(x => x.SecureUrl)
+                .Must(x => x.HasValue() && x.IsWebUrl())
+                .When(x => x.SslEnabled)
                 .WithMessage(T("Admin.Validation.Url"));
 
             RuleFor(x => x.HtmlBodyId).Matches(@"^([A-Za-z])(\w|\-)*$")

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Objects;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace SmartStore.Core
@@ -22,12 +23,14 @@ namespace SmartStore.Core
         public int Id { get; set; }
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public virtual string GetEntityName()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual string GetEntityName()
 		{
 			return GetUnproxiedType().Name;
 		}
 
-	    public Type GetUnproxiedType()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Type GetUnproxiedType()
         {
 			#region Old
 			//var t = GetType();

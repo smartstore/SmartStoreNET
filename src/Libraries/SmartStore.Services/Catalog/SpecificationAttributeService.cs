@@ -103,7 +103,7 @@ namespace SmartStore.Services.Catalog
 			return _specificationAttributeOptionRepository.GetById(specificationAttributeOptionId);
 		}
 
-		public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttribute(int specificationAttributeId)
+        public virtual IList<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttribute(int specificationAttributeId)
 		{
             if (specificationAttributeId == 0)
             {

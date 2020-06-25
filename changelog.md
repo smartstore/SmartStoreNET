@@ -1,5 +1,145 @@
 # Release Notes
 
+## Smartstore 4.0.0
+### Highlights
+* (NEW) **Media Manager**: Powerful and lightning-fast explorer/manager for media files (commercial plugin exclusively bundled with Pro Edition)
+* (NEW) **Rule Builder**: Powerful rule system for visual business rule creation
+  * Dozens of predefined rules out-of-the-box
+  * Supports logical operators (AND/OR) and unlimited grouping/nesting
+  * Cart rules: can be applied to tier prices, discounts, shipping and payment methods
+  * Customer rules: used to auto-assign customers to customer groups for 1-to-1 content targeting
+  * Product rules: used to auto-assign products to categories based on filter definitions (e.g. price, brand, color, stock etc.)
+* (NEW) **New permission (ACL) system**: Granular tree-based permission management based on customer groups. Supports inheritance to allow or deny entire permission ranges
+* (NEW) **Personalized product recommendations**: Replaces homepage products dynamically with personalized product recommendations based on customer interests. (commercial plugin)
+* (NEW) **Geo Blocker**: Restricts shop access based on visitor country or IP address ranges (commercial plugin)
+* (NEW) **Dashboard with charts**: New dashboard widgets display key data like orders, customers, bestsellers etc. in nice graphical charts. 
+
+### Breaking changes
+* (Dev) *Install\UninstallPermissions* has been removed from *IPermissionService*. No longer needs to be called by plugins. Permissions are now automatically installed\uninstalled.
+* (Dev) *IDiscountRequirementRule* and *IShippingMethodFilter* has been removed. Discounts and shipping methods can now be filtered by rule sets.
+* (Dev) Customer navigation property *CustomerRoles* has been replaced by *CustomerRoleMappings*, a new entity for role mappings.
+* The search index must be rebuilt due to various enhancements.
+* (Dev) The wrong name of API endpoint *LocalizedPropertys* has been corrected and renamed to *LocalizedProperties*.
+
+### New Features
+* **Granular permissions**: All permissions of a customer directly visible on the customer edit page.
+* DEV: Added Visual Studio extension to create Smartstore Plugins
+* GDPR conform Cookie Consent Manager
+* SEO: XML Sitemap now includes blog, news and forum
+* SEO: do 301 redirect to URL without trailing slash
+* SVG support for image uploads.
+* Schedule tasks: new property "Priority" runs tasks with higher priority first when multiple tasks are pending.
+* #1805 Added XML Sitemap settings to backend UI.
+* #1598 Add published property to ProductTag entity.
+* #1669 Apply percentage discounts also on tier prices.
+* #1618 Implement ACL and multistore capability on menu item level.
+* #1683 Menu Builder items: implement support for icon (brand) color.
+* #1584 Show bundle item images in order details like in shopping cart details.
+* **MegaSearch**:
+	* Added more text analysis options (e.g. Lucene.Net classic analyzer).
+	* Added tool to display internal information about a search, such as Lucene.Net terms.
+	* #1693 Find the grouped product when searching for the SKU, GTIN, MPN of a non individually visible, associated product.
+	* #1711 Find product when searching for GTIN or MPN of an attribute combination.
+	* Perf. Added option to ignore attribute filtering property on product level.
+* **Web-API**:
+	* #1809 Added a parameter to start an import after uploading import files.
+	* #1801 Added endpoints for *ProductPictures*, *ProductCategories* and *ProductManufacturers* to allow updating *DisplayOrder*.
+	* #1858 Added endpoints for *NewsLetterSubscription*.
+* #1714 Direct links to variations on a product.
+* #1733 Add ability to hide products from catalog, but not search.
+* #1754 Implement hidden boolean setting that controls which catalog search engine implementation should be used in backend.
+* #1776 Enable images and color values for search filters to be stored for specification attribute options.
+* #1793 Add field for manufacturer bottom description like for categories.
+* #1116 Add new field for product condition.
+* #1790 ACL support for manufacturers.
+* #1616 Add new field for tracking URL to shipment entity to better track shipments.
+* (Page Builder) Added a Page Builder block to display blog posts.
+
+### Improvements
+* #1663 Make *MeasureDimension* and *MeasureWeight* localizable.
+* #1600 Show an example currency value for custom formatting value changes.
+* Card desk instead of a grid for customer addresses on customer edit page.
+* Display "price from" in product lists if any attribute combination price exists.
+* Reworked blog & news section.
+* #1718 Activated ReCaptcha without keys can cause the merchant to lock himself out of the shop.
+* #1752 Export: let a provider directly export to a file stream instead of a memory stream.
+* #1763 Topic editor should display all menu item nodes that reference the current topic.
+* #1665 UI: ACL, discount and store selection should be done via multiple select2.
+* Updated UserAgent Parser.
+* TinyImage: updated WebP detection patterns.
+* **PayPal PLUS**:
+	* Apply order of payment methods in backend to the list of third-party payment methods in checkout.
+	* #1848 Send the billing address when redirecting to PayPal.
+* Hide cart payment button for payment methods without match of applied rule sets.
+* #1839 MegaSearch: Support exact value match for numeric range filters.
+* #1920 Hide option prizes if "Call for price" is enabled.
+* Debitoor: added an option to force a price type on invoices.
+* BeezUp: export product costs.
+* #1915 RTL: fixed alignment of product art badge.
+* #1738 Sending of mails to customers uses generic message template now.
+* #1805 UI: Added XmlSitemap settings to backend
+* And many more other minor improvements
+
+### Bugfixes
+* Export: Fixed KeyNotFoundException when batch size was 1.
+* #1686 Fixed KeyNotFoundException when payment method friendly name ends with spaces.
+* Cart: Fixed ShoppingCartSettings.ShowProductBundleImagesOnShoppingCart hides the bundle item name.
+* **MegaSearch**:
+	* Fixed the preset sorting order of products on a manufacturer page may be wrong depending on catalog settings.
+	* #1716 Price facet filter bypasses Call for Pricing and shows the approximate price of a product.
+	* The number of hits for product review facets was wrong in some cases.
+	* Do not show facets for manufacturers or categories if they are limited to stores or subject to ACL.
+	* #1823 Ghost facet filter groups will appear if a numeric value is assigned that matches to a different spec option.
+* **Page Builder**:
+	* #1689 Block with z-index < 0 can not be selected in story view - Block tools can reduce z-index below 0.
+	* #1691 Manually editing/removing block cols/rows does not refresh grid state correctly.
+	* #1684 Edit Mode rendering bug in Mac Safari
+	* #1836 Added "Order" property to page Builder block to control rendering order of blocks in HTML output
+* **PayPal**:
+	* Fixed rare exception "Unsupported Media Type" (415) in PayPal PLUS.
+	* Only process a partially refund IPN when the order refunded amount is zero. Otherwise the order refunded amount will be wrong.
+* **Customer import**:
+	* VatNumber and other fields were ignored.
+	* Customer roles sometimes inserted several times.
+	* Changed billing/shipping address was added instead of updating the existing one.
+	* Region assigned to an address was not updated.
+* **Product tags**:
+	* #1730 Product tag count should filter also based on Visibility.
+	* Product tag count sometimes not up-to-date due to missing cache clearance.
+* **Debitoor**:
+	* Avoid errors due to invalid quantity unit Id of 0.
+	* #1952 rework quantity units.
+	* Sometimes the SKU was missing on invoices.
+* Multistore mapping was ignored for manufacturers in sitemap.
+* Categories limited to stores were not displayed in tree view.
+* Fixed InvalidOperationException in CreatePdfInvoiceAttachment when an order is placed by a guest.
+* The ShowDescriptionInSubPages setting should also be applied to the bottom category description.
+* #1774 Recaptcha: doesn't work for product reviews, blog and news comments if hidden captcha is activated.
+* #1766 Customer FullName is not populated after registration.
+* #1765 Web-API: fixed authentication error "Value cannot be null. Parameter name: name" when login type is email.
+* Payone: fixed wrong hash value if redirecting option is activated.
+* Azure: opening the configuration page resulted in an error.
+* Shipping by weight: the surcharge hint was not displayed correctly.
+* Off-canvas menu shows wrong product count for brand menu items.
+* Images of newly added variants could be deleted automatically due to wrong image transient state.
+* #1794 Menu display order is ignored for widget zone header_menu_special_after.
+* #1451 RTL: Manage categories tree view.
+* Biz-Importer: If the TaxRate table was missing, the assignment of the tax category to the product was not set.
+* #1832 Import: adding URL records requires cache to be cleared.
+* #1818 The order list summary do not respect all list filters and shows wrong aggregate values.
+* #1835 Removing gift card issue.
+* #1875 A delivery time cannot be deleted if it is assigned to a variant combination of a deleted product.
+* BeezUp: fixes ArgumentNullException, parameter name "source".
+* #1743 Avoid redirecting to the account activation page when trying to log in for the first time.
+* #1895 The checkout button disappears when moving a product from the shopping cart to the wishlist.
+* Menu builder: in case of system menus the template can changes accidentally when saving.
+* Structured data: Replace length with depth property.
+* #1701 'View All' button from the offcanvas manufacturer menu causes 404 on mobile.
+* Added missing sitemap task.
+* #1696 ESD: browser freezes when editing file changelog
+* And many more other minor fixes...
+
+
 ## SmartStore.NET 3.2.2
 
 ### New Features
@@ -10,7 +150,7 @@
 * New Heidelpay payment plugin.
 * Shop-Connector: mapping of product SKUs that differ between client shops.
 * MegaMenu supports configuration of menu items
- 
+
 
 ### Improvements
 * Amazon Pay: PSD2. Strong customer authentication (SCA) upgrade.

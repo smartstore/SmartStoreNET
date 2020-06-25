@@ -7,7 +7,7 @@ namespace SmartStore.Admin.Models.Catalog
 	{
 		public int ProductAttributeId { get; set; }
 
-		[AllowHtml]
+        [AllowHtml]
 		public string Name { get; set; }
-	}
+    }
 }

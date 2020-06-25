@@ -15,8 +15,8 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -31,7 +31,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -68,7 +68,7 @@ namespace SmartStore.Services.Tests.Orders
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
         Currency _currency;
-        ITypeFinder _typeFinder;
+        ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
         public new void SetUp()
@@ -104,7 +104,7 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
 			_settingService = MockRepository.GenerateMock<ISettingService>();
-			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -121,12 +121,10 @@ namespace SmartStore.Services.Tests.Orders
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _shippingSettings,
-                _eventPublisher,
-				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder,
-				_services);
+				_services,
+                _cartRuleProvider);
 
 			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
@@ -624,18 +622,28 @@ namespace SmartStore.Services.Tests.Orders
 			cart.Add(new OrganizedShoppingCartItem(sci2));
 
 			var customer = new Customer();
-			var customerRole1 = new CustomerRole()
+			var customerRole1 = new CustomerRole
 			{
 				Active = true,
 				FreeShipping = true,
 			};
-			var customerRole2 = new CustomerRole()
+			var customerRole2 = new CustomerRole
 			{
 				Active = true,
 				FreeShipping = false,
 			};
-			customer.CustomerRoles.Add(customerRole1);
-			customer.CustomerRoles.Add(customerRole2);
+
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRole = customerRole1
+            });
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping
+            {
+                CustomerId = customer.Id,
+                CustomerRole = customerRole2
+            });
+
 			cart.ForEach(sci => sci.Item.Customer = customer);
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 

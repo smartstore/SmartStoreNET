@@ -14,16 +14,17 @@
 		var opts = this.options = $.extend(true, {}, options, meta || {});
 		
 		this.init = function() {
-			var opts = this.options;
-			
+            var opts = this.options;
+
             this.createGallery(opts.galleryStartIndex);
 			
 			// Update product data and gallery
-			$(el).on('change', ':input', function (e) {
+            $(el).on('change', ':input', function (e) {
 				var ctx = $(this).closest('.update-container');
-				var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
+                var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
+                var isFileUpload = $(this).data("fileupload");
 				
-                if (ctx.length == 0) {
+                if (ctx.length === 0) {
                     // associated or bundled item
                     ctx = el;
                 }
@@ -31,14 +32,14 @@
                 ctx.doAjax({
                     data: ctx.find(':input').serialize(),
                     callbackSuccess: function (response) {
-						self.updateDetailData(response, ctx, isTouchSpin);
+                        self.updateDetailData(response, ctx, isTouchSpin, isFileUpload);
 
                         if (ctx.hasClass('pd-bundle-item')) {
                             // update bundle price too
                             $('#main-update-container').doAjax({
                                 data: $('.pd-bundle-items').find(':input').serialize(),
                                 callbackSuccess: function (response2) {
-									self.updateDetailData(response2, $('#main-update-container'), isTouchSpin);
+                                    self.updateDetailData(response2, $('#main-update-container'), isTouchSpin, isFileUpload);
                                 }
                             });
                         }
@@ -49,19 +50,21 @@
 			return this;
 		};
 
-		this.updateDetailData = function (data, ctx, isTouchSpin) {
+        this.updateDetailData = function (data, ctx, isTouchSpin, isFileUpload) {
 			var gallery = $('#pd-gallery').data(galPluginName);
 
 			// Image gallery needs special treatment
-			if (data.GalleryHtml) {
-				var cnt = $('#pd-gallery-container');
-				gallery.reset();
-				cnt.html(data.GalleryHtml);
-				self.createGallery(data.GalleryStartIndex);
-            }
-            else if (data.GalleryStartIndex >= 0) {
-                if (data.GalleryStartIndex !== gallery.currentIndex) {
-                    gallery.goTo(data.GalleryStartIndex);
+            if (!isFileUpload) {
+                if (data.GalleryHtml) {
+                    var cnt = $('#pd-gallery-container');
+                    gallery.reset();
+                    cnt.html(data.GalleryHtml);
+                    self.createGallery(data.GalleryStartIndex);
+                }
+                else if (data.GalleryStartIndex >= 0) {
+                    if (data.GalleryStartIndex !== gallery.currentIndex) {
+                        gallery.goTo(data.GalleryStartIndex);
+                    }
                 }
             }
 
@@ -69,7 +72,7 @@
 				// Iterate all elems with [data-partial] attribute...
 				var $el = $(el);
 				var partial = $el.data('partial');
-				if (partial && !(isTouchSpin && partial == 'OfferActions')) {
+				if (partial && !(isTouchSpin && partial === 'OfferActions')) {
 					// ...fetch the updated html from the corresponding AJAX result object's properties
 					if (data.Partials && data.Partials.hasOwnProperty(partial)) {
 						var updatedHtml = data.Partials[partial] || "";
@@ -104,7 +107,7 @@
             var self = this;
             var opts = this.options;
 
-            gallery = $('#pd-gallery').smartGallery({
+            this.gallery = $('#pd-gallery').smartGallery({
                 startIndex: startIndex || 0,
                 zoom: {
                     enabled: opts.enableZoom

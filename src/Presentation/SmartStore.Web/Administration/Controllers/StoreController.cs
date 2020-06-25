@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using SmartStore.Admin.Models.Store;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Security;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Media;
-using SmartStore.Services.Security;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -13,214 +18,266 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
-	public partial class StoreController : AdminControllerBase
-	{
-		private readonly ICurrencyService _currencyService;
+    [AdminAuthorize]
+    public partial class StoreController : AdminControllerBase
+    {
+        private readonly ICurrencyService _currencyService;
+        private readonly IProductService _productService;
+        private readonly IProductAttributeService _productAttributeService;
+        private readonly ICategoryService _categoryService;
+        private readonly IManufacturerService _manufacturerService;
+        private readonly ICustomerService _customerService;
+        private readonly IOrderService _orderService;
+        private readonly IMediaService _mediaService;
+        private readonly IShoppingCartService _shoppingCartService;
+        private readonly ICatalogSearchService _catalogSearchService;
 
-		public StoreController(ICurrencyService currencyService)
-		{
-			_currencyService = currencyService;
-		}
+        public StoreController(
+            ICurrencyService currencyService,
+            IProductService productService,
+            IProductAttributeService productAttributeService,
+            ICategoryService categoryService,
+            IManufacturerService manufacturerService,
+            ICustomerService customerService,
+            IOrderService orderService,
+            IMediaService mediaService,
+            IShoppingCartService shoppingCartService,
+            ICatalogSearchService catalogSearchService)
+        {
+            _currencyService = currencyService;
+            _productService = productService;
+            _productAttributeService = productAttributeService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _customerService = customerService;
+            _categoryService = categoryService;
+            _orderService = orderService;
+            _mediaService = mediaService;
+            _shoppingCartService = shoppingCartService;
+            _catalogSearchService = catalogSearchService;
+        }
 
-		private void PrepareStoreModel(StoreModel model, Store store)
-		{
-			model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
-				.Select(x => new SelectListItem
-				{
-					Text = x.Name,
-					Value = x.Id.ToString()
-				})
-				.ToList();
-		}
+        private void PrepareStoreModel(StoreModel model, Store store)
+        {
+            model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                })
+                .ToList();
+        }
 
-		public ActionResult List()
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+        // Ajax.
+        public ActionResult AllStores(string label, string selectedIds)
+        {
+            var stores = Services.StoreService.GetAllStores();
+            var ids = selectedIds.ToIntArray();
 
-			return View();
-		}
+            if (label.HasValue())
+            {
+                stores.Insert(0, new Store { Name = label, Id = 0 });
+            }
 
-		public ActionResult AllStores(string label, int selectedId = 0)
-		{
-			var stores = Services.StoreService.GetAllStores();
+            var list =
+                from m in stores
+                select new
+                {
+                    id = m.Id.ToString(),
+                    text = m.Name,
+                    selected = ids.Contains(m.Id)
+                };
 
-			if (label.HasValue())
-			{
-				stores.Insert(0, new Store { Name = label, Id = 0 });
-			}
+            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
-			var list = 
-				from m in stores
-				select new
-				{
-					id = m.Id.ToString(),
-					text = m.Name,
-					selected = m.Id == selectedId
-				};
+        #region List
 
-			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-		}
+        [Permission(Permissions.Configuration.Store.Read)]
+        public ActionResult List()
+        {
+            return View();
+        }
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command)
-		{
-			var gridModel = new GridModel<StoreModel>();
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Store.Read)]
+        public ActionResult List(GridCommand command)
+        {
+            var gridModel = new GridModel<StoreModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-			{
-				var storeModels = Services.StoreService.GetAllStores()
-					.Select(x =>
-					{
-						var model = x.ToModel();
+            var storeModels = Services.StoreService.GetAllStores()
+                .Select(x =>
+                {
+                    var model = x.ToModel();
 
-						PrepareStoreModel(model, x);
+                    PrepareStoreModel(model, x);
 
-						model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
+                    model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
 
-						return model;
-					})
-					.ToList();
+                    return model;
+                })
+                .ToList();
 
-				gridModel.Data = storeModels;
-				gridModel.Total = storeModels.Count();
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<StoreModel>();
+            gridModel.Data = storeModels;
+            gridModel.Total = storeModels.Count();
 
-				NotifyAccessDenied();
-			}
+            return new JsonResult
+            {
+                Data = gridModel
+            };
+        }
 
-			return new JsonResult
-			{
-				Data = gridModel
-			};
-		}
+        [Permission(Permissions.Configuration.Store.Create)]
+        public ActionResult Create()
+        {
+            var model = new StoreModel();
+            PrepareStoreModel(model, null);
 
-		public ActionResult Create()
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+            return View(model);
+        }
 
-			var model = new StoreModel();
-			PrepareStoreModel(model, null);
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Configuration.Store.Create)]
+        public ActionResult Create(StoreModel model, bool continueEditing)
+        {
+            if (ModelState.IsValid)
+            {
+                var store = model.ToEntity();
 
-			return View(model);
-		}
+                // Ensure we have "/" at the end.
+                store.Url = store.Url.EnsureEndsWith("/");
+                Services.StoreService.InsertStore(store);
 
-		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Create(StoreModel model, bool continueEditing)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+                NotifySuccess(T("Admin.Configuration.Stores.Added"));
+                return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
+            }
 
-			if (ModelState.IsValid)
-			{
-				var store = model.ToEntity();
-				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
-				//ensure we have "/" at the end
-				store.Url = store.Url.EnsureEndsWith("/");
-				Services.StoreService.InsertStore(store);
+            PrepareStoreModel(model, null);
+            return View(model);
+        }
 
-				NotifySuccess(T("Admin.Configuration.Stores.Added"));
-				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
-			}
+        [Permission(Permissions.Configuration.Store.Read)]
+        public ActionResult Edit(int id)
+        {
+            var store = Services.StoreService.GetStoreById(id);
+            if (store == null)
+            {
+                return RedirectToAction("List");
+            }
 
-			//If we got this far, something failed, redisplay form
-			PrepareStoreModel(model, null);
-			return View(model);
-		}
+            var model = store.ToModel();
+            PrepareStoreModel(model, store);
 
-		public ActionResult Edit(int id)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+            return View(model);
+        }
 
-			var store = Services.StoreService.GetStoreById(id);
-			if (store == null)
-				return RedirectToAction("List");
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [FormValueRequired("save", "save-continue")]
+        [Permission(Permissions.Configuration.Store.Update)]
+        public ActionResult Edit(StoreModel model, bool continueEditing)
+        {
+            var store = Services.StoreService.GetStoreById(model.Id);
+            if (store == null)
+            {
+                return RedirectToAction("List");
+            }
 
-			var model = store.ToModel();
-			PrepareStoreModel(model, store);
+            if (ModelState.IsValid)
+            {
+                store = model.ToEntity(store);
 
-			return View(model);
-		}
+                // Ensure we have "/" at the end.
+                store.Url = store.Url.EnsureEndsWith("/");
+                Services.StoreService.UpdateStore(store);
 
-		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		[FormValueRequired("save", "save-continue")]
-		public ActionResult Edit(StoreModel model, bool continueEditing)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+                NotifySuccess(T("Admin.Configuration.Stores.Updated"));
+                return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
+            }
 
-			var store = Services.StoreService.GetStoreById(model.Id);
-			if (store == null)
-				return RedirectToAction("List");
+            PrepareStoreModel(model, store);
+            return View(model);
+        }
 
-			if (ModelState.IsValid)
-			{
-				store = model.ToEntity(store);
+        [HttpPost]
+        [Permission(Permissions.Configuration.Store.Delete)]
+        public ActionResult Delete(int id)
+        {
+            var store = Services.StoreService.GetStoreById(id);
+            if (store == null)
+            {
+                return RedirectToAction("List");
+            }
 
-				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
+            try
+            {
+                Services.StoreService.DeleteStore(store);
 
-				//ensure we have "/" at the end
-				store.Url = store.Url.EnsureEndsWith("/");
-				Services.StoreService.UpdateStore(store);
+                // When we delete a store we should also ensure that all "per store" settings will also be deleted.
+                var settingsToDelete = Services.Settings
+                    .GetAllSettings()
+                    .Where(s => s.StoreId == id)
+                    .ToList();
 
-				NotifySuccess(T("Admin.Configuration.Stores.Updated"));
-				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
-			}
+                settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
 
-			//If we got this far, something failed, redisplay form
-			PrepareStoreModel(model, store);
-			return View(model);
-		}
+                // When we had two stores and now have only one store, we also should delete all "per store" settings.
+                var allStores = Services.StoreService.GetAllStores();
 
-		[HttpPost]
-		public ActionResult Delete(int id)
-		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+                if (allStores.Count == 1)
+                {
+                    settingsToDelete = Services.Settings
+                        .GetAllSettings()
+                        .Where(s => s.StoreId == allStores[0].Id)
+                        .ToList();
 
-			var store = Services.StoreService.GetStoreById(id);
-			if (store == null)
-				return RedirectToAction("List");
+                    settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
+                }
 
-			try
-			{
-				Services.StoreService.DeleteStore(store);
+                NotifySuccess(T("Admin.Configuration.Stores.Deleted"));
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex);
+            }
 
-				//when we delete a store we should also ensure that all "per store" settings will also be deleted
-				var settingsToDelete = Services.Settings
-					.GetAllSettings()
-					.Where(s => s.StoreId == id)
-					.ToList();
+            return RedirectToAction("Edit", new { id = store.Id });
+        }
 
-				settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
+        #endregion
 
-				//when we had two stores and now have only one store, we also should delete all "per store" settings
-				var allStores = Services.StoreService.GetAllStores();
+        [Permission(Permissions.Configuration.Store.ReadStats, false)]
+        public JsonResult StoreDashboardReport()
+        {
+            var allOrders = _orderService.GetOrders(0, 0, null, null, null, null, null, null, null);
+            var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
+            var model = new StoreDashboardReportModel
+            {
+                ProductsCount = _catalogSearchService.PrepareQuery(new CatalogSearchQuery()).Count().ToString("N0"),
+                CategoriesCount = _categoryService.BuildCategoriesQuery(showHidden: true).Count().ToString("N0"),
+                ManufacturersCount = _manufacturerService.GetManufacturers().Count().ToString("N0"),
+                AttributesCount = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).TotalCount.ToString("N0"),
+                AttributeCombinationsCount = _productService.CountAllProductVariants().ToString("N0"),
+                MediaCount = _mediaService.CountFiles(new MediaSearchQuery { Deleted = false }).ToString("N0"),
+                CustomersCount = _customerService.SearchCustomers(
+                    new CustomerSearchQuery
+                    {
+                        Deleted = false,
+                        CustomerRoleIds = new int[] { registeredRoleId }
+                    }
+                ).TotalCount.ToString("N0"),
+                OrdersCount = allOrders.Count().ToString("N0"),
+                Sales = (allOrders.Sum(x => (decimal?)x.OrderTotal) ?? 0).ToString("C0"),
+                OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("N0"),
+                CartsValue = _shoppingCartService.GetAllOpenCartSubTotal().ToString("C0"),
+                WishlistsValue = _shoppingCartService.GetAllOpenWishlistSubTotal().ToString("C0")
+            };
 
-				if (allStores.Count == 1)
-				{
-					settingsToDelete = Services.Settings
-						.GetAllSettings()
-						.Where(s => s.StoreId == allStores[0].Id)
-						.ToList();
-
-					settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
-				}
-
-				NotifySuccess(T("Admin.Configuration.Stores.Deleted"));
-				return RedirectToAction("List");
-			}
-			catch (Exception exc)
-			{
-				NotifyError(exc);
-			}
-			return RedirectToAction("Edit", new { id = store.Id });
-		}
-	}
+            return new JsonResult
+            {
+                Data = new { model },
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
+    }
 }

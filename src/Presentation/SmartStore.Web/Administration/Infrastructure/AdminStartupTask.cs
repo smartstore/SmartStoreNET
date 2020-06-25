@@ -6,9 +6,9 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Infrastructure
 {
-    public class AdminStartupTask : IStartupTask
+    public class AdminStartupTask : IApplicationStart
     {
-        public void Execute()
+        public void Start()
         {
 			TypeConverterFactory.RegisterConverter<CsvConfiguration>(new CsvConfigurationConverter());
 			TypeConverterFactory.RegisterConverter<ColumnMapConverter>(new ColumnMapConverter());

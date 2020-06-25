@@ -5,10 +5,10 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Product attribute service interface
-	/// </summary>
-	public partial interface IProductAttributeService
+    /// <summary>
+    /// Product attribute service interface
+    /// </summary>
+    public partial interface IProductAttributeService
     {
         #region Product attributes
 
@@ -19,10 +19,13 @@ namespace SmartStore.Services.Catalog
         void DeleteProductAttribute(ProductAttribute productAttribute);
 
         /// <summary>
-        /// Gets all product attributes
+        /// Gets all product attributes.
         /// </summary>
-        /// <returns>Product attribute collection</returns>
-        IList<ProductAttribute> GetAllProductAttributes();
+        /// <param name="pageIndex">Page index,</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="untracked">Indicates whether to load entities tracked or untracked.</param>
+        /// <returns>Product attributes.</returns>
+        IPagedList<ProductAttribute> GetAllProductAttributes(int pageIndex, int pageSize, bool untracked = true);
 
         /// <summary>
         /// Gets a product attribute 

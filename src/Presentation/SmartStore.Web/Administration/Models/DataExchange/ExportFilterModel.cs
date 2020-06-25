@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
@@ -8,11 +9,11 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	public class ExportFilterModel
 	{
-		#region All entity types
+        #region All entity types
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
+        [UIHint("Stores")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
 		public int? StoreId { get; set; }
-		public List<SelectListItem> AvailableStores { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedFrom")]
 		public DateTime? CreatedFrom { get; set; }
@@ -37,7 +38,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public ProductType? ProductType { get; set; }
 		public List<SelectListItem> AvailableProductTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMinimum")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.Visibility")]
+        public ProductVisibility? Visibility { get; set; }
+
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMinimum")]
 		public int? IdMinimum { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMaximum")]
@@ -57,9 +61,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CategoryIds")]
 		public int[] CategoryIds { get; set; }
-		public List<SelectListItem> AvailableCategories { get; set; }
+        public List<SelectListItem> SelectedCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutCategories")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutCategories")]
 		public bool? WithoutCategories { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ManufacturerId")]

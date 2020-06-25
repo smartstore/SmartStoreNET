@@ -50,25 +50,26 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Mark a clause as a mandatory match. By default all clauses are optional.
 		/// </summary>
-		public SearchFilter Mandatory()
+        /// <param name="mandatory">Whether the clause is mandatory or not.</param>
+		public SearchFilter Mandatory(bool mandatory = true)
 		{
-			Occurence = SearchFilterOccurence.Must;
-			return this;
+            Occurence = mandatory ? SearchFilterOccurence.Must : SearchFilterOccurence.MustNot;
+            return this;
 		}
 
-		/// <summary>
-		/// Mark a clause as a forbidden match (MustNot).
-		/// </summary>
-		public SearchFilter Forbidden()
+        /// <summary>
+        /// Mark a clause as a forbidden match (MustNot).
+        /// </summary>
+        public SearchFilter Forbidden()
 		{
 			Occurence = SearchFilterOccurence.MustNot;
 			return this;
 		}
 
-		/// <summary>
-		/// Specifies whether the clause should be matched exactly, like 'app' won't match 'apple' (applied on string clauses only).
-		/// </summary>
-		public SearchFilter ExactMatch()
+        /// <summary>
+        /// Specifies whether the clause should be matched exactly, like 'app' won't match 'apple' (applied on string clauses only).
+        /// </summary>
+        public SearchFilter ExactMatch()
 		{
 			IsExactMatch = true;
 			return this;

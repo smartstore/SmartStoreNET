@@ -4,21 +4,13 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.PayPal.Filters
 {
-    public class PayPalPlusWidgetZoneFilter : IActionFilter, IResultFilter
+    public class PayPalPlusWidgetZoneFilter : IResultFilter
 	{
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 
         public PayPalPlusWidgetZoneFilter(Lazy<IWidgetProvider> widgetProvider)
 		{
 			_widgetProvider = widgetProvider;
-		}
-
-		public void OnActionExecuting(ActionExecutingContext filterContext)
-		{
-		}
-
-		public void OnActionExecuted(ActionExecutedContext filterContext)
-		{
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)

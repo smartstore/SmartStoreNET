@@ -355,6 +355,11 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool HideProductDefaultPictures { get; set; }
 
         /// <summary>
+        /// Gets or sets a value whether to display the product condition.
+        /// </summary>
+        public bool ShowProductCondition { get; set; }
+
+        /// <summary>
         /// Gets or sets "List of products purchased by other customers who purchased the above" option is enable
         /// </summary>
         public bool ProductsAlsoPurchasedEnabled { get; set; }
@@ -470,6 +475,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether to ignore discounts (side-wide)
         /// </summary>
         public bool IgnoreDiscounts { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to also apply percentage discounts in tier prices.
+        /// </summary>
+        public bool ApplyPercentageDiscountOnTierPrice { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to ignore featured products (side-wide)

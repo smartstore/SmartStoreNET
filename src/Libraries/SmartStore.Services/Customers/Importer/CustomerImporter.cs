@@ -8,7 +8,9 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.IO;
+using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
 using SmartStore.Services.DataExchange.Import;
@@ -16,7 +18,6 @@ using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Media;
-using SmartStore.Services.Security;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
@@ -27,39 +28,43 @@ namespace SmartStore.Services.Customers.Importer
 
 		private readonly IRepository<Customer> _customerRepository;
 		private readonly IRepository<CustomerRole> _customerRoleRepository;
-		private readonly IRepository<Picture> _pictureRepository;
 		private readonly ICommonServices _services;
-		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly IPictureService _pictureService;
-		private readonly IAffiliateService _affiliateService;
+        private readonly ICustomerService _customerService;
+        private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IMediaService _mediaService;
+        private readonly IAffiliateService _affiliateService;
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly CustomerSettings _customerSettings;
 		private readonly DateTimeSettings _dateTimeSettings;
 		private readonly ForumSettings _forumSettings;
+        private readonly TaxSettings _taxSettings;
+        private readonly PrivacySettings _privacySettings;
 
-		public CustomerImporter(
+        public CustomerImporter(
 			IRepository<Customer> customerRepository,
 			IRepository<CustomerRole> customerRoleRepository,
-			IRepository<Picture> pictureRepository,
 			ICommonServices services,
-			IGenericAttributeService genericAttributeService,
-			IPictureService pictureService,
-			IAffiliateService affiliateService,
+            ICustomerService customerService,
+            IGenericAttributeService genericAttributeService,
+            IMediaService mediaService,
+            IAffiliateService affiliateService,
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			FileDownloadManager fileDownloadManager,
 			CustomerSettings customerSettings,
 			DateTimeSettings dateTimeSettings,
-			ForumSettings forumSettings)
+			ForumSettings forumSettings,
+            TaxSettings taxSettings,
+            PrivacySettings privacySettings)
 		{
 			_customerRepository = customerRepository;
 			_customerRoleRepository = customerRoleRepository;
-			_pictureRepository = pictureRepository;
+            _mediaService = mediaService;
 			_services = services;
+            _customerService = customerService;
 			_genericAttributeService = genericAttributeService;
-			_pictureService = pictureService;
 			_affiliateService = affiliateService;
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
@@ -67,14 +72,16 @@ namespace SmartStore.Services.Customers.Importer
 			_customerSettings = customerSettings;
 			_dateTimeSettings = dateTimeSettings;
 			_forumSettings = forumSettings;
+            _taxSettings = taxSettings;
+            _privacySettings = privacySettings;
 		}
 
 		protected override void Import(ImportExecuteContext context)
 		{
-			var customer = _services.WorkContext.CurrentCustomer;
-			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
+            var customer = _services.WorkContext.CurrentCustomer;
+            var allowManagingCustomerRoles = _services.Permissions.Authorize(Permissions.Customer.EditRole, customer);
 
-			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
+            var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
 				.Select(x => x.Id)
 				.ToList();
 
@@ -92,12 +99,8 @@ namespace SmartStore.Services.Customers.Importer
 				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
 			
 			var allCustomerNumbers = new HashSet<string>(
-				_customerRepository.Table.Where(x => !String.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
+				_customerRepository.Table.Where(x => !string.IsNullOrEmpty(x.CustomerNumber)).Select(x => x.CustomerNumber),
 				StringComparer.OrdinalIgnoreCase);
-
-			var allCustomerRoles = _customerRoleRepository.Table
-				.Where(x => !string.IsNullOrEmpty(x.SystemName))
-				.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
@@ -121,9 +124,9 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						ProcessCustomers(context, batch, allAffiliateIds, allCustomerNumbers);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomers");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomers");
 					}
 
 					// reduce batch to saved (valid) records.
@@ -134,22 +137,25 @@ namespace SmartStore.Services.Customers.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
-					// ===========================================================================
-					// Process customer roles
-					// ===========================================================================
-					try
-					{
-						_customerRepository.Context.AutoDetectChangesEnabled = true;
-						ProcessCustomerRoles(context, batch, allCustomerRoles);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomerRoles");
-					}
-					finally
-					{
-						_customerRepository.Context.AutoDetectChangesEnabled = false;
-					}
+                    // ===========================================================================
+                    // Process customer roles
+                    // ===========================================================================
+                    if (allowManagingCustomerRoles && context.DataSegmenter.HasColumn("CustomerRoleSystemNames"))
+                    {
+                        try
+                        {
+                            _customerRepository.AutoCommitEnabled = true;
+                            ProcessCustomerRoles(context, batch);
+                        }
+                        catch (Exception ex)
+                        {
+                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessCustomerRoles");
+                        }
+                        finally
+                        {
+                            _customerRepository.AutoCommitEnabled = false;
+                        }
+                    }
 
 					// ===========================================================================
 					// Process generic attributes
@@ -158,9 +164,9 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessGenericAttributes");
 					}
 
 					// ===========================================================================
@@ -172,9 +178,9 @@ namespace SmartStore.Services.Customers.Importer
 						{
 							ProcessAvatars(context, batch);
 						}
-						catch (Exception exception)
+						catch (Exception ex)
 						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAvatars");
+							context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessAvatars");
 						}
 					}
 
@@ -186,9 +192,9 @@ namespace SmartStore.Services.Customers.Importer
 						_services.DbContext.AutoDetectChangesEnabled = true;
 						ProcessAddresses(context, batch, allCountries, allStateProvinces);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
+						context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessAddresses");
 					}
 					finally
 					{
@@ -209,16 +215,18 @@ namespace SmartStore.Services.Customers.Importer
 			_customerRepository.AutoCommitEnabled = true;
 
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
-			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
-			var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
+            var customerQuery = _customerRepository.Table
+                .Expand(x => x.Addresses)
+                .Expand(x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole));
 
 			foreach (var row in batch)
 			{
 				Customer customer = null;
 				var id = row.GetDataValue<int>("Id");
 				var email = row.GetDataValue<string>("Email");
+                var userName = row.GetDataValue<string>("Username");
 
-				foreach (var keyName in context.KeyFieldNames)
+                foreach (var keyName in context.KeyFieldNames)
 				{
 					switch (keyName)
 					{
@@ -243,7 +251,6 @@ namespace SmartStore.Services.Customers.Importer
 							}
 							break;
 						case "Username":
-							var userName = row.GetDataValue<string>("Username");
 							if (userName.HasValue())
 							{
 								customer = customerQuery.FirstOrDefault(x => x.Username == userName);
@@ -272,7 +279,7 @@ namespace SmartStore.Services.Customers.Importer
 				}
 				else
 				{
-					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoles);
+					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoleMappings);
 				}
 
 				var affiliateId = row.GetDataValue<int>("AffiliateId");
@@ -282,10 +289,12 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CustomerGuid);
 				row.SetProperty(context.Result, (x) => x.Username);
 				row.SetProperty(context.Result, (x) => x.Email);
-				row.SetProperty(context.Result, (x) => x.FirstName);
+                row.SetProperty(context.Result, (x) => x.Salutation);
+                row.SetProperty(context.Result, (x) => x.FullName);
+                row.SetProperty(context.Result, (x) => x.FirstName);
 				row.SetProperty(context.Result, (x) => x.LastName);
 
-				if (_customerSettings.TitleEnabled)
+                if (_customerSettings.TitleEnabled)
 					row.SetProperty(context.Result, (x) => x.Title);
 
 				if (_customerSettings.CompanyEnabled)
@@ -294,7 +303,10 @@ namespace SmartStore.Services.Customers.Importer
 				if (_customerSettings.DateOfBirthEnabled)
 					row.SetProperty(context.Result, (x) => x.BirthDate);
 
-				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
+                if (_privacySettings.StoreLastIpAddress)
+                    row.SetProperty(context.Result, (x) => x.LastIpAddress);
+
+                if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
 				{
 					context.Result.AddInfo("Security. Ignored password of current customer (who started this import).", row.GetRowInfo(), "Password");
 				}
@@ -312,24 +324,37 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
 
-				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
-				{
-					customer.AffiliateId = affiliateId;
-				}
+                if (_taxSettings.EuVatEnabled)
+                    row.SetProperty(context.Result, (x) => x.VatNumberStatusId);
 
+                if (_dateTimeSettings.AllowCustomersToSetTimeZone)
+                    row.SetProperty(context.Result, (x) => x.TimeZoneId);
+
+                if (_customerSettings.GenderEnabled)
+                    row.SetProperty(context.Result, (x) => x.Gender);
+
+                if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
+                    customer.AffiliateId = affiliateId;
+                
 				string customerNumber = null;
 
-				if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
-					customerNumber = row.Entity.Id.ToString();
-				else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && !row.IsTransient && row.HasDataValue("CustomerNumber"))
-					customerNumber = row.GetDataValue<string>("CustomerNumber");
+                if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && row.IsTransient)
+                {
+                    customerNumber = row.Entity.Id.ToString();
+                }
+                else if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.Enabled && !row.IsTransient && row.HasDataValue("CustomerNumber"))
+                {
+                    customerNumber = row.GetDataValue<string>("CustomerNumber");
+                }
 				
 				if (customerNumber.HasValue() || !allCustomerNumbers.Contains(customerNumber))
 				{
 					row.Entity.CustomerNumber = customerNumber;
 
-					if (!customerNumber.IsEmpty())
-						allCustomerNumbers.Add(customerNumber);
+                    if (!customerNumber.IsEmpty())
+                    {
+                        allCustomerNumbers.Add(customerNumber);
+                    }
 				}
 
 				if (row.IsTransient)
@@ -348,74 +373,62 @@ namespace SmartStore.Services.Customers.Importer
 
 		protected virtual int ProcessCustomerRoles(
 			ImportExecuteContext context,
-			IEnumerable<ImportRow<Customer>> batch,
-			Dictionary<string, CustomerRole> allCustomerRoles)
+			IEnumerable<ImportRow<Customer>> batch)
 		{
-			CustomerRole role = null;
-			var hasCustomerRoleSystemNames = context.DataSegmenter.HasColumn("CustomerRoleSystemNames");
-
-			// Deprecated fields. Still processed for backward compatibility. Use "CustomerRoleSystemNames" instead.
-			var hasIsGuest = context.DataSegmenter.HasColumn("IsGuest");
-			var hasIsRegistered = context.DataSegmenter.HasColumn("IsRegistered");
-			var hasIsForumModerator = context.DataSegmenter.HasColumn("IsForumModerator");
+            Dictionary<string, CustomerRole> allCustomerRoles = null;
 
 			foreach (var row in batch)
 			{
 				var customer = row.Entity;
+                var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
 
-				// Deprecated customer role fields.
-				if (hasIsGuest)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsGuest"), allCustomerRoles, SystemCustomerRoleNames.Guests);
-				}
-				if (hasIsRegistered)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsRegistered"), allCustomerRoles, SystemCustomerRoleNames.Registered);
-				}
-				if (hasIsForumModerator)
-				{
-					UpsertRole(customer, row.GetDataValue<bool>("IsForumModerator"), allCustomerRoles, SystemCustomerRoleNames.ForumModerators);
-				}
+				var assignedRoles = customer.CustomerRoleMappings
+                    .Where(x => !x.IsSystemMapping)
+                    .Select(x => x.CustomerRole)
+                    .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
 
-				// New customer role field.
-				if (hasCustomerRoleSystemNames)
+				// Roles to remove.
+				foreach (var customerRole in assignedRoles)
 				{
-					var importRoleSystemNames = row.GetDataValue<List<string>>("CustomerRoleSystemNames");
-					var assignedRoles = customer.CustomerRoles.ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
-
-					// Roles to remove.
-					foreach (var customerRole in assignedRoles)
+					var systemName = customerRole.Key;
+					if (!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) &&
+						!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators) &&
+						!importRoleSystemNames.Contains(systemName))
 					{
-						var systemName = customerRole.Key;
-						if (!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) &&
-							!systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators) &&
-							!importRoleSystemNames.Contains(systemName))
-						{
-							customer.CustomerRoles.Remove(customerRole.Value);
-						}
+                        var mappings = customer.CustomerRoleMappings.Where(x => !x.IsSystemMapping && x.CustomerRoleId == customerRole.Value.Id).ToList();
+                        mappings.Each(x => _customerService.DeleteCustomerRoleMapping(x));
 					}
+				}
 
-					// Roles to add.
-					foreach (var systemName in importRoleSystemNames)
+				// Roles to add.
+				foreach (var systemName in importRoleSystemNames)
+				{
+					if (systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) ||
+						systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators))
 					{
-						if (systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Administrators) ||
-							systemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.SuperAdministrators))
-						{
-							context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "CustomerRoleSystemNames");
-						}
-						else if (!assignedRoles.ContainsKey(systemName) && allCustomerRoles.TryGetValue(systemName, out role))
-						{
-							// Never insert roles!
-							context.Services.DbContext.SetToUnchanged(role);
-
-							customer.CustomerRoles.Add(role);
-						}
+						context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "CustomerRoleSystemNames");
 					}
+					else if (!assignedRoles.ContainsKey(systemName))
+					{
+                        // Add role mapping, never insert roles.
+                        // Be careful not to insert the roles several times!
+                        if (allCustomerRoles == null)
+                        {
+                            allCustomerRoles = _customerRoleRepository.TableUntracked
+                                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                                .ToDictionarySafe(x => x.SystemName, StringComparer.OrdinalIgnoreCase);
+                        }
+
+                        if (allCustomerRoles.TryGetValue(systemName, out var role))
+                        {
+                            _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = role.Id });
+                        }
+                    }
 				}
 			}
 
-			return context.Services.DbContext.SaveChanges();
-		}
+            return _services.DbContext.SaveChanges();
+        }
 
 		protected virtual int ProcessAddresses(
 			ImportExecuteContext context,
@@ -439,20 +452,30 @@ namespace SmartStore.Services.Customers.Importer
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
-			// last name is mandatory for an address to be imported or updated
-			if (!row.HasDataValue(fieldPrefix + "LastName"))
-				return;
+            // Last name is mandatory for an address to be imported or updated.
+            if (!row.HasDataValue(fieldPrefix + "LastName"))
+            {
+                return;
+            }
 
-			var address = new Address
-			{
-				CreatedOnUtc = UtcNow
-			};
+            Address address = null;
+
+            if (fieldPrefix == "BillingAddress.")
+            {
+                address = row.Entity.BillingAddress ?? new Address { CreatedOnUtc = UtcNow };
+            }
+            else if (fieldPrefix == "ShippingAddress.")
+            {
+                address = row.Entity.ShippingAddress ?? new Address { CreatedOnUtc = UtcNow };
+            }
 
 			var childRow = new ImportRow<Address>(row.Segmenter, row.DataRow, row.Position);
 			childRow.Initialize(address, row.EntityDisplayName);
 
-			childRow.SetProperty(context.Result, fieldPrefix + "LastName", x => x.LastName);
-			childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
+            childRow.SetProperty(context.Result, fieldPrefix + "Salutation", x => x.Salutation);
+            childRow.SetProperty(context.Result, fieldPrefix + "Title", x => x.Title);
+            childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
+            childRow.SetProperty(context.Result, fieldPrefix + "LastName", x => x.LastName);
 			childRow.SetProperty(context.Result, fieldPrefix + "Email", x => x.Email);
 			childRow.SetProperty(context.Result, fieldPrefix + "Company", x => x.Company);
 			childRow.SetProperty(context.Result, fieldPrefix + "City", x => x.City);
@@ -465,21 +488,23 @@ namespace SmartStore.Services.Customers.Importer
 			childRow.SetProperty(context.Result, fieldPrefix + "CountryId", x => x.CountryId);
 			if (childRow.Entity.CountryId == null)
 			{
-				// try with country code
+				// Try with country code.
 				childRow.SetProperty(context.Result, fieldPrefix + "CountryCode", x => x.CountryId, converter: (val, ci) => CountryCodeToId(allCountries, val.ToString()));
 			}
 
-			var countryId = childRow.Entity.CountryId;
-
+            var countryId = childRow.Entity.CountryId;
 			if (countryId.HasValue)
 			{
-				childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
-				if (childRow.Entity.StateProvinceId == null)
-				{
-					// try with state abbreviation
-					childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
-				}
-			}
+                if (row.HasDataValue(fieldPrefix + "StateProvinceId"))
+                {
+                    childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
+                }
+                else
+                {
+                    // Try with state abbreviation.
+                    childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
+                }
+            }
 
 			if (!childRow.IsDirty)
 			{
@@ -487,24 +512,28 @@ namespace SmartStore.Services.Customers.Importer
 				return;
 			}
 
-			var appliedAddress = row.Entity.Addresses.FindAddress(address);
+            if (address.Id == 0)
+            {
+                // Avoid importing two addresses if billing and shipping address are equal.
+                var appliedAddress = row.Entity.Addresses.FindAddress(address);
+                if (appliedAddress == null)
+                {
+                    appliedAddress = address;
+                    row.Entity.Addresses.Add(appliedAddress);
+                }
 
-			if (appliedAddress == null)
-			{
-				appliedAddress = address;
-				row.Entity.Addresses.Add(appliedAddress);
-			}
+                // Map address to customer.
+                if (fieldPrefix == "BillingAddress.")
+                {
+                    row.Entity.BillingAddress = appliedAddress;
+                }
+                else if (fieldPrefix == "ShippingAddress.")
+                {
+                    row.Entity.ShippingAddress = appliedAddress;
+                }
+            }
 
-			if (fieldPrefix == "BillingAddress.")
-			{
-				row.Entity.BillingAddress = appliedAddress;
-			}
-			else if (fieldPrefix == "ShippingAddress.")
-			{
-				row.Entity.ShippingAddress = appliedAddress;
-			}
-
-			_customerRepository.Update(row.Entity);
+            _customerRepository.Update(row.Entity);
 		}
 
 		protected virtual int ProcessGenericAttributes(
@@ -515,11 +544,10 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			foreach (var row in batch)
 			{
-				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
-					SaveAttribute(row, SystemCustomerAttributeNames.TimeZoneId);
-
-				if (_customerSettings.GenderEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.Gender);
+                if (_taxSettings.EuVatEnabled)
+                {
+                    SaveAttribute(row, SystemCustomerAttributeNames.VatNumber);
+                }
 
 				if (_customerSettings.StreetAddressEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress);
@@ -527,16 +555,16 @@ namespace SmartStore.Services.Customers.Importer
 				if (_customerSettings.StreetAddress2Enabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.StreetAddress2);
 
-				if (_customerSettings.ZipPostalCodeEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.ZipPostalCode);
-
 				if (_customerSettings.CityEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.City);
 
-				if (_customerSettings.CountryEnabled)
-					SaveAttribute<int>(row, SystemCustomerAttributeNames.CountryId);
+                if (_customerSettings.ZipPostalCodeEnabled)
+                    SaveAttribute(row, SystemCustomerAttributeNames.ZipPostalCode);
 
-				if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
+                if (_customerSettings.CountryEnabled)
+                    SaveAttribute<int>(row, SystemCustomerAttributeNames.CountryId);
+
+                if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
 					SaveAttribute<int>(row, SystemCustomerAttributeNames.StateProvinceId);
 
 				if (_customerSettings.PhoneEnabled)
@@ -551,18 +579,15 @@ namespace SmartStore.Services.Customers.Importer
 				if (_forumSettings.SignaturesEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Signature);
 
-				var countryId = CountryCodeToId(allCountries, row.GetDataValue<string>("CountryCode"));
-				var stateId = StateAbbreviationToId(allStateProvinces, countryId, row.GetDataValue<string>("StateAbbreviation"));
+                var countryId = CountryCodeToId(allCountries, row.GetDataValue<string>("CountryCode"));
+                var stateId = StateAbbreviationToId(allStateProvinces, countryId, row.GetDataValue<string>("StateAbbreviation"));
 
-				if (countryId.HasValue)
-				{
-					SaveAttribute(row, SystemCustomerAttributeNames.CountryId, countryId.Value);
-				}
-
-				if (stateId.HasValue)
-				{
+                if (countryId.HasValue)
+                    SaveAttribute(row, SystemCustomerAttributeNames.CountryId, countryId.Value);
+                
+                if (stateId.HasValue)
 					SaveAttribute(row, SystemCustomerAttributeNames.StateProvinceId, stateId.Value);
-				}
+				
 			}
 
 			return _services.DbContext.SaveChanges();
@@ -575,17 +600,12 @@ namespace SmartStore.Services.Customers.Importer
 			foreach (var row in batch)
 			{
 				var urlOrPath = row.GetDataValue<string>("AvatarPictureUrl");
-				if (urlOrPath.IsEmpty())
-					continue;
+                if (urlOrPath.IsEmpty())
+                {
+                    continue;
+                }
 
-				var equalPictureId = 0;
-				var currentPictures = new List<Picture>();
-				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
-
-				var image = CreateDownloadImage(context, urlOrPath, seoName, 1);
-				if (image == null)
-					continue;
-
+				var image = CreateDownloadImage(context, urlOrPath, 1);
 				if (image.Url.HasValue() && !image.Success.HasValue)
 				{
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
@@ -594,37 +614,36 @@ namespace SmartStore.Services.Customers.Importer
 				if ((image.Success ?? false) && File.Exists(image.Path))
 				{
 					Succeeded(image);
-					var pictureBinary = File.ReadAllBytes(image.Path);
+                    using (var stream = File.OpenRead(image.Path))
+                    {
+                        if ((stream?.Length ?? 0) > 0)
+                        {
+                            var currentFiles = new List<MediaFileInfo>();
+                            var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+                            var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
+                            if (file != null)
+                            {
+                                currentFiles.Add(file);
+                            }
 
-					if (pictureBinary != null && pictureBinary.Length > 0)
-					{
-						var pictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-						if (pictureId != 0)
-						{
-							var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
-							if (picture != null)
-							{
-								currentPictures.Add(picture);
-							}
-						}
-                        
-						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
+                            if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
+                            {
+                                // Don't manage avatar files. Just overwrite existing file.
+                                var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName.ToValidFileName());
 
-						if (pictureBinary != null && pictureBinary.Length > 0)
-						{
-                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
-
-                            if (picture != null)
-							{
-								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
-							}
-						}
-						else
-						{
-							context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
-						}
-					}
-				}
+                                var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Overwrite);
+                                if ((newFile?.Id ?? 0) != 0)
+                                {
+                                    SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);
+                                }
+                            }
+                            else
+                            {
+                                context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+                            }
+                        }
+                    }
+                }
 				else
 				{
 					context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "AvatarPictureUrl");
@@ -646,7 +665,7 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			get
 			{
-				return new string[] { "Email" };
+				return new string[] { "Email", "CustomerGuid" };
 			}
 		}
 
@@ -695,27 +714,6 @@ namespace SmartStore.Services.Customers.Importer
 			if (row.IsNew || value != null)
 			{
 				_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, value);
-			}
-		}
-
-		private void UpsertRole(Customer customer, bool value, Dictionary<string, CustomerRole> allRoles, string customerRoleSystemName)
-		{
-			CustomerRole role = null;
-			if (allRoles.TryGetValue(customerRoleSystemName, out role))
-			{
-				var hasRole = customer.CustomerRoles.Any(x => x.SystemName == role.SystemName);
-
-				if (value && !hasRole)
-				{
-					// Never insert roles!
-					_services.DbContext.SetToUnchanged(role);
-
-					customer.CustomerRoles.Add(role);
-				}
-				else if (!value && hasRole)
-				{
-					customer.CustomerRoles.Remove(role);
-				}
 			}
 		}
 

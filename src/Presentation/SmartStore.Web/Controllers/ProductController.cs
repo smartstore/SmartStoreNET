@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
@@ -26,6 +27,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
@@ -39,7 +41,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IProductService _productService;
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly ITaxService _taxService;
-		private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
 		private readonly ICustomerContentService _customerContentService;
 		private readonly ICustomerService _customerService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
@@ -65,8 +67,8 @@ namespace SmartStore.Web.Controllers
 			IProductService productService,
 			IProductAttributeService productAttributeService,
 			ITaxService taxService,
-			IPictureService pictureService,
-			ICustomerContentService customerContentService, 
+            IMediaService mediaService,
+            ICustomerContentService customerContentService, 
 			ICustomerService customerService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
 			IProductTagService productTagService,
@@ -90,7 +92,7 @@ namespace SmartStore.Web.Controllers
 			_productService = productService;
 			_productAttributeService = productAttributeService;
 			_taxService = taxService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_customerContentService = customerContentService;
 			_customerService = customerService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
@@ -122,7 +124,7 @@ namespace SmartStore.Web.Controllers
 
 			// Is published? Check whether the current user has a "Manage catalog" permission.
 			// It allows him to preview a product before publishing.
-			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
+			if (!product.Published && !_services.Permissions.Authorize(Permissions.Catalog.Product.Read))
 				return HttpNotFound();
 
 			// ACL (access control list)
@@ -134,7 +136,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			// Is product individually visible?
-			if (!product.VisibleIndividually)
+            if (product.Visibility == ProductVisibility.Hidden)
 			{
 				// Find parent grouped product.
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
@@ -201,11 +203,13 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
-							var pictureUrl = _pictureService.GetUrl(x.Manufacturer.PictureId.GetValueOrDefault());
-							if (pictureUrl != null)
+                            var fileId = x.Manufacturer.MediaFileId.GetValueOrDefault();
+                            m.PictureModel.ImageUrl = _mediaService.GetUrl(fileId, 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
+
+                            var fileUrl = _mediaService.GetUrl(fileId, 0);
+							if (fileUrl != null)
 							{
-								m.PictureModel.PictureId = x.Manufacturer.PictureId.GetValueOrDefault();
+								m.PictureModel.PictureId = fileId;
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
 								m.PictureModel.AlternateText = string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
 							}
@@ -216,8 +220,10 @@ namespace SmartStore.Web.Controllers
 				return model;
 			}, TimeSpan.FromHours(6));
 
-			if (cacheModel.Count == 0)
-				return Content("");
+            if (cacheModel.Count == 0)
+            {
+                return new EmptyResult();
+            }
 
 			return PartialView(cacheModel);
 		}
@@ -277,9 +283,9 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductTierPrices(int productId)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
+			if (!_services.Permissions.Authorize(Permissions.Catalog.DisplayPrice))
 			{
-				return Content("");
+                return new EmptyResult();
 			}	
 
 			var product = _productService.GetProductById(productId);
@@ -290,9 +296,9 @@ namespace SmartStore.Web.Controllers
 			
 			if (!product.HasTierPrices)
 			{
-				// No tier prices
-				return Content(""); 
-			}
+                // No tier prices.
+                return new EmptyResult();
+            }
 
             var model = _helper.CreateTierPriceModel(product);
             
@@ -500,7 +506,7 @@ namespace SmartStore.Web.Controllers
 			var product = _productService.GetProductById(productId);
 			var bItem = _productService.GetBundleItemById(bundleItemId);
 			IList<ProductBundleItemData> bundleItems = null;
-			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
+			ProductBundleItemData bundleItem = bItem == null ? null : new ProductBundleItemData(bItem);
 
 			// Quantity required for tier prices.
 			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
@@ -530,39 +536,61 @@ namespace SmartStore.Web.Controllers
 				// Update bundle item thumbnail.
 				if (!bundleItem.Item.HideThumbnail)
 				{
-					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
-					dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.BundledProductPictureSize, false);
-				}
+                    var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                    if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0], MediaLoadFlags.AsNoTracking) != null)
+                    {
+                        var file = _productService.GetProductPicturesByProductId(bundleItem.Item.ProductId, 1)
+                            .Select(x => x.MediaFile)
+                            .FirstOrDefault();
+
+                        dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.BundledProductPictureSize, null, false);
+                    }
+                }
 			}
 			else if (isAssociated)
 			{
-				// Update associated product thumbnail.
-				var picture = m.GetAssignedPicture(_pictureService, null, productId);
-				dynamicThumbUrl = _pictureService.GetUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
-			}
+                // Update associated product thumbnail.
+                var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                if (assignedMediaIds.Any() && _mediaService.GetFileById(assignedMediaIds[0], MediaLoadFlags.AsNoTracking) != null)
+                {
+                    var file = _productService.GetProductPicturesByProductId(productId, 1)
+                        .Select(x => x.MediaFile)
+                        .FirstOrDefault();
+
+                    dynamicThumbUrl = _mediaService.GetUrl(file, _mediaSettings.AssociatedProductPictureSize, null, false);
+                }
+            }
 			else if (product.ProductType != ProductType.BundledProduct)
 			{
-				// Update image gallery.
-				var pictures = _pictureService.GetPicturesByProductId(productId);
+                // Update image gallery.
+                var files = _productService.GetProductPicturesByProductId(productId)
+                    .Select(x => x.MediaFile)
+                    .ToList();
 
-                if (product.HasPreviewPicture && pictures.Count > 1)
+                if (product.HasPreviewPicture && files.Count > 1)
                 {
-                    pictures.RemoveAt(0);
+                    files.RemoveAt(0);
                 }
 
-                if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
+                if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
-					// All pictures rendered... only index is required.
-					var picture = m.GetAssignedPicture(_pictureService, pictures);
-					galleryStartIndex = (picture == null ? 0 : pictures.IndexOf(picture));
-				}
-				else
+                    // All pictures rendered... only index is required.
+                    galleryStartIndex = 0;
+
+                    var assignedMediaIds = m.SelectedCombination?.GetAssignedMediaIds() ?? new int[0];
+                    if (assignedMediaIds.Any())
+                    {
+                        var file = files.FirstOrDefault(p => p.Id == assignedMediaIds[0]);
+                        galleryStartIndex = file == null ? 0 : files.IndexOf(file);
+                    }
+                }
+                else
 				{
 					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);
 
 					_helper.PrepareProductDetailsPictureModel(
 						pictureModel,
-						pictures,
+						files,
 						product.GetLocalized(x => x.Name),
 						allCombinationPictureIds,
 						false,
@@ -643,14 +671,15 @@ namespace SmartStore.Web.Controllers
 			if (product == null)
 			{
 				throw new ArgumentException(T("Products.NotFound", productId));
-			}				
+			}
 
-			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+            var store = _services.StoreContext.CurrentStore;
+
+            var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id, store.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = product.ProductTags
-					// Filter by store
-					.Where(x => _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id) > 0)
+					.Where(x => x.Published && _productTagService.GetProductCount(x.Id, store.Id) > 0)
 					.Select(x =>
 					{
 						var ptModel = new ProductTagModel
@@ -658,7 +687,7 @@ namespace SmartStore.Web.Controllers
 							Id = x.Id,
 							Name = x.GetLocalized(y => y.Name),
 							SeName = x.GetSeName(),
-							ProductCount = _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id)
+							ProductCount = _productTagService.GetProductCount(x.Id, store.Id)
 						};
 						return ptModel;
 					})
@@ -674,44 +703,55 @@ namespace SmartStore.Web.Controllers
 
 		#region Product reviews
 
-		[ActionName("Reviews")]
 		[RewriteUrl(SslRequirement.No)]
 		[GdprConsent]
 		public ActionResult Reviews(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
-				return HttpNotFound();
+            if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
+            {
+                return HttpNotFound();
+            }
 
-			var model = new ProductReviewsModel();
-			_helper.PrepareProductReviewsModel(model, product);
+            var model = new ProductReviewsModel
+            {
+                Rating = _catalogSettings.DefaultProductRatingValue
+            };
 
-			// only registered users can leave reviews
-			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
+            _helper.PrepareProductReviewsModel(model, product);
+
+            model.SuccessfullyAdded = (TempData["SuccessfullyAdded"] as bool?) ?? false;
+            if (model.SuccessfullyAdded)
+            {
+                model.Result = T(_catalogSettings.ProductReviewsMustBeApproved
+                    ? "Reviews.SeeAfterApproving"
+                    : "Reviews.SuccessfullyAdded");
+            }
+
+            // Only registered users can leave reviews.
+            if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
 			{
 				ModelState.AddModelError("", T("Reviews.OnlyRegisteredUsersCanWriteReviews"));
 			}
-				
-			// default value
-			model.Rating = _catalogSettings.DefaultProductRatingValue;
+
 			return View(model);
 		}
 
 		[HttpPost, ActionName("Reviews")]
-		[FormValueRequired("add-review")]
 		[ValidateCaptcha]
 		[ValidateAntiForgeryToken]
 		[GdprConsent]
-		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
+		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, string captchaError)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
-				return HttpNotFound();
+            if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
+            {
+                return HttpNotFound();
+            }
 
-			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
+			if (_captchaSettings.ShowOnProductReviewPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
@@ -721,12 +761,13 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				//save review
-				int rating = model.Rating;
-				if (rating < 1 || rating > 5)
-					rating = _catalogSettings.DefaultProductRatingValue;
+				var rating = model.Rating;
+                if (rating < 1 || rating > 5)
+                {
+                    rating = _catalogSettings.DefaultProductRatingValue;
+                }
 
-				bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
+				var isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
 				var customer = _services.WorkContext.CurrentCustomer;
 
 				var productReview = new ProductReview
@@ -743,33 +784,28 @@ namespace SmartStore.Web.Controllers
 				};
 				_customerContentService.InsertCustomerContent(productReview);
 
-				// update product totals
 				_productService.UpdateProductReviewTotals(product);
 
-				// notify store owner
-				if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
-					Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+                if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
+                {
+                    Services.MessageFactory.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
+                }
 
-				// activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
-				if (isApproved)
-					_customerService.RewardPointsForProductReview(customer, product, true);
+                if (isApproved)
+                {
+                    _customerService.RewardPointsForProductReview(customer, product, true);
+                }
 
 				_helper.PrepareProductReviewsModel(model, product);
-				model.Title = null;
-				model.ReviewText = null;
 
-				model.SuccessfullyAdded = true;
-				if (!isApproved)
-					model.Result = T("Reviews.SeeAfterApproving");
-				else
-					model.Result = T("Reviews.SuccessfullyAdded");
+                TempData["SuccessfullyAdded"] = true;
 
-				return View(model);
+                return RedirectToAction("Reviews");
 			}
 
-			// If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			_helper.PrepareProductReviewsModel(model, product);
 			return View(model);
 		}
@@ -867,7 +903,7 @@ namespace SmartStore.Web.Controllers
 			model.SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired;
 			model.SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
 			model.Question = T("Products.AskQuestion.Question.Text").Text.FormatCurrentUI(model.ProductName);
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
 
 			return View(model);
 		}
@@ -875,21 +911,19 @@ namespace SmartStore.Web.Controllers
 		[HttpPost, ActionName("AskQuestion")]
 		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
-		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
+		public ActionResult AskQuestionSend(ProductAskQuestionModel model, string captchaError)
 		{
 			var product = _productService.GetProductById(model.Id);
 			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
-			// validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage && !captchaValid)
+			if (_captchaSettings.ShowOnAskQuestionPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
 			if (ModelState.IsValid)
 			{
-				// email
 				var msg = Services.MessageFactory.SendProductQuestionMessage(
 					_services.WorkContext.CurrentCustomer,
 					product,
@@ -900,7 +934,7 @@ namespace SmartStore.Web.Controllers
 
 				if (msg?.Email?.Id != null)
 				{
-					this.NotifySuccess(T("Products.AskQuestion.Sent"), true);
+					NotifySuccess(T("Products.AskQuestion.Sent"), true);
 					return RedirectToRoute("Product", new { SeName = product.GetSeName() });
 				}
 				else
@@ -909,12 +943,13 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			// If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			var customer = _services.WorkContext.CurrentCustomer;
 			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
-			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
+			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage;
+
 			return View(model);
 		}
 
@@ -936,26 +971,26 @@ namespace SmartStore.Web.Controllers
 			model.ProductSeName = product.GetSeName();
 			model.YourEmailAddress = _services.WorkContext.CurrentCustomer.Email;
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 
 		[HttpPost, ActionName("EmailAFriend")]
 		[ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
+		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, string captchaError)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
-			//validate CAPTCHA
-			if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage && !captchaValid)
+			if (_captchaSettings.ShowOnEmailProductToFriendPage && captchaError.HasValue())
 			{
-				ModelState.AddModelError("", T("Common.WrongCaptcha"));
+				ModelState.AddModelError("", captchaError);
 			}
 
-			//check whether the current customer is guest and ia allowed to email a friend
+			// Check whether the current customer is guest and ia allowed to email a friend.
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToEmailAFriend)
 			{
 				ModelState.AddModelError("", T("Products.EmailAFriend.OnlyRegisteredUsers"));
@@ -980,12 +1015,13 @@ namespace SmartStore.Web.Controllers
 				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
             model.AllowChangedCustomerEmail = _catalogSettings.AllowDifferingEmailAddressForEmailAFriend;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailProductToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailProductToFriendPage;
+
 			return View(model);
 		}
 

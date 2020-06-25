@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using SmartStore.ComponentModel;
@@ -18,10 +17,11 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Shipping;
 
 namespace SmartStore.Services.Messages
 {
-	public partial class MessageModelProvider
+    public partial class MessageModelProvider
 	{
 		protected virtual object CreateModelPart(Order part, MessageContext messageContext)
 		{
@@ -228,10 +228,6 @@ namespace SmartStore.Services.Messages
 
 		private (Money SubTotal, Money SubTotalDiscount, Money ShippingTotal, Money PaymentFee, bool DisplaySubTotalDiscount) GetSubTotals(Order order, MessageContext messageContext)
 		{
-			var language = messageContext.Language;
-			var currencyService = _services.Resolve<ICurrencyService>();
-			var priceFormatter = _services.Resolve<IPriceFormatter>();
-
 			var isNet = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax;
 
 			var subTotal = isNet ? order.OrderSubtotalExclTax : order.OrderSubtotalInclTax;
@@ -389,30 +385,47 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-			var orderItems = new List<OrderItem>();
-			var orderItemIds = part.ShipmentItems.Select(x => x.OrderItemId).ToArray();
-			foreach (var orderItemId in orderItemIds)
-			{
-				var orderItem = _services.Resolve<IOrderService>().GetOrderItemById(orderItemId);
-				if (orderItem != null)
-				{
-					orderItems.Add(orderItem);
-				}
-			}
+            var orderService = _services.Resolve<IOrderService>();
+            var orderItems = orderService.GetOrderItemsByOrderIds(new int[] { part.OrderId })[part.OrderId];
+            var itemParts = orderItems
+                .Where(x => x.Product != null)
+                .Select(x => CreateModelPart(x, messageContext))
+                .ToList();
+
+            var trackingUrl = part.TrackingUrl;
+
+            if (trackingUrl.IsEmpty() && part.TrackingNumber.HasValue() && part.Order.ShippingRateComputationMethodSystemName.HasValue())
+            {
+                // Try to get URL from tracker.
+                var srcm = _services.Resolve<IShippingService>().LoadShippingRateComputationMethodBySystemName(part.Order.ShippingRateComputationMethodSystemName);
+                if (srcm != null && srcm.Value.IsActive)
+                {
+                    var tracker = srcm.Value.ShipmentTracker;
+                    if (tracker != null)
+                    {
+                        var shippingSettings = _services.Settings.LoadSetting<ShippingSettings>(part.Order.StoreId);
+                        if (srcm.IsShippingRateComputationMethodActive(shippingSettings))
+                        {
+                            trackingUrl = tracker.GetUrl(part.TrackingNumber);
+                        }
+                    }
+                }
+            }
 
 			var m = new Dictionary<string, object>
 			{
 				{ "Id", part.Id },
 				{ "TrackingNumber", part.TrackingNumber.NullEmpty() },
-				{ "TotalWeight", part.TotalWeight },
+                { "TrackingUrl", trackingUrl.NullEmpty() },
+                { "TotalWeight", part.TotalWeight },
 				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
 				{ "DeliveredOn", ToUserDate(part.DeliveryDateUtc, messageContext) },
 				{ "ShippedOn", ToUserDate(part.ShippedDateUtc, messageContext) },
 				{ "Url", BuildActionUrl("ShipmentDetails", "Order", new { id = part.Id, area = "" }, messageContext)},
-				{ "Items", orderItems.Where(x => x.Product != null).Select(x => CreateModelPart(x, messageContext)).ToList() },
+				{ "Items", itemParts },
 			};
 
-			PublishModelPartCreatedEvent<Shipment>(part, m);
+			PublishModelPartCreatedEvent(part, m);
 
 			return m;
 		}

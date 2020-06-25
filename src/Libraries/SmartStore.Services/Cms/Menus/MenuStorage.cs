@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cms
 {
     public partial class MenuStorage : IMenuStorage
     {
-        private const string MENU_ALLSYSTEMNAMEs_CACHE_KEY = "MenuStorage:SystemNames";
+        private const string MENU_ALLSYSTEMNAMES_CACHE_KEY = "MenuStorage:SystemNames";
         private const string MENU_USER_CACHE_KEY = "MenuStorage:Menus:User-{0}-{1}";
         private const string MENU_PATTERN_KEY = "MenuStorage:Menus:*";
 
@@ -110,6 +110,11 @@ namespace SmartStore.Services.Cms
             _services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
         }
 
+        public virtual IEnumerable<string> GetAllMenuSystemNames()
+        {
+            return GetMenuSystemNames(true);
+        }
+
         public virtual IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0,
@@ -125,7 +130,7 @@ namespace SmartStore.Services.Cms
         {
             if (roles == null)
             {
-                roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
+                roles = _services.WorkContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole);
             }
 
             if (storeId == 0)
@@ -137,7 +142,7 @@ namespace SmartStore.Services.Cms
 
             var userMenusInfo = _services.Cache.Get(cacheKey, () =>
             {
-                var query = BuildMenuQuery(0, storeId, null, false, false, true, false, true);
+                var query = BuildMenuQuery(0, storeId, null, false, false, true, true, true);
 
                 var data = query.Select(x => new
                 {
@@ -296,14 +301,16 @@ namespace SmartStore.Services.Cms
 
         #region Utilities
 
-        private ISet GetMenuSystemNames(bool create)
+        private ISet GetMenuSystemNames(bool ensureCreated)
 		{
-			if (create || _services.Cache.Contains(MENU_ALLSYSTEMNAMEs_CACHE_KEY))
+			if (ensureCreated || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
 			{
-				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMEs_CACHE_KEY, () =>
+				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMES_CACHE_KEY, () =>
 				{
 					return _menuRepository.TableUntracked
 						.Where(x => x.Published)
+                        .OrderByDescending(x => x.IsSystemMenu)
+                        .ThenBy(x => x.Id)
 						.Select(x => x.SystemName)
 						.ToArray();
 				});
@@ -358,7 +365,7 @@ namespace SmartStore.Services.Cms
 
             if (!includeHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedRoleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedRoleIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
                 query = 
                     from x in query
@@ -382,7 +389,10 @@ namespace SmartStore.Services.Cms
 
             if (sort)
             {
-                query = query.OrderBy(x => x.SystemName).ThenBy(x => x.Title);
+                query = query
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.SystemName)
+                    .ThenBy(x => x.Title);
             }
 
             return query;
@@ -394,6 +404,8 @@ namespace SmartStore.Services.Cms
             int storeId,
             bool includeHidden)
         {
+            var applied = false;
+            var entityName = nameof(MenuItemRecord);
             var singleMenu = menuId != 0 || (systemName.HasValue() && storeId != 0);
             var menuQuery = BuildMenuQuery(menuId, storeId, systemName, null, includeHidden, !singleMenu, !singleMenu);
 
@@ -408,6 +420,43 @@ namespace SmartStore.Services.Cms
                 where includeHidden || mi.Published
                 orderby mi.ParentItemId, mi.DisplayOrder
                 select mi;
+
+            if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+            {
+                query =
+                    from x in query
+                    join m in _storeMappingRepository.Table
+                    on new { x1 = x.Id, x2 = entityName } equals new { x1 = m.EntityId, x2 = m.EntityName } into sm
+                    from m in sm.DefaultIfEmpty()
+                    where !x.LimitedToStores || storeId == m.StoreId
+                    select x;
+
+                applied = true;
+            }
+
+            if (!includeHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedRoleIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
+
+                query =
+                    from x in query
+                    join a in _aclRepository.Table
+                    on new { x1 = x.Id, x2 = entityName } equals new { x1 = a.EntityId, x2 = a.EntityName } into ac
+                    from a in ac.DefaultIfEmpty()
+                    where !x.SubjectToAcl || allowedRoleIds.Contains(a.CustomerRoleId)
+                    select x;
+
+                applied = true;
+            }
+
+            if (applied)
+            {
+                query =
+                    from x in query
+                    group x by x.Id into grp
+                    orderby grp.Key
+                    select grp.FirstOrDefault();
+            }
 
             return query;
         }

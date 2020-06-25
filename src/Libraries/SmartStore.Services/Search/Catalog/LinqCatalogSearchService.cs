@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
@@ -20,42 +19,33 @@ namespace SmartStore.Services.Search
     {
 		private static int[] _priceThresholds = new int[] { 10, 25, 50, 100, 250, 500, 1000 };
 
-		private readonly IProductService _productService;
+        private readonly ICommonServices _services;
+        private readonly IProductService _productService;
 		private readonly IRepository<Product> _productRepository;
-		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
-		private readonly IRepository<ProductCategory> _productCategoryRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
-		private readonly IEventPublisher _eventPublisher;
-		private readonly ICommonServices _services;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly ICategoryService _categoryService;
 
 		public LinqCatalogSearchService(
-			IProductService productService,
+            ICommonServices services,
+            IProductService productService,
 			IRepository<Product> productRepository,
-			IRepository<ProductManufacturer> productManufacturerRepository,
-			IRepository<ProductCategory> productCategoryRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IRepository<AclRecord> aclRepository,
-			IEventPublisher eventPublisher,
-			ICommonServices services,
 			IDeliveryTimeService deliveryTimeService,
 			IManufacturerService manufacturerService,
 			ICategoryService categoryService)
 		{
-			_productService = productService;
+            _services = services;
+            _productService = productService;
 			_productRepository = productRepository;
-			_productManufacturerRepository = productManufacturerRepository;
-			_productCategoryRepository = productCategoryRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
-			_eventPublisher = eventPublisher;
-			_services = services;
 			_deliveryTimeService = deliveryTimeService;
 			_manufacturerService = manufacturerService;
 			_categoryService = categoryService;
@@ -85,14 +75,18 @@ namespace SmartStore.Services.Search
                 select p;
         }
 
-        protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
+        protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery, out bool isGroupingRequired)
 		{
+            isGroupingRequired = false;
+
 			var term = searchQuery.Term;
 			var fields = searchQuery.Fields;
 			var languageId = searchQuery.LanguageId ?? 0;
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
+                isGroupingRequired = true;
+
 				// SearchMode.ExactMatch doesn't make sense here
 				if (searchQuery.Mode == SearchMode.StartsWith)
 				{
@@ -136,7 +130,7 @@ namespace SmartStore.Services.Search
 			var query = baseQuery ?? _productRepository.Table;
 
 			query = query.Where(x => !x.Deleted && !x.IsSystemProduct);
-			query = ApplySearchTerm(query, searchQuery);
+			query = ApplySearchTerm(query, searchQuery, out var isGroupingRequired);
 
 			#region Filters
 
@@ -146,12 +140,13 @@ namespace SmartStore.Services.Search
 			var productIds = GetIdList(filters, "id");
 			if (productIds.Any())
 			{
-				query = query.Where(x => productIds.Contains(x.Id));
+                query = query.Where(x => productIds.Contains(x.Id));
 			}
 
 			var categoryIds = GetIdList(filters, "categoryid");
 			if (categoryIds.Any())
 			{
+                isGroupingRequired = true;
                 categoryId = categoryIds.First();
 				if (categoryIds.Count == 1 && categoryId == 0)
 				{
@@ -160,7 +155,7 @@ namespace SmartStore.Services.Search
 				}
 				else
 				{
-					query = QueryCategories(query, categoryIds, null);
+                    query = QueryCategories(query, categoryIds, null);
 				}
 			}
 
@@ -168,11 +163,13 @@ namespace SmartStore.Services.Search
             var notFeaturedCategoryIds = GetIdList(filters, "notfeaturedcategoryid");
             if (featuredCategoryIds.Any())
             {
+                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? featuredCategoryIds.First() : categoryId;
                 query = QueryCategories(query, featuredCategoryIds, true);
             }
             if (notFeaturedCategoryIds.Any())
             {
+                isGroupingRequired = true;
                 categoryId = categoryId == 0 ? notFeaturedCategoryIds.First() : categoryId;
                 query = QueryCategories(query, notFeaturedCategoryIds, false);
             }
@@ -180,6 +177,7 @@ namespace SmartStore.Services.Search
 			var manufacturerIds = GetIdList(filters, "manufacturerid");
 			if (manufacturerIds.Any())
 			{
+                isGroupingRequired = true;
                 manufacturerId = manufacturerIds.First();
 				if (manufacturerIds.Count == 1 && manufacturerId == 0)
 				{
@@ -196,11 +194,13 @@ namespace SmartStore.Services.Search
             var notFeaturedManuIds = GetIdList(filters, "notfeaturedmanufacturerid");
             if (featuredManuIds.Any())
             {
+                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? featuredManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, featuredManuIds, true);
             }
             if (notFeaturedManuIds.Any())
             {
+                isGroupingRequired = true;
                 manufacturerId = manufacturerId == 0 ? notFeaturedManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, notFeaturedManuIds, false);
             }
@@ -208,6 +208,7 @@ namespace SmartStore.Services.Search
 			var tagIds = GetIdList(filters, "tagid");
 			if (tagIds.Any())
 			{
+                isGroupingRequired = true;
                 query =
 					from p in query
 					from pt in p.ProductTags.Where(pt => tagIds.Contains(pt.Id))
@@ -219,6 +220,7 @@ namespace SmartStore.Services.Search
 				var roleIds = GetIdList(filters, "roleid");
 				if (roleIds.Any())
 				{
+                    isGroupingRequired = true;
                     query =
 						from p in query
 						join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
@@ -231,253 +233,374 @@ namespace SmartStore.Services.Search
 			var deliverTimeIds = GetIdList(filters, "deliveryid");
 			if (deliverTimeIds.Any())
 			{
-				query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
+                query = query.Where(x => x.DeliveryTimeId != null && deliverTimeIds.Contains(x.DeliveryTimeId.Value));
 			}
 
 			var parentProductIds = GetIdList(filters, "parentid");
 			if (parentProductIds.Any())
 			{
-				query = query.Where(x => parentProductIds.Contains(x.ParentGroupedProductId));
+                query = query.Where(x => parentProductIds.Contains(x.ParentGroupedProductId));
 			}
+
+            var conditions = GetIdList(filters, "condition");
+            if (conditions.Any())
+            {
+                query = query.Where(x => conditions.Contains((int)x.Condition));
+            }
 
 			foreach (IAttributeSearchFilter filter in filters)
 			{
-				var rangeFilter = filter as IRangeSearchFilter;
+				var rf = filter as IRangeSearchFilter;
 
-				if (filter.FieldName == "id")
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as int?;
-						var upper = rangeFilter.UpperTerm as int?;
+                if (filter.FieldName == "id")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as int?;
+                        var upper = rf.UpperTerm as int?;
 
-						if (lower.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => x.Id >= lower.Value);
-							else
-								query = query.Where(x => x.Id > lower.Value);
-						}
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => x.Id >= lower.Value);
+                            else
+                                query = query.Where(x => x.Id > lower.Value);
+                        }
 
-						if (upper.HasValue)
-						{
-							if (rangeFilter.IncludesUpper)
-								query = query.Where(x => x.Id <= upper.Value);
-							else
-								query = query.Where(x => x.Id < upper.Value);
-						}
-					}
-				}
-				else if (filter.FieldName == "categoryid")
-				{
-					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
-					{
-						// Has any category.
-						query = query.Where(x => x.ProductCategories.Count > 0);
-					}
-				}
-				else if (filter.FieldName == "manufacturerid")
-				{
-					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
-					{
-						// Has any manufacturer.
-						query = query.Where(x => x.ProductManufacturers.Count > 0);
-					}
-				}
-				else if (filter.FieldName == "published")
-				{
-					query = query.Where(x => x.Published == (bool)filter.Term);
-				}
-				else if (filter.FieldName == "availablestart")
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as DateTime?;
-						var upper = rangeFilter.UpperTerm as DateTime?;
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesUpper)
+                                query = query.Where(x => x.Id <= upper.Value);
+                            else
+                                query = query.Where(x => x.Id < upper.Value);
+                        }
+                    }
+                }
+                else if (filter.FieldName == "categoryid")
+                {
+                    if (rf != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rf.UpperTerm as int?) ?? 0))
+                    {
+                        isGroupingRequired = true;
+                        // Has any category.
+                        query = query.Where(x => x.ProductCategories.Count > 0);
+                    }
+                }
+                else if (filter.FieldName == "manufacturerid")
+                {
+                    if (rf != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rf.UpperTerm as int?) ?? 0))
+                    {
+                        isGroupingRequired = true;
+                        // Has any manufacturer.
+                        query = query.Where(x => x.ProductManufacturers.Count > 0);
+                    }
+                }
+                else if (filter.FieldName == "published")
+                {
+                    query = query.Where(x => x.Published == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "availablestart")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as DateTime?;
+                        var upper = rf.UpperTerm as DateTime?;
 
-						if (lower.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc >= lower.Value);
-							else
-								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc > lower.Value);
-						}
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc >= lower.Value);
+                            else
+                                query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc > lower.Value);
+                        }
 
-						if (upper.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc <= upper.Value);
-							else
-								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc < upper.Value);
-						}
-					}
-				}
-				else if (filter.FieldName == "availableend")
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as DateTime?;
-						var upper = rangeFilter.UpperTerm as DateTime?;
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc <= upper.Value);
+                            else
+                                query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc < upper.Value);
+                        }
+                    }
+                }
+                else if (filter.FieldName == "availableend")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as DateTime?;
+                        var upper = rf.UpperTerm as DateTime?;
 
-						if (lower.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc >= lower.Value);
-							else
-								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc > lower.Value);
-						}
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc >= lower.Value);
+                            else
+                                query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc > lower.Value);
+                        }
 
-						if (upper.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc <= upper.Value);
-							else
-								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc < upper.Value);
-						}
-					}
-				}
-				else if (filter.FieldName == "visibleindividually")
-				{
-					query = query.Where(x => x.VisibleIndividually == (bool)filter.Term);
-				}
-				else if (filter.FieldName == "showonhomepage")
-				{
-					query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
-				}
-				else if (filter.FieldName == "typeid")
-				{
-					query = query.Where(x => x.ProductTypeId == (int)filter.Term);
-				}
-				else if (filter.FieldName == "stockquantity")
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as int?;
-						var upper = rangeFilter.UpperTerm as int?;
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc <= upper.Value);
+                            else
+                                query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc < upper.Value);
+                        }
+                    }
+                }
+                else if (filter.FieldName == "visibility")
+                {
+                    var visibility = (ProductVisibility)filter.Term;
+                    switch (visibility)
+                    {
+                        case ProductVisibility.SearchResults:
+                            query = query.Where(x => x.Visibility <= visibility);
+                            break;
+                        default:
+                            query = query.Where(x => x.Visibility == visibility);
+                            break;
+                    }
+                }
+                else if (filter.FieldName == "showonhomepage")
+                {
+                    query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "download")
+                {
+                    query = query.Where(p => p.IsDownload == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "recurring")
+                {
+                    query = query.Where(p => p.IsRecurring == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "shipenabled")
+                {
+                    query = query.Where(p => p.IsShipEnabled == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "shipfree")
+                {
+                    query = query.Where(p => p.IsFreeShipping == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "taxexempt")
+                {
+                    query = query.Where(p => p.IsTaxExempt == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "esd")
+                {
+                    query = query.Where(p => p.IsEsd == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "discount")
+                {
+                    query = query.Where(p => p.HasDiscountsApplied == (bool)filter.Term);
+                }
+                else if (filter.FieldName == "typeid")
+                {
+                    query = query.Where(x => x.ProductTypeId == (int)filter.Term);
+                }
+                else if (filter.FieldName == "stockquantity")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as int?;
+                        var upper = rf.UpperTerm as int?;
 
-						if (lower.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => x.StockQuantity >= lower.Value);
-							else
-								query = query.Where(x => x.StockQuantity > lower.Value);
-						}
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => x.StockQuantity >= lower.Value);
+                            else
+                                query = query.Where(x => x.StockQuantity > lower.Value);
+                        }
 
-						if (upper.HasValue)
-						{
-							if (rangeFilter.IncludesUpper)
-								query = query.Where(x => x.StockQuantity <= upper.Value);
-							else
-								query = query.Where(x => x.StockQuantity < upper.Value);
-						}
-					}
-				}
-				else if (filter.FieldName == "rating")
-				{
-					query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) >= (double)filter.Term);
-				}
-				else if (filter.FieldName == "available")
-				{
-					// We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
-					var manageStock = (int)ManageInventoryMethod.ManageStock;
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesUpper)
+                                query = query.Where(x => x.StockQuantity <= upper.Value);
+                            else
+                                query = query.Where(x => x.StockQuantity < upper.Value);
+                        }
+                    }
+                    else
+                    {
+                        if (filter.Occurence == SearchFilterOccurence.MustNot)
+                            query = query.Where(x => x.StockQuantity != (int)filter.Term);
+                        else
+                            query = query.Where(x => x.StockQuantity == (int)filter.Term);
+                    }
+                }
+                else if (filter.FieldName == "rating")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as double?;
+                        var upper = rf.UpperTerm as double?;
 
-					query = query.Where(x => 
-						x.ManageInventoryMethodId != manageStock ||
-						(x.ManageInventoryMethodId == manageStock && (x.StockQuantity > 0 || x.BackorderModeId != (int)BackorderMode.NoBackorders))
-					);
-				}
-				else if (filter.FieldName.StartsWith("price"))
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as double?;
-						var upper = rangeFilter.UpperTerm as double?;
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) >= lower.Value);
+                            else
+                                query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) > lower.Value);
+                        }
 
-						if (lower.HasValue)
-						{
-							var minPrice = Convert.ToDecimal(lower.Value);
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesUpper)
+                                query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) <= upper.Value);
+                            else
+                                query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) < upper.Value);
+                        }
+                    }
+                    else
+                    {
+                        if (filter.Occurence == SearchFilterOccurence.MustNot)
+                            query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) != (double)filter.Term);
+                        else
+                            query = query.Where(x => x.ApprovedTotalReviews != 0 && ((double)x.ApprovedRatingSum / (double)x.ApprovedTotalReviews) == (double)filter.Term);
+                    }
+                }
+                else if (filter.FieldName == "available")
+                {
+                    query = query.Where(x =>
+                        x.ManageInventoryMethodId == (int)ManageInventoryMethod.DontManageStock ||
+                        (x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock && (x.StockQuantity > 0 || x.BackorderModeId != (int)BackorderMode.NoBackorders)) ||
+                        (x.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes && x.ProductVariantAttributeCombinations.Any(pvac => pvac.StockQuantity > 0 || pvac.AllowOutOfStockOrders))
+                    );
+                }
+                else if (filter.FieldName.StartsWith("price"))
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as double?;
+                        var upper = rf.UpperTerm as double?;
 
-							query = query.Where(x =>
-								((x.SpecialPrice.HasValue &&
-								((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
-								(!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
-								(x.SpecialPrice >= minPrice))
-								||
-								((!x.SpecialPrice.HasValue ||
-								((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
-								(x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
-								(x.Price >= minPrice))
-							);
-						}
+                        if (lower.HasValue)
+                        {
+                            var minPrice = Convert.ToDecimal(lower.Value);
 
-						if (upper.HasValue)
-						{
-							var maxPrice = Convert.ToDecimal(upper);
+                            query = query.Where(x =>
+                                ((x.SpecialPrice.HasValue &&
+                                ((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
+                                (!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
+                                (x.SpecialPrice >= minPrice))
+                                ||
+                                ((!x.SpecialPrice.HasValue ||
+                                ((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
+                                (x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
+                                (x.Price >= minPrice))
+                            );
+                        }
 
-							query = query.Where(x =>
-								((x.SpecialPrice.HasValue &&
-								((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
-								(!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
-								(x.SpecialPrice <= maxPrice))
-								||
-								((!x.SpecialPrice.HasValue ||
-								((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
-								(x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
-								(x.Price <= maxPrice))
-							);
-						}
-					}
-				}
-				else if (filter.FieldName == "createdon")
-				{
-					if (rangeFilter != null)
-					{
-						var lower = filter.Term as DateTime?;
-						var upper = rangeFilter.UpperTerm as DateTime?;
+                        if (upper.HasValue)
+                        {
+                            var maxPrice = Convert.ToDecimal(upper);
 
-						if (lower.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => x.CreatedOnUtc >= lower.Value);
-							else
-								query = query.Where(x => x.CreatedOnUtc > lower.Value);
-						}
+                            query = query.Where(x =>
+                                ((x.SpecialPrice.HasValue &&
+                                ((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
+                                (!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
+                                (x.SpecialPrice <= maxPrice))
+                                ||
+                                ((!x.SpecialPrice.HasValue ||
+                                ((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
+                                (x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
+                                (x.Price <= maxPrice))
+                            );
+                        }
+                    }
+                    else
+                    {
+                        var price = Convert.ToDecimal(filter.Term);
 
-						if (upper.HasValue)
-						{
-							if (rangeFilter.IncludesLower)
-								query = query.Where(x => x.CreatedOnUtc <= upper.Value);
-							else
-								query = query.Where(x => x.CreatedOnUtc < upper.Value);
-						}
-					}
-				}
-				else if (filter.FieldName == "storeid")
-				{
-					if (!QuerySettings.IgnoreMultiStore)
-					{
-						var storeId = (int)filter.Term;
-						if (storeId != 0)
-						{
+                        if (filter.Occurence == SearchFilterOccurence.MustNot)
+                        {
+                            query = query.Where(x =>
+                                ((x.SpecialPrice.HasValue &&
+                                ((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
+                                (!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
+                                (x.SpecialPrice != price))
+                                ||
+                                ((!x.SpecialPrice.HasValue ||
+                                ((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
+                                (x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
+                                (x.Price != price))
+                            );
+                        }
+                        else
+                        {
+                            query = query.Where(x =>
+                                ((x.SpecialPrice.HasValue &&
+                                ((!x.SpecialPriceStartDateTimeUtc.HasValue || x.SpecialPriceStartDateTimeUtc.Value < utcNow) &&
+                                (!x.SpecialPriceEndDateTimeUtc.HasValue || x.SpecialPriceEndDateTimeUtc.Value > utcNow))) &&
+                                (x.SpecialPrice == price))
+                                ||
+                                ((!x.SpecialPrice.HasValue ||
+                                ((x.SpecialPriceStartDateTimeUtc.HasValue && x.SpecialPriceStartDateTimeUtc.Value > utcNow) ||
+                                (x.SpecialPriceEndDateTimeUtc.HasValue && x.SpecialPriceEndDateTimeUtc.Value < utcNow))) &&
+                                (x.Price == price))
+                            );
+                        }
+                    }
+                }
+                else if (filter.FieldName == "createdon")
+                {
+                    if (rf != null)
+                    {
+                        var lower = filter.Term as DateTime?;
+                        var upper = rf.UpperTerm as DateTime?;
+
+                        if (lower.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => x.CreatedOnUtc >= lower.Value);
+                            else
+                                query = query.Where(x => x.CreatedOnUtc > lower.Value);
+                        }
+
+                        if (upper.HasValue)
+                        {
+                            if (rf.IncludesLower)
+                                query = query.Where(x => x.CreatedOnUtc <= upper.Value);
+                            else
+                                query = query.Where(x => x.CreatedOnUtc < upper.Value);
+                        }
+                    }
+                    else
+                    {
+                        if (filter.Occurence == SearchFilterOccurence.MustNot)
+                            query = query.Where(x => x.CreatedOnUtc != (DateTime)filter.Term);
+                        else
+                            query = query.Where(x => x.CreatedOnUtc == (DateTime)filter.Term);
+                    }
+                }
+                else if (filter.FieldName == "storeid")
+                {
+                    if (!QuerySettings.IgnoreMultiStore)
+                    {
+                        var storeId = (int)filter.Term;
+                        if (storeId != 0)
+                        {
+                            isGroupingRequired = true;
                             query =
-								from p in query
-								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
-								from sm in psm.DefaultIfEmpty()
-								where !p.LimitedToStores || sm.StoreId == storeId
-								select p;
-						}
-					}
-				}
+                                from p in query
+                                join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+                                from sm in psm.DefaultIfEmpty()
+                                where !p.LimitedToStores || sm.StoreId == storeId
+                                select p;
+                        }
+                    }
+                }
 			}
 
             #endregion
 
             // Grouping is very slow if there are many products.
-            query =
-                from p in query
-                group p by p.Id into grp
-                orderby grp.Key
-                select grp.FirstOrDefault();
+            if (isGroupingRequired)
+            {
+                query =
+                    from p in query
+                    group p by p.Id into grp
+                    orderby grp.Key
+                    select grp.FirstOrDefault();
+            }
 
             #region Sorting
 
@@ -533,7 +656,7 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			#endregion
+            #endregion
 
 			return query;
 		}
@@ -580,8 +703,7 @@ namespace SmartStore.Services.Search
 
 					foreach (var category in categories)
 					{
-						string label = null;
-						names.TryGetValue(category.Id, out label);
+						names.TryGetValue(category.Id, out var label);
 
 						facets.Add(new Facet(new FacetValue(category.Id, IndexTypeCode.Int32)
 						{
@@ -605,8 +727,7 @@ namespace SmartStore.Services.Search
 
 					foreach (var manu in manufacturers)
 					{
-						string label = null;
-						names.TryGetValue(manu.Id, out label);
+						names.TryGetValue(manu.Id, out var label);
 
 						facets.Add(new Facet(new FacetValue(manu.Id, IndexTypeCode.Int32)
 						{
@@ -628,8 +749,7 @@ namespace SmartStore.Services.Search
 						if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
 							break;
 
-						string label = null;
-						names.TryGetValue(deliveryTime.Id, out label);
+						names.TryGetValue(deliveryTime.Id, out var label);
 
 						facets.Add(new Facet(new FacetValue(deliveryTime.Id, IndexTypeCode.Int32)
 						{
@@ -739,10 +859,11 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
-			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+            _services.EventPublisher.Publish(new CatalogSearchingEvent(searchQuery, true));
 
 			var totalHits = 0;
-			Func<IList<Product>> hitsFactory = null;
+            int[] hitsEntityIds = null;
+            Func<IList<Product>> hitsFactory = null;
 			IDictionary<string, FacetGroup> facets = null;
 
 			if (searchQuery.Take > 0)
@@ -765,8 +886,8 @@ namespace SmartStore.Services.Search
 						.Skip(() => skip)
 						.Take(() => searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).ToArray();
-					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+                    hitsEntityIds = query.Select(x => x.Id).ToArray();
+					hitsFactory = () => _productService.GetProductsByIds(hitsEntityIds, loadFlags);
 				}
 
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
@@ -779,11 +900,12 @@ namespace SmartStore.Services.Search
 				null,
 				searchQuery,
 				totalHits,
-				hitsFactory,
+                hitsEntityIds,
+                hitsFactory,
 				null,
 				facets);
 
-			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+			_services.EventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 
 			return result;
 		}

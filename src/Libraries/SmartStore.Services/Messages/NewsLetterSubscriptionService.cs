@@ -2,27 +2,27 @@ using System;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Messages
 {
-	public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
+    public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
     {
         private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
-		private readonly ICommonServices _services;
+        private readonly IRepository<Customer> _customerRepository;
+        private readonly ICommonServices _services;
 
-		public NewsLetterSubscriptionService(IRepository<NewsLetterSubscription> subscriptionRepository, ICommonServices services)
+		public NewsLetterSubscriptionService(
+            IRepository<NewsLetterSubscription> subscriptionRepository,
+            IRepository<Customer> customerRepository,
+            ICommonServices services)
         {
             _subscriptionRepository = subscriptionRepository;
+            _customerRepository = customerRepository;
 			_services = services;
 		}
 
-        /// <summary>
-        /// Inserts a newsletter subscription
-        /// </summary>
-        /// <param name="newsLetterSubscription">NewsLetter subscription</param>
-        /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public void InsertNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
 			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
@@ -45,11 +45,6 @@ namespace SmartStore.Services.Messages
             }
         }
 
-        /// <summary>
-        /// Updates a newsletter subscription
-        /// </summary>
-        /// <param name="newsLetterSubscription">NewsLetter subscription</param>
-        /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public void UpdateNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
 			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
@@ -90,11 +85,6 @@ namespace SmartStore.Services.Messages
             }
         }
 
-        /// <summary>
-        /// Deletes a newsletter subscription
-        /// </summary>
-        /// <param name="newsLetterSubscription">NewsLetter subscription</param>
-        /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public virtual void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
 			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
@@ -153,11 +143,6 @@ namespace SmartStore.Services.Messages
 			return result;
 		}
 
-		/// <summary>
-		/// Gets a newsletter subscription by newsletter subscription identifier
-		/// </summary>
-		/// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
-		/// <returns>NewsLetter subscription</returns>
 		public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
         {
             if (newsLetterSubscriptionId == 0) return null;
@@ -166,11 +151,6 @@ namespace SmartStore.Services.Messages
             return queuedEmail;
         }
 
-        /// <summary>
-        /// Gets a newsletter subscription by newsletter subscription GUID
-        /// </summary>
-        /// <param name="newsLetterSubscriptionGuid">The newsletter subscription GUID</param>
-        /// <returns>NewsLetter subscription</returns>
         public virtual NewsLetterSubscription GetNewsLetterSubscriptionByGuid(Guid newsLetterSubscriptionGuid)
         {
             if (newsLetterSubscriptionGuid == Guid.Empty) return null;
@@ -183,12 +163,6 @@ namespace SmartStore.Services.Messages
             return newsLetterSubscriptions.FirstOrDefault();
         }
 
-        /// <summary>
-        /// Gets a newsletter subscription by email
-        /// </summary>
-        /// <param name="email">The newsletter subscription email</param>
-		/// <param name="storeId">The store identifier</param>
-        /// <returns>NewsLetter subscription</returns>
         public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email, int storeId = 0)
         {
 			if (!email.IsEmail())
@@ -207,46 +181,58 @@ namespace SmartStore.Services.Messages
 			return subscription;
         }
 
-        /// <summary>
-        /// Gets the newsletter subscription list
-        /// </summary>
-        /// <param name="email">Email to search or string. Empty to load all records.</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-		/// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
-		/// <param name="storeId">The store identifier</param>
-        /// <returns>NewsLetterSubscription entity list</returns>
-        public virtual IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email, int pageIndex, int pageSize, bool showHidden = false, int storeId = 0)
+        public virtual IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscriptions(
+            string email,
+            int pageIndex,
+            int pageSize,
+            bool showHidden = false,
+            int[] storeIds = null,
+            int[] customerRolesIds = null)
         {
-            var query = _subscriptionRepository.Table;
+            var customerQuery = _customerRepository.Table.Where(x => !x.Deleted);
 
-			if (!String.IsNullOrEmpty(email))
-			{
-				query = query.Where(nls => nls.Email.Contains(email));
-			}
-            
-			if (!showHidden)
+            // Note, changing the shape makes eager loading for customer entity impossible here.
+            var query =
+                from ns in _subscriptionRepository.Table
+                join c in customerQuery on ns.Email equals c.Email into customers
+                from c in customers.DefaultIfEmpty()
+                select new NewsletterSubscriber
+                {
+                    Subscription = ns,
+                    Customer = c
+                };
+
+            if (email.HasValue())
             {
-                query = query.Where(nls => nls.Active);
+                query = query.Where(x => x.Subscription.Email.Contains(email));
             }
 
-			if (storeId > 0)
-			{
-				query = query.Where(x => x.StoreId == storeId);
-			}
+            if (!showHidden)
+            {
+                query = query.Where(x => x.Subscription.Active);
+            }
 
-            query = query.OrderBy(nls => nls.Email).ThenBy(x => x.StoreId);
+            if (storeIds?.Any() ?? false)
+            {
+                query = query.Where(x => storeIds.Contains(x.Subscription.StoreId));
+            }
 
-            var newsletterSubscriptions = new PagedList<NewsLetterSubscription>(query, pageIndex, pageSize);
-            return newsletterSubscriptions;
+            if (customerRolesIds?.Any() ?? false)
+            {
+                query = query.Where(x => x.Customer.CustomerRoleMappings
+                    .Where(rm => rm.CustomerRole.Active)
+                    .Select(rm => rm.CustomerRoleId)
+                    .Intersect(customerRolesIds).Count() > 0);
+            }
+
+            query = query
+                .OrderBy(x => x.Subscription.Email)
+                .ThenBy(x => x.Subscription.StoreId);
+
+            var result = new PagedList<NewsletterSubscriber>(query, pageIndex, pageSize);
+            return result;
         }
 
-        /// <summary>
-        /// Publishes the subscription event.
-        /// </summary>
-        /// <param name="email">The email.</param>
-        /// <param name="isSubscribe">if set to <c>true</c> [is subscribe].</param>
-        /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         private void PublishSubscriptionEvent(string email, bool isSubscribe, bool publishSubscriptionEvents)
         {
             if (publishSubscriptionEvents)
@@ -262,11 +248,6 @@ namespace SmartStore.Services.Messages
             }
         }
 
-		/// <summary>
-		/// Ensures the subscriber email or throw.
-		/// </summary>
-		/// <param name="email">The email.</param>
-		/// <returns></returns>
 		private static string EnsureSubscriberEmailOrThrow(string email)
 		{
 			string output = email.EmptyNull().Trim().Truncate(255);
@@ -278,5 +259,5 @@ namespace SmartStore.Services.Messages
 
 			return output;
 		}
-    }
+    }    
 }

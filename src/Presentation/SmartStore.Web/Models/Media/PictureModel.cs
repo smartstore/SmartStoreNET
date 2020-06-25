@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework.Modelling;
+﻿using SmartStore.Services.Media;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Media
 {
@@ -13,5 +14,7 @@ namespace SmartStore.Web.Models.Media
 		public int? FullSizeImageHeight { get; set; }
 		public string Title { get; set; }
         public string AlternateText { get; set; }
+
+        public MediaFileInfo File { get; set; }
     }
 }

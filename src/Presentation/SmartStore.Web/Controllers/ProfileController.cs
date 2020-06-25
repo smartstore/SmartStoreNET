@@ -14,7 +14,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Profile;
 
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Controllers
     public partial class ProfileController : PublicControllerBase
     {
         private readonly IForumService _forumService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ICountryService _countryService;
         private readonly ICustomerService _customerService;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -33,8 +33,9 @@ namespace SmartStore.Web.Controllers
         private readonly CustomerSettings _customerSettings;
         private readonly MediaSettings _mediaSettings;
 
-        public ProfileController(IForumService forumService,
-            IPictureService pictureService,
+        public ProfileController(
+            IForumService forumService,
+            IMediaService mediaService,
             ICountryService countryService,
             ICustomerService customerService,
             IGenericAttributeService genericAttributeService,
@@ -44,7 +45,7 @@ namespace SmartStore.Web.Controllers
             MediaSettings mediaSettings)
         {
             _forumService = forumService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _countryService = countryService;
             _customerService = customerService;
             _genericAttributeService = genericAttributeService;
@@ -91,7 +92,7 @@ namespace SmartStore.Web.Controllers
                 Id = customer.Id
             };
 
-            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, null, true);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, null, true);
 
             // Location.
             if (_customerSettings.ShowCustomersLocation)

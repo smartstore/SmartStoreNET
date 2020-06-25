@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.UI
 			}
 			else
 			{
-				HtmlHelper.RenderAction("Menu", "Common", new
+				HtmlHelper.RenderAction("Menu", "Menu", new
 				{
 					area = "",
 					name = Component.Name,
@@ -39,7 +39,7 @@ namespace SmartStore.Web.Framework.UI
 			}
 			else
 			{
-				HtmlHelper.RenderAction("Menu", "Common", new { area = "", name = c.Name, template = c.Template });
+				HtmlHelper.RenderAction("Menu", "Menu", new { area = "", name = c.Name, template = c.Template });
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace SmartStore.Web.Framework.UI
 			}
 			else
 			{
-				return HtmlHelper.Action("Menu", "Common", new { area = "", name = c.Name, template = c.Template }).ToHtmlString();
+				return HtmlHelper.Action("Menu", "Menu", new { area = "", name = c.Name, template = c.Template }).ToHtmlString();
 			}
 		}
 	}

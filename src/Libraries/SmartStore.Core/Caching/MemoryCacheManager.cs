@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Core.Caching
 {
@@ -68,34 +69,37 @@ namespace SmartStore.Core.Caching
 			return false;
 		}
 
-		public T Get<T>(string key, bool independent = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>(string key, bool independent = false)
 		{
 			TryGet(key, independent, out T value);
 			return value;
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
+        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
         {
 			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			if (_scopeAccessor.Value.HasScope(key))
+			if (!allowRecursion && _scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
 
 			// Get the (semaphore) locker specific to this key
-			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromMinutes(1)))
+			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromSeconds(5)))
 			{
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.Value.BeginScope(key))
+					var scope = !allowRecursion ? _scopeAccessor.Value.BeginScope(key) : ActionDisposable.Empty;
+					using (scope)
 					{
 						value = acquirer();
-						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						var dependencies = !allowRecursion ? _scopeAccessor.Value.Current?.Dependencies : (IEnumerable<string>)null;
+						Put(key, value, duration, dependencies);
 						return value;
 					}
 				}
@@ -104,14 +108,14 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
+		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false, bool allowRecursion = false)
 		{
 			if (TryGet(key, independent, out T value))
 			{
 				return value;
 			}
 
-			if (_scopeAccessor.Value.HasScope(key))
+			if (!allowRecursion && _scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
@@ -121,10 +125,12 @@ namespace SmartStore.Core.Caching
 			{
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.Value.BeginScope(key))
+					var scope = !allowRecursion ? _scopeAccessor.Value.BeginScope(key) : ActionDisposable.Empty;
+					using (scope)
 					{
 						value = await acquirer();
-						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
+						var dependencies = !allowRecursion ? _scopeAccessor.Value.Current?.Dependencies : (IEnumerable<string>)null;
+						Put(key, value, duration, dependencies);
 						return value;
 					}
 				}

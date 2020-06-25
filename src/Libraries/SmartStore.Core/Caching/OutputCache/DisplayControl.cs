@@ -25,7 +25,7 @@ namespace SmartStore.Core.Caching
 			[typeof(Category)]							= (x, c) => new[] { "c" + x.Id },
 			[typeof(Manufacturer)]						= (x, c) => new[] { "m" + x.Id },
 			[typeof(ProductBundleItem)]					= (x, c) => new[] { "p" + ((ProductBundleItem)x).ProductId },
-			[typeof(ProductPicture)]					= (x, c) => new[] { "p" + ((ProductPicture)x).ProductId },
+			[typeof(ProductMediaFile)]					= (x, c) => new[] { "p" + ((ProductMediaFile)x).ProductId },
 			[typeof(ProductSpecificationAttribute)]		= (x, c) => new[] { "p" + ((ProductSpecificationAttribute)x).ProductId },
 			[typeof(ProductVariantAttributeCombination)]= (x, c) => new[] { "p" + ((ProductVariantAttributeCombination)x).ProductId },
 			[typeof(TierPrice)]							= (x, c) => new[] { "p" + ((TierPrice)x).ProductId },

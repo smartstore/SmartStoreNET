@@ -9,13 +9,13 @@
 
 @include media-breakpoint-down(md) {
     html {
-        font-size: 15px;
+        font-size: $font-size-root-md;
     }
 }
 
 @include media-breakpoint-down(sm) {
     html {
-        font-size: 14px;
+        font-size: $font-size-root-sm;
     }
 }
 
@@ -30,6 +30,8 @@ html {
 
 body { 
     background: $site-bg;
+    // INFO: Sticky elements won't work anymore with overflow-x: hidden on #page element
+    overflow-x: hidden; 
 
     &.popup { 
         padding: 1.25rem; 
@@ -46,9 +48,11 @@ body {
     }
 }
 
-#page {
-    overflow-x: hidden;  
-}
+.touchevents body:not(.has-sticky-content) #page {
+    // INFO: Sticky elements won't work anymore with overflow-x: hidden on #page element
+    // INFO 2: apparently without 'overflow-x: hidden' #page gets very glitchy on mobile. Observe this and leave it active for now.
+    overflow-x: hidden;
+}  
 
 #header {
     background-color: $header-bg;
@@ -59,8 +63,8 @@ body {
 }
 
 #content {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-top: var(--content-margin-top, 1.5rem);
+    margin-bottom: var(--content-margin-bottom, 1.5rem);
 }
 
 .page-main {

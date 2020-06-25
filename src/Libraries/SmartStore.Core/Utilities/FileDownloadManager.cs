@@ -48,7 +48,7 @@ namespace SmartStore.Utilities
 			else
 			{
 				req = WebRequest.CreateHttp(url);
-				req.UserAgent = "SmartStore.NET";
+				req.UserAgent = "Smartstore";
 			}
 
 			if (timeout.HasValue)
@@ -60,6 +60,7 @@ namespace SmartStore.Utilities
 			{
 				req.SetFormsAuthenticationCookie(_httpRequest);
 				req.SetAnonymousIdentCookie(_httpRequest);
+                req.SetVisitorCookie(_httpRequest);
 			}
 
 			using (var resp = (HttpWebResponse)req.GetResponse())

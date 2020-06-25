@@ -1,19 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class ManufacturerService : IManufacturerService
+    public partial class ManufacturerService : IManufacturerService, IXmlSitemapPublisher
     {
         private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "productmanufacturer:allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
         private const string PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY = "productmanufacturer:allbyproductid-{0}-{1}-{2}";
@@ -24,9 +26,9 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly IWorkContext _workContext;
+        private readonly IRepository<AclRecord> _aclRepository;
+        private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
 
 		public ManufacturerService(IRequestCache requestCache,
@@ -34,20 +36,20 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<Product> productRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			IWorkContext workContext,
-			IStoreContext storeContext,
-            IEventPublisher eventPublisher)
+            IRepository<AclRecord> aclRepository,
+            IWorkContext workContext,
+			IStoreContext storeContext)
         {
             _requestCache = requestCache;
             _manufacturerRepository = manufacturerRepository;
             _productManufacturerRepository = productManufacturerRepository;
             _productRepository = productRepository;
 			_storeMappingRepository = storeMappingRepository;
+            _aclRepository = aclRepository;
 			_workContext = workContext;
 			_storeContext = storeContext;
-            _eventPublisher = eventPublisher;
 
-			this.QuerySettings = DbQuerySettings.Default;
+			QuerySettings = DbQuerySettings.Default;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -63,28 +65,53 @@ namespace SmartStore.Services.Catalog
 
 		public virtual IQueryable<Manufacturer> GetManufacturers(bool showHidden = false, int storeId = 0)
 		{
-			var query = _manufacturerRepository.Table
-				.Where(m => !m.Deleted);
+            var grouping = false;
+            var entityName = nameof(Manufacturer);
+            var query = _manufacturerRepository.Table.Where(m => !m.Deleted);
 
-			if (!showHidden)
-				query = query.Where(m => m.Published);
+            if (!showHidden)
+            {
+                query = query.Where(m => m.Published);
+            }
 
-			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+            // Store mapping.
+            if (!showHidden && storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from m in query
 						join sm in _storeMappingRepository.Table
-						on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+						on new { m1 = m.Id, m2 = entityName } equals new { m1 = sm.EntityId, m2 = sm.EntityName } into m_sm
 						from sm in m_sm.DefaultIfEmpty()
 						where !m.LimitedToStores || storeId == sm.StoreId
 						select m;
 
-				query = from m in query
-						group m by m.Id into mGroup
-						orderby mGroup.Key
-						select mGroup.FirstOrDefault();
+                grouping = true;
 			}
 
-			return query;
+            // ACL (access control list).
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
+
+                query = from m in query
+                        join a in _aclRepository.Table
+                        on new { m1 = m.Id, m2 = entityName } equals new { m1 = a.EntityId, m2 = a.EntityName } into ma
+                        from a in ma.DefaultIfEmpty()
+                        where !m.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                        select m;
+
+                grouping = true;
+            }
+
+            if (grouping)
+            {
+                query = 
+                    from m in query
+                    group m by m.Id into mGroup
+                    orderby mGroup.Key
+                    select mGroup.FirstOrDefault();
+            }
+
+            return query;
 		}
 
         public virtual IList<Manufacturer> GetAllManufacturers(bool showHidden = false)
@@ -184,40 +211,24 @@ namespace SmartStore.Services.Catalog
         public virtual IPagedList<ProductManufacturer> GetProductManufacturersByManufacturerId(int manufacturerId, int pageIndex, int pageSize, bool showHidden = false)
         {
             if (manufacturerId == 0)
+            {
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);
+            }
 
-			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
+            var storeId = _storeContext.CurrentStore.Id;
+            var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
+            var rolesToken = QuerySettings.IgnoreAcl || showHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
+            var key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, rolesToken, storeToken);
+
             return _requestCache.Get(key, () =>
             {
                 var query = from pm in _productManufacturerRepository.Table
                             join p in _productRepository.Table on pm.ProductId equals p.Id
                             where pm.ManufacturerId == manufacturerId && !p.Deleted && (showHidden || p.Published)
-                            orderby pm.DisplayOrder
                             select pm;
 
-				if (!showHidden)
-				{
-					if (!QuerySettings.IgnoreMultiStore)
-					{
-						//Store mapping
-						var currentStoreId = _storeContext.CurrentStore.Id;
-						query = from pm in query
-								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-								join sm in _storeMappingRepository.Table
-								on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-								from sm in m_sm.DefaultIfEmpty()
-								where !m.LimitedToStores || currentStoreId == sm.StoreId
-								select pm;
-					}
-
-					//only distinct manufacturers (group by ID)
-					query = from pm in query
-							group pm by pm.Id into pmGroup
-							orderby pmGroup.Key
-							select pmGroup.FirstOrDefault();
-
-					query = query.OrderBy(pm => pm.DisplayOrder);
-				}
+                query = ApplyHiddenProductManufacturerFilter(query, storeId, showHidden);
+                query = query.OrderBy(pm => pm.DisplayOrder);
 
                 var productManufacturers = new PagedList<ProductManufacturer>(query, pageIndex, pageSize);
                 return productManufacturers;
@@ -227,64 +238,49 @@ namespace SmartStore.Services.Catalog
         public virtual IList<ProductManufacturer> GetProductManufacturersByProductId(int productId, bool showHidden = false)
         {
             if (productId == 0)
+            {
                 return new List<ProductManufacturer>();
+            }
 
-			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
+            var storeId = _storeContext.CurrentStore.Id;
+            var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
+            var rolesToken = QuerySettings.IgnoreAcl || showHidden ? "0" : _workContext.CurrentCustomer.GetRolesIdent();
+            var key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, rolesToken, storeToken);
+
             return _requestCache.Get(key, () =>
-				{
-					var query = from pm in _productManufacturerRepository.Table
-								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-								where pm.ProductId == productId && !m.Deleted && (showHidden || m.Published)
-								orderby pm.DisplayOrder
-								select pm;
+			{
+				var query = from pm in _productManufacturerRepository.Table
+							join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+							where pm.ProductId == productId && !m.Deleted && (showHidden || m.Published)
+							select pm;
 
-					if (!showHidden)
-					{
-						if (!QuerySettings.IgnoreMultiStore)
-						{
-							// Store mapping
-							var currentStoreId = _storeContext.CurrentStore.Id;
-							query = from pm in query
-									join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
-									join sm in _storeMappingRepository.Table
-									on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-									from sm in m_sm.DefaultIfEmpty()
-									where !m.LimitedToStores || currentStoreId == sm.StoreId
-									select pm;
-						}
+                query = ApplyHiddenProductManufacturerFilter(query, storeId, showHidden);
+                query = query.OrderBy(pm => pm.DisplayOrder);
+                query = query.Include(pm => pm.Manufacturer.MediaFile);
 
-						// Only distinct manufacturers (group by ID)
-						query = from pm in query
-								group pm by pm.Id into mGroup
-								orderby mGroup.Key
-								select mGroup.FirstOrDefault();
-
-						query = query.OrderBy(pm => pm.DisplayOrder);
-					}
-
-                    query = query.Include(x => x.Manufacturer.Picture);
-
-                    var productManufacturers = query.ToList();
-					return productManufacturers;
-				});
+                var productManufacturers = query.ToList();
+				return productManufacturers;
+			});
         }
 
-		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds)
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds, bool showHidden = false)
 		{
 			Guard.NotNull(manufacturerIds, nameof(manufacturerIds));
 
-			var query = _productManufacturerRepository.TableUntracked
-				.Where(x => manufacturerIds.Contains(x.ManufacturerId))
-				.OrderBy(x => x.DisplayOrder);
+            var query = _productManufacturerRepository.TableUntracked
+				.Where(x => manufacturerIds.Contains(x.ManufacturerId));
 
-			var map = query
+            query = ApplyHiddenProductManufacturerFilter(query, _storeContext.CurrentStore.Id, showHidden);
+            query = query.OrderBy(pm => pm.DisplayOrder);
+
+            var map = query
 				.ToList()
 				.ToMultimap(x => x.ManufacturerId, x => x);
 
 			return map;
 		}
 
-		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds, bool showHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -299,7 +295,8 @@ namespace SmartStore.Services.Catalog
 				where !pm.Manufacturer.Deleted && productIds.Contains(pm.ProductId)
 				select pm;
 
-			query = query.Include(x => x.Manufacturer.Picture);
+            query = ApplyHiddenProductManufacturerFilter(query, _storeContext.CurrentStore.Id, showHidden);
+            query = query.Include(x => x.Manufacturer.MediaFile);
 
 			var map = query
 				.OrderBy(x => x.ProductId)
@@ -340,5 +337,88 @@ namespace SmartStore.Services.Catalog
             _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
             _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
         }
-    }
+
+        protected virtual IQueryable<ProductManufacturer> ApplyHiddenProductManufacturerFilter(IQueryable<ProductManufacturer> query, int storeId = 0, bool showHidden = false)
+        {
+            var entityName = nameof(Manufacturer);
+            var grouping = false;
+
+            // Store mapping.
+            if (!showHidden && storeId > 0 && !QuerySettings.IgnoreMultiStore)
+            {
+                query = 
+                    from pm in query
+                    join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+                    join sm in _storeMappingRepository.Table
+                    on new { m1 = m.Id, m2 = entityName } equals new { m1 = sm.EntityId, m2 = sm.EntityName } into m_sm
+                    from sm in m_sm.DefaultIfEmpty()
+                    where !m.LimitedToStores || storeId == sm.StoreId
+                    select pm;
+
+                grouping = true;
+            }
+
+            // ACL (access control list).
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
+
+                query =
+                    from pm in query
+                    join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+                    join a in _aclRepository.Table
+                    on new { m1 = m.Id, m2 = entityName } equals new { m1 = a.EntityId, m2 = a.EntityName } into ma
+                    from a in ma.DefaultIfEmpty()
+                    where !m.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                    select pm;
+
+                grouping = true;
+            }
+
+            if (grouping)
+            {
+                query =
+                    from pm in query
+                    group pm by pm.Id into pmGroup
+                    orderby pmGroup.Key
+                    select pmGroup.FirstOrDefault();
+            }
+
+            return query;
+        }
+
+        #region XML Sitemap
+
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesManufacturers)
+				return null;
+
+			var query = GetManufacturers(false, context.RequestStoreId).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
+			return new ManufacturerXmlSitemapResult { Query = query };
+		}
+
+		class ManufacturerXmlSitemapResult : XmlSitemapProvider
+		{
+			public IQueryable<Manufacturer> Query { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var topics = Query.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			public override int Order => int.MinValue + 100;
+		}
+
+		#endregion
+	}
 }

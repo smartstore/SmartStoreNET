@@ -31,12 +31,12 @@ namespace SmartStore.Core.Infrastructure
 		protected virtual void RunStartupTasks()
         {
 			var typeFinder = _containerManager.Resolve<ITypeFinder>();
-            var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>(ignoreInactivePlugins: true);
-            var startUpTasks = new List<IStartupTask>();
+            var startUpTaskTypes = typeFinder.FindClassesOfType<IApplicationStart>(ignoreInactivePlugins: true);
+            var startUpTasks = new List<IApplicationStart>();
 
             foreach (var startUpTaskType in startUpTaskTypes)
             {
-				startUpTasks.Add((IStartupTask)Activator.CreateInstance(startUpTaskType));
+				startUpTasks.Add((IApplicationStart)Activator.CreateInstance(startUpTaskType));
             }
 
 			// execute tasks async grouped by order
@@ -48,7 +48,7 @@ namespace SmartStore.Core.Infrastructure
 					try
 					{
 						Logger.DebugFormat("Executing startup task '{0}'", task.GetType().FullName);
-						task.Execute();
+						task.Start();
 					}
 					catch (Exception ex)
 					{

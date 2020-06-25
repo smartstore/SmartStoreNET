@@ -6,6 +6,13 @@ using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Core.Domain.Tasks
 {
+    public enum TaskPriority
+    {
+        Low = -1,
+        Normal = 0,
+        High = 1
+    }
+    
     [DebuggerDisplay("{Name} (Type: {Type})")]
 	[Hookable(false)]
 	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
@@ -38,6 +45,11 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         [Index("IX_NextRun_Enabled", 1)]
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the task priority. Tasks with higher priority run first when multiple tasks are pending.
+        /// </summary>
+        public TaskPriority Priority { get; set; } = TaskPriority.Normal;
 
         /// <summary>
         /// Gets or sets the value indicating whether a task should be stopped on some error

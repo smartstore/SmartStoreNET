@@ -62,8 +62,8 @@ namespace SmartStore.Data.Migrations
                 "Bitte überprüfen Sie die Link-Daten. Auf Basis Ihrer Eingabe kann kein Link erzeugt werden.");
 
             builder.AddOrUpdate("Admin.Packaging.IsIncompatible",
-                "The package is not compatible the current app version {0}. Please update Smartstore.NET or install another version of this package.",
-                "Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore.NET oder nutzen Sie eine andere, kompatible Paket-Version.");
+                "The package is not compatible the current app version {0}. Please update Smartstore or install another version of this package.",
+                "Das Paket ist nicht kompatibel mit der aktuellen Programmversion {0}. Bitte aktualisieren Sie Smartstore oder nutzen Sie eine andere, kompatible Paket-Version.");
         }
     }
 }

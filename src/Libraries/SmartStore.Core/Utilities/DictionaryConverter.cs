@@ -77,7 +77,7 @@ namespace SmartStore.Utilities
     {
         public static bool CanCreateType(Type itemType)
         {
-            return itemType.IsClass && itemType.GetConstructor(Type.EmptyTypes) != null;
+            return itemType.IsPlainObjectType() && itemType.GetConstructor(Type.EmptyTypes) != null;
         }
 
         public static T CreateAndPopulate<T>(IDictionary<string, object> source, out ICollection<ConvertProblem> problems)
@@ -140,16 +140,14 @@ namespace SmartStore.Utilities
             {
                 foreach (var fastProp in FastProperty.GetProperties(t).Values)
                 {
-                    object value;
 					var pi = fastProp.Property;
 
-                    if (!pi.PropertyType.IsPredefinedSimpleType() && source.TryGetValue(pi.Name, out value) && value is IDictionary<string, object>)
+                    if (!pi.PropertyType.IsPredefinedSimpleType() && source.TryGetValue(pi.Name, out var value) && value is IDictionary<string, object>)
                     {
                         var nestedValue = fastProp.GetValue(target);
-                        ICollection<ConvertProblem> nestedProblems;
 
                         populated = populated.Concat(new object[] { target }).ToArray();
-                        Populate((IDictionary<string, object>)value, nestedValue, out nestedProblems, populated);
+                        Populate((IDictionary<string, object>)value, nestedValue, out var nestedProblems, populated);
 
                         if (nestedProblems != null && nestedProblems.Any())
                         {
@@ -231,7 +229,7 @@ namespace SmartStore.Utilities
 
             try
             {
-                if (value != null && !Equals(value, ""))
+                if (value != null && !Equals(value, string.Empty))
                 {
                     Type destType = pi.PropertyType;
 

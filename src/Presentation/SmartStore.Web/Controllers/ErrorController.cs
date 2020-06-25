@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Infrastructure;
 
 namespace SmartStore.Web.Controllers
 {
-	// Keep this very simple: no dependencies at all!
-	public class ErrorController : Controller
+	public class ErrorController : SmartController
 	{
-
 		[MapLegacyRoutes]
 		public ActionResult NotFound()
 		{

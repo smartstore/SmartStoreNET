@@ -5,7 +5,7 @@
 
 @{
     Layout = "_Layout";
-    
+
     var parsedMonth = Model.PagingFilteringContext.GetParsedMonth();
 
     Html.AddTitleParts(
@@ -18,6 +18,8 @@
         T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
         T("Metadesc.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
     );
+
+    Html.AppendScriptParts(true, "~/Content/vendors/imagesloaded/imagesloaded.pkgd.min.js");
 }
 
 @section right {
@@ -32,101 +34,62 @@
 }
 
 <div class="page blog-page">
-    <div class="page-title row">
-        <div class="col">
-            <div class="heading">
-                <h1 class="heading-title">
-                    @if (String.IsNullOrEmpty(Model.PagingFilteringContext.Tag))
-					{
-						if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
-						{
-							@T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToNativeString("MMMM"))
-						}
-						else
-						{
-                            @T("Blog")
-						}
-					}
-					else
-					{
-						@T("Blog.TaggedWith", Model.PagingFilteringContext.Tag)
-					}
-                </h1>
-            </div>
-        </div>
-        <div class="col col-auto text-right">
-            <a class="btn btn-warning" href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" title="@T("Blog.RSS.Hint")">
-                <i class="fa fa-rss"></i>
-                <span>@T("Blog.RSS")</span>
-            </a>
-        </div>
-    </div>
+
+    @{ Html.RenderPartial("BlogSummaryHeading", Model); }
 
     <div class="page-body">
-        
+
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
 
-        <div class="blogposts">
-            @foreach (var item in Model.BlogPosts)
-            {
-                <article class="blogpost row mt-0">
-                    
-                    <div class="blogpost-content col-12 col-md-9">
-                        <h3 class="blogpost-title">
-                            <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
-                                @item.Title
-                            </a>
-                        </h3>
-
-                        <div class="blogpost-body html-editor-content">
-                            @Html.Raw(item.Body)
-                        </div>
-
-                        @{ Html.RenderWidget("bloglist_page_inside_post"); }
-                    </div>
-
-                    <div class="blogpost-info col-12 col-md-3">
-                        @if (item.Comments.AllowComments)
-                        {
-                            <a class="blogpost-comments@(item.Comments.NumberOfComments > 0 ? " vivid" : "") d-none d-md-block"
-                               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
-                               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)"
-                               data-toggle="tooltip">
-                                <span class="blogpost-comments-icon fa fa-comments"></span>
-                                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
-                            </a>
-                        }
-
-                        <div class="blogpost-date mb-2 text-muted">
-                            @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
-                        </div>
-
-                        @if (item.Tags.Count > 0)
-                        {
-                            <div class="blogpost-tags mb-3 mb-md-0 p-2">
-                                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
-                                @for (int i = 0, length = item.Tags.Count; i < length; i++)
-                                {
-                                    var tag = item.Tags[i];
-                                    var isLast = i == length - 1;
-                                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name@(!isLast ? "," : "")</a>
-                                }
-                            </div>
-                        }
-                    </div>
-
-                </article>
-            }
+        <div class="blogposts mb-4" style="visibility: hidden;">
+            @{ Html.RenderPartial("BlogSummaryList", Model); }
         </div>
 
         @(Html.SmartStore().Pager(Model.PagingFilteringContext)
-				.Name("pagination-bottom")
-				.QueryParam("pagenumber")
-				.ShowFirst(false)
-				.ShowLast(false)
-				.Style(PagerStyle.Pagination)
-				.MaxPagesToDisplay(6))
+                .Name("pagination-bottom")
+                .QueryParam("pagenumber")
+                .ShowFirst(false)
+                .ShowLast(false)
+                .Style(PagerStyle.Pagination)
+                .MaxPagesToDisplay(6))
 
         @{ Html.RenderWidget("bloglist_page_after_posts"); }
     </div>
 </div>
+
+@helper RenderTags(BlogPostModel item)
+{
+    if (item.Tags.Count > 0 && item.DisplayTagsInPreview)
+    {
+        <div class="blogpost-tags-overlay mb-3 mb-md-0 p-2">
+            @for (int i = 0, length = item.Tags.Count; i < length; i++)
+            {
+                var tag = item.Tags[i];
+                var tagClasses = "blogpost-tag badge p-1 {0}".FormatWith(item.SectionBg.HasValue() && item.SectionBg.Equals("primary") && !item.HasBgImage ? "badge-secondary" : "badge-primary");
+
+                <a class="@tagClasses" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>
+            }
+        </div>
+    }
+}
+
+@helper RenderComments(BlogPostModel item)
+{
+    if (item.Comments.AllowComments)
+    {
+        <div class="comments-overlay">
+            <a class="fs-xs m-2 btn btn-secondary btn-circle@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+                href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+                title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+                <span class="blogpost-comments-icon fa fa-comment-alt pr-1"></span>
+                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
+            </a>
+        </div>
+    }
+}
+
+<script>
+    $(function () {
+        $(".blogposts").masonaryGrid(".bloglist-item");
+    });
+</script>

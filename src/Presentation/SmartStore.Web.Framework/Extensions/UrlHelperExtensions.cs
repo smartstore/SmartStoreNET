@@ -1,6 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
-using SmartStore.Core.Domain.Media;
+﻿using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Media;
@@ -38,18 +36,6 @@ namespace SmartStore.Web.Framework
 			}
 
 			return fallbackUrl;
-		}
-
-		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
-		{
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetUrl(pictureId.GetValueOrDefault(), targetSize, fallbackType, host);
-		}
-
-		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
-		{
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
 		}
 
 		/// <summary>
@@ -139,5 +125,33 @@ namespace SmartStore.Web.Framework
 
 			return string.Empty;
 		}
+
+		#region Media
+
+		public static string Media(this UrlHelper urlHelper, int? fileId, int thumbnailSize = 0, string host = null, bool doFallback = true)
+		{
+			var mediaService = EngineContext.Current.Resolve<IMediaService>();
+			return mediaService.GetUrl(fileId, thumbnailSize, host, doFallback);
+		}
+
+		public static string Media(this UrlHelper urlHelper, MediaFileInfo file, int thumbnailSize = 0, string host = null, bool doFallback = true)
+		{
+			var mediaService = EngineContext.Current.Resolve<IMediaService>();
+			return mediaService.GetUrl(file, thumbnailSize, host, doFallback);
+		}
+
+		public static string Media(this UrlHelper urlHelper, int? fileId, ProcessImageQuery query, string host = null, bool doFallback = true)
+		{
+			var mediaService = EngineContext.Current.Resolve<IMediaService>();
+			return mediaService.GetUrl(fileId, query, host, doFallback);
+		}
+
+		public static string Media(this UrlHelper urlHelper, MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true)
+		{
+			var mediaService = EngineContext.Current.Resolve<IMediaService>();
+			return mediaService.GetUrl(file, query, host, doFallback);
+		}
+
+		#endregion
 	}
 }

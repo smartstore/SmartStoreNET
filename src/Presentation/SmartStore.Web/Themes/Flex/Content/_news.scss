@@ -1,0 +1,47 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// News Styles
+// --------------------------------------------------
+
+.newsitem-title-link {
+    font-weight: $font-weight-medium;
+    color: $body-color;
+    word-break: break-word;
+}
+
+.newsitem-date {
+    color: $text-muted;
+    font-size: $font-size-sm;
+}
+
+.newsitem-description {
+    font-weight: $font-weight-normal;
+}
+
+.newsitem-picture {
+    display: block;
+    overflow: hidden;
+    margin-bottom: 0;
+
+    > img {
+        object-fit: cover;
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+// Generic (also used for single blog post page)
+.single-media-item-image {
+    max-height: 300px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+
+    > img {
+        object-fit: cover;
+        width: 100%;
+    }
+}

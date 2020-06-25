@@ -14,6 +14,12 @@
   your shipment with the Id <b>{{ Shipment.Id }}</b> has been sent.
 </p>
 
+{% if Shipment.TrackingUrl %}
+<p class="mb-4 text-center">
+  <a class="btn btn-primary" href="{{ Shipment.TrackingUrl }}">Track shipment</a>
+</p>
+{% endif %}
+
 <table class="w-100 mb-3">
   <thead>
   	<tr>

@@ -1,5 +1,4 @@
-﻿
-using System.Data.Common;
+﻿using System.Data.Common;
 
 namespace SmartStore.Core.Data
 {
@@ -8,7 +7,6 @@ namespace SmartStore.Core.Data
     /// </summary>
     public interface IDataProvider
     {
-
         /// <summary>
         /// A value indicating whether this data provider supports stored procedures
         /// </summary>

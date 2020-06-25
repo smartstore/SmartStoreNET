@@ -1,52 +1,86 @@
-﻿@using SmartStore.Web.Models.Customer;
-@using SmartStore.Web.Framework.UI;
-@model CustomerAvatarEditModel
-@{
-	Layout = "_MyAccount";
-	ViewBag.PageClassToken = "avatar";
-	ViewBag.PageTitle = T("Account.Avatar").Text;
+﻿@model CustomerAvatarEditModel
 
-	Html.AddTitleParts(T("PageTitle.Account").Text);
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Services.Media;
+
+@{
+    Layout = "_MyAccount";
+    ViewBag.PageClassToken = "avatar";
+    ViewBag.PageTitle = T("Account.Avatar").Text;
+
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+
+    var fileId = Model?.Avatar?.PictureId ?? 0;
+    var mediaService = this.CommonServices.MediaService;
+    var currentFile = mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
 }
 
 @if (!ViewData.ModelState.IsValid)
 {
-	@Html.ValidationSummary(true)
+    @Html.ValidationSummary(true)
 }
 
 <div id="AvatarUploadContainer">
-	<div class="mb-2">
-        @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
-	</div>
+    <div class="fu-container">
+        <div class="dropzone-container">
+            <div class="avatar-container fu-filename m-2 h-100" data-current-filename="@(currentFile?.Name)">
+                @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
+            </div>
+            @Html.HiddenFor(x => fileId, new { @class = "hidden" })
 
-	@(Html.SmartStore().FileUploader()
-		.Name("uploadedFile")
-		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
-		.AcceptedFileTypes("gif|jpe?g|png")
-		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
-		.ShowRemoveButtonAfterUpload(true)
-		.UploadText(T("Common.FileUploader.Upload"))
-		.OnUploadCompletedHandlerName("onAvatarUploaded")
-		.OnFileRemoveHandlerName("onAvatarRemoved")
-	)
+            <div class="fu-controls ml-3">
+                @(Html.SmartStore().FileUploader()
+                    .Name("uploadedFile")
+                    .UploadUrl(Url.Action("UploadAvatar", "Customer"))
+                    .TypeFilter("image")
+                    .ShowBrowseMedia(false)
+                    .ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
+                    .ShowRemoveButtonAfterUpload(true)
+                    .UploadText(T("Common.FileUploader.UploadAvatar"))
+                    .OnUploadCompletedHandlerName("onAvatarUploaded")
+                    .OnFileRemoveHandlerName("onAvatarRemoved")
+                    .Multifile(false)
+                    .HasTemplatePreview(true)
+	                )
+            </div>
+        </div>
 
-	@if (!Model.Avatar.PictureUrl.HasValue())
-	{
-		<div class="alert alert-info mt-2">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
-	}
+        <div class="fu-progress">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-	window['onAvatarUploaded'] = function (e, el, data) {
-		var result = data.result;
-		if (result.success) {
-            window.location = '@Url.Action("Avatar", "Customer", new { area = "" })';
-		}
+    window['onAvatarUploaded'] = function (file, response, progress) {
+        if (response.success) {
+			// Hide letter span.
+            $(".avatar-letter").addClass("d-none");
+
+			// Display image.
+            $(".avatar-img")
+				.attr("src", response.avatarUrl)
+                .removeClass("d-none");
+
+            // Display name.
+            $(".fu-message").html(file.name);
+        }
 	};
 
     window['onAvatarRemoved'] = function (e, el) {
-		$(this).doPostData({
-			url: '@Url.Action("RemoveAvatar", "Customer", new { area = "" })'
+		$.ajax({
+			async: false,
+			cache: false,
+			type: 'POST',
+            url: '@Url.Action("RemoveAvatar", "Customer")',
+            success: function () {
+                // Switch display classes for image and letter.
+                $(".avatar-img").addClass("d-none");
+                $(".avatar-letter").removeClass("d-none");
+			}
 		});
 	}
 </script>

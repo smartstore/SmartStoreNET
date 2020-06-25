@@ -1,0 +1,29 @@
+@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var metadata = Model.Descriptor.Metadata;
+    var id = string.Concat("rule-value-", Model.Id);
+
+    var pickTime = (metadata.Get("picktime") as bool?) ?? true;
+	var format = pickTime ? "L LT" : "L";
+
+    var value = Model.Value != null
+        ? Convert.ToDateTime(Model.Value, System.Globalization.CultureInfo.CurrentCulture)
+        : (DateTime?)null;
+
+    var strValue = value.HasValue && value.Value > DateTime.MinValue
+        ? pickTime ? value.Value.ToString() : value.Value.ToShortDateString()
+        : string.Empty;
+}
+<div class="date datetimepicker-group" id="@id-parent" data-date="@strValue" data-target-input="nearest" style="display: flex; flex-grow: 1;">
+    @Html.TextBox(id, strValue, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
+	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
+		<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+	</div>
+</div>
+
+<script>
+    $(function () {
+        $('#@(id)-parent').datetimepicker({ format: '@(format)', useCurrent: false, locale: moment.locale() });
+	});
+</script>

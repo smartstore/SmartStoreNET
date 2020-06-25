@@ -57,7 +57,8 @@
 			@Html.SmartLabelFor(x => x.FileSystemPath)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.FileSystemPath)
+            @Html.TextBoxFor(x => x.FileSystemPath, new { autocomplete = "new-password", @class = "text-box single-line" })
+            @*@Html.EditorFor(x => x.FileSystemPath)*@
 			@Html.ValidationMessageFor(x => x.FileSystemPath)
 		</td>
 	</tr>
@@ -123,7 +124,7 @@
 			@Html.SmartLabelFor(x => x.Username)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.Username, new { autocomplete = "off", @class = "text-box single-line" })
+			@Html.TextBoxFor(x => x.Username, new { autocomplete = "new-password", @class = "text-box single-line" })
 			@Html.ValidationMessageFor(x => x.Username)
 		</td>
 	</tr>
@@ -132,7 +133,7 @@
 			@Html.SmartLabelFor(x => x.Password)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.Password, new { autocomplete = "off", type = "password", @class = "text-box single-line password" })
+			@Html.TextBoxFor(x => x.Password, new { autocomplete = "new-password", type = "password", @class = "text-box single-line password" })
 			@Html.ValidationMessageFor(x => x.Password)
 		</td>
 	</tr>

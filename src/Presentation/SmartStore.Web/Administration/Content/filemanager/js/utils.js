@@ -104,34 +104,34 @@ RoxyLang = {
 	"E_CopyDirInvalidPath": "Cannot copy directory - path doesn't exist",
 	"E_CreateArchive": "Error creating zip archive.",
 	"E_UploadingFile": "error"
-}
+};
 
 var RoxyIconHints = {
-    "pdf": { name: "far fa-file-pdf", color: "#F44336" },
-    "document": { name: "far fa-file-word", color: "#2B579A" },
-    "spreadsheet": { name: "far fa-file-excel", color: "#217346" },
-    "database": { name: "fa fa-database", color: "#3ba074" },
-    "presentation": { name: "far fa-file-powerpoint", color: "#D24726" },
+	"pdf": { name: "far fa-file-pdf", color: "#F44336" },
+	"document": { name: "far fa-file-word", color: "#2B579A" },
+	"spreadsheet": { name: "far fa-file-excel", color: "#217346" },
+	"database": { name: "fa fa-database", color: "#3ba074" },
+	"presentation": { name: "far fa-file-powerpoint", color: "#D24726" },
 	"archive": { name: "far fa-file-archive", color: "#3F51B5" },
-    "audio": { name: "far fa-file-audio", color: "#009688" },
-    "markup": { name: "far fa-file-code", color: "#4CAF50" },
-    "code": { name: "fa fa-bolt", color: "#4CAF50" },
+	"audio": { name: "far fa-file-audio", color: "#009688" },
+	"markup": { name: "far fa-file-code", color: "#4CAF50" },
+	"code": { name: "fa fa-bolt", color: "#4CAF50" },
 	"exe": { name: "fa fa-cog", color: "#58595B" },
-    "image": { name: "far fa-file-image", color: "#e77c00" },
-    "text": { name: "far fa-file-alt", color: "#607D8B" },
-    "video": { name: "far fa-file-video", color: "#FF5722" },
-    "font": { name: "fa fa-font", color: "#797985" },
-    "misc": { name: "far fa-file", color: "#ccc" }
-}
+	"image": { name: "far fa-file-image", color: "#e77c00" },
+	"text": { name: "far fa-file-alt", color: "#607D8B" },
+	"video": { name: "far fa-file-video", color: "#FF5722" },
+	"font": { name: "fa fa-font", color: "#797985" },
+	"misc": { name: "far fa-file", color: "#ccc" }
+};
 
 function RoxyUtils() { }
 RoxyUtils.GetRootPath = function (path) {
 	return roxy_root + path;
-}
+};
 
 RoxyUtils.GetAssetPath = function (path) {
 	return roxy_assets_root + path;
-}
+};
 
 RoxyUtils.FixPath = function (path) {
 	if (!path)
@@ -142,6 +142,7 @@ RoxyUtils.FixPath = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.FormatDate = function (date) {
 	var ret = '';
 	try {
@@ -153,6 +154,7 @@ RoxyUtils.FormatDate = function (date) {
 	}
 	return ret;
 };
+
 RoxyUtils.GetPath = function (path) {
 	var ret = '';
 	path = RoxyUtils.FixPath(path);
@@ -161,6 +163,7 @@ RoxyUtils.GetPath = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.GetUrlParam = function (varName, url) {
 	var ret = '';
 	if (!url)
@@ -170,7 +173,7 @@ RoxyUtils.GetUrlParam = function (varName, url) {
 		url = url.split('&');
 		for (i = 0; i < url.length; i++) {
 			var tmp = url[i].split('=');
-			if (tmp[0] && tmp[1] && tmp[0] == varName) {
+			if (tmp[0] && tmp[1] && tmp[0] === varName) {
 				ret = tmp[1];
 				break;
 			}
@@ -179,6 +182,7 @@ RoxyUtils.GetUrlParam = function (varName, url) {
 
 	return ret;
 };
+
 RoxyUtils.GetFilename = function (path) {
 	var ret = path;
 	path = RoxyUtils.FixPath(path);
@@ -188,6 +192,7 @@ RoxyUtils.GetFilename = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.MakePath = function () {
 	ret = '';
 	if (arguments && arguments.length > 0) {
@@ -201,6 +206,7 @@ RoxyUtils.MakePath = function () {
 
 	return ret;
 };
+
 RoxyUtils.GetFileExt = function (path) {
 	var ret = '';
 	path = RoxyUtils.GetFilename(path);
@@ -210,6 +216,7 @@ RoxyUtils.GetFileExt = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.FileExists = function (path) {
 	var ret = false;
 
@@ -225,6 +232,7 @@ RoxyUtils.FileExists = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.GetFileIcon = function (path) {
 	ret = 'images/filetypes/unknown.png'; //'images/filetypes/file_extension_' + RoxyUtils.GetFileExt(path).toLowerCase() + '.png';
 	if (fileTypeIcons[RoxyUtils.GetFileExt(path).toLowerCase()]) {
@@ -233,6 +241,7 @@ RoxyUtils.GetFileIcon = function (path) {
 
 	return RoxyUtils.GetAssetPath(ret);
 };
+
 RoxyUtils.GetFileSize = function (path) {
 	var ret = 0;
 	$.ajax({
@@ -248,6 +257,7 @@ RoxyUtils.GetFileSize = function (path) {
 
 	return ret;
 };
+
 RoxyUtils.GetFileType = function (path, mime) {
 	var ext = RoxyUtils.GetFileExt(path).toLowerCase();
 	var ret;
@@ -301,7 +311,8 @@ RoxyUtils.GetFileType = function (path, mime) {
 		case "jpeg":
 		case "bmp":
 		case "gif":
-		case "webp":
+        case "webp":
+        case "svg":
 		case "psd":
 			ret = "image";
 			break;
@@ -357,9 +368,11 @@ RoxyUtils.GetFileType = function (path, mime) {
 
 	return ret;
 };
+
 RoxyUtils.IsImage = function (path) {
 	return RoxyUtils.GetFileType(path) === 'image';
 };
+
 RoxyUtils.FormatFileSize = function (x) {
 	var suffix = 'B';
 	if (!x)
@@ -375,11 +388,13 @@ RoxyUtils.FormatFileSize = function (x) {
 	x = new Number(x);
 	return x.toFixed(2) + ' ' + suffix;
 };
+
 RoxyUtils.AddParam = function (url, n, v) {
 	url += (url.indexOf('?') > -1 ? '&' : '?') + n + '=' + encodeURIComponent(v);
 
 	return url;
 };
+
 RoxyUtils.SelectText = function (field_id, start, end) {
 	try {
 		var field = document.getElementById(field_id);
@@ -396,10 +411,10 @@ RoxyUtils.SelectText = function (field_id, start, end) {
 			field.selectionEnd = end;
 		}
 		field.focus();
-	} catch (ex) { }
+	} catch (ex) { /**/ }
 };
 
-function RoxyFilemanConf() { }
+RoxyFilemanConf = {};
 RoxyUtils.LoadConfig = function () {
 	$.ajax({
 		url: RoxyUtils.GetAssetPath('conf.json'),
@@ -440,6 +455,7 @@ RoxyUtils.Translate = function () {
 		}
 	});
 };
+
 RoxyUtils.GetCookies = function () {
 	var ret = new Object();
 	var tmp = document.cookie.replace(' ', '');
@@ -453,12 +469,14 @@ RoxyUtils.GetCookies = function () {
 	}
 
 	return ret;
-}
+};
+
 RoxyUtils.GetCookie = function (key) {
 	var tmp = RoxyUtils.GetCookies();
 
 	return tmp[key] || '';
-}
+};
+
 RoxyUtils.SetCookie = function (key, val, hours, path) {
 	var expires = new Date();
 	if (hours) {
@@ -470,18 +488,20 @@ RoxyUtils.SetCookie = function (key, val, hours, path) {
 	}
 
 	document.cookie = key + '=' + encodeURIComponent(val) + '; path=' + path + (hours ? '; expires=' + expires.toGMTString() : '');
-}
+};
+
 RoxyUtils.ToBool = function (val) {
 	var ret = false;
 	val = val.toString().toLowerCase();
-	if (val == 'true' || val == 'on' || val == 'yes' || val == '1')
+	if (val === 'true' || val === 'on' || val === 'yes' || val === '1')
 		ret = true;
 
 	return ret;
-}
+};
+
 RoxyUtils.UnsetCookie = function (key) {
 	document.cookie = key + "=; expires=Thu, 01 Jan 1972 00:00:00 UTC";
-}
+};
 
 function t(tag) {
 	var ret = tag;

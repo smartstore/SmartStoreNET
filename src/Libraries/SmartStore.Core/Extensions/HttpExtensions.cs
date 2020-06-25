@@ -12,28 +12,32 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
 using System.Web.Mvc;
 using SmartStore.Core.Fakes;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
 	public static class HttpExtensions
 	{
-		private const string CACHE_REGION_NAME = "SmartStoreNET:";
+		const string CacheRegionName = "SmartStoreNET:";
+		const string RememberPathKey = "AppRelativeCurrentExecutionFilePath.Original";
 
 		private static readonly List<Tuple<string, string>> _sslHeaders = new List<Tuple<string, string>>
 		{
 			new Tuple<string, string>("HTTP_CLUSTER_HTTPS", "on"),
-			new Tuple<string, string>("X-Forwarded-Proto", "https"),
+            new Tuple<string, string>("HTTP_X_FORWARDED_PROTO", "https"),
+            new Tuple<string, string>("X-Forwarded-Proto", "https"),
 			new Tuple<string, string>("x-arr-ssl", null),
 			new Tuple<string, string>("X-Forwarded-Protocol", "https"),
 			new Tuple<string, string>("X-Forwarded-Ssl", "on"),
 			new Tuple<string, string>("X-Url-Scheme", "https")
 		};
 
-		/// <summary>
-		/// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
-		/// </summary>
-		/// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
-		public static HttpRequestBase SafeGetHttpRequest(this HttpContext httpContext)
+        /// <summary>
+        /// Tries to get the <see cref="HttpRequestBase"/> instance without throwing exceptions
+        /// </summary>
+        /// <returns>The <see cref="HttpRequestBase"/> instance or <c>null</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static HttpRequestBase SafeGetHttpRequest(this HttpContext httpContext)
 		{
 			if (httpContext == null)
 			{
@@ -83,6 +87,8 @@ namespace SmartStore
 				return false;
 			}
 
+			url = url.Trim();
+
 			if (url.StartsWith("~/"))
 			{
 				return true;
@@ -93,22 +99,28 @@ namespace SmartStore
 				return false;
 			}
 
-			// at this point when the url starts with "/" it is local
+			// At this point when the url starts with "/" it is local
 			if (url.StartsWith("/"))
 			{
 				return true;
 			}
 
-			// at this point, check for a fully qualified url
+			// At this point, check for a fully qualified url
 			try
 			{
 				var uri = new Uri(url);
+
+				if (!uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) && !uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+
 				if (uri.Authority.Equals(request.Headers["Host"], StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
 
-				// finally, check the base url from the settings
+				// Finally, check the base url from the settings
 				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
 				if (storeContext != null)
 				{
@@ -131,13 +143,14 @@ namespace SmartStore
 			}
 		}
 
-		/// <summary>
-		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
-		/// Works with Cloud's load balancers.
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		public static bool IsSecureConnection(this HttpRequest request)
+        /// <summary>
+        /// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
+        /// Works with Cloud's load balancers.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsSecureConnection(this HttpRequest request)
         {
             return IsSecureConnection(new HttpRequestWrapper(request));
         }
@@ -168,18 +181,27 @@ namespace SmartStore
 		}
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, FormsAuthentication.FormsCookieName);
 		}
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public static void SetAnonymousIdentCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetAnonymousIdentCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, "SMARTSTORE.ANONYMOUS"); 
 		}
 
-		private static void CopyCookie(HttpWebRequest webRequest, HttpRequestBase sourceHttpRequest, string cookieName)
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetVisitorCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
+        {
+            CopyCookie(webRequest, httpRequest, "SMARTSTORE.VISITOR");
+        }
+
+        private static void CopyCookie(HttpWebRequest webRequest, HttpRequestBase sourceHttpRequest, string cookieName)
 		{
 			Guard.NotNull(webRequest, nameof(webRequest));
 			Guard.NotNull(sourceHttpRequest, nameof(sourceHttpRequest));
@@ -201,7 +223,7 @@ namespace SmartStore
 
 		public static string BuildScopedKey(this Cache cache, string key)
 		{
-			return key.HasValue() ? CACHE_REGION_NAME + key : null;
+			return key.HasValue() ? CacheRegionName + key : null;
 		}
 
 		public static T GetOrAdd<T>(this Cache cache, string key, Func<T> acquirer, TimeSpan? duration = null)
@@ -229,7 +251,20 @@ namespace SmartStore
 			return value;
 		}
 
-		public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void RememberAppRelativePath(this HttpContextBase httpContext)
+		{
+			httpContext.Items[RememberPathKey] = httpContext.Request.AppRelativeCurrentExecutionFilePath;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string GetOriginalAppRelativePath(this HttpContextBase httpContext)
+		{
+			return GetItem<string>(httpContext, RememberPathKey, forceCreation: false) ?? httpContext.Request.AppRelativeCurrentExecutionFilePath;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
 		{
 			return GetItem<T>(new HttpContextWrapper(httpContext), key, factory, forceCreation);
 		}
@@ -274,7 +309,7 @@ namespace SmartStore
 
 		public static string[] AllKeys(this Cache cache, string pattern)
 		{
-			pattern = pattern == "*" ? CACHE_REGION_NAME : pattern;
+			pattern = pattern == "*" ? CacheRegionName : pattern;
 
 			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
 					   let key = entry.Key.ToString()
@@ -313,5 +348,5 @@ namespace SmartStore
 
             return false;
         }
-    }
+	}
 }

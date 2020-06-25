@@ -1,8 +1,8 @@
-﻿FriendlyName: SmartStore.NET Developer Tools (MiniProfiler and other goodies)
+﻿FriendlyName: Smartstore Developer Tools (MiniProfiler and other goodies)
 SystemName: SmartStore.DevTools
 Group: Developer
-Version: 3.2.2
-MinAppVersion: 3.2.2
+Version: 4.0.0
+MinAppVersion: 4.0.0
 DisplayOrder: 1
 FileName: SmartStore.DevTools.dll
 ResourceRootKey: Plugins.Developer.DevTools

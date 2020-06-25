@@ -38,9 +38,9 @@
 {% endif %}
 
 {% if ReturnRequest.CustomerComments %}
-<table class="w-100 brd bg-light p-3">
+<table class="w-100 brd bg-light">
   <tr>
-  	<td>
+  	<td class="p-3">
       <h3>Kommentar</h3>
   		{{ ReturnRequest.CustomerComments }}
     </td>

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -157,11 +158,16 @@ namespace SmartStore.Web.Framework.UI
                 value = context.HttpContext?.Request?.Form?.GetValues(name)?.FirstOrDefault();
                 if (value.IsEmpty())
                 {
-                    context.HttpContext?.Request?.QueryString?.GetValues(name)?.FirstOrDefault();
+                    value = context.HttpContext?.Request?.QueryString?.GetValues(name)?.FirstOrDefault();
                 }
             }
 
-            return value.Convert<T>();
+            if (CommonHelper.TryConvert<T>(value, out var result))
+            {
+                return result;
+            }
+
+            return default(T);
         }
 
         private bool MenuItemAccessPermitted(MenuItem item)
@@ -170,7 +176,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (item.PermissionNames.HasValue())
             {
-                var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.Authorize(x.Trim()));
+                var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.FindAuthorization(x.Trim()));
                 if (!permitted)
                 {
                     result = false;

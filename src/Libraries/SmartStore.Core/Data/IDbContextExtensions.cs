@@ -17,14 +17,17 @@ namespace SmartStore
 		/// <returns>The count of detached entities</returns>
 		public static int DetachAll(this IDbContext ctx, bool unchangedEntitiesOnly = true)
 		{
-			return ctx.DetachEntities<BaseEntity>(unchangedEntitiesOnly);
+			return ctx.DetachEntities<BaseEntity>(unchangedEntitiesOnly, false);
 		}
 
-		public static void DetachEntities<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities) where TEntity : BaseEntity
+		public static void DetachEntities<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities, bool deep = false) where TEntity : BaseEntity
 		{
 			Guard.NotNull(ctx, nameof(ctx));
 
-			entities.Each(x => ctx.DetachEntity(x));
+			using (new DbContextScope(ctx, autoDetectChanges: false, lazyLoading: false))
+			{
+				entities.Each(x => ctx.DetachEntity(x, deep));
+			}		
 		}
 
 		/// <summary>

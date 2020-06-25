@@ -7,8 +7,6 @@
 @Html.SmartStore().TabStrip().Name("shipping-method-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
-	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "shipping-method-edit", this.Html, this.Model));
 })
@@ -81,56 +79,23 @@
 				@Html.ValidationMessageFor(model => model.IgnoreCharges)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+            </td>
+        </tr>
 	</table>
 }
-
-@helper TabRestrictions()
-{
-	if (Model.Id == 0)
-	{
-		<div class="alert alert-warning">
-			@T("Admin.Configuration.Restriction.SaveBeforeEdit")
-		</div>
-	}
-	else if (Model.FilterConfigurationUrls.Count == 0)
-	{
-		<div class="alert alert-info">
-			@T("Admin.Configuration.Shipping.Methods.RestrictionNote")
-		</div>
-	}
-
-	<div>
-		<div id="FilterOutShippingMethodContainer"></div>
-	</div>
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
-
-<script type="text/javascript">
-	$(document).ready(function () {
-		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
-			i = 0;
-
-		if (configUrls.length > 0) {
-			getFilterConfiguration(configUrls[0], $('#FilterOutShippingMethodContainer'));
-		}
-
-		function getFilterConfiguration(url, container) {
-			$.ajax({
-				url: url,
-				cache: false,
-				dataType: 'html',
-				success: function (html) {
-					container.append(html);
-					if (++i < configUrls.length) {
-						getFilterConfiguration(configUrls[i], container);
-					}
-					applyCommonPlugins(container);
-				}
-			});
-		}
-    });
-</script>

@@ -18,36 +18,109 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="source">Source</param>
         /// <param name="parentId">Parent category identifier</param>
-        /// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+        /// <param name="ignoreDetachedCategories">A value indicating whether categories without existing parent category in provided category list (source) should be ignored</param>
         /// <returns>Sorted categories</returns>
-        public static IList<T> SortCategoryNodesForTree<T>(this IEnumerable<T> source, int parentId = 0, bool ignoreCategoriesWithoutExistingParent = false)
-			where T : ICategoryNode
+        public static IEnumerable<T> SortCategoryNodesForTree<T>(this IEnumerable<T> source, int parentId = 0, bool ignoreDetachedCategories = false)
+            where T : ICategoryNode
         {
-			Guard.NotNull(source, nameof(source));
+            Guard.NotNull(source, nameof(source));
 
-            var result = new List<T>();
-			var sourceCount = source.Count();
+            var sourceCount = source.Count();
+            var result = new List<T>(sourceCount);
+            var lookup = source.ToLookup(x => x.ParentCategoryId);
 
-            var childNodes = source.Where(c => c.ParentCategoryId == parentId).ToArray();
-            foreach (var node in childNodes)
-            {
-                result.Add(node);
-                result.AddRange(SortCategoryNodesForTree(source, node.Id, true));
-            }
+            result.AddRange(SortCategoryNodesForTreeInternal(parentId, lookup));
 
-            if (!ignoreCategoriesWithoutExistingParent && result.Count != sourceCount)
+            if (!ignoreDetachedCategories && result.Count != sourceCount)
             {
                 // Find categories without parent in provided category source and insert them into result
+                var resultLookup = result.ToDictionarySafe(x => x.Id);
                 foreach (var cat in source)
-				{
-					if (result.Where(x => x.Id == cat.Id).FirstOrDefault() == null)
-					{
-						result.Add(cat);
-					}	
-				}
+                {
+                    if (!resultLookup.ContainsKey(cat.Id))
+                    {
+                        result.Add(cat);
+                    }
+                }
             }
 
             return result;
+        }
+
+        private static IEnumerable<T> SortCategoryNodesForTreeInternal<T>(int parentId, ILookup<int, T> lookup)
+            where T : ICategoryNode
+        {
+            if (!lookup.Contains(parentId))
+            {
+                return Enumerable.Empty<T>();
+            }
+
+            var childNodes = lookup[parentId];
+            var result = new List<T>();
+            foreach (var node in childNodes)
+            {
+                result.Add(node);
+                result.AddRange(SortCategoryNodesForTreeInternal(node.Id, lookup));
+            }
+
+            return result;
+        }
+
+        class CategoryNodeSorter<T>
+            where T : ICategoryNode
+        {
+            private readonly IEnumerable<T> _source;
+            private readonly int _parentId;
+            private readonly bool _ignoreDetachedCategories;
+
+            public CategoryNodeSorter(IEnumerable<T> source, int parentId = 0, bool ignoreDetachedCategories = false)
+            {
+                _source = source;
+                _parentId = parentId;
+                _ignoreDetachedCategories = ignoreDetachedCategories;
+            }
+
+            public IEnumerable<T> Sort()
+            {
+                var sourceCount = _source.Count();
+                var result = new List<T>(sourceCount);
+                var lookup = _source.ToLookup(x => x.ParentCategoryId);
+
+                result.AddRange(SortInternal(_parentId, lookup));
+
+                if (!_ignoreDetachedCategories && result.Count != sourceCount)
+                {
+                    // Find categories without parent in provided category source and insert them into result
+                    var resultLookup = result.ToDictionarySafe(x => x.Id);
+                    foreach (var cat in _source)
+                    {
+                        if (!resultLookup.ContainsKey(cat.Id))
+                        {
+                            result.Add(cat);
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            private IEnumerable<T> SortInternal(int parentId, ILookup<int, T> lookup)
+            {
+                if (!lookup.Contains(parentId))
+                {
+                    return Enumerable.Empty<T>();
+                }
+
+                var childNodes = lookup[parentId];
+                var result = new List<T>();
+                foreach (var node in childNodes)
+                {
+                    result.Add(node);
+                    result.AddRange(SortInternal(node.Id, lookup));
+                }
+
+                return result;
+            }
         }
 
         /// <summary>

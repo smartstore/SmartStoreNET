@@ -12,11 +12,11 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure
 {
-	public class LegacyRoutesStarter : IStartupTask
+	public class LegacyRoutesStarter : IApplicationStart
 	{
 		internal const string MediaPattern = @"/media/(?<dir>thumbs|uploaded)/(?<path>.*?)$";
 
-		public void Execute()
+		public void Start()
 		{
 			if (CommonHelper.GetAppSetting<bool>("sm:EnableLegacyRoutesMapping"))
 			{

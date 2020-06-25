@@ -14,7 +14,7 @@
 
 .card-shadow {
     // shim for .shadow-sm
-	box-shadow: $box-shadow-sm;
+	box-shadow: $box-shadow-sm-var;
 }
 
 .card-body > p:last-child {
@@ -36,6 +36,7 @@
 // "Real" responsive card decks & groups
 // Remove this, once BS4 natively supports responsive card decks & groups
 // ======================================================================
+
 @mixin card-deck-responsive($breakpoint) {
     $m: $card-deck-margin * 2;
 

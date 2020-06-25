@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -35,7 +36,7 @@ namespace SmartStore.Admin.Models.Catalog
 		public string Color { get; set; }
 		public bool IsListTypeAttribute { get; set; }
 
-		[UIHint("Picture")]
+		[UIHint("Media"), AdditionalMetadata("album", "catalog")]
 		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
 		public int PictureId { get; set; }
 
@@ -92,6 +93,23 @@ namespace SmartStore.Admin.Models.Catalog
 		{
 			RuleFor(x => x.Name).NotEmpty();
 			RuleFor(x => x.Quantity).GreaterThan(0).When(x => x.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage);
+		}
+	}
+
+	public class ProductAttributeOptionMapper :
+		IMapper<ProductAttributeOption, ProductAttributeOptionModel>,
+		IMapper<ProductAttributeOptionModel, ProductAttributeOption>
+	{
+		public void Map(ProductAttributeOption from, ProductAttributeOptionModel to)
+		{
+			MiniMapper.Map(from, to);
+			to.PictureId = from.MediaFileId;
+		}
+
+		public void Map(ProductAttributeOptionModel from, ProductAttributeOption to)
+		{
+			MiniMapper.Map(from, to);
+			to.MediaFileId = from.PictureId;
 		}
 	}
 }

@@ -10,10 +10,16 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Localization;
+using System.Web.Mvc;
+using System;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Forums
 {
-    public partial class ForumService : IForumService
+    public partial class ForumService : IForumService, IXmlSitemapPublisher
     {
         private readonly IRepository<ForumGroup> _forumGroupRepository;
         private readonly IRepository<Forum> _forumRepository;
@@ -27,6 +33,8 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
+        private readonly Lazy<UrlHelper> _urlHelper;
+        private readonly Lazy<IUrlRecordService> _urlRecordService;
         private readonly ICommonServices _services;
 
         public ForumService(
@@ -42,6 +50,8 @@ namespace SmartStore.Services.Forums
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
+            Lazy<UrlHelper> urlHelper,
+            Lazy<IUrlRecordService> urlRecordService,
             ICommonServices services)
         {
             _forumGroupRepository = forumGroupRepository;
@@ -56,6 +66,8 @@ namespace SmartStore.Services.Forums
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
+            _urlHelper = urlHelper;
+            _urlRecordService = urlRecordService;
             _services = services;
         }
 
@@ -173,7 +185,7 @@ namespace SmartStore.Services.Forums
 
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
                 query =
                     from fg in query
@@ -380,7 +392,7 @@ namespace SmartStore.Services.Forums
 
             if (!showHidden && !QuerySettings.IgnoreAcl)
             {
-                var allowedCustomerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = customer.GetRoleIds();
 
                 query =
                     from ft in query
@@ -980,6 +992,120 @@ namespace SmartStore.Services.Forums
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region XML Sitemap
+
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
+        {
+            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesForum || !context.LoadSetting<ForumSettings>().ForumsEnabled)
+                return null;
+
+            return new ForumXmlSitemapResult(context, this, _urlHelper.Value, _urlRecordService.Value);
+        }
+
+        class ForumXmlSitemapResult : XmlSitemapProvider
+        {
+            private readonly IForumService _forumService;
+            private readonly XmlSitemapBuildContext _context;
+            private readonly UrlHelper _urlHelper;
+            private readonly IUrlRecordService _urlRecordService;
+
+            private readonly IList<ForumGroup> _groups;
+            private readonly IList<Forum> _forums;
+            private readonly IQueryable<ForumTopic> _topicsQuery;
+
+            public ForumXmlSitemapResult(
+                XmlSitemapBuildContext context,
+                IForumService forumService, 
+                UrlHelper urlHelper,
+                IUrlRecordService urlRecordService)
+            {
+                _forumService = forumService;
+                _context = context;
+                _urlHelper = urlHelper;
+                _urlRecordService = urlRecordService;
+
+                _groups = _forumService.GetAllForumGroups(context.RequestStoreId, false);
+                _forums = _groups.SelectMany(x => x.Forums).ToList();
+                _topicsQuery = _forumService.GetAllTopics(0, 0, int.MaxValue, false).SourceQuery;
+            }
+
+            public override int GetTotalCount()
+            {
+                // INFO: we gonna create nodes for all groups, forums within groups and all topics
+                return _groups.Count + _forums.Count + _topicsQuery.Count();
+            }
+
+            public override XmlSitemapNode CreateNode(UrlHelper urlHelper, string baseUrl, NamedEntity entity, UrlRecordCollection slugs, Language language)
+            {
+                var path = string.Empty;
+
+                switch (entity.EntityName)
+                {
+                    case nameof(ForumGroup):
+                        path = urlHelper.RouteUrl("ForumGroupSlug", new { id = entity.Id, slug = slugs.GetSlug(language.Id, entity.Id, true) });
+                        break;
+                    case nameof(Forum):
+                        path = urlHelper.RouteUrl("ForumSlug", new { id = entity.Id, slug = slugs.GetSlug(language.Id, entity.Id, true) });
+                        break;
+                    case nameof(ForumTopic):
+                        path = urlHelper.RouteUrl("TopicSlug", new { id = entity.Id, slug = entity.Slug });
+                        break;
+                }
+
+                if (path.HasValue())
+                {
+                    return new XmlSitemapNode
+                    {
+                        LastMod = entity.LastMod,
+                        Loc = baseUrl + path.TrimStart('/')
+                    };
+                }
+
+                return null;
+            }
+
+            public override IEnumerable<NamedEntity> Enlist()
+            {
+                // Enlist forum groups
+                foreach (var group in _groups)
+                {
+                    yield return new NamedEntity { EntityName = nameof(ForumGroup), Id = group.Id, LastMod = group.UpdatedOnUtc };
+                }
+
+                // Enlist forums
+                foreach (var forum in _forums)
+                {
+                    yield return new NamedEntity { EntityName = nameof(Forum), Id = forum.Id, LastMod = forum.UpdatedOnUtc };
+                }
+
+                // Enlist topics
+                var pager = new FastPager<ForumTopic>(_topicsQuery.AsNoTracking(), _context.MaximumNodeCount);
+
+                while (pager.ReadNextPage(x => new { x.Id, x.UpdatedOnUtc, x.Subject }, x => x.Id, out var topics)) 
+                {
+                    if (_context.CancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    foreach (var x in topics)
+                    {
+                        yield return new NamedEntity
+                        {
+                            EntityName = nameof(ForumTopic),
+                            Slug = (new ForumTopic { Subject = x.Subject }).GetSeName(),
+                            Id = x.Id,
+                            LastMod = x.UpdatedOnUtc
+                        };
+                    }
+                }
+            }
+
+            public override int Order => 1000;
         }
 
         #endregion

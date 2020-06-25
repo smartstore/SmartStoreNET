@@ -5,43 +5,24 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Utilities;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Blogs
 {
-    /// <summary>
-    /// Blog service
-    /// </summary>
-    public partial class BlogService : IBlogService
+    public partial class BlogService : IBlogService, IXmlSitemapPublisher
     {
-        #region Fields
-
         private readonly IRepository<BlogPost> _blogPostRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly ICommonServices _services;
-		private readonly ILanguageService _languageService;
         private readonly SeoSettings _seoSettings;
-        private readonly BlogSettings _blogSettings;
-
-        #endregion
-
-        #region Ctor
 
         public BlogService(IRepository<BlogPost> blogPostRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			ICommonServices services,
-			ILanguageService languageService,
-            SeoSettings seoSettings,
-            BlogSettings blogSettings)
+            SeoSettings seoSettings)
         {
             _blogPostRepository = blogPostRepository;
 			_storeMappingRepository = storeMappingRepository;
-			_services = services;
-			_languageService = languageService;
-			_blogSettings = blogSettings;
             _seoSettings = seoSettings;
 
             this.QuerySettings = DbQuerySettings.Default;
@@ -49,14 +30,6 @@ namespace SmartStore.Services.Blogs
 
 		public DbQuerySettings QuerySettings { get; set; }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Deletes a blog post
-        /// </summary>
-        /// <param name="blogPost">Blog post</param>
         public virtual void DeleteBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
@@ -65,11 +38,6 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Delete(blogPost);
         }
 
-        /// <summary>
-        /// Gets a blog post
-        /// </summary>
-        /// <param name="blogPostId">Blog post identifier</param>
-        /// <returns>Blog post</returns>
         public virtual BlogPost GetBlogPostById(int blogPostId)
         {
             if (blogPostId == 0)
@@ -78,18 +46,6 @@ namespace SmartStore.Services.Blogs
                 return _blogPostRepository.GetById(blogPostId);
         }
 
-        /// <summary>
-        /// Gets all blog posts
-        /// </summary>
-		/// <param name="storeId">The store identifier; pass 0 to load all records</param>
-        /// <param name="languageId">Language identifier; 0 if you want to get all records</param>
-        /// <param name="dateFrom">Filter by created date; null if you want to get all records</param>
-        /// <param name="dateTo">Filter by created date; null if you want to get all records</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="maxAge">The maximum age of returned blog posts</param>
-        /// <returns>Blog posts</returns>
 		public virtual IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
 			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
@@ -112,6 +68,7 @@ namespace SmartStore.Services.Blogs
                 var utcNow = DateTime.UtcNow;
                 query = query.Where(b => !b.StartDateUtc.HasValue || b.StartDateUtc <= utcNow);
                 query = query.Where(b => !b.EndDateUtc.HasValue || b.EndDateUtc >= utcNow);
+                query = query.Where(b => b.IsPublished);
             }
 
 			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
@@ -137,28 +94,19 @@ namespace SmartStore.Services.Blogs
             return blogPosts;
         }
 
-        /// <summary>
-        /// Gets all blog posts
-        /// </summary>
-		/// <param name="storeId">The store identifier; pass 0 to load all records</param>
-        /// <param name="languageId">Language identifier. 0 if you want to get all news</param>
-        /// <param name="tag">Tag</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Blog posts</returns>
 		public virtual IPagedList<BlogPost> GetAllBlogPostsByTag(
 			int storeId, 
 			int languageId, 
 			string tag,
             int pageIndex, 
 			int pageSize, 
-			bool showHidden = false)
+			bool showHidden = false,
+            DateTime? maxAge = null)
         {
             tag = tag.Trim();
 
             //we laod all records and only then filter them by tag
-			var blogPostsAll = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
+			var blogPostsAll = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden, maxAge);
             var taggedBlogPosts = new List<BlogPost>();
             
             foreach (var blogPost in blogPostsAll)
@@ -169,7 +117,7 @@ namespace SmartStore.Services.Blogs
                     true,
                     _seoSettings.SeoNameCharConversion));
 
-                if (!String.IsNullOrEmpty(tags.FirstOrDefault(t => t.Equals(tag, StringComparison.InvariantCultureIgnoreCase))))
+                if (tags.FirstOrDefault(t => t.Equals(tag, StringComparison.InvariantCultureIgnoreCase)).HasValue())
                     taggedBlogPosts.Add(blogPost);
             }
 
@@ -178,13 +126,6 @@ namespace SmartStore.Services.Blogs
             return result;
         }
 
-        /// <summary>
-        /// Gets all blog post tags
-        /// </summary>
-		/// <param name="storeId">The store identifier; pass 0 to load all records</param>
-        /// <param name="languageId">Language identifier. 0 if you want to get all news</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Blog post tags</returns>
 		public virtual IList<BlogPostTag> GetAllBlogPostTags(int storeId, int languageId, bool showHidden = false)
         {
             var blogPostTags = new List<BlogPostTag>();
@@ -213,10 +154,6 @@ namespace SmartStore.Services.Blogs
             return blogPostTags;
         }
 
-        /// <summary>
-        /// Inserts an blog post
-        /// </summary>
-        /// <param name="blogPost">Blog post</param>
         public virtual void InsertBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
@@ -225,10 +162,6 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Insert(blogPost);
         }
 
-        /// <summary>
-        /// Updates the blog post
-        /// </summary>
-        /// <param name="blogPost">Blog post</param>
         public virtual void UpdateBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
@@ -237,10 +170,6 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Update(blogPost);
         }
         
-        /// <summary>
-        /// Update blog post comment totals
-        /// </summary>
-        /// <param name="blogPost">Blog post</param>
         public virtual void UpdateCommentTotals(BlogPost blogPost)
         {
             if (blogPost == null)
@@ -260,6 +189,39 @@ namespace SmartStore.Services.Blogs
             blogPost.ApprovedCommentCount = approvedCommentCount;
             blogPost.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateBlogPost(blogPost);
+        }
+
+        #region XML Sitemap
+
+        public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
+        {
+            if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesBlog || !context.LoadSetting<BlogSettings>().Enabled)
+                return null;
+            
+            var query = GetAllBlogPosts(context.RequestStoreId, 0, null, null, 0, int.MaxValue).SourceQuery;
+
+            return new BlogPostXmlSitemapResult { Query = query };
+        }
+
+        class BlogPostXmlSitemapResult : XmlSitemapProvider
+        {
+            public IQueryable<BlogPost> Query { get; set; }
+
+            public override int GetTotalCount()
+            {
+                return Query.Count();
+            }
+
+            public override IEnumerable<NamedEntity> Enlist()
+            {
+                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc, x.LanguageId }).ToList();
+                foreach (var x in topics)
+                {
+                    yield return new NamedEntity { EntityName = "BlogPost", Id = x.Id, LastMod = x.CreatedOnUtc, LanguageId = x.LanguageId };
+                }
+            }
+
+            public override int Order => 300;
         }
 
         #endregion

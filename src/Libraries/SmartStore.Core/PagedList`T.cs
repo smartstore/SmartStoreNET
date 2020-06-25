@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core
 {
-    public class PagedList<T> : IPagedList<T>, IReadOnlyList<T>, IReadOnlyCollection<T>
+    public class PagedList<T> : IPagedList<T>
     {
 		private bool _isEfQuery;
 		private bool _queryIsPagedAlready;
@@ -73,7 +73,7 @@ namespace SmartStore.Core
 			{
 				if (_totalCount == null)
 				{
-					_totalCount = SourceQuery.Count();
+					_totalCount = await SourceQuery.CountAsync();
 				}
 
 				if (_queryIsPagedAlready)
@@ -151,6 +151,16 @@ namespace SmartStore.Core
 		public int PageIndex { get; set; }
 
 		public int PageSize { get; set; }
+
+		public async Task<int> GetTotalCountAsync()
+		{
+			if (!_totalCount.HasValue)
+			{
+				_totalCount = await SourceQuery.CountAsync();
+			}
+
+			return _totalCount.Value;
+		}
 
 		public int TotalCount
         {

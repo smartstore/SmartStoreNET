@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 using Autofac;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
@@ -8,7 +7,7 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Hooks
 {
-	[Important]
+    [Important]
 	public class UpdateCustomerFullNameHook : DbSaveHook<Customer>
 	{
 		private static readonly HashSet<string> _candidateProps = new HashSet<string>(new string[] 
@@ -40,13 +39,18 @@ namespace SmartStore.Services.Hooks
 		{
 			var shouldUpdate = entity.IsTransientRecord();
 
-			if (!entity.IsTransientRecord())
+            if (!shouldUpdate)
+            {
+                shouldUpdate = entity.FullName.IsEmpty() && (entity.FirstName.HasValue() || entity.LastName.HasValue());
+            }
+
+            if (!shouldUpdate)
 			{
 				var modProps = _ctx.Resolve<IDbContext>().GetModifiedProperties(entity);
 				shouldUpdate = _candidateProps.Any(x => modProps.ContainsKey(x));
 			}
 
-			if (shouldUpdate)
+            if (shouldUpdate)
 			{
 				var parts = new[]
 				{

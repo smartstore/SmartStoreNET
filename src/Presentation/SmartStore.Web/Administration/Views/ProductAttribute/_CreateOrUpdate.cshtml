@@ -158,70 +158,65 @@
 	{
 		<div>
 			@(Html.Telerik().Grid<ProductAttributeOptionsSetModel>()
-				.Name("productattributeoptionsset-grid")
-				.DataKeys(keys =>
-				{
-					keys.Add(x => x.Id);
-					keys.Add(x => x.ProductAttributeId).RouteKey("productAttributeId");
-				})
-				.ToolBar(commands => commands.Insert())
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.Name);
-					columns.Command(commands =>
-					{
-						commands.Edit().Localize(T);
-						commands.Delete().Localize(T);
-					})
-					.HtmlAttributes(new { align = "right" })
-					.Width(120);
-				})
-				.DataBinding(dataBinding => dataBinding.Ajax()
-					.Select("OptionsSetList", "ProductAttribute", new { productAttributeId = Model.Id })
-					.Insert("OptionsSetInsert", "ProductAttribute", new { productAttributeId = Model.Id })
-					.Update("OptionsSetUpdate", "ProductAttribute")
-					.Delete("OptionsSetDelete", "ProductAttribute")
-				)
-				.EnableCustomBinding(true)
-				.DetailView(details => details.ClientTemplate(
-					Html.Telerik().Grid<ProductAttributeOptionModel>()
-						.Name("productattributeoptions-grid<#= Id #>")
-						.DataKeys(keys =>
-						{
-							keys.Add(x => x.Id);
-							keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
-						})
-						.ToolBar(commands => commands.Template(OptionGridCommands))
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.Name)
-								.ClientTemplate(@Html.VariantAttributeValueName());
-							columns.Bound(x => x.Alias);
-							columns.Bound(x => x.LinkedProductName)
-								.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
-							columns.Bound(x => x.PriceAdjustmentString)
-								.Centered();
-							columns.Bound(x => x.WeightAdjustmentString)
-								.Centered();
-							columns.Bound(x => x.IsPreSelected)
-								.ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
-								.Centered();
-							columns.Bound(x => x.DisplayOrder)
-								.Centered();
-							columns.Bound(x => x.Id)
-								.Width(220)
-								.Centered()
-								.Title("")
-								.ClientTemplate(
-									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='btn btn-secondary edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
-									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='btn btn-danger ml-1 delete-option'>" + @T("Admin.Common.Delete") + "</a>")
-								.HtmlAttributes(new { align = "right" });
-						})
-						.DataBinding(dataBinding => dataBinding.Ajax()
-							.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
-						)
-						.ToHtmlString()
-				)))
+                .Name("productattributeoptionsset-grid")
+                .DataKeys(keys =>
+                {
+                    keys.Add(x => x.Id);
+                    keys.Add(x => x.ProductAttributeId).RouteKey("productAttributeId");
+                })
+                .ToolBar(commands => commands.Insert())
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.Name);
+                    columns.Command(commands =>
+                    {
+                        commands.Edit().Localize(T);
+                        commands.Delete().Localize(T);
+                    })
+                    .HtmlAttributes(new { align = "right" })
+                    .Width(120);
+                })
+                .DataBinding(dataBinding => dataBinding.Ajax()
+                    .Select("OptionsSetList", "ProductAttribute", new { productAttributeId = Model.Id })
+                    .Insert("OptionsSetInsert", "ProductAttribute", new { productAttributeId = Model.Id })
+                    .Update("OptionsSetUpdate", "ProductAttribute")
+                    .Delete("OptionsSetDelete", "ProductAttribute")
+                )
+                .EnableCustomBinding(true)
+                .DetailView(details => details.ClientTemplate(
+                    Html.Telerik().Grid<ProductAttributeOptionModel>()
+                        .Name("productattributeoptions-grid<#= Id #>")
+                        .ToolBar(commands => commands.Template(OptionGridCommands))
+                        .Columns(columns =>
+                        {
+                            columns.Bound(x => x.Name)
+                                .ClientTemplate(Html.VariantAttributeValueName());
+                            columns.Bound(x => x.Alias);
+                            columns.Bound(x => x.LinkedProductName)
+                                .ClientTemplate(Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
+                            columns.Bound(x => x.PriceAdjustmentString)
+                                .Centered();
+                            columns.Bound(x => x.WeightAdjustmentString)
+                                .Centered();
+                            columns.Bound(x => x.IsPreSelected)
+                                .ClientTemplate(Html.SymbolForBool("IsPreSelected"))
+                                .Centered();
+                            columns.Bound(x => x.DisplayOrder)
+                                .Centered();
+                            columns.Bound(x => x.Id)
+                                .Width(220)
+                                .Centered()
+                                .Title("")
+                                .ClientTemplate(
+                                    "<a href='" + Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='btn btn-secondary edit-option'>" + T("Admin.Common.Edit") + "</a>" +
+                                    "<a href='" + Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='btn btn-danger ml-1 delete-option'>" + T("Admin.Common.Delete") + "</a>")
+                                .HtmlAttributes(new { align = "right" });
+                        })
+                        .DataBinding(dataBinding => dataBinding.Ajax()
+                            .Select("OptionsSetListDetails", "ProductAttribute", new { optionsSetId = "<#= Id #>" })
+                        )
+                        .ToHtmlString()
+                )))
 		</div>
 
 		<input type="button" id="btnOption" name="btnOption" class="d-none" />
@@ -232,37 +227,37 @@
 
 				var mainGrid = $('#productattributeoptionsset-grid');
 
-				// refresh options set grid
+				// Refresh options set grid.
                 $('#btnRefresh').click(function () {
 					mainGrid.data('tGrid').ajaxRequest();
                     return false;
                 });
 				
-				// refresh options set child grid
+				// Refresh options set child grid.
 				$(document).on('click', 'input[id=btnOptionRefresh]', function () {
                 	$('#productattributeoptions-grid' + $(this).val()).data('tGrid').ajaxRequest();
                 	return false;
                 });
 
-				// add option
+				// Add option.
 				$(mainGrid).on('click', '.t-grid-insert-option', function (e) {
                 	e.preventDefault();
                 	var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
-                	openPopup('@Url.Content("~/Admin/ProductAttribute/OptionCreatePopup/")' + id + '?&btnId=btnOptionRefresh');
+                	openPopup('@Url.Content("~/Admin/ProductAttribute/OptionCreatePopup/")' + id + '?&btnId=btnOptionRefresh', true);
                 	return false;
                 });
 
-				// edit option
+				// Edit option.
 				$(mainGrid).on('click', 'a.edit-option', function (e) {
 					e.preventDefault();
 					var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
-					openPopup($(this).attr('href'));
+					openPopup($(this).attr('href'), true);
 					return false;
 				});
 
-				// delete option
+				// Delete option.
 				$(mainGrid).on('click', 'a.delete-option', function (e) {
 					e.preventDefault();
 					var grid = $(this).closest('.t-grid').data('tGrid');

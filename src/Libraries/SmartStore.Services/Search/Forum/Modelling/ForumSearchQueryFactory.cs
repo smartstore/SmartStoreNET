@@ -269,7 +269,7 @@ namespace SmartStore.Services.Search.Modelling
 
                 if (filter == ForumDateFilter.LastVisit)
                 {
-                    var lastVisit = _genericAttributeService.GetAttribute<DateTime?>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.LastForumVisit, store.Id);
+                    var lastVisit = customer.LastForumVisit;
                     if (!lastVisit.HasValue)
                     {
                         continue;

@@ -1,0 +1,12 @@
+﻿@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "_AdminLayout";
+}
+
+@section SideBarLeft 
+{
+    @Html.SmartStore().Menu().Name("Settings")
+}
+
+@RenderBody()

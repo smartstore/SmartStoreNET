@@ -6,11 +6,8 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Packaging;
+using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
-using SmartStore.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Security;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -21,36 +18,24 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ThemeController : AdminControllerBase
 	{
-        private readonly ISettingService _settingService;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
-		private readonly IPackageManager _packageManager;
-		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
 		private readonly IAssetCache _assetCache;
-		private readonly Lazy<IThemeFileResolver> _themeFileResolver;
 
         public ThemeController(
-            ISettingService settingService, 
 			IThemeRegistry themeRegistry,
             IThemeVariablesService themeVarService,
-			IPackageManager packageManager,
-			ICommonServices services,
 			IThemeContext themeContext,
-			IAssetCache assetCache,
-			Lazy<IThemeFileResolver> themeFileResolver)
+			IAssetCache assetCache)
 		{
-            _settingService = settingService;
             _themeVarService = themeVarService;
             _themeRegistry = themeRegistry;
-			_packageManager = packageManager;
-			_services = services;
 			_themeContext = themeContext;
 			_assetCache = assetCache;
-			_themeFileResolver = themeFileResolver;
 		}
 
         #region Methods
@@ -60,13 +45,11 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.Configuration.Theme.Read)]
         public ActionResult List(int? storeId)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
-			int selectedStoreId = storeId ?? _services.StoreContext.CurrentStore.Id;
-			var themeSettings = _settingService.LoadSetting<ThemeSettings>(selectedStoreId);
+			var selectedStoreId = storeId ?? Services.StoreContext.CurrentStore.Id;
+			var themeSettings = Services.Settings.LoadSetting<ThemeSettings>(selectedStoreId);
             var model = themeSettings.ToModel();
 
             var bundlingOptions = new List<SelectListItem> 
@@ -87,11 +70,11 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableAssetCachingValues.AddRange(assetCachingOptions);
 			model.AvailableAssetCachingValues.FirstOrDefault(x => int.Parse(x.Value) == model.AssetCachingEnabled).Selected = true;
 
-			// add theme configs
+			// Add theme configs.
 			model.Themes.AddRange(GetThemes(themeSettings));
 
 			model.StoreId = selectedStoreId;
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems();
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems();
 
             return View(model);
         }
@@ -99,7 +82,7 @@ namespace SmartStore.Admin.Controllers
         private IList<ThemeManifestModel> GetThemes(ThemeSettings themeSettings, bool includeHidden = true)
         {
 			var themes = from m in _themeRegistry.GetThemeManifests(includeHidden)
-                                select PrepareThemeManifestModel(m, themeSettings);
+                select PrepareThemeManifestModel(m, themeSettings);
 
 			var sortedThemes = themes.ToArray().SortTopological(StringComparer.OrdinalIgnoreCase).Cast<ThemeManifestModel>();
 
@@ -128,17 +111,16 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost, ActionName("List")]
+        [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult ListPost(ThemeListModel model, FormCollection form)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
+			var themeSettings = Services.Settings.LoadSetting<ThemeSettings>(model.StoreId);
 
-			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
-
-            bool themeSwitched = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(model.DefaultTheme);
+            var themeSwitched = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(model.DefaultTheme);
             if (themeSwitched)
             {
-                _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
+                Services.EventPublisher.Publish(new ThemeSwitchedEvent
+                { 
                     OldTheme = themeSettings.DefaultTheme,
                     NewTheme = model.DefaultTheme
                 });
@@ -153,47 +135,41 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			themeSettings = model.ToEntity(themeSettings);
-			_settingService.SaveSetting(themeSettings, model.StoreId);
-            
-			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
-
-            _services.EventPublisher.Publish(new ModelBoundEvent(model, themeSettings, form));
+            Services.Settings.SaveSetting(themeSettings, model.StoreId);
+           
+            Services.EventPublisher.Publish(new ModelBoundEvent(model, themeSettings, form));
 
             NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
         }
 
+        [Permission(Permissions.Configuration.Theme.Read)]
         public ActionResult Configure(string theme, int storeId)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-				return RedirectToAction("List", new { storeId = storeId });
+				return RedirectToAction("List", new { storeId });
             }
 
             var model = new ConfigureThemeModel
             {
                 ThemeName = theme,
 				StoreId = storeId,
-				AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems()
+				AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems()
             };
 
-			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme = theme });
+			ViewData["ConfigureThemeUrl"] = Url.Action("Configure", new { theme });
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
+        [Permission(Permissions.Configuration.Theme.Update)]
+        public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-				return RedirectToAction("List", new { storeId = storeId });
+				return RedirectToAction("List", new { storeId });
             }		
 
 			try
@@ -201,14 +177,13 @@ namespace SmartStore.Admin.Controllers
 				values = FixThemeVarValues(values);
 				_themeVarService.SaveThemeVariables(theme, storeId, values);
 
-				// activity log
-				_services.CustomerActivity.InsertActivity("EditThemeVars", T("ActivityLog.EditThemeVars"), theme);
+				Services.CustomerActivity.InsertActivity("EditThemeVars", T("ActivityLog.EditThemeVars"), theme);
 
 				NotifySuccess(T("Admin.Configuration.Themes.Notifications.ConfigureSuccess"));
 
-				return continueEditing ?
-					RedirectToAction("Configure", new { theme = theme, storeId = storeId }) :
-					RedirectToAction("List", new { storeId = storeId });
+				return continueEditing
+                    ? RedirectToAction("Configure", new { theme, storeId })
+                    : RedirectToAction("List", new { storeId });
 			}
 			catch (ThemeValidationException ex)
 			{
@@ -221,8 +196,8 @@ namespace SmartStore.Admin.Controllers
 				NotifyError(ex);
 			}
 
-			// Fail
-			return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
+			// Fail.
+			return RedirectToAction("Configure", new { theme, storeId });
         }
 
 		private IDictionary<string, object> FixThemeVarValues(IDictionary<string, object> values)
@@ -251,44 +226,37 @@ namespace SmartStore.Admin.Controllers
 			return fixedDict;
 		}
 
-		public ActionResult ReloadThemes(int? storeId)
+        [Permission(Permissions.Configuration.Theme.Update)]
+        public ActionResult ReloadThemes(int? storeId)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-			{
-				_themeRegistry.ReloadThemes();
-			}
+			_themeRegistry.ReloadThemes();
 	
-			return RedirectToAction("List", new { storeId = storeId });
+			return RedirectToAction("List", new { storeId });
 		}
 
+        [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult Reset(string theme, int storeId)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-				return RedirectToAction("List", new { storeId = storeId });
+				return RedirectToAction("List", new { storeId });
             }
 
             _themeVarService.DeleteThemeVariables(theme, storeId);
 
-            // activity log
-			_services.CustomerActivity.InsertActivity("ResetThemeVars", T("ActivityLog.ResetThemeVars"), theme);
+			Services.CustomerActivity.InsertActivity("ResetThemeVars", T("ActivityLog.ResetThemeVars"), theme);
 
 			NotifySuccess(T("Admin.Configuration.Themes.Notifications.ResetSuccess"));
-            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
+            return RedirectToAction("Configure", new { theme, storeId });
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult ImportVariables(string theme, int storeId, FormCollection form)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-				return RedirectToAction("List", new { storeId = storeId });
+				return RedirectToAction("List", new { storeId });
             }
 
             try
@@ -299,10 +267,9 @@ namespace SmartStore.Admin.Controllers
                     int importedCount = 0;
 					importedCount = _themeVarService.ImportVariables(theme, storeId, file.InputStream.AsString());
 
-                    // activity log
                     try
                     {
-						_services.CustomerActivity.InsertActivity("ImportThemeVars", T("ActivityLog.ResetThemeVars"), importedCount, theme);
+						Services.CustomerActivity.InsertActivity("ImportThemeVars", T("ActivityLog.ResetThemeVars"), importedCount, theme);
                     }
                     catch { }
 
@@ -318,18 +285,16 @@ namespace SmartStore.Admin.Controllers
                 NotifyError(ex);
             }
 
-            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
+            return RedirectToAction("Configure", new { theme, storeId });
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Theme.Read)]
         public ActionResult ExportVariables(string theme, int storeId, FormCollection form)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
-                return AccessDeniedView();
-
             if (!_themeRegistry.ThemeManifestExists(theme))
             {
-				return RedirectToAction("List", new { storeId = storeId });
+				return RedirectToAction("List", new { storeId });
             }
 
             try
@@ -345,10 +310,9 @@ namespace SmartStore.Admin.Controllers
                     string profileName = form["exportprofilename"];
                     string fileName = "themevars-{0}{1}-{2}.xml".FormatCurrent(theme, profileName.HasValue() ? "-" + profileName.ToValidFileName() : "", DateTime.Now.ToString("yyyyMMdd"));
 
-                    // activity log
                     try
                     {
-						_services.CustomerActivity.InsertActivity("ExportThemeVars", T("ActivityLog.ExportThemeVars"), theme);
+						Services.CustomerActivity.InsertActivity("ExportThemeVars", T("ActivityLog.ExportThemeVars"), theme);
                     }
                     catch { }
 
@@ -360,10 +324,11 @@ namespace SmartStore.Admin.Controllers
                 NotifyError(ex);
             }
             
-            return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
+            return RedirectToAction("Configure", new { theme, storeId });
         }
 
-		public ActionResult ClearAssetCache()
+        [Permission(Permissions.Configuration.Theme.Update)]
+        public ActionResult ClearAssetCache()
 		{
 			try
 			{
@@ -378,31 +343,33 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToReferrer();
 		}
 
-		#endregion
+        #endregion
 
-		#region Preview
+        #region Preview
 
-		public ActionResult Preview(string theme, int? storeId, string returnUrl)
+        [Permission(Permissions.Configuration.Theme.Read)]
+        public ActionResult Preview(string theme, int? storeId, string returnUrl)
 		{
-			// Initializes the preview mode
-
+			// Initializes the preview mode.
 			if (!storeId.HasValue)
 			{
-				storeId = _services.StoreContext.CurrentStore.Id;
+				storeId = Services.StoreContext.CurrentStore.Id;
 			}
 
 			if (theme.IsEmpty())
 			{
-				theme = _settingService.LoadSetting<ThemeSettings>(storeId.Value).DefaultTheme;
+				theme = Services.Settings.LoadSetting<ThemeSettings>(storeId.Value).DefaultTheme;
 			}
 
-			if (!_themeRegistry.ThemeManifestExists(theme))
-				return HttpNotFound();
+            if (!_themeRegistry.ThemeManifestExists(theme))
+            {
+                return HttpNotFound();
+            }
 
 			using (HttpContext.PreviewModeCookie())
 			{
 				_themeContext.SetPreviewTheme(theme);
-				_services.StoreContext.SetPreviewStore(storeId);
+				Services.StoreContext.SetPreviewStore(storeId);
 			}
 
 			if (returnUrl.IsEmpty() && Request.UrlReferrer != null && Request.UrlReferrer.ToString().Length > 0)
@@ -415,28 +382,28 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("Index", "Home", new { area = (string)null });
 		}
 
-		public ActionResult PreviewTool()
+        [Permission(Permissions.Configuration.Theme.Read)]
+        public ActionResult PreviewTool()
 		{
-			// Prepares data for the preview mode (flyout) tool
-
+			// Prepares data for the preview mode (flyout) tool.
 			var currentTheme = _themeContext.CurrentTheme;
 			ViewBag.Themes = (from m in _themeRegistry.GetThemeManifests(false)
-						 select new SelectListItem
-						 {
-							 Value = m.ThemeName,
-							 Text = m.ThemeTitle,
-							 Selected = m == currentTheme
-						 }).ToList();
+			    select new SelectListItem
+			    {
+				    Value = m.ThemeName,
+				    Text = m.ThemeTitle,
+				    Selected = m == currentTheme
+			    }).ToList();
 
-			var currentStore = _services.StoreContext.CurrentStore;
-			ViewBag.Stores = (_services.StoreService.GetAllStores().Select(x => new SelectListItem
-						 {
-							 Value = x.Id.ToString(),
-							 Text = x.Name,
-							 Selected = x.Id == currentStore.Id
-						 })).ToList();
+			var currentStore = Services.StoreContext.CurrentStore;
+			ViewBag.Stores = Services.StoreService.GetAllStores().Select(x => new SelectListItem
+			    {
+				    Value = x.Id.ToString(),
+				    Text = x.Name,
+				    Selected = x.Id == currentStore.Id
+			    }).ToList();
 
-			var themeSettings = _settingService.LoadSetting<ThemeSettings>(currentStore.Id);
+			var themeSettings = Services.Settings.LoadSetting<ThemeSettings>(currentStore.Id);
 			ViewBag.DisableApply = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(currentTheme.ThemeName);
 			var cookie = Request.Cookies["sm:PreviewToolOpen"];
 			ViewBag.ToolOpen = cookie != null ? cookie.Value.ToBool() : false;
@@ -444,31 +411,31 @@ namespace SmartStore.Admin.Controllers
 			return PartialView();
 		}
 
-		[HttpPost,  ActionName("PreviewTool")]
+		[HttpPost, ActionName("PreviewTool")]
 		[FormValueRequired(FormValueRequirementRule.MatchAll, "theme", "storeId")]
 		[FormValueAbsent(FormValueRequirement.StartsWith, "PreviewMode.")]
-		public ActionResult PreviewToolPost(string theme, int storeId, string returnUrl)
+        [Permission(Permissions.Configuration.Theme.Update)]
+        public ActionResult PreviewToolPost(string theme, int storeId, string returnUrl)
 		{
-			// Refreshes the preview mode (after a select change)
-
+			// Refreshes the preview mode (after a select change).
 			using (HttpContext.PreviewModeCookie())
 			{
 				_themeContext.SetPreviewTheme(theme);
-				_services.StoreContext.SetPreviewStore(storeId);
+				Services.StoreContext.SetPreviewStore(storeId);
 			}
 
 			return RedirectToReferrer(returnUrl);
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Exit")]
-		public ActionResult ExitPreview()
+        [Permission(Permissions.Configuration.Theme.Read)]
+        public ActionResult ExitPreview()
 		{
-			// Exits the preview mode
-
+			// Exits the preview mode.
 			using (HttpContext.PreviewModeCookie())
 			{
 				_themeContext.SetPreviewTheme(null);
-				_services.StoreContext.SetPreviewStore(null);
+				Services.StoreContext.SetPreviewStore(null);
 			}
 
 			var returnUrl = (string)TempData["PreviewModeReturnUrl"];
@@ -476,33 +443,31 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Apply")]
-		public ActionResult ApplyPreviewTheme(string theme, int storeId)
+        [Permission(Permissions.Configuration.Theme.Update)]
+        public ActionResult ApplyPreviewTheme(string theme, int storeId)
 		{
-			// Applies the current previewed theme and exits the preview mode
-
-			var themeSettings = _settingService.LoadSetting<ThemeSettings>(storeId);
+			// Applies the current previewed theme and exits the preview mode.
+			var themeSettings = Services.Settings.LoadSetting<ThemeSettings>(storeId);
 			var oldTheme = themeSettings.DefaultTheme;
 			themeSettings.DefaultTheme = theme;
 			var themeSwitched = !oldTheme.IsCaseInsensitiveEqual(theme);
 
 			if (themeSwitched)
 			{
-				_services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent
+				Services.EventPublisher.Publish(new ThemeSwitchedEvent
 				{
 					OldTheme = oldTheme,
 					NewTheme = theme
 				});
 			}
 
-			_settingService.SaveSetting(themeSettings, storeId);
+			Services.Settings.SaveSetting(themeSettings, storeId);
 
-			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return ExitPreview();
 		}
 
 		#endregion
-
 	}
 }

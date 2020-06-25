@@ -1,0 +1,100 @@
+﻿@using SmartStore.Rules
+@model IRuleExpressionGroup
+
+<div class="ruleset" data-ruleset-id="@Model.Id" data-refrule-id="@Model.RefRuleId">
+    <div class="ruleset-header d-flex align-items-center justify-content-between">
+        <div class="ruleset-operator" data-url="@Url.Action("ChangeOperator")">
+            <div class="ruleset-op-one align-items-center justify-content-stretch @(Model.LogicalOperator == LogicalRuleOperator.And ? "hide" : "d-flex")">
+                @Html.Raw(T("Admin.Rules.OneCondition", RuleSetConditionsButton(LogicalRuleOperator.Or)))
+            </div>
+            <div class="ruleset-op-all align-items-center justify-content-stretch @(Model.LogicalOperator == LogicalRuleOperator.And ? "d-flex" : "hide")">
+                @Html.Raw(T("Admin.Rules.AllConditions", RuleSetConditionsButton(LogicalRuleOperator.And)))
+            </div>
+        </div>
+        @if (Model.RefRuleId == 0)
+        {
+            <div class="d-flex align-items-center">
+                <button type="button" class="btn btn-light ruleset-save" title="@T("Admin.Rules.SaveConditions")" disabled>
+                    <i class="fa fa-save"></i>
+                </button>
+            </div>
+        }
+    </div>
+
+    <div class="ruleset-body">
+        @foreach (var expression in Model.Expressions)
+        {
+            if (expression is IRuleExpressionGroup)
+            {
+                Html.RenderPartial("_RuleSet", expression);
+            }
+            else
+            {
+                Html.RenderPartial("_Rule", expression);
+            }
+        }
+    </div>
+
+    <div class="ruleset-footer">
+        <div class="row xs-gutters x-mt-3">
+            <div class="col-4 col-md-3 col-xl-2">
+                <select class="form-control r-add-rule">
+                    <option>@T("Admin.Rules.AddCondition")</option>
+                    @foreach (var grp in Model.Provider.RuleDescriptors.GroupBy(x => x.GroupKey))
+                    {
+                        if (grp.Key.HasValue())
+                        {
+                            @Html.Raw("<optgroup label=\"{0}\">".FormatInvariant(T(grp.Key)))
+                        }
+                        foreach (var d in grp)
+                        {
+                            <option value="@d.Name">@(d.DisplayName.NullEmpty() ?? d.Name)</option>
+                        }
+                        if (grp.Key.HasValue())
+                        {
+                            @Html.Raw("</optgroup>")
+                        }
+                    }
+                </select>
+            </div>
+
+            @if (Model.Provider.Scope != RuleScope.Product)
+            {
+                <div class="col-8 col-md-9 col-xl-10">
+                    <button type="button" class="btn btn-outline-secondary btn-to-primary r-add-group">
+                        <span>@T("Admin.Rules.AddGroup")</span>
+                    </button>
+
+                    @if (Model.IsSubGroup)
+                    {
+                        <button type="button" class="btn btn-outline-secondary btn-to-danger r-delete-group float-right">
+                            <span>@T("Admin.Rules.DeleteGroup")</span>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Called by Telerik rule value controls and smartstore.rules.js.
+    function onRuleValueChanged() {
+        var root = $('#ruleset-root');
+        root.find('.ruleset-save:first').prop('disabled', false);
+        root.data('dirty', true);
+    }
+</script>
+
+@helper RuleSetConditionsButton(LogicalRuleOperator op)
+{
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-secondary btn-sm btn-flat font-weight-medium dropdown-toggle mx-1 px-1 no-chevron" data-toggle="dropdown">
+            <span class="logical-operator">@T(op == LogicalRuleOperator.And ? "Admin.Rules.Operator.All" : "Admin.Rules.Operator.One")</span>
+        </button>
+        <div class="dropdown-menu logical-operator-chooser">
+            <a href="javascript:void(0)" class="dropdown-item" data-value="And">@T("Admin.Rules.Operator.All")</a>
+            <a href="javascript:void(0)" class="dropdown-item@(Model.Provider.Scope == RuleScope.Product ? " disabled" : "")" data-value="Or">@T("Admin.Rules.Operator.One")</a>
+        </div>
+    </div>
+}

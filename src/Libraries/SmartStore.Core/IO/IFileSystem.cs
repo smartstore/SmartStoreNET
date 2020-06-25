@@ -20,6 +20,17 @@ namespace SmartStore.Core.IO
 		/// <summary>
 		/// Retrieves the public URL for a given file within the storage provider.
 		/// </summary>
+		/// <param name="file">The file to resolve the public url for.</param>
+		/// <param name="forCloud">
+		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
+		/// If <c>false</c>, retrieves an app relative URL to delegate further processing to the media middleware (which can handle remote files)
+		/// </param>
+		/// <returns>The public URL.</returns>
+		string GetPublicUrl(IFile file, bool forCloud = false);
+
+		/// <summary>
+		/// Retrieves the public URL for a given file within the storage provider.
+		/// </summary>
 		/// <param name="path">The relative path within the storage provider.</param>
 		/// <param name="forCloud">
 		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
@@ -78,7 +89,7 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
 		/// <param name="pattern">The file pattern to match</param>
-		/// <param name="predicate">Optional. Files matching the predicate are excluded.</param>
+		/// <param name="predicate">Optional. Files not matching the predicate are excluded.</param>
 		/// <param name="deep">Whether to count files in all subfolders also</param>
 		/// <returns>Total count of files.</returns>
 		long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true);
@@ -110,8 +121,8 @@ namespace SmartStore.Core.IO
         /// Creates a folder in the storage provider.
         /// </summary>
         /// <param name="path">The relative path to the folder to be created.</param>
-        /// <exception cref="ArgumentException">If the folder already exists.</exception>
-        void CreateFolder(string path);
+        /// <returns>The folder instance.</returns>
+        IFolder CreateFolder(string path);
 
         /// <summary>
         /// Deletes a folder in the storage provider.
@@ -127,12 +138,32 @@ namespace SmartStore.Core.IO
 		/// <param name="newPath">The relative path to the new folder.</param>
 		void RenameFolder(string path, string newPath);
 
-        /// <summary>
-        /// Deletes a file in the storage provider.
-        /// </summary>
-        /// <param name="path">The relative path to the file to be deleted.</param>
-        /// <exception cref="ArgumentException">If the file doesn't exist.</exception>
-        void DeleteFile(string path);
+		/// <summary>
+		/// Copies a folder and all its content to another folder.
+		/// </summary>
+		/// <param name="path">Path of source folder</param>
+		/// <param name="destinationPath">Path of destination folder</param>
+		/// <param name="overwrite">Whether to overwrite existing files</param>
+		void CopyFolder(string path, string destinationPath, bool overwrite = true);
+
+		/// <summary>
+		/// Checks whether the name of the file is unique within its directory.
+		/// When given file exists, this method appends [1...n] to the file title until
+		/// the check returns false.
+		/// </summary>
+		/// <param name="path">The path of file to check</param>
+		/// <param name="newPath">The new unique path, or <c>null</c> if method returns <c>false</c></param>
+		/// <returns>
+		/// <c>false</c> when <paramref name="path"/> does not exist yet. <c>true</c> otherwise.
+		/// </returns>
+		bool CheckUniqueFileName(string path, out string newPath);
+
+		/// <summary>
+		/// Deletes a file in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be deleted.</param>
+		/// <exception cref="ArgumentException">If the file doesn't exist.</exception>
+		void DeleteFile(string path);
 
 		/// <summary>
 		/// Renames a file in the storage provider.
@@ -162,10 +193,11 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to the file to be copied.</param>
 		/// <param name="newPath">The relative path to the new file.</param>
-		void CopyFile(string path, string newPath);
+		/// <param name="overwrite">Whether to overwrite a file with same name.</param>
+		void CopyFile(string path, string newPath, bool overwrite = false);
 
 		/// <summary>
-		/// Saves a stream in the storage provider.
+		/// Saves a stream in the storage provider. If the file already exists, it will be overwritten.
 		/// </summary>
 		/// <param name="path">The relative path to the file to be created.</param>
 		/// <param name="inputStream">The stream to be saved.</param>
@@ -173,7 +205,7 @@ namespace SmartStore.Core.IO
 		void SaveStream(string path, Stream inputStream);
 
 		/// <summary>
-		/// Asynchronously saves a stream in the storage provider.
+		/// Asynchronously saves a stream in the storage provider. If the file already exists, it will be overwritten.
 		/// </summary>
 		/// <param name="path">The relative path to the file to be created.</param>
 		/// <param name="inputStream">The stream to be saved.</param>
@@ -181,7 +213,7 @@ namespace SmartStore.Core.IO
 		Task SaveStreamAsync(string path, Stream inputStream);
 
 		/// <summary>
-		/// Combines to paths.
+		/// Combines two paths.
 		/// </summary>
 		/// <param name="path1">The parent path.</param>
 		/// <param name="path2">The child path.</param>

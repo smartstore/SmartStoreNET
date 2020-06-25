@@ -9,9 +9,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using AngleSharp.Dom;
-using AngleSharp.Parser.Html;
 using SmartStore.Core.Html;
+using System.Runtime.CompilerServices;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -117,12 +117,14 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string EmptyNull(this string value)
         {
             return (value ?? string.Empty).Trim();
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string NullEmpty(this string value)
         {
             return (string.IsNullOrEmpty(value)) ? null : value;
@@ -135,6 +137,7 @@ namespace SmartStore
 		/// <param name="objects">The objects.</param>
 		/// <returns></returns>
 		[DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.InvariantCulture, format, objects);
@@ -147,6 +150,7 @@ namespace SmartStore
 		/// <param name="objects">The objects.</param>
 		/// <returns></returns>
 		[DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatCurrent(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.CurrentCulture, format, objects);
@@ -159,12 +163,14 @@ namespace SmartStore
 		/// <param name="objects">The objects.</param>
 		/// <returns></returns>
 		[DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatCurrentUI(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.CurrentUICulture, format, objects);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatWith(this string format, params object[] args)
         {
             return FormatWith(format, CultureInfo.CurrentCulture, args);
@@ -185,6 +191,7 @@ namespace SmartStore
 		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
 		/// </returns>
 		[DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCaseSensitiveEqual(this string value, string comparing)
         {
             return string.CompareOrdinal(value, comparing) == 0;
@@ -199,6 +206,7 @@ namespace SmartStore
 		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
 		/// </returns>
 		[DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCaseInsensitiveEqual(this string value, string comparing)
         {
             return string.Compare(value, comparing, StringComparison.OrdinalIgnoreCase) == 0;
@@ -208,6 +216,7 @@ namespace SmartStore
         /// Determines whether the string is null, empty or all whitespace.
         /// </summary>
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty(this string value)
         {
 			return string.IsNullOrWhiteSpace(value);
@@ -239,6 +248,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasValue(this string value)
         {
             return !string.IsNullOrWhiteSpace(value);
@@ -392,13 +402,15 @@ namespace SmartStore
 		{
 			Guard.NotNull(input, nameof(input));
 
-			var sb = new StringBuilder();
-			var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
+            var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
 
 			foreach (var line in lines)
 			{
 				var len = line.Length;
-				var sbLine = new StringBuilder(len);
+                var psbLine = PooledStringBuilder.Rent();
+                var sbLine = (StringBuilder)psbLine;
 				var isChar = false;
 				var isLiteral = false; // When we detect the ~! literal
 				int i = 0;
@@ -442,10 +454,11 @@ namespace SmartStore
 				}
 
 				// Append the compacted and trimmed line
-				sb.AppendLine(sbLine.ToString().Trim().Trim(','));	
-			}
+				sb.AppendLine(sbLine.ToString().Trim().Trim(','));
+                psbLine.Return();
+            }
 
-			return sb.ToString().Trim();
+			return psb.ToStringAndReturn().Trim();
 		}
 
 		/// <summary>
@@ -487,9 +500,10 @@ namespace SmartStore
 		/// <param name="startsWith">The string the target string should start with</param>
 		/// <returns>The resulting string</returns>
 		[DebuggerStepThrough]
-		public static string EnsureStartsWith(this string value, string startsWith)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string EnsureStartsWith(this string value, string startsWith)
 		{
-			if (value == null)
+            if (value == null)
 				throw new ArgumentNullException(nameof(value));
 
 			if (startsWith == null)
@@ -528,30 +542,35 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string UrlEncode(this string value)
         {
             return HttpUtility.UrlEncode(value);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string UrlDecode(this string value)
         {
             return HttpUtility.UrlDecode(value);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string AttributeEncode(this string value)
         {
             return HttpUtility.HtmlAttributeEncode(value);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string HtmlEncode(this string value)
         {
             return HttpUtility.HtmlEncode(value);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string HtmlDecode(this string value)
         {
             return HttpUtility.HtmlDecode(value);
@@ -563,7 +582,8 @@ namespace SmartStore
 			return RemoveHtml(source);
 		}
 
-		public static string RemoveHtml(this string source)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string RemoveHtml(this string source)
 		{
 			return HtmlUtils.StripTags(source).Trim().HtmlDecode();
 		}
@@ -577,8 +597,10 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static string SplitPascalCase(this string value)
         {
-            var sb = new StringBuilder();
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
             char[] ca = value.ToCharArray();
+
             sb.Append(ca[0]);
 
             for (int i = 1; i < ca.Length - 1; i++)
@@ -596,7 +618,7 @@ namespace SmartStore
                 sb.Append(ca[ca.Length - 1]);
             }
 
-            return sb.ToString();
+            return psb.ToStringAndReturn();
         }
 
 		/// <summary>
@@ -674,15 +696,19 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value, char delimiter, bool appendDelimiters)
         {
-            var sb = new StringBuilder(value != null ? value.Length : 16);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
             using (var w = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
                 EncodeJsString(w, value, delimiter, appendDelimiters);
-                return w.ToString();
+                var result = w.ToString();
+                psb.Return();
+                return result;
             }
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnclosedIn(this string value, string enclosedIn)
         {
             return value.IsEnclosedIn(enclosedIn, StringComparison.CurrentCulture);
@@ -711,17 +737,20 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnclosedIn(this string value, string start, string end)
         {
             return value.IsEnclosedIn(start, end, StringComparison.CurrentCulture);
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnclosedIn(this string value, string start, string end, StringComparison comparisonType)
         {
             return value.StartsWith(start, comparisonType) && value.EndsWith(end, comparisonType);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RemoveEncloser(this string value, string encloser)
         {
             return value.RemoveEncloser(encloser, StringComparison.CurrentCulture);
@@ -740,6 +769,7 @@ namespace SmartStore
             return value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RemoveEncloser(this string value, string start, string end)
         {
             return value.RemoveEncloser(start, end, StringComparison.CurrentCulture);
@@ -757,7 +787,8 @@ namespace SmartStore
 
 		/// <summary>Debug.WriteLine</summary>
         [DebuggerStepThrough]
-		public static void Dump(this string value, bool appendMarks = false) 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Dump(this string value, bool appendMarks = false) 
         {
 			Debug.WriteLine(value);
 			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
@@ -804,14 +835,40 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(grow))
 				return (string.IsNullOrEmpty(value) ? "" : value);
 
-			return string.Concat(value, delimiter, grow);
+			return value + delimiter + grow;
 		}
-		
-		/// <summary>
-		/// Returns n/a if string is empty else self.
-		/// </summary>
+
+        /// <summary>
+        /// Left-pads a string. Always returns empty string if source is null or empty.
+        /// </summary>
         [DebuggerStepThrough]
-		public static string NaIfEmpty(this string value) 
+        public static string LeftPad(this string value, string format = null, char pad = ' ', int count = 1)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            Guard.NotNull(pad, nameof(pad));
+
+            if (count < 1)
+                return value;
+
+            var left = new String(pad, count);
+            var right = value;
+
+            if (!string.IsNullOrWhiteSpace(format))
+            {
+                right = string.Format(CultureInfo.InvariantCulture, format, value);
+            }
+
+            return left + right;
+        }
+
+        /// <summary>
+        /// Returns n/a if string is empty else self.
+        /// </summary>
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string NaIfEmpty(this string value) 
         {
 			return (string.IsNullOrWhiteSpace(value) ? "n/a" : value);
 		}
@@ -880,7 +937,8 @@ namespace SmartStore
 		}
 
 		[DebuggerStepThrough]
-		public static string TrimSafe(this string value) 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string TrimSafe(this string value) 
         {
 			return (value.HasValue() ? value.Trim() : value);
 		}
@@ -889,13 +947,14 @@ namespace SmartStore
 		public static string Slugify(this string value, bool allowSpace = false, char[] allowChars = null) 
         {
 			string res = string.Empty;
+            var psb = PooledStringBuilder.Rent();
 
-			try 
+            try 
             {
 				if (!string.IsNullOrWhiteSpace(value)) 
                 {
-					var sb = new StringBuilder();
-					bool space = false;
+                    var sb = (StringBuilder)psb;
+                    bool space = false;
 					char ch;
 
 					for (int i = 0; i < value.Length; ++i) 
@@ -962,10 +1021,15 @@ namespace SmartStore
             {
 				ex.Dump();
 			}
+            finally
+            {
+                psb.Return();
+            }
 
 			return (res.Length > 0 ? res : "null");
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string SanitizeHtmlId(this string value)
         {
 			return System.Web.Mvc.TagBuilder.CreateSanitizedId(value);
@@ -986,6 +1050,7 @@ namespace SmartStore
 		}
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(this string input, string pattern, RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.Multiline)
         {
             return Regex.IsMatch(input, pattern, options);
@@ -998,52 +1063,39 @@ namespace SmartStore
             return match.Success;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RegexRemove(this string input, string pattern, RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.Multiline)
         {
             return Regex.Replace(input, pattern, string.Empty, options);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RegexReplace(this string input, string pattern, string replacement, RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.Multiline)
         {
             return Regex.Replace(input, pattern, replacement, options);
         }
 
         [DebuggerStepThrough]
-        public static string ToValidFileName(this string input, string replacement = "-")
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string ToValidFileName(this string input, string replacement = "-")
         {
-            return input.ToValidPathInternal(false, replacement);
-        }
+			return string.Join(
+				replacement ?? "-",
+				input.ToSafe().Split(Path.GetInvalidFileNameChars()));
+		}
 
         [DebuggerStepThrough]
-        public static string ToValidPath(this string input, string replacement = "-")
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string ToValidPath(this string input, string replacement = "-")
         {
-            return input.ToValidPathInternal(true, replacement);
-        }
-
-        private static string ToValidPathInternal(this string input, bool isPath, string replacement)
-        {
-            var invalidChars = new HashSet<char>(isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars());
-
-			replacement = replacement ?? "-";
-
-			var sb = new StringBuilder();
-			foreach (var c in input.ToSafe())
-			{
-				if (invalidChars.Contains(c))
-				{
-					sb.Append(replacement);
-				}
-				else
-				{
-					sb.Append(c);
-				}
-			}
-
-			return sb.ToString();
-        }
+			return string.Join(
+				replacement ?? "-",
+				input.ToSafe().Split(Path.GetInvalidPathChars()));
+		}
 
 		[DebuggerStepThrough]
-		public static int[] ToIntArray(this string s)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int[] ToIntArray(this string s)
 		{
 			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v.Trim()));
 		}

@@ -62,21 +62,6 @@
 	<LocaleResource Name="AdditionalImages.Hint">
 		<Value>Check the box if you want to export more than one image. Up to 10 are possible.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Condition">
-		<Value>Condition</Value>
-	</LocaleResource>
-	<LocaleResource Name="Condition.Hint">
-		<Value>Condition of the product.</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConditionNew">
-		<Value>New</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConditionUsed">
-		<Value>Used</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConditionRefurbished">
-		<Value>Refurbished</Value>
-	</LocaleResource>
 	<LocaleResource Name="Availability">
 		<Value>Availability</Value>
 	</LocaleResource>

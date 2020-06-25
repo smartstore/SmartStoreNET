@@ -18,10 +18,10 @@ using SmartStore.Utilities;
 
 namespace SmartStore.AmazonPay.Services
 {
-	/// <summary>
-	/// Helper with utilities to keep the AmazonPayService tidy.
-	/// </summary>
-	public partial class AmazonPayService
+    /// <summary>
+    /// Helper with utilities to keep the AmazonPayService tidy.
+    /// </summary>
+    public partial class AmazonPayService
 	{
 		/// <summary>
 		/// Also named "spId".
@@ -93,18 +93,6 @@ namespace SmartStore.AmazonPay.Services
 				var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
 				return (AmazonPayOrderAttribute)serializer.Deserialize(reader);
 			}
-		}
-
-		private bool IsPaymentMethodActive(int storeId, bool logInactive = false)
-		{
-			var isActive = _paymentService.IsPaymentMethodActive(AmazonPayPlugin.SystemName, storeId);
-
-			if (!isActive && logInactive)
-			{
-				Logger.Error(null, T("Plugins.Payments.AmazonPay.PaymentMethodNotActive", _services.StoreContext.CurrentStore.Name));
-			}
-
-			return isActive;
 		}
 
 		private void AddOrderNote(AmazonPaySettings settings, Order order, string anyString = null, bool isIpn = false)
@@ -556,7 +544,7 @@ namespace SmartStore.AmazonPay.Services
 				.WithClientId(settings.ClientId)
 				.WithSecretKey(settings.SecretKey)
 				.WithSandbox(settings.UseSandbox)
-				.WithApplicationName("SmartStore.Net " + AmazonPayPlugin.SystemName)
+				.WithApplicationName("Smartstore " + AmazonPayPlugin.SystemName)
 				.WithApplicationVersion(appVersion)
 				.WithRegion(region);
 

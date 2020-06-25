@@ -49,9 +49,9 @@ namespace SmartStore.DevTools.Filters
 			if (!_profilerSettings.Value.EnableMiniProfilerInPublicStore)
 				return;
 
-			if (!filterContext.Result.IsHtmlViewResult())
-				_services.Chronometer.StepStop("ActionFilter");
-		}
+            if (!filterContext.Result.IsHtmlViewResult())
+                _services.Chronometer.StepStop("ActionFilter");
+        }
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
@@ -74,16 +74,16 @@ namespace SmartStore.DevTools.Filters
 				viewName = action;
 			}
 
-			_services.Chronometer.StepStart("ResultFilter", string.Format("{0}: {1}", viewResult is PartialViewResult ? "Partial" : "View", viewName));
+            _services.Chronometer.StepStart("ResultFilter", string.Format("{0}: {1}", viewResult is PartialViewResult ? "Partial" : "View", viewName));
 
-			if (!filterContext.IsChildAction)
+            if (!filterContext.IsChildAction)
 			{
-				_widgetProvider.Value.RegisterAction(
-					"head_html_tag",
-					"MiniProfiler",
-					"DevTools",
-					new { area = "SmartStore.DevTools" });
-			}
+                _widgetProvider.Value.RegisterAction(
+                    "head_html_tag",
+                    "MiniProfiler",
+                    "DevTools",
+                    new { area = "SmartStore.DevTools" });
+            }
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
@@ -98,9 +98,9 @@ namespace SmartStore.DevTools.Filters
 			if (!this.ShouldProfile(filterContext.HttpContext))
 				return;
 
-			_services.Chronometer.StepStop("ResultFilter");
-			_services.Chronometer.StepStop("ActionFilter");
-		}
+            _services.Chronometer.StepStop("ResultFilter");
+            _services.Chronometer.StepStop("ActionFilter");
+        }
 
 		private bool ShouldProfile(HttpContextBase ctx)
 		{

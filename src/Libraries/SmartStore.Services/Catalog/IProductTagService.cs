@@ -6,7 +6,7 @@ namespace SmartStore.Services.Catalog
     /// <summary>
     /// Product tag service interface
     /// </summary>
-    public partial interface IProductTagService
+    public partial interface IProductTagService : IScopedService
     {
         /// <summary>
         /// Delete a product tag
@@ -17,8 +17,9 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets all product tags
         /// </summary>
+        /// <param name="includeHidden">Whether to include hidden product tags.</param>
         /// <returns>Product tags</returns>
-        IList<ProductTag> GetAllProductTags();
+        IList<ProductTag> GetAllProductTags(bool includeHidden = false);
 
         /// <summary>
         /// Gets all product tag names
@@ -52,12 +53,20 @@ namespace SmartStore.Services.Catalog
         /// <param name="productTag">Product tag</param>
         void UpdateProductTag(ProductTag productTag);
 
-		/// <summary>
-		/// Get number of products
-		/// </summary>
-		/// <param name="productTagId">Product tag identifier</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <returns>Number of products</returns>
-		int GetProductCount(int productTagId, int storeId);
+        /// <summary>
+        /// Updates the product tags.
+        /// </summary>
+        /// <param name="product">Product.</param>
+        /// <param name="tagNames">New tags for the product.</param>
+        void UpdateProductTags(Product product, string[] tagNames);
+
+        /// <summary>
+        /// Get number of products
+        /// </summary>
+        /// <param name="productTagId">Product tag identifier</param>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="includeHidden">Whether to include hidden product tags.</param>
+        /// <returns>Number of products</returns>
+        int GetProductCount(int productTagId, int storeId, bool includeHidden = false);
     }
 }

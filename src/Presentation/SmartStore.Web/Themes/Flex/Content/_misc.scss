@@ -34,6 +34,7 @@
 //
 // Cookie Consent
 // -------------------------------------------------
+
 .cookie-consent-panel-message {
     background: $gray-800;
 	z-index: $zindex-fixed + 1;
@@ -47,16 +48,19 @@
 	border-top: 1px solid #222;
 	text-align: center;
 	line-height: 1.5;
-}
-.cookie-consent-panel-message .close {
-    color: #fff !important;
-}
-.cookie-consent-panel-message a {
-	color: inherit;
-	text-decoration: underline;
-}
-.cookie-consent-panel-message .popup {
-	display: none !important;
+
+    .close {
+        color: #fff !important;
+    }
+
+    a {
+	    color: inherit;
+	    text-decoration: underline;
+    }
+
+    .popup {
+	    display: none !important;
+    }
 }
 
 //
@@ -64,49 +68,46 @@
 // -------------------------------------------------
 
 // overwrite for bluimp file upload control
-.fileupload .fileupload-progress.collapse {
+/*.fu-fileupload .fu-progress.collapse {
     display: none !important; 
     width: 100%;
 }
-.fileupload .fileupload-progress.collapse.show {
+.fu-fileupload .fu-progress.collapse.show {
     display: block !important; 
-}
+}*/
 
 //
-// Customer
+// Customer avatar
 // -------------------------------------------------
 .customer-avatar,
 .customer-avatar-lg {
-    display: inline-block;
+    display: inline-flex;
 
-    a {
+    .avatar-link {
         text-decoration: none;
         color: inherit;
     }
 
-    img, .letter {
-        display: inline-block;
+    .avatar-link, .avatar-img, .avatar-letter {
         border-radius: 50%;
         border: 0;
+        width: 100%;
+        height: 100%;
     }
 
-    .letter {
+    .avatar-letter {
+        display: flex;
+        justify-content: center;
         font-weight: bold;
-        text-align: center;
     }
 }
 
 .customer-avatar {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
 
-    img, .letter {
-        width: 45px;
-        height: 45px;
-    }
-
-    .letter {
-        font-size: 30px;
+    .avatar-letter {
+        font-size: $h2-font-size;
     }
 }
 
@@ -114,30 +115,22 @@
     width: 120px;
     height: 120px;
 
-    img, .letter {
-        width: 120px;
-        height: 120px;
-    }
-
-    .letter {
-        font-size: 80px;
+    .avatar-letter {
+        font-size: $display3-size;
     }
 }
 
 //
 // Other stuff
 // -------------------------------------------------
-
 #iframe-backinstocksubsription {
     max-width: 100%;
 }
 
 .pm-unread {
-	font-weight: bold;
-	background: $gray-100;
+    font-weight: bold;
+    background: $gray-100;
 }
-
-
 //
 // Hacks
 // -------------------------------------------------
@@ -147,25 +140,25 @@
         width: auto;
         -ms-flex-preferred-size: auto;
     }
+
     .megamenu-dropdown-container.simple {
         position: static;
     }
+
     .instasearch-button {
         height: 100%;
     }
 }
+
 .edge .offcanvas-cart-footer-col.d-flex {
     display: -webkit-box !important;
     display: -ms-flexbox !important;
 }
-
-
 //
 // Vars
 // -------------------------------------------------
-
 :root {
-  $varnames: ();
+    $varnames: ();
 
     @each $color, $value in $colors {
         $varnames: $varnames + '--' + $color + ",";
@@ -179,11 +172,44 @@
         $varnames: $varnames + '--gray-' + $color + ",";
         --gray-#{$color}: #{$value};
     }
-  
+
     $varnames: $varnames + '--body,--muted,--black';
 
     --varnames: #{$varnames};
     --body: #{$body-color};
     --muted: #{$text-muted};
     --black: #000;
+
+    @if alpha($body-bg) == 0 {
+        --body-bg: #{$site-bg};
+    }
+    @else {
+        --body-bg: #{$body-bg};
+    }
+
+    @if ($fa-use-pro == true) {
+        --fa-font-family: 'Font Awesome 5 Pro';
+    }
+}
+// admin edit
+.btn-admin-edit {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+    z-index: 1;
+}
+
+.news-item-page:hover .btn-admin-edit,
+.blogpost-page:hover .btn-admin-edit,
+.pd-section-top:hover .btn-admin-edit {
+    display: inline-block;
+}
+// masonary grid
+.masonary-grid {
+    display: grid;
+    grid-gap: $list-group-item-padding-x;
+    grid-template-columns: repeat(auto-fill, minmax(330px,1fr));
+    grid-auto-rows: 20px;
 }

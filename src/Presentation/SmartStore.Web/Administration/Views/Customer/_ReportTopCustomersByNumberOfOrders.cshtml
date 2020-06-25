@@ -1,0 +1,73 @@
+﻿@using Telerik.Web.Mvc.UI
+@model TopCustomersReportModel
+
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.StartDate)
+		@Html.EditorFor(model => Model.StartDate, new { @class = "form-control" })
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.EndDate)
+		@Html.EditorFor(model => model.EndDate, new { @class = "form-control" })
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.OrderStatusId)
+		@Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses, T("Admin.Common.All"))
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.PaymentStatusId)
+		@Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses, T("Admin.Common.All"))
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.ShippingStatusId)
+		@Html.DropDownList("ShippingStatusId", Model.AvailableShippingStatuses, T("Admin.Common.All"))
+	</div>
+
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabel(string.Empty, string.Empty)
+		<button type="submit" id="search-best-customers-numberoforders-grid" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Customers.Reports.RunReport")</span>
+		</button>
+	</div>
+</div>
+
+@(Html.Telerik().Grid<TopCustomerReportLineModel>()
+	.Name("best-customers-numberoforders-grid")
+	.ClientEvents(events => events.OnDataBinding("bestCustomersNumberOfOrdersOnDataBinding"))
+	.Columns(columns =>
+	{
+		columns.Bound(x => x.OrderTotal)
+			.RightAlign()
+			.Width(160);
+		columns.Bound(x => x.OrderCount)
+			.Centered()
+			.Width(160);
+		columns.Bound(x => x.CustomerId)
+			.Template(x => Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+			.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerDisplayName #></a>");
+	})
+	.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersByNumberOfOrdersList", "Customer"))
+	.EnableCustomBinding(true))
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#search-best-customers-numberoforders-grid').click(function () {
+            var grid = $('#best-customers-numberoforders-grid').data('tGrid');
+            grid.currentPage = 1;
+            grid.ajaxRequest();
+            return false;
+        });
+    });
+
+	function bestCustomersNumberOfOrdersOnDataBinding(e) {
+		var searchModel = {
+			StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+			EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
+			OrderStatusId: $('#@Html.FieldIdFor(model => model.OrderStatusId)').val(),
+			PaymentStatusId: $('#@Html.FieldIdFor(model => model.PaymentStatusId)').val(),
+			ShippingStatusId: $('#@Html.FieldIdFor(model => model.ShippingStatusId)').val()
+		};
+		e.data = searchModel;
+	}
+</script>

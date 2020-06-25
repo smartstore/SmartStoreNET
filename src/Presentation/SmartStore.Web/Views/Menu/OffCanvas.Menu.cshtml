@@ -1,0 +1,92 @@
+﻿@model MenuModel
+
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "";
+
+    // targetNode is the node (with children) which was clicked. Means: we gonna navigate to its children.
+    var targetNode = Model.SelectedNode ?? Model.Root;
+    if (targetNode.IsLeaf && !targetNode.IsRoot)
+    {
+        targetNode = targetNode.Parent;
+    }
+
+    // currentNode represents the current page
+    var currentNode = ViewBag.CurrentNode as TreeNode<MenuItem>;
+}
+
+<div class="ocm-menu" data-depth="@targetNode.Depth">
+	@if (targetNode.Depth > 0)
+	{
+		<div class="ocm-info">
+			<h3 @Html.LanguageAttributes(targetNode.Value.Rtl, WorkContext.WorkingLanguage) class="ocm-name">@targetNode.Value.Text</h3>
+		</div>
+	}
+
+    <ul class="ocm-nav list-unstyled">
+        @if (targetNode.Depth > 0)
+        {
+            <li class="ocm-back ocm-item">
+                <a href="@targetNode.Parent.Value.GenerateUrl(this.Url)" class="ocm-link" data-id="@(targetNode.Parent.IsRoot ? 0 : targetNode.Parent.Id)" data-ajax="true">
+                    <i class="fa fa-angle-left"></i>
+                    <span>@T("Common.Back")</span>
+                </a>
+            </li>
+            
+            if (!targetNode.Value.IsVoid())
+            {
+                <li class="show-current-node ocm-item">
+                    <a href="@targetNode.Value.GenerateUrl(this.Url)" class="ocm-link" data-id="@targetNode.Id" data-ajax="false">
+                        @T("Offcanvas.Menu.ShowCurrentCat", targetNode.Value.Text)
+                    </a>
+                </li>
+            }
+        }
+
+        @foreach (var node in targetNode.Children)
+        {
+            var item = node.Value;
+
+            if (!item.Visible || item.IsGroupHeader)
+            {
+                continue;
+            }
+
+            // LI attributes
+            var cssClass = "ocm-item";
+            if (node.HasChildren)
+            {
+                cssClass += " has-children";
+            }
+            if (node == currentNode)
+            {
+                cssClass += " selected";
+            }
+            var attrs = new RouteValueDictionary(item.HtmlAttributes).PrependCssClass(cssClass);
+
+            // A attributes
+            var linkAttrs = new RouteValueDictionary(item.LinkHtmlAttributes)
+            {
+                ["data-id"] = node.Id
+            }.PrependCssClass("ocm-link has-count");
+
+            if (node.HasChildren)
+            {
+                linkAttrs["data-ajax"] = "true";
+            }
+
+            if (item.ElementsCount > 0)
+            {
+                linkAttrs["data-count"] = item.ElementsCount.ToString();
+            }
+
+            <li @Html.Attrs(attrs)>
+                <a href="@item.GenerateUrl(this.Url)" @Html.Attrs(linkAttrs)>
+					<span @Html.LanguageAttributes(item.Rtl, WorkContext.WorkingLanguage)>@item.Text</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

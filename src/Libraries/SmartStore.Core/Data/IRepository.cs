@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data
 {
@@ -39,19 +40,33 @@ namespace SmartStore.Core.Data
         /// <returns>The resolved entity</returns>
         T GetById(object id);
 
-		/// <summary>
-		/// Attaches an entity to the context
-		/// </summary>
-		/// <param name="entity">The entity to attach</param>
-		/// <returns>The entity</returns>
-		T Attach(T entity);
+        /// <summary>
+        /// Gets an entity by id from the database or the local change tracker asynchronously.
+        /// </summary>
+        /// <param name="id">The id of the entity. This can also be a composite key.</param>
+        /// <returns>The resolved entity</returns>
+        Task<T> GetByIdAsync(object id);
 
         /// <summary>
-        /// Marks the entity instance to be saved to the store.
+        /// Attaches an entity to the context
+        /// </summary>
+        /// <param name="entity">The entity to attach</param>
+        /// <returns>The entity</returns>
+        T Attach(T entity);
+
+        /// <summary>
+        /// Marks an entity instance to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>
         /// </summary>
         /// <param name="entity">An entity instance that should be saved to the database.</param>
         /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
         void Insert(T entity);
+
+        /// <summary>
+        /// Marks an entity instance to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="entity">An entity instance that should be saved to the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        Task InsertAsync(T entity);
 
         /// <summary>
         /// Marks multiple entities to be saved to the store.
@@ -61,34 +76,69 @@ namespace SmartStore.Core.Data
         void InsertRange(IEnumerable<T> entities, int batchSize = 100);
 
         /// <summary>
-        /// Marks the changes of an existing entity to be saved to the store.
+        /// Marks multiple entities to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="entities">The list of entity instances to be saved to the database</param>
+        /// <param name="batchSize">The number of entities to insert before saving to the database (if <see cref="AutoCommitEnabled"/> is true)</param>
+        Task InsertRangeAsync(IEnumerable<T> entities, int batchSize = 100);
+
+        /// <summary>
+        /// Marks the changes of an existing entity to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
         /// </summary>
         /// <param name="entity">An instance that should be updated in the database.</param>
         /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
         void Update(T entity);
 
-		/// <summary>
-		/// Marks the changes of existing entities to be saved to the store.
-		/// </summary>
-		/// <param name="entities">A list of entity instances that should be updated in the database.</param>
-		/// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
-		void UpdateRange(IEnumerable<T> entities);
+        /// <summary>
+        /// Marks the changes of an existing entity to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="entity">An instance that should be updated in the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        Task UpdateAsync(T entity);
 
         /// <summary>
-        /// Marks an existing entity to be deleted from the store.
+        /// Marks the changes of existing entities to be saved to the store.
+        /// </summary>
+        /// <param name="entities">A list of entity instances that should be updated in the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        void UpdateRange(IEnumerable<T> entities);
+
+        /// <summary>
+        /// Marks the changes of existing entities to be saved to the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>..
+        /// </summary>
+        /// <param name="entities">A list of entity instances that should be updated in the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        Task UpdateRangeAsync(IEnumerable<T> entities);
+
+        /// <summary>
+        /// Marks an existing entity to be deleted from the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
         /// </summary>
         /// <param name="entity">An entity instance that should be deleted from the database.</param>
         /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
         void Delete(T entity);
 
-		/// <summary>
-		/// Marks existing entities to be deleted from the store.
-		/// </summary>
-		/// <param name="entities">A list of entity instances that should be deleted from the database.</param>
-		/// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
-		void DeleteRange(IEnumerable<T> entities);
+        /// <summary>
+        /// Marks an existing entity to be deleted from the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="entity">An entity instance that should be deleted from the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        Task DeleteAsync(T entity);
 
-		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
+        /// <summary>
+        /// Marks existing entities to be deleted from the store.
+        /// </summary>
+        /// <param name="entities">A list of entity instances that should be deleted from the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        void DeleteRange(IEnumerable<T> entities);
+
+        /// <summary>
+        /// Marks existing entities to be deleted from the store and saves immediately if <see cref="AutoCommitEnabled"/> is <c>true</c>..
+        /// </summary>
+        /// <param name="entities">A list of entity instances that should be deleted from the database.</param>
+        /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+        Task DeleteRangeAsync(IEnumerable<T> entities);
+
+        [Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand(IQueryable<T> query, string path);
 
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]

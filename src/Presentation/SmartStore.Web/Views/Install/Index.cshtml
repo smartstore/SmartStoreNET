@@ -47,7 +47,7 @@
 			<header id="header">
 				<nav id="navbar" class="navbar navbar-dark navbar-expand-sm content p-0">
 					<a class="navbar-brand mx-0 mr-3" href="https://www.smartstore.com">
-						<img class="navbar-img" src="~/Administration/Content/images/smartstore.svg" alt="SmartStore.NET" />
+						<img class="navbar-img" src="~/Administration/Content/images/smartstore.svg" alt="Smartstore" />
 					</a>
 					<div class="navbar-text h5 p-0 m-0 pl-1" style="height: 20px; vertical-align: bottom">
 						@ILS.GetResource("Title")
@@ -109,7 +109,7 @@
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="AdminEmail">@ILS.GetResource("AdminEmail")</label>
 										<div class="col-md-9">
-											@Html.TextBoxFor(x => x.AdminEmail, new { @class = "form-control" })
+											@Html.TextBoxFor(x => x.AdminEmail, new { @class = "form-control remember" })
 											@Html.ValidationMessageFor(x => x.AdminEmail)
 										</div>
 									</div>
@@ -137,7 +137,7 @@
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Database")</label>
 										<div class="col-md-9">
-											<select name="DataProvider" id="DataProvider" class="form-control">
+											<select name="DataProvider" id="DataProvider" class="form-control remember">
 												<option value="sqlce">@ILS.GetResource("SqlCompact")</option>
 												<option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
 											</select>
@@ -148,7 +148,7 @@
 										<div class="form-group row">
 											<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Connection")</label>
 											<div class="col-md-9">
-												<select name="SqlConnectionInfo" id="SqlConnectionInfo" class="form-control">
+												<select name="SqlConnectionInfo" id="SqlConnectionInfo" class="form-control remember">
 													<option value="sqlconnectioninfo_values">@ILS.GetResource("ConnectionStringValues")</option>
 													<option value="sqlconnectioninfo_raw">@ILS.GetResource("RawConnectionString")</option>
 												</select>
@@ -160,7 +160,7 @@
 											<div class="form-group row">
 												<label class="col-md-3 col-form-label" for="SqlServerName">@ILS.GetResource("SqlServerName")</label>
 												<div class="col-md-9">
-													@Html.TextBoxFor(x => x.SqlServerName, new { @class = "form-control" })
+													@Html.TextBoxFor(x => x.SqlServerName, new { @class = "form-control remember" })
 												</div>
 											</div>
 											<div class="form-group row">
@@ -168,11 +168,11 @@
 												<div class="col-md-9">
 													<div class="form-row">
 														<div class="col">
-															@Html.TextBoxFor(x => x.SqlDatabaseName, new { @class = "form-control" })
+															@Html.TextBoxFor(x => x.SqlDatabaseName, new { @class = "form-control remember" })
 														</div>
 														<div class="col-auto">
 															<div class="form-check form-control-plaintext">
-																@Html.CheckBoxFor(x => x.SqlServerCreateDatabase, new { id = "SqlServerCreateDatabase", @class = "form-check-input" })
+																@Html.CheckBoxFor(x => x.SqlServerCreateDatabase, new { id = "SqlServerCreateDatabase", @class = "form-check-input remember" })
 																<label class="form-check-label" for="SqlServerCreateDatabase">@ILS.GetResource("CreateDatabaseIfDoesNotExist")</label>
 															</div>
 														</div>
@@ -182,7 +182,7 @@
 											<div class="form-group row">
 												<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Authentication")</label>
 												<div class="col-md-9">
-													<select name="SqlAuthenticationType" id="SqlAuthenticationType" class="form-control">
+													<select name="SqlAuthenticationType" id="SqlAuthenticationType" class="form-control remember">
 														<option value="sqlauthentication">@ILS.GetResource("SqlAuthentication")</option>
 														<option value="windowsauthentication">@ILS.GetResource("WindowsAuthentication")</option>
 													</select>
@@ -195,7 +195,7 @@
 														<div class="form-row">
 															<div class="col-6">
 																<div class="has-icon">
-																	@Html.TextBoxFor(x => x.SqlServerUsername, new { @class = "form-control", placeholder = ILS.GetResource("SqlServerUsername") })
+																	@Html.TextBoxFor(x => x.SqlServerUsername, new { @class = "form-control remember", placeholder = ILS.GetResource("SqlServerUsername") })
 																	<span class="input-group-icon text-muted"><i class="icm icm-user" style="line-height: inherit"></i></span>
 																</div>
 															</div>
@@ -217,7 +217,7 @@
 											<div class="form-group row">
 												<label class="col-md-3 col-form-label" for="DatabaseConnectionString">@ILS.GetResource("ConnectionString")</label>
 												<div class="col-md-9">
-													@Html.TextBoxFor(x => x.DatabaseConnectionString, new { @class = "form-control" })
+													@Html.TextBoxFor(x => x.DatabaseConnectionString, new { @class = "form-control remember" })
 													<small class="form-text text-muted mt-2">
 														@ILS.GetResource("Example"):
 														Data Source=sqlServerName;Initial Catalog=dbName;Persist Security Info=True;User
@@ -237,10 +237,10 @@
 										<div class="form-group row">
 											<div class="col-md-9 offset-md-3">
 												<div class="form-check mb-2">
-													@Html.CheckBoxFor(x => x.UseCustomCollation, new { id = "UseCustomCollation", @class = "form-check-input" })
+													@Html.CheckBoxFor(x => x.UseCustomCollation, new { id = "UseCustomCollation", @class = "form-check-input remember" })
 													<label class="form-check-label" for="UseCustomCollation">@ILS.GetResource("CustomCollation")</label>
 												</div>
-												@Html.TextBoxFor(x => x.Collation, new { disabled = "disabled", @class = "form-control" })
+												@Html.TextBoxFor(x => x.Collation, new { disabled = "disabled", @class = "form-control remember" })
 											</div>
 										</div>
 									</div>
@@ -254,14 +254,14 @@
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="PrimaryLanguage">@ILS.GetResource("PrimaryLanguage")</label>
 										<div class="col-md-9">
-											@Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages, new { @class = "form-control" })
+											@Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages, new { @class = "form-control remember" })
 											@Html.ValidationMessageFor(x => x.PrimaryLanguage)
 										</div>
 									</div>
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="MediaStorage">@ILS.GetResource("MediaStorage.Label")</label>
 										<div class="col-md-9">
-											@Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages, new { @class = "form-control" })
+											@Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages, new { @class = "form-control remember" })
 											@Html.ValidationMessageFor(x => x.MediaStorage)
 											<small class="form-text text-muted mt-2">
 												@ILS.GetResource("MediaStorage.Hint")
@@ -271,7 +271,7 @@
 									<div class="form-group row">
 										<div class="col-md-9 offset-md-3">
 											<div class="form-check">
-												@Html.CheckBoxFor(x => x.InstallSampleData, new { id = "InstallSampleData", @class = "form-check-input" })
+												@Html.CheckBoxFor(x => x.InstallSampleData, new { id = "InstallSampleData", @class = "form-check-input remember" })
 												<label class="form-check-label" for="InstallSampleData">@ILS.GetResource("CreateSampleData")</label>
 											</div>
 										</div>
@@ -306,6 +306,7 @@
     <script src='~/Scripts/smartstore.system.js' type='text/javascript'></script>
 	<script src='~/Scripts/smartstore.viewport.js' type='text/javascript'></script>
 	<script src='~/Scripts/smartstore.common.js' type='text/javascript'></script>
+	<script src='~/Scripts/smartstore.dialogs.js' type='text/javascript'></script>
 
     <script src='~/Content/vendors/underscore/underscore.min.js' type='text/javascript'></script>
     <script src='~/Content/vendors/underscore/underscore.string.min.js' type='text/javascript'></script>
@@ -375,6 +376,21 @@
 			$('#SqlConnectionInfo').on('change', toggleSqlConnectionInfo).trigger('change');
 			$('#SqlAuthenticationType').on('change', toggleSqlAuthenticationType).trigger('change');
 			$("#UseCustomCollation").on('click', toggleCollation);
+
+			var installPrefs = localStorage.getItem('installPrefs');
+			if (installPrefs) {
+				installPrefs = JSON.parse(installPrefs);
+				$.each(installPrefs, function (key, val) {
+					if (val !== null && val !== undefined) {
+                        var el = $('#' + key);
+						if (el.is('.form-check-input'))
+                            el.prop('checked', true);
+						else
+                            el.val(val);
+                        el.trigger('change');
+                    }
+				});
+            }
 		});
 
         var Installation = (function () {
@@ -391,7 +407,8 @@
                         console.log(data);
 
                         if (!data.Completed) {
-                        	if (data.ProgressMessage !== undefined && _.isString(data.ProgressMessage) && data.ProgressMessage) {
+							if (data.ProgressMessage !== undefined && _.isString(data.ProgressMessage) && data.ProgressMessage) {
+								console.log(data.ProgressMessage);
                         		$("#install-progress").html(data.ProgressMessage);
                         	}
                         }
@@ -438,7 +455,14 @@
 
             return {
 
-                onStart: function (context) {
+				onStart: function (context) {
+					var rememberFields = $('.form-control.remember, .form-check-input.remember')
+					var installPrefs = {};
+					rememberFields.each(function () {
+						var el = $(this);
+						installPrefs[el.attr('id')] = el.is('.form-check-input') ? el.is(':checked') : el.val();
+					});
+					localStorage.setItem('installPrefs', JSON.stringify(installPrefs));
 
                     $.throbber.show({
                         //message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>',
@@ -453,13 +477,12 @@
                 },
 
                 onSuccess: function (data) {
-
                     finalizeInstallation(data.Success);
 
                     if (data.Success) {
                     	$("#install-message").html("@ILS.GetResource("Common.StartShop")");
                         $("#install-progress").html("");
-                        setLocation(data.RedirectUrl);
+                        window.location = data.RedirectUrl;
                     }
                     else {
                         $.throbber.hide();

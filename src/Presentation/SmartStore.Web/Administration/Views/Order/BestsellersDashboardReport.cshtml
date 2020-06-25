@@ -1,0 +1,66 @@
+﻿@model BestsellersDashboardReportModel
+
+<div class="report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.BestSellers")</div>
+        <nav class="ml-auto">
+            <div class="nav btn-group" role="tablist">
+                <a class="btn btn-secondary btn-dashboard nav-item nav-link active" id="bestsellers-quantity-tab" data-toggle="tab" href="#bestsellers-quantity" role="tab" aria-controls="bestsellers-quantity" aria-selected="true">@T("Admin.SalesReport.ByQuantity")</a>
+                <a class="btn btn-secondary btn-dashboard nav-item nav-link" id="bestsellers-amount-tab" data-toggle="tab" href="#bestsellers-amount" role="tab" aria-controls="bestsellers-amount" aria-selected="false">@T("Admin.SalesReport.ByAmount")</a>
+            </div>
+        </nav>
+    </div>
+    <div class="tab-content" id="bestsellers-tabcontent">
+        <div class="tab-pane fade show active" id="bestsellers-quantity" role="tabpanel" aria-labelledby="bestsellers-quantity-tab">
+            <div class="table-responsive table-dashboard">
+                <table class="table table-3 small table-hover table-prevent-overflow">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
+                            <th class="display-row text-center">@T("Admin.Promotions.SalesReport.Sales")</th>
+                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.BestsellersByQuantity)
+                        {
+                            <tr>
+                                <td class="display-row" title="@x.ProductName">
+                                    @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
+                                </td>
+
+                                <td class="display-row text-center font-weight-medium" title="@x.TotalQuantity">@x.TotalQuantity</td>
+                                <td class="display-row text-right" title="@x.TotalAmount">@x.TotalAmount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="bestsellers-amount" role="tabpanel" aria-labelledby="bestsellers-amount-tab">
+            <div class="table-responsive table-dashboard">
+                <table class="table table-3 small table-hover table-prevent-overflow">
+                    <thead>
+                        <tr>
+                            <th class="display-row">@T("Admin.Catalog.Categories.Products.Fields.Product")</th>
+                            <th class="display-row text-center">@T("Admin.Promotions.SalesReport.Sales")</th>
+                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.BestsellersByAmount)
+                        {
+                            <tr>
+                                <td class="display-row" title="@x.ProductName">
+                                    @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint)
+                                </td>
+                                <td class="display-row text-center" title="@x.TotalQuantity">@x.TotalQuantity</td>
+                                <td class="display-row text-right font-weight-medium" title="@x.TotalAmount">@x.TotalAmount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

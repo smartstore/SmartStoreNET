@@ -1,16 +1,26 @@
 ﻿
 @{ 
-	string templateName = ViewData["TemplateName"]?.Convert<string>();
+    string templateName = GetMetadata<string>("TemplateName").NullEmpty();
+    string width = GetMetadata<string>("width").NullEmpty();
+    string height = GetMetadata<string>("height").NullEmpty();
 
-	Html.AddScriptParts("~/bundles/codemirror");
-	Html.AddCssFileParts("~/css/codemirror");
+    var hasSize = width != null || height != null;
+    var autoHeight = height == "auto";
+    if (hasSize)
+    {
+        width = width == null ? "null" : "\"{0}\"".FormatInvariant(width);
+        height = height == null ? "null" : "\"{0}\"".FormatInvariant(height);
+    }
+
+    Html.AddScriptParts("~/bundles/codemirror");
+    Html.AddCssFileParts("~/css/codemirror");
 }
 
-<script type="text/javascript">
+    <script type="text/javascript">
     $(function () {
 		if (window.CodeMirror !== undefined) {
             var el = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)');
-            CodeMirror.fromTextArea(el[0], {
+            var cm = CodeMirror.fromTextArea(el[0], {
 				mode: "liquid-html",
 				theme: "eclipse",
 				lineNumbers: true,
@@ -21,7 +31,8 @@
 				matchBrackets: true,
 				autoCloseTags: true,
 				autoCloseBrackets: true,
-				styleActiveLine: true,
+                styleActiveLine: true,
+                viewportMargin: @(autoHeight ? "Infinity" : "10"),
 				extraKeys: {
 					"'.'": CodeMirror.hint.completeAfter,
 					"'<'": CodeMirror.hint.completeAfter,
@@ -37,10 +48,15 @@
 					completeSingle: false,
 					templateName: @Html.Raw(templateName.HasValue() ? "'" + templateName + "'" : "null")
 				}
-			});
+            });
+
+            @if (hasSize)
+            {
+                <text>cm.setSize(@Html.Raw(width), @Html.Raw(height));</text>
+            }
         }
     });
-</script>
+    </script>
 
 @Html.TextArea(string.Empty, /* Name suffix */
 			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */

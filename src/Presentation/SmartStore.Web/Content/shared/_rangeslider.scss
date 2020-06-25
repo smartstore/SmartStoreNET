@@ -19,6 +19,14 @@
         &::-ms-thumb {
             padding: 0;
         }
+
+        &[disabled] {
+            opacity: 0.5;
+
+            &::-webkit-slider-runnable-track {
+                cursor: default;
+            }
+        }
     }
 
     &.range-slider-sm {
@@ -61,6 +69,7 @@
         justify-content: space-between;
         font-size: 11px;
         z-index: -5;
+        margin-top: -2px;
     }
 
     .range-tick {
@@ -73,6 +82,7 @@
         border-radius: 1px;
         background-color: $custom-range-track-bg;
         white-space: nowrap;
+        margin-bottom: 12px;
 
         &:after {
             position: absolute;
@@ -94,6 +104,7 @@
         color: #fff;
         padding: 2px 6px;
         opacity: 0;
+        z-index: 1;
 
         &[data-placement=right] {
             transform: translateX($custom-range-thumb-width * 1.7);
@@ -126,7 +137,7 @@
 
     &.ready {
         .range-value {
-            transition: transform 0.25s ease-out, left 0.1s ease-out, opacity 0.25s ease-in-out;
+            transition: transform 0.1s ease-in-out, opacity 0.25s ease-in-out;
         }
 
         &:hover .range-value,

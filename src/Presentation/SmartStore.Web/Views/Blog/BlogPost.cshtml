@@ -3,7 +3,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+    Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
@@ -15,30 +15,49 @@
     }
 }
 
-<article class="page blogpost-page">  
-    <div class="blogpost-date text-muted">
+<article class="page blogpost-page" itemscope itemtype="http://schema.org/BlogPosting">  
+
+    @if (Model.DisplayAdminLink)
+	{
+		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
+			<i class="fa fa-cog"></i>
+			<span>@T("Common.Cms.EditBlogpost")</span>
+		</a>
+	}
+
+    @if (Model.PictureModel.FullSizeImageUrl.HasValue())
+    {
+        var pic = Model.PictureModel;
+        <div class="shadow-sm-primary mb-3">
+            <figure class="single-media-item-image">
+                <img class="img-fluid" src="@pic.FullSizeImageUrl" alt="@pic.AlternateText" title="@pic.Title" width="@pic.FullSizeImageWidth.Value" height="@pic.FullSizeImageHeight.Value" itemprop="image" />
+            </figure>
+        </div>
+    }
+
+    <div class="blogpost-date text-muted" itemprop="dateCreated">
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
-    <div class="page-title mb-5">
-		<h1 class="fs-h2">@Model.Title</h1>
+    <div class="page-title mb-4 mt-3">
+		<h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
     </div>
 
     <div class="blogpost-body">
-		@{ Html.RenderWidget("blogpost_page_before_body"); }
-        <div class="blogpost-content text-body html-editor-content">
+		
+        @{ Html.RenderWidget("blogpost_page_before_body"); }
+
+        <div class="blogpost-content long-text html-editor-content" itemprop="articleBody">
             @Html.Raw(Model.Body)
         </div>
 
         @if (Model.Tags.Count > 0)
         {
-            <div class="blogpost-tags mt-4">
-                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
+            <div class="blogpost-tags mt-4" itemprop="keywords">
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
                     var tag = Model.Tags[i];
-                    var isLast = i == length - 1;
-                    <a class="blogpost-tag" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>@(!isLast ? ", " : "")
+                    <a class="blogpost-tag badge badge-pill badge-info py-2 px-3 mb-1" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>
                 }
             </div>
         }

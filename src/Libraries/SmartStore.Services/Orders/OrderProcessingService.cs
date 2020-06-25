@@ -6,7 +6,6 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
@@ -72,7 +71,6 @@ namespace SmartStore.Services.Orders
         private readonly OrderSettings _orderSettings;
         private readonly TaxSettings _taxSettings;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly CurrencySettings _currencySettings;
 		private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
 
@@ -115,7 +113,6 @@ namespace SmartStore.Services.Orders
             OrderSettings orderSettings,
             TaxSettings taxSettings,
             LocalizationSettings localizationSettings,
-            CurrencySettings currencySettings,
 			ShoppingCartSettings shoppingCartSettings,
             CatalogSettings catalogSettings)
         {
@@ -153,7 +150,6 @@ namespace SmartStore.Services.Orders
             _orderSettings = orderSettings;
             _taxSettings = taxSettings;
             _localizationSettings = localizationSettings;
-            _currencySettings = currencySettings;
 			_shoppingCartSettings = shoppingCartSettings;
             _catalogSettings = catalogSettings;
 
@@ -754,8 +750,8 @@ namespace SmartStore.Services.Orders
                 var customerCurrencyRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-					var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
-					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
+                    var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
+                    var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
 
                     var primaryStoreCurrency = _storeContext.CurrentStore.PrimaryStoreCurrency;
@@ -771,8 +767,8 @@ namespace SmartStore.Services.Orders
                 Language customerLanguage = null;
                 if (!processPaymentRequest.IsRecurringPayment)
 				{
-					customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
-				}
+                    customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
+                }
 				else
 				{
 					customerLanguage = _languageService.GetLanguageById(initialOrder.CustomerLanguageId);
@@ -914,7 +910,7 @@ namespace SmartStore.Services.Orders
                     orderTaxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out var taxRatesDictionary);
 
                     // VAT number.
-					var customerVatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+					var customerVatStatus = (VatNumberStatus)customer.VatNumberStatusId;
 					if (_taxSettings.EuVatEnabled && customerVatStatus == VatNumberStatus.Valid)
 					{
 						vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
@@ -2693,7 +2689,11 @@ namespace SmartStore.Services.Orders
             return true;
         }
 
-		public virtual Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities)
+		public virtual Shipment AddShipment(
+            Order order,
+            string trackingNumber,
+            string trackingUrl,
+            Dictionary<int, int> quantities)
 		{
 			Guard.NotNull(order, nameof(order));
 
@@ -2705,7 +2705,7 @@ namespace SmartStore.Services.Orders
 				if (!orderItem.Product.IsShipEnabled)
 					continue;
 
-				//ensure that this product can be shipped (have at least one item to ship)
+				// Ensure that this product can be shipped (have at least one item to ship).
 				var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
 				if (maxQtyToAdd <= 0)
 					continue;
@@ -2737,8 +2737,9 @@ namespace SmartStore.Services.Orders
 					shipment = new Shipment
 					{
 						OrderId = order.Id,
-						Order = order,		// otherwise order updated event would not be fired during InsertShipment
+						Order = order,		// Otherwise order updated event would not be fired during InsertShipment.
 						TrackingNumber = trackingNumber,
+                        TrackingUrl = trackingUrl,
 						TotalWeight = null,
 						ShippedDateUtc = null,
 						DeliveryDateUtc = null,

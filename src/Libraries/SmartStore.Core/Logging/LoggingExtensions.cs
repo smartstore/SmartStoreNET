@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Core.Logging
 {
@@ -53,7 +54,8 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		private static void FilteredLog(ILogger logger, LogLevel level, Exception exception, string message, object[] objects)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void FilteredLog(ILogger logger, LogLevel level, Exception exception, string message, object[] objects)
 		{
 			if (logger.IsEnabledFor(level))
 			{
@@ -61,7 +63,8 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		private static void FilteredLog(ILogger logger, LogLevel level, Exception exception, Func<string> messageFactory)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void FilteredLog(ILogger logger, LogLevel level, Exception exception, Func<string> messageFactory)
 		{
 			if (logger.IsEnabledFor(level))
 			{

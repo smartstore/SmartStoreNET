@@ -17,11 +17,14 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities.ObjectPools;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class CategoryService : ICategoryService
-    {
+	public partial class CategoryService : ICategoryService, IXmlSitemapPublisher
+	{
 		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
 
 		// {0} = IncludeHidden, {1} = CustomerRoleIds, {2} = StoreId
@@ -324,8 +327,8 @@ namespace SmartStore.Services.Catalog
 			int pageSize = int.MaxValue,
 			bool showHidden = false,
 			string alias = null,
-			bool ignoreCategoriesWithoutExistingParent = true,
-			int storeId = 0)
+            bool ignoreDetachedCategories = true,
+            int storeId = 0)
         {
 			var query = BuildCategoriesQuery(categoryName, showHidden, alias, storeId);
 
@@ -337,7 +340,7 @@ namespace SmartStore.Services.Catalog
             var unsortedCategories = query.ToList();
 
             // Sort categories
-			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
+			var sortedCategories = unsortedCategories.SortCategoryNodesForTree(ignoreDetachedCategories: ignoreDetachedCategories);
 
             // Paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
@@ -366,10 +369,10 @@ namespace SmartStore.Services.Catalog
 		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, int storeId = 0, bool showHidden = false)
         {
 			var entityName = nameof(Category);
-			var applied = false;
+			var grouping = false;
 			
 			// Store mapping
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+			if (!showHidden && storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from c in query
 						join m in _storeMappingRepository.Table
@@ -378,13 +381,13 @@ namespace SmartStore.Services.Catalog
 						where !c.LimitedToStores || storeId == m.StoreId
 						select c;
 
-				applied = true;
+				grouping = true;
 			}
 
 			// ACL (access control list)
 			if (!showHidden && !QuerySettings.IgnoreAcl)
 			{
-				var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
 
 				query = from c in query
 						join a in _aclRepository.Table
@@ -393,10 +396,10 @@ namespace SmartStore.Services.Catalog
 						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
 						select c;
 
-				applied = true;
+				grouping = true;
 			}
   
-			if (applied)
+			if (grouping)
 			{
 				// Only distinct categories (group by ID)
 				query = from c in query
@@ -404,7 +407,6 @@ namespace SmartStore.Services.Catalog
 						orderby cGroup.Key
 						select cGroup.FirstOrDefault();
 			}
-
 
 			return query;
         }
@@ -583,7 +585,7 @@ namespace SmartStore.Services.Catalog
 				orderby pc.DisplayOrder
 				select pc;
 
-			query = query.Include(x => x.Category.Picture);
+			query = query.Include(x => x.Category.MediaFile);
 
 			if (hasDiscountsApplied.HasValue)
 			{
@@ -625,7 +627,7 @@ namespace SmartStore.Services.Catalog
 			if (!QuerySettings.IgnoreAcl)
 			{
 				group = true;
-				var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+                var allowedCustomerRolesIds = _workContext.CurrentCustomer.GetRoleIds();
 
 				query = from pc in query
 						join c in _categoryRepository.Table on pc.CategoryId equals c.Id
@@ -725,7 +727,8 @@ namespace SmartStore.Services.Catalog
 			}
 
 			var trail = treeNode.Trail;
-			var sb = new StringBuilder(string.Empty, (trail.Count()) * 16);
+            var psb = PooledStringBuilder.Rent();
+            var sb = (StringBuilder)psb;
 
 			foreach (var node in trail)
 			{
@@ -753,7 +756,7 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
-			var path = sb.ToString();
+			var path = psb.ToStringAndReturn();
 			treeNode.SetThreadMetadata(lookupKey, path);
 			return path;
 		}
@@ -776,7 +779,7 @@ namespace SmartStore.Services.Catalog
 								x.Name,
                                 x.ExternalLink,
 								x.Alias,
-								x.PictureId,
+								x.MediaFileId,
 								x.Published,
 								x.DisplayOrder,
 								x.UpdatedOnUtc,
@@ -787,13 +790,13 @@ namespace SmartStore.Services.Catalog
 							};
 
 				var unsortedNodes = query.ToList().Select(x => new CategoryNode
-				{
+                {
 					Id = x.Id,
 					ParentCategoryId = x.ParentCategoryId,
 					Name = x.Name,
                     ExternalLink = x.ExternalLink,
 					Alias = x.Alias,
-					PictureId = x.PictureId,
+					MediaFileId = x.MediaFileId,
 					Published = x.Published,
 					DisplayOrder = x.DisplayOrder,
 					UpdatedOnUtc = x.UpdatedOnUtc,
@@ -803,44 +806,12 @@ namespace SmartStore.Services.Catalog
 					SubjectToAcl = x.SubjectToAcl
 				});
 
-				var nodes = unsortedNodes.SortCategoryNodesForTree(0, true);
-				var curParent = new TreeNode<ICategoryNode>(new CategoryNode { Name = "Home" });
-				CategoryNode prevNode = null;
+                var nodeMap = unsortedNodes.ToMultimap(x => x.ParentCategoryId, x => x);
+                var curParent = new TreeNode<ICategoryNode>(new CategoryNode { Name = "Home" });
 
-				foreach (var node in nodes)
-				{
-					// Determine parent
-					if (prevNode != null)
-					{
-						if (node.ParentCategoryId != curParent.Value.Id)
-						{
-							if (node.ParentCategoryId == prevNode.Id)
-							{
-								// level +1
-								curParent = curParent.LastChild;
-							}
-							else
-							{
-								// level -x
-								while (!curParent.IsRoot)
-								{
-									if (curParent.Value.Id == node.ParentCategoryId)
-									{
-										break;
-									}
-									curParent = curParent.Parent;
-								}
-							}
-						}
-					}
+                AddChildTreeNodes(curParent, 0, nodeMap);
 
-					// add to parent
-					curParent.Append(node, node.Id);
-
-					prevNode = node;
-			}
-
-				return curParent.Root;
+                return curParent.Root;
 			}, CategoryTreeCacheDuration);
 
 			if (rootCategoryId > 0)
@@ -850,5 +821,71 @@ namespace SmartStore.Services.Catalog
 
 			return root;
 		}
+
+        private void AddChildTreeNodes(TreeNode<ICategoryNode> parentNode, int parentItemId, Multimap<int, CategoryNode> nodeMap)
+        {
+            if (parentNode == null)
+            {
+                return;
+            }
+
+            var nodes = nodeMap.ContainsKey(parentItemId)
+                ? nodeMap[parentItemId].OrderBy(x => x.DisplayOrder)
+                : Enumerable.Empty<CategoryNode>();
+
+            foreach (var node in nodes)
+            {
+                var newNode = new TreeNode<ICategoryNode>(node)
+                {
+                    Id = node.Id
+                };
+
+                parentNode.Append(newNode);
+
+                AddChildTreeNodes(newNode, node.Id, nodeMap);
+            }
+        }
+
+		public int CountAllCategories()
+		{
+			var query = _categoryRepository.Table;
+			query = query.Where(x => !x.Deleted);
+
+			return query.Count();
+		}
+
+		#region XML Sitemap
+
+		public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
+		{
+			if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesCategories)
+				return null;
+
+			var query = BuildCategoriesQuery(showHidden: false, storeId: context.RequestStoreId);
+			return new CategoryXmlSitemapResult { Query = query };
+		}
+
+		class CategoryXmlSitemapResult : XmlSitemapProvider
+		{
+			public IQueryable<Category> Query { get; set; }
+
+			public override int GetTotalCount()
+			{
+				return Query.Count();
+			}
+
+			public override IEnumerable<NamedEntity> Enlist()
+			{
+				var topics = Query.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			public override int Order => int.MinValue;
+		}
+
+		#endregion
 	}
 }

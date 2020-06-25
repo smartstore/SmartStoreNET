@@ -75,23 +75,26 @@ namespace SmartStore.Web.Framework.UI.Menus.Providers
 			if (!_countsResetted.Contains(menuName) && _catalogSettings.ShowCategoryProductNumber)
 			{
 				var allCachedMenus = _menuService.GetMenu(menuName)?.GetAllCachedMenus();
-				foreach (var kvp in allCachedMenus)
-				{
-					bool dirty = false;
-					kvp.Value.Traverse(x =>
-					{
-						if (x.Value.ElementsCount.HasValue)
-						{
-							dirty = true;
-							x.Value.ElementsCount = null;
-						}
-					}, true);
+                if (allCachedMenus != null)
+                {
+                    foreach (var kvp in allCachedMenus)
+                    {
+                        bool dirty = false;
+                        kvp.Value.Traverse(x =>
+                        {
+                            if (x.Value.ElementsCount.HasValue)
+                            {
+                                dirty = true;
+                                x.Value.ElementsCount = null;
+                            }
+                        }, true);
 
-					if (dirty)
-					{
-						_cache.Put(kvp.Key, kvp.Value);
-					}
-				}
+                        if (dirty)
+                        {
+                            _cache.Put(kvp.Key, kvp.Value);
+                        }
+                    }
+                }
 
 				_countsResetted.Add(menuName);
 			}

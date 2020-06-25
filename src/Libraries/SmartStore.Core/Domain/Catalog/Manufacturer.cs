@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
@@ -15,7 +16,7 @@ namespace SmartStore.Core.Domain.Catalog
 	/// Represents a manufacturer
 	/// </summary>
 	[DataContract]
-	public partial class Manufacturer : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported, IPagingOptions
+	public partial class Manufacturer : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IPagingOptions
 	{
 		private ICollection<Discount> _appliedDiscounts;
 
@@ -30,6 +31,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets a description displayed at the bottom of the manufacturer page.
+        /// </summary>
+        [DataMember]
+        public string BottomDescription { get; set; }
 
         /// <summary>
         /// Gets or sets a value of used manufacturer template identifier
@@ -56,16 +63,16 @@ namespace SmartStore.Core.Domain.Catalog
 		public string MetaTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the parent picture identifier
+        /// Gets or sets the parent media file identifier
         /// </summary>
 		[DataMember]
-		public int? PictureId { get; set; }
+		public int? MediaFileId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the picture
+		/// Gets or sets the media file
 		/// </summary>
 		[DataMember]
-		public virtual Picture Picture { get; set; }
+		public virtual MediaFile MediaFile { get; set; }
 
         /// <summary>
         /// Gets or sets the page size
@@ -97,6 +104,13 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public bool LimitedToStores { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is subject to ACL.
+        /// </summary>
+        [DataMember]
+        [Index]
+        public bool SubjectToAcl { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published

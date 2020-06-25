@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore
@@ -10,28 +11,32 @@ namespace SmartStore
 
 		public static int GetRange(this int id, int size, out int lower)
 		{
-			lower = 0;
-
-			// max 1000 values per cache item
-			var range = (int)Math.Ceiling((decimal)id / size) * size;
+            // max 1000 values per cache item
+            var range = (int)Math.Ceiling((decimal)id / size) * size;
 
 			lower = range - (size - 1);
 
 			return range;
 		}
 
-		#endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int? ZeroToNull(this int? value)
+        {
+            return value <= 0 ? null : value;
+        }
 
-		#region decimal
+        #endregion
 
-		/// <summary>
-		/// Calculates the tax (percentage) from a gross and a net value.
-		/// </summary>
-		/// <param name="inclTax">Gross value</param>
-		/// <param name="exclTax">Net value</param>
-		/// <param name="decimals">Rounding decimal number</param>
-		/// <returns>Tax percentage</returns>
-		public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
+        #region decimal
+
+        /// <summary>
+        /// Calculates the tax (percentage) from a gross and a net value.
+        /// </summary>
+        /// <param name="inclTax">Gross value</param>
+        /// <param name="exclTax">Net value</param>
+        /// <param name="decimals">Rounding decimal number</param>
+        /// <returns>Tax percentage</returns>
+        public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
 		{
 			if (exclTax == decimal.Zero)
 			{
@@ -48,20 +53,21 @@ namespace SmartStore
         /// </summary>
         /// <param name="midpoint">Handling of the midway between two numbers. "ToEven" round down, "AwayFromZero" round up.</param>
         /// <returns>Smallest currency unit</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToSmallestCurrencyUnit(this decimal value, MidpointRounding midpoint = MidpointRounding.AwayFromZero)
 		{
-			var result = Math.Round(value * 100, 0, midpoint);
-			return Convert.ToInt32(result);
+			return Convert.ToInt32(Math.Round(value * 100, 0, midpoint));
 		}
 
-		/// <summary>
-		/// Round decimal to the nearest multiple of denomination
-		/// </summary>
-		/// <param name="value">Value to round</param>
-		/// <param name="denomination">Denomination</param>
-		/// <param name="midpoint">Handling of the midway between two numbers. "ToEven" round down, "AwayFromZero" round up.</param>
-		/// <returns>Rounded value</returns>
-		public static decimal RoundToNearest(this decimal value, decimal denomination, MidpointRounding midpoint = MidpointRounding.AwayFromZero)
+        /// <summary>
+        /// Round decimal to the nearest multiple of denomination
+        /// </summary>
+        /// <param name="value">Value to round</param>
+        /// <param name="denomination">Denomination</param>
+        /// <param name="midpoint">Handling of the midway between two numbers. "ToEven" round down, "AwayFromZero" round up.</param>
+        /// <returns>Rounded value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static decimal RoundToNearest(this decimal value, decimal denomination, MidpointRounding midpoint = MidpointRounding.AwayFromZero)
 		{
 			if (denomination == decimal.Zero)
 			{
@@ -78,6 +84,7 @@ namespace SmartStore
 		/// <param name="denomination">Denomination</param>
         /// <param name="roundUp"><c>true</c> round to, <c>false</c> round down</param>
         /// <returns>Rounded value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal RoundToNearest(this decimal value, decimal denomination, bool roundUp)
         {
             if (denomination == decimal.Zero)
@@ -150,6 +157,7 @@ namespace SmartStore
         /// <param name="value">Value to round</param>
         /// <param name="decimals">Rounding decimal number</param>
         /// <returns>Rounded and formated value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant(this decimal value, int decimals = 2)
 		{
 			return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);

@@ -4,32 +4,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
+using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Configuration
 {
 	public partial class SettingService : ScopedServiceBase, ISettingService
     {
-        private const string SETTINGS_ALL_KEY = "setting:all";
+		private const string SETTINGS_ALL_KEY = "setting:all";
 
         private readonly IRepository<Setting> _settingRepository;
         private readonly ICacheManager _cacheManager;
 
-        public SettingService(ICacheManager cacheManager, IRepository<Setting> settingRepository)
+		public SettingService(ICacheManager cacheManager, IRepository<Setting> settingRepository)
         {
             _cacheManager = cacheManager;
             _settingRepository = settingRepository;
-
-			Logger = NullLogger.Instance;
         }
 
-		public ILogger Logger { get; set; }
+		public ILogger Logger { get; set; } = NullLogger.Instance;
 
 		protected virtual IDictionary<string, CachedSetting> GetAllCachedSettings()
 		{
@@ -57,7 +57,7 @@ namespace SmartStore.Services.Configuration
 				}
 
 				return dictionary;
-			}, independent: true);
+			}, independent: true, allowRecursion: true);
 		}
 
 		protected virtual PropertyInfo GetPropertyInfo<T, TPropType>(Expression<Func<T, TPropType>> keySelector)
@@ -150,6 +150,24 @@ namespace SmartStore.Services.Configuration
             return setting;
         }
 
+		public virtual Setting GetSettingEntityByKey(string key, int storeId = 0)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var query = _settingRepository.Table.Where(x => x.Name == key);
+
+			if (storeId > 0)
+			{
+				query = query.Where(x => x.StoreId == storeId || x.StoreId == 0).OrderByDescending(x => x.StoreId);
+			}
+			else
+			{
+				query = query.Where(x => x.StoreId == 0);
+			}
+
+			return query.FirstOrDefault();
+		}
+
 		public virtual T GetSettingByKey<T>(
 			string key, 
 			T defaultValue = default, 
@@ -202,7 +220,8 @@ namespace SmartStore.Services.Configuration
 			return setting != null;
 		}
 
-		public T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T LoadSetting<T>(int storeId = 0) where T : ISettings, new()
 		{
 			return (T)LoadSettingCore(typeof(T), storeId);
 		}
@@ -238,7 +257,7 @@ namespace SmartStore.Services.Configuration
 
 				if (!allSettings.TryGetValue(CreateCacheKey(key, storeId), out var cachedSetting) && storeId > 0)
 				{
-					// // Fallback to shared (storeId = 0)
+					// Fallback to shared (storeId = 0)
 					allSettings.TryGetValue(CreateCacheKey(key, 0), out cachedSetting);
 				}
 
@@ -305,7 +324,7 @@ namespace SmartStore.Services.Configuration
 			return instance;
 		}
 
-		public virtual void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
+		public virtual SaveSettingResult SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
         {
             Guard.NotEmpty(key, nameof(key));
 
@@ -324,6 +343,7 @@ namespace SmartStore.Services.Configuration
 					{
 						setting.Value = str;
 						UpdateSetting(setting, clearCache);
+						return SaveSettingResult.Modified;
 					}
 				}
 				else
@@ -346,26 +366,22 @@ namespace SmartStore.Services.Configuration
 					StoreId = storeId
 				};
 				InsertSetting(setting, clearCache);
+				return SaveSettingResult.Inserted;
 			}
+
+			return SaveSettingResult.Unchanged;
         }
 
-		public void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new()
         {
-			SaveSettingCore(settings, storeId);
-        }
-
-		public void SaveSetting(ISettings settings, int storeId = 0)
-		{
-			SaveSettingCore(settings, storeId);
-		}
-
-		protected virtual void SaveSettingCore(ISettings settings, int storeId = 0)
-		{
 			Guard.NotNull(settings, nameof(settings));
 
-			using (BeginScope())
+			using (BeginScope(clearCache: true))
 			{
-				var settingType = settings.GetType();
+				var hasChanges = false;
+				var modifiedProperties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+				var settingType = typeof(T);
 				var prefix = settingType.Name;
 
 				/* We do not clear cache after each setting update.
@@ -383,14 +399,19 @@ namespace SmartStore.Services.Configuration
 
 					string key = prefix + "." + prop.Name;
 					// Duck typing is not supported in C#. That's why we're using dynamic type
-					dynamic value = prop.GetValue(settings);
+					dynamic currentValue = prop.GetValue(settings);
 
-					SetSetting(key, value ?? "", storeId, false);
+					if (SetSetting(key, currentValue ?? "", storeId, false) > SaveSettingResult.Unchanged)
+					{
+						hasChanges = true;
+					}
 				}
+
+				return hasChanges;
 			}
 		}
 
-		public virtual void SaveSetting<T, TPropType>(
+		public virtual SaveSettingResult SaveSetting<T, TPropType>(
 			T settings,
 			Expression<Func<T, TPropType>> keySelector,
 			int storeId = 0, 
@@ -398,15 +419,15 @@ namespace SmartStore.Services.Configuration
 		{
 			var propInfo = GetPropertyInfo(keySelector);
 			var key = string.Concat(typeof(T).Name, ".", propInfo.Name);
-
+			
 			// Duck typing is not supported in C#. That's why we're using dynamic type.
 			var fastProp = FastProperty.GetProperty(propInfo, PropertyCachingStrategy.EagerCached);
-			dynamic value = fastProp.GetValue(settings);
+			dynamic currentValue = fastProp.GetValue(settings);
 
-			SetSetting(key, value ?? "", storeId, clearCache);
+			return SetSetting(key, currentValue ?? "", storeId, clearCache);
 		}
 
-		public virtual void UpdateSetting<T, TPropType>(
+		public virtual SaveSettingResult UpdateSetting<T, TPropType>(
 			T settings, 
 			Expression<Func<T, TPropType>> keySelector, 
 			bool overrideForStore, 
@@ -414,12 +435,14 @@ namespace SmartStore.Services.Configuration
 		{
 			if (overrideForStore || storeId == 0)
 			{
-				SaveSetting(settings, keySelector, storeId, false);
+				return SaveSetting(settings, keySelector, storeId, false);
 			}
-			else if (storeId > 0)
+			else if (storeId > 0 && DeleteSetting(settings, keySelector, storeId))
 			{
-				DeleteSetting(settings, keySelector, storeId);
+				return SaveSettingResult.Deleted;
 			}
+
+			return SaveSettingResult.Unchanged;
 		}
 
 		public virtual void DeleteSetting(Setting setting)
@@ -453,7 +476,7 @@ namespace SmartStore.Services.Configuration
 			}
         }
 
-		public virtual void DeleteSetting<T, TPropType>(
+		public virtual bool DeleteSetting<T, TPropType>(
 			T settings,
 			Expression<Func<T, TPropType>> keySelector, 
 			int storeId = 0) where T : ISettings, new()
@@ -461,10 +484,10 @@ namespace SmartStore.Services.Configuration
 			var propInfo = GetPropertyInfo(keySelector);
 			var key = string.Concat(typeof(T).Name, ".", propInfo.Name);
 
-			DeleteSetting(key, storeId);
+			return DeleteSetting(key, storeId);
 		}
 
-		public virtual void DeleteSetting(string key, int storeId = 0)
+		public virtual bool DeleteSetting(string key, int storeId = 0)
 		{
 			if (key.HasValue())
 			{
@@ -476,8 +499,13 @@ namespace SmartStore.Services.Configuration
 					select s).FirstOrDefault();
 
 				if (setting != null)
+				{
 					DeleteSetting(setting);
+					return true;
+				}		
 			}
+
+			return false;
 		}
 
 		public virtual int DeleteSettings(string rootKey) {

@@ -43,7 +43,6 @@ namespace SmartStore.Data.Caching
 			typeof(CustomerRole).Name,
 			typeof(DeliveryTime).Name,
 			typeof(Discount).Name,
-			typeof(DiscountRequirement).Name,
 			typeof(EmailAccount).Name,
 			typeof(Language).Name,
 			typeof(ManufacturerTemplate).Name,

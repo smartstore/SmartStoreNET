@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Customers
@@ -22,11 +24,12 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<Order> _orderRepository;
         private readonly ICustomerService _customerService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        
+        private readonly IPriceFormatter _priceFormatter;
+
         #endregion
 
         #region Ctor
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -36,15 +39,23 @@ namespace SmartStore.Services.Customers
         /// <param name="dateTimeHelper">Date time helper</param>
         public CustomerReportService(IRepository<Customer> customerRepository,
             IRepository<Order> orderRepository, ICustomerService customerService,
-            IDateTimeHelper dateTimeHelper)
+            IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter)
         {
-            this._customerRepository = customerRepository;
-            this._orderRepository = orderRepository;
-            this._customerService = customerService;
-            this._dateTimeHelper = dateTimeHelper;
+            _customerRepository = customerRepository;
+            _orderRepository = orderRepository;
+            _customerService = customerService;
+            _dateTimeHelper = dateTimeHelper;
+            _priceFormatter = priceFormatter;
         }
 
         #endregion
+
+        public Localizer T
+        {
+            get;
+            set;
+        } = NullLocalizer.Instance;
+
 
         #region Methods
 
@@ -58,8 +69,8 @@ namespace SmartStore.Services.Customers
         /// <param name="ss">Order shippment status; null to load all records</param>
         /// <param name="orderBy">1 - order by order total, 2 - order by number of orders</param>
         /// <returns>Report</returns>
-        public virtual IList<BestCustomerReportLine> GetBestCustomersReport(DateTime? startTime,
-            DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy)
+        public virtual IList<TopCustomerReportLine> GetTopCustomersReport(DateTime? startTime,
+            DateTime? endTime, OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss, int orderBy, int count)
         {
             int? orderStatusId = null;
             if (os.HasValue)
@@ -100,25 +111,26 @@ namespace SmartStore.Services.Customers
                     break;
                 case 2:
                     {
-                        query2 = query2.OrderByDescending(x => x.OrderCount);
+                        query2 = query2.OrderByDescending(x => x.OrderCount).ThenByDescending(x => x.OrderTotal);
                     }
                     break;
                 default:
                     throw new ArgumentException("Wrong orderBy parameter", "orderBy");
             }
 
-            // load 20 customers
-            query2 = query2.Take(() => 20);
+            query2 = query2.Take(() => count);
 
             var result = query2.ToList().Select(x =>
             {
-                return new BestCustomerReportLine()
+                return new TopCustomerReportLine()
                 {
                     CustomerId = x.CustomerId,
                     OrderTotal = x.OrderTotal,
-                    OrderCount = x.OrderCount
+                    OrderCount = x.OrderCount,
                 };
+
             }).ToList();
+
             return result;
         }
 
@@ -133,17 +145,81 @@ namespace SmartStore.Services.Customers
 
             var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
             if (registeredCustomerRole == null)
+            {
                 return 0;
+            }
+
+            var query =
+                from c in _customerRepository.Table
+                from rm in c.CustomerRoleMappings
+                where !c.Deleted && rm.CustomerRoleId == registeredCustomerRole.Id && c.CreatedOnUtc >= date
+                select c;
+
+            var count = query.Count();
+            return count;
+        }
+
+        public List<RegistredCustomersDate> GetRegisteredCustomersDate()
+        {
+            //Get registred customers in last 365 days, group by day and count them 
+            var date = _dateTimeHelper.ConvertToUserTime(DateTime.Now).AddDays(-365);
+
+            var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+            if (registeredCustomerRole == null)
+                return new List<RegistredCustomersDate>();
 
             var query = from c in _customerRepository.Table
-                        from cr in c.CustomerRoles
+                        from rm in c.CustomerRoleMappings
                         where !c.Deleted &&
-                        cr.Id == registeredCustomerRole.Id &&
-                        c.CreatedOnUtc >= date 
-                        //&& c.CreatedOnUtc <= DateTime.UtcNow
-                        select c;
-            int count = query.Count();
-            return count;
+                        rm.CustomerRoleId == registeredCustomerRole.Id &&
+                        c.CreatedOnUtc >= date
+                        group c.CreatedOnUtc by DbFunctions.TruncateTime(c.CreatedOnUtc) into dg
+                        select new { Date = (DateTime)dg.Key, Count = dg.Count() };
+
+            var data = new List<RegistredCustomersDate>();
+            data.Add(new RegistredCustomersDate(DateTime.Now.AddDays(-760), 0));
+            foreach (var item in query.ToList())
+            {
+                data.Add(new RegistredCustomersDate(item.Date, item.Count));
+            }
+
+            return data;
+        }
+
+        public virtual int GetCustomerRegistrations(DateTime? startTimeUtc, DateTime? endTimeUtc)
+        {
+            var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+            if(registeredCustomerRole == null)
+            {
+                return 0;
+            }
+
+            var query = _customerRepository.Table;
+            query = query.Where(x => !x.Deleted);
+            if (startTimeUtc.HasValue)
+            {
+                query = query.Where(x => startTimeUtc.Value <= x.CreatedOnUtc);
+            }
+            if (endTimeUtc.HasValue)
+            {
+                query = query.Where(x => endTimeUtc.Value >= x.CreatedOnUtc);
+            }
+
+            query = query.Where(x => x.CustomerRoleMappings.Any(y => y.CustomerRoleId == registeredCustomerRole.Id));
+
+            return query.Count();
+        }
+
+        public struct RegistredCustomersDate
+        {
+            public DateTime Date { get; set; }
+            public int Count { get; set; }
+
+            public RegistredCustomersDate(DateTime date, int count)
+            {
+                Date = date;
+                Count = count;
+            }
         }
 
         #endregion

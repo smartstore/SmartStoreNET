@@ -1,0 +1,489 @@
+/// <reference path="_variables.scss" />
+/// <reference path="../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../Content/shared/_mixins.scss" />
+/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
+
+.chart-colors {
+    --chart-color-danger: #{$chart-color-danger};
+    --chart-color-warning: #{$chart-color-warning};
+    --chart-color-success: #{$chart-color-success};
+    --chart-color-primary: #{$chart-color-primary};
+    --chart-color-danger-light: #{$chart-color-danger-light};
+    --chart-color-warning-light: #{$chart-color-warning-light};
+    --chart-color-success-light: #{$chart-color-success-light};
+    --chart-color-primary-light: #{$chart-color-primary-light};
+    --chart-color-danger-dark: #{$chart-color-danger-dark};
+    --chart-color-warning-dark: #{$chart-color-warning-dark};
+    --chart-color-success-dark: #{$chart-color-success-dark};
+    --chart-color-primary-dark: #{$chart-color-primary-dark};
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    grid-auto-rows: auto;
+}
+
+.table-dashboard {
+    padding-bottom: 0.75rem;
+
+    > table {
+        margin-bottom: 0;
+        table-layout: fixed;
+
+        tr > th,
+        tr > td {
+            border-top: 0;
+            padding-left: 1rem;
+            padding-right: 1rem;
+
+            &:first-child {
+                padding-left: 1.5rem !important;
+            }
+
+            &:last-child {
+                padding-right: 1.5rem !important;
+            }
+        }
+
+        tr > th {
+            border-color: rgba(0,0,0, 0.05);
+            border-bottom-width: 3px;
+        }
+    }
+
+    > .table-3 {
+        tr > th,
+        tr > td {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+
+            &:first-child {
+                width: 50%;
+            }
+
+            &:last-child {
+                width: 30%;
+            }
+        }
+    }
+
+    > .table-4 {
+        tr > th,
+        tr > td {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+
+            &:nth-child(2) {
+                width: 15%;
+            }
+
+            &:nth-child(4) {
+                width: 15%;
+            }
+        }
+    }
+}
+
+.report {
+    background-color: white;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow-sm-var;
+    height: 100%;
+    overflow: hidden;
+
+    &.sticky-report {
+        position: sticky;
+        top: 0.625rem;
+        height: auto;
+    }
+
+    .report-title-row {
+        padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+        align-items: center;
+        display: flex;
+        flex-wrap: nowrap;
+
+        .report-title {
+            font-size: 1.25rem;
+            font-weight: $font-weight-medium;
+        }
+    }
+
+    .incomplete-orders-title {
+        text-align: center;
+        font-weight: $font-weight-medium;
+        font-size: 1rem;
+        color: $gray-500;
+    }
+
+    .incomplete-orders-container {
+        width: 100%;
+        height: 100%;
+        padding-top: 1rem;
+    }
+
+    .incomplete-orders-chart-container {
+        width: 100%;
+        height: 250px;
+        position: relative;
+    }
+
+    .incomplete-orders-chart-text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .incomplete-orders-quantity {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 50%;
+        font-weight: $font-weight-bold;
+        color: $gray-500;
+        font-size: 1.5rem;
+        padding-bottom: .1em;
+    }
+
+    .incomplete-orders-amount {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 50%;
+        font-size: 1.25rem;
+        padding-top: .1rem;
+        color: $gray-700;
+    }
+
+    .table {
+        white-space: nowrap;
+
+        .display-row {
+            padding: .75rem 1rem;
+        }
+
+        td.display-row {
+            padding: 1rem 1rem;
+        }
+    }
+
+    .marketplace-feed-body {
+        padding: 1rem 1.5rem .5rem 1.5rem;
+
+        .marketplace-feed-item {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #ddd;
+
+            &:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0.25rem;
+            }
+        }
+
+        .marketplace-feed-item-title {
+            margin-bottom: .5rem;
+        }
+    }
+
+    .statistics-value {
+        font-size: .9rem;
+        font-weight: $font-weight-medium;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 2px;
+    }
+
+    .statistics-attribute {
+        font-size: .8rem;
+        border-top: 1px solid #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .statistics-container {
+        width: 100%;
+    }
+
+    .statistics-content {
+        display: flex;
+        width: 100%;
+        align-items: center;
+    }
+
+    .statistics-col {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        padding: 1.6rem 1rem;
+    }
+
+    .statistics-container-outer {
+        display: flex;
+        width: 80%;
+        justify-content: center;
+        padding-left: 1rem;
+    }
+
+    .statistics-container-inner {
+        width: 100%;
+        text-align: center;
+    }
+
+    .statistics-icon {
+        font-size: 1.5rem;
+        color: #ccc;
+    }
+
+    .indicator {
+        width: 10px;
+        min-width: 10px;
+        height: 10px;
+        min-height: 10px;
+        border-radius: 50%;
+    }
+
+    .btn-dashboard {
+        font-size: .75rem;
+        padding: .33rem .66rem;
+    }
+
+    .canvas-container {
+        position: relative;
+    }
+
+    #orders-chart-legend {
+        & > ul {
+            cursor: pointer;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        & li {
+            display: inline-block;
+            user-select: none;
+
+            &.hidden {
+                text-decoration: line-through;
+                user-select: none;
+            }
+
+            &:not(:last-child) {
+                padding-right: 1rem;
+            }
+        }
+
+        & .total-amount {
+            text-decoration: none !important;
+            display: inline-block;
+            user-select: text;
+        }
+
+        & .legend {
+            border-radius: 7px;
+            display: inline-block;
+            height: 11px;
+            margin-right: .3rem;
+            width: 11px;
+        }
+    }
+
+    .chevron {
+        color: var(--success);
+
+        &:after {
+            @include fontawesome-font("\f077", regular);
+            position: absolute;
+        }
+
+        &.negative:after {
+            color: var(--danger);
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.report-incomplete-orders {
+    grid-column: 1 / 13;
+    grid-row: 1 / 2;
+}
+
+.marketplace-feed {
+    grid-column: 1 / 13;
+    grid-row: 8 / 9;
+}
+
+.report-orders {
+    grid-column: 1 / 13;
+    grid-row: 2 / 3;
+}
+
+.report-bestsellers {
+    grid-column: 1 / 13;
+    grid-row: 3 / 4;
+}
+
+.report-top-customers {
+    grid-column: 1 / 13;
+    grid-row: 4 / 5;
+}
+
+.report-customer-registrations {
+    grid-column: 1 / 13;
+    grid-row: 5 / 6;
+}
+
+.report-latest-orders {
+    grid-column: 1 / 13;
+    grid-row: 6 / 7;
+}
+
+.report-store-statistics {
+    grid-column: 1 / 13;
+    grid-row: 7 / 8;
+}
+
+@include media-breakpoint-up(sm) {
+    .incomplete-orders-container {
+        width: 50% !important;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .report-incomplete-orders {
+        .incomplete-orders-container {
+            width: 25% !important;
+        }
+    }
+
+    .marketplace-feed {
+        grid-row: 7 / 8;
+    }
+
+    .report-orders {
+        grid-row: 2 / 3;
+    }
+
+    .report-bestsellers {
+        grid-column: 1 / 7;
+        grid-row: 3 / 4;
+    }
+
+    .report-top-customers {
+        grid-column: 7 / 13;
+        grid-row: 3 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-row: 4 / 5;
+    }
+
+    .report-latest-orders {
+        grid-row: 5 / 6;
+    }
+
+    .report-store-statistics {
+        grid-row: 6 / 7;
+    }
+}
+
+@include media-breakpoint-up(xl) {
+    .report-incomplete-orders {
+        grid-column: 1 / 9;
+    }
+
+    .marketplace-feed {
+        grid-column: 9 / 13;
+        grid-row: 1 / 7;
+    }
+
+    .report-orders {
+        grid-column: 1 / 9;
+    }
+
+    .report-bestsellers {
+        grid-column: 1 / 5;
+    }
+
+    .report-top-customers {
+        grid-column: 5 / 9;
+        grid-row: 3 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-column: 1 / 9;
+    }
+
+    .report-latest-orders {
+        grid-column: 1 / 9;
+    }
+
+    .report-store-statistics {
+        grid-column: 1 / 9;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .report-incomplete-orders {
+        grid-column: 1 / 11;
+
+        .incomplete-orders-chart-container {
+            height: 300px;
+        }
+    }
+
+    .marketplace-feed {
+        grid-column: 11 / 13;
+        grid-row: 1 / 5;
+    }
+
+    .report-orders {
+        grid-column: 1 / 8;
+    }
+
+    .report-bestsellers {
+        grid-column: 8 / 11;
+        grid-row: 2 / 3;
+    }
+
+    .report-top-customers {
+        grid-column: 1 / 4;
+    }
+
+    .report-customer-registrations {
+        grid-column: 4 / 11;
+        grid-row: 3 / 4;
+    }
+
+    .report-latest-orders {
+        grid-column: 1 / 7;
+        grid-row: 4 / 5;
+    }
+
+    .report-store-statistics {
+        grid-column: 7 / 11;
+        grid-row: 4 / 5;
+    }
+}
+.table-prevent-overflow {
+    tr > th,
+    tr > td {
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

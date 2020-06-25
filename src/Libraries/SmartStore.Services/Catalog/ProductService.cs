@@ -4,15 +4,15 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Messages;
+using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
@@ -23,7 +23,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
-        private readonly IRepository<ProductPicture> _productPictureRepository;
+        private readonly IRepository<ProductMediaFile> _productFileRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Catalog
             IRepository<RelatedProduct> relatedProductRepository,
             IRepository<CrossSellProduct> crossSellProductRepository,
             IRepository<TierPrice> tierPriceRepository,
-            IRepository<ProductPicture> productPictureRepository,
+            IRepository<ProductMediaFile> productPictureRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
@@ -52,7 +52,7 @@ namespace SmartStore.Services.Catalog
             _relatedProductRepository = relatedProductRepository;
             _crossSellProductRepository = crossSellProductRepository;
             _tierPriceRepository = tierPriceRepository;
-            _productPictureRepository = productPictureRepository;
+            _productFileRepository = productPictureRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			_productBundleItemRepository = productBundleItemRepository;
 			_shoppingCartItemRepository = shoppingCartItemRepository;
@@ -143,6 +143,23 @@ namespace SmartStore.Services.Catalog
 		#endregion
 
 		#region Products
+
+		public virtual int CountAllProducts()
+		{
+			var query = _productRepository.Table;
+			query = query.Where(x => !x.Deleted);
+
+			return query.Count();
+
+		}
+
+		public virtual int CountAllProductVariants()
+		{
+			var query = _productVariantAttributeCombinationRepository.Table;
+			query = query.Where(x => x.IsActive);
+
+			return query.Count();			
+		}
 
 		public virtual void DeleteProduct(Product product)
         {
@@ -594,7 +611,7 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
-		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
+		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds, bool includeHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -604,21 +621,30 @@ namespace SmartStore.Services.Catalog
                 return map;
             }
 
-            var query = _productRepository.TableUntracked
-				.Expand(x => x.ProductTags)
-				.Where(x => productIds.Contains(x.Id))
-				.Select(x => new
-				{
-					ProductId = x.Id,
-					Tags = x.ProductTags
-				});
+            /// <seealso cref="ProductTagService.GetProductCount(int, bool)"/>
+            var productQuery = _productRepository.TableUntracked
+                .Expand(x => x.ProductTags)
+                .Where(x => productIds.Contains(x.Id) && !x.Deleted && !x.IsSystemProduct);
 
-			var list = query.ToList();
+            if (!includeHidden)
+            {
+                productQuery = productQuery.Where(x => x.Visibility == ProductVisibility.Full && x.Published);
+            }
 
-			foreach (var item in list)
+            var items = productQuery
+                .Select(x => new
+                {
+                    ProductId = x.Id,
+                    Tags = x.ProductTags.Where(y => includeHidden || y.Published)
+                })
+                .ToList();
+
+			foreach (var item in items)
 			{
-				foreach (var tag in item.Tags)
-					map.Add(item.ProductId, tag);
+                foreach (var tag in item.Tags)
+                {
+                    map.Add(item.ProductId, tag);
+                }
 			}
 
 			return map;
@@ -658,7 +684,7 @@ namespace SmartStore.Services.Catalog
             }
 
             var query = _productRepository.Table // .TableUntracked does not seem to eager load
-				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
+                .Expand(x => x.AppliedDiscounts.Select(y => y.RuleSets))
 				.Where(x => productIds.Contains(x.Id))
 				.Select(x => new
 				{
@@ -894,33 +920,33 @@ namespace SmartStore.Services.Catalog
 
         #region Product pictures
 
-        public virtual void DeleteProductPicture(ProductPicture productPicture)
+        public virtual void DeleteProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
 			UnassignDeletedPictureFromVariantCombinations(productPicture);
 
-            _productPictureRepository.Delete(productPicture);
+            _productFileRepository.Delete(productPicture);
         }
 
-        private void UnassignDeletedPictureFromVariantCombinations(ProductPicture productPicture)
+        private void UnassignDeletedPictureFromVariantCombinations(ProductMediaFile productPicture)
         {
             var picId = productPicture.Id;
             bool touched = false;
 
 			var combinations =
 				from c in this._productVariantAttributeCombinationRepository.Table
-				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedPictureIds)
+				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedMediaFileIds)
 				select c;
 
 			foreach (var c in combinations)
 			{
-				var ids = c.GetAssignedPictureIds().ToList();
+				var ids = c.GetAssignedMediaIds().ToList();
 				if (ids.Contains(picId))
 				{
 					ids.Remove(picId);
 					//c.AssignedPictureIds = ids.Count > 0 ? String.Join<int>(",", ids) : null;
-					c.SetAssignedPictureIds(ids.ToArray());
+					c.SetAssignedMediaIds(ids.ToArray());
 					touched = true;
 					// we will save after we're done. It's faster.
 				}
@@ -933,75 +959,106 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        public virtual IList<ProductPicture> GetProductPicturesByProductId(int productId)
+        public virtual IList<ProductMediaFile> GetProductPicturesByProductId(int productId, int numberOfPictures = 0)
         {
-            var query = from pp in _productPictureRepository.Table
-                        where pp.ProductId == productId
-                        orderby pp.DisplayOrder
-                        select pp;
-            var productPictures = query.ToList();
-            return productPictures;
-        }
-
-		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
-		{
-            Guard.NotNull(productIds, nameof(productIds));
-
-            if (!productIds.Any())
+            if (productId == 0)
             {
-                return new Multimap<int, ProductPicture>();
+                return new List<ProductMediaFile>();
             }
 
-            var query = 
-				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
-				where productIds.Contains(pp.ProductId)
-				orderby pp.ProductId, pp.DisplayOrder
-				select pp;
+            var query = _productFileRepository.Table
+                .Include(x => x.MediaFile)
+                .Where(x => x.ProductId == productId);
 
-			if (onlyFirstPicture)
-			{
-				var map = query.GroupBy(x => x.ProductId, x => x)
-					.Select(x => x.FirstOrDefault())
-					.ToList()
-					.ToMultimap(x => x.ProductId, x => x);
+            if (numberOfPictures > 0)
+            {
+                query = query
+                    .OrderBy(x => x.DisplayOrder)
+                    .Take(() => numberOfPictures);
+            }
+            else
+            {
+                query = query.OrderBy(x => x.DisplayOrder);
+            }
 
-				return map;
-			}
-			else
-			{
-				var map = query
-					.ToList()
-					.ToMultimap(x => x.ProductId, x => x);
+            var productFiles = query.ToList();
+            return productFiles;
+        }
 
-				return map;
-			}
-		}
+		public virtual Multimap<int, ProductMediaFile> GetProductPicturesByProductIds(
+            int[] productIds,
+            int? maxPicturesPerProduct = null,
+            MediaLoadFlags flags = MediaLoadFlags.None)
+		{
+            if (!(productIds?.Any() ?? false))
+            {
+                return new Multimap<int, ProductMediaFile>();
+            }
 
-        public virtual ProductPicture GetProductPictureById(int productPictureId)
+            var take = maxPicturesPerProduct ?? int.MaxValue;
+
+            var query = _productFileRepository.TableUntracked
+                .Where(pf => productIds.Contains(pf.ProductId))
+                .GroupBy(pf => pf.ProductId, x => x)
+                .SelectMany(pf => pf.OrderBy(x => x.DisplayOrder).Take(take));
+
+            // For eager loading apply Include() after GroupBy().
+            if (flags == MediaLoadFlags.None)
+            {
+                query = query.Include(pp => pp.MediaFile);
+            }
+            else
+            {
+                if (flags.HasFlag(MediaLoadFlags.WithBlob))
+                {
+                    query = query.Include(pp => pp.MediaFile.MediaStorage);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithFolder))
+                {
+                    query = query.Include(pp => pp.MediaFile.Folder);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithTags))
+                {
+                    query = query.Include(pp => pp.MediaFile.Tags);
+                }
+                if (flags.HasFlag(MediaLoadFlags.WithTracks))
+                {
+                    query = query.Include(pp => pp.MediaFile.Tracks);
+                }
+            }
+
+            var map = query
+                .ToList()
+                .ToMultimap(x => x.ProductId, x => x);
+
+            return map;
+        }
+
+        public virtual ProductMediaFile GetProductPictureById(int productPictureId)
         {
             if (productPictureId == 0)
                 return null;
 
-            var pp = _productPictureRepository.GetById(productPictureId);
+            var pp = _productFileRepository.GetById(productPictureId);
             return pp;
         }
 
-        public virtual void InsertProductPicture(ProductPicture productPicture)
+        public virtual void InsertProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
-			_productPictureRepository.Insert(productPicture);
+			_productFileRepository.Insert(productPicture);
         }
 
         /// <summary>
         /// Updates a product picture
         /// </summary>
         /// <param name="productPicture">Product picture</param>
-        public virtual void UpdateProductPicture(ProductPicture productPicture)
+        public virtual void UpdateProductPicture(ProductMediaFile productPicture)
         {
 			Guard.NotNull(productPicture, nameof(productPicture));
 
-			_productPictureRepository.Update(productPicture);
+			_productFileRepository.Update(productPicture);
         }
 
         #endregion
@@ -1131,6 +1188,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-        #endregion
-    }
+		#endregion
+	}
 }

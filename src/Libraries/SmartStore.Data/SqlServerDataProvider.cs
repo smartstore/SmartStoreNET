@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
-using System.IO;
-using System.Text;
-using System.Web.Hosting;
-using SmartStore.Data.Setup;
-using SmartStore.Data.Migrations;
-using SmartStore.Utilities;
 
 namespace SmartStore.Data
 {

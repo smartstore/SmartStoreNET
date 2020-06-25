@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
-using SmartStore.Core.Plugins;
 using SmartStore.Data.Caching;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Directory
 {
@@ -18,40 +15,66 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
-        private readonly ICustomerService _customerService;
-        private readonly IPluginFinder _pluginFinder;
-        private readonly IEventPublisher _eventPublisher;
 		private readonly CatalogSettings _catalogSettings;
 
         public DeliveryTimeService(
             IRepository<DeliveryTime> deliveryTimeRepository,
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
-            ICustomerService customerService,
-            IPluginFinder pluginFinder,
-            IEventPublisher eventPublisher,
 			CatalogSettings catalogSettings)
         {
-            this._deliveryTimeRepository = deliveryTimeRepository;
-            this._customerService = customerService;
-            this._pluginFinder = pluginFinder;
-            this._eventPublisher = eventPublisher;
-            this._productRepository = productRepository;
-            this._attributeCombinationRepository = attributeCombinationRepository;
-			this._catalogSettings = catalogSettings;
-
-			T = NullLocalizer.Instance;
+            _deliveryTimeRepository = deliveryTimeRepository;
+            _productRepository = productRepository;
+            _attributeCombinationRepository = attributeCombinationRepository;
+			_catalogSettings = catalogSettings;
 		}
 
-		public Localizer T { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
 
-		public virtual void DeleteDeliveryTime(DeliveryTime deliveryTime)
+        public virtual void DeleteDeliveryTime(DeliveryTime deliveryTime)
         {
             if (deliveryTime == null)
-                throw new ArgumentNullException("deliveryTime");
+            {
+                return;
+            }
 
-            if (this.IsAssociated(deliveryTime.Id))
+            // Remove associations to deleted products.
+            using (var scope = new DbContextScope(_productRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                var productsQuery = _productRepository.Table.Where(x => x.Deleted && x.DeliveryTimeId == deliveryTime.Id);
+                var productsPager = new FastPager<Product>(productsQuery, 500);
+
+                while (productsPager.ReadNextPage(out var products))
+                {
+                    if (products.Any())
+                    {
+                        products.Each(x => x.DeliveryTimeId = null);
+                        scope.Commit();
+                    }
+                }
+
+                var attributeCombinationQuery =
+                    from ac in _attributeCombinationRepository.Table
+                    join p in _productRepository.Table on ac.ProductId equals p.Id
+                    where p.Deleted && ac.DeliveryTimeId == deliveryTime.Id
+                    select ac;
+                var attributeCombinationPager = new FastPager<ProductVariantAttributeCombination>(attributeCombinationQuery, 1000);
+
+                while (attributeCombinationPager.ReadNextPage(out var attributeCombinations))
+                {
+                    if (attributeCombinations.Any())
+                    {
+                        attributeCombinations.Each(x => x.DeliveryTimeId = null);
+                        scope.Commit();
+                    }
+                }
+            }
+
+            // Warn if there are associations to active products.
+            if (IsAssociated(deliveryTime.Id))
+            {
                 throw new SmartException(T("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts"));
+            }
 
             _deliveryTimeRepository.Delete(deliveryTime);
         }
@@ -101,24 +124,21 @@ namespace SmartStore.Services.Directory
 
         public virtual void InsertDeliveryTime(DeliveryTime deliveryTime)
         {
-            if (deliveryTime == null)
-                throw new ArgumentNullException("deliveryTime");
+            Guard.NotNull(deliveryTime, nameof(deliveryTime));
 
             _deliveryTimeRepository.Insert(deliveryTime);
         }
 
         public virtual void UpdateDeliveryTime(DeliveryTime deliveryTime)
         {
-            if (deliveryTime == null)
-                throw new ArgumentNullException("deliveryTime");
+            Guard.NotNull(deliveryTime, nameof(deliveryTime));
 
             _deliveryTimeRepository.Update(deliveryTime);
         }
 
         public virtual void SetToDefault(DeliveryTime deliveryTime)
         {
-            if (deliveryTime == null)
-                throw new ArgumentNullException("deliveryTime");
+            Guard.NotNull(deliveryTime, nameof(deliveryTime));
 
             var deliveryTimes = GetAllDeliveryTimes();
 

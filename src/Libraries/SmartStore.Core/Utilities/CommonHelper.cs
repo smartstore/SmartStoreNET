@@ -13,6 +13,7 @@ using SmartStore.ComponentModel;
 using System.Text;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Utilities
 {
@@ -161,28 +162,90 @@ namespace SmartStore.Utilities
 
 		public static bool TryConvert<T>(object value, out T convertedValue)
 		{
-			return TryConvert<T>(value, CultureInfo.InvariantCulture, out convertedValue);
-		}
+            convertedValue = default(T);
 
-		public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
+            if (TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            {
+                if (result != null)
+                    convertedValue = (T)result;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
+        {
+            convertedValue = default(T);
+
+            if (TryConvert(value, typeof(T), culture, out object result))
+            {
+                if (result != null)
+                    convertedValue = (T)result;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryConvert(object value, Type to, out object convertedValue)
 		{
-			return TryAction<T>(delegate
-			{
-				return value.Convert<T>(culture);
-			}, out convertedValue);
-		}
+            return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
+        }
 
-		public static bool TryConvert(object value, Type to, out object convertedValue)
-		{
-			return TryConvert(value, to, CultureInfo.InvariantCulture, out convertedValue);
-		}
+        public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
+        {
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
 
-		public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
-		{
-			return TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
-		}
+            convertedValue = null;
 
-		public static ExpandoObject ToExpando(object value)
+            if (value == null || value == DBNull.Value)
+            {
+                return to == typeof(string) || to.IsPredefinedSimpleType() == false;
+            }
+            
+            if (to != typeof(object) && to.IsInstanceOfType(value))
+            {
+                convertedValue = value;
+                return true;
+            }
+
+            Type from = value.GetType();
+
+            if (culture == null)
+            {
+                culture = CultureInfo.InvariantCulture;
+            }
+
+            try
+            {
+                // Get a converter for 'to' (value -> to)
+                var converter = TypeConverterFactory.GetConverter(to);
+                if (converter != null && converter.CanConvertFrom(from))
+                {
+                    convertedValue = converter.ConvertFrom(culture, value);
+                    return true;
+                }
+
+                // Try the other way round with a 'from' converter (to <- from)
+                converter = TypeConverterFactory.GetConverter(from);
+                if (converter != null && converter.CanConvertTo(to))
+                {
+                    convertedValue = converter.ConvertTo(culture, null, value, to);
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
+        }
+
+        public static ExpandoObject ToExpando(object value)
 		{
 			Guard.NotNull(value, nameof(value));
 
@@ -368,7 +431,8 @@ namespace SmartStore.Utilities
 					// Serialization failed or is not supported: make JSON.
 					var json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
 					{
-						DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                        ContractResolver = SmartContractResolver.Instance,
+                        DateFormatHandling = DateFormatHandling.IsoDateFormat,
 						DateTimeZoneHandling = DateTimeZoneHandling.Utc,
 						MaxDepth = 10,
 						ReferenceLoopHandling = ReferenceLoopHandling.Ignore

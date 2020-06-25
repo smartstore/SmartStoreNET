@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Directory;
@@ -16,13 +17,13 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Order;
 
 namespace SmartStore.Web.Controllers
@@ -91,14 +92,19 @@ namespace SmartStore.Web.Controllers
 			var model = new ShipmentDetailsModel
 			{
 				Id = shipment.Id,
-				TrackingNumber = shipment.TrackingNumber
+				TrackingNumber = shipment.TrackingNumber,
+                TrackingNumberUrl = shipment.TrackingUrl
 			};
 
             if (shipment.ShippedDateUtc.HasValue)
+            {
                 model.ShippedDate = _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc);
+            }
 
             if (shipment.DeliveryDateUtc.HasValue)
+            {
                 model.DeliveryDate = _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc);
+            }
             
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
 
@@ -107,7 +113,12 @@ namespace SmartStore.Web.Controllers
                 var shipmentTracker = srcm.Value.ShipmentTracker;
                 if (shipmentTracker != null)
                 {
-                    model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
+                    // The URL entered by the merchant takes precedence over an automatically generated URL.
+                    if (model.TrackingNumberUrl.IsEmpty())
+                    {
+                        model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
+                    }
+
 					if (shippingSettings.DisplayShipmentEventsToCustomers)
                     {
                         var shipmentEvents = shipmentTracker.GetShipmentEvents(shipment.TrackingNumber);
@@ -119,7 +130,7 @@ namespace SmartStore.Web.Controllers
 
 								var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel
 								{
-									Country = (shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode),
+									Country = shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode,
 									Date = shipmentEvent.Date,
 									EventName = shipmentEvent.EventName,
 									Location = shipmentEvent.Location
@@ -132,7 +143,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
             
-            //products in this shipment
+            // Products in this shipment.
 			model.ShowSku = catalogSettings.ShowProductSku;
 
             foreach (var shipmentItem in shipment.ShipmentItems)
@@ -201,14 +212,12 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[AdminAuthorize]
+        [Permission(Permissions.Order.Read)]
 		public ActionResult PrintMany(string ids = null, bool pdf = false)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
-				return new HttpUnauthorizedResult();
-
 			const int maxOrders = 500;
 			IList<Order> orders = null;
-			int totalCount = 0;
+			var totalCount = 0;
 
 			using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
@@ -322,9 +331,9 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 
 			return RedirectToAction("Details", "Order", new { id = order.Id });
@@ -352,19 +361,19 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsNonExistentOrder(Order order)
 		{
-			var flag = order == null || order.Deleted;
+			var result = order == null || order.Deleted;
 
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+			if (!Services.Permissions.Authorize(Permissions.Order.Read))
 			{
-				flag = flag || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
+				result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
 			}
 
-			return flag;
+			return result;
 		}
 
 		private bool IsUnauthorizedOrder(Order order)
 		{
-            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+            if (!Services.Permissions.Authorize(Permissions.Order.Read))
                 return order == null || order.CustomerId != Services.WorkContext.CurrentCustomer.Id;
             else
                 return order == null;

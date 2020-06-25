@@ -21,9 +21,6 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Copy.CopyImages")]
-        public bool CopyImages { get; set; }
-
         [SmartResourceDisplayName("Admin.Catalog.Products.Copy.Published")]
         public bool Published { get; set; }
     }

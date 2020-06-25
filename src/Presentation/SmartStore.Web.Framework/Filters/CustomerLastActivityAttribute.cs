@@ -16,14 +16,12 @@ namespace SmartStore.Web.Framework.Filters
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
+            if (filterContext?.HttpContext?.Request == null)
                 return;
 
-            // don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 
-            // only GET requests
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 

@@ -1,5 +1,5 @@
-﻿@{
-    ViewBag.Title = T("Admin.Dashboard").Text;
+@{
+    Layout = "_MinimalLayout";
 }
 
 <div class="section-header">
@@ -9,35 +9,33 @@
     </div>
 </div>
 
-<div class="dashboard">
-	@{ Html.RenderWidget("admin_dashboard_top"); }
+<div class="dashboard-grid">
+    @{ Html.RenderWidget("admin_dashboard_top"); }
 
-	<div class="row">
-		<div class="col-lg-9 col-xl-10">
-			@{ Html.RenderAction("OrderAverageReport", "Order"); }
-			<div class="row">
-				<div class="col-xl-6">
-					@{ Html.RenderAction("BestsellersBriefReportByQuantity", "Order"); }
-				</div>
-				<div class="col-xl-6">
-					@{ Html.RenderAction("BestsellersBriefReportByAmount", "Order"); }
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-xl-6">
-					@{ Html.RenderAction("ReportRegisteredCustomers", "Customer"); }
-				</div>
-				<div class="col-xl-6">
-					@{ Html.RenderAction("OrderIncompleteReport", "Order"); }
-				</div>
-			</div>
-		</div>
+    <div class="report-incomplete-orders">
+        @{ Html.RenderAction("OrdersIncompleteDashboardReport", "Order"); }
+    </div>
+    <div class="report-orders">
+        @{ Html.RenderAction("OrdersDashboardReport", "Order"); }
+    </div>
+    <div class="report-bestsellers">
+        @{ Html.RenderAction("BestsellersDashboardReport", "Order"); }
+    </div>
+    <div class="report-top-customers">
+        @{ Html.RenderAction("TopCustomersDashboardReport", "Customer"); }
+    </div>
+    <div class="report-customer-registrations">
+        @{ Html.RenderAction("RegisteredCustomersDashboardReport", "Customer"); }
+    </div>
+    <div class="report-latest-orders">
+        @{ Html.RenderAction("LatestOrdersDashboardReport", "Order"); }
+    </div>
+    <div class="report-store-statistics">
+        @{ Html.RenderPartial("~/Administration/Views/Store/StoreDashboardReport.cshtml"); }
+    </div>
+    <div class="marketplace-feed">
+        @{ Html.RenderAction("MarketplaceFeed"); }
+    </div>
 
-		<div class="col-lg-3 col-xl-2">
-			@{ Html.RenderAction("MarketplaceFeed"); }
-		</div>
-	</div>
-
-	@{ Html.RenderWidget("admin_dashboard_bottom"); }
+    @{ Html.RenderWidget("admin_dashboard_bottom"); }
 </div>
-

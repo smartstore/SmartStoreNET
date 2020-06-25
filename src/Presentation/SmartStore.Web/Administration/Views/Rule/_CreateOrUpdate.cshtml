@@ -1,0 +1,151 @@
+﻿@model RuleSetModel
+
+@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@{
+    Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.rules.js");
+    // Required to avoid client exception "jQuery.telerik.load is not a function".
+    Html.AddScriptParts(true, "~/Administration/Content/telerik/js/2012.2.607/telerik.common.min.js");
+}
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.IsSubGroup)
+@Html.HiddenFor(model => model.CreatedOnUtc)
+@Html.HiddenFor(model => model.UpdatedOnUtc)
+@Html.HiddenFor(model => model.LastProcessedOnUtc)
+@Html.HiddenFor(model => model.RawRuleData)
+
+<div class="adminContent">
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </div>
+        <div class="adminData">
+            @Html.TextBoxFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Description)
+        </div>
+        <div class="adminData">
+            @Html.TextAreaFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsActive)
+        </div>
+        <div class="adminData">
+            @Html.CheckBoxFor(model => model.IsActive)
+            @Html.ValidationMessageFor(model => model.IsActive)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Scope)
+        </div>
+        <div class="adminData">
+            @if (Model.Id == 0)
+            {
+			    <select name="@Html.FieldNameFor(x => x.Scope)" id="@Html.FieldIdFor(x => x.Scope)" class="form-control">
+				    @foreach (var item in Model.Scopes)
+				    {
+                        <option value="@item.Value" @Html.Attr("selected", "selected", item.Selected) data-description="@(item.Get<string>("Description"))">@item.Text</option>
+				    }
+			    </select>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.Scope)
+                @Html.TextBoxFor(model => model.ScopeName, new { @readonly = "readonly" })
+            }
+        </div>
+    </div>
+    @if (Model.AssignedToDiscounts?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToDiscounts", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Promotions.Discounts")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToDiscounts.Select(x => $"<a href='{Url.Action("Edit", "Discount", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToShippingMethods?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToShippingMethods", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Configuration.Shipping.Methods")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToShippingMethods.Select(x => $"<a href='{Url.Action("EditMethod", "Shipping", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToPaymentMethods?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToPaymentMethods", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Configuration.Payment.Methods")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToPaymentMethods.Select(x => $"<a href='{Url.Action("Edit", "Payment", new { systemName = x.SystemName })}' title='{x.SystemName.HtmlEncode()}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToCustomerRoles?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToCustomerRoles", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Customers.CustomerRoles")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToCustomerRoles.Select(x => $"<a href='{Url.Action("Edit", "CustomerRole", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.AssignedToCategories?.Any() ?? false)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabel("AssignedToCategories", T("Admin.Rules.RuleSet.AssignedObjects", T("Admin.Catalog.Categories")), T("Admin.Rules.RuleSet.AssignedObjects.Hint"))
+            </div>
+            <div class="adminData form-control-plaintext wide">
+                @Html.Raw(string.Join(" · ", Model.AssignedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
+            </div>
+        </div>
+    }
+    @if (Model.Id == 0)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                &nbsp;
+            </div>
+            <div class="adminData muted">
+                @T("Admin.Rules.SaveToCreateConditions")
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Id != 0)
+{
+    <h4 class="my-4">@T("Admin.Rules.TestConditions", "<a id=\"execute-rules\" class=\"btn btn-sm btn-primary align-top\" href=\"" + Url.Action("Execute") + "\">", "</a>")</h4>
+    <div id="excute-result" class="alert alert-warning hide"></div>
+
+    <div id="ruleset-root" class="ruleset-root" 
+         data-dirty="false"
+         data-scope="@((int)Model.Scope)" 
+         data-url-addgroup="@Url.Action("AddGroup")" 
+         data-url-deletegroup="@Url.Action("DeleteGroup")"
+         data-url-updaterules="@Url.Action("UpdateRules", new { ruleScope = (int)Model.Scope })"
+         data-url-addrule="@Url.Action("AddRule")"
+         data-url-deleterule="@Url.Action("DeleteRule")">
+        @{ Html.RenderPartial("_RuleSet", Model.ExpressionGroup); }
+    </div>
+}

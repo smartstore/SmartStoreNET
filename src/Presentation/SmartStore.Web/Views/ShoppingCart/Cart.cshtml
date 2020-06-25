@@ -5,6 +5,7 @@
     Layout = "_Checkout";
     Html.AddBodyCssClass("order-summary-page no-offcanvas-cart");
     Html.AddTitleParts(T("PageTitle.ShoppingCart").Text);
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 
 @section orderProgress{

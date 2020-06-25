@@ -16,11 +16,12 @@ namespace SmartStore.Services.Media
 		public MediaFileSystem()
 			: base(GetMediaBasePath(), "~/" + GetMediaPublicPath())
 		{
-			this.TryCreateFolder("Storage");
-			this.TryCreateFolder("Thumbs");
-			this.TryCreateFolder("Uploaded");
-			this.TryCreateFolder("QueuedEmailAttachment");
-			this.TryCreateFolder("Downloads");
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				this.CreateFolder("Storage");
+				this.CreateFolder("Thumbs");
+				this.CreateFolder("QueuedEmailAttachment");
+			}
 		}
 
 		public static string GetMediaBasePath()

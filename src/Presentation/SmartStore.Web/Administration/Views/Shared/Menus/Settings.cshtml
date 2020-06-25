@@ -1,0 +1,61 @@
+﻿@model MenuModel
+
+@using SmartStore.Collections;
+@using SmartStore.Web.Framework.UI;
+
+@{
+	if (Model.Root == null)
+	{
+		return;
+	}
+}
+
+@functions {
+	public string GetNodeLink(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node)
+	{
+		if (node.HasChildren)
+		{
+			return "javascript:void(0)";
+		}
+
+		return node.Value.GenerateUrl(this.ViewContext.RequestContext);
+	}
+}
+
+<div class="menu-settings tabbable tabs-left ml-2 my-2">
+	<nav class="nav-aside">
+		<ul class="nav nav-tabs nav-tabs-line flex-column" data-menu-name="settings">
+			@{
+				var isCurrent = false;
+				foreach (var node in Model.Root.Children)
+				{
+					var item = node.Value;
+					var isSelected = false;
+
+					if (!item.Visible)
+					{
+						continue;
+					}
+
+					if (!isCurrent)
+					{
+						// No need to check further if selected node is found once.
+						isCurrent = item.IsCurrent(ViewContext);
+						isSelected = isCurrent;
+					}
+
+					var itemText = node.GetItemText(T);
+					var itemUrl = GetNodeLink(node);
+					var icon = item.Icon.NullEmpty() ?? "fas fa-fw fa-lg";
+
+					<li class="nav-item">
+						<a class="nav-link@(isSelected ? " active" : "") text-left" href="@itemUrl">
+							<i class="@icon"></i>
+							<span class="tab-caption">@itemText</span>
+						</a>
+					</li>
+				}
+			}
+		</ul>
+	</nav>
+</div>

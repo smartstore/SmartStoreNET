@@ -11,7 +11,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class StoreClosedAttribute : FilterAttribute, IActionFilter
+    public class StoreClosedAttribute : FilterAttribute, IAuthorizationFilter
     {
 		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
 		{
@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
 		
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
 			if (filterContext == null || filterContext.HttpContext == null)
 				return;
@@ -35,7 +35,7 @@ namespace SmartStore.Web.Framework.Filters
 			if (request == null)
 				return;
 
-			//don't apply filter to child methods
+			// Don't apply filter to child methods
 			if (filterContext.IsChildAction)
 				return;
 
@@ -76,13 +76,8 @@ namespace SmartStore.Web.Framework.Filters
 						var storeClosedUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("StoreClosed");
 						filterContext.Result = new RedirectResult(storeClosedUrl);
 					}
-
 				}
 			}
-		}
-
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
 		}
 
 		private static bool IsPermittedRoute(string controllerName, string actionName)

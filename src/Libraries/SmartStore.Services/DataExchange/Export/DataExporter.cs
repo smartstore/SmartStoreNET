@@ -1,29 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Data.Entity;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
@@ -36,22 +40,16 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Search;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using SmartStore.Collections;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.DataExchange.Export
 {
     public partial class DataExporter : IDataExporter
 	{
-		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
-
 		#region Dependencies
 
 		private readonly ICommonServices _services;
@@ -62,7 +60,7 @@ namespace SmartStore.Services.DataExchange.Export
         private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<IUrlRecordService> _urlRecordService;
-		private readonly Lazy<IPictureService> _pictureService;
+        private readonly Lazy<IMediaService> _mediaService;
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
 		private readonly Lazy<ICurrencyService> _currencyService;
 		private readonly Lazy<ITaxService> _taxService;
@@ -111,8 +109,8 @@ namespace SmartStore.Services.DataExchange.Export
             Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<ILanguageService> languageService,
 			Lazy<IUrlRecordService> urlRecordService,
-			Lazy<IPictureService> pictureService,
-			Lazy<IPriceCalculationService> priceCalculationService,
+            Lazy<IMediaService> mediaService,
+            Lazy<IPriceCalculationService> priceCalculationService,
 			Lazy<ICurrencyService> currencyService,
 			Lazy<ITaxService> taxService,
 			Lazy<ICategoryService> categoryService,
@@ -157,7 +155,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizedEntityService = localizedEntityService;
 			_languageService = languageService;
 			_urlRecordService = urlRecordService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_priceCalculationService = priceCalculationService;
 			_currencyService = currencyService;
 			_taxService = taxService;
@@ -196,11 +194,9 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizationSettings = localizationSettings;
 			_taxSettings = taxSettings;
             _seoSettings = seoSettings;
-
-			T = NullLocalizer.Instance;
 		}
 
-		public Localizer T { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
 
         #endregion
 
@@ -275,86 +271,26 @@ namespace SmartStore.Services.DataExchange.Export
 				return true;
 			}
 
-			switch (ctx.Request.Provider.Value.EntityType)
-			{
-				case ExportEntityType.Product:
-				case ExportEntityType.Category:
-				case ExportEntityType.Manufacturer:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
-
-				case ExportEntityType.Customer:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
-
-				case ExportEntityType.Order:
-				case ExportEntityType.ShoppingCartItem:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageOrders, customer);
-
-				case ExportEntityType.NewsLetterSubscription:
-					return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
-			}
-
-			return true;
+            return _services.Permissions.Authorize(Permissions.Configuration.Export.Execute);
 		}
-
-        private void StreamToFile(DataExporterContext ctx, Stream stream, string path, Action<Stream> onDisposed)
-        {
-            if (stream != null)
-            {
-                try
-                {
-                    if (ctx.IsFileBasedExport && path.HasValue() && stream.Length > 0)
-                    {
-                        if (!stream.CanSeek)
-                        {
-                            ctx.Log.Warn("Data stream seems to be closed!");
-                        }
-
-                        stream.Seek(0, SeekOrigin.Begin);
-
-                        using (_rwLock.GetWriteLock())
-                        using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-                        {
-                            stream.CopyTo(fileStream);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-                    ctx.Log.ErrorFormat(ex, $"Failed to stream file {path}.");
-                    ctx.Result.LastError = ex.ToAllMessages(true);
-                }
-                finally
-                {
-                    stream.Dispose();
-                    onDisposed(stream);
-                }
-            }
-
-            if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
-            {
-                FileSystemHelper.DeleteFile(path);
-            }
-        }
 
         private void DetachAllEntitiesAndClear(DataExporterContext ctx)
 		{
-			try
+            try
 			{
                 ctx.AssociatedProductContext?.Clear();
-                ctx.TranslationsPerPage?.Clear();
-                ctx.UrlRecordsPerPage?.Clear();
 
                 if (ctx.ProductExportContext != null)
 				{
-					_dbContext.DetachEntities(x =>
-					{
-						return x is Product || x is Discount || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || 
-							   x is Picture || x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer ||
-							   x is ProductPicture || x is ProductTag || x is ProductSpecificationAttribute || x is TierPrice;
-					});
+                    _dbContext.DetachEntities(x =>
+                    {
+                        return x is Product || x is Discount || x is ProductVariantAttributeCombination || x is ProductVariantAttribute || x is ProductVariantAttributeValue || x is ProductAttribute ||
+                               x is MediaFile || x is ProductBundleItem || x is ProductBundleItemAttributeFilter || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
+                               x is ProductMediaFile || x is ProductTag || x is ProductSpecificationAttribute || x is SpecificationAttributeOption || x is SpecificationAttribute || x is TierPrice || x is ProductReview ||
+                               x is ProductReviewHelpfulness || x is DeliveryTime || x is QuantityUnit || x is Download || x is MediaStorage || x is GenericAttribute || x is UrlRecord;
+                    });
 
-					ctx.ProductExportContext.Clear();
+                    ctx.ProductExportContext.Clear();
 				}
 
 				if (ctx.OrderExportContext != null)
@@ -362,7 +298,7 @@ namespace SmartStore.Services.DataExchange.Export
 					_dbContext.DetachEntities(x =>
 					{
 						return x is Order || x is Address || x is GenericAttribute || x is Customer ||
-							   x is OrderItem || x is RewardPointsHistory || x is Shipment;
+							   x is OrderItem || x is RewardPointsHistory || x is Shipment || x is ProductVariantAttributeCombination;
 					});
 
 					ctx.OrderExportContext.Clear();
@@ -372,7 +308,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					_dbContext.DetachEntities(x =>
 					{
-						return x is Category || x is Picture || x is ProductCategory;
+						return x is Category || x is MediaFile || x is ProductCategory;
 					});
 
 					ctx.CategoryExportContext.Clear();
@@ -382,7 +318,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					_dbContext.DetachEntities(x =>
 					{
-						return x is Manufacturer || x is Picture || x is ProductManufacturer;
+						return x is Manufacturer || x is MediaFile || x is ProductManufacturer;
 					});
 
 					ctx.ManufacturerExportContext.Clear();
@@ -402,15 +338,17 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					_dbContext.DetachEntities(x =>
 					{
-						return x is ShoppingCartItem || x is Customer || x is Product;
+						return x is ShoppingCartItem || x is Customer || x is Product || x is ProductVariantAttributeCombination;
 					});
 				}
-			}
-			catch (Exception ex)
+            }
+            catch (Exception ex)
 			{
 				ctx.Log.Warn(ex, "Detaching entities failed.");
 			}
-		}
+
+            //((DbContext)_dbContext).DumpAttachedEntities();
+        }
 
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx)
 		{
@@ -511,9 +449,9 @@ namespace SmartStore.Services.DataExchange.Export
 						entities =>
 						{
 							ctx.ManufacturerExportContext = new ManufacturerExportContext(entities,
-								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x),
-								x => _pictureService.Value.GetPicturesByIds(x)
-							);
+								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x, true),
+                                x => _mediaService.Value.GetFilesByIds(x)
+                            );
 						},
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalRecords
@@ -528,7 +466,7 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ctx.CategoryExportContext = new CategoryExportContext(entities,
 								x => _categoryService.Value.GetProductCategoriesByCategoryIds(x),
-								x => _pictureService.Value.GetPicturesByIds(x)
+                                x => _mediaService.Value.GetFilesByIds(x)
 							);
 						},
 						entity => Convert(ctx, entity),
@@ -584,11 +522,21 @@ namespace SmartStore.Services.DataExchange.Export
 			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
+        private Stream CreateStream(string path)
+        {
+            if (path.HasValue())
+            {
+                return new FileStream(path, FileMode.Create, FileAccess.Write);
+            }
+
+            return new MemoryStream();
+        }
+
         private IEnumerable<ExportDataUnit> GetDataUnitsForRelatedEntities(DataExporterContext ctx)
         {
             // Related data is data without own export provider or importer. For a flat formatted export
             // they have to be exported together with metadata to know what to be edited.
-            RelatedEntityType[] types = null;
+            RelatedEntityType[] types;
 
             switch (ctx.Request.Provider.Value.EntityType)
             {
@@ -610,6 +558,12 @@ namespace SmartStore.Services.DataExchange.Export
 
             foreach (var type in types)
             {
+                var unit = new ExportDataUnit
+                {
+                    RelatedType = type,
+                    DisplayInFileDialog = true
+                };
+
                 // Convention: Must end with type name because that's how the import identifies the entity.
                 // Be careful in case of accidents with file names. They must not be too long.
                 var fileName = $"{ctx.Store.Id}-{context.FileIndex.ToString("D4")}-{type.ToString()}";
@@ -619,13 +573,10 @@ namespace SmartStore.Services.DataExchange.Export
                     fileName = $"{CommonHelper.GenerateRandomDigitCode(4)}-{fileName}";
                 }
 
-                result.Add(new ExportDataUnit
-                {
-                    RelatedType = type,
-                    DisplayInFileDialog = true,
-                    FileName = fileName + fileExtension,
-                    DataStream = new MemoryStream()
-                });
+                unit.FileName = fileName + fileExtension;
+                unit.DataStream = new ExportFileStream(CreateStream(Path.Combine(context.Folder, unit.FileName)));
+
+                result.Add(unit);
             }
 
             return result;
@@ -638,52 +589,75 @@ namespace SmartStore.Services.DataExchange.Export
 				throw new SmartException($"Unknown export method {method.NaIfEmpty()}.");
 			}
 
-            var context = ctx.ExecuteContext;
-            var provider = ctx.Request.Provider.Value;
-
 			try
 			{
-                context.DataStream = new MemoryStream();
-
-                if (method == "Execute")
+                using (ctx.ExecuteContext.DataStream = new ExportFileStream(CreateStream(ctx.IsFileBasedExport ? path : null)))
                 {
-                    provider.Execute(context);
-                }
-                else if (method == "OnExecuted")
-                {
-                    provider.OnExecuted(context);
+                    if (method == "Execute")
+                    {
+                        ctx.Request.Provider.Value.Execute(ctx.ExecuteContext);
+                    }
+                    else if (method == "OnExecuted")
+                    {
+                        ctx.Request.Provider.Value.OnExecuted(ctx.ExecuteContext);
+                    }
                 }
             }
             catch (Exception ex)
 			{
-				context.Abort = DataExchangeAbortion.Hard;
+                ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
 				ctx.Log.ErrorFormat(ex, $"The provider failed at the {method.NaIfEmpty()} method.");
 				ctx.Result.LastError = ex.ToAllMessages(true);
 			}
 			finally
 			{
-                StreamToFile(ctx, context.DataStream, path, x => context.DataStream = null);
+                ctx.ExecuteContext.DataStream?.Dispose();
+                ctx.ExecuteContext.DataStream = null;
+
+                if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport)
+                {
+                    FileSystemHelper.DeleteFile(path);
+                }
 
                 if (method == "Execute")
                 {
-                    var sb = new StringBuilder();
-                    sb.Append($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {provider.EntityType.ToString()} to {path.NaIfEmpty()}.");
+                    var unitFileInfos = new StringBuilder();
+                    var relatedDataUnits = ctx.ExecuteContext.ExtraDataUnits
+                        .Where(x => x.RelatedType.HasValue && x.FileName.HasValue() && x.DataStream != null)
+                        .ToList();
 
-                    foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue && x.DataStream != null))
+                    foreach (var unit in relatedDataUnits)
                     {
                         // Set unit.DataStream to null so that providers know that this unit should no longer be written to.
                         // We need these units later for ExportProfile.ResultInfo.
-                        var unitPath = Path.Combine(context.Folder, unit.FileName);
-                        StreamToFile(ctx, unit.DataStream, unitPath, x => unit.DataStream = null);
+                        unit.DataStream?.Dispose();
+                        unit.DataStream = null;
 
-                        sb.Append($"\r\nProvider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()} to {unitPath.NaIfEmpty()}.");
+                        var unitPath = Path.Combine(ctx.ExecuteContext.Folder, unit.FileName);
+
+                        if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
+                        {
+                            if (ctx.IsFileBasedExport)
+                            {
+                                FileSystemHelper.DeleteFile(unitPath);
+                            }
+                        }
+                        else
+                        {
+                            unitFileInfos.Append($"\r\nProvider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()} to {unitPath}.");
+                        }
                     }
 
-                    ctx.Log.Info(sb.ToString());
+                    if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
+                    {
+                        ctx.Log.Info($"Provider reports {ctx.ExecuteContext.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {ctx.Request.Provider.Value.EntityType.ToString()} to {path.NaIfEmpty()}.");
+                    }
+
+                    ctx.Log.Info(unitFileInfos.ToString());
                 }
 			}
 
-			return context.Abort != DataExchangeAbortion.Hard;
+			return ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard;
 		}
 
 		private bool Deploy(DataExporterContext ctx, string zipPath)
@@ -840,7 +814,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Customer customer = null,
 			int? storeId = null,
 			int? maxPicturesPerProduct = null,
-			bool showHidden = true)
+			bool includeHidden = true)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -853,14 +827,13 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
 				x => _specificationAttributeService.Value.GetProductSpecificationAttributesByProductIds(x),
 				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
-				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, showHidden),
-				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
+				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, includeHidden),
+				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x, includeHidden),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
-				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
-                x => _productService.Value.GetAssociatedProductsByProductIds(x),
-				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
-				x => _productService.Value.GetProductPicturesByProductIds(x),
-				x => _productService.Value.GetProductTagsByProductIds(x),
+				x => _productService.Value.GetBundleItemsByProductIds(x, includeHidden),
+                x => _productService.Value.GetAssociatedProductsByProductIds(x, includeHidden),
+				x => _productService.Value.GetProductPicturesByProductIds(x, maxPicturesPerProduct),
+				x => _productService.Value.GetProductTagsByProductIds(x, includeHidden),
                 x => _downloadService.Value.GetDownloadsByEntityIds(x, nameof(Product))
 			);
 
@@ -880,11 +853,13 @@ namespace SmartStore.Services.DataExchange.Export
 				var searchQuery = new CatalogSearchQuery()
 					.WithCurrency(ctx.ContextCurrency)
 					.WithLanguage(ctx.ContextLanguage)
-					.VisibleIndividuallyOnly(true)
-					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
+                    .HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
 					.PriceBetween(f.PriceMinimum, f.PriceMaximum)
 					.WithStockQuantity(f.AvailabilityMinimum, f.AvailabilityMaximum)
 					.CreatedBetween(createdFrom, createdTo);
+
+                if (f.Visibility.HasValue)
+                    searchQuery = searchQuery.WithVisibility(f.Visibility.Value);
 
 				if (f.IsPublished.HasValue)
 					searchQuery = searchQuery.PublishedOnly(f.IsPublished.Value);
@@ -940,12 +915,15 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Product> GetProducts(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
                 // End of data reached.
                 return null;
             }
+
 
             var products = GetProductQuery(ctx, null, PageSize).ToList();
             if (!products.Any())
@@ -980,7 +958,7 @@ namespace SmartStore.Services.DataExchange.Export
                         {
                             foreach (var associatedProduct in associatedProducts[product.Id])
                             {
-                                if (ctx.Projection.OnlyIndividuallyVisibleAssociated && !associatedProduct.VisibleIndividually)
+                                if (ctx.Projection.OnlyIndividuallyVisibleAssociated && associatedProduct.Visibility == ProductVisibility.Hidden)
                                 {
                                     continue;
                                 }
@@ -1009,7 +987,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = products.Last().Id;
             SetProgress(ctx, products.Count);
 
-			return result;
+            return result;
 		}
 
 		private IQueryable<Order> GetOrderQuery(DataExporterContext ctx, int? skip, int take)
@@ -1053,6 +1031,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Order> GetOrders(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1074,7 +1054,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = orders.Last().Id;
             SetProgress(ctx, orders.Count);
 
-			return orders;
+            return orders;
 		}
 
 		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int? skip, int take)
@@ -1109,6 +1089,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Manufacturer> GetManufacturers(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1125,7 +1107,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = manus.Last().Id;
             SetProgress(ctx, manus.Count);
 
-			return manus;
+            return manus;
 		}
 
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int? skip, int take)
@@ -1160,6 +1142,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Category> GetCategories(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1176,7 +1160,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = categories.Last().Id;
             SetProgress(ctx, categories.Count);
 
-			return categories;
+            return categories;
 		}
 
 		private IQueryable<Customer> GetCustomerQuery(DataExporterContext ctx, int? skip, int take)
@@ -1186,7 +1170,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.Expand(x => x.ShippingAddress)
 				.Expand(x => x.Addresses.Select(y => y.Country))
 				.Expand(x => x.Addresses.Select(y => y.StateProvince))
-				.Expand(x => x.CustomerRoles)
+				.Expand(x => x.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 				.Where(x => !x.Deleted);
 
             if (ctx.Filter.IsActiveCustomer.HasValue)
@@ -1201,7 +1185,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
             {
-                query = query.Where(x => x.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+                query = query.Where(x => x.CustomerRoleMappings.Select(y => y.CustomerRoleId).Intersect(ctx.Filter.CustomerRoleIds).Any());
             }
 
             if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Any())
@@ -1281,6 +1265,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Customer> GetCustomers(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1297,7 +1283,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = customers.Last().Id;
             SetProgress(ctx, customers.Count);
 
-			return customers;
+            return customers;
 		}
 
 		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExporterContext ctx, int? skip, int take)
@@ -1370,6 +1356,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1386,7 +1374,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = subscriptions.Last().Id;
             SetProgress(ctx, subscriptions.Count);
 
-			return subscriptions;
+            return subscriptions;
 		}
 
 		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int? skip, int take)
@@ -1395,7 +1383,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var query = _shoppingCartItemRepository.Value.TableUntracked
 				.Expand(x => x.Customer)
-				.Expand(x => x.Customer.CustomerRoles)
+				.Expand(x => x.Customer.CustomerRoleMappings.Select(rm => rm.CustomerRole))
 				.Expand(x => x.Product)
 				.Where(x => !x.Customer.Deleted);
 
@@ -1429,7 +1417,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
             {
-                query = query.Where(x => x.Customer.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+                query = query.Where(x => x.Customer.CustomerRoleMappings.Select(y => y.CustomerRoleId).Intersect(ctx.Filter.CustomerRoleIds).Any());
             }
 
 			if (ctx.Filter.LastActivityFrom.HasValue)
@@ -1492,6 +1480,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<ShoppingCartItem> GetShoppingCartItems(DataExporterContext ctx)
 		{
+            DetachAllEntitiesAndClear(ctx);
+
             var stats = ctx.StatsPerStore[ctx.Store.Id];
             if (ctx.LastId >= stats.MaxId)
             {
@@ -1508,7 +1498,7 @@ namespace SmartStore.Services.DataExchange.Export
             ctx.LastId = cartItems.Last().Id;
             SetProgress(ctx, cartItems.Count);
 
-			return cartItems;
+            return cartItems;
 		}
 
 		#endregion
@@ -1635,7 +1625,7 @@ namespace SmartStore.Services.DataExchange.Export
 				var logHead = new StringBuilder();
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
-				logHead.AppendLine("SmartStore.NET: v." + SmartStoreVersion.CurrentFullVersion);
+				logHead.AppendLine("Smartstore: v." + SmartStoreVersion.CurrentFullVersion);
 				logHead.Append("Export profile: " + profile.Name);
 				logHead.AppendLine(profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})");
 
@@ -1723,7 +1713,6 @@ namespace SmartStore.Services.DataExchange.Export
 					}
 
                     ctx.EntityIdsPerSegment.Clear();
-                    DetachAllEntitiesAndClear(ctx);
 
                     if (context.IsMaxFailures)
                     {
@@ -1735,7 +1724,7 @@ namespace SmartStore.Services.DataExchange.Export
                     }
 				}
 
-				if (context.Abort != DataExchangeAbortion.Hard)
+                if (context.Abort != DataExchangeAbortion.Hard)
 				{
                     var calledExecuted = false;
 
@@ -1747,6 +1736,7 @@ namespace SmartStore.Services.DataExchange.Export
                         var path = x.FileName.HasValue() ? Path.Combine(context.Folder, x.FileName) : null;
                         if (!x.RelatedType.HasValue)
                         {
+                            // Unit added by provider.
                             calledExecuted = true;
                             success = CallProvider(ctx, "OnExecuted", path);
                         }
@@ -1778,11 +1768,6 @@ namespace SmartStore.Services.DataExchange.Export
 		private void ExportCoreOuter(DataExporterContext ctx)
 		{
             var profile = ctx.Request.Profile;
-            if (profile == null || !profile.Enabled)
-            {
-                return;
-            }
-
 			var logPath = profile.GetExportLogPath();
 			var zipPath = profile.GetExportZipPath();
 
@@ -1820,38 +1805,38 @@ namespace SmartStore.Services.DataExchange.Export
 
                     // lazyLoading: false, proxyCreation: false impossible due to price calculation.
                     using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
-					{
-						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
-						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
-						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
-						ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
+                    {
+                        ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
+                        ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
+                        ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
+                        ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 
                         if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
-							ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
-						{
-							ctx.Countries = _countryService.Value.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
-						}
+                            ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
+                        {
+                            ctx.Countries = _countryService.Value.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
+                        }
 
-						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Customer)
-						{
-							var subscriptionEmails = _subscriptionRepository.Value.TableUntracked
-								.Where(x => x.Active)
-								.Select(x => x.Email)
-								.Distinct()
-								.ToList();
+                        if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Customer)
+                        {
+                            var subscriptionEmails = _subscriptionRepository.Value.TableUntracked
+                                .Where(x => x.Active)
+                                .Select(x => x.Email)
+                                .Distinct()
+                                .ToList();
 
-							ctx.NewsletterSubscriptions = new HashSet<string>(subscriptionEmails, StringComparer.OrdinalIgnoreCase);
-						}
+                            ctx.NewsletterSubscriptions = new HashSet<string>(subscriptionEmails, StringComparer.OrdinalIgnoreCase);
+                        }
 
-						var stores = Init(ctx);
+                        var stores = Init(ctx);
 
-						ctx.ExecuteContext.Language = ToDynamic(ctx, ctx.ContextLanguage);
-						ctx.ExecuteContext.Customer = ToDynamic(ctx, ctx.ContextCustomer);
-						ctx.ExecuteContext.Currency = ToDynamic(ctx, ctx.ContextCurrency);
-						ctx.ExecuteContext.Profile = ToDynamic(ctx, profile);
+                        ctx.ExecuteContext.Language = ToDynamic(ctx, ctx.ContextLanguage);
+                        ctx.ExecuteContext.Customer = ToDynamic(ctx, ctx.ContextCustomer);
+                        ctx.ExecuteContext.Currency = ToDynamic(ctx, ctx.ContextCurrency);
+                        ctx.ExecuteContext.Profile = ToDynamic(ctx, profile);
 
-						stores.ForEach(x => ExportCoreInner(ctx, x));
-					}
+                        stores.ForEach(x => ExportCoreInner(ctx, x));
+                    }
 
 					if (!ctx.IsPreview && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
 					{
@@ -1920,9 +1905,12 @@ namespace SmartStore.Services.DataExchange.Export
                         ctx.Translations.Clear();
                         ctx.UrlRecords.Clear();
 
-						ctx.Request.CustomData.Clear();
+                        ctx.TranslationsPerPage?.Clear();
+                        ctx.UrlRecordsPerPage?.Clear();
 
-						ctx.ExecuteContext.CustomProperties.Clear();
+                        ctx.Request.CustomData.Clear();
+
+                        ctx.ExecuteContext.CustomProperties.Clear();
 						ctx.ExecuteContext.Log = null;
 						ctx.Log = null;
 					}
@@ -1988,11 +1976,26 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken)
 		{
-			var ctx = new DataExporterContext(request, cancellationToken);
+            var ctx = new DataExporterContext(request, cancellationToken);
 
-			ExportCoreOuter(ctx);
+            if (!(request?.Profile?.Enabled ?? false))
+            {
+                return ctx.Result;
+            }
+
+            var lockKey = $"dataexporter:profile:{request.Profile.Id}";
+            if (KeyedLock.IsLockHeld(lockKey))
+            {
+                ctx.Result.LastError = $"The execution of the profile \"{request.Profile.Name.NaIfEmpty()}\" (ID {request.Profile.Id}) is locked.";
+                return ctx.Result;
+            }
+
+            using (KeyedLock.Lock(lockKey))
+            {
+                ExportCoreOuter(ctx);
+            }
+
 			cancellationToken.ThrowIfCancellationRequested();
-
 			return ctx.Result;
 		}
 

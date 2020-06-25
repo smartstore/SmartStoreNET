@@ -106,7 +106,7 @@ namespace SmartStore.Services.Localization
                 var query = _languageRepository.Table;
                 if (!showHidden)
                     query = query.Where(l => l.Published);
-                return query.Select(x => x.Id).Count();
+                return query.Count();
             });
         }
 

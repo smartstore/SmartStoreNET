@@ -42,6 +42,11 @@ namespace SmartStore.Tests
 			return _dbSet.Find(id);
 		}
 
+		public Task<T> GetByIdAsync(object id)
+		{
+			return _dbSet.FindAsync(id);
+		}
+
 		public T Attach(T entity)
 		{
 			return _dbSet.Attach(entity);
@@ -56,9 +61,22 @@ namespace SmartStore.Tests
 			_dbSet.Add(entity);
 		}
 
+
+		public Task InsertAsync(T entity)
+		{
+			Insert(entity);
+			return Task.FromResult(0);
+		}
+
 		public void InsertRange(IEnumerable<T> entities, int batchSize = 100)
 		{
 			entities.Each(x => Insert(x));
+		}
+
+		public Task InsertRangeAsync(IEnumerable<T> entities, int batchSize = 100)
+		{
+			InsertRange(entities, batchSize);
+			return Task.FromResult(0);
 		}
 
 		public void Update(T entity)
@@ -66,9 +84,20 @@ namespace SmartStore.Tests
 			// Noop
 		}
 
+		public Task UpdateAsync(T entity)
+		{
+			return Task.FromResult(0);
+		}
+
 		public void UpdateRange(IEnumerable<T> entities)
 		{
 			entities.Each(x => Update(x));
+		}
+
+		public Task UpdateRangeAsync(IEnumerable<T> entities)
+		{
+			UpdateRange(entities);
+			return Task.FromResult(0);
 		}
 
 		public void Delete(T entity)
@@ -76,9 +105,21 @@ namespace SmartStore.Tests
 			_dbSet.Remove(entity);
 		}
 
+		public Task DeleteAsync(T entity)
+		{
+			Delete(entity);
+			return Task.FromResult(0);
+		}
+
 		public void DeleteRange(IEnumerable<T> entities)
 		{
 			_dbSet.RemoveRange(entities);
+		}
+
+		public Task DeleteRangeAsync(IEnumerable<T> entities)
+		{
+			DeleteRange(entities);
+			return Task.FromResult(0);
 		}
 
 		public IQueryable<T> Expand(IQueryable<T> query, string path)

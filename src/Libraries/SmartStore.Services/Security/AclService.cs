@@ -17,7 +17,7 @@ namespace SmartStore.Services.Security
 		/// 0 = segment (EntityName.IdRange)
 		/// </summary>
 		const string ACL_SEGMENT_KEY = "acl:range-{0}";
-		const string ACL_SEGMENT_PATTERN = "acl:range-*";
+		internal const string ACL_SEGMENT_PATTERN = "acl:range-*";
 
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly Work<IWorkContext> _workContext;
@@ -91,12 +91,15 @@ namespace SmartStore.Services.Security
 			return aclRecords;
 		}
 
-		public virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+		public virtual void SaveAclMappings<T>(T entity, params int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
 		{
 			var existingAclRecords = GetAclRecords(entity);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+            entity.SubjectToAcl = selectedCustomerRoleIds.Length == 1 && selectedCustomerRoleIds[0] == 0
+                ? false
+                : selectedCustomerRoleIds.Any();
 
-			foreach (var customerRole in allCustomerRoles)
+            foreach (var customerRole in allCustomerRoles)
 			{
 				if (selectedCustomerRoleIds != null && selectedCustomerRoleIds.Contains(customerRole.Id))
 				{
@@ -112,6 +115,12 @@ namespace SmartStore.Services.Security
 						DeleteAclRecord(aclRecordToDelete);
 				}
 			}
+
+            // TODO: Find a way to detect the context of the entity. Until then we don't check for modified props
+            //if (_aclRecordRepository.Context.TryGetModifiedProperty(entity, nameof(entity.SubjectToAcl), out _)) 
+            //{
+                _aclRecordRepository.Context.SaveChanges();
+            //}
 		}
 
 		public virtual void InsertAclRecord(AclRecord aclRecord)
@@ -171,7 +180,7 @@ namespace SmartStore.Services.Security
 
 		public bool Authorize(string entityName, int entityId)
 		{
-			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoles);
+			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoleMappings?.Select(x => x.CustomerRole));
 		}
 
 		public virtual bool Authorize(string entityName, int entityId, IEnumerable<CustomerRole> roles)
@@ -181,7 +190,7 @@ namespace SmartStore.Services.Security
 			if (entityId <= 0)
 				return false;
 
-			if (!HasActiveAcl)
+            if (!HasActiveAcl)
 				return true;
 
 			if (roles == null)

@@ -7,10 +7,18 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Configuration
 {
-    /// <summary>
-    /// Setting service interface
-    /// </summary>
-    public partial interface ISettingService
+	public enum SaveSettingResult
+	{
+		Unchanged,
+		Modified,
+		Inserted,
+		Deleted
+	}
+
+	/// <summary>
+	/// Setting service interface
+	/// </summary>
+	public partial interface ISettingService
     {
 		/// <summary>
 		/// Creates a unit of work in which cache eviction is suppressed
@@ -34,15 +42,23 @@ namespace SmartStore.Services.Configuration
         /// <returns>Setting</returns>
         Setting GetSettingById(int settingId);
 
-        /// <summary>
-        /// Get setting value by key
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="key">Key</param>
-        /// <param name="defaultValue">Default value</param>
+		/// <summary>
+		/// Gets a setting by key
+		/// </summary>
+		/// <param name="key">Unique setting key</param>
 		/// <param name="storeId">Store identifier</param>
-		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain is not found</param>
-        /// <returns>Setting value</returns>
+		/// <returns>Setting</returns>
+		Setting GetSettingEntityByKey(string key, int storeId = 0);
+
+		/// <summary>
+		/// Get setting value by key
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="key">Key</param>
+		/// <param name="defaultValue">Default value</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <param name="loadSharedValueIfNotFound">A value indicating whether a shared (for all stores) value should be loaded if a value specific for a certain store is not found</param>
+		/// <returns>Setting value</returns>
 		T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false);
 
 		/// <summary>
@@ -86,22 +102,16 @@ namespace SmartStore.Services.Configuration
 		/// <param name="value">Value</param>
 		/// <param name="storeId">Store identifier</param>
 		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-		void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true);
-
-        /// <summary>
-        /// Save settings object
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-		/// <param name="settings">Setting instance</param>
-		/// <param name="storeId">Store identifier</param>
-		void SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new();
+		SaveSettingResult SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true);
 
 		/// <summary>
 		/// Save settings object
 		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
 		/// <param name="settings">Setting instance</param>
 		/// <param name="storeId">Store identifier</param>
-		void SaveSetting(ISettings settings, int storeId = 0);
+		/// <returns><c>true</c> when any setting property has been modified.</returns>
+		bool SaveSetting<T>(T settings, int storeId = 0) where T : ISettings, new();
 
 		/// <summary>
 		/// Save settings object
@@ -112,12 +122,27 @@ namespace SmartStore.Services.Configuration
 		/// <param name="keySelector">Key selector</param>
 		/// <param name="storeId">Store ID</param>
 		/// <param name="clearCache">A value indicating whether to clear cache after setting update</param>
-		void SaveSetting<T, TPropType>(T settings,
+		/// <returns><c>true</c> when the setting property has been modified.</returns>
+		SaveSettingResult SaveSetting<T, TPropType>(
+			T settings,
 			Expression<Func<T, TPropType>> keySelector,
-			int storeId = 0, bool clearCache = true) where T : ISettings, new();
+			int storeId = 0, 
+			bool clearCache = true) where T : ISettings, new();
 
-		/// <remarks>codehint: sm-add</remarks>
-		void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0) where T : ISettings, new();
+		/// <summary>
+		/// Updates a setting property
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <typeparam name="TPropType">Property type</typeparam>
+		/// <param name="settings">Settings</param>
+		/// <param name="keySelector">Key selector</param>
+		/// <param name="storeId">Store ID</param>
+		/// <returns><c>true</c> when the setting property has been modified.</returns>
+		SaveSettingResult UpdateSetting<T, TPropType>(
+			T settings, 
+			Expression<Func<T, TPropType>> keySelector, 
+			bool overrideForStore, 
+			int storeId = 0) where T : ISettings, new();
 
 		void InsertSetting(Setting setting, bool clearCache = true);
 
@@ -136,18 +161,24 @@ namespace SmartStore.Services.Configuration
         void DeleteSetting<T>() where T : ISettings, new();
 
 		/// <summary>
-		/// Delete settings object
+		/// Delete a settings property from storage
 		/// </summary>
 		/// <typeparam name="T">Entity type</typeparam>
 		/// <typeparam name="TPropType">Property type</typeparam>
 		/// <param name="settings">Settings</param>
 		/// <param name="keySelector">Key selector</param>
 		/// <param name="storeId">Store ID</param>
-		void DeleteSetting<T, TPropType>(T settings,
-			Expression<Func<T, TPropType>> keySelector, int storeId = 0) where T : ISettings, new();
+		/// <returns><c>true</c> when the setting existed and has been deleted</returns>
+		bool DeleteSetting<T, TPropType>(
+			T settings,
+			Expression<Func<T, TPropType>> keySelector, 
+			int storeId = 0) where T : ISettings, new();
 
-		/// <remarks>codehint: sm-add</remarks>
-		void DeleteSetting(string key, int storeId = 0);
+		/// <summary>
+		/// Delete a settings property from storage
+		/// </summary>
+		/// <returns><c>true</c> when the setting existed and has been deleted</returns>
+		bool DeleteSetting(string key, int storeId = 0);
 
 		/// <summary>
 		/// Deletes all settings with its key beginning with rootKey.

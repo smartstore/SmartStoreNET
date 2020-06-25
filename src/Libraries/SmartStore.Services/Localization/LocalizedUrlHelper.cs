@@ -34,8 +34,7 @@ namespace SmartStore.Services.Localization
 
         public bool IsLocalizedUrl()
         {
-            string seoCode;
-            return IsLocalizedUrl(out seoCode);
+            return IsLocalizedUrl(out _);
         }
 
         public bool IsLocalizedUrl(out string seoCode)
@@ -106,7 +105,7 @@ namespace SmartStore.Services.Localization
         public string GetAbsolutePath()
         {
             string path = this.ApplicationPath.EnsureEndsWith("/");
-            path = path + this.RelativePath;
+            path += this.RelativePath;
 
             if (path.Length > 1 && path[0] != '/')
             {

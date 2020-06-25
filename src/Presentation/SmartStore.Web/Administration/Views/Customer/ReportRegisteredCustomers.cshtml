@@ -1,29 +1,28 @@
 ﻿@model IList<RegisteredCustomerReportLineModel>
 
 <div class="card shadow-sm mb-4">
-	<h6 class="card-header font-weight-medium border-bottom-0">
-		<i class="fa fa-users pr-2"></i>
-		@T("Admin.Customers.Reports.RegisteredCustomers")
-	</h6>
-
-	<div class="table-responsive">
-		<table class="table table-striped m-0">
-			<thead>
-				<tr>
-					<th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period")</th>
-					<th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Customers")</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var x in Model)
-				{
-					<tr>
-						<td>@x.Period</td>
-						<td>@x.Customers</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+    <h6 class="card-header font-weight-medium border-bottom-0">
+        <i class="fa fa-users pr-2"></i>
+        @T("Admin.Customers.Reports.RegisteredCustomers")
+    </h6>
+    <div class="table-responsive">
+            <table class="table table-striped m-0">
+                <thead>
+                    <tr>
+                        <th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period")</th>
+                        <th>@T("Admin.Customers.Reports.RegisteredCustomers.Fields.Customers")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model)
+                    {
+                        <tr>
+                            <td>@x.Period</td>
+                            <td>@x.Customers</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 </div>
 

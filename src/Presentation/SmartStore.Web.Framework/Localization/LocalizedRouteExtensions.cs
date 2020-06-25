@@ -34,16 +34,20 @@ namespace SmartStore.Web.Framework.Localization
             return MapLocalizedRoute(routes, name, url, defaults, null /* constraints */, namespaces);
         }
 
+        public static Route CreateLocalizedRoute(this RouteCollection routes, string url, object defaults, string[] namespaces)
+        {
+            return MapLocalizedRouteInternal(routes, null /* name */, url, defaults, null /* constraints */, namespaces, false);
+        }
+
         public static Route MapLocalizedRoute(this RouteCollection routes, string name, string url, object defaults, object constraints, string[] namespaces)
         {
-            if (routes == null)
-            {
-                throw new ArgumentNullException("routes");
-            }
-            if (url == null)
-            {
-                throw new ArgumentNullException("url");
-            }
+            return MapLocalizedRouteInternal(routes, name, url, defaults, constraints, namespaces, true);
+        }
+
+        private static Route MapLocalizedRouteInternal(this RouteCollection routes, string name, string url, object defaults, object constraints, string[] namespaces, bool add)
+        {
+            Guard.NotNull(routes, nameof(routes));
+            Guard.NotNull(url, nameof(url));
 
             var route = new LocalizedRoute(url, new MvcRouteHandler())
             {
@@ -57,7 +61,10 @@ namespace SmartStore.Web.Framework.Localization
                 route.DataTokens["Namespaces"] = namespaces;
             }
 
-            routes.Add(name, route);
+            if (add)
+            {
+                routes.Add(name, route);
+            }          
 
             return route;
         }

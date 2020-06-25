@@ -202,13 +202,13 @@ namespace SmartStore.PayPal
 					decimal discountTotal = cartTotal - postProcessPaymentRequest.Order.OrderTotal;
 					discountTotal = Math.Round(discountTotal, 2);
 
-					//gift card or rewared point amount applied to cart in SmartStore.NET - shows in Paypal as "discount"
+					// Gift card or rewared point amount applied to cart in Smartstore - shows in Paypal as "discount"
 					builder.AppendFormat("&discount_amount_cart={0}", discountTotal.ToString("0.00", CultureInfo.InvariantCulture));
 				}
 			}
 			else
 			{
-				//pass order total
+				// Pass order total
 				string totalItemName = "{0} {1}".FormatWith(T("Checkout.OrderNumber"), orderNumber);
 				builder.AppendFormat("&item_name={0}", HttpUtility.UrlEncode(totalItemName));
 				var orderTotal = Math.Round(postProcessPaymentRequest.Order.OrderTotal, 2);

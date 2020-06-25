@@ -26,7 +26,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -41,7 +40,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-	public enum ModelTreeMemberKind
+    public enum ModelTreeMemberKind
 	{
 		Primitive,
 		Complex,
@@ -467,7 +466,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var host = messageContext.BaseUri.ToString();
-			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
+            var logoFile = _services.MediaService.GetFileById(messageContext.Store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
 
 			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 
@@ -480,7 +479,7 @@ namespace SmartStore.Services.Messages
 				{ "Cdn", part.ContentDeliveryNetwork },
 				{ "PrimaryStoreCurrency", part.PrimaryStoreCurrency?.CurrencyCode },
 				{ "PrimaryExchangeRateCurrency", part.PrimaryExchangeRateCurrency?.CurrencyCode },
-				{ "Logo", CreateModelPart(logoInfo, messageContext, host, null, new Size(400, 75)) },
+				{ "Logo", CreateModelPart(logoFile, messageContext, host, null, new Size(400, 75)) },
 				{ "Company", CreateCompanyModelPart(messageContext) },
 				{ "Contact", CreateContactModelPart(messageContext) },
 				{ "Bank", CreateBankModelPart(messageContext) },
@@ -490,49 +489,53 @@ namespace SmartStore.Services.Messages
 			var he = new HybridExpando(true);
 			he.Merge(m, true);
 
-			PublishModelPartCreatedEvent<Store>(part, he);
+			PublishModelPartCreatedEvent(part, he);
 
 			return he;
 		}
 
-		protected virtual object CreateModelPart(PictureInfo part, MessageContext messageContext, 
-			string href, 
-			int? targetSize = null, 
-			Size? clientMaxSize = null,
-			string alt = null)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotEmpty(href, nameof(href));
+        protected virtual object CreateModelPart(
+            MediaFileInfo part,
+            MessageContext messageContext,
+            string href,
+            int? targetSize = null,
+            Size? clientMaxSize = null,
+            string alt = null)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotEmpty(href, nameof(href));
 
-			if (part == null)
-				return null;
+            if (part == null)
+            {
+                return null;
+            }
 
-			var width = part.Width;
-			var height = part.Height;
+            var width = part.File.Width;
+            var height = part.File.Height;
 
-			if (width.HasValue && height.HasValue && (targetSize.HasValue || clientMaxSize.HasValue))
-			{
-				var maxSize = clientMaxSize ?? new Size(targetSize.Value, targetSize.Value);
-				var size = ImagingHelper.Rescale(new Size(width.Value, height.Value), maxSize);
-				width = size.Width;
-				height = size.Height;
-			}
+            if (width.HasValue && height.HasValue && (targetSize.HasValue || clientMaxSize.HasValue))
+            {
+                var maxSize = clientMaxSize ?? new Size(targetSize.Value, targetSize.Value);
+                var size = ImagingHelper.Rescale(new Size(width.Value, height.Value), maxSize);
+                width = size.Width;
+                height = size.Height;
+            }
 
-			var m = new
-			{
-				Src = _services.PictureService.GetUrl(part, targetSize.GetValueOrDefault(), FallbackPictureType.NoFallback, messageContext.BaseUri.ToString()),
-				Href = href,
-				Width = width,
-				Height = height,
-				Alt = alt
-			};
+            var m = new
+            {
+                Src = _services.MediaService.GetUrl(part, targetSize.GetValueOrDefault(), messageContext.BaseUri.ToString(), false),
+                Href = href,
+                Width = width,
+                Height = height,
+                Alt = alt
+            };
 
-			PublishModelPartCreatedEvent<PictureInfo>(part, m);
+            PublishModelPartCreatedEvent(part, m);
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateModelPart(Product part, MessageContext messageContext, string attributesXml = null)
+        protected virtual object CreateModelPart(Product part, MessageContext messageContext, string attributesXml = null)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
@@ -550,8 +553,8 @@ namespace SmartStore.Services.Messages
 				currency, 
 				true);
 			var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
-			var pictureInfo = GetPictureFor(part, attributesXml);
-			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
+            var file = GetMediaFileFor(part, attributesXml);
+            var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
 			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
 			
 			var m = new Dictionary<string, object>
@@ -563,8 +566,8 @@ namespace SmartStore.Services.Messages
 				{ "StockQuantity", part.StockQuantity },
 				{ "AdditionalShippingCharge", additionalShippingCharge },
 				{ "Url", url },
-				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
-				{ "ThumbnailLg", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
+				{ "Thumbnail", CreateModelPart(file, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
+				{ "ThumbnailLg", CreateModelPart(file, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
 				{ "DeliveryTime", null },
 				{ "QtyUnit", null }
 			};
@@ -599,7 +602,7 @@ namespace SmartStore.Services.Messages
 			var email = part.FindEmail();
 			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
 			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
-            var customerVatStatus = (VatNumberStatus)part.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+            var customerVatStatus = (VatNumberStatus)part.VatNumberStatusId;
 
             int rewardPointsBalance = part.GetRewardPointsBalance();
 			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);

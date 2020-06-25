@@ -29,6 +29,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Boards;
 using SmartStore.Web.Models.Search;
@@ -39,7 +40,7 @@ namespace SmartStore.Web.Controllers
     public partial class BoardsController : PublicControllerBase
     {
         private readonly IForumService _forumService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ICountryService _countryService;
         private readonly IForumSearchService _forumSearchService;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -58,7 +59,7 @@ namespace SmartStore.Web.Controllers
 
         public BoardsController(
             IForumService forumService,
-            IPictureService pictureService,
+            IMediaService mediaService,
             ICountryService countryService,
             IForumSearchService forumSearchService,
             IGenericAttributeService genericAttributeService,
@@ -76,7 +77,7 @@ namespace SmartStore.Web.Controllers
             IForumSearchQueryFactory queryFactory)
         {
             _forumService = forumService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _countryService = countryService;
             _forumSearchService = forumSearchService;
             _genericAttributeService = genericAttributeService;
@@ -122,7 +123,7 @@ namespace SmartStore.Web.Controllers
                 PostsPageSize = _forumSettings.PostsPageSize
             };
 
-            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, model.CustomerName);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, model.CustomerName);
 
             if (topic.LastPostId != 0 && lastPosts.TryGetValue(topic.LastPostId, out var lastPost))
             {
@@ -277,11 +278,7 @@ namespace SmartStore.Web.Controllers
             {
                 if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                 {
-                    _genericAttributeService.SaveAttribute(
-                        customer,
-                        SystemCustomerAttributeNames.LastForumVisit,
-                        DateTime.UtcNow,
-                        Services.StoreContext.CurrentStore.Id);
+                    customer.LastForumVisit = DateTime.UtcNow;
                 }
             }
             catch (Exception ex)
@@ -738,7 +735,7 @@ namespace SmartStore.Web.Controllers
                     ? post.CreatedOnUtc.RelativeFormat(true, "f")
                     : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
 
-                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
+                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
 
                 // Location.
                 postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
@@ -904,7 +901,7 @@ namespace SmartStore.Web.Controllers
                 IsEdit = false,
                 Published = true,
                 SeName = string.Empty,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumId = forum.Id,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumSeName = forum.GetSeName(),
@@ -923,7 +920,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         [ValidateCaptcha]
         [GdprConsent]
-		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
+		public ActionResult TopicCreate(EditForumTopicModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -941,9 +938,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1020,7 +1017,7 @@ namespace SmartStore.Web.Controllers
             model.Id = 0;
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1053,7 +1050,7 @@ namespace SmartStore.Web.Controllers
                 IsEdit = true,
                 Published = topic.Published,
                 SeName = topic.GetSeName(),
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 TopicPriorities = ForumTopicTypesList(),
                 ForumName = topic.Forum.GetLocalized(x => x.Name),
                 ForumSeName = topic.Forum.GetSeName(),
@@ -1087,7 +1084,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateCaptcha]
-        public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
+        public ActionResult TopicEdit(EditForumTopicModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1106,9 +1103,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1195,7 +1192,7 @@ namespace SmartStore.Web.Controllers
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
             model.Published = topic.Published;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = topic.Forum.GetLocalized(x => x.Name);
             model.ForumSeName = topic.Forum.GetSeName();
             model.ForumId = topic.Forum.Id;
@@ -1267,7 +1264,7 @@ namespace SmartStore.Web.Controllers
                 ForumTopicId = topic.Id,
                 IsEdit = false,
                 Published = true,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = topic.Forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = topic.Subject,
@@ -1313,7 +1310,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         [ValidateCaptcha]
         [GdprConsent]
-		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
+		public ActionResult PostCreate(EditForumPostModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1332,9 +1329,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1406,7 +1403,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.Id = 0;
             model.IsEdit = false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = topic.Forum.GetLocalized(x => x.Name);
             model.ForumTopicId = topic.Id;
             model.ForumTopicSubject = topic.Subject;
@@ -1442,7 +1439,7 @@ namespace SmartStore.Web.Controllers
                 Published = post.Published,
                 IsFirstPost = firstPost?.Id == post.Id,
                 ForumTopicId = post.ForumTopic.Id,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = post.ForumTopic.Subject,
@@ -1474,7 +1471,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateCaptcha]
-        public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
+        public ActionResult PostEdit(EditForumPostModel model, string captchaError)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1493,9 +1490,9 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            if (_captchaSettings.ShowOnForumPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
             if (ModelState.IsValid)
@@ -1566,7 +1563,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.IsEdit = true;
             model.Published = post.Published;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnForumPage;
             model.ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name);
             model.ForumTopicId = post.ForumTopic.Id;
             model.ForumTopicSubject = post.ForumTopic.Subject;

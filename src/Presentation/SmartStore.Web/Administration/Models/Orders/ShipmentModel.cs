@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-	public class ShipmentModel : EntityModelBase
+    [Validator(typeof(ShipmentValidator))]
+    public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()
         {
@@ -27,15 +32,22 @@ namespace SmartStore.Admin.Models.Orders
 
 		[SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
         public int OrderId { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Shipments.TotalWeight")]
         public string TotalWeight { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Shipments.TrackingNumber")]
         public string TrackingNumber { get; set; }
+
+        [SmartResourceDisplayName("Admin.Orders.Shipments.TrackingUrl")]
+        public string TrackingUrl { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Shipments.ShippedDate")]
-        public string ShippedDate { get; set; }
+        public DateTime? ShippedDate { get; set; }
         public bool CanShip { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Shipments.DeliveryDate")]
-        public string DeliveryDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public bool CanDeliver { get; set; }
 
         public List<ShipmentItemModel> Items { get; set; }
@@ -89,4 +101,14 @@ namespace SmartStore.Admin.Models.Orders
 
 		#endregion
 	}
+
+    public partial class ShipmentValidator : AbstractValidator<ShipmentModel>
+    {
+        public ShipmentValidator(Localizer T)
+        {
+            RuleFor(x => x.TrackingUrl)
+                .Must(x => x.IsEmpty() || x.IsWebUrl())
+                .WithMessage(T("Admin.Validation.Url"));
+        }
+    }
 }

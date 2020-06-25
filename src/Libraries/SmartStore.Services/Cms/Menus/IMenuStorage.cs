@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Customers;
 
@@ -24,6 +25,9 @@ namespace SmartStore.Services.Cms
         /// </summary>
         /// <param name="menu">Menu entity.</param>
         void DeleteMenu(MenuRecord menu);
+
+        // Gets the system names of all published menus
+        IEnumerable<string> GetAllMenuSystemNames();
 
         /// <summary>
         /// Gets all menus.

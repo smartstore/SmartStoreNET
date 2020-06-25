@@ -18,24 +18,22 @@ using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Tests.Search
 {
-	[TestFixture]
+    [TestFixture]
 	public class LinqCatalogSearchServiceTests
 	{
-		private LinqCatalogSearchService _linqCatalogSearchService;
+        private ICommonServices _services;
+        private LinqCatalogSearchService _linqCatalogSearchService;
 		private IProductService _productService;
 		private IRepository<Product> _productRepository;
-		private IRepository<ProductManufacturer> _productManufacturerRepository;
-		private IRepository<ProductCategory> _productCategoryRepository;
 		private IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private IRepository<StoreMapping> _storeMappingRepository;
 		private IRepository<AclRecord> _aclRepository;
-		private IEventPublisher _eventPublisher;
-		private ICommonServices _services;
 		private IDeliveryTimeService _deliveryTimeService;
 		private IManufacturerService _manufacturerService;
 		private ICategoryService _categoryService;
+        private IEventPublisher _eventPublisher;
 
-		private void InitMocks(CatalogSearchQuery query, IEnumerable<Product> products, IEnumerable<LocalizedProperty> localized)
+        private void InitMocks(CatalogSearchQuery query, IEnumerable<Product> products, IEnumerable<LocalizedProperty> localized)
 		{
 			_productRepository.Expect(x => x.Table).Return(products.AsQueryable());
 			_productRepository.Expect(x => x.TableUntracked).Return(products.AsQueryable());
@@ -86,29 +84,28 @@ namespace SmartStore.Services.Tests.Search
 		[SetUp]
 		public virtual void Setup()
 		{
-			_productService = MockRepository.GenerateMock<IProductService>();
+            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
+
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.EventPublisher).Return(_eventPublisher);
+
+            _productService = MockRepository.GenerateMock<IProductService>();
 			_productRepository = MockRepository.GenerateMock<IRepository<Product>>();
-			_productManufacturerRepository = MockRepository.GenerateMock<IRepository<ProductManufacturer>>();
-			_productCategoryRepository = MockRepository.GenerateMock<IRepository<ProductCategory>>();
 			_localizedPropertyRepository = MockRepository.GenerateMock<IRepository<LocalizedProperty>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_aclRepository = MockRepository.GenerateMock<IRepository<AclRecord>>();
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
 			_deliveryTimeService = MockRepository.GenerateMock<IDeliveryTimeService>();
 			_manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
 			_categoryService = MockRepository.GenerateMock<ICategoryService>();
 
 			_linqCatalogSearchService = new LinqCatalogSearchService(
-				_productService,
+                _services,
+                _productService,
 				_productRepository,
-				_productManufacturerRepository,
-				_productCategoryRepository,
 				_localizedPropertyRepository, 
 				_storeMappingRepository, 
 				_aclRepository, 
-				_eventPublisher,
-				_services,
 				_deliveryTimeService,
 				_manufacturerService,
 				_categoryService);
@@ -155,10 +152,10 @@ namespace SmartStore.Services.Tests.Search
 		{
 			var products = new List<Product>
 			{
-				new SearchProduct { Name = "SmartStore.NET" },
+				new SearchProduct { Name = "Smartstore" },
 				new SearchProduct { Name = "Apple iPhone Smartphone 6" },
 				new SearchProduct { Name = "Energistically recaptiualize superior e-markets without next-generation platforms" },
-				new SearchProduct { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by SmartStore" }
+				new SearchProduct { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by Smartstore" }
 			};
 
 			var result = Search(new CatalogSearchQuery(new string[] { "name", "shortdescription" }, "cook"), products);
@@ -172,10 +169,10 @@ namespace SmartStore.Services.Tests.Search
 		{
 			var products = new List<Product>
 			{
-				new SearchProduct(1) { Name = "SmartStore.NET" },
+				new SearchProduct(1) { Name = "Smartstore" },
 				new SearchProduct(2) { Name = "Apple iPhone Smartphone 6" },
 				new SearchProduct(3) { Name = "Energistically recaptiualize superior e-markets without next-generation platforms" },
-				new SearchProduct(4) { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by SmartStore" }
+				new SearchProduct(4) { Name = "Rapidiously conceptualize future-proof imperatives", ShortDescription = "Shopping System powered by Smartstore" }
 			};
 
 			var result = Search(new CatalogSearchQuery(new string[] { "name", "shortdescription" }, "Smart", SearchMode.Contains), products);
@@ -236,22 +233,28 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(result.Hits.Count, Is.EqualTo(2));
 		}
 
-		[Test]
-		public void LinqSearch_filter_visible_individually_only()
-		{
-			var products = new List<Product>
-			{
-				new SearchProduct(1),
-				new SearchProduct(2) { VisibleIndividually = false },
-				new SearchProduct(3)
-			};
+        [Test]
+        public void LinqSearch_filter_visibility()
+        {
+            var products = new List<Product>
+            {
+                new SearchProduct(1),
+                new SearchProduct(2) { Visibility = ProductVisibility.Hidden },
+                new SearchProduct(3),
+                new SearchProduct(4) { Visibility = ProductVisibility.SearchResults }
+            };
 
-			var result = Search(new CatalogSearchQuery().VisibleIndividuallyOnly(true), products);
+            var result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.Full), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
 
-			Assert.That(result.Hits.Count, Is.EqualTo(2));
-		}
+            result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.SearchResults), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
 
-		[Test]
+            result = Search(new CatalogSearchQuery().WithVisibility(ProductVisibility.Hidden), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(1));
+        }
+
+        [Test]
 		public void LinqSearch_filter_homepage_products_only()
 		{
 			var products = new List<Product>
@@ -269,21 +272,20 @@ namespace SmartStore.Services.Tests.Search
 		[Test]
 		public void LinqSearch_filter_has_parent_grouped_product_id()
 		{
-			var products = new List<Product>
-			{
-				new SearchProduct(1),
-				new SearchProduct(2) { ParentGroupedProductId = 16, VisibleIndividually = false },
-				new SearchProduct(3) { ParentGroupedProductId = 36, VisibleIndividually = false },
-				new SearchProduct(4) { ParentGroupedProductId = 9 },
-				new SearchProduct(5) { ParentGroupedProductId = 36 }
-			};
+            var products = new List<Product>
+            {
+                new SearchProduct(1),
+                new SearchProduct(2) { ParentGroupedProductId = 16, Visibility = ProductVisibility.Hidden },
+                new SearchProduct(3) { ParentGroupedProductId = 36, Visibility = ProductVisibility.Hidden },
+                new SearchProduct(4) { ParentGroupedProductId = 9 },
+                new SearchProduct(5) { ParentGroupedProductId = 36 }
+            };
 
-			var result = Search(new CatalogSearchQuery().HasParentGroupedProduct(36), products);
+            var result = Search(new CatalogSearchQuery().HasParentGroupedProduct(36), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
+        }
 
-			Assert.That(result.Hits.Count, Is.EqualTo(2));
-		}
-
-		[Test]
+        [Test]
 		public void LinqSearch_filter_has_store_id()
 		{
 			var products = new List<Product>
@@ -502,9 +504,25 @@ namespace SmartStore.Services.Tests.Search
 			result = Search(new CatalogSearchQuery().WithStockQuantity(10003, null), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(2));
 
-			result = Search(new CatalogSearchQuery().WithStockQuantity(null, 10002), products);
+            result = Search(new CatalogSearchQuery().WithStockQuantity(10003, null, false), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithStockQuantity(null, 10002), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(6));
-		}
+
+            result = Search(new CatalogSearchQuery().WithStockQuantity(null, 10002, null, false), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(5));
+
+
+            result = Search(new CatalogSearchQuery().WithStockQuantity(10000, 10000), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithStockQuantity(20000, 20000), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(0));
+
+            result = Search(new CatalogSearchQuery().WithStockQuantity(0, 0, false, false), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(6));
+        }
 
 		[Test]
 		public void LinqSearch_filter_with_price()
@@ -528,7 +546,16 @@ namespace SmartStore.Services.Tests.Search
 
 			result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(null, 100M), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(3));
-		}
+
+            result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(14.90M, 14.90M), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(59.90M, 59.90M), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(0));
+
+            result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(14.90M, 14.90M, false, false), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(4));
+        }
 
 		[Test]
 		public void LinqSearch_filter_with_created_utc()
@@ -551,7 +578,16 @@ namespace SmartStore.Services.Tests.Search
 
 			result = Search(new CatalogSearchQuery().CreatedBetween(null, new DateTime(2016, 7, 1)), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(5));
-		}
+
+            result = Search(new CatalogSearchQuery().CreatedBetween(new DateTime(2016, 8, 4), new DateTime(2016, 8, 4)), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().CreatedBetween(new DateTime(2012, 8, 4), new DateTime(2012, 8, 4)), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(0));
+
+            result = Search(new CatalogSearchQuery().CreatedBetween(new DateTime(2016, 8, 4), new DateTime(2016, 8, 4), false, false), products);
+            Assert.That(result.Hits.Count(), Is.EqualTo(5));
+        }
 
 		[Test]
 		public void LinqSearch_filter_available_only()
@@ -580,32 +616,30 @@ namespace SmartStore.Services.Tests.Search
 		[Test]
 		public void LinqSearch_filter_with_rating()
 		{
-			var products = new List<Product>
-			{
-				new SearchProduct(1),
-				new SearchProduct(2)
-				{
-					ApprovedTotalReviews = 3,
-					ApprovedRatingSum = 12
-				},
-				new SearchProduct(3)
-				{
-					ApprovedTotalReviews = 1,
-					ApprovedRatingSum = 3
-				},
-				new SearchProduct(4)
-				{
-					ApprovedTotalReviews = 1,
-					ApprovedRatingSum = 2
-				}
-			};
+            var products = new List<Product>
+            {
+                new SearchProduct(1),
+                new SearchProduct(2) { ApprovedRatingSum = 14, ApprovedTotalReviews = 3 },  // 4.66
+                new SearchProduct(3) { ApprovedRatingSum = 9, ApprovedTotalReviews = 3 },   // 3.00
+                new SearchProduct(4) { ApprovedRatingSum = 17, ApprovedTotalReviews = 4 },  // 4.25
+                new SearchProduct(5) { ApprovedRatingSum = 20, ApprovedTotalReviews = 10 }  // 2.00
+            };
 
-			var result = Search(new CatalogSearchQuery().WithRating(3.0, null), products);
-			Assert.That(result.Hits.Count, Is.EqualTo(2));
+            var result = Search(new CatalogSearchQuery().WithRating(3.0, null), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
 
-			result = Search(new CatalogSearchQuery().WithRating(4.0, null), products);
-			Assert.That(result.Hits.Count, Is.EqualTo(1));
-		}
+            result = Search(new CatalogSearchQuery().WithRating(4.0, 5.0), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
+
+            result = Search(new CatalogSearchQuery().WithRating(3.0, 3.0), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithRating(4.0, 4.0), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(0));
+
+            result = Search(new CatalogSearchQuery().WithRating(2.0, 2.0, false, false), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
+        }
 
 		[Test]
 		public void LinqSearch_filter_with_deliverytime_ids()
@@ -625,11 +659,37 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(result.Hits.Count, Is.EqualTo(1));
 		}
 
-		#endregion
+        [Test]
+        public void LinqSearch_filter_with_condition()
+        {
+            var products = new List<Product>
+            {
+                new SearchProduct(1) { Condition = ProductCondition.New },
+                new SearchProduct(2) { Condition = ProductCondition.Used },
+                new SearchProduct(3) { Condition = ProductCondition.New },
+                new SearchProduct(4) { Condition = ProductCondition.Damaged },
+                new SearchProduct(5) { Condition = ProductCondition.New },
+                new SearchProduct(6) { Condition = ProductCondition.Refurbished }
+            };
 
-		#region SearchProduct
+            var result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.New), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(3));
 
-		internal class SearchProduct : Product
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.Used, ProductCondition.Damaged), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(2));
+
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.Refurbished), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(1));
+
+            result = Search(new CatalogSearchQuery().WithCondition(ProductCondition.New, ProductCondition.Used), products);
+            Assert.That(result.Hits.Count, Is.EqualTo(4));
+        }
+
+        #endregion
+
+        #region SearchProduct
+
+        internal class SearchProduct : Product
 		{
 			internal SearchProduct()
 				: this(0, null, null, null)
@@ -662,7 +722,7 @@ namespace SmartStore.Services.Tests.Search
 				ICollection<ProductManufacturer> manufacturers,
 				ICollection<ProductTag> tags)
 			{
-				Id = (id == 0 ? (new Random()).Next(100, int.MaxValue) : id);
+				Id = id == 0 ? (new Random()).Next(100, int.MaxValue) : id;
 				ProductCategories = categories ?? new HashSet<ProductCategory>();
 				ProductManufacturers = manufacturers ?? new HashSet<ProductManufacturer>();
 				ProductTags = tags ?? new HashSet<ProductTag>();
@@ -672,7 +732,7 @@ namespace SmartStore.Services.Tests.Search
 				FullDescription = "Enthusiastically utilize compelling systems with vertical collaboration and idea-sharing. Interactively incubate bleeding-edge innovation with future-proof catalysts for change. Distinctively exploit parallel paradigms rather than progressive scenarios. Compellingly synergize visionary ROI after process-centric resources. Objectively negotiate performance based best practices with 24/7 vortals. Globally pontificate reliable processes for innovative services. Monotonectally enable mission - critical information and quality.";
 				Sku = "X-" + id.ToString();
 				Published = true;
-				VisibleIndividually = true;
+                Visibility = ProductVisibility.Full;
 				ProductTypeId = (int)ProductType.SimpleProduct;
 				StockQuantity = 10000;
 				CreatedOnUtc = new DateTime(2016, 8, 24);

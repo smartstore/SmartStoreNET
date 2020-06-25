@@ -17,7 +17,6 @@ namespace SmartStore.Data.Tests.Catalog
             {
 				ProductType = ProductType.GroupedProduct,
 				ParentGroupedProductId = 2,
-				VisibleIndividually = true,
                 Name = "Name 1",
                 ShortDescription = "ShortDescription 1",
                 FullDescription = "FullDescription 1",
@@ -106,7 +105,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.ShouldNotBeNull();
 			fromDb.ProductType.ShouldEqual(ProductType.GroupedProduct);
 			fromDb.ParentGroupedProductId.ShouldEqual(2);
-			fromDb.VisibleIndividually.ShouldEqual(true);
+            fromDb.Visibility.ShouldEqual(ProductVisibility.Full);
             fromDb.Name.ShouldEqual("Name 1");
             fromDb.ShortDescription.ShouldEqual("ShortDescription 1");
             fromDb.FullDescription.ShouldEqual("FullDescription 1");
@@ -297,19 +296,20 @@ namespace SmartStore.Data.Tests.Catalog
                 UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
 
-            product.ProductPictures.Add(new ProductPicture
+            product.ProductPictures.Add(new ProductMediaFile
 			{
 				DisplayOrder = 1,
-				Picture = new Picture
+				MediaFile = new MediaFile
 				{
 					MediaStorage = new MediaStorage
 					{
 						Data = new byte[] { 1, 2, 3 }
 					},
-					UpdatedOnUtc = DateTime.UtcNow,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow,
 					MimeType = "image/pjpeg",
-					IsNew = true
-				}
+                    MediaType = "image"
+                }
 			});
 
             var fromDb = SaveAndLoadEntity(product);
@@ -320,8 +320,8 @@ namespace SmartStore.Data.Tests.Catalog
             (fromDb.ProductPictures.Count == 1).ShouldBeTrue();
             fromDb.ProductPictures.First().DisplayOrder.ShouldEqual(1);
 
-            fromDb.ProductPictures.First().Picture.ShouldNotBeNull();
-            fromDb.ProductPictures.First().Picture.MimeType.ShouldEqual("image/pjpeg");
+            fromDb.ProductPictures.First().MediaFile.ShouldNotBeNull();
+            fromDb.ProductPictures.First().MediaFile.MimeType.ShouldEqual("image/pjpeg");
         }
 
         [Test]
@@ -335,21 +335,20 @@ namespace SmartStore.Data.Tests.Catalog
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02)
             };
-            product.ProductTags.Add
-                (
-                    new ProductTag
-                    {
-                        Name = "Tag name 1"
-                    }
-                );
+
+            product.ProductTags.Add(new ProductTag
+            {
+                Name = "Tag name 1"
+            });
+
             var fromDb = SaveAndLoadEntity(product);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Name 1");
 
-
             fromDb.ProductTags.ShouldNotBeNull();
             (fromDb.ProductTags.Count == 1).ShouldBeTrue();
             fromDb.ProductTags.First().Name.ShouldEqual("Tag name 1");
+            fromDb.ProductTags.First().Published.ShouldEqual(true);
         }
 
 		[Test]

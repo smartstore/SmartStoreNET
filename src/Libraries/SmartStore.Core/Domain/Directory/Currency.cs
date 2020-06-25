@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a currency
     /// </summary>
 	[DataContract]
-	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported
+	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported, ICloneable<Currency>
     {
         public Currency()
         {
@@ -117,11 +117,21 @@ namespace SmartStore.Core.Domain.Directory
         [DataMember]
         public CurrencyRoundingRule RoundOrderTotalRule { get; set; }
 
-		#endregion Rounding
+        #endregion
 
-		#region Utils
+        public Currency Clone()
+        {
+            return (Currency)this.MemberwiseClone();
+        }
 
-		private NumberFormatInfo _numberFormat;
+        object ICloneable.Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        #region Utils
+
+        private NumberFormatInfo _numberFormat;
 
 		[NotMapped, JsonIgnore, IgnoreDataMember]
 		public NumberFormatInfo NumberFormat

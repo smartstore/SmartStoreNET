@@ -1,94 +1,59 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
-
+/// <reference path="../../Content/bs4/scss/_variables.scss" />
 
 /* File Upload
 ------------------------------------*/
-
-/*
- * User Interface Plugin (for single file uploads)
- *
- * Based on:
- * jQuery File Upload UI Plugin CSS 6.3
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
-
- .fileupload-container {
+.fu-container {
     position: relative;
-    display: flex;
-    flex-wrap: nowrap;
-    border: $input-border-width solid $input-border-color;
-    background-color: $input-bg;
-    border-radius: $input-border-radius;
-    overflow: hidden;
 
-    .fileupload-thumb-stage {
-        position: relative;
-        width: 64px;
-        max-width: 64px;
-        border-right: 1px solid rgba(#000, 0.2);
-        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggRDQA1Yl77tAAAAN1JREFUeNrt1rEJwCAURVEVFwruv4BEMtGHdGJpF4LHLqQ7+OTm3u+0nNau9XOMx995SnK2DyxYsD4/OSK86Jt/3SwzhAXrT6d60RW8GcKCpeAVvPtihrBgKXgFb4YIYMFS8AreDGEhgKXgFbwZwoKFQMEreDOEBUvBe9EVvBnCgqXgFbz7YoawYCl4BW+GCGDBUvAK3gxhIYCl4BW8GcKChUDBK3gzhAVLwXvRFbwZwoKl4BW8+2KGsGApeAVvhghgwVLwCt4MYSGApeAVvBnCgoVAwSt4M4QF6/jzAlCrcKXDcpR1AAAAAElFTkSuQmCC') repeat;
+    &.dz-highlight .dropzone-container,
+    &.dz-drag-hover .dropzone-container {
+        border-color: $primary !important;
+        background-color: lighten($primary, 50%) !important;
+        pointer-events: none;
     }
 
-    .fileupload-thumb {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
+    > .dz-preview {
+        display: none !important;
     }
 
-    .fileupload-controls {
-        flex-grow: 1;
-        padding: 0.5rem 0.5rem;
-    }
- }
-
-.fileupload {
-	.btn.cancel {
-		display: none;
-	}
-
-    .fileupload-buttons {
-        position: relative;
+    .fu-message {
+        cursor: pointer;
     }
 
-	.fileinput-button {
-		position: relative;
-		overflow: hidden;
-	}
+    // Xl display.
+    &.xl {
+        .fu-message {
+            font-size: $h5-font-size !important;
+        }
 
-	.fileinput-button input {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		border: 0;
-		opacity: 0;
-		direction: ltr;
-		cursor: pointer;
-	}
+        .dropzone-file-info,
+        .fu-fileupload {
+            justify-content: center;
+            text-align: center;
+        }
+    }
 
-    > .fileupload-progress {
+    &:not(.xl) {
+        .dropzone-target {
+            padding: 10px;
+        }
+
+        .fu-buttons .btn {
+            @extend .btn-sm;
+        }
+    }
+
+    // Progress bars.
+    .fu-progress:not(.list) {
         position: absolute;
         left: 0;
         bottom: -1px;
-        right: 0;  
-        
-	    .progress {
+        right: 0;
+
+        .progress {
             height: 0.25rem;
-		    background: transparent;
+            background: transparent;
             margin: 0;
             border-radius: 0;
             border-bottom-left-radius: $input-border-radius;
@@ -99,7 +64,7 @@
                 background-color: $primary;
                 transition: width 0.25s ease, background-color 0.25s ease;
             }
-	    }
+        }
 
         &.success {
             transition-delay: 0.4s;
@@ -109,81 +74,278 @@
             background-color: $success !important;
         }
     }
+
+    .customer-avatar-lg {
+        display: block;
+    }
+
+    .empty {
+        font-weight: $font-weight-normal !important;
+        color: $gray-600 !important;
+    }
 }
 
+// Dropzone skinning
+.dropzone-container {
+    pointer-events: initial !important;
+    transition: all .2s;
+    align-items: center;
+    display: flex;
+    position: relative;
+    border: 2px dashed $gray-400 !important;
+    background: $gray-100 !important;
+    border-radius: 5px;
 
-// Multi file uploader
-// =======================================
+    &.fullscreen {
+        position: relative;
+        width: 100%;
+        height: 100%;
 
-/*.fileupload-multi {
-	.fileinput-button {
-		position: relative;
-		overflow: hidden;
-		float: left;
-		margin-right: 4px;
-	}
+        .fu-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    }
 
-	.fileinput-button input {
-		position: absolute;
-		top: 0;
-		right: 0;
-		margin: 0;
-		border: solid transparent;
-		border-width: 0 0 100px 200px;
-		opacity: 0;
-		-moz-transform: translate(-300px, 0) scale(4);
-		direction: ltr;
-		cursor: pointer;
-	}
+    &.hide {
+        display: none;
+    }
 
-	.fileupload-buttonbar .btn,
-	.fileupload-buttonbar .toggle {
-		margin-bottom: 5px;
-	}
+    .dropzone {
+        border: none;
+        background: none;
+        width: 100%;
+        padding: 20px;
+    }
 
-	.files .progress {
-		width: 200px;
-	}
+    .fu-fileupload,
+    .fu-message {
+        font-size: $font-size-lg;
+        align-self: center;
+        color: var(--primary-dark);
 
-	.progress-animated .bar {
-		background: url(images/progressbar.gif) !important;
-		filter: none;
-	}
+        &.empty {
+            //font-size: $font-size-lg;
+        }
+    }
 
-	.fileupload-loading {
-		position: absolute;
-		left: 50%;
-		width: 128px;
-		height: 128px;
-		background: url(images/loading.gif) center no-repeat;
-		display: none;
-	}
+    .dz-preview, .dz-message {
+        display: none;
+    }
 
-	.fileupload-processing .fileupload-loading {
-		display: block;
-	}
+    .fu-thumb {
+        position: relative;
+        margin: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 90px;
+        min-width: 90px;
 
-	@media (max-width: 480px) {
-		.files .btn span {
-			display: none;
-		}
+        .xl & {
+            min-width: 120px;
+            width: 120px;
+            height: 120px;
+        }
 
-		.files .preview * {
-			width: 40px;
-		}
+        &.empty {
+            border: 2px dashed $gray-400;
 
-		.files .name * {
-			width: 80px;
-			display: inline-block;
-			word-wrap: break-word;
-		}
+            .file-icon {
+                color: rgba(#000, 0.12);
+            }
+        }
 
-		.files .progress {
-			width: 20px;
-		}
+        .file-img {
+            max-width: 100%;
+            max-height: 100%;
+            border: 1px solid rgba(#000, 0.1);
+            box-shadow: $box-shadow-sm-var;
+        }
+    }
 
-		.files .delete {
-			width: 60px;
-		}
-	}
-}*/
+    .fu-controls {
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .fu-remove {
+        display: none;
+        min-width: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+
+        &:hover {
+            background-color: rgba($danger, .2);
+        }
+
+        .fu-remove-icon {
+            margin-top: -2px;
+        }
+    }
+}
+
+.fu-file-preview {
+    margin: 0 10px 10px 0;
+    position: relative;
+    border: 1px solid $gray-400;
+    border-radius: $border-radius-sm;
+    background: $light;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+
+    .main-pic-badge {
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        right: 0;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    &:first-child .main-pic-badge {
+        display: block;
+    }
+
+    .file-figure {
+        min-width: $file-thumbnail-min-size;
+        max-width: $file-thumbnail-max-width;
+        height: $file-thumbnail-min-size;
+
+        .file-icon:not(.show) {
+            display: none;
+        }
+
+        .file-img {
+            max-width: 100%;
+            max-height: $file-thumbnail-min-size;
+            height: $file-thumbnail-min-size;
+            object-fit: contain;
+        }
+    }
+
+    .toolbar {
+        position: absolute;
+        bottom: 0;
+        min-width: 100%;
+        background-color: $gray-100;
+        visibility: hidden;
+        transition: visibility 0.1s;
+        border-top: 1px solid $gray-500;
+        z-index: 2;
+        cursor: default;
+
+        > .btn {
+            border-radius: 0 !important;
+        }
+    }
+
+    .fu-file-info-container {
+        position: absolute;
+        transition: opacity .3s;
+        opacity: 0;
+        visibility: visible;
+        background-color: rgba($indigo, 0.7);
+
+        .drag-gripper {
+            width: fit-content;
+            cursor: move;
+            z-index: 10;
+
+            .drag-icon {
+                width: 2.75rem;
+                height: 2.75rem;
+                line-height: 2.75rem;
+            }
+        }
+
+        .fu-file-info-name {
+            z-index: 2;
+            padding: 0 0.5rem;
+            text-shadow: 1px 1px 1px rgba(#000, 0.5);
+            line-height: 1.3;
+            max-height: calc(#{$font-size-base} * 1.3 * 3);
+            max-width: 100%;
+            overflow: hidden;
+            word-break: break-all;
+            margin-bottom: .75rem;
+        }
+
+        .fu-preview-control-menu {
+            z-index: 5;
+            margin-top: -6px;
+
+            > * {
+                margin-top: 6px;
+            }
+        }
+    }
+
+    &:hover:not(.sortable-ghost) {
+        border: 1px solid $gray-400;
+
+        .toolbar {
+            visibility: visible;
+        }
+
+        .fu-preview-overlay {
+            visibility: visible;
+            opacity: .5;
+        }
+
+        .fu-file-info-container {
+            opacity: 1;
+            backdrop-filter: blur(2px);
+        }
+    }
+
+    &:not(.dz-success), &.dz-processing {
+        .drag-gripper, .fu-preview-control-menu {
+            visibility: hidden !important;
+        }
+    }
+
+    &.sortable-ghost .toolbar {
+        visibility: hidden;
+    }
+}
+
+// FileConflictResolutionDialog
+#duplicate-window {
+    .remaining-file-counter {
+        float: right;
+        padding-top: 10px;
+    }
+
+    .file-display {
+        border: 1px solid $gray-400;
+
+        .file-info {
+            overflow: hidden;
+        }
+
+        .file-figure {
+            width: 100px;
+            height: 80px;
+            display: flex;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-img {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .file-date {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+}

@@ -21,6 +21,7 @@ using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using System.Threading.Tasks;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Customers
 {
@@ -28,11 +29,12 @@ namespace SmartStore.Services.Customers
     {
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
+        private readonly IRepository<CustomerRoleMapping> _customerRoleMappingRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-		private readonly RewardPointsSettings _rewardPointsSettings;
+		private readonly Lazy<RewardPointsSettings> _rewardPointsSettings;
 		private readonly ICommonServices _services;
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
@@ -42,11 +44,12 @@ namespace SmartStore.Services.Customers
 		public CustomerService(
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
+            IRepository<CustomerRoleMapping> customerRoleMappingRepository,
             IRepository<GenericAttribute> gaRepository,
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IRepository<ShoppingCartItem> shoppingCartItemRepository,
             IGenericAttributeService genericAttributeService,
-			RewardPointsSettings rewardPointsSettings,
+			Lazy<RewardPointsSettings> rewardPointsSettings,
 			ICommonServices services,
 			HttpContextBase httpContext,
 			IUserAgent userAgent,
@@ -55,6 +58,7 @@ namespace SmartStore.Services.Customers
         {
             _customerRepository = customerRepository;
             _customerRoleRepository = customerRoleRepository;
+            _customerRoleMappingRepository = customerRoleMappingRepository;
             _gaRepository = gaRepository;
 			_rewardPointsHistoryRepository = rewardPointsHistoryRepository;
             _shoppingCartItemRepository = shoppingCartItemRepository;
@@ -74,7 +78,7 @@ namespace SmartStore.Services.Customers
 
 		public ILogger Logger { get; set; }
 
-		#region Customers
+        #region Customers
 
 		public virtual IPagedList<Customer> SearchCustomers(CustomerSearchQuery q)
 		{
@@ -175,7 +179,7 @@ namespace SmartStore.Services.Customers
 
 			if (q.CustomerRoleIds != null && q.CustomerRoleIds.Length > 0)
 			{
-				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(q.CustomerRoleIds).Count() > 0);
+				query = query.Where(c => c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Intersect(q.CustomerRoleIds).Count() > 0);
 			}
 
 			if (q.Deleted.HasValue)
@@ -215,13 +219,13 @@ namespace SmartStore.Services.Customers
 			// Search by zip
 			if (q.ZipPostalCode.HasValue())
 			{
-				query = query
-					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where(z => z.Attribute.KeyGroup == "Customer" &&
-						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-						z.Attribute.Value.Contains(q.ZipPostalCode))
-					.Select(z => z.Customer);
-			}
+                query = query
+                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
+                    .Where(z => z.Attribute.KeyGroup == "Customer" &&
+                        z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
+                        z.Attribute.Value.Contains(q.ZipPostalCode))
+                    .Select(z => z.Customer);
+            }
 
             if (!isOrdered)
             {
@@ -307,7 +311,7 @@ namespace SmartStore.Services.Customers
 		{
 			return query
 				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
-				.Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.DiscountRequirements)));
+                .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
 		}
 
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
@@ -399,12 +403,14 @@ namespace SmartStore.Services.Customers
             // Add to 'Guests' role
             var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
             if (guestRole == null)
+            {
                 throw new SmartException("'Guests' role could not be loaded");
+            }
 
 			using (new DbContextScope(autoCommit: true))
 			{
-				// Ensure that entities are saved to db in any case
-				customer.CustomerRoles.Add(guestRole);
+                // Ensure that entities are saved to db in any case
+                customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
 				_customerRepository.Insert(customer);
 
 				var clientIdent = _services.WebHelper.GetClientIdent();
@@ -472,7 +478,20 @@ namespace SmartStore.Services.Customers
         {
 			Guard.NotNull(customer, nameof(customer));
 
-			_customerRepository.Insert(customer);
+            /// Validate unique user. <see cref="ICustomerRegistrationService.RegisterCustomer(CustomerRegistrationRequest)"/>
+            if (customer.Email.HasValue() && GetCustomerByEmail(customer.Email) != null)
+            {
+                throw new SmartException(T("Account.Register.Errors.EmailAlreadyExists"));
+            }
+
+            if (customer.Username.HasValue() &&
+                _customerSettings.CustomerLoginType != CustomerLoginType.Email &&
+                GetCustomerByUsername(customer.Username) != null)
+            {
+                throw new SmartException(T("Account.Register.Errors.UsernameAlreadyExists"));
+            }
+
+            _customerRepository.Insert(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
@@ -550,7 +569,7 @@ namespace SmartStore.Services.Customers
 				if (registrationTo.HasValue)
 					query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
 
-				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Contains(guestRole.Id));
+				query = query.Where(c => c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Contains(guestRole.Id));
 
 				if (onlyWithoutShoppingCart)
 					query = query.Where(c => !c.ShoppingCartItems.Any());
@@ -665,7 +684,11 @@ namespace SmartStore.Services.Customers
 			if (role.IsSystemRole)
                 throw new SmartException("System role could not be deleted");
 
+            var roleId = role.Id;
+
             _customerRoleRepository.Delete(role);
+
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(roleId));
         }
 
         public virtual CustomerRole GetCustomerRoleById(int roleId)
@@ -713,19 +736,102 @@ namespace SmartStore.Services.Customers
 			Guard.NotNull(role, nameof(role));
 
 			_customerRoleRepository.Update(role);
+
+            _services.Cache.RemoveByPattern(PermissionService.PERMISSION_TREE_KEY.FormatInvariant(role.Id));
         }
 
         #endregion
 
-		#region Reward points
+        #region Customer role mappings
 
-		public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
+        public virtual CustomerRoleMapping GetCustomerRoleMappingById(int mappingId)
+        {
+            if (mappingId == 0)
+            {
+                return null;
+            }
+
+            return _customerRoleMappingRepository.GetById(mappingId);
+        }
+
+        public virtual IPagedList<CustomerRoleMapping> GetCustomerRoleMappings(
+            int[] customerIds,
+            int[] customerRoleIds,
+            bool? isSystemMapping,
+            int pageIndex,
+            int pageSize,
+            bool withCustomers = true)
+        {
+            var query = _customerRoleMappingRepository.TableUntracked;
+
+            if (withCustomers)
+            {
+                query = query.Include(x => x.Customer);
+            }
+
+            if (customerIds?.Any() ?? false)
+            {
+                query = query.Where(x => customerIds.Contains(x.CustomerId));
+            }
+            if (customerRoleIds?.Any() ?? false)
+            {
+                query = query.Where(x => customerRoleIds.Contains(x.CustomerRoleId));
+            }
+            if (isSystemMapping.HasValue)
+            {
+                query = query.Where(x => x.IsSystemMapping == isSystemMapping.Value);
+            }
+
+            if (withCustomers)
+            {
+                query = query
+                    .OrderBy(x => x.IsSystemMapping)
+                    .ThenByDescending(x => x.Customer.CreatedOnUtc);
+            }
+            else
+            {
+                query = query.OrderBy(x => x.IsSystemMapping);
+            }
+
+            var mappings = new PagedList<CustomerRoleMapping>(query, pageIndex, pageSize);
+            return mappings;
+        }
+
+        public virtual void InsertCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _customerRoleMappingRepository.Insert(mapping);
+        }
+
+        public virtual void UpdateCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            Guard.NotNull(mapping, nameof(mapping));
+
+            _customerRoleMappingRepository.Update(mapping);
+        }
+
+        public virtual void DeleteCustomerRoleMapping(CustomerRoleMapping mapping)
+        {
+            if (mapping != null)
+            {
+                _customerRoleMappingRepository.Delete(mapping);
+            }
+        }
+
+        #endregion
+
+        #region Reward points
+
+        public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
 		{
-			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)
+            var rpSettings = _rewardPointsSettings.Value;
+
+			if (rpSettings.Enabled && rpSettings.PointsForProductReview > 0)
 			{
 				string message = T(add ? "RewardPoints.Message.EarnedForProductReview" : "RewardPoints.Message.ReducedForProductReview", product.GetLocalized(x => x.Name));
 
-				customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForProductReview * (add ? 1 : -1), message);
+				customer.AddRewardPointsHistoryEntry(rpSettings.PointsForProductReview * (add ? 1 : -1), message);
 
 				UpdateCustomer(customer);
 			}
@@ -750,6 +856,6 @@ namespace SmartStore.Services.Customers
 			return map;
 		}
 
-		#endregion Reward points
+		#endregion
 	}
 }

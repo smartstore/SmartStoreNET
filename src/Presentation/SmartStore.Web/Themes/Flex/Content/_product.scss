@@ -179,11 +179,6 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     }
 
     .pd-offer-action-qty { max-width: 120px; min-width: 90px; }
-
-    // hide elements when container is too small
-    @media (max-width: 400px), (min-width: 768px) and (max-width: 1199px) {
-        .pd-offer-action-qty { display: none !important; }
-    }
 }
 
 
@@ -488,18 +483,4 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
             transform: scale(1.14);
         }
     }
-}
-
-
-// Misc
-// =====================================================
-
-.btn-edit-product {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    background-color: rgba(#fff, 0.5);
-
-    .pd-section-top:hover & { display: inline-block; }
 }

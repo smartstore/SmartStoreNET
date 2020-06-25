@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Core.Security;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
@@ -13,7 +14,7 @@ using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Search.Rendering;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Search;
 
@@ -59,19 +60,17 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult SearchBox()
 		{
-			var currentTerm = _queryFactory.Current?.Term;
-
 			var model = new SearchBoxModel
 			{
                 Origin = "Search/Search",
                 SearchUrl = Url.RouteUrl("Search"),
                 InstantSearchUrl = Url.RouteUrl("InstantSearch"),
                 InputPlaceholder = T("Search.SearchBox.Tooltip"),
-                InstantSearchEnabled = _searchSettings.InstantSearchEnabled,
+                InstantSearchEnabled = _searchSettings.InstantSearchEnabled && Services.Permissions.Authorize(Permissions.System.AccessShop),
 				ShowThumbsInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
 				SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
-				CurrentQuery = currentTerm
-			};
+				CurrentQuery = _queryFactory.Current?.Term
+            };
 
 			return PartialView(model);
 		}

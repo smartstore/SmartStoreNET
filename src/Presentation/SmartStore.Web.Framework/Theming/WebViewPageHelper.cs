@@ -13,9 +13,17 @@ using SmartStore.Core.Domain;
 using SmartStore.Services.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Services.Cms;
+using System.Web.Routing;
+using System.Globalization;
 
 namespace SmartStore.Web.Framework.Theming
 {
+	public class FileManagerUrlRequested
+	{
+		public UrlHelper UrlHelper { get; set; }
+		public string Url { get; set; }
+	}
+	
 	public class WebViewPageHelper
 	{
 		private bool _initialized;
@@ -23,14 +31,14 @@ namespace SmartStore.Web.Framework.Theming
 		private ExpandoObject _themeVars;
 		private ICollection<NotifyEntry> _internalNotifications;
 
-		private int? _currentCategoryId;
-		private int? _currentManufacturerId;
-		private int? _currentProductId;
+        private string _currentPageType;
+        private object _currentPageId;
 
-		private bool? _isHomePage;
+        private bool? _isHomePage;
 		private bool? _isMobileDevice;
         private bool? _isStoreClosed;
 		private bool? _enableHoneypot;
+		private string _fileManagerUrl;
 
 		public WebViewPageHelper()
 		{
@@ -44,89 +52,83 @@ namespace SmartStore.Web.Framework.Theming
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
 		public ILinkResolver LinkResolver { get; set; }
+		public UrlHelper UrlHelper { get; set; }
 
-		public void Initialize(ViewContext viewContext)
+		public void Initialize(ControllerContext controllerContext)
 		{
 			if (!_initialized)
 			{
-				_controllerContext = viewContext.GetRootControllerContext();
+				_controllerContext = controllerContext.GetRootControllerContext();
+                IdentifyPage();
 				_initialized = true;
 			}
 		}
 
+        public string CurrentPageType
+        {
+            get => _currentPageType;
+        }
 
-		public int CurrentCategoryId
-		{
-			get
-			{
-				if (!_currentCategoryId.HasValue)
-				{
-					int id = 0;
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
+        public object CurrentPageId
+        {
+            get => _currentPageId;
+        }
 
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("category")
-						&& routeValues.ContainsKey("categoryId"))
-					{
-						id = Convert.ToInt32(routeValues["categoryId"].ToString());
-					}
-					_currentCategoryId = id;
-				}
+        private void IdentifyPage()
+        {
+            var routeData = _controllerContext.RequestContext.RouteData;
+            var controllerName = routeData.GetRequiredString("controller").ToLowerInvariant();
+            var actionName = routeData.GetRequiredString("action").ToLowerInvariant();
 
-				return _currentCategoryId.Value;
-			}
-		}
+            _currentPageType = "system";
+            _currentPageId = controllerName + "." + actionName;
+			
+            if (IsHomePage)
+            {
+                _currentPageType = "home";
+                _currentPageId = 0;
+            }
+            else if (controllerName == "catalog")
+            {
+                if (actionName == "category")
+                {
+                    _currentPageType = "category";
+                    _currentPageId = routeData.Values.Get("categoryId");
+                }
+                else if (actionName == "manufacturer")
+                {
+                    _currentPageType = "brand";
+                    _currentPageId = routeData.Values.Get("manufacturerId");
+                }
+            }
+            else if (controllerName == "product")
+            {
+                if (actionName == "productdetails")
+                {
+                    _currentPageType = "product";
+                    _currentPageId = routeData.Values.Get("productId");
+                }
+            }
+            else if (controllerName == "topic")
+            {
+                if (actionName == "topicdetails")
+                {
+                    _currentPageType = "topic";
+                    _currentPageId = routeData.Values.Get("topicId");
+                }
+            }
+        }
 
-		public int CurrentManufacturerId
-		{
-			get
-			{
-				if (!_currentManufacturerId.HasValue)
-				{
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
-					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer")
-						&& routeValues.ContainsKey("manufacturerId"))
-					{
-						id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
-					}
-					_currentManufacturerId = id;
-				}
-
-				return _currentManufacturerId.Value;
-			}
-		}
-
-		public int CurrentProductId
-		{
-			get
-			{
-				if (!_currentProductId.HasValue)
-				{
-					var routeValues = _controllerContext.RequestContext.RouteData.Values;
-					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product")
-						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails")
-						&& routeValues.ContainsKey("productId"))
-					{
-						id = Convert.ToInt32(routeValues["productId"].ToString());
-					}
-					_currentProductId = id;
-				}
-
-				return _currentProductId.Value;
-			}
-		}
-
-		public bool IsHomePage
+        public bool IsHomePage
 		{
 			get
 			{
 				if (!_isHomePage.HasValue)
 				{
 					var routeData = _controllerContext.RequestContext.RouteData;
-					_isHomePage = routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
+					var response = _controllerContext.RequestContext.HttpContext.Response;
+					_isHomePage = response.StatusCode != 404 &&
+						routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
 						routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Index");
 				}
 
@@ -172,6 +174,28 @@ namespace SmartStore.Web.Framework.Theming
 				}
 
 				return _enableHoneypot.Value;
+			}
+		}
+
+		public string FileManagerUrl
+		{
+			get
+			{
+				if (_fileManagerUrl == null)
+				{
+					var defaultUrl = UrlHelper.Action("Index", "RoxyFileManager", new { area = "admin" });
+					var message = new FileManagerUrlRequested
+					{
+						UrlHelper = UrlHelper,
+						Url = defaultUrl
+					};
+
+					Services.EventPublisher.Publish(message);
+
+					_fileManagerUrl = message.Url ?? defaultUrl;
+				}
+
+				return _fileManagerUrl;
 			}
 		}
 

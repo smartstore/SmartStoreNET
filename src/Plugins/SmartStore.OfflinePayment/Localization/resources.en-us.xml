@@ -210,7 +210,7 @@
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PurchaseOrderNumber" AppendRootKey="false">
     <Value>Purchase order</Value>
   </LocaleResource>
-  <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">
+  <LocaleResource Name="Plugins.Payments.PurchaseOrder" AppendRootKey="false">
     <Children>
       <LocaleResource Name="AdminInstruction">
         <Value>
@@ -218,7 +218,7 @@
         </Value>
       </LocaleResource>
       <LocaleResource Name="PurchaseOrderNumber">
-        <Value>PO Number</Value>
+        <Value>Purchase order number</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>

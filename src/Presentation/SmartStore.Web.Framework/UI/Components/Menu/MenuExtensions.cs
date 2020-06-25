@@ -137,14 +137,9 @@ namespace SmartStore.Web.Framework.UI
             {
                 Name = menu.Name,
 				Template = template ?? menu.Name,
-                Root = menu.Root
+                Root = menu.Root,
+                SelectedNode = menu.ResolveCurrentNode(context)
             };
-
-            var currentNode = menu.ResolveCurrentNode(context);
-
-            model.Path = currentNode != null
-                ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
-                : new List<TreeNode<MenuItem>>();
 
             menu.ResolveElementCounts(model.SelectedNode, false);
 
@@ -171,6 +166,8 @@ namespace SmartStore.Web.Framework.UI
                 return new TreeNode<MenuItem>(new MenuItem());
             }
 
+            var itemMap = items.ToMultimap(x => x.ParentItemId, x => x);
+
             // Prepare root node. It represents the MenuRecord.
             var menu = items.First().Menu;
             var rootItem = new MenuItem
@@ -194,11 +191,13 @@ namespace SmartStore.Web.Framework.UI
                     return;
                 }
 
-                var entities = items.Where(x => x.ParentItemId == parentItemId).OrderBy(x => x.DisplayOrder);
-
+                var entities = itemMap.ContainsKey(parentItemId)
+                    ? itemMap[parentItemId].OrderBy(x => x.DisplayOrder)
+                    : Enumerable.Empty<MenuItemRecord>();
+                
                 foreach (var entity in entities)
                 {
-                    if (entity.ProviderName.HasValue() && itemProviders.TryGetValue(entity.ProviderName, out var provider))
+                    if (!string.IsNullOrEmpty(entity.ProviderName) && itemProviders.TryGetValue(entity.ProviderName, out var provider))
                     {
                         var newNode = provider.Value.Append(new MenuItemProviderRequest
                         {

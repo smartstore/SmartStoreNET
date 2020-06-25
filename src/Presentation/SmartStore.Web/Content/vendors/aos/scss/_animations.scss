@@ -5,7 +5,9 @@
 // ----------------------------------
 
 // Animations variables
-$aos-distance: 100px !default;
+
+$aos-distance:      #{var(--aos-distance)};
+$aos-distance-rev:  #{calc(var(--aos-distance)*-1)};
 
 @media screen {
     /**
@@ -15,7 +17,7 @@ $aos-distance: 100px !default;
     * fade-up-right, fade-up-left, fade-down-right, fade-down-left
     */
 
-    [data-aos^='fade'][data-aos^='fade'] {
+    [data-aos|='fade'] {
       opacity: 0;
       transition-property: opacity, transform;
 
@@ -30,11 +32,11 @@ $aos-distance: 100px !default;
     }
 
     [data-aos='fade-down'] {
-      transform: translate3d(0, -$aos-distance, 0);
+      transform: translate3d(0, $aos-distance-rev, 0);
     }
 
     [data-aos='fade-right'] {
-      transform: translate3d(-$aos-distance, 0, 0);
+      transform: translate3d($aos-distance-rev, 0, 0);
     }
 
     [data-aos='fade-left'] {
@@ -42,7 +44,7 @@ $aos-distance: 100px !default;
     }
 
     [data-aos='fade-up-right'] {
-      transform: translate3d(-$aos-distance, $aos-distance, 0);
+      transform: translate3d($aos-distance-rev, $aos-distance, 0);
     }
 
     [data-aos='fade-up-left'] {
@@ -50,11 +52,11 @@ $aos-distance: 100px !default;
     }
 
     [data-aos='fade-down-right'] {
-      transform: translate3d(-$aos-distance, -$aos-distance, 0);
+      transform: translate3d($aos-distance-rev, $aos-distance-rev, 0);
     }
 
     [data-aos='fade-down-left'] {
-      transform: translate3d($aos-distance, -$aos-distance, 0);
+      transform: translate3d($aos-distance, $aos-distance-rev, 0);
     }
 
 
@@ -66,7 +68,7 @@ $aos-distance: 100px !default;
     * zoom-out, zoom-out-up, zoom-out-down, zoom-out-left, zoom-out-right
     */
 
-    [data-aos^='zoom'][data-aos^='zoom'] {
+    [data-aos|='zoom'] {
       opacity: 0;
       transition-property: opacity, transform;
 
@@ -85,11 +87,11 @@ $aos-distance: 100px !default;
     }
 
     [data-aos='zoom-in-down'] {
-      transform: translate3d(0, -$aos-distance, 0) scale(.6);
+      transform: translate3d(0, $aos-distance-rev, 0) scale(.6);
     }
 
     [data-aos='zoom-in-right'] {
-      transform: translate3d(-$aos-distance, 0, 0) scale(.6);
+      transform: translate3d($aos-distance-rev, 0, 0) scale(.6);
     }
 
     [data-aos='zoom-in-left'] {
@@ -105,11 +107,11 @@ $aos-distance: 100px !default;
     }
 
     [data-aos='zoom-out-down'] {
-      transform: translate3d(0, -$aos-distance, 0) scale(1.2);
+      transform: translate3d(0, $aos-distance-rev, 0) scale(1.2);
     }
 
     [data-aos='zoom-out-right'] {
-      transform: translate3d(-$aos-distance, 0, 0) scale(1.2);
+      transform: translate3d($aos-distance-rev, 0, 0) scale(1.2);
     }
 
     [data-aos='zoom-out-left'] {
@@ -123,7 +125,7 @@ $aos-distance: 100px !default;
     * Slide animations
     */
 
-    [data-aos^='slide'][data-aos^='slide'] {
+    [data-aos|='slide'] {
       transition-property: transform;
       visibility: hidden;
 
@@ -157,28 +159,34 @@ $aos-distance: 100px !default;
     * flip-left, flip-right, flip-up, flip-down
     */
 
-    [data-aos^='flip'][data-aos^='flip'] {
+    [data-aos|='flip'] {
       backface-visibility: hidden;
-      transition-property: transform;
+      transition-property: transform, opacity;
+      opacity: 0;
+      --aos-flip: 38deg;
+
+      &.aos-animate {
+          opacity: 1;
+      }
     }
 
     [data-aos='flip-left'] {
-      transform: perspective(2500px) rotateY(-100deg);
+      transform: perspective(2500px) rotateY(calc(var(--aos-flip) * -1));
       &.aos-animate {transform: perspective(2500px) rotateY(0);}
     }
 
     [data-aos='flip-right'] {
-      transform: perspective(2500px) rotateY(100deg);
+      transform: perspective(2500px) rotateY(var(--aos-flip));
       &.aos-animate {transform: perspective(2500px) rotateY(0);}
     }
 
     [data-aos='flip-up'] {
-      transform: perspective(2500px) rotateX(-100deg);
+      transform: perspective(2500px) rotateX(calc(var(--aos-flip) * -1));
       &.aos-animate {transform: perspective(2500px) rotateX(0);}
     }
 
     [data-aos='flip-down'] {
-      transform: perspective(2500px) rotateX(100deg);
+      transform: perspective(2500px) rotateX(var(--aos-flip));
       &.aos-animate {transform: perspective(2500px) rotateX(0);}
     }
 }

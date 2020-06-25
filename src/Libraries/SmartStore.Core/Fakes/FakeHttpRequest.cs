@@ -32,19 +32,10 @@ namespace SmartStore.Core.Fakes
         {
             _httpMethod = method;
             _relativeUrl = relativeUrl;
-            _formParams = formParams;
-            _queryStringParams = queryStringParams;
-            _cookies = cookies;
-            _serverVariables = serverVariables;
-            //ensure collections are not null
-            if (_formParams == null)
-                _formParams = new NameValueCollection();
-            if (_queryStringParams == null)
-                _queryStringParams = new NameValueCollection();
-            if (_cookies == null)
-                _cookies = new HttpCookieCollection();
-            if (_serverVariables == null)
-                _serverVariables = new NameValueCollection();
+            _formParams = formParams ?? new NameValueCollection();
+            _queryStringParams = queryStringParams ?? new SmartStore.Collections.QueryString().FillFromString(relativeUrl);
+            _cookies = cookies ?? new HttpCookieCollection();
+            _serverVariables = serverVariables ?? new NameValueCollection();
         }
 
 
@@ -111,6 +102,11 @@ namespace SmartStore.Core.Fakes
             get { return ""; }
         }
 
+        public override string Path
+        {
+            get { return _url?.AbsolutePath ?? ApplicationPath ?? "/"; }
+        }
+
         public override string ApplicationPath
         {
             get
@@ -140,7 +136,7 @@ namespace SmartStore.Core.Fakes
 		public override bool IsSecureConnection => _url?.Scheme?.EmptyNull().StartsWith("https", StringComparison.OrdinalIgnoreCase) == true;
 		public override bool IsAuthenticated => false;
 		public override string[] UserLanguages => new string[] { };
-		public override string UserAgent => "SmartStore.NET";
+		public override string UserAgent => "Smartstore";
 		public override bool IsLocal => false;
 
 		public override RequestContext RequestContext

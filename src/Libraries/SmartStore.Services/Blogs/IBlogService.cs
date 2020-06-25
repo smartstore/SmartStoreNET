@@ -49,7 +49,7 @@ namespace SmartStore.Services.Blogs
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Blog posts</returns>
 		IPagedList<BlogPost> GetAllBlogPostsByTag(int storeId, int languageId, string tag,
-            int pageIndex, int pageSize, bool showHidden = false);
+            int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
         /// Gets all blog post tags

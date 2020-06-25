@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NuGet;
 using SmartStore.Collections;
@@ -9,7 +10,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Media.Storage;
@@ -19,34 +19,21 @@ namespace SmartStore.Services.Media
     public partial class DownloadService : IDownloadService
     {
         private readonly IRepository<Download> _downloadRepository;
-        private readonly IEventPublisher _eventPubisher;
-		private readonly Provider<IMediaStorageProvider> _storageProvider;
+        private readonly IMediaService _mediaService;
+        private readonly Provider<IMediaStorageProvider> _storageProvider;
 
 		public DownloadService(
 			IRepository<Download> downloadRepository,
-			IEventPublisher eventPubisher,
-			ISettingService settingService,
+            IMediaService mediaService,
+            ISettingService settingService,
 			IProviderManager providerManager)
         {
             _downloadRepository = downloadRepository;
-            _eventPubisher = eventPubisher;
+            _mediaService = mediaService;
 
 			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
-		}
-
-		private void UpdateDownloadCore(Download download, byte[] downloadBinary, bool updateDataStorage)
-		{
-			download.UpdatedOnUtc = DateTime.UtcNow;
-
-			_downloadRepository.Update(download);
-
-			if (updateDataStorage)
-			{
-				// save to storage
-				_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
-			}
 		}
 
 		public virtual Download GetDownloadById(int downloadId)
@@ -54,7 +41,7 @@ namespace SmartStore.Services.Media
             if (downloadId == 0)
                 return null;
             
-            var download = _downloadRepository.GetById(downloadId);
+            var download = _downloadRepository.Table.Expand(x => x.MediaFile).FirstOrDefault(x => x.Id == downloadId);
             return download;
         }
 
@@ -63,8 +50,8 @@ namespace SmartStore.Services.Media
 			if (downloadIds == null || downloadIds.Length == 0)
 				return new List<Download>();
 
-			var query = from dl in _downloadRepository.Table
-						where downloadIds.Contains(dl.Id)
+			var query = from dl in _downloadRepository.Table.Expand(x => x.MediaFile)
+                        where downloadIds.Contains(dl.Id)
 						select dl;
 
 			var downloads = query.ToList();
@@ -84,15 +71,15 @@ namespace SmartStore.Services.Media
 		{
 			if (entityId > 0)
 			{
-				var downloads = (from x in _downloadRepository.Table
-								 where x.EntityId == entityId && x.EntityName == entityName
+				var downloads = (from x in _downloadRepository.Table.Expand(x => x.MediaFile)
+                                 where x.EntityId == entityId && x.EntityName == entityName
 								 select x).ToList();
 
 				if (downloads.Any())
 				{
 					var idsOrderedByVersion = downloads
-						.Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
-						.OrderBy(x => x.Version)
+                        .Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
+                        .OrderByDescending(x => x.Version)
 						.Select(x => x.Id);
 
 					downloads = new List<Download>(downloads.OrderBySequence(idsOrderedByVersion));
@@ -108,9 +95,9 @@ namespace SmartStore.Services.Media
         {
             if (entityId > 0 && fileVersion.HasValue() && entityName.HasValue())
             {
-                var download = (from x in _downloadRepository.Table
-                                 where x.EntityId == entityId && x.EntityName.Equals(entityName) && x.FileVersion.Equals(fileVersion)
-                                 select x).FirstOrDefault();
+                var download = (from x in _downloadRepository.Table.Expand(x => x.MediaFile)
+                                where x.EntityId == entityId && x.EntityName.Equals(entityName) && x.FileVersion.Equals(fileVersion)
+                                select x).FirstOrDefault();
                 
                 return download;
             }
@@ -123,7 +110,7 @@ namespace SmartStore.Services.Media
             Guard.NotNull(entityIds, nameof(entityIds));
             Guard.NotEmpty(entityName, nameof(entityName));
 
-            var query = _downloadRepository.TableUntracked
+            var query = _downloadRepository.TableUntracked.Expand(x => x.MediaFile)
                 .Where(x => entityIds.Contains(x.EntityId) && x.EntityName == entityName)
 				.OrderBy(x => x.FileVersion);
 
@@ -137,52 +124,58 @@ namespace SmartStore.Services.Media
         public virtual Download GetDownloadByGuid(Guid downloadGuid)
         {
             if (downloadGuid == Guid.Empty)
+            {
                 return null;
+            }
 
-            var query = from o in _downloadRepository.Table
-                        where o.DownloadGuid == downloadGuid
-                        select o;
-            var order = query.FirstOrDefault();
-            return order;
+            var query = from x in _downloadRepository.Table.Expand(x => x.MediaFile)
+                        where x.DownloadGuid == downloadGuid
+                        select x;
+
+            var download = query.FirstOrDefault();
+            return download;
         }
 
         public virtual void DeleteDownload(Download download)
         {
 			Guard.NotNull(download, nameof(download));
 
-			// delete from storage
-			_storageProvider.Value.Remove(download.ToMedia());
-
-			// delete entity
 			_downloadRepository.Delete(download);
         }
 
-        public virtual void InsertDownload(Download download, byte[] downloadBinary)
+        public virtual void InsertDownload(Download download)
         {
 			Guard.NotNull(download, nameof(download));
 
             _downloadRepository.Insert(download);
+        }
 
-			// save to storage
-			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+        public virtual void InsertDownload(Download download, Stream stream, string fileName)
+        {
+            Guard.NotNull(download, nameof(download));
+
+            var path = _mediaService.CombinePaths(SystemAlbumProvider.Downloads, fileName.ToValidFileName());
+            var file = _mediaService.SaveFile(path, stream, dupeFileHandling: DuplicateFileHandling.Rename);
+            file.File.Hidden = true;
+            download.MediaFile = file.File;
+
+            _downloadRepository.Insert(download);
+
+            // Why saving a second time?? Don't do it!
+            // Save to storage.
+            //_storageProvider.Value.Save(file.File, stream);
         }
 
 		public virtual void UpdateDownload(Download download)
-		{
-			Guard.NotNull(download, nameof(download));
-
-			// we use an overload because a byte array cannot be nullable
-			UpdateDownloadCore(download, null, false);
-		}
-
-		public virtual void UpdateDownload(Download download, byte[] downloadBinary)
         {
 			Guard.NotNull(download, nameof(download));
 
-			UpdateDownloadCore(download, downloadBinary, true);
+            download.UpdatedOnUtc = DateTime.UtcNow;
+
+            _downloadRepository.Update(download);
         }
 
-		public virtual bool IsDownloadAllowed(OrderItem orderItem)
+        public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)
                 return false;
@@ -261,7 +254,7 @@ namespace SmartStore.Services.Media
 		{
 			Guard.NotNull(download, nameof(download));
 
-			return _storageProvider.Value.Load(download.ToMedia());
+			return _storageProvider.Value.Load(download.MediaFile);
 		}
-	}
+    }
 }

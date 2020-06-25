@@ -4,6 +4,9 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.OrderId)
+
     <div class="section-header">
         <div class="title">
             @string.Format(T("Admin.Orders.Shipments.AddNew.Title").Text, Model.OrderId) @Html.ActionLink("(" + T("Admin.Orders.Shipments.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
@@ -28,6 +31,16 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.TrackingNumber)
+                @Html.ValidationMessageFor(model => model.TrackingNumber)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingUrl)
+            </td>
+            <td class="adminData">
+				@Html.EditorFor(model => model.TrackingUrl)
+                @Html.ValidationMessageFor(model => model.TrackingUrl)
             </td>
         </tr>
     </table>
@@ -38,19 +51,19 @@
 		<table class="table admin-table">
 			<thead>
 				<tr>
-					<th>
+					<th class="w-50">
 						@T("Admin.Orders.Shipments.Products.ProductName")
 					</th>
 					<th>
 						@T("Admin.Orders.Shipments.Products.SKU")
 					</th>
-					<th>
+					<th class="text-center">
 						@T("Admin.Orders.Shipments.Products.QtyOrdered")
 					</th>
-					<th>
+					<th class="text-center">
 						@T("Admin.Orders.Shipments.Products.QtyShipped")
 					</th>
-					<th>
+					<th style="width: 180px;">
 						@T("Admin.Orders.Shipments.Products.QtyToShip")
 					</th>
 				</tr>
@@ -58,8 +71,9 @@
 			<tbody>
 				@foreach (var item in Model.Items)
 				{
+                    var fieldId = string.Concat("qtyToAdd", item.OrderItemId);
 					<tr>
-						<td style="width: 50%;">
+						<td>
 							@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
@@ -67,17 +81,17 @@
 								@Html.Raw(item.AttributeInfo)
 							}
 						</td>
-						<td style="width: 10%;">
+						<td>
 							@item.Sku
 						</td>
-						<td align="center" style="width: 10%;">
+						<td class="text-center">
 							@item.QuantityOrdered
 						</td>
-						<td align="center" style="width: 10%;">
+						<td class="text-center">
 							@item.QuantityInAllShipments
 						</td>
-						<td align="center" style="width: 20%;">
-							<input name="qtyToAdd@(item.OrderItemId)" type="text" value="@item.QuantityToAdd" id="qtyToAdd@(item.OrderItemId)" style="width:100px;" class="form-control" />
+						<td>
+                            @Html.Editor(fieldId, "Int32", fieldId, new { size = "sm", htmlAttributes = new { value = item.QuantityToAdd } })
 						</td>
 					</tr>
 				}

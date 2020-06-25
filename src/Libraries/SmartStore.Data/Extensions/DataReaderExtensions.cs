@@ -103,7 +103,7 @@ namespace SmartStore.Data
 
 		private static void MapObject(IDataReader reader, object instance, params string[] fieldsToSkip)
 		{
-			var fastProperties = FastProperty.GetProperties(instance);
+			var fastProperties = FastProperty.GetProperties(instance.GetType());
 
 			if (fastProperties.Count == 0)
 				return;

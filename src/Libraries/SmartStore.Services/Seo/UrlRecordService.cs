@@ -462,9 +462,9 @@ namespace SmartStore.Services.Seo
 			return result;
         }
 
-		public virtual UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported
+		public virtual UrlRecord SaveSlug<T>(T entity, Func<T, string> nameProperty) where T : BaseEntity, ISlugSupported
 		{
-			string name = nameProperty.Compile().Invoke(entity);
+			string name = nameProperty.Invoke(entity);
 
 			string existingSeName = entity.GetSeName<T>(0, true, false);
 			existingSeName = entity.ValidateSeName(existingSeName, name, true);

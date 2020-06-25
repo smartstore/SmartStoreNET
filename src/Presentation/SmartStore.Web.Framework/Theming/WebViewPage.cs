@@ -18,11 +18,21 @@ namespace SmartStore.Web.Framework.Theming
     {
 		private WebViewPageHelper _helper;
 
+        protected string CurrentPageType
+        {
+            get => _helper.CurrentPageType;
+        }
+
+        protected object CurrentPageId
+        {
+            get => _helper.CurrentPageId;
+        }
+
         protected int CurrentCategoryId
         {
             get
             {
-				return _helper.CurrentCategoryId;
+                return _helper.CurrentPageType == "category" ? _helper.CurrentPageId.Convert<int>() : 0;
             }
         }
 
@@ -30,16 +40,24 @@ namespace SmartStore.Web.Framework.Theming
         {
             get
             {
-				return _helper.CurrentManufacturerId;
-			}
+                return _helper.CurrentPageType == "manufacturer" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
         }
 
         protected int CurrentProductId
         {
             get
             {
-				return _helper.CurrentProductId;
-			}
+                return _helper.CurrentPageType == "product" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
+        }
+
+        protected int CurrentTopicId
+        {
+            get
+            {
+                return _helper.CurrentPageType == "topic" ? _helper.CurrentPageId.Convert<int>() : 0;
+            }
         }
 
         protected bool IsHomePage
@@ -69,6 +87,11 @@ namespace SmartStore.Web.Framework.Theming
 		public bool EnableHoneypotProtection
 		{
 			get { return _helper.EnableHoneypotProtection; }
+		}
+
+		public string FileManagerUrl
+		{
+			get { return _helper.FileManagerUrl; }
 		}
 
 		protected bool HasMessages
@@ -222,7 +245,7 @@ namespace SmartStore.Web.Framework.Theming
                 {
                     return defaultValue;
                 }
-                return (T)value.Convert(typeof(T));
+                return value.Convert<T>();
             }
 
             return defaultValue;
@@ -329,6 +352,23 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			TryGetMetadata<T>(name, out var value);
 			return value;
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
+		/// <param name="defaultValue">The default value to return if item does not exist.</param>
+		/// <returns>Result</returns>
+		public T GetMetadata<T>(string name, T defaultValue)
+		{
+			if (TryGetMetadata<T>(name, out var value))
+			{
+				return value;
+			}
+
+			return defaultValue;
 		}
 
 		/// <summary>

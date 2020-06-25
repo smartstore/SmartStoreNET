@@ -43,8 +43,7 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			context.MigrateLocaleResources(MigrateLocaleResources);
-			context.SaveChanges();
+            context.MigrateLocaleResources(MigrateLocaleResources);
 
 			DataMigrator.MoveCustomerFields(context);
 		}

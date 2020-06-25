@@ -25,8 +25,17 @@ namespace SmartStore.Web.Framework.UI
 					_seekedSelectedNode = true;
 				}
 
-				return _selectedNode;
+				return _selectedNode ?? Root;
 			}
+            set
+            {
+                _selectedNode = value;
+                Path = _selectedNode != null
+                    ? _selectedNode.Trail.Where(x => !x.IsRoot).ToList()
+                    : new List<TreeNode<MenuItem>>();
+
+                _seekedSelectedNode = true;
+            }
 		}
 	}
 }

@@ -1,0 +1,12 @@
+﻿@using SmartStore.Web.Framework.Modelling;
+@model MediaTemplateModel
+@if (Model.RenderViewer)
+{
+    <div class="w-100 embed-responsive embed-responsive-16by9 file-preview-container">
+        <video class="@("file-preview".Grow(Model.ExtraCssClasses, " "))" src="@Model.File.Url" controls preload="metadata" />
+    </div>
+}
+else
+{
+    @Html.Partial("MediaTemplates/_Thumbnail")
+}

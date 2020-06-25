@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public string GetLocalizedValue<TMetadata>(TMetadata metadata,
 			string propertyName,
-			Expression<Func<TMetadata, string>> fallback,
+			Func<TMetadata, string> fallback,
 			int languageId = 0,
 			bool returnDefaultValue = true) 
 			where TMetadata : IProviderMetadata
@@ -52,7 +52,7 @@ namespace SmartStore.Web.Framework.Plugins
 			string result = _services.Localization.GetResource(resourceName, languageId, false, "", true);
 
 			if (result.IsEmpty() && returnDefaultValue)
-				result = fallback.Compile()(metadata);
+				result = fallback(metadata);
 
 			return result;
 		}

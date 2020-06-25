@@ -6,10 +6,9 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Security;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -18,23 +17,18 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class QueuedEmailController : AdminControllerBase
 	{
 		private readonly IQueuedEmailService _queuedEmailService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly ILocalizationService _localizationService;
-        private readonly IPermissionService _permissionService;
 
 		public QueuedEmailController(
 			IQueuedEmailService queuedEmailService,
-            IDateTimeHelper dateTimeHelper, ILocalizationService localizationService,
-            IPermissionService permissionService)
+            IDateTimeHelper dateTimeHelper)
 		{
-            this._queuedEmailService = queuedEmailService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
+            _queuedEmailService = queuedEmailService;
+            _dateTimeHelper = dateTimeHelper;
 		}
 
         public ActionResult Index()
@@ -42,59 +36,49 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+        [Permission(Permissions.System.Message.Read)]
 		public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
             var model = new QueuedEmailListModel();
             return View(model);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
-		public ActionResult QueuedEmailList(GridCommand command, QueuedEmailListModel model)
+        [Permission(Permissions.System.Message.Read)]
+        public ActionResult QueuedEmailList(GridCommand command, QueuedEmailListModel model)
         {
 			var gridModel = new GridModel<QueuedEmailModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
+			DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
+			DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+
+			var q = new SearchEmailsQuery
 			{
-				DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
-				DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				EndTime = endDateValue,
+				From = model.SearchFromEmail,
+				MaxSendTries = model.SearchMaxSentTries,
+				OrderByLatest = true,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				SendManually = model.SearchSendManually,
+				StartTime = startDateValue,
+				To = model.SearchToEmail,
+				UnsentOnly = model.SearchLoadNotSent
+			};
+			var queuedEmails = _queuedEmailService.SearchEmails(q);
 
-				var q = new SearchEmailsQuery
-				{
-					EndTime = endDateValue,
-					From = model.SearchFromEmail,
-					MaxSendTries = model.SearchMaxSentTries,
-					OrderByLatest = true,
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
-					SendManually = model.SearchSendManually,
-					StartTime = startDateValue,
-					To = model.SearchToEmail,
-					UnsentOnly = model.SearchLoadNotSent
-				};
-				var queuedEmails = _queuedEmailService.SearchEmails(q);
-
-				gridModel.Data = queuedEmails.Select(x =>
-				{
-					var m = x.ToModel();
-					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-
-					if (x.SentOnUtc.HasValue)
-						m.SentOn = _dateTimeHelper.ConvertToUserTime(x.SentOnUtc.Value, DateTimeKind.Utc);
-
-					return m;
-				});
-
-				gridModel.Total = queuedEmails.TotalCount;
-			}
-			else
+			gridModel.Data = queuedEmails.Select(x =>
 			{
-				gridModel.Data = Enumerable.Empty<QueuedEmailModel>();
+				var m = x.ToModel();
+				m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
 
-				NotifyAccessDenied();
-			}
+				if (x.SentOnUtc.HasValue)
+					m.SentOn = _dateTimeHelper.ConvertToUserTime(x.SentOnUtc.Value, DateTimeKind.Utc);
+
+				return m;
+			});
+
+			gridModel.Total = queuedEmails.TotalCount;
 
 			return new JsonResult
 			{
@@ -115,19 +99,21 @@ namespace SmartStore.Admin.Controllers
 			return List();
         }
 
-		public ActionResult Edit(int id)
+        [Permission(Permissions.System.Message.Read)]
+        public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
 			var email = _queuedEmailService.GetQueuedEmailById(id);
             if (email == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var model = email.ToModel();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(email.CreatedOnUtc, DateTimeKind.Utc);
             if (email.SentOnUtc.HasValue)
+            {
                 model.SentOn = _dateTimeHelper.ConvertToUserTime(email.SentOnUtc.Value, DateTimeKind.Utc);
+            }
 
             return View(model);
 		}
@@ -135,41 +121,42 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Edit")]
         [FormValueExists("save", "save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [Permission(Permissions.System.Message.Update)]
         public ActionResult Edit(QueuedEmailModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
             var email = _queuedEmailService.GetQueuedEmailById(model.Id);
             if (email == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
                 email = model.ToEntity(email);
                 _queuedEmailService.UpdateQueuedEmail(email);
 
-                NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Updated"));
+                NotifySuccess(T("Admin.System.QueuedEmails.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = email.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(email.CreatedOnUtc, DateTimeKind.Utc);
             if (email.SentOnUtc.HasValue)
+            {
                 model.SentOn = _dateTimeHelper.ConvertToUserTime(email.SentOnUtc.Value, DateTimeKind.Utc);
+            }
 
             return View(model);
 		}
 
         [HttpPost, ActionName("Edit"), FormValueRequired("requeue")]
+        [Permission(Permissions.System.Message.Create)]
         public ActionResult Requeue(QueuedEmailModel queuedEmailModel)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
             var queuedEmail = _queuedEmailService.GetQueuedEmailById(queuedEmailModel.Id);
             if (queuedEmail == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var requeuedEmail = new QueuedEmail
             {
@@ -186,89 +173,85 @@ namespace SmartStore.Admin.Controllers
             };
             _queuedEmailService.InsertQueuedEmail(requeuedEmail);
 
-            NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Requeued"));
+            NotifySuccess(T("Admin.System.QueuedEmails.Requeued"));
 
             return RedirectToAction("Edit", requeuedEmail.Id);
         }
 
 		[HttpPost, ActionName("Edit"), FormValueRequired("sendnow")]
-		public async Task<ActionResult> SendNow(QueuedEmailModel queuedEmailModel)
+        [Permission(Permissions.System.Message.Send)]
+        public async Task<ActionResult> SendNow(QueuedEmailModel queuedEmailModel)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-				return AccessDeniedView();
-
 			var queuedEmail = _queuedEmailService.GetQueuedEmailById(queuedEmailModel.Id);
-			if (queuedEmail == null)
-				return RedirectToAction("List");
+            if (queuedEmail == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var result = await _queuedEmailService.SendEmailAsync(queuedEmail);
-
-			if (result)
-				NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
-			else
-				NotifyError(_localizationService.GetResource("Common.Error.SendMail"));
+            if (result)
+            {
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            }
+            else
+            {
+                NotifyError(T("Common.Error.SendMail"));
+            }
 
 			return RedirectToAction("Edit", queuedEmail.Id);
 		}
 
 	    [HttpPost, ActionName("Delete")]
-		public ActionResult DeleteConfirmed(int id)
+        [Permission(Permissions.System.Message.Delete)]
+        public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
 			var email = _queuedEmailService.GetQueuedEmailById(id);
             if (email == null)
+            {
                 return RedirectToAction("List");
+            }
 
             _queuedEmailService.DeleteQueuedEmail(email);
 
-            NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Deleted"));
+            NotifySuccess(T("Admin.System.QueuedEmails.Deleted"));
 
 			return RedirectToAction("List");
 		}
 
         [HttpPost]
+        [Permission(Permissions.System.Message.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
-
             if (selectedIds != null)
             {
                 var queuedEmails = _queuedEmailService.GetQueuedEmailsByIds(selectedIds.ToArray());
-
 				foreach (var queuedEmail in queuedEmails)
 				{
 					_queuedEmailService.DeleteQueuedEmail(queuedEmail);
 				}
             }
 
-            return Json(new { Result = true });
+            return Json(new { success = true });
         }
 
 		[HttpPost, ActionName("List"), FormValueRequired("delete-all")]
-		public ActionResult DeleteAll()
+        [Permission(Permissions.System.Message.Delete)]
+        public ActionResult DeleteAll()
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-				return AccessDeniedView();
-
-			int count = _queuedEmailService.DeleteAllQueuedEmails();
+			var count = _queuedEmailService.DeleteAllQueuedEmails();
 
 			NotifySuccess(T("Admin.Common.RecordsDeleted", count));
 
 			return RedirectToAction("List");
 		}
 
-		public ActionResult DownloadAttachment(int id)
+        [Permission(Permissions.System.Message.Read)]
+        public ActionResult DownloadAttachment(int id)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-				return AccessDeniedView();
-
 			var qea = _queuedEmailService.GetQueuedEmailAttachmentById(id);
 			if (qea == null)
 			{
-				return HttpNotFound("List");
+				return HttpNotFound();
 			}
 
 			if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
@@ -292,17 +275,19 @@ namespace SmartStore.Admin.Controllers
 					NotifyError(string.Concat(T("Admin.Common.FileNotFound"), ": ", path));
 
 					var referrer = Services.WebHelper.GetUrlReferrer();
-					if (referrer.HasValue())
-						return Redirect(referrer);
+                    if (referrer.HasValue())
+                    {
+                        return Redirect(referrer);
+                    }
 					
 					return RedirectToAction("List");
 				}
 
 				return File(path, qea.MimeType, qea.Name);
 			}
-			else if (qea.FileId.HasValue)
+			else if (qea.MediaFileId.HasValue)
 			{
-				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.FileId.Value });
+				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.MediaFileId.Value });
 			}
 
 			NotifyError(T("Admin.System.QueuedEmails.CouldNotDownloadAttachment"));

@@ -1,8 +1,12 @@
 ﻿@using SmartStore.Core.Domain.Tax
+
 @model TaxSettingsModel
+
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Tax").Text;
+    Layout = "_SettingLayout";
 }
+
 @using (Html.BeginForm())
 {    
 <script type="text/javascript">

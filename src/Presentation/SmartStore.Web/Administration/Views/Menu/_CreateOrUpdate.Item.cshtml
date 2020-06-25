@@ -14,7 +14,25 @@
 })
 
 @helper TabGeneral()
-{ 
+{
+    var brandColors = GetThemeVariable("brand-colors");
+    var iconColors = brandColors
+        .Trim()
+        .SplitSafe(",")
+        .Select(x => x.TrimSafe())
+        .Select(x => new SelectListItem { Text = x, Value = x })
+        .ToList();
+    iconColors.Add(new SelectListItem { Text = T("Common.White"), Value = "white" });
+    iconColors.Add(new SelectListItem { Text = "gray-100", Value = "gray-100" });
+    iconColors.Add(new SelectListItem { Text = "gray-200", Value = "gray-200" });
+    iconColors.Add(new SelectListItem { Text = "gray-300", Value = "gray-300" });
+    iconColors.Add(new SelectListItem { Text = "gray-400", Value = "gray-400" });
+    iconColors.Add(new SelectListItem { Text = "gray-500", Value = "gray-500" });
+    iconColors.Add(new SelectListItem { Text = "gray-600", Value = "gray-600" });
+    iconColors.Add(new SelectListItem { Text = "gray-700", Value = "gray-700" });
+    iconColors.Add(new SelectListItem { Text = "gray-800", Value = "gray-800" });
+    iconColors.Add(new SelectListItem { Text = "gray-900", Value = "gray-900" });
+
     <div id="menu-item-container">
         <div class="adminContent mb-3">
             <div class="adminRow">
@@ -116,6 +134,24 @@
             </div>
             <div class="adminRow">
                 <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedStoreIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedStoreIds)
+                    @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+                </div>
+                <div class="adminData">
+                    @Html.EditorFor(model => model.SelectedCustomerRoleIds)
+                    @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+                </div>
+            </div>
+            <div class="adminRow">
+                <div class="adminTitle">
                     @Html.SmartLabelFor(model => model.BeginGroup)
                 </div>
                 <div class="adminData">
@@ -130,6 +166,15 @@
                 <div class="adminData">
                     @Html.Partial("FontAwesomeIcon", Model)
                     @Html.ValidationMessageFor(model => model.Icon)
+                </div>
+            </div>
+            <div class="adminRow@(Model.ProviderAppendsMultipleItems ? " d-none" : "")">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.IconColor)
+                </div>
+                <div class="adminData">
+                    @Html.DropDownListFor(model => model.IconColor, iconColors, T("Common.Unspecified"), new { @class = "icon-color-chooser" })
+                    @Html.ValidationMessageFor(model => model.IconColor)
                 </div>
             </div>
             @*For later use.
@@ -181,3 +226,15 @@
         </div>
     </div>
 }
+
+<script>
+    $(function () {
+
+        // Icon colors.
+        $('.icon-color-chooser > option').each(function () {
+            var option = $(this);
+            option.data("color", localStorage.getItem('--' + this.value));
+        });
+
+    });
+</script>

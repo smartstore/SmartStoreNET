@@ -1,4 +1,9 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Autofac;
 using FluentValidation;
 using FluentValidation.Results;
 using SmartStore.OfflinePayment.Models;
@@ -10,29 +15,23 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.Theming;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace SmartStore.OfflinePayment.Controllers
 {
-
     public class OfflinePaymentController : PaymentControllerBase
     {
 		private readonly IComponentContext _ctx;
 		private readonly HttpContextBase _httpContext;
-		private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
 
-		public OfflinePaymentController(
+        public OfflinePaymentController(
 			HttpContextBase httpContext,
 			IComponentContext ctx,
-			IPictureService pictureService)
+            IMediaService mediaService)
         {
 			_httpContext = httpContext;
 			_ctx = ctx;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 		}
 
 		#region Global
@@ -114,11 +113,13 @@ namespace SmartStore.OfflinePayment.Controllers
 			where TSetting : PaymentSettingsBase, new()
 		{
 			var settings = _ctx.Resolve<TSetting>();
-			var model = new TModel();
-			model.DescriptionText = GetLocalizedText(settings.DescriptionText);
-			model.ThumbnailUrl = _pictureService.GetUrl(settings.ThumbnailPictureId, 120, false); 
+            var model = new TModel
+            {
+                DescriptionText = GetLocalizedText(settings.DescriptionText),
+                ThumbnailUrl = _mediaService.GetUrl(settings.ThumbnailPictureId, 120, null, false)
+            };
 
-			if (fn != null)
+            if (fn != null)
 			{
 				fn(model, settings);
 			}
@@ -147,33 +148,42 @@ namespace SmartStore.OfflinePayment.Controllers
 
 			if (type.HasValue())
 			{
-				if (type == "Manual")
-				{
-					validator = new ManualPaymentInfoValidator(T);
-					var model = new ManualPaymentInfoModel
-					{
-						CardholderName = form["CardholderName"],
-						CardNumber = form["CardNumber"],
-						CardCode = form["CardCode"]
-					};
-					validationResult = validator.Validate(model);
-				}
-				else if (type == "DirectDebit")
-				{
-					validator = new DirectDebitPaymentInfoValidator();
-					var model = new DirectDebitPaymentInfoModel
-					{
-						EnterIBAN = form["EnterIBAN"],
-						DirectDebitAccountHolder = form["DirectDebitAccountHolder"],
-						DirectDebitAccountNumber = form["DirectDebitAccountNumber"],
-						DirectDebitBankCode = form["DirectDebitBankCode"],
-						DirectDebitCountry = form["DirectDebitCountry"],
-						DirectDebitBankName = form["DirectDebitBankName"],
-						DirectDebitIban = form["DirectDebitIban"],
-						DirectDebitBic = form["DirectDebitBic"]
-					};
-					validationResult = validator.Validate(model);
-				}
+                if (type == "Manual")
+                {
+                    validator = new ManualPaymentInfoValidator(T);
+                    var model = new ManualPaymentInfoModel
+                    {
+                        CardholderName = form["CardholderName"],
+                        CardNumber = form["CardNumber"],
+                        CardCode = form["CardCode"]
+                    };
+                    validationResult = validator.Validate(model);
+                }
+                else if (type == "DirectDebit")
+                {
+                    validator = new DirectDebitPaymentInfoValidator();
+                    var model = new DirectDebitPaymentInfoModel
+                    {
+                        EnterIBAN = form["EnterIBAN"],
+                        DirectDebitAccountHolder = form["DirectDebitAccountHolder"],
+                        DirectDebitAccountNumber = form["DirectDebitAccountNumber"],
+                        DirectDebitBankCode = form["DirectDebitBankCode"],
+                        DirectDebitCountry = form["DirectDebitCountry"],
+                        DirectDebitBankName = form["DirectDebitBankName"],
+                        DirectDebitIban = form["DirectDebitIban"],
+                        DirectDebitBic = form["DirectDebitBic"]
+                    };
+                    validationResult = validator.Validate(model);
+                }
+                else if (type == "PurchaseOrderNumber")
+                {
+                    validator = new PurchaseOrderNumberPaymentInfoValidator();
+                    var model = new PurchaseOrderNumberPaymentInfoModel
+                    {
+                        PurchaseOrderNumber = form["PurchaseOrderNumber"]
+                    };
+                    validationResult = validator.Validate(model);
+                }
 
 				if (validationResult != null && !validationResult.IsValid)
 				{

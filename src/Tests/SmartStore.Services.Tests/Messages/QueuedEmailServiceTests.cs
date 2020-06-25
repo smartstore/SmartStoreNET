@@ -7,44 +7,43 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
-using SmartStore.Core.Events;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Tests.Configuration;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.Messages
 {
-	[TestFixture]
+    [TestFixture]
 	public class QueuedEmailServiceTests : ServiceTest
     {
 		IRepository<QueuedEmail> _qeRepository;
 		IRepository<QueuedEmailAttachment> _qeaRepository;
-		IRepository<Download> _downloadRepository;
 		IEmailSender _emailSender;
 		ICommonServices _services;
-		IDownloadService _downloadService;
 		QueuedEmailService _queuedEmailService;
 		ISettingService _settingService;
-		IEventPublisher _eventPublisher;
+        IMediaService _mediaService;
+        Provider<IMediaStorageProvider> _mediaStorageProvider;
 
-		[SetUp]
+        [SetUp]
 		public new void SetUp()
 		{
 			_qeRepository = MockRepository.GenerateMock<IRepository<QueuedEmail>>();
 			_qeaRepository = MockRepository.GenerateMock<IRepository<QueuedEmailAttachment>>();
-			_downloadRepository = MockRepository.GenerateMock<IRepository<Download>>();
 			_emailSender = MockRepository.GenerateMock<IEmailSender>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _mediaService = MockRepository.GenerateMock<IMediaService>();
+            _mediaStorageProvider = ProviderManager.GetProvider<IMediaStorageProvider>(DatabaseMediaStorageProvider.SystemName);
 
-			_settingService = new ConfigFileSettingService(null, null);
+            _settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
+            _services.Expect(x => x.MediaService).Return(_mediaService);
 
-			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);
-
-			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services, _downloadService, ProviderManager);
+            _queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services);
 		}
 
         [Test]
@@ -94,19 +93,21 @@ namespace SmartStore.Services.Tests.Messages
 				Name = "path2.pdf", 
 				MimeType = "application/pdf" 
 			};
-			var attachFile = new QueuedEmailAttachment
+
+            var fileReferenceFile = new MediaFile
+            {
+                MimeType = "application/pdf",
+                MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
+                MediaStorageId = 2,
+                Extension = ".pdf",
+                Name = "file.pdf"
+            };
+            var attachFile = new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.FileReference,
 				Name = "file.pdf",
 				MimeType = "application/pdf",
-				File = new Download
-				{
-					ContentType = "application/pdf",
-					MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
-					MediaStorageId = 2,
-					Extension = ".pdf",
-					Filename = "file"
-				}
+				MediaFile = fileReferenceFile
 			};
 
 			qe.Attachments.Add(attachBlob);
@@ -114,7 +115,10 @@ namespace SmartStore.Services.Tests.Messages
 			qe.Attachments.Add(attachPath1);
 			qe.Attachments.Add(attachPath2);
 
-			var msg = _queuedEmailService.ConvertEmail(qe);
+            _mediaService.Expect(x => x.ConvertMediaFile(fileReferenceFile)).Return(
+                new MediaFileInfo(fileReferenceFile, _mediaStorageProvider.Value, null, null));
+
+            var msg = _queuedEmailService.ConvertEmail(qe);
 
 			Assert.IsNotNull(msg);
 			Assert.IsNotNull(msg.To);

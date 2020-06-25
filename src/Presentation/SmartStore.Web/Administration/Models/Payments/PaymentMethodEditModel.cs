@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using SmartStore.Rules;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Payments
 {
-	public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>, IStoreSelector
+    public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>
 	{
 		public PaymentMethodEditModel()
 		{
 			Locales = new List<PaymentMethodLocalizedModel>();
-			FilterConfigurationUrls = new List<string>();
 		}
 
 		public IList<PaymentMethodLocalizedModel> Locales { get; set; }
 		public string IconUrl { get; set; }
-		public IList<string> FilterConfigurationUrls { get; set; }
 
 		[SmartResourceDisplayName("Common.SystemName")]
 		public string SystemName { get; set; }
@@ -35,12 +35,21 @@ namespace SmartStore.Admin.Models.Payments
         [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotalEnabled")]
         public bool RoundOrderTotalEnabled { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
-	}
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
+        [UIHint("RuleSets")]
+        [AdditionalMetadata("multiple", true)]
+        [AdditionalMetadata("scope", RuleScope.Cart)]
+        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Requirements")]
+        public int[] SelectedRuleSetIds { get; set; }
+    }
 
 
 	public class PaymentMethodLocalizedModel : ILocalizedModelLocal

@@ -1,8 +1,11 @@
 ﻿@model CustomerUserSettingsModel
+
 @using SmartStore.Core.Domain.Customers;
 @{
+    Layout = "_SettingLayout";
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -36,7 +39,7 @@
 
 @helper TabCustomerSettings()
 {
-    <script type="text/javascript">
+    <script>
         $(function () {
         	$('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberMethod)').change(function () {
         		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@(CustomerNumberMethod.Disabled.ToString())');
@@ -740,45 +743,10 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.PrivacySettings.EnableCookieConsent,
-					Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent, new { data_toggler_for = "#pnlCookieConsent" }))
+					Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent))
 				@Html.ValidationMessageFor(model => model.PrivacySettings.EnableCookieConsent)
 			</td>
 		</tr>
-		<tbody id="pnlCookieConsent">
-			<tr>
-				<td colspan="2">
-					@(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-privacy-localized",
-						@<div class="adminContent">
-							<div class="adminRow">
-								<div class="adminTitle">
-									@Html.SmartLabelFor(model => model.Locales[item].CookieConsentBadgetext)
-								</div>
-								<div class="adminData wide">
-									@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-									@Html.HiddenFor(model => model.Locales[item].LanguageId)
-
-									@Html.TextAreaFor(model => Model.Locales[item].CookieConsentBadgetext)
-									@Html.ValidationMessageFor(model => model.Locales[item].CookieConsentBadgetext)
-								</div>
-							</div>
-						</div>
-						,
-						@<div class="adminContent">
-							<div class="adminRow">
-								<div class="adminTitle">
-									@Html.SmartLabelFor(model => model.PrivacySettings.CookieConsentBadgetext)
-								</div>
-								<div class="adminData wide">
-									@Html.TextAreaFor(model => model.PrivacySettings.CookieConsentBadgetext)
-									@Html.ValidationMessageFor(model => model.PrivacySettings.CookieConsentBadgetext)
-								</div>
-							</div>
-						</div>
-					))
-				</td>
-			</tr>
-		</tbody>
-	
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)

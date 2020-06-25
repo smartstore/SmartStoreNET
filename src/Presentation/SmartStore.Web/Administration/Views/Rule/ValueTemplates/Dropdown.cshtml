@@ -1,0 +1,78 @@
+﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@model IRuleExpression
+@{
+    var id = string.Concat("rule-value-", Model.Id);
+    var list = Model.Descriptor.SelectList;
+    var isMultiple = list?.Multiple ?? true;
+    var values = Model.RawValue.SplitSafe(",");
+    string remoteUrl = null;
+
+    if (list is RemoteRuleValueSelectList remoteList)
+    {
+        remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.SelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+    }
+
+    var attributes = new Dictionary<string, object>
+    {
+        { "data-placeholder", T("Common.Unspecified").Text },
+        { "data-remote-url", remoteUrl },
+        { "data-tags", list == null }
+    };
+    if (isMultiple)
+    {
+        attributes["multiple"] = "multiple";
+    }
+}
+<select id="@id" name="@id" @Html.Attrs(attributes)>
+    @if (remoteUrl.HasValue())
+    {
+        var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
+            ? (Dictionary<string, RuleSelectItem>)objSelectedItems
+            : new Dictionary<string, RuleSelectItem>();
+
+        foreach (var value in values)
+        {
+            selectedItems.TryGetValue(value, out var selectedItem);
+            <option value="@value" selected="selected" @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
+            @(selectedItem?.Text.NullEmpty() ?? value)</option>
+        }
+    }
+    else if (list != null)
+    {
+        if (!values.Any() && !isMultiple)
+        {
+            <option></option>
+        }
+        foreach (var grp in ((LocalRuleValueSelectList)list).Options.OrderBy(x => x.Group?.Order ?? 0).GroupBy(x => x.Group?.Name ?? ""))
+        {
+            if (grp.Key.HasValue())
+            {
+                @Html.Raw("<optgroup label=\"{0}\">".FormatInvariant(grp.Key))
+            }
+            foreach (var option in grp)
+            {
+                <option value="@option.Value" 
+                        @Html.Attr("selected", "selected", values.Contains(option.Value)) 
+                        @Html.Attr("data-hint", option.Hint, option.Hint.HasValue())>
+                @(option.Text.NullEmpty() ?? option.Value)</option>
+            }
+            if (grp.Key.HasValue())
+            {
+                @Html.Raw("</optgroup>")
+            }
+        }
+    }
+    else
+    {
+        foreach (var value in values)
+        {
+            <option value="@value" selected="selected">@value</option>
+        }
+    }
+</select>
+<script>
+    $(function () {
+        $('#@id').selectWrapper();
+	});
+</script>

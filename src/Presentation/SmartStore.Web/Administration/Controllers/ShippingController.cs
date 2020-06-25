@@ -3,9 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Shipping;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Services;
+using SmartStore.Core.Security;
+using SmartStore.Rules;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
@@ -18,7 +18,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ShippingController : AdminControllerBase
 	{
         private readonly IShippingService _shippingService;
@@ -26,43 +26,35 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 		private readonly PluginMediator _pluginMediator;
-		private readonly ICommonServices _services;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly IRuleStorage _ruleStorage;
 
-		public ShippingController(
+        public ShippingController(
 			IShippingService shippingService,
 			ShippingSettings shippingSettings,
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
 			PluginMediator pluginMediator,
-			ICommonServices services,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+            IRuleStorage ruleStorage)
 		{
             _shippingService = shippingService;
             _shippingSettings = shippingSettings;
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
 			_pluginMediator = pluginMediator;
-			_services = services;
 			_storeMappingService = storeMappingService;
+            _ruleStorage = ruleStorage;
 		}
         
         #region Utilities
 
-        [NonAction]
-        protected void UpdateLocales(ShippingMethod shippingMethod, ShippingMethodModel model)
+        private void UpdateLocales(ShippingMethod shippingMethod, ShippingMethodModel model)
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(shippingMethod,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(shippingMethod,
-                                                           x => x.Description,
-                                                           localized.Description,
-                                                           localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(shippingMethod, x => x.Name, localized.Name, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(shippingMethod, x => x.Description, localized.Description, localized.LanguageId);
             }
         }
 
@@ -70,39 +62,22 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (shippingMethod != null)
 			{
-				var allFilters = _shippingService.GetAllShippingMethodFilters();
-				var configUrls = allFilters
-					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
-					.Where(x => x.HasValue())
-					.ToList();
-
-				model.FilterConfigurationUrls = configUrls
-					.Select(x => string.Concat("'", x, "'"))
-					.OrderBy(x => x)
-					.ToList();
-
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
-			}
-			else
-			{
-				model.FilterConfigurationUrls = new List<string>();
-				model.SelectedStoreIds = new int[0];
+                model.SelectedRuleSetIds = shippingMethod.RuleSets.Select(x => x.Id).ToArray();
 			}
 
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
-		}
+            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
+        }
 
         #endregion
 
         #region Shipping rate computation methods
 
+        [Permission(Permissions.Configuration.Shipping.Read)]
         public ActionResult Providers()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var shippingProvidersModel = new List<ShippingRateComputationMethodModel>();
             var shippingProviders = _shippingService.LoadAllShippingRateComputationMethods();
+
             foreach (var shippingProvider in shippingProviders)
             {
 				var model = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
@@ -113,25 +88,27 @@ namespace SmartStore.Admin.Controllers
 			return View(shippingProvidersModel);
         }
 
-		public ActionResult ActivateProvider(string systemName, bool activate)
+        [Permission(Permissions.Configuration.Shipping.Activate)]
+        public ActionResult ActivateProvider(string systemName, bool activate)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-				return AccessDeniedView();
-
 			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
 
 			if (activate && !srcm.Value.IsActive)
 			{
-				NotifyWarning(_services.Localization.GetResource("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
+				NotifyWarning(T("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
 			}
 			else
 			{
-				if (!activate)
-					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.Metadata.SystemName);
-				else
-					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
+                if (!activate)
+                {
+                    _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.Metadata.SystemName);
+                }
+                else
+                {
+                    _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
+                }
 
-				_services.Settings.SaveSetting(_shippingSettings);
+				Services.Settings.SaveSetting(_shippingSettings);
 				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
 			}
 
@@ -139,16 +116,19 @@ namespace SmartStore.Admin.Controllers
 		}
 
         #endregion
-        
+
         #region Shipping methods
 
+        [Permission(Permissions.Configuration.Shipping.Read)]
         public ActionResult Methods()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-                .Select(x => x.ToModel())
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
                 .ToList();
 
             var model = new GridModel<ShippingMethodModel>
@@ -156,30 +136,28 @@ namespace SmartStore.Admin.Controllers
                 Data = shippingMethodsModel,
                 Total = shippingMethodsModel.Count
             };
+
             return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
+        [Permission(Permissions.Configuration.Shipping.Read)]
         public ActionResult Methods(GridCommand command)
         {
 			var model = new GridModel<ShippingMethodModel>();
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-			{
-				var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-					.Select(x => x.ToModel())
-					.ForCommand(command)
-					.ToList();
+			var shippingMethodsModel = _shippingService.GetAllShippingMethods()
+                .Select(x =>
+                {
+                    var smm = x.ToModel();
+                    smm.NumberOfRules = x.RuleSets.Count;
+                    return smm;
+                })
+                .ForCommand(command)
+				.ToList();
 
-				model.Data = shippingMethodsModel;
-				model.Total = shippingMethodsModel.Count;
-			}
-			else
-			{
-				model.Data = Enumerable.Empty<ShippingMethodModel>();
-
-				NotifyAccessDenied();
-			}
+			model.Data = shippingMethodsModel;
+			model.Total = shippingMethodsModel.Count;
 
             return new JsonResult
             {
@@ -187,12 +165,9 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-
+        [Permission(Permissions.Configuration.Shipping.Create)]
         public ActionResult CreateMethod()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var model = new ShippingMethodModel();
 			PrepareShippingMethodModel(model, null);
 
@@ -201,36 +176,39 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Configuration.Shipping.Create)]
         public ActionResult CreateMethod(ShippingMethodModel model, bool continueEditing)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             if (ModelState.IsValid)
             {
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				SaveStoreMappings(sm, model);
+                if (model.SelectedRuleSetIds?.Any() ?? false)
+                {
+                    _ruleStorage.ApplyRuleSetMappings(sm, model.SelectedRuleSetIds);
 
+                    _shippingService.UpdateShippingMethod(sm);
+                }
+
+                SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
-                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
+                NotifySuccess(T("Admin.Configuration.Shipping.Methods.Added"));
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
             }
 
-            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
+        [Permission(Permissions.Configuration.Shipping.Read)]
         public ActionResult EditMethod(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var sm = _shippingService.GetShippingMethodById(id);
             if (sm == null)
+            {
                 return RedirectToAction("Methods");
+            }
 
             var model = sm.ToModel();
 			PrepareShippingMethodModel(model, sm);
@@ -244,26 +222,29 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateInput(false), ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [Permission(Permissions.Configuration.Shipping.Update)]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing, FormCollection form)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var sm = _shippingService.GetShippingMethodById(model.Id);
             if (sm == null)
-                return RedirectToAction("Methods");
+            {
+                return HttpNotFound();
+            }
 
             if (ModelState.IsValid)
             {
                 sm = model.ToEntity(sm);
+
+                // Add\remove assigned rule sets.
+                _ruleStorage.ApplyRuleSetMappings(sm, model.SelectedRuleSetIds);
+
                 _shippingService.UpdateShippingMethod(sm);
 
-				SaveStoreMappings(sm, model);
-
+				SaveStoreMappings(sm, model.SelectedStoreIds);
 				UpdateLocales(sm, model);
 
-				_services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));
+				Services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));
 
 				NotifySuccess(T("Admin.Configuration.Shipping.Methods.Updated"));
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
@@ -273,18 +254,18 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [Permission(Permissions.Configuration.Shipping.Delete)]
         public ActionResult DeleteMethod(int id)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
             var sm = _shippingService.GetShippingMethodById(id);
             if (sm == null)
+            {
                 return RedirectToAction("Methods");
+            }
 
             _shippingService.DeleteShippingMethod(sm);
 
-			NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
+			NotifySuccess(T("Admin.Configuration.Shipping.Methods.Deleted"));
             return RedirectToAction("Methods");
         }
         

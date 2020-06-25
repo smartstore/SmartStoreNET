@@ -24,11 +24,6 @@
 		.Content(TabInfo())
 		.Selected(true);
 
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		//.Icon("fa fa-globe fa-lg fa-fw")
-		.Content(TabStores());
-
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
 })
 
@@ -114,6 +109,7 @@
         <td class="adminData">
             @Html.EditorFor(model => model.CustomFormatting)
             @Html.ValidationMessageFor(model => model.CustomFormatting)
+            <div id="CustomFormattingExample"></div>
         </td>
     </tr>
     <tr>
@@ -143,7 +139,15 @@
             @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
-    
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SelectedStoreIds)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.SelectedStoreIds)
+            @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+        </td>
+    </tr>
 	@if (Model.Id > 0)
 	{
 		<tr>
@@ -262,18 +266,12 @@
         <tr class="round-order-total">
             <td class="adminTitle">
             </td>
-            <td class="adminData">
-                
+            <td class="adminData">                
                 @if (Model.RoundOrderTotalPaymentMethods.Any())
                 {
                     <div class="alert alert-info">
                         <span>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</span>
-                        @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
-                        {
-                            <span class="pr-1">
-                                <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
-                            </span>
-                        }
+                        @Html.Raw(string.Join(" · ", Model.RoundOrderTotalPaymentMethods.Select(x => $"<a href='{Url.Action("Edit", "Payment", new { systemName = x.Key })}'>{x.Value.HtmlEncode()}</a>")))
                     </div>
                 }
                 else
@@ -287,7 +285,32 @@
     </table>
 }
 
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
+<script>
+    $(function () {
+
+        // Show custom formatting example.
+        $('#@Html.FieldIdFor(model => model.CustomFormatting)').on('change', function () {
+			$.ajax({
+				cache: false,
+				type: 'GET',
+				url: '@(Url.Action("GetCustomFormattingExample", "Currency"))',
+				data: {
+					"currencyId" : @Model.Id,
+					"customFormat": $('#@Html.FieldIdFor(model => model.CustomFormatting)').val()
+				},
+				success: function (response) {
+                    if (response.error.length > 0) {
+                        $('#CustomFormattingExample').html('<div class="text-warning mt-1">' + response.error + '</div>');
+                    }
+                    else if (response.example.length > 0) {
+                        $('#CustomFormattingExample').html('<div class="text-muted mt-1">' + response.example + '</div>');
+                    }
+                    else {
+                        $('#CustomFormattingExample').empty();
+                    }
+				}
+            });
+        }).trigger('change');
+
+    });
+</script>

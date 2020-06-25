@@ -9,6 +9,7 @@ namespace SmartStore.Admin.Models.News
     {
         [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.NewsItem")]
         public int NewsItemId { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.NewsItem")]
         [AllowHtml]
         public string NewsItemTitle { get; set; }

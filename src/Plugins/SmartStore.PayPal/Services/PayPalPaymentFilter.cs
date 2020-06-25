@@ -20,8 +20,6 @@ namespace SmartStore.PayPal.Services
             _orderTotalCalculationService = orderTotalCalculationService;
         }
 
-        public string GetConfigurationUrl(string systemName) => null;
-
         public bool IsExcluded(PaymentFilterRequest request)
         {
             if (request.Customer == null)

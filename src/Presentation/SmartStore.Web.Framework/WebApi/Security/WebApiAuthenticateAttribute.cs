@@ -11,14 +11,14 @@ using System.Web.Http.Dependencies;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
 	public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
 	{
 		protected HmacAuthentication _hmac = new HmacAuthentication();
@@ -34,9 +34,12 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			{
 				byte[] contentBytes = request.Content.ReadAsByteArrayAsync().Result;
 
-				if (contentBytes != null && contentBytes.Length > 0)
-					return _hmac.CreateContentMd5Hash(contentBytes);
+                if (contentBytes != null && contentBytes.Length > 0)
+                {
+                    return _hmac.CreateContentMd5Hash(contentBytes);
+                }
 			}
+
 			return "";
 		}
 
@@ -49,11 +52,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				try
 				{
 					var permissionService = dependencyScope.GetService<IPermissionService>();
-
-					if (permissionService.GetPermissionRecordBySystemName(Permission) != null)
-					{
-						result = permissionService.Authorize(Permission, customer);
-					}
+                    result = permissionService.Authorize(Permission, customer);
 				}
 				catch { }
 			}
@@ -77,9 +76,9 @@ namespace SmartStore.Web.Framework.WebApi.Security
 					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatInvariant(strResult)
 				);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
 			}
 		}
 
@@ -92,9 +91,9 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				var customerService = dependencyScope.GetService<ICustomerService>();
 				customer = customerService.GetCustomerById(customerId);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
 			}
 
 			return customer;
@@ -221,9 +220,9 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			{
 				result = IsAuthenticated(actionContext, dependencyScope, controllingData, utcNow, out customer);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
 			}
 
 			if (result == HmacResult.Success)
@@ -259,7 +258,12 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
 				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
-				if (controllingData.LogUnauthorized)
+                if (result == HmacResult.UserHasNoPermission && Permission.HasValue())
+                {
+                    headers.Add(WebApiGlobal.Header.MissingPermission, Permission);
+                }
+
+                if (controllingData.LogUnauthorized)
 				{
 					LogUnauthorized(actionContext, dependencyScope, result, customer);
 				}

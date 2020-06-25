@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Routing;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
-using SmartStore.Services.Configuration;
-using SmartStore.Core.Caching;
+using SmartStore.DevTools.Security;
+using SmartStore.Services;
 
 namespace SmartStore.DevTools
 {
-	[DisplayOrder(10)]
+    [DisplayOrder(10)]
 	[SystemName("Widgets.DevToolsDemo")]
 	[FriendlyName("Dev-Tools Demo Widget")]
 	public class DevToolsPlugin : BasePlugin, IConfigurable //, IWidget
 	{
-		private readonly ISettingService _settingService;
+        private readonly ICommonServices _services;
 		private readonly ICacheableRouteRegistrar _cacheableRouteRegistrar;
 
-		public DevToolsPlugin(ISettingService settingService,
+		public DevToolsPlugin(
+            ICommonServices services,
 			ICacheableRouteRegistrar cacheAbleRouteRegistrar)
         {
-			_settingService = settingService;
+            _services = services;
 			_cacheableRouteRegistrar = cacheAbleRouteRegistrar;
 
-			this.Logger = NullLogger.Instance;
+			Logger = NullLogger.Instance;
         }
 
 		public ILogger Logger { get; set; }
@@ -53,24 +53,23 @@ namespace SmartStore.DevTools
 
         public override void Install()
         {
-			// Example for how to add a route to the output cache
-			//_cacheableRouteRegistrar.RegisterCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
+            // Example for how to add a route to the output cache
+            //_cacheableRouteRegistrar.RegisterCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
 
-			_settingService.SaveSetting(new ProfilerSettings());
+            _services.Settings.SaveSetting(new ProfilerSettings());
+
 			base.Install();
 
 			Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
-        /// <summary>
-        /// Uninstall plugin
-        /// </summary>
         public override void Uninstall()
         {
-			// Example for how to remove a route from the output cache
-			//_cacheableRouteRegistrar.RemoveCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
+            // Example for how to remove a route from the output cache
+            //_cacheableRouteRegistrar.RemoveCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
 
-			_settingService.DeleteSetting<ProfilerSettings>();
+            _services.Settings.DeleteSetting<ProfilerSettings>();
+
 			base.Uninstall();
         }
 

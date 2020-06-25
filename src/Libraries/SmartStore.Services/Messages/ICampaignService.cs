@@ -37,18 +37,25 @@ namespace SmartStore.Services.Messages
         IList<Campaign> GetAllCampaigns();
         
         /// <summary>
-        /// Sends a campaign to specified emails
+        /// Sends a campaign to all newsletter subscribers.
         /// </summary>
-        /// <param name="campaign">Campaign</param>
-        /// <param name="subscriptions">Subscriptions</param>
-        /// <returns>Total emails sent</returns>
-        int SendCampaign(Campaign campaign, IEnumerable<NewsLetterSubscription> subscriptions);
+        /// <param name="campaign">Campaign.</param>
+        /// <returns>Number of queued messages.</returns>
+        int SendCampaign(Campaign campaign);
 
-		/// <summary>
-		/// Creates a campaign email without sending it for previewing and testing purposes.
-		/// </summary>
-		/// <param name="campaign">The campaign to preview</param>
-		/// <returns>The preview result</returns>
-		CreateMessageResult Preview(Campaign campaign);
+        /// <summary>
+        /// Sends a campaign to specified subscriber.
+        /// </summary>
+        /// <param name="campaign">Campaign.</param>
+        /// <param name="subscriber">Newsletter subscriber.</param>
+        /// <returns>Message result.</returns>
+        CreateMessageResult SendCampaign(Campaign campaign, NewsletterSubscriber subscriber);
+
+        /// <summary>
+        /// Creates a campaign email without sending it for previewing and testing purposes.
+        /// </summary>
+        /// <param name="campaign">The campaign to preview</param>
+        /// <returns>The preview result</returns>
+        CreateMessageResult Preview(Campaign campaign);
 	}
 }

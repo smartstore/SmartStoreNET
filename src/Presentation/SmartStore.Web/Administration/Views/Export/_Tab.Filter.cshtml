@@ -1,4 +1,5 @@
 ﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 
@@ -12,7 +13,7 @@
 					@Html.SmartLabelFor(x => x.Filter.StoreId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+                    @Html.EditorFor(x => x.Filter.StoreId)
 					@Html.ValidationMessageFor(x => x.Filter.StoreId)
 				</td>
 			</tr>
@@ -32,6 +33,14 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.Filter.IsPublished)
 				@Html.ValidationMessageFor(x => x.Filter.IsPublished)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.Visibility)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.Filter.Visibility, ProductVisibility.Full.ToSelectList(false), Model.AllString)
 			</td>
 		</tr>
 		<tr>
@@ -102,9 +111,17 @@
 				@Html.SmartLabelFor(x => x.Filter.CategoryIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.Filter.CategoryIds,
-					new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
-					new { multiple = "multiple" })
+                <select id="@Html.FieldIdFor(x => x.Filter.CategoryIds)" name="@Html.FieldNameFor(x => x.Filter.CategoryIds)" 
+                        multiple="multiple" 
+                        placeholder="@T("Common.Unspecified")"
+                        data-select="True" 
+                        data-select-lazy="True" 
+                        data-select-url="@Url.Action("AllCategories", "Category", new { selectedIds = string.Join(",", Model.Filter.SelectedCategories.Select(x => x.Value)) })">
+                    @foreach (var item in Model.Filter.SelectedCategories)
+                    {
+                        <option value="@item.Value" selected="selected">@item.Text</option>
+                    }
+                </select>
 				@Html.ValidationMessageFor(x => x.Filter.CategoryIds)
 			</td>
 		</tr>
@@ -244,7 +261,7 @@
 					@Html.SmartLabelFor(x => x.Filter.StoreId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+					@Html.EditorFor(x => x.Filter.StoreId)
 					@Html.ValidationMessageFor(x => x.Filter.StoreId)
 				</td>
 			</tr>
@@ -349,7 +366,7 @@
 					@Html.SmartLabelFor(x => x.Filter.StoreId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+					@Html.EditorFor(x => x.Filter.StoreId)
 					@Html.ValidationMessageFor(x => x.Filter.StoreId)
 				</td>
 			</tr>

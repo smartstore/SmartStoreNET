@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
-using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Order
 {
-	public partial class OrderDetailsModel : EntityModelBase
+    public partial class OrderDetailsModel : EntityModelBase
     {
         public OrderDetailsModel()
         {
@@ -52,6 +52,26 @@ namespace SmartStore.Web.Models.Order
         public string VatNumber { get; set; }
 
         public string PaymentMethod { get; set; }
+
+        public string PaymentMethodSystemName { get; set; }
+
+        #region Offline payment data 
+
+        public string CardNumber { get; set; }
+        public string MaskedCreditCardNumber { get; set; }
+        public string CardCvv2 { get; set; }
+        public string CardExpirationMonth { get; set; }
+        public string CardExpirationYear { get; set; }
+        public string DirectDebitAccountHolder { get; set; }
+        public string DirectDebitAccountNumber { get; set; }
+        public string DirectDebitBankCode { get; set; }
+        public string DirectDebitBankName { get; set; }
+        public string DirectDebitBIC { get; set; }
+        public string DirectDebitCountry { get; set; }
+        public string DirectDebitIban { get; set; }
+
+        #endregion
+
         public bool CanRePostProcessPayment { get; set; }
         public bool DisplayPurchaseOrderNumber { get; set; }
         public string PurchaseOrderNumber { get; set; }
@@ -78,8 +98,10 @@ namespace SmartStore.Web.Models.Order
 
         public bool ShowSku { get; set; }
 		public bool ShowProductImages { get; set; }
-		public IList<OrderItemModel> Items { get; set; }
+        public bool ShowProductBundleImages { get; set; }
+        public int BundleThumbSize { get; set; }
 
+        public IList<OrderItemModel> Items { get; set; }
         public IList<OrderNote> OrderNotes { get; set; }
 
         #region Nested Classes
@@ -106,12 +128,13 @@ namespace SmartStore.Web.Models.Order
 			public bool BundlePerItemShoppingCart { get; set; }
 			public PictureModel Picture { get; set; }
 
-			public IList<BundleItemModel> BundleItems { get; set; }
+            public IList<BundleItemModel> BundleItems { get; set; }
         }
 
 		public partial class BundleItemModel : ModelBase
 		{
-			public string Sku { get; set; }
+            public PictureModel Picture { get; set; }
+            public string Sku { get; set; }
 			public string ProductName { get; set; }
 			public string ProductSeName { get; set; }
 			public string ProductUrl { get; set; }
@@ -120,7 +143,8 @@ namespace SmartStore.Web.Models.Order
 			public int DisplayOrder { get; set; }
 			public string PriceWithDiscount { get; set; }
 			public string AttributeInfo { get; set; }
-		}
+            public bool HideThumbnail { get; set; }
+        }
 
         public partial class TaxRate : ModelBase
         {
@@ -149,6 +173,7 @@ namespace SmartStore.Web.Models.Order
             public DateTime? ShippedDate { get; set; }
             public DateTime? DeliveryDate { get; set; }
         }
+
         #endregion
     }
 }

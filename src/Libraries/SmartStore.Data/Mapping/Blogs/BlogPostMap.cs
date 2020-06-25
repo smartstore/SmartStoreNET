@@ -7,16 +7,29 @@ namespace SmartStore.Data.Mapping.Blogs
     {
         public BlogPostMap()
         {
-            this.ToTable("BlogPost");
-            this.HasKey(bp => bp.Id);
-            this.Property(bp => bp.Title).IsRequired();
-            this.Property(bp => bp.Body).IsRequired().IsMaxLength();
-            this.Property(bp => bp.MetaKeywords).HasMaxLength(400);
-            this.Property(bp => bp.MetaTitle).HasMaxLength(400);
+            ToTable("BlogPost");
+            HasKey(bp => bp.Id);
+            Property(bp => bp.Title).IsRequired();
+            Property(bp => bp.Body).IsRequired().IsMaxLength();
+            Property(bp => bp.MetaKeywords).HasMaxLength(400);
+            Property(bp => bp.MetaTitle).HasMaxLength(400);
+            Property(bp => bp.MediaFileId).HasColumnName("MediaFileId");
+            Property(bp => bp.PreviewMediaFileId).HasColumnName("PreviewMediaFileId");
 
-            this.HasRequired(bp => bp.Language)
+            HasRequired(bp => bp.Language)
                 .WithMany()
-                .HasForeignKey(bp => bp.LanguageId).WillCascadeOnDelete(true);
+                .HasForeignKey(bp => bp.LanguageId)
+                .WillCascadeOnDelete(true);
+
+            HasOptional(bp => bp.MediaFile)
+                .WithMany()
+                .HasForeignKey(bp => bp.MediaFileId)
+                .WillCascadeOnDelete(false);
+
+            HasOptional(bp => bp.PreviewMediaFile)
+                .WithMany()
+                .HasForeignKey(bp => bp.PreviewMediaFileId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

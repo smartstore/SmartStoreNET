@@ -24,11 +24,11 @@ namespace SmartStore.Web.Framework.Validators
 
 			if (_canResolveServices)
 			{
-				// (Perf) although FV expects a culture parameter, we gonna ignore it.
-				// It's highly unlikely that it is anything different than our WorkingLanguage.
-				var services = EngineContext.Current.Resolve<ICommonServices>();
-				result = services.Localization.GetResource("Validation." + key, logIfNotFound: false, defaultValue: result, returnEmptyIfNotFound: true);
-			}
+                // (Perf) although FV expects a culture parameter, we gonna ignore it.
+                // It's highly unlikely that it is anything different than our WorkingLanguage.
+                var services = EngineContext.Current.Resolve<ICommonServices>();
+                result = services.Localization.GetResource("Validation." + key, logIfNotFound: false, defaultValue: result, returnEmptyIfNotFound: true);
+            }
 
 			return result;
 		}

@@ -25,6 +25,23 @@
 .fs-xs,
 .fs-xs a        { font-size: $font-size-xs !important; }
 
+@include media-breakpoint-only(xs) {
+    .rfs {
+        font-size: 14px;
+    } 
+}
+
+@include media-breakpoint-only(sm) {
+    .rfs {
+        font-size: 15px;
+    } 
+}
+
+@include media-breakpoint-down(md) {
+    .rfs {
+        word-break: break-word;
+    } 
+}
 
 // Font weight Helpers
 // ======================================
@@ -43,13 +60,13 @@ h6, .h6 {
     }
 }
 
-.font-weight-light {
-    font-weight: $font-weight-light !important;
-}
-
-.font-weight-medium {
+.font-weight-medium, .fwm {
     font-weight: $font-weight-medium !important;
 }
+
+.fwb { @extend .font-weight-bold; }
+.fwn { @extend .font-weight-normal; }
+.fwl { @extend .font-weight-light; }
 
 
 // Heading & Title
@@ -72,7 +89,7 @@ h6, .h6 {
     .heading-title {
         position: relative;
         display: inline-block;
-        background: $body-bg;
+        background: var(--body-bg, #fff);
         padding-right: 1rem;
         font-weight: $font-weight-light;
     }
@@ -112,6 +129,48 @@ h6, .h6 {
 }
 
 
+// Long text
+// ======================================
+
+.long-text {
+    font-size: 1.0625rem;
+    line-height: 1.75rem;
+    letter-spacing: .015625rem;
+
+    h2, h3, h4 {
+        font-weight: $font-weight-bold;
+    }
+
+    h5, h6 {
+        font-weight: $font-weight-medium;
+    }
+
+    h2:not(:first-of-type) {
+        margin-top: 4rem;
+    }
+
+    h2 {
+        font-size: $h3-font-size;
+        margin-bottom: 2rem;
+    }
+
+    h3 {
+        font-size: $h4-font-size;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h4, h5, h6 {
+        font-size: inherit;
+        margin-top: 2rem;
+    }
+
+    h3, h6 {
+        color: $gray-700;
+    }
+}
+
+
 // Misc typo stuff
 // ======================================
 
@@ -140,12 +199,6 @@ a.pretty-link {
 
 .text-wrap {
     white-space: normal !important;
-}
-
-.text-body {
-    @if $font-size-base < 1rem {
-        font-size: $lead-font-size;
-    }   
 }
 
 code {

@@ -59,7 +59,10 @@ $footer-inverse-color-muted:    rgba(#fff, 0.5) !default;
 $footer-social-bg:              #aaa !default;
 $footer-social-color:           #fff !default;
 
-$facet-control-size:			20px;
+$facet-control-size:			20px !default;
+
+$font-size-root-md:             15px !default;
+$font-size-root-sm:             14px !default;
 
 
 // Material tabs
@@ -137,9 +140,21 @@ $btn-border-radius-sm:          .125rem;
 
 // Shadows
 
-$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
-$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
+$box-shadow-sm-var:             0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 2px 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 3px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1));
+$box-shadow-var:                0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 3px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.08)), 
+                                0 6px 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
+$box-shadow-lg-var:             0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 3px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 8px 20px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                                0 16px 42px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
+
+$box-shadow-sm:                 var(--box-shadow);
+$box-shadow:                    var(--box-shadow);
+$box-shadow-lg:                 var(--box-shadow);
+
 
 $input-box-shadow:              none;
 $input-focus-box-shadow:        none;
@@ -174,10 +189,15 @@ $btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in
 $btn-disabled-opacity:			0.5;
 
 
+// Badge
+
+$badge-font-weight:             $font-weight-medium !default;
+
+
 // Dropdown
 
-$dropdown-box-shadow:			$box-shadow;
-$dropdown-border-color:			rgba(#000, 0.05); 
+$dropdown-box-shadow:			$box-shadow-var;
+$dropdown-border-color:			rgba(#000, 0.025); 
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
@@ -185,7 +205,7 @@ $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 // Modal
 
 $modal-content-border-width:        0;
-$modal-backdrop-opacity:            .55;
+$modal-backdrop-opacity:            .75;
 $modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
 $modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .1), 0 15px 35px rgba(#32325d, .15), 0 5px 15px rgba(#000, .1);
 

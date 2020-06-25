@@ -1,5 +1,4 @@
 ﻿@model CategoryListModel
-@using Telerik.Web.Mvc.UI
 @{   
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
 }
@@ -38,11 +37,11 @@
 		@Html.SmartLabelFor(model => model.SearchAlias)
 		@Html.TextBoxFor(model => model.SearchAlias, new { @class = "form-control" })
 	</div>
-	@if (Model.AvailableStores.Count > 1)
+	@if (!Model.IsSingleStoreMode)
 	{
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchStoreId)
-			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+			@Html.EditorFor(model => model.SearchStoreId)
 		</div>
 	}
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -85,7 +84,7 @@
 				.Width(160)
 				.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-				.Hidden(Model.AvailableStores.Count <= 1)
+				.Hidden(Model.IsSingleStoreMode)
 				.Centered();
 		})
 		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))

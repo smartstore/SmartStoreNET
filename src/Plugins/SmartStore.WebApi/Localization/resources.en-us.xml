@@ -1,0 +1,105 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+    <LocaleResource Name="Plugins.FriendlyName.SmartStore.WebApi" AppendRootKey="false">
+        <Value>Web API</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugins.Permissions.DisplayName.WebApi" AppendRootKey="false">
+        <Value>Web API</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="AdminInstruction">
+        <Value>
+            <![CDATA[<ul>
+			<li>Only registered customers (see list below) with a public and a secret key for the API have access to it.</li>
+			<li>You can remove the access for a customer permanently by deleting the keys or temporary by disallowing them.</li>
+			<li>The rights of the respective customer group are valid for the API too.</li>
+			</ul>]]>
+        </Value>
+    </LocaleResource>
+    <LocaleResource Name="UserGridTabTitle">
+        <Value>User</Value>
+    </LocaleResource>
+    <LocaleResource Name="OptionsGridTabTitle">
+        <Value>Options</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiOdataUrl">
+        <Value>OData API URL</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiOdataUrl.Hint">
+        <Value>URL of the OData Web-API.</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiOdataMetadataUrl">
+        <Value>OData metadata URL</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiOdataMetadataUrl.Hint">
+        <Value>URL of the OData metadata. It describes the complete entity data model (EDM) the Web-API is based on.</Value>
+    </LocaleResource>
+    <LocaleResource Name="SwaggerUrl">
+        <Value>Swagger URL</Value>
+    </LocaleResource>
+    <LocaleResource Name="SwaggerUrl.Hint">
+        <Value>URL of the Swagger documentation of the Web-API.</Value>
+    </LocaleResource>
+    <LocaleResource Name="ValidMinutePeriod">
+        <Value>Request time window</Value>
+    </LocaleResource>
+    <LocaleResource Name="ValidMinutePeriod.Hint">
+        <Value>For security reasons should the time at which the request was sent to the API differ not too far from the current server time. With this setting, you set this time window in minutes.</Value>
+    </LocaleResource>
+    <LocaleResource Name="LogUnauthorized">
+        <Value>Log unauthorized accesses</Value>
+    </LocaleResource>
+    <LocaleResource Name="LogUnauthorized.Hint">
+        <Value>Each unauthorized access will be saved in the log list.</Value>
+    </LocaleResource>
+    <LocaleResource Name="NoRequestTimestampValidation">
+        <Value>No timestamp validation</Value>
+    </LocaleResource>
+    <LocaleResource Name="NoRequestTimestampValidation.Hint">
+        <Value>Specifies whether to validate that the timestamp of the previous request is less or equal than the one of the current. Prevents the occurrence of HmacResult.TimestampOlderThanLastRequest.</Value>
+    </LocaleResource>
+    <LocaleResource Name="AllowEmptyMd5Hash">
+        <Value>Allow authentification without MD5 hash</Value>
+    </LocaleResource>
+    <LocaleResource Name="AllowEmptyMd5Hash.Hint">
+        <Value>Specifies whether to allow authentifications without MD5 content hash.</Value>
+    </LocaleResource>
+    <LocaleResource Name="MaxTop">
+        <Value>Maximum pagesize</Value>
+    </LocaleResource>
+    <LocaleResource Name="MaxTop.Hint">
+        <Value>Specifies the maximum pagesize. Requests with a larger value for the pagesize ($top option) will be rejected.</Value>
+    </LocaleResource>
+    <LocaleResource Name="MaxExpansionDepth">
+        <Value>Maximum expansion depth</Value>
+    </LocaleResource>
+    <LocaleResource Name="MaxExpansionDepth.Hint">
+        <Value>Specifies the maximum expansion depth for the $expand option.</Value>
+    </LocaleResource>
+    <LocaleResource Name="PublicKey">
+        <Value>Public key</Value>
+    </LocaleResource>
+    <LocaleResource Name="SecretKey">
+        <Value>Secret key</Value>
+    </LocaleResource>
+    <LocaleResource Name="LastRequest">
+        <Value>Last access</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiEnabled">
+        <Value>Access allowed</Value>
+    </LocaleResource>
+    <LocaleResource Name="Activate">
+        <Value>Allow</Value>
+    </LocaleResource>
+    <LocaleResource Name="Deactivate">
+        <Value>Don't allow</Value>
+    </LocaleResource>
+    <LocaleResource Name="RemoveKeys">
+        <Value>Delete keys</Value>
+    </LocaleResource>
+    <LocaleResource Name="CreateKeys">
+        <Value>Generate keys</Value>
+    </LocaleResource>
+    <LocaleResource Name="ApiAccess">
+        <Value>Access to API</Value>
+    </LocaleResource>
+</Language>

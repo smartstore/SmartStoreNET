@@ -1,4 +1,5 @@
 ﻿using SmartStore.Collections;
+using SmartStore.DevTools.Security;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.DevTools
@@ -9,8 +10,10 @@ namespace SmartStore.DevTools
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Developer Tools")
-				.Icon("far fa-terminal")
-				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
+                .ResKey("Plugins.FriendlyName.SmartStore.DevTools")
+                .Icon("far fa-terminal")
+                .PermissionNames(DevToolsPermissions.Read)
+                .Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
 				.ToItem();
 			
 			pluginsNode.Prepend(menuItem);

@@ -140,11 +140,11 @@ namespace SmartStore.Services.Orders
 		{
 			var query = _orderRepository.Table;
 
-			if (storeId > 0)
-				query = query.Where(x => x.StoreId == storeId);
+            if (customerId > 0)
+                query = query.Where(x => x.CustomerId == customerId);
 
-			if (customerId > 0)
-				query = query.Where(x => x.CustomerId == customerId);
+            if (storeId > 0)
+				query = query.Where(x => x.StoreId == storeId);
 
 			if (startTime.HasValue)
 				query = query.Where(x => startTime.Value <= x.CreatedOnUtc);

@@ -4,6 +4,8 @@
 ;
 (function ($) {
 
+	var $w = $(window);
+
 	$.extend({
 
 		topZIndex: function (selector) {
@@ -185,58 +187,46 @@
 		 *       the user visible viewport of a web browser.
 		 *       only accounts for vertical position, not horizontal.
 		*/
-		visible: function (partial, hidden, direction) {
+		visible: function (partial, hidden, direction, container) {
 			if (this.length < 1)
-				return;
+				return false;
 
-			var $w = $(window);
+			// Set direction default to 'both'.
+			direction = direction || 'both';
+
 			var $t = this.length > 1 ? this.eq(0) : this,
+				isContained = typeof container !== 'undefined' && container !== null,
+				$c = isContained ? $(container) : $w,
+				wPosition = isContained ? $c.offset() : 0,
 				t = $t.get(0),
-				vpWidth = $w.width(),
-				vpHeight = $w.height(),
-				direction = (direction) ? direction : 'both',
+				vpWidth = $c.outerWidth(),
+				vpHeight = $c.outerHeight(),
 				clientSize = hidden === true ? t.offsetWidth * t.offsetHeight : true;
 
-			if (typeof t.getBoundingClientRect === 'function') {
+			var rec = t.getBoundingClientRect(),
+				tViz = isContained ?
+					rec.top - wPosition.top >= 0 && rec.top < vpHeight + wPosition.top :
+					rec.top >= 0 && rec.top < vpHeight,
+				bViz = isContained ?
+					rec.bottom - wPosition.top > 0 && rec.bottom <= vpHeight + wPosition.top :
+					rec.bottom > 0 && rec.bottom <= vpHeight,
+				lViz = isContained ?
+					rec.left - wPosition.left >= 0 && rec.left < vpWidth + wPosition.left :
+					rec.left >= 0 && rec.left < vpWidth,
+				rViz = isContained ?
+					rec.right - wPosition.left > 0 && rec.right < vpWidth + wPosition.left :
+					rec.right > 0 && rec.right <= vpWidth,
+				vV = partial ? tViz || bViz : tViz && bViz,
+				hV = partial ? lViz || rViz : lViz && rViz,
+				vVisible = (rec.top < 0 && rec.bottom > vpHeight) ? true : vV,
+				hVisible = (rec.left < 0 && rec.right > vpWidth) ? true : hV;
 
-				// Use this native browser method, if available.
-				var rec = t.getBoundingClientRect(),
-					tViz = rec.top >= 0 && rec.top < vpHeight,
-					bViz = rec.bottom > 0 && rec.bottom <= vpHeight,
-					lViz = rec.left >= 0 && rec.left < vpWidth,
-					rViz = rec.right > 0 && rec.right <= vpWidth,
-					vVisible = partial ? tViz || bViz : tViz && bViz,
-					hVisible = partial ? lViz || rViz : lViz && rViz;
-
-				if (direction === 'both')
-					return clientSize && vVisible && hVisible;
-				else if (direction === 'vertical')
-					return clientSize && vVisible;
-				else if (direction === 'horizontal')
-					return clientSize && hVisible;
-			} else {
-
-				var viewTop = $w.scrollTop(),
-					viewBottom = viewTop + vpHeight,
-					viewLeft = $w.scrollLeft(),
-					viewRight = viewLeft + vpWidth,
-					offset = $t.offset(),
-					_top = offset.top,
-					_bottom = _top + $t.height(),
-					_left = offset.left,
-					_right = _left + $t.width(),
-					compareTop = partial === true ? _bottom : _top,
-					compareBottom = partial === true ? _top : _bottom,
-					compareLeft = partial === true ? _right : _left,
-					compareRight = partial === true ? _left : _right;
-
-				if (direction === 'both')
-					return !!clientSize && ((compareBottom <= viewBottom) && (compareTop >= viewTop)) && ((compareRight <= viewRight) && (compareLeft >= viewLeft));
-				else if (direction === 'vertical')
-					return !!clientSize && ((compareBottom <= viewBottom) && (compareTop >= viewTop));
-				else if (direction === 'horizontal')
-					return !!clientSize && ((compareRight <= viewRight) && (compareLeft >= viewLeft));
-			}
+			if (direction === 'both')
+				return clientSize && vVisible && hVisible;
+			else if (direction === 'vertical')
+				return clientSize && vVisible;
+			else if (direction === 'horizontal')
+				return clientSize && hVisible;
 		},
 
 		moreLess: function () {
@@ -255,7 +245,19 @@
 				}
 
 				var inner = el.find('> .more-block');
-				var actualHeight = inner.length > 0 ? inner.outerHeight(false) : el.outerHeight(false);
+
+                function getActualHeight() {
+                    return inner.length > 0 ? inner.outerHeight(false) : el.outerHeight(false);
+                }
+
+                var actualHeight = getActualHeight();
+
+                if (actualHeight === 0) {
+                    el.evenIfHidden(function () {
+                        actualHeight = getActualHeight();
+                    });
+                }
+
 				var maxHeight = el.data('max-height') || 260;
 
 				if (actualHeight <= maxHeight) {
@@ -279,17 +281,74 @@
 				});
 
 				var expander = el.find('.btn-text-expander--expand');
-				if (expander.length == 0) {
+				if (expander.length === 0) {
 					el.append('<a href="#" class="btn-text-expander btn-text-expander--expand"><i class="fa fa fa-angle-double-down pr-2"></i><span>' + Res['Products.Longdesc.More'] + '</span></a>');
 				}
 
 				var collapser = el.find('.btn-text-expander--collapse');
-				if (collapser.length == 0) {
+				if (collapser.length === 0) {
 					el.append('<a href="#" class="btn-text-expander btn-text-expander--collapse"><i class="fa fa fa-angle-double-up pr-2"></i><span>' + Res['Products.Longdesc.Less'] + '</span></a>');
 				}
 			});
-		}
-	}); // $.fn.extend
+		},
+
+        // Element must be decorated with visibilty:hidden
+        masonaryGrid: function (itemSelector, callback) {
+            
+            return this.each(function () {
+
+                var self = $(this);
+                var grid = self[0];
+                var allItems = self.find(".card");
+
+                var viewport = ResponsiveBootstrapToolkit;
+                if (viewport.is('<=sm')) {
+                    self.css("visibility", "visible");
+                    return false;
+                }
+                
+                self.addClass("masonary-grid");    
+
+                // first call so aos can be initialized correctly
+                resizeAllGridItems();
+                
+                self.imagesLoaded(function () {
+                    // second call to get correct size if pictures weren't loaded on the first call
+                    resizeAllGridItems();
+                    self.css("visibility", "visible");
+
+                    if (typeof callback === 'function') {
+                        _.defer(function () {
+                            callback.call(this);
+                        });
+                    }
+                });
+
+                function resizeGridItem(item) {
+                    var rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+                    var rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+                    var rowSpan = Math.ceil((item.querySelector(itemSelector).getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+                    item.style.gridRowEnd = "span " + rowSpan;
+                }
+
+                function resizeAllGridItems() {
+                    allItems.each(function () {
+                        resizeGridItem($(this)[0]);
+                    });
+                }
+
+                var timeout;
+
+                $w.on("resize", function () {
+                    if (timeout) {
+                        window.cancelAnimationFrame(timeout);
+                    }
+
+                    timeout = window.requestAnimationFrame(resizeAllGridItems);
+                });
+            });
+        }
+    }); // $.fn.extend
 
     // Shorter aliases
     $.fn.gap = $.fn.cushioning; 

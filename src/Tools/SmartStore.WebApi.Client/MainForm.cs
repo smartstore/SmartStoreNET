@@ -108,7 +108,8 @@ namespace SmartStoreNetWebApiClient
 				var id1 = txtIdentfier1.Text.ToInt();
 				var id2 = txtIdentfier2.Text;
 				var pictureId = txtPictureId.Text.ToInt();
-				var keyForId1 = "Id";
+                var moreData = txtMoreData.Text.EmptyNull().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                var keyForId1 = "Id";
 				var keyForId2 = "";
 
 				multiPartData = new Dictionary<string, object>();
@@ -122,16 +123,28 @@ namespace SmartStoreNetWebApiClient
 				{
 					// only one identifier required: import profile id or profile name
 					keyForId2 = "Name";
-
-					// to delete existing import files:
-					//multiPartData.Add("deleteExisting", true);
 				}
 
-				if (id1 != 0)
-					multiPartData.Add(keyForId1, id1);
+                if (id1 != 0)
+                {
+                    multiPartData.Add(keyForId1, id1);
+                }
 
-				if (id2.HasValue())
-					multiPartData.Add(keyForId2, id2);
+                if (id2.HasValue())
+                {
+                    multiPartData.Add(keyForId2, id2);
+                }
+
+                // To delete existing import files... deleteExisting:true
+                // To start import... startImport:true
+                foreach (var str in moreData)
+                {
+                    var data = str.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (data.Length == 2)
+                    {
+                        multiPartData.Add(data[0], data[1]);
+                    }
+                }
 
 				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text, pictureId);
 			}
@@ -256,8 +269,10 @@ namespace SmartStoreNetWebApiClient
 			txtIdentfier1.Visible = show;
 			lblIdentfier2.Visible = show;
 			txtIdentfier2.Visible = show;
-			txtPictureId.Visible = show;
-			lblPictureId.Visible = show;
+            lblPictureId.Visible = show;
+            txtPictureId.Visible = show;
+            lblMoreData.Visible = show;
+            txtMoreData.Visible = show;
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)

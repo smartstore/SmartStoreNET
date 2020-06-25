@@ -34,9 +34,6 @@ Text suggestions:</div><ul>
 	<LocaleResource Name="IncompleteProfileDetails">
 		<Value>Incomplete Amazon profile data!</Value>
 	</LocaleResource>
-	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Payment method "Login and Pay with Amazon" is not available for store "{0}".</Value>
-	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
 		<Value>Missing checkout session state for "Login and Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
 	</LocaleResource>
@@ -136,23 +133,23 @@ Text suggestions:</div><ul>
 		<Value>The Merchant ID you received during registration at Amazon's Seller Central.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace">
-		<Value>Marketplace</Value>
+		<Value>Currency</Value>
 	</LocaleResource>
 	<LocaleResource Name="Marketplace.Hint">
-		<Value>The country where you registered your Amazon seller account.</Value>
+		<Value>Specifies both the currency and the Amazon region.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Marketplace.De">
-		<Value>Germany</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Uk">
-		<Value>United Kingdom of Great Britain</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Us">
-		<Value>USA</Value>
-	</LocaleResource>
-	<LocaleResource Name="Marketplace.Jp">
-		<Value>Japan</Value>
-	</LocaleResource>
+    <LocaleResource Name="Marketplace.De">
+        <Value>EUR (Euro)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Uk">
+        <Value>GBP (Pound Sterling)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Us">
+        <Value>USD (US Dollar)</Value>
+    </LocaleResource>
+    <LocaleResource Name="Marketplace.Jp">
+        <Value>JPY (Japanese Yen)</Value>
+    </LocaleResource>
 	<LocaleResource Name="AccessKey">
 		<Value>Your Access Key ID</Value>
 	</LocaleResource>
@@ -337,4 +334,7 @@ Text suggestions:</div><ul>
 	<LocaleResource Name="InformCustomerAddErrors.Hint">
 		<Value>Specifies to append the error message to the order note and email.</Value>
 	</LocaleResource>
+  <LocaleResource Name="CookieInfo">
+    <Value>Amazon Pay uses cookies to display and process the payment transaction via Amazon.</Value>
+  </LocaleResource>
 </Language>

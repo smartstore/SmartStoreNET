@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -14,7 +16,7 @@ namespace SmartStore.Services.Orders
     public partial interface IOrderReportService
     {
         /// <summary>
-        /// Get order average report
+        /// Get order average report.
         /// </summary>
 		/// <param name="storeId">Store identifier</param>
 		/// <param name="orderStatusIds">Filter by order status</param>
@@ -24,18 +26,30 @@ namespace SmartStore.Services.Orders
         /// <param name="endTimeUtc">End date</param>
         /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
         /// <param name="ignoreCancelledOrders">A value indicating whether to ignore cancelled orders</param>
-        /// <returns>Result</returns>
-		OrderAverageReportLine GetOrderAverageReportLine(int storeId, int[] orderStatusIds,
-			int[] paymentStatusIds, int[] shippingStatusIds, DateTime? startTimeUtc,
-			DateTime? endTimeUtc, string billingEmail, bool ignoreCancelledOrders = false);
-        
+        /// <returns>Order average report line.</returns>
+		OrderAverageReportLine GetOrderAverageReportLine(int storeId,
+            int[] orderStatusIds,
+            int[] paymentStatusIds,
+            int[] shippingStatusIds,
+            DateTime? startTimeUtc,
+            DateTime? endTimeUtc,
+            string billingEmail,
+            bool ignoreCancelledOrders = false);
+
         /// <summary>
-        /// Get order average report
+        /// Get order average report.
         /// </summary>
-		/// <param name="storeId">Store identifier</param>
+        /// <param name="orderQuery">Order queryable.</param>
+        /// <returns>Order average report line.</returns>
+        OrderAverageReportLine GetOrderAverageReportLine(IQueryable<Order> orderQuery);
+
+        /// <summary>
+        /// Get order average report.
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
         /// <param name="os">Order status</param>
-        /// <returns>Result</returns>
-		OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
+        /// <returns>Order average report.</returns>
+        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
 
         /// <summary>
         /// Get best sellers report
@@ -51,11 +65,17 @@ namespace SmartStore.Services.Orders
         /// <param name="orderBy">1 - order by quantity, 2 - order by total amount</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Result</returns>
-		IList<BestsellersReportLine> BestSellersReport(int storeId,
-			DateTime? startTime, DateTime? endTime,
-			OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
-            int billingCountryId = 0, int recordsToReturn = 5,
-			int orderBy = 1, bool showHidden = false);
+		IList<BestsellersReportLine> BestSellersReport(
+            int storeId,
+            DateTime? startTime,
+            DateTime? endTime,
+            OrderStatus? os, 
+            PaymentStatus? ps, 
+            ShippingStatus? ss,
+            int billingCountryId = 0,
+            int recordsToReturn = 5,
+            int orderBy = 1,
+            bool showHidden = false);
 
         /// <summary>
         /// Gets a the count of purchases for a product
@@ -83,21 +103,43 @@ namespace SmartStore.Services.Orders
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Products</returns>
-        IPagedList<Product> ProductsNeverSold(DateTime? startTime,
-            DateTime? endTime, int pageIndex, int pageSize, bool showHidden = false);
+        IPagedList<Product> ProductsNeverSold(DateTime? startTime, DateTime? endTime, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
-        /// Get profit report
+        /// Get order profit.
         /// </summary>
-		/// <param name="storeId">Store identifier</param>
-        /// <param name="startTimeUtc">Start date</param>
-        /// <param name="endTimeUtc">End date</param>
-		/// <param name="orderStatusIds">Filter by order status</param>
-		/// <param name="paymentStatusIds">Filter by payment status</param>
-		/// <param name="shippingStatusIds">Filter by shipping status</param>
-        /// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
-        /// <returns>Result</returns>
-		decimal ProfitReport(int storeId, int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-            DateTime? startTimeUtc, DateTime? endTimeUtc, string billingEmail);
+        /// <param name="orderQuery">Order queryable.</param>
+        /// <returns>Order profit.</returns>
+        decimal GetProfit(IQueryable<Order> orderQuery);
+
+
+        /// <summary>
+        /// Get paged list of incomplete orders
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time limitation</param>
+        /// <param name="endTimeUtc">End time limitation</param>
+        /// <returns>List of incomplete orders</returns>
+        IPagedList<OrderDataPoint> GetIncompleteOrders(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
+
+        /// <summary>
+        /// Get paged list of orders as ChartDataPoints
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time UTC</param>
+        /// <param name="endTimeUtc">End time UTC</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns></returns>
+        IPagedList<OrderDataPoint> GetOrdersDashboardData(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc, int pageIndex, int pageSize);
+
+        /// <summary>
+        /// Get orders total
+        /// </summary>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="startTimeUtc">Start time UTC</param>
+        /// <param name="endTimeUtc">End time UTC</param>
+        /// <returns></returns>
+        decimal GetOrdersTotal(int storeId, DateTime? startTimeUtc, DateTime? endTimeUtc);
     }
 }

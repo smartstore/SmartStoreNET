@@ -1,152 +1,169 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services;
 using SmartStore.Services.Common;
+using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class CookieConsentFilter : IActionFilter, IResultFilter
+	public class CookieConsentFilter : IActionFilter, IResultFilter
 	{
 		private readonly IUserAgent _userAgent;
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 		private readonly PrivacySettings _privacySettings;
+		private readonly ICookieManager _cookieManager;
 
+		private bool _isProcessableRequest;
+		
 		public CookieConsentFilter(
 			IUserAgent userAgent,
 			ICommonServices services,
 			Lazy<IWidgetProvider> widgetProvider,
-			PrivacySettings privacySettings)
+			PrivacySettings privacySettings,
+			ICookieManager cookieManager)
 		{
 			_userAgent = userAgent;
 			_services = services;
 			_widgetProvider = widgetProvider;
 			_privacySettings = privacySettings;
+			_cookieManager = cookieManager;
+		}
+
+		private bool IsProcessableRequest(ControllerContext controllerContext)
+		{
+			if (!_privacySettings.EnableCookieConsent)
+				return false;
+
+			if (controllerContext.IsChildAction)
+				return false;
+
+			var request = controllerContext.HttpContext?.Request;
+
+			if (request == null)
+				return false;
+
+			if (request.IsAjaxRequest())
+				return false;
+
+			if (!String.Equals(request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+				return false;
+
+			return true;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			if (!_privacySettings.EnableCookieConsent)
+			_isProcessableRequest = IsProcessableRequest(filterContext);
+
+			if (!_isProcessableRequest)
 				return;
 
-			if (filterContext?.ActionDescriptor == null || filterContext?.HttpContext?.Request == null)
-				return;
-
-			string actionName = filterContext.ActionDescriptor.ActionName;
-			string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
-
-			var viewBag = filterContext.Controller.ViewBag;
-			viewBag.AskCookieConsent = true;
-			viewBag.HasCookieConsent = false;
-
+			var isLegacy = false;
 			var request = filterContext.HttpContext.Request;
+			var response = filterContext.HttpContext.Response;
+			ConsentCookie cookieData = null;
 
-			// Check if the user has a consent cookie
-			var consentCookie = request.Cookies[CookieConsent.CONSENT_COOKIE_NAME];
+			// Check if the user has a consent cookie.
+			var consentCookie = request.Cookies["CookieConsent"];
 			if (consentCookie == null)
 			{
 				// No consent cookie. We first check the Do Not Track header value, this can have the value "0" or "1"
-				string dnt = request.Headers.Get("DNT");
+				var doNotTrack = request.Headers.Get("DNT");
 
-				// If we receive a DNT header, we accept its value and do not ask the user anymore
-				if (!String.IsNullOrEmpty(dnt))
+				// If we receive a DNT header, we accept its value (0 = give consent, 1 = deny) and do not ask the user anymore.
+				if (doNotTrack.HasValue())
 				{
-					viewBag.AskCookieConsent = false;
-					viewBag.HasCookieConsent = dnt == "0";
+					if (doNotTrack.Equals("0"))
+					{
+						// Tracking consented.
+						_cookieManager.SetConsentCookie(response, true, true);
+					}
+					else
+					{
+						// Tracking denied.
+						_cookieManager.SetConsentCookie(response, false, false);
+					}
 				}
 				else
 				{
 					if (_userAgent.IsBot)
 					{
-						// don't ask consent from search engines, also don't set cookies
-						viewBag.AskCookieConsent = false;
+						// Don't ask consent from search engines, also don't set cookies.
+						_cookieManager.SetConsentCookie(response, true, true);
 					}
 					else
 					{
-						// first request on the site and no DNT header. 
-						consentCookie = new HttpCookie(CookieConsent.CONSENT_COOKIE_NAME);
-						consentCookie.Value = "asked";
-						filterContext.HttpContext.Response.Cookies.Add(consentCookie);
+						// First request on the site and no DNT header (we could use session cookie, which is allowed by EU cookie law).
+						// Don't set cookie!
 					}
 				}
 			}
 			else
 			{
-				// we received a consent cookie
-				viewBag.AskCookieConsent = false;
-				if (consentCookie.Value == "asked")
+				// We received a consent cookie
+				try
 				{
-					// consent is implicitly given
-					consentCookie.Expires = DateTime.UtcNow.AddYears(1);
-					filterContext.HttpContext.Response.Cookies.Set(consentCookie);
-					viewBag.HasCookieConsent = true;
-				}
-				else if (consentCookie.Value == "true")
+					cookieData = JsonConvert.DeserializeObject<ConsentCookie>(consentCookie.Value);
+				} 
+				catch { }
+				
+				if (cookieData == null) 
 				{
-					viewBag.HasCookieConsent = true;
+					// Cookie was found but could not be converted thus it's a legacy cookie.
+					isLegacy = true;
+					var str = consentCookie.Value;
+
+					// 'asked' means customer has not consented.
+					// '2' was the Value of legacy enum CookieConsentStatus.Denied
+					if (str.Equals("asked") || str.Equals("2"))
+					{
+						// Remove legacy Cookie & thus show CookieManager.
+						request.Cookies.Remove("CookieConsent");
+					}
+					// 'true' means consented to all cookies.
+					// '1' was the Value of legacy enum CookieConsentStatus.Consented
+					else if (str.Equals("true") || str.Equals("1"))
+					{
+						// Set Cookie with all types allowed.
+						_cookieManager.SetConsentCookie(response, true, true);
+					}
 				}
-				else
-				{
-					// assume consent denied
-					viewBag.HasCookieConsent = false;
-				}
+			}
+
+			if (!isLegacy)
+			{
+				filterContext.HttpContext.Items["CookieConsent"] = cookieData;
 			}
 		}
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!_privacySettings.EnableCookieConsent)
+			if (!_isProcessableRequest)
 				return;
 
-			if (filterContext.IsChildAction)
+			// Should only run on a full view rendering result or HTML ContentResult.
+			if (!filterContext.Result.IsHtmlViewResult())
 				return;
 
-			var result = filterContext.Result;
-
-			// should only run on a full view rendering result or HTML ContentResult
-			if (!result.IsHtmlViewResult())
-				return;
-			
+			// Always render the child action because of output caching.
 			_widgetProvider.Value.RegisterAction(
 				new[] { "body_end_html_tag_before" },
-				"CookieConsentBadge",
+				"CookieManager", 
 				"Common",
 				new { area = "" });
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
-		}
-	}
-
-	public static class CookieConsent
-	{
-		public const string CONSENT_COOKIE_NAME = "CookieConsent";
-
-		public static void SetCookieConsent(HttpResponseBase response, bool consent)
-		{
-			var consentCookie = new HttpCookie(CookieConsent.CONSENT_COOKIE_NAME);
-			consentCookie.Value = consent ? "true" : "false";
-			consentCookie.Expires = DateTime.UtcNow.AddYears(1);
-			response.Cookies.Set(consentCookie);
-		}
-
-		public static bool AskCookieConsent(ViewContext context)
-		{
-			return context.ViewBag.AskCookieConsent ?? false;
-		}
-
-		public static bool HasCookieConsent(ViewContext context)
-		{
-			return context.ViewBag.HasCookieConsent ?? false;
 		}
 	}
 }

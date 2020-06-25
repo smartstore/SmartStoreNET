@@ -66,9 +66,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_logger = logger;
         }
 
-        #endregion Ctor
+		#endregion Ctor
 
-        #region Populate
+		#region Populate
 
 		private void PopulateStores()
 		{
@@ -183,9 +183,14 @@ namespace SmartStore.Web.Infrastructure.Installation
             adminUser.Addresses.Add(adminAddress);
             adminUser.BillingAddress = adminAddress;
             adminUser.ShippingAddress = adminAddress;
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Administrators));
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.ForumModerators));
-            adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));
+
+            var adminRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Administrators);
+            var forumRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.ForumModerators);
+            var registeredRole = customerRoles.First(x => x.SystemName == SystemCustomerRoleNames.Registered);
+
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = adminRole.Id });
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = forumRole.Id });
+            adminUser.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = registeredRole.Id });
             Save(adminUser);
 
 			// Set default customer name
@@ -208,19 +213,21 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
 			_ctx.SaveChanges();
 
-			// Built-in user for search engines (crawlers)
+            // Built-in user for search engines (crawlers)
+            var guestRole = customerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
+
             var customer = _data.SearchEngineUser();
-            customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
             Save(customer);
 
             // Built-in user for background tasks
             customer = _data.BackgroundTaskUser();
-            customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
             Save(customer);
 
 			// Built-in user for the PDF converter
 			customer = _data.PdfConverterUser();
-			customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+            customer.CustomerRoleMappings.Add(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = guestRole.Id });
 			Save(customer);
         }
 
@@ -354,7 +361,8 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 productTag = new ProductTag
                 {
-                    Name = tag
+                    Name = tag,
+                    Published = true
                 };
             }
 			product.ProductTags.Add(productTag);
@@ -369,52 +377,25 @@ namespace SmartStore.Web.Infrastructure.Installation
 				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
 				var mediaStorages = _ctx.Set<MediaStorage>();
 
-				// pictures
-				var pics = _ctx.Set<Picture>()
-					.Expand(x => x.MediaStorage)
-					.Where(x => x.MediaStorageId != null)
-					.ToList();
-
-				foreach (var pic in pics)
+				using (var scope = new DbContextScope(ctx: _ctx, autoDetectChanges: true, autoCommit: false))
 				{
-					if (pic.MediaStorage != null && pic.MediaStorage.Data != null && pic.MediaStorage.Data.LongLength > 0)
+					var mediaFiles = _ctx.Set<MediaFile>()
+						.Expand(x => x.MediaStorage)
+						.Where(x => x.MediaStorageId != null)
+						.ToList();
+
+					foreach (var mediaFile in mediaFiles)
 					{
-						fileSystemStorageProvider.Save(pic.ToMedia(), pic.MediaStorage.Data);
-
-						try
+						if (mediaFile.MediaStorage?.Data?.LongLength > 0)
 						{
-							mediaStorages.Remove(pic.MediaStorage);
+							fileSystemStorageProvider.Save(mediaFile, mediaFile.MediaStorage.Data.ToStream());
+							mediaFile.MediaStorageId = null;
+							mediaFile.MediaStorage = null;
 						}
-						catch { }
-
-						pic.MediaStorageId = null;
 					}
+
+					scope.Commit();
 				}
-
-				_ctx.SaveChanges();
-
-				// downloads
-				var downloads = _ctx.Set<Download>()
-					.Expand(x => x.MediaStorage)
-					.ToList();
-
-				foreach (var download in downloads)
-				{
-					if (download.MediaStorage != null && download.MediaStorage.Data != null && download.MediaStorage.Data.LongLength > 0)
-					{
-						fileSystemStorageProvider.Save(download.ToMedia(), download.MediaStorage.Data);
-
-						try
-						{
-							mediaStorages.Remove(download.MediaStorage);
-						}
-						catch { }
-
-						download.MediaStorageId = null;
-					}
-				}
-
-				_ctx.SaveChanges();
 			}
 		}
 

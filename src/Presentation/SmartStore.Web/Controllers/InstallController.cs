@@ -22,7 +22,7 @@ using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Hooks;
-using SmartStore.Services.Security;
+using SmartStore.Services.Media;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
@@ -225,8 +225,8 @@ namespace SmartStore.Web.Controllers
 				model.AvailableAppLanguages.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual("en")).Selected = true;
 			}
 
-            model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB"), Selected = true });
-            model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS") });
+			model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS"), Selected = true });
+			model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB") });
 
             return View(model);
         }
@@ -264,7 +264,7 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//set page timeout to 5 minutes
+			// set page timeout to 5 minutes
 			this.Server.ScriptTimeout = 300;
 
 			if (model.DatabaseConnectionString != null)
@@ -272,12 +272,12 @@ namespace SmartStore.Web.Controllers
 				model.DatabaseConnectionString = model.DatabaseConnectionString.Trim();
 			}
 
-			//SQL Server
+			// SQL Server
 			if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
 			{
 				if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
 				{
-					//raw connection string
+					// raw connection string
 					if (string.IsNullOrEmpty(model.DatabaseConnectionString))
 					{
 						UpdateResult(x => 
@@ -289,7 +289,7 @@ namespace SmartStore.Web.Controllers
 
 					try
 					{
-						//try to create connection string
+						// try to create connection string
 						new SqlConnectionStringBuilder(model.DatabaseConnectionString);
 					}
 					catch (Exception ex)
@@ -303,7 +303,7 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					//values
+					// values
 					if (string.IsNullOrEmpty(model.SqlServerName))
 					{
 						UpdateResult(x =>
@@ -322,10 +322,10 @@ namespace SmartStore.Web.Controllers
 						});
 					}
 
-					//authentication type
+					// authentication type
 					if (model.SqlAuthenticationType.Equals("sqlauthentication", StringComparison.InvariantCultureIgnoreCase))
 					{
-						//SQL authentication
+						// SQL authentication
 						if (string.IsNullOrEmpty(model.SqlServerUsername))
 						{
 							UpdateResult(x =>
@@ -348,14 +348,14 @@ namespace SmartStore.Web.Controllers
 			}
 
 
-			//Consider granting access rights to the resource to the ASP.NET request identity. 
-			//ASP.NET has a base process identity 
-			//(typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
-			//and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
-			//If the application is impersonating via <identity impersonate="true"/>, 
-			//the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
+			// Consider granting access rights to the resource to the ASP.NET request identity. 
+			// ASP.NET has a base process identity 
+			// (typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
+			// and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
+			// If the application is impersonating via <identity impersonate="true"/>, 
+			// the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
 			var webHelper = scope.Resolve<IWebHelper>();
-			//validate permissions
+			// validate permissions
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(webHelper);
 			foreach (string dir in dirsToCheck)
 			{
@@ -416,7 +416,7 @@ namespace SmartStore.Web.Controllers
 						}
 						else
 						{
-							//values
+							// values
 							connectionString = CreateConnectionString(
 								model.SqlAuthenticationType == "windowsauthentication",
 								model.SqlServerName, model.SqlDatabaseName,
@@ -453,7 +453,7 @@ namespace SmartStore.Web.Controllers
 						}
 						else
 						{
-							//check whether database exists
+							// check whether database exists
 							if (!SqlServerDatabaseExists(connectionString))
 							{
 								return UpdateResult(x =>
@@ -555,11 +555,11 @@ namespace SmartStore.Web.Controllers
 						x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase");
 						Logger.Info(x.ProgressMessage);
 					});
-					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally
+					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally.
 					dbContext.Database.Initialize(true);
 
-					// install plugins
-					PluginManager.MarkAllPluginsAsUninstalled();
+                    // Install plugins.
+                    PluginManager.MarkAllPluginsAsUninstalled();
 					var pluginFinder = scope.Resolve<IPluginFinder>();
 					var plugins = pluginFinder.GetPlugins<IPlugin>(false)
 						//.ToList()
@@ -583,7 +583,8 @@ namespace SmartStore.Web.Controllers
 					var pluginsCount = plugins.Count;
 					var idx = 0;
 
-					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false)) {
+					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false))
+                    {
 						foreach (var plugin in plugins)
 						{
 							try
@@ -609,22 +610,25 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
+					// Detect media file tracks (must come after plugins installation)
+					UpdateResult(x =>
+					{
+						x.ProgressMessage = _locService.GetResource("Progress.ProcessingMedia");
+						Logger.Info(x.ProgressMessage);
+					});
+					var mediaTracker = scope.Resolve<IMediaTracker>();
+					foreach (var album in scope.Resolve<IAlbumRegistry>().GetAlbumNames(true))
+					{
+						mediaTracker.DetectAllTracks(album, true);
+					}
+
 					UpdateResult(x => 
 					{
 						x.ProgressMessage = _locService.GetResource("Progress.Finalizing");
 						Logger.Info(x.ProgressMessage);
 					});
 
-					// Register default permissions
-					var permissionProviders = new List<Type>();
-					permissionProviders.Add(typeof(StandardPermissionProvider));
-					foreach (var providerType in permissionProviders)
-					{
-						dynamic provider = Activator.CreateInstance(providerType);
-						scope.Resolve<IPermissionService>().InstallPermissions(provider);
-					}
-
-					// do not ignore settings migrated by data seeder (e.g. default media storage provider)
+					// Do not ignore settings migrated by data seeder (e.g. default media storage provider).
 					scope.Resolve<ISettingService>().ClearCache();
 
 					// SUCCESS: Redirect to home page
@@ -636,9 +640,9 @@ namespace SmartStore.Web.Controllers
 						Logger.Info("Installation completed successfully");
 					});
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					Logger.Error(exception);
+					Logger.Error(ex);
 					
 					// Clear provider settings if something got wrong
 					DataSettings.Delete();
@@ -654,14 +658,14 @@ namespace SmartStore.Web.Controllers
 						catch { }
 					}
 
-					var msg = exception.Message;
-					var realException = exception;
+					var msg = ex.Message;
+					var realException = ex;
 					while (realException.InnerException != null)
 					{
 						realException = realException.InnerException;
 					}
 
-					if (!Object.Equals(exception, realException))
+					if (!Object.Equals(ex, realException))
 					{
 						msg += " (" + realException.Message + ")";
 					}

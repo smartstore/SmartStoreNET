@@ -42,7 +42,7 @@ var AjaxCart = (function ($, window, document, undefined) {
 		};
 
 		if (el.data("form-selector")) {
-			str = $(el.data("form-selector")).serialize();
+			var str = $(el.data("form-selector")).serialize();
 
 			// HACK (MC)!
 			// we changed the ModelType of the _AddToCart
@@ -50,7 +50,7 @@ var AjaxCart = (function ($, window, document, undefined) {
 			// Therefore input names are not in the form anymore as the ShoppingCartController 
 			// expects them. Hacking here ist much easier than refactoring the controller method.
 			// But change this in future of couse.
-			arr = str.split(".");
+			var arr = str.split(".");
 			if (arr.length == 3 && arr[1] == "AddToCart") {
 				str = arr[0] + "." + arr[2];
 			}
@@ -106,7 +106,7 @@ var AjaxCart = (function ($, window, document, undefined) {
 					}
 
 					// success is optional and therefore true by default
-					isSuccess = response.success === undefined ? true : response.success;
+					var isSuccess = response.success === undefined ? true : response.success;
 
 					var msg = cmd.action === "add" || cmd.action === "addfromwishlist" || cmd.action === "addfromcart" ? "ajaxcart.item.added" : "ajaxcart.item.removed";
 					EventBroker.publish(
@@ -244,7 +244,6 @@ var ShopBar = (function($) {
     }
 
     EventBroker.subscribe("ajaxcart.item.adding", function (msg, data) {
-    	var tool = tools[data.type];
     	ShopBar.showThrobber();
     });
 
@@ -252,7 +251,7 @@ var ShopBar = (function($) {
         var tool = tools[data.type];
         var button = buttons[data.type];
         var badge = $("span.label", button);
-        
+
         if (badge.hasClass("d-none")) {
         	badge.removeClass("d-none");
         }
@@ -291,6 +290,7 @@ var ShopBar = (function($) {
 
     EventBroker.subscribe("ajaxcart.error", function (msg, data) {
         notify(data.response);
+        ShopBar.hideThrobber();
     });
 
     EventBroker.subscribe("ajaxcart.complete", function (msg, data) {
@@ -314,8 +314,10 @@ var ShopBar = (function($) {
 		},
 
         hideThrobber: function () {      	
-        	var cnt = $(".tab-content", offcanvasCart);
-        	_.delay(function () { cnt.data("throbber").hide(); }, 100);
+            var throbber = $(".tab-content", offcanvasCart).data('throbber');
+            if (throbber) {
+                _.delay(function () { throbber.hide(); }, 100);
+            }
 		},
 
         initQtyControls: function(parentSelector) {

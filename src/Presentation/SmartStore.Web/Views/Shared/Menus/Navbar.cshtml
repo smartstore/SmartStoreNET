@@ -8,10 +8,6 @@
         return;
     }
 
-    var selectedEntityId = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
-        ? Model.SelectedNode.Parent.Value.EntityId
-        : Model.SelectedNode.Value.EntityId;
-
     var renderMoreItem = false;
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
@@ -50,11 +46,7 @@
 	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-left"></i></a>
     </div>
 
-    <ul class="navbar-nav flex-row flex-nowrap" 
-        data-selected-entity-id="@selectedEntityId"
-        data-current-category-id="@CurrentCategoryId" 
-        data-current-product-id="@CurrentProductId"
-        data-current-manufacturer-id="@CurrentManufacturerId">
+    <ul class="navbar-nav flex-row flex-nowrap" id="menu-main">
 
         @foreach (var node in root.Children)
         {
@@ -88,16 +80,17 @@
                 continue;
             }
 
-            var attributes = new Dictionary<string, object>(item.LinkHtmlAttributes);
-            attributes.PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
+            var attrs = new RouteValueDictionary(item.HtmlAttributes).PrependCssClass(GetCssClassForNode(node, itemState));
+
+            var linkAttrs = new RouteValueDictionary(item.LinkHtmlAttributes).PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
             if (isDropDownActive)
             {
-                attributes["aria-expanded"] = "false";
-                attributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
+                linkAttrs["aria-expanded"] = "false";
+                linkAttrs["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
             }
 
-            <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.Id" data-id="@item.Id">
-                <a href="@itemUrl" @Html.Attrs(attributes)>
+            <li id="main-nav-item-@item.Id" data-id="@item.Id" @Html.Attrs(attrs, "id")>
+                <a href="@itemUrl" @Html.Attrs(linkAttrs)>
                     @if (item.Icon.HasValue())
                     {
 	                    <i class="@item.Icon"></i>

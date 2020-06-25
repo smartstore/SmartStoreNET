@@ -9,25 +9,26 @@
 //  - from 1 through 60 > 30
 // ----------------------------------
 
-@for $i from 1 through 30 {
-    body[data-aos-duration='#{$i * 100}'] [data-aos],
-    body [data-aos][data-aos-duration='#{$i * 100}'] {
-        transition-duration: #{$i * 100}ms;
-    }
-
-    body[data-aos-delay='#{$i * 100}'] [data-aos],
-    body [data-aos][data-aos-delay='#{$i * 100}'] {
-        transition-delay: 0s;
-
-        &.aos-animate {
-            transition-delay: #{$i * 100}ms;
-        }
-    }
+body {
+    --aos-duration: 1000ms;
+    --aos-delay: 0ms;
+    --aos-distance: 100px;
 }
 
 [data-aos] {
     pointer-events: none;
+    transition-duration: var(--aos-duration);
+    transition-delay: 0s;
+
     &.aos-animate {
         pointer-events: auto;
+        transition-delay: var(--aos-delay);
+    }
+}
+
+// Backward compat with ContentSlider & other stuff
+@for $i from 1 through 30 {
+    [data-aos-delay='#{$i * 100}'] {
+        --aos-delay: #{$i * 100}ms;
     }
 }

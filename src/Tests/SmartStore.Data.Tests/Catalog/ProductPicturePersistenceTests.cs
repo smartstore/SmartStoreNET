@@ -12,7 +12,7 @@ namespace SmartStore.Data.Tests.Catalog
         [Test]
         public void Can_save_and_load_productPicture()
         {
-            var productPicture = new ProductPicture
+            var productPicture = new ProductMediaFile
 			{
 				DisplayOrder = 1,
 				Product = new Product
@@ -23,16 +23,17 @@ namespace SmartStore.Data.Tests.Catalog
 					CreatedOnUtc = new DateTime(2010, 01, 01),
 					UpdatedOnUtc = new DateTime(2010, 01, 02)
 				},
-				Picture = new Picture
+				MediaFile = new MediaFile
 				{
 					MediaStorage = new MediaStorage
 					{
 						Data = new byte[] { 1, 2, 3 }
 					},
-					UpdatedOnUtc = DateTime.UtcNow,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow,
 					MimeType = "image/pjpeg",
-					IsNew = true
-				}
+                    MediaType = "image"
+                }
 			};
 
             var fromDb = SaveAndLoadEntity(productPicture);
@@ -42,8 +43,8 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.Product.ShouldNotBeNull();
             fromDb.Product.Name.ShouldEqual("Name 1");
 
-            fromDb.Picture.ShouldNotBeNull();
-            fromDb.Picture.MimeType.ShouldEqual("image/pjpeg");
+            fromDb.MediaFile.ShouldNotBeNull();
+            fromDb.MediaFile.MimeType.ShouldEqual("image/pjpeg");
         }
     }
 }

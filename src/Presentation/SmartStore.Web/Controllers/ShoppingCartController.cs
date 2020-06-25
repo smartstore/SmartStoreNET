@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -20,6 +18,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
@@ -31,7 +30,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
@@ -40,13 +38,14 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class ShoppingCartController : PublicControllerBase
+    public partial class ShoppingCartController : PublicControllerBase
     {
         #region Fields
 
@@ -54,7 +53,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly ILocalizationService _localizationService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeFormatter _productAttributeFormatter;
@@ -98,6 +97,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICompareProductsService _compareProductsService;
 		private readonly ProductUrlHelper _productUrlHelper;
         private readonly RewardPointsSettings _rewardPointsSettings;
+        private readonly MediaExceptionFactory _exceptionFactory;
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace SmartStore.Web.Controllers
 			IWorkContext workContext,
 			IStoreContext storeContext,
             IShoppingCartService shoppingCartService, 
-			IPictureService pictureService,
+            IMediaService mediaService,
             ILocalizationService localizationService, 
             IProductAttributeService productAttributeService, 
 			IProductAttributeFormatter productAttributeFormatter,
@@ -150,13 +150,14 @@ namespace SmartStore.Web.Controllers
 			MeasureSettings measureSettings,
             ICompareProductsService compareProductsService,
 			ProductUrlHelper productUrlHelper,
-			RewardPointsSettings rewardPointsSettings)
+			RewardPointsSettings rewardPointsSettings,
+            MediaExceptionFactory exceptionFactory)
         {
             _productService = productService;
             _workContext = workContext;
 			_storeContext = storeContext;
             _shoppingCartService = shoppingCartService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _localizationService = localizationService;
             _productAttributeService = productAttributeService;
             _productAttributeFormatter = productAttributeFormatter;
@@ -200,6 +201,7 @@ namespace SmartStore.Web.Controllers
             _compareProductsService = compareProductsService;
 			_productUrlHelper = productUrlHelper;
             _rewardPointsSettings = rewardPointsSettings;
+            _exceptionFactory = exceptionFactory;
         }
 
         #endregion
@@ -209,45 +211,55 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+            Guard.NotNull(product, nameof(product));
 
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
 				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
-			// TODO: (mc) refactor > GetPictureInfos()
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
-				Picture picture = null;
+                MediaFileInfo file = null;
 
-				if (combination != null)
-				{
-					var picturesIds = combination.GetAssignedPictureIds();
-					if (picturesIds != null && picturesIds.Length > 0)
-						picture = _pictureService.GetPictureById(picturesIds[0]);
-				}
-
-                // no attribute combination image, then load product picture
-				if (picture == null)
-					picture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
-
-				if (picture == null && !product.VisibleIndividually && product.ParentGroupedProductId > 0)
-				{
-					//let's check whether this product has some parent "grouped" product
-					picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
-				}
-
-                return new PictureModel
+                if (combination != null)
                 {
-                    PictureId = picture != null ? picture.Id : 0,
-					Size = pictureSize,
-					ImageUrl = _pictureService.GetUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
-                    Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
-                    AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
+                    var fileIds = combination.GetAssignedMediaIds();
+                    if (fileIds?.Any() ?? false)
+                    {
+                        file = _mediaService.GetFileById(fileIds[0], MediaLoadFlags.AsNoTracking);
+                    }
+                }
+
+                // No attribute combination image, then load product picture.
+                if (file == null)
+                {
+                    file = _productService.GetProductPicturesByProductId(product.Id, 1)
+                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                        .FirstOrDefault();
+                }
+
+                // Let's check whether this product has some parent "grouped" product.
+                if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
+                {
+                    file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                        .FirstOrDefault();
+                }
+
+                var pm = new PictureModel
+                {
+                    PictureId = file?.Id ?? 0,
+                    Size = pictureSize,
+                    ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !_catalogSettings.HideProductDefaultPictures),
+                    Title = T("Media.Product.ImageLinkTitleFormat", productName),
+                    AlternateText = T("Media.Product.ImageAlternateTextFormat", productName),
+                    File = file
                 };
+
+                return pm;
             });
+
             return model;
         }
 
@@ -267,7 +279,7 @@ namespace SmartStore.Web.Controllers
 				ProductId = product.Id,
 				ProductName = product.GetLocalized(x => x.Name),
 				ProductSeName = product.GetSeName(),
-				VisibleIndividually = product.VisibleIndividually,
+				VisibleIndividually = product.Visibility != ProductVisibility.Hidden,
 				EnteredQuantity = item.Quantity,
                 MinOrderAmount = product.OrderMinimumQuantity,
                 MaxOrderAmount = product.OrderMaximumQuantity,
@@ -484,7 +496,7 @@ namespace SmartStore.Web.Controllers
                 QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                 ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually,
+				VisibleIndividually = product.Visibility != ProductVisibility.Hidden,
 				CreatedOnUtc = item.UpdatedOnUtc,
 				DisableBuyButton = product.DisableBuyButton
 			};
@@ -691,16 +703,16 @@ namespace SmartStore.Web.Controllers
 			model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
 			model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
 			model.DisplayWeight = _shoppingCartSettings.ShowWeight;
-            model.DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist);
+            model.DisplayMoveToWishlistButton = _permissionService.Authorize(Permissions.Cart.AccessWishlist);
             model.IsEditable = isEditable;
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
 
             var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
-            if(measure != null) 
+            if (measure != null) 
             {
-                model.MeasureUnitName = measure.Name;
+                model.MeasureUnitName = measure.GetLocalized(x => x.Name);
             }
             
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
@@ -711,7 +723,7 @@ namespace SmartStore.Web.Controllers
 			model.IsValidMinOrderSubtotal = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
-			//gift card and gift card boxes
+			// Gift card and gift card boxes.
 			model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
 			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
 			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
@@ -724,7 +736,7 @@ namespace SmartStore.Web.Controllers
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 
-            //reward points
+            // Reward points.
             if (_rewardPointsSettings.Enabled && !cart.IsRecurring() && !_workContext.CurrentCustomer.IsGuest())
             {
                 int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
@@ -741,7 +753,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            //cart warnings
+            // Cart warnings.
             var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
 			{
@@ -755,7 +767,7 @@ namespace SmartStore.Web.Controllers
 			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
-				//remove attributes which require shippable products
+				// Remove attributes which require shippable products.
 				checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
 			}
 
@@ -784,7 +796,7 @@ namespace SmartStore.Web.Controllers
 						caModel.Values.Add(pvaValueModel);
 
 						// Display price if allowed.
-						if (_permissionService.Authorize(StandardPermissionProvider.DisplayPrices))
+						if (_permissionService.Authorize(Permissions.Catalog.DisplayPrice))
 						{
 							decimal priceAdjustmentBase = _taxService.GetCheckoutAttributePrice(caValue);
 							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
@@ -860,13 +872,12 @@ namespace SmartStore.Web.Controllers
 							{
 								caModel.UploadedFileGuid = values.First();
 
-								Guid guid;
-								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out guid))
+								if (caModel.UploadedFileGuid.HasValue() && Guid.TryParse(caModel.UploadedFileGuid, out var guid))
 								{
 									var download = _downloadService.GetDownloadByGuid(guid);
-									if (download != null)
+									if (download != null && !download.UseDownloadUrl && download.MediaFile != null)
 									{
-										caModel.UploadedFileName = string.Concat(download.Filename ?? download.DownloadGuid.ToString(), download.Extension);
+                                        caModel.UploadedFileName = download.MediaFile.Name;
 									}
 								}
 							}
@@ -992,7 +1003,7 @@ namespace SmartStore.Web.Controllers
 
             model.EmailWishlistEnabled = _shoppingCartSettings.EmailWishlistEnabled;
             model.IsEditable = isEditable;
-            model.DisplayAddToCart = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart);
+            model.DisplayAddToCart = _permissionService.Authorize(Permissions.Cart.AccessShoppingCart);
 
             if (cart.Count == 0)
                 return;
@@ -1037,7 +1048,7 @@ namespace SmartStore.Web.Controllers
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
-                DisplayMoveToWishlistButton = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist)
+                DisplayMoveToWishlistButton = _permissionService.Authorize(Permissions.Cart.AccessWishlist)
 			};
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -1083,7 +1094,7 @@ namespace SmartStore.Web.Controllers
                             product, 
                             item.AttributesXml, 
                             null,
-                            serapator: ", ", 
+                            separator: ", ", 
                             //htmlEncode: false,
                             renderPrices: false, 
                             renderGiftCardAttributes: false, 
@@ -1103,18 +1114,19 @@ namespace SmartStore.Web.Controllers
 								ProductSeName = childItem.Item.Product.GetSeName(),
 							};
 
-							bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(
-								childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
+							bundleItemModel.ProductUrl = _productUrlHelper.GetProductUrl(childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
 
-							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
-							if (itemPicture != null)
-								bundleItemModel.PictureUrl = _pictureService.GetUrl(itemPicture, 32);
+                            var file = _productService.GetProductPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
+                            if (file != null)
+                            {
+                                bundleItemModel.PictureUrl = _mediaService.GetUrl(file.MediaFile, 32);
+                            }
 
-							cartItemModel.BundleItems.Add(bundleItemModel);
+                            cartItemModel.BundleItems.Add(bundleItemModel);
 						}
 					}
 
-                    //unit prices
+                    // Unit prices.
                     if (product.CallForPrice)
                     {
                         cartItemModel.UnitPrice = _localizationService.GetResource("Products.CallForPrice");
@@ -1130,7 +1142,7 @@ namespace SmartStore.Web.Controllers
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
                     }
 
-                    //picture
+                    // Picture.
                     if (_shoppingCartSettings.ShowProductImagesInMiniShoppingCart)
                     {
                         cartItemModel.Picture = PrepareCartItemPictureModel(product, _mediaSettings.MiniCartThumbPictureSize, cartItemModel.ProductName, item.AttributesXml);
@@ -1252,15 +1264,10 @@ namespace SmartStore.Web.Controllers
             var postedFile = Request.ToPostedFileResult();
             if (postedFile != null && postedFile.FileName.HasValue())
             {
-                int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                if (postedFile.Size > fileMaxSize)
+                int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
+                if (postedFile.Size > maxFileSize)
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
-                        downloadGuid = Guid.Empty
-                    });
+                    throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
                 }
                 else
                 {
@@ -1269,19 +1276,21 @@ namespace SmartStore.Web.Controllers
                         DownloadGuid = Guid.NewGuid(),
                         UseDownloadUrl = false,
                         DownloadUrl = "",
-                        ContentType = postedFile.ContentType,
-                        Filename = postedFile.FileTitle,
-                        Extension = postedFile.FileExtension,
-                        IsNew = true,
                         UpdatedOnUtc = DateTime.UtcNow,
                         EntityId = 0,
                         EntityName = "CheckoutAttribute"
                     };
 
-                    _downloadService.InsertDownload(download, postedFile.Buffer);
+                    _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
+
+                    var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
 
                     return Json(new
                     {
+                        id = download.MediaFileId,
+                        name = mediaFile.Name,
+                        type = mediaFile.MediaType,
+                        thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
                         success = true,
                         message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
                         downloadGuid = download.DownloadGuid,
@@ -1567,15 +1576,10 @@ namespace SmartStore.Web.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-            int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-			if (postedFile.Size > fileMaxSize)
+            int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
+            if (postedFile.Size > maxFileSize)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
-                    downloadGuid = Guid.Empty,
-                });
+                throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
             }
 
             var download = new Download
@@ -1583,21 +1587,21 @@ namespace SmartStore.Web.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                ContentType = postedFile.ContentType,
-                // we store filename without extension for downloads
-                Filename = postedFile.FileTitle,
-                Extension = postedFile.FileExtension,
-                IsNew = true,
-				IsTransient = true,
 				UpdatedOnUtc = DateTime.UtcNow,
                 EntityId = productId,
                 EntityName = "ProductAttribute"
             };
 
-            _downloadService.InsertDownload(download, postedFile.Buffer);
+            _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
+
+            var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
 
             return Json(new
             {
+                id = download.MediaFileId,
+                name = mediaFile.Name,
+                type = mediaFile.MediaType,
+                thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
                 downloadGuid = download.DownloadGuid,
@@ -1608,7 +1612,7 @@ namespace SmartStore.Web.Controllers
         [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Cart(ProductVariantQuery query)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+            if (!_permissionService.Authorize(Permissions.Cart.AccessShoppingCart))
                 return RedirectToRoute("HomePage");
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -1647,7 +1651,7 @@ namespace SmartStore.Web.Controllers
         {
             var isWishlistItem = wishlistItem.GetValueOrDefault(false);
 
-			if (!_permissionService.Authorize(isWishlistItem ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
+			if (!_permissionService.Authorize(isWishlistItem ? Permissions.Cart.AccessWishlist : Permissions.Cart.AccessShoppingCart))
 			{
 				return Json(new { success = false, showCheckoutButtons = true });
 			}
@@ -1981,7 +1985,7 @@ namespace SmartStore.Web.Controllers
                 var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
                 if (measure != null)
                 {
-                    model.WeightMeasureUnitName = measure.Name;
+                    model.WeightMeasureUnitName = measure.GetLocalized(x => x.Name);
                 }
 
                 // Subtotal
@@ -2163,25 +2167,30 @@ namespace SmartStore.Web.Controllers
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 			var model = new ShoppingCartModel();
 
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-				 SystemCustomerAttributeNames.DiscountCouponCode, null);
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
         }
 
         [HttpPost, ActionName("Cart")]
-        [FormValueRequired("removegiftcard")]
-        public ActionResult RemoveGiftardCode(int giftCardId)
+        [FormValueRequired(FormValueRequirement.StartsWith, "removegiftcard-")]
+        public ActionResult RemoveGiftCardCode(FormCollection form)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             var model = new ShoppingCartModel();
+            var prefix = "removegiftcard-";
 
-            var gc = _giftCardService.GetGiftCardById(giftCardId);
-            if (gc != null)
+            var key = form.AllKeys.FirstOrDefault(x => x.StartsWith(prefix));
+            if (key.HasValue())
             {
-                _workContext.CurrentCustomer.RemoveGiftCardCouponCode(gc.GiftCardCouponCode);
-                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+                var giftCardId = form[key].Substring(prefix.Length).ToInt();
+                var gc = _giftCardService.GetGiftCardById(giftCardId);
+                if (gc != null)
+                {
+                    _workContext.CurrentCustomer.RemoveGiftCardCouponCode(gc.GiftCardCouponCode);
+                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+                }
             }
 
             PrepareShoppingCartModel(model, cart);
@@ -2190,12 +2199,14 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult OffCanvasCart()
         {
-            var model = new OffCanvasCartModel
-			{
-				ShoppingCartEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
-				WishlistEnabled = Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
-				CompareProductsEnabled = _catalogSettings.CompareProductsEnabled
-			};
+            var model = new OffCanvasCartModel();
+
+            if (Services.Permissions.Authorize(Permissions.System.AccessShop))
+            {
+                model.ShoppingCartEnabled = _shoppingCartSettings.MiniShoppingCartEnabled && Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart);
+                model.WishlistEnabled = Services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
+                model.CompareProductsEnabled = _catalogSettings.CompareProductsEnabled;
+            }
 
             return PartialView(model);
         }
@@ -2205,7 +2216,7 @@ namespace SmartStore.Web.Controllers
             if (!_shoppingCartSettings.MiniShoppingCartEnabled)
                 return Content("");
 
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+            if (!_permissionService.Authorize(Permissions.Cart.AccessShoppingCart))
                 return Content("");
 
             var model = PrepareMiniShoppingCartModel();
@@ -2239,7 +2250,7 @@ namespace SmartStore.Web.Controllers
                         sci.Item.AttributesXml,
                         null,
                         htmlEncode: false,
-                        serapator: ", ",
+                        separator: ", ",
                         renderPrices: false,
                         renderGiftCardAttributes: false,
                         allowHyperlinks: false);
@@ -2254,14 +2265,14 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult UpdateCartItem(int sciItemId, int newQuantity, bool isCartPage = false, bool isWishlist = false)
         {
-            if (!_permissionService.Authorize(isWishlist ? StandardPermissionProvider.EnableWishlist : StandardPermissionProvider.EnableShoppingCart))
+            if (!_permissionService.Authorize(isWishlist ? Permissions.Cart.AccessWishlist : Permissions.Cart.AccessShoppingCart))
                 return RedirectToRoute("HomePage");
 
             var warnings = new List<string>();
             warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer, sciItemId, newQuantity, false));
 
-            var cartHtml = String.Empty;
-            var totalsHtml = String.Empty;
+            var cartHtml = string.Empty;
+            var totalsHtml = string.Empty;
 			var showCheckoutButtons = true;
 
             if (isCartPage)
@@ -2298,8 +2309,8 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult CartSummary(bool cart = false, bool wishlist = false, bool compare = false)
 		{
-			var cartEnabled = cart && Services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
-			var wishlistEnabled = wishlist && Services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			var cartEnabled = cart && Services.Permissions.Authorize(Permissions.Cart.AccessShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+			var wishlistEnabled = wishlist && Services.Permissions.Authorize(Permissions.Cart.AccessWishlist);
 			var compareEnabled = compare && _catalogSettings.CompareProductsEnabled;
 
 			int cartItemsCount = 0;
@@ -2354,7 +2365,7 @@ namespace SmartStore.Web.Controllers
 		[RewriteUrl(SslRequirement.Yes)]
         public ActionResult Wishlist(Guid? customerGuid)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
+            if (!_permissionService.Authorize(Permissions.Cart.AccessWishlist))
                 return RedirectToRoute("HomePage");
 
             var customer = customerGuid.HasValue ? _customerService.GetCustomerByGuid(customerGuid.Value) : _workContext.CurrentCustomer;
@@ -2372,10 +2383,7 @@ namespace SmartStore.Web.Controllers
 		[FormValueRequired("addtocartbutton")]
 		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-				return RedirectToRoute("HomePage");
-
-			if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
+			if (!_permissionService.Authorize(Permissions.Cart.AccessShoppingCart) || !_permissionService.Authorize(Permissions.Cart.AccessWishlist))
 				return RedirectToRoute("HomePage");
 
 			var pageCustomer = customerGuid.HasValue
@@ -2426,82 +2434,89 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
-		// ajax
+		// Ajax.
 		[HttpPost]
         [ActionName("MoveItemBetweenCartAndWishlist")]
         public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType, bool isCartPage = false)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart) || !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
+            if (!_permissionService.Authorize(Permissions.Cart.AccessShoppingCart) || !_permissionService.Authorize(Permissions.Cart.AccessWishlist))
             {
                 return Json(new
                 {
                     success = false,
-					message = _localizationService.GetResource("Common.NoProcessingSecurityIssue")
+					message = T("Common.NoProcessingSecurityIssue").Text
                 });
             }
 
+            var showCheckoutButtons = true;
             var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
+            var storeId = _storeContext.CurrentStore.Id;
+            var cart = customer.GetCartItems(cartType, storeId);
             var sci = cart.Where(x => x.Item.Id == cartItemId).FirstOrDefault();
 
 			if (sci != null)
 			{
-				var warnings = _shoppingCartService.Copy(sci, customer, 
-                    cartType == ShoppingCartType.Wishlist ? ShoppingCartType.ShoppingCart : ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
+				var warnings = _shoppingCartService.Copy(sci, customer, cartType == ShoppingCartType.Wishlist ? ShoppingCartType.ShoppingCart : ShoppingCartType.Wishlist, storeId, true);
 
-				if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0) //no warnings ( already in the cart)
+				if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0)
 				{
-					//let's remove the item from origin
-					_shoppingCartService.DeleteShoppingCartItem(sci.Item);
+                    // No warnings (already in cart). Let's remove the item from origin.
+                    _shoppingCartService.DeleteShoppingCartItem(sci.Item);
 				}
 
 				if (warnings.Count == 0)
 				{
-                    var cartHtml = String.Empty;
-                    var totalsHtml = String.Empty;
-                    var message = String.Empty;
+                    var cartHtml = string.Empty;
+                    var totalsHtml = string.Empty;
+                    var message = string.Empty;
                     var cartItemCount = 0;
+
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct && cartType == ShoppingCartType.Wishlist)
+                    {
+                        // Redirect to the shopping cart page.
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("ShoppingCart")
+                        });
+                    }
 
                     if (isCartPage)
                     {
                         if (cartType == ShoppingCartType.Wishlist)
                         {
                             var model = new WishlistModel();
-                            var wishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+                            var wishlist = customer.GetCartItems(ShoppingCartType.Wishlist, storeId);
+
                             PrepareWishlistModel(model, wishlist);
+
                             cartHtml = this.RenderPartialViewToString("WishlistItems", model);
-                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheCart");
+                            message = T("Products.ProductHasBeenAddedToTheCart");
                             cartItemCount = wishlist.Count;
                         }
                         else
                         {
                             var model = new ShoppingCartModel();
-                            cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
+                            cart = customer.GetCartItems(cartType, storeId);
+
                             PrepareShoppingCartModel(model, cart);
+
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
                             totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-                            message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
+                            message = T("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
+                            showCheckoutButtons = model.IsValidMinOrderSubtotal;
                         }
-                    }
-
-                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
-                    {
-                        //redirect to the shopping cart page
-                        return Json(new
-                        {
-                            redirect = Url.RouteUrl("ShoppingCart"),
-                        });
                     }
                     
                     return Json(new
                     {
                         success = true,
                         wasMoved = _shoppingCartSettings.MoveItemsFromWishlistToCart,
-                        message = message,
-                        cartHtml = cartHtml,
-                        totalsHtml = totalsHtml,
-                        cartItemCount = cartItemCount
+                        message,
+                        cartHtml,
+                        totalsHtml,
+                        cartItemCount,
+                        showCheckoutButtons
                     });
 				}
 			}
@@ -2509,7 +2524,7 @@ namespace SmartStore.Web.Controllers
             return Json(new
             {
                 success = false,
-				message = _localizationService.GetResource("Products.ProductNotAddedToTheCart")
+				message = T("Products.ProductNotAddedToTheCart").Text
             });
         }
 
@@ -2517,7 +2532,7 @@ namespace SmartStore.Web.Controllers
 		[GdprConsent]
 		public ActionResult EmailWishlist()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
+            if (!_shoppingCartSettings.EmailWishlistEnabled || !_permissionService.Authorize(Permissions.Cart.AccessWishlist))
                 return RedirectToRoute("HomePage");
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
@@ -2525,11 +2540,12 @@ namespace SmartStore.Web.Controllers
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
 
-            var model = new WishlistEmailAFriendModel()
+            var model = new WishlistEmailAFriendModel
             {
                 YourEmailAddress = _workContext.CurrentCustomer.Email,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage
             };
+
             return View(model);
         }
 
@@ -2537,9 +2553,9 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("send-email")]
         [ValidateCaptcha]
 		[GdprConsent]
-		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
+		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, string captchaError)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
+            if (!_shoppingCartSettings.EmailWishlistEnabled || !_permissionService.Authorize(Permissions.Cart.AccessWishlist))
                 return RedirectToRoute("HomePage");
 
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
@@ -2547,13 +2563,12 @@ namespace SmartStore.Web.Controllers
             if (cart.Count == 0)
                 return RedirectToRoute("HomePage");
 
-            //validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage && !captchaValid)
+            if (_captchaSettings.ShowOnEmailWishlistToFriendPage && captchaError.HasValue())
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", captchaError);
             }
 
-            //check whether the current customer is guest and ia allowed to email wishlist
+            // Check whether the current customer is guest and ia allowed to email wishlist.
             if (_workContext.CurrentCustomer.IsGuest() && !_shoppingCartSettings.AllowAnonymousUsersToEmailWishlist)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Wishlist.EmailAFriend.OnlyRegisteredUsers"));
@@ -2561,12 +2576,11 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                //email
                 Services.MessageFactory.SendShareWishlistMessage(
 					_workContext.CurrentCustomer,
 					model.YourEmailAddress,
                     model.FriendEmail, 
-					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
+					HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");
@@ -2574,9 +2588,10 @@ namespace SmartStore.Web.Controllers
                 return View(model);
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ModelState.AddModelError("", _localizationService.GetResource("Common.Error.Sendmail"));
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage;
+            model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnEmailWishlistToFriendPage;
+
             return View(model);
         }
 

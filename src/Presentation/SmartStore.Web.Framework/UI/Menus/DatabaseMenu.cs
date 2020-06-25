@@ -28,7 +28,6 @@ namespace SmartStore.Web.Framework.UI
         private readonly Lazy<ICategoryService> _categoryService;
         private readonly IMenuStorage _menuStorage;
         private readonly ILogger _logger;
-        private readonly HttpContextBase _httpContext;
         private readonly DbQuerySettings _querySettings;
         private readonly Lazy<CatalogSettings> _catalogSettings;
         private readonly Lazy<SearchSettings> _searchSettings;
@@ -41,7 +40,6 @@ namespace SmartStore.Web.Framework.UI
             Lazy<ICategoryService> categoryService,
             IMenuStorage menuStorage,
             ILogger logger,
-            HttpContextBase httpContext,
             IMenuPublisher menuPublisher,
             DbQuerySettings querySettings,
             Lazy<CatalogSettings> catalogSettings,
@@ -57,7 +55,6 @@ namespace SmartStore.Web.Framework.UI
             _categoryService = categoryService;
             _menuStorage = menuStorage;
             _logger = logger;
-            _httpContext = httpContext;
             MenuPublisher = menuPublisher;
             _querySettings = querySettings;
             _catalogSettings = catalogSettings;
@@ -94,35 +91,48 @@ namespace SmartStore.Web.Framework.UI
 
                                     foreach (var node in nodes)
                                     {
-                                        var categoryIds = new HashSet<int>();
+                                        var isCategory = node.Value.EntityName.IsCaseInsensitiveEqual(nameof(Category));
+                                        var isManufacturer = node.Value.EntityName.IsCaseInsensitiveEqual(nameof(Manufacturer));
 
-                                        if (_catalogSettings.Value.ShowCategoryProductNumberIncludingSubcategories)
+                                        if (isCategory || isManufacturer)
                                         {
-                                            // Include subcategories.
-                                            node.Traverse(x =>
+                                            var entityIds = new HashSet<int>();
+                                            if (isCategory && _catalogSettings.Value.ShowCategoryProductNumberIncludingSubcategories)
                                             {
-                                                categoryIds.Add(x.Value.EntityId);
-                                            }, true);
-                                        }
-                                        else
-                                        {
-                                            categoryIds.Add(node.Value.EntityId);
-                                        }
+                                                // Include sub-categories.
+                                                node.Traverse(x =>
+                                                {
+                                                    entityIds.Add(x.Value.EntityId);
+                                                }, true);
+                                            }
+                                            else
+                                            {
+                                                entityIds.Add(node.Value.EntityId);
+                                            }
 
-                                        var context = new CatalogSearchQuery()
-                                            .VisibleOnly()
-                                            .VisibleIndividuallyOnly(true)
-                                            .WithCategoryIds(null, categoryIds.ToArray())
-                                            .HasStoreId(Services.StoreContext.CurrentStoreIdIfMultiStoreMode)
-                                            .BuildFacetMap(false)
-                                            .BuildHits(false);
+                                            var context = new CatalogSearchQuery()
+                                                .VisibleOnly()
+                                                .WithVisibility(ProductVisibility.Full)
+                                                .HasStoreId(Services.StoreContext.CurrentStoreIdIfMultiStoreMode)
+                                                .BuildFacetMap(false)
+                                                .BuildHits(false);
 
-                                        if (!_searchSettings.Value.IncludeNotAvailable)
-                                        {
-                                            context = context.AvailableOnly(true);
+                                            if (isCategory)
+                                            {
+                                                context = context.WithCategoryIds(null, entityIds.ToArray());
+                                            }
+                                            else
+                                            {
+                                                context = context.WithManufacturerIds(null, entityIds.ToArray());
+                                            }
+
+                                            if (!_searchSettings.Value.IncludeNotAvailable)
+                                            {
+                                                context = context.AvailableOnly(true);
+                                            }
+
+                                            node.Value.ElementsCount = _catalogSearchService.Value.Search(context).TotalHitsCount;
                                         }
-
-                                        node.Value.ElementsCount = _catalogSearchService.Value.Search(context).TotalHitsCount;
                                     }
                                 }
                             }

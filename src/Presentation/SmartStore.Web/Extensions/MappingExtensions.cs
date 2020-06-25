@@ -53,6 +53,7 @@ namespace SmartStore.Web
                 Id = entity.Id,
                 Name = entity.GetLocalized(x => x.Name),
                 Description = entity.GetLocalized(x => x.Description, detectEmptyHtml: true),
+                BottomDescription = entity.GetLocalized(x => x.BottomDescription, detectEmptyHtml: true),
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),
@@ -66,7 +67,7 @@ namespace SmartStore.Web
         /// </summary>
         /// <param name="customer">Customer entity.</param>
         /// <param name="genericAttributeService">Generic attribute service.</param>
-        /// <param name="pictureService">Picture service.</param>
+        /// <param name="mediaService">Media service.</param>
         /// <param name="customerSettings">Customer settings.</param>
         /// <param name="mediaSettings">Media settings.</param>
         /// <param name="urlHelper">URL helper.</param>
@@ -76,7 +77,7 @@ namespace SmartStore.Web
         public static CustomerAvatarModel ToAvatarModel(
             this Customer customer,
             IGenericAttributeService genericAttributeService,
-            IPictureService pictureService,
+            IMediaService mediaService,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings,
             UrlHelper urlHelper,
@@ -131,7 +132,11 @@ namespace SmartStore.Web
                 if (customerSettings.AllowCustomersToUploadAvatars)
                 {
                     var avatarId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId, genericAttributeService);
-                    model.PictureUrl = pictureService.GetUrl(avatarId, mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
+                    if (avatarId > 0)
+                    {
+                        model.PictureId = avatarId;
+                        model.PictureUrl = mediaService.GetUrl(avatarId, mediaSettings.AvatarPictureSize, null, false);
+                    }
                 }
 
                 if (model.PictureUrl.IsEmpty())

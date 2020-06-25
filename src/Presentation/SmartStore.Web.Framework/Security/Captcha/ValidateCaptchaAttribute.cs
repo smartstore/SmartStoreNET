@@ -13,15 +13,15 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Security
 {
-	public class ValidateCaptchaAttribute : ActionFilterAttribute
+    public class ValidateCaptchaAttribute : ActionFilterAttribute
     {
 		public ValidateCaptchaAttribute()
 		{
 			Logger = NullLogger.Instance;
 		}
 
-		public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
-		public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
+        public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
 		public Lazy<ILocalizationService> LocalizationService { get; set; }
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -30,48 +30,58 @@ namespace SmartStore.Web.Framework.Security
 
 			try
 			{
-				var captchaSettings = CaptchaSettings.Value;
-				if (captchaSettings.Enabled && captchaSettings.ReCaptchaPrivateKey.HasValue())
-				{
-					var verifyUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaVerifyUrl");
-					var recaptchaResponse = filterContext.HttpContext.Request.Form["g-recaptcha-response"];
+                if (CaptchaSettings.Value.CanDisplayCaptcha)
+                {
+                    var verifyUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaVerifyUrl");
+                    var recaptchaResponse = filterContext.HttpContext.Request.Form["g-recaptcha-response"];
 
-					var url = "{0}?secret={1}&response={2}".FormatInvariant(
-						verifyUrl,
-						HttpUtility.UrlEncode(captchaSettings.ReCaptchaPrivateKey),
-						HttpUtility.UrlEncode(recaptchaResponse)
-					);
+                    var url = "{0}?secret={1}&response={2}".FormatInvariant(
+                        verifyUrl,
+                        HttpUtility.UrlEncode(CaptchaSettings.Value.ReCaptchaPrivateKey),
+                        HttpUtility.UrlEncode(recaptchaResponse)
+                    );
 
-					using (var client = new WebClient())
-					{
-						var jsonResponse = client.DownloadString(url);
-						using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(jsonResponse)))
-						{
-							var serializer = new DataContractJsonSerializer(typeof(GoogleRecaptchaApiResponse));
-							var result = serializer.ReadObject(memoryStream) as GoogleRecaptchaApiResponse;
+                    using (var client = new WebClient())
+                    {
+                        var jsonResponse = client.DownloadString(url);
+                        using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(jsonResponse)))
+                        {
+                            var serializer = new DataContractJsonSerializer(typeof(GoogleRecaptchaApiResponse));
+                            var result = serializer.ReadObject(memoryStream) as GoogleRecaptchaApiResponse;
 
-							if (result == null)
-							{
-								Logger.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
-							}
-							else
-							{
-								if (result.ErrorCodes == null)
-								{
-									valid = result.Success;
-								}
-							}
-						}
-					}
-				}
+                            if (result == null)
+                            {
+                                Logger.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
+                            }
+                            else
+                            {
+                                if (result.ErrorCodes == null)
+                                {
+                                    valid = result.Success;
+                                }
+                                else
+                                {
+                                    foreach (var error in result.ErrorCodes)
+                                    {
+                                        Logger.Error("Error while getting Google Recaptcha response: " + error);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				Logger.ErrorsAll(exception);
+				Logger.ErrorsAll(ex);
 			}
 
-			// this will push the result value into a parameter in our Action  
+			// This will push the result value into a parameter in our Action.
 			filterContext.ActionParameters["captchaValid"] = valid;
+
+            filterContext.ActionParameters["captchaError"] = !valid && CaptchaSettings.Value.CanDisplayCaptcha
+                ? LocalizationService.Value.GetResource(CaptchaSettings.Value.UseInvisibleReCaptcha ? "Common.WrongInvisibleCaptcha" : "Common.WrongCaptcha")
+                : null;
 
             base.OnActionExecuting(filterContext);
         }

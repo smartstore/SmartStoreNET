@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SmartStore.ComponentModel;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
 {
@@ -18,75 +20,79 @@ namespace SmartStore
     {
         #region Object
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Convert<T>(this object value)
         {
-			return (T)(Convert(value, typeof(T)) ?? default(T));
-		}
-
-		public static T Convert<T>(this object value, T defaultValue)
-		{
-			return (T)(Convert(value, typeof(T)) ?? defaultValue);
-		}
-
-		public static T Convert<T>(this object value, CultureInfo culture)
-        {
-			return (T)(Convert(value, typeof(T), culture) ?? default(T));
-		}
-
-		public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
-		{
-			return (T)(Convert(value, typeof(T), culture) ?? defaultValue);
-		}
-
-		public static object Convert(this object value, Type to)
-        {
-			return value.Convert(to, CultureInfo.InvariantCulture);
-        }
-
-		public static object Convert(this object value, Type to, CultureInfo culture)
-		{
-			if (to == null)
-				throw new ArgumentNullException(nameof(to));
-
-			if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
-			{
-				return value == DBNull.Value ? null : value;
-			}
-
-			Type from = value.GetType();
-
-			if (culture == null)
-			{
-				culture = CultureInfo.InvariantCulture;
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            {
+                return default(T);
             }
 
-			// get a converter for 'to' (value -> to)
-			var converter = TypeConverterFactory.GetConverter(to);
-			if (converter != null && converter.CanConvertFrom(from))
-			{
-				return converter.ConvertFrom(culture, value);
-			}
+            return (T)result;
+        }
 
-			// try the other way round with a 'from' converter (to <- from)
-			converter = TypeConverterFactory.GetConverter(from);
-			if (converter != null && converter.CanConvertTo(to))
-			{
-				return converter.ConvertTo(culture, null, value, to);
-			}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, T defaultValue)
+		{
+            if (!CommonHelper.TryConvert(value, typeof(T), CultureInfo.InvariantCulture, out object result))
+            {
+                return defaultValue;
+            }
 
-			// use Convert.ChangeType if both types are IConvertible
-			if (value is IConvertible && typeof(IConvertible).IsAssignableFrom(to))
-			{
-				return System.Convert.ChangeType(value, to, culture);
-			}
+            return (T)result;
+        }
 
-			throw Error.InvalidCast(from, to);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, CultureInfo culture)
+        {
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            {
+                return default(T);
+            }
+
+            return (T)result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Convert<T>(this object value, T defaultValue, CultureInfo culture)
+		{
+            if (!CommonHelper.TryConvert(value, typeof(T), culture, out object result))
+            {
+                return defaultValue;
+            }
+
+            return (T)result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static object Convert(this object value, Type to)
+        {
+            if (!CommonHelper.TryConvert(value, to, CultureInfo.InvariantCulture, out object result))
+            {
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static object Convert(this object value, Type to, CultureInfo culture)
+		{
+            if (!CommonHelper.TryConvert(value, to, culture, out object result))
+            {
+                return null;
+                //throw Error.InvalidCast(value?.GetType(), to);
+            }
+
+            return result;
 		}
 
         #endregion
 
         #region int
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char ToHex(this int value)
         {
             if (value <= 9)
@@ -101,17 +107,19 @@ namespace SmartStore
 
         #region String
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToInt(this string value, int defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out int result))
+			if (CommonHelper.TryConvert(value, typeof(int), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (int)result;
 			}
 
 			return defaultValue;
         }
 
-		public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
 		{
 			if (value.HasValue() && char.TryParse(unescape ? Regex.Unescape(value) : value, out char result))
 			{
@@ -121,31 +129,35 @@ namespace SmartStore
 			return defaultValue;
 		}
 
-		public static float ToFloat(this string value, float defaultValue = 0)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float ToFloat(this string value, float defaultValue = 0)
         {
-			if (CommonHelper.TryConvert(value, out float result))
+			if (CommonHelper.TryConvert(value, typeof(float), CultureInfo.InvariantCulture, out object result))
 			{
-				return result;
+				return (float)result;
 			}
 
 			return defaultValue;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ToBool(this string value, bool defaultValue = false)
         {
-			if (CommonHelper.TryConvert(value, out bool result))
+			if (CommonHelper.TryConvert(value, typeof(bool), out object result))
 			{
-				return result;
+				return (bool)result;
 			}
 
 			return defaultValue;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToDateTime(this string value, DateTime? defaultValue)
         {
             return value.ToDateTime(null, defaultValue);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime? ToDateTime(this string value, string[] formats, DateTime? defaultValue)
         {
             return value.ToDateTime(formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces, defaultValue);
@@ -219,17 +231,27 @@ namespace SmartStore
 				{
 					return buffer.Array;
 				}
-
 				return mem.ToArray();
 			}
 			else
 			{
-				using (var streamReader = new MemoryStream())
-				{
-					stream.CopyTo(streamReader);
-					return streamReader.GetBuffer();
-				}
-			}
+                try
+                {
+                    var len = stream.Length;
+                    if (len > Int32.MaxValue)
+                    {
+                        return ToByteArrayCopy(stream);
+                    }
+
+                    var buffer = new byte[(int)len];
+                    stream.Read(buffer, 0, (int)len);
+                    return buffer;
+                }
+                catch
+                {
+                    return ToByteArrayCopy(stream);
+                }
+            }
 		}
 
 		public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
@@ -243,25 +265,55 @@ namespace SmartStore
 				{
 					return buffer.Array;
 				}
-
 				return mem.ToArray();
 			}
 			else
 			{
-				using (var streamReader = new MemoryStream())
-				{
-					await stream.CopyToAsync(streamReader);
-					return streamReader.ToArray();
-				}
-			}
+                try
+                {
+                    var len = stream.Length;
+                    if (len > Int32.MaxValue)
+                    {
+                        return await ToByteArrayCopyAsync(stream);
+                    }
+
+                    var buffer = new byte[(int)len];
+                    stream.Read(buffer, 0, (int)len);
+                    return buffer;
+                }
+                catch
+                {
+                    return await ToByteArrayCopyAsync(stream);
+                }
+            }
 		}
 
-		public static string AsString(this Stream stream)
+        private static byte[] ToByteArrayCopy(Stream stream, int capacity = 0)
+        {
+            using (var memStream = new MemoryStream(capacity))
+            {
+                stream.CopyTo(memStream);
+                return memStream.ToArray();
+            }
+        }
+
+        private static async Task<byte[]> ToByteArrayCopyAsync(Stream stream, int capacity = 0)
+        {
+            using (var memStream = new MemoryStream(capacity))
+            {
+                await stream.CopyToAsync(memStream);
+                return memStream.ToArray();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string AsString(this Stream stream)
 		{
 			return stream.AsString(Encoding.UTF8);
 		}
 
-		public static Task<string> AsStringAsync(this Stream stream)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<string> AsStringAsync(this Stream stream)
 		{
 			return stream.AsStringAsync(Encoding.UTF8);
 		}
@@ -354,7 +406,8 @@ namespace SmartStore
                 }
                 else
                 {
-                    StringBuilder sb = new StringBuilder();
+                    var psb = PooledStringBuilder.Rent();
+                    var sb = (StringBuilder)psb;
 
                     byte[] hashBytes = md5.ComputeHash(value);
                     foreach (byte b in hashBytes)
@@ -362,7 +415,7 @@ namespace SmartStore
                         sb.Append(b.ToString("x2").ToLower());
                     }
 
-                    return sb.ToString();
+                    return psb.ToStringAndReturn();
                 }
             }
         }
@@ -405,11 +458,12 @@ namespace SmartStore
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Enumerable: Collections/List/Dictionary...
+        #region Enumerable: Collections/List/Dictionary...
 
-		public static T ToObject<T>(this IDictionary<string, object> values) where T : class
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T ToObject<T>(this IDictionary<string, object> values) where T : class
         {
             return (T)values.ToObject(typeof(T));
         }

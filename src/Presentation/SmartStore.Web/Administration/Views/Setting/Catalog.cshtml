@@ -1,7 +1,11 @@
-﻿@model CatalogSettingsModel
+﻿@using SmartStore.Core.Domain.Catalog;
+@model CatalogSettingsModel
+
 @{
+    Layout = "_SettingLayout";
 	ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -201,10 +205,21 @@
                 @Html.SmartLabelFor(model => model.IgnoreDiscounts)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.IgnoreDiscounts)
+                @Html.SettingEditorFor(model => model.IgnoreDiscounts, Html.CheckBoxFor(model => model.IgnoreDiscounts, new { data_toggler_for = "#pnlDiscounts", data_toggler_reverse = true }))
                 @Html.ValidationMessageFor(model => model.IgnoreDiscounts)
             </td>
         </tr>
+        <tbody id="pnlDiscounts">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ApplyPercentageDiscountOnTierPrice)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ApplyPercentageDiscountOnTierPrice)
+                    @Html.ValidationMessageFor(model => model.ApplyPercentageDiscountOnTierPrice)
+                </td>
+            </tr>
+        </tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
@@ -682,6 +697,15 @@
 @helper TabProductDetailSettings()
 {
     <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductCondition)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductCondition)
+                @Html.ValidationMessageFor(model => model.ShowProductCondition)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.RecentlyViewedProductsEnabled)

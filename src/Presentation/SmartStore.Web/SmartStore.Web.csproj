@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.0.5\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props')" />
   <Import Project="..\..\packages\LibSassHost.Native.win-x86.1.2.0\build\LibSassHost.Native.win-x86.props" Condition="Exists('..\..\packages\LibSassHost.Native.win-x86.1.2.0\build\LibSassHost.Native.win-x86.props')" />
@@ -53,6 +52,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
@@ -64,6 +64,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
     <Prefer32Bit>false</Prefer32Bit>
     <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
     <PrecompileBeforePublish>false</PrecompileBeforePublish>
@@ -73,10 +74,6 @@
   <ItemGroup>
     <Reference Include="AdvancedStringBuilder, Version=0.1.0.0, Culture=neutral, PublicKeyToken=e818a2fc08933ddb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AdvancedStringBuilder.0.1.0\lib\net45\AdvancedStringBuilder.dll</HintPath>
-    </Reference>
-    <Reference Include="AjaxMin, Version=5.14.5506.26196, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AjaxMin.5.14.5506.26202\lib\net40\AjaxMin.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,23 +86,26 @@
       <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="BundleTransformer.Autoprefixer, Version=1.10.2.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.Autoprefixer.1.10.2\lib\net40\BundleTransformer.Autoprefixer.dll</HintPath>
     </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.10.0.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.Core.1.10.0\lib\net40\BundleTransformer.Core.dll</HintPath>
     </Reference>
-    <Reference Include="BundleTransformer.MicrosoftAjax, Version=1.10.0.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\BundleTransformer.MicrosoftAjax.1.10.0\lib\net40\BundleTransformer.MicrosoftAjax.dll</HintPath>
+    <Reference Include="BundleTransformer.JsMin, Version=1.12.6.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.JsMin.1.12.6\lib\net40\BundleTransformer.JsMin.dll</HintPath>
+    </Reference>
+    <Reference Include="BundleTransformer.NUglify, Version=1.12.9.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.NUglify.1.12.9\lib\net40\BundleTransformer.NUglify.dll</HintPath>
     </Reference>
     <Reference Include="BundleTransformer.SassAndScss, Version=1.10.0.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.10.0\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
     </Reference>
     <Reference Include="ClearScript, Version=5.5.5.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
       <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.3.0.5\lib\net45\ClearScript.dll</HintPath>
+    </Reference>
+    <Reference Include="DouglasCrockford.JsMin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=99147aa1108448b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DouglasCrockford.JsMin.2.1.0\lib\net45\DouglasCrockford.JsMin.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -149,6 +149,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NUglify, Version=1.5.14.0, Culture=neutral, PublicKeyToken=15bc7810aec21b5e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUglify.1.5.14\lib\net40\NUglify.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -261,6 +264,7 @@
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\MediaController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\OrderHelper.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
@@ -296,6 +300,7 @@
     <Compile Include="Infrastructure\Menus\MainMenuInvalidator.cs" />
     <Compile Include="Infrastructure\Menus\MyAccountMenu.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
+    <Compile Include="Infrastructure\Routes\4_LastRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
     <Compile Include="Infrastructure\Installation\EnUSSeedData.cs" />
@@ -334,6 +339,7 @@
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
+    <Compile Include="Models\Common\CookieManagerModel.cs" />
     <Compile Include="Models\Search\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
@@ -461,6 +467,7 @@
     <Content Include="App_Data\EmailTemplates\de\Service.EmailAFriend.xml" />
     <Content Include="App_Data\EmailTemplates\de\ShipmentDelivered.CustomerNotification.xml" />
     <Content Include="App_Data\EmailTemplates\de\ShipmentSent.CustomerNotification.xml" />
+    <Content Include="App_Data\EmailTemplates\de\System.Generic.xml" />
     <Content Include="App_Data\EmailTemplates\de\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\de\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\de\Wishlist.EmailAFriend.xml" />
@@ -492,6 +499,7 @@
     <Content Include="App_Data\EmailTemplates\en\Service.EmailAFriend.xml" />
     <Content Include="App_Data\EmailTemplates\en\ShipmentDelivered.CustomerNotification.xml" />
     <Content Include="App_Data\EmailTemplates\en\ShipmentSent.CustomerNotification.xml" />
+    <Content Include="App_Data\EmailTemplates\en\System.Generic.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\en\Wishlist.EmailAFriend.xml" />
@@ -507,304 +515,270 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\Samples\0000904_samsung_125.jpeg" />
-    <Content Include="App_Data\Samples\0000930_spiegel-bestseller.png" />
-    <Content Include="App_Data\Samples\0000932_uberman-der-roman.jpeg" />
-    <Content Include="App_Data\Samples\0000935_der-gefangene-des-himmels-roman_300.jpeg" />
-    <Content Include="App_Data\Samples\0000936_kochen-geniesen.jpeg" />
-    <Content Include="App_Data\Samples\0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg" />
-    <Content Include="App_Data\Samples\0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg" />
-    <Content Include="App_Data\Samples\0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg" />
-    <Content Include="App_Data\Samples\0000946_fast-cars-bildkalender-2013_300.jpeg" />
-    <Content Include="App_Data\Samples\0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg" />
-    <Content Include="App_Data\Samples\0000954_dell-inspiron-one-23.jpeg" />
-    <Content Include="App_Data\Samples\0000956_dell-inspiron-one-23.jpeg" />
-    <Content Include="App_Data\Samples\01-12Hand_Aspire1.jpg" />
-    <Content Include="App_Data\Samples\58_00007561.jpg" />
-    <Content Include="App_Data\Samples\acer-logo.jpg" />
-    <Content Include="App_Data\Samples\beethoven-fur-elise.mp3" />
-    <Content Include="App_Data\Samples\Beethoven.jpg" />
-    <Content Include="App_Data\Samples\category_accessories.jpg" />
-    <Content Include="App_Data\Samples\category_accessories_apparel.jpg" />
-    <Content Include="App_Data\Samples\category_apparel_shoes.jpeg" />
-    <Content Include="App_Data\Samples\category_apple.png" />
-    <Content Include="App_Data\Samples\category_basketball.png" />
-    <Content Include="App_Data\Samples\category_book.jpeg" />
-    <Content Include="App_Data\Samples\category_camera_photo.jpeg" />
-    <Content Include="App_Data\Samples\category_cellphone.png" />
-    <Content Include="App_Data\Samples\category_computers.png" />
-    <Content Include="App_Data\Samples\category_desktops.png" />
-    <Content Include="App_Data\Samples\category_digitaldownloads.jpg" />
-    <Content Include="App_Data\Samples\category_digitalproducts.jpg" />
-    <Content Include="App_Data\Samples\category_electronics.jpeg" />
-    <Content Include="App_Data\Samples\category_fashion.jpg" />
-    <Content Include="App_Data\Samples\category_furniture.jpg" />
-    <Content Include="App_Data\Samples\category_games.jpg" />
-    <Content Include="App_Data\Samples\category_gaming.png" />
-    <Content Include="App_Data\Samples\category_gaming_accessories.png" />
-    <Content Include="App_Data\Samples\category_gift-cards.png" />
-    <Content Include="App_Data\Samples\category_giftcards.png" />
-    <Content Include="App_Data\Samples\category_glasses.png" />
-    <Content Include="App_Data\Samples\category_golf.jpg" />
-    <Content Include="App_Data\Samples\category_jackets.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\category_leather_jackets.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\category_notebooks.png" />
-    <Content Include="App_Data\Samples\category_shoes.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\category_soccer.png" />
-    <Content Include="App_Data\Samples\category_sports.jpg" />
-    <Content Include="App_Data\Samples\category_sunglasses.jpg" />
-    <Content Include="App_Data\Samples\category_tracksuit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\category_trousers.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\category_watches.png" />
-    <Content Include="App_Data\Samples\company_logo.png" />
-    <Content Include="App_Data\Samples\emblem_library.png" />
-    <Content Include="App_Data\Samples\gift-card.jpg" />
-    <Content Include="App_Data\Samples\manufacturer-android.png" />
-    <Content Include="App_Data\Samples\manufacturer-blackberry.png" />
-    <Content Include="App_Data\Samples\manufacturer-canon.png" />
-    <Content Include="App_Data\Samples\manufacturer-casio.png" />
-    <Content Include="App_Data\Samples\manufacturer-certina.png" />
-    <Content Include="App_Data\Samples\manufacturer-dell.png" />
-    <Content Include="App_Data\Samples\manufacturer-hp.png" />
-    <Content Include="App_Data\Samples\manufacturer-htc.png" />
-    <Content Include="App_Data\Samples\manufacturer-lg.png" />
-    <Content Include="App_Data\Samples\manufacturer-microsoft.png" />
-    <Content Include="App_Data\Samples\manufacturer-msi.png" />
-    <Content Include="App_Data\Samples\manufacturer-panasonic.png" />
-    <Content Include="App_Data\Samples\manufacturer-samsung.png" />
-    <Content Include="App_Data\Samples\manufacturer-trekstor.png" />
-    <Content Include="App_Data\Samples\manufacturer-westerndigital.png" />
-    <Content Include="App_Data\Samples\manufacturer_adidas.png" />
-    <Content Include="App_Data\Samples\manufacturer_apple.png" />
-    <Content Include="App_Data\Samples\manufacturer_breitling.png" />
-    <Content Include="App_Data\Samples\manufacturer_EA_Sports.png" />
-    <Content Include="App_Data\Samples\manufacturer_festina.png" />
-    <Content Include="App_Data\Samples\manufacturer_Jack_Wolfskin.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\manufacturer_MeyAndEdlich.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\manufacturer_microsoft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\manufacturer_nike.png" />
-    <Content Include="App_Data\Samples\manufacturer_oakley.png" />
-    <Content Include="App_Data\Samples\manufacturer_puma.jpg" />
-    <Content Include="App_Data\Samples\manufacturer_ray-ban.jpg" />
-    <Content Include="App_Data\Samples\manufacturer_seiko.png" />
-    <Content Include="App_Data\Samples\manufacturer_sony.png" />
-    <Content Include="App_Data\Samples\manufacturer_tissot.png" />
-    <Content Include="App_Data\Samples\manufacturer_titleist.png" />
-    <Content Include="App_Data\Samples\manufacturer_ubisoft.png" />
-    <Content Include="App_Data\Samples\manufacturer_wb.png" />
-    <Content Include="App_Data\Samples\manufacturer_wilson.png" />
-    <Content Include="App_Data\Samples\productCustomFlakSunglasses_black_white.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_gold.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_lightblue.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_mint.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_rose.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_turquoise.jpg" />
-    <Content Include="App_Data\Samples\products_airpods_white.jpg" />
-    <Content Include="App_Data\Samples\products_nike-strike-football.jpg" />
-    <Content Include="App_Data\Samples\products_princeofpersia.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-gold.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-lightblue.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-mint.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-purple.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-rose.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-silver.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-spacegray.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-turquoise.jpg" />
-    <Content Include="App_Data\Samples\product_97-ipad-yellow.jpg" />
-    <Content Include="App_Data\Samples\product_AcerAspireOne_1.jpeg" />
-    <Content Include="App_Data\Samples\product_AcerAspireOne_2.jpeg" />
-    <Content Include="App_Data\Samples\product_aceraspiresl1500.png" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-blue.jpg" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-brown.jpg" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-gray.jpg" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-green.jpg" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-red.jpg" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-white.png" />
-    <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-yellow.jpg" />
-    <Content Include="App_Data\Samples\product_adidas_superstar_schuh_1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\product_all-court-basketball.png" />
-    <Content Include="App_Data\Samples\product_allstar_charcoal.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_converse.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_hi_charcoal.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_hi_maroon.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_hi_navy.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_hi_purple.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_hi_white.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_maroon.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_navy.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_purple.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_white.jpg" />
-    <Content Include="App_Data\Samples\product_ball_chair_black.jpg" />
-    <Content Include="App_Data\Samples\product_ball_chair_white.jpg" />
-    <Content Include="App_Data\Samples\product_bestgrillingrecipes.jpg" />
-    <Content Include="App_Data\Samples\product_certina_ds_podium_big.png" />
-    <Content Include="App_Data\Samples\product_charles_eames_lounge_chair_black.jpg" />
-    <Content Include="App_Data\Samples\product_charles_eames_lounge_chair_white.jpg" />
-    <Content Include="App_Data\Samples\product_clark_premium_jeans.jpg" />
-    <Content Include="App_Data\Samples\product_cookingfortwo.jpg" />
-    <Content Include="App_Data\Samples\product_corbusier_lc6_table_1.jpg" />
-    <Content Include="App_Data\Samples\product_corbusier_lc6_table_2.jpg" />
-    <Content Include="App_Data\Samples\product_corbusier_lc6_table_3.jpg" />
-    <Content Include="App_Data\Samples\product_corbusier_lc6_table_4.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlakSunglasses.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_24kiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_clear.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_fireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_gray.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_jadeiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_positiverediridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_rubyiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_sapphireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_matteblack_violetiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_24kiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_clear.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_fireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_gray.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_jadeiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_positiverediridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_rubyiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_sapphireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_orangeflare_violetiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_24kiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_clear.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_fireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_gray.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_jadeiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_positiverediridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_rubyiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_sapphireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_polishedwhite_violetiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_24kiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_clear.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_fireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_gray.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_jadeiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_positiverediridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_rubyiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_sapphireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_redline_violetiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_24kiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_clear.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_fireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_gray.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_jadeiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_positiverediridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_rubyiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_sapphireiridium.jpg" />
-    <Content Include="App_Data\Samples\product_CustomFlak_skyblue_violetiridium.jpg" />
-    <Content Include="App_Data\Samples\product_dellinspiron23.png" />
-    <Content Include="App_Data\Samples\product_dualshock4.jpg" />
-    <Content Include="App_Data\Samples\product_evolution-high-school-game-basketball.jpg" />
-    <Content Include="App_Data\Samples\product_fifa17.jpg" />
-    <Content Include="App_Data\Samples\product_gbb-epic-sub-zero-driver.jpg" />
-    <Content Include="App_Data\Samples\product_giftcart.png" />
-    <Content Include="App_Data\Samples\product_gift_card_10.png" />
-    <Content Include="App_Data\Samples\product_gift_card_100.png" />
-    <Content Include="App_Data\Samples\product_gift_card_25.png" />
-    <Content Include="App_Data\Samples\product_gift_card_50.png" />
-    <Content Include="App_Data\Samples\product_hoffmann_cube_chair_black.jpg" />
-    <Content Include="App_Data\Samples\product_horizon.jpg" />
-    <Content Include="App_Data\Samples\product_ipad_1.jpg" />
-    <Content Include="App_Data\Samples\product_ipad_2.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_all_colors.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_black.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_gold.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_red.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_rose.jpg" />
-    <Content Include="App_Data\Samples\product_iphone-plus_silver.jpg" />
-    <Content Include="App_Data\Samples\product_iphoneplus_1.jpg" />
-    <Content Include="App_Data\Samples\product_iphoneplus_2.jpg" />
-    <Content Include="App_Data\Samples\product_jack_wolfskin_kanuka_point_1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\product_ladies_jacket_black.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_blue.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_green.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_navy.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_orange.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_red.jpg" />
-    <Content Include="App_Data\Samples\product_ladies_jacket_silver.jpg" />
-    <Content Include="App_Data\Samples\product_legoworlds.jpg" />
-    <Content Include="App_Data\Samples\product_minecraft.jpg" />
-    <Content Include="App_Data\Samples\product_nike-vopower-53-trainer-hs-ball.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_1.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_2.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_3.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_4.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_5.jpg" />
-    <Content Include="App_Data\Samples\product_productOriginalWayfarer_6.jpg" />
-    <Content Include="App_Data\Samples\product_ps4_slim.jpg" />
-    <Content Include="App_Data\Samples\product_ps4_wo_controller.jpg" />
-    <Content Include="App_Data\Samples\product_ps4_w_controller.jpg" />
-    <Content Include="App_Data\Samples\product_radar_ev_prizm.jpg" />
-    <Content Include="App_Data\Samples\product_RayBanTopBar_1.jpg" />
-    <Content Include="App_Data\Samples\product_RayBanTopBar_2.jpg" />
-    <Content Include="App_Data\Samples\product_RayBanTopBar_3.jpg" />
-    <Content Include="App_Data\Samples\product_SeikoSRPA49K1.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_black_1.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_black_2.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_black_3.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_red_1.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_red_2.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_red_3.jpg" />
-    <Content Include="App_Data\Samples\product_shirt_meccanica_red_4.jpg" />
-    <Content Include="App_Data\Samples\product_sony_dualshock4_wirelesscontroller.png" />
-    <Content Include="App_Data\Samples\product_sony_ps3_black.png" />
-    <Content Include="App_Data\Samples\product_sony_ps3_plus_game.png" />
-    <Content Include="App_Data\Samples\product_sony_ps4.png" />
-    <Content Include="App_Data\Samples\product_sony_ps4_bundle.png" />
-    <Content Include="App_Data\Samples\product_sony_ps4_camera.png" />
-    <Content Include="App_Data\Samples\product_supremeGolfball_1.jpg" />
-    <Content Include="App_Data\Samples\product_supremeGolfball_2.jpg" />
-    <Content Include="App_Data\Samples\product_tissot-t-touch-expert-solar-t091_2.jpg" />
-    <Content Include="App_Data\Samples\product_tissot-t-touch-expert-solar.jpg" />
-    <Content Include="App_Data\Samples\product_titleist-pro-v1x.jpg" />
-    <Content Include="App_Data\Samples\product_titleist_sm6_tour_chrome.jpg" />
-    <Content Include="App_Data\Samples\product_torfabrik-offizieller-spielball_blue.png" />
-    <Content Include="App_Data\Samples\product_torfabrik-offizieller-spielball_green.png" />
-    <Content Include="App_Data\Samples\product_torfabrik-offizieller-spielball_red.png" />
-    <Content Include="App_Data\Samples\product_torfabrik-offizieller-spielball_white.png" />
-    <Content Include="App_Data\Samples\product_torfabrik-offizieller-spielball_yellow.png" />
-    <Content Include="App_Data\Samples\product_transocean-chronograph.jpg" />
-    <Content Include="App_Data\Samples\product_ultimate-apple-pro-hipster-bundle.jpg" />
-    <Content Include="App_Data\Samples\product_watchseries2_1.jpg" />
-    <Content Include="App_Data\Samples\product_watchseries2_2.jpg" />
-    <Content Include="App_Data\Samples\product_wolfskin_shoes_coogee_1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\product_xbox_one_s_1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Samples\ps4_bundle_minecraft.jpg" />
-    <Content Include="App_Data\Samples\sony-ps3-white.jpg" />
-    <Content Include="App_Data\Samples\sony-PS3AssassinsCreedBundle.jpg" />
-    <Content Include="App_Data\Samples\stone_of_wisdom.jpg" />
-    <Content Include="App_Data\Samples\ubisoft-assassins-creed-3.jpg" />
-    <Content Include="App_Data\Samples\ubisoft-driver-san-francisco.jpg" />
-    <Content Include="App_Data\Samples\ubisoft-watchdogs.jpg" />
-    <Content Include="App_Data\Samples\vivaldi-four-seasons-spring.mp3" />
-    <Content Include="App_Data\Samples\vivaldi.jpg" />
-    <Content Include="App_Data\Samples\wayfarer_havana.png" />
-    <Content Include="App_Data\Samples\wayfarer_havana_black.png" />
-    <Content Include="App_Data\Samples\wayfarer_rayban-black.png" />
+    <Content Include="App_Data\Samples\brand\wilson.png" />
+    <Content Include="App_Data\Samples\category\0000930_spiegel-bestseller.png" />
+    <Content Include="App_Data\Samples\product\0000932_uberman-der-roman.jpeg" />
+    <Content Include="App_Data\Samples\product\0000935_der-gefangene-des-himmels-roman_300.jpeg" />
+    <Content Include="App_Data\Samples\category\0000936_kochen-geniesen.jpeg" />
+    <Content Include="App_Data\Samples\product\0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg" />
+    <Content Include="App_Data\Samples\product\0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg" />
+    <Content Include="App_Data\Samples\product\0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg" />
+    <Content Include="App_Data\Samples\product\0000946_fast-cars-bildkalender-2013_300.jpeg" />
+    <Content Include="App_Data\Samples\product\0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg" />
+    <Content Include="App_Data\Samples\brand\acer.jpg" />
+    <Content Include="App_Data\Samples\download\beethoven-fur-elise.mp3" />
+    <Content Include="App_Data\Samples\product\Beethoven.jpg" />
+    <Content Include="App_Data\Samples\category\accessories.jpg" />
+    <Content Include="App_Data\Samples\category\accessories_apparel.jpg" />
+    <Content Include="App_Data\Samples\category\apparel_shoes.jpeg" />
+    <Content Include="App_Data\Samples\category\apple.png" />
+    <Content Include="App_Data\Samples\category\basketball.png" />
+    <Content Include="App_Data\Samples\category\book.jpeg" />
+    <Content Include="App_Data\Samples\category\camera_photo.jpeg" />
+    <Content Include="App_Data\Samples\category\cellphone.png" />
+    <Content Include="App_Data\Samples\category\computers.png" />
+    <Content Include="App_Data\Samples\category\desktops.png" />
+    <Content Include="App_Data\Samples\category\digitaldownloads.jpg" />
+    <Content Include="App_Data\Samples\category\digitalproducts.jpg" />
+    <Content Include="App_Data\Samples\category\electronics.jpeg" />
+    <Content Include="App_Data\Samples\category\fashion.jpg" />
+    <Content Include="App_Data\Samples\category\furniture.jpg" />
+    <Content Include="App_Data\Samples\category\games.jpg" />
+    <Content Include="App_Data\Samples\category\gaming.png" />
+    <Content Include="App_Data\Samples\category\gaming_accessories.png" />
+    <Content Include="App_Data\Samples\category\gift-cards.png" />
+    <Content Include="App_Data\Samples\category\giftcards.png" />
+    <Content Include="App_Data\Samples\category\glasses.png" />
+    <Content Include="App_Data\Samples\category\golf.jpg" />
+    <Content Include="App_Data\Samples\category\jackets.jpg" />
+    <Content Include="App_Data\Samples\category\leather_jackets.jpg" />
+    <Content Include="App_Data\Samples\category\notebooks.png" />
+    <Content Include="App_Data\Samples\category\shoes.png" />
+    <Content Include="App_Data\Samples\category\soccer.png" />
+    <Content Include="App_Data\Samples\category\sports.jpg" />
+    <Content Include="App_Data\Samples\category\sunglasses.jpg" />
+    <Content Include="App_Data\Samples\category\tracksuit.png" />
+    <Content Include="App_Data\Samples\category\trousers.png" />
+    <Content Include="App_Data\Samples\category\watches.png" />
+    <Content Include="App_Data\Samples\company-logo.png" />
+    <Content Include="App_Data\Samples\category\emblem_library.png" />
+    <Content Include="App_Data\Samples\product\gift-card.jpg" />
+    <Content Include="App_Data\Samples\brand\android.png" />
+    <Content Include="App_Data\Samples\brand\blackberry.png" />
+    <Content Include="App_Data\Samples\brand\canon.png" />
+    <Content Include="App_Data\Samples\brand\casio.png" />
+    <Content Include="App_Data\Samples\brand\certina.png" />
+    <Content Include="App_Data\Samples\brand\dell.png" />
+    <Content Include="App_Data\Samples\brand\hp.png" />
+    <Content Include="App_Data\Samples\brand\htc.png" />
+    <Content Include="App_Data\Samples\brand\lg.png" />
+    <Content Include="App_Data\Samples\brand\microsoft-icon.png" />
+    <Content Include="App_Data\Samples\brand\msi.png" />
+    <Content Include="App_Data\Samples\brand\panasonic.png" />
+    <Content Include="App_Data\Samples\brand\samsung.png" />
+    <Content Include="App_Data\Samples\brand\trekstor.png" />
+    <Content Include="App_Data\Samples\brand\westerndigital.png" />
+    <Content Include="App_Data\Samples\brand\adidas.png" />
+    <Content Include="App_Data\Samples\brand\apple.png" />
+    <Content Include="App_Data\Samples\brand\breitling.png" />
+    <Content Include="App_Data\Samples\brand\EA_Sports.png" />
+    <Content Include="App_Data\Samples\brand\festina.png" />
+    <Content Include="App_Data\Samples\brand\Jack_Wolfskin.png" />
+    <Content Include="App_Data\Samples\brand\MeyAndEdlich.jpg" />
+    <Content Include="App_Data\Samples\brand\microsoft.png" />
+    <Content Include="App_Data\Samples\brand\nike.png" />
+    <Content Include="App_Data\Samples\brand\oakley.png" />
+    <Content Include="App_Data\Samples\brand\puma.jpg" />
+    <Content Include="App_Data\Samples\brand\ray-ban.jpg" />
+    <Content Include="App_Data\Samples\brand\seiko.png" />
+    <Content Include="App_Data\Samples\brand\sony.png" />
+    <Content Include="App_Data\Samples\brand\tissot.png" />
+    <Content Include="App_Data\Samples\brand\titleist.png" />
+    <Content Include="App_Data\Samples\brand\ubisoft.png" />
+    <Content Include="App_Data\Samples\brand\wb.png" />
+    <Content Include="App_Data\Samples\product\airpods_gold.jpg" />
+    <Content Include="App_Data\Samples\product\airpods_lightblue.jpg" />
+    <Content Include="App_Data\Samples\product\airpods_mint.jpg" />
+    <Content Include="App_Data\Samples\product\airpods_rose.jpg" />
+    <Content Include="App_Data\Samples\product\airpods_turquoise.jpg" />
+    <Content Include="App_Data\Samples\product\airpods_white.jpg" />
+    <Content Include="App_Data\Samples\product\ball_chair_black.jpg" />
+    <Content Include="App_Data\Samples\product\ball_chair_white.jpg" />
+    <Content Include="App_Data\Samples\product\bestgrillingrecipes.jpg" />
+    <Content Include="App_Data\Samples\product\certina_ds_podium_big.png" />
+    <Content Include="App_Data\Samples\product\charles_eames_lounge_chair_black.jpg" />
+    <Content Include="App_Data\Samples\product\charles_eames_lounge_chair_white.jpg" />
+    <Content Include="App_Data\Samples\product\clark_premium_jeans.jpg" />
+    <Content Include="App_Data\Samples\product\cookingfortwo.jpg" />
+    <Content Include="App_Data\Samples\product\corbusier_lc6_table_1.jpg" />
+    <Content Include="App_Data\Samples\product\corbusier_lc6_table_2.jpg" />
+    <Content Include="App_Data\Samples\product\corbusier_lc6_table_3.jpg" />
+    <Content Include="App_Data\Samples\product\corbusier_lc6_table_4.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlakSunglasses.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlakSunglasses_black_white.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_24kiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_clear.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_fireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_gray.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_jadeiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_positiverediridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_rubyiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_sapphireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_matteblack_violetiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_24kiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_clear.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_fireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_gray.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_jadeiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_positiverediridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_rubyiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_sapphireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_orangeflare_violetiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_24kiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_clear.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_fireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_gray.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_jadeiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_positiverediridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_rubyiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_sapphireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_polishedwhite_violetiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_24kiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_clear.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_fireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_gray.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_jadeiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_positiverediridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_rubyiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_sapphireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_redline_violetiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_24kiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_clear.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_fireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_gray.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_jadeiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_positiverediridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_rubyiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_sapphireiridium.jpg" />
+    <Content Include="App_Data\Samples\product\CustomFlak_skyblue_violetiridium.jpg" />
+    <Content Include="App_Data\Samples\product\dellinspiron23.png" />
+    <Content Include="App_Data\Samples\product\dualshock4.jpg" />
+    <Content Include="App_Data\Samples\product\evolution-high-school-game-basketball.jpg" />
+    <Content Include="App_Data\Samples\product\fifa17.jpg" />
+    <Content Include="App_Data\Samples\product\gbb-epic-sub-zero-driver.jpg" />
+    <Content Include="App_Data\Samples\product\giftcart.png" />
+    <Content Include="App_Data\Samples\product\gift_card_10.png" />
+    <Content Include="App_Data\Samples\product\gift_card_100.png" />
+    <Content Include="App_Data\Samples\product\gift_card_25.png" />
+    <Content Include="App_Data\Samples\product\gift_card_50.png" />
+    <Content Include="App_Data\Samples\product\hoffmann_cube_chair_black.jpg" />
+    <Content Include="App_Data\Samples\product\horizon.jpg" />
+    <Content Include="App_Data\Samples\product\ipad_1.jpg" />
+    <Content Include="App_Data\Samples\product\ipad_2.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_all_colors.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_black.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_gold.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_red.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_rose.jpg" />
+    <Content Include="App_Data\Samples\product\iphone-plus_silver.jpg" />
+    <Content Include="App_Data\Samples\product\iphoneplus_1.jpg" />
+    <Content Include="App_Data\Samples\product\iphoneplus_2.jpg" />
+    <Content Include="App_Data\Samples\product\jack_wolfskin_kanuka_point_1.png" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_black.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_blue.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_green.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_navy.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_orange.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_red.jpg" />
+    <Content Include="App_Data\Samples\product\ladies_jacket_silver.jpg" />
+    <Content Include="App_Data\Samples\product\legoworlds.jpg" />
+    <Content Include="App_Data\Samples\product\minecraft.jpg" />
+    <Content Include="App_Data\Samples\product\nike-strike-football.jpg" />
+    <Content Include="App_Data\Samples\product\nike-vopower-53-trainer-hs-ball.jpg" />
+    <Content Include="App_Data\Samples\product\princeofpersia.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-gold.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-lightblue.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-mint.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-purple.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-rose.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-silver.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-spacegray.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-turquoise.jpg" />
+    <Content Include="App_Data\Samples\product\97-ipad-yellow.jpg" />
+    <Content Include="App_Data\Samples\product\AcerAspireOne_1.jpeg" />
+    <Content Include="App_Data\Samples\product\AcerAspireOne_2.jpeg" />
+    <Content Include="App_Data\Samples\product\aceraspiresl1500.png" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-blue.jpg" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-brown.jpg" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-gray.jpg" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-green.jpg" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-red.jpg" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-white.png" />
+    <Content Include="App_Data\Samples\product\adidas-tango-pasadena-ball-yellow.jpg" />
+    <Content Include="App_Data\Samples\product\adidas_superstar_schuh_1.png" />
+    <Content Include="App_Data\Samples\product\all-court-basketball.png" />
+    <Content Include="App_Data\Samples\product\allstar_charcoal.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_converse.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_hi_charcoal.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_hi_maroon.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_hi_navy.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_hi_purple.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_hi_white.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_maroon.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_navy.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_purple.jpg" />
+    <Content Include="App_Data\Samples\product\allstar_white.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_1.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_2.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_3.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_4.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_5.jpg" />
+    <Content Include="App_Data\Samples\product\OriginalWayfarer_6.jpg" />
+    <Content Include="App_Data\Samples\product\ps4_slim.jpg" />
+    <Content Include="App_Data\Samples\product\ps4_wo_controller.jpg" />
+    <Content Include="App_Data\Samples\product\ps4_w_controller.jpg" />
+    <Content Include="App_Data\Samples\product\radar_ev_prizm.jpg" />
+    <Content Include="App_Data\Samples\product\RayBanTopBar_1.jpg" />
+    <Content Include="App_Data\Samples\product\RayBanTopBar_2.jpg" />
+    <Content Include="App_Data\Samples\product\RayBanTopBar_3.jpg" />
+    <Content Include="App_Data\Samples\product\SeikoSRPA49K1.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_black_1.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_black_2.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_black_3.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_red_1.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_red_2.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_red_3.jpg" />
+    <Content Include="App_Data\Samples\product\shirt_meccanica_red_4.jpg" />
+    <Content Include="App_Data\Samples\product\sony_dualshock4_wirelesscontroller.png" />
+    <Content Include="App_Data\Samples\product\sony_ps3_black.png" />
+    <Content Include="App_Data\Samples\product\sony_ps3_plus_game.png" />
+    <Content Include="App_Data\Samples\product\sony_ps4.png" />
+    <Content Include="App_Data\Samples\product\sony_ps4_bundle.png" />
+    <Content Include="App_Data\Samples\product\sony_ps4_camera.png" />
+    <Content Include="App_Data\Samples\product\supremeGolfball_1.jpg" />
+    <Content Include="App_Data\Samples\product\supremeGolfball_2.jpg" />
+    <Content Include="App_Data\Samples\product\tissot-t-touch-expert-solar-t091_2.jpg" />
+    <Content Include="App_Data\Samples\product\tissot-t-touch-expert-solar.jpg" />
+    <Content Include="App_Data\Samples\product\titleist-pro-v1x.jpg" />
+    <Content Include="App_Data\Samples\product\titleist_sm6_tour_chrome.jpg" />
+    <Content Include="App_Data\Samples\product\torfabrik-offizieller-spielball_blue.png" />
+    <Content Include="App_Data\Samples\product\torfabrik-offizieller-spielball_green.png" />
+    <Content Include="App_Data\Samples\product\torfabrik-offizieller-spielball_red.png" />
+    <Content Include="App_Data\Samples\product\torfabrik-offizieller-spielball_white.png" />
+    <Content Include="App_Data\Samples\product\torfabrik-offizieller-spielball_yellow.png" />
+    <Content Include="App_Data\Samples\product\transocean-chronograph.jpg" />
+    <Content Include="App_Data\Samples\product\ultimate-apple-pro-hipster-bundle.jpg" />
+    <Content Include="App_Data\Samples\product\watchseries2_1.jpg" />
+    <Content Include="App_Data\Samples\product\watchseries2_2.jpg" />
+    <Content Include="App_Data\Samples\product\wolfskin_shoes_coogee_1.png" />
+    <Content Include="App_Data\Samples\product\xbox_one_s_1.png" />
+    <Content Include="App_Data\Samples\product\ps4_bundle_minecraft.jpg" />
+    <Content Include="App_Data\Samples\product\stone_of_wisdom.jpg" />
+    <Content Include="App_Data\Samples\download\vivaldi-four-seasons-spring.mp3" />
+    <Content Include="App_Data\Samples\product\vivaldi.jpg" />
+    <Content Include="App_Data\Samples\product\wayfarer_havana.png" />
+    <Content Include="App_Data\Samples\product\wayfarer_havana_black.png" />
+    <Content Include="App_Data\Samples\product\wayfarer_rayban-black.png" />
     <Content Include="Content\bs4\js\bootstrap.bundle.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.min.js" />
     <Content Include="Content\bs4\js\bootstrap.js" />
@@ -882,8 +856,13 @@
     <Content Include="Content\vendors\beautify\beautify-css.min.js" />
     <Content Include="Content\vendors\beautify\beautify-html.min.js" />
     <Content Include="Content\vendors\beautify\beautify.min.js" />
+    <Content Include="Content\vendors\Chart.js\Chart.js" />
+    <Content Include="Content\vendors\Chart.js\Chart.min.js" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
+    <Content Include="Content\vendors\dropzone\js\dropzone.min.js" />
+    <Content Include="Content\vendors\dropzone\js\dropzone.js" />
+    <Content Include="Scripts\smartstore.dropzoneWrapper.js" />
     <Content Include="Content\vendors\fa5\css\all.css" />
     <Content Include="Content\vendors\fa5\css\all.min.css" />
     <Content Include="Content\vendors\fa5\css\brands.css" />
@@ -901,14 +880,6 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-brands-400.svg" />
     <Content Include="Content\vendors\fa5\webfonts\fa-regular-400.svg" />
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.svg" />
-    <Content Include="Content\vendors\fileuploader\images\loading.gif" />
-    <Content Include="Content\vendors\fileuploader\images\progressbar.gif" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-fp.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-single-ui.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload-ui.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.fileupload.js" />
-    <Content Include="Content\vendors\fileuploader\jquery.iframe-transport.js" />
-    <Content Include="Content\vendors\fileuploader\locale.js" />
     <Content Include="Content\vendors\font-awesome\font-awesome.css" />
     <Content Include="Content\vendors\font-awesome\font-awesome.min.css" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
@@ -935,6 +906,7 @@
     <Content Include="Content\vendors\colorpicker\js\bootstrap-colorpicker.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.js" />
     <Content Include="Content\vendors\datetimepicker\js\tempusdominus-bootstrap-4.min.js" />
+    <Content Include="Content\vendors\imagesloaded\imagesloaded.pkgd.min.js" />
     <Content Include="Content\vendors\moment\locale\ar-dz.js" />
     <Content Include="Content\vendors\moment\locale\ar-kw.js" />
     <Content Include="Content\vendors\moment\locale\ar-ly.js" />
@@ -1021,6 +993,9 @@
     <Content Include="Content\vendors\select2\js\select2.js" />
     <Content Include="Content\vendors\select2\js\select2.min.js" />
     <Content Include="Content\vendors\slick\slick.js" />
+    <Content Include="Content\vendors\sortable\jquery-sortable.js" />
+    <Content Include="Content\vendors\vue\vue.min.js" />
+    <Content Include="Content\vendors\vue\vue.js" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.css" />
     <Content Include="Content\vendors\x-editable\bootstrap-editable.js" />
     <Content Include="Content\vendors\drift\LICENSE" />
@@ -1037,7 +1012,7 @@
     <Content Include="Content\shared\_nav-collapsible.scss" />
     <Content Include="Content\shared\_offcanvas.scss" />
     <Content Include="Content\shared\_star-rating.scss" />
-    <Content Include="App_Data\Samples\Stone_of_the_wise_preview.pdf" />
+    <Content Include="App_Data\Samples\download\Stone_of_the_wise_preview.pdf" />
     <Content Include="Content\editors\summernote\font\summernote.eot" />
     <Content Include="Content\editors\summernote\font\summernote.ttf" />
     <Content Include="Content\editors\summernote\font\summernote.woff" />
@@ -1084,6 +1059,12 @@
     <Content Include="Content\shared\_fa.scss" />
     <Content Include="App_Data\icons.json" />
     <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
+    <Content Include="Content\shared\_tree.scss" />
+    <Content Include="Content\bs4\scss\bootstrap-head.scss" />
+    <Content Include="Content\bs4\scss\bootstrap-main.scss" />
+    <Content Include="Content\shared\_custom-scrollbar.scss" />
+    <Content Include="Content\shared\_custom-scrollbar-buttons.scss" />
+    <Content Include="Content\shared\_media.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1101,7 +1082,7 @@
     <Content Include="Content\vendors\jquery-ui\position.js" />
     <Content Include="Content\vendors\jquery-ui\widget.js" />
     <Content Include="Content\vendors\touchspin\jquery.bootstrap-touchspin.js" />
-    <Content Include="Content\vendors\jquery\jquery.sortable.js" />
+    <Content Include="Content\vendors\sortable\sortable.js" />
     <Content Include="Content\vendors\jquery\jquery.unobtrusive-ajax.js" />
     <Content Include="Content\vendors\jquery\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.js.map" />
@@ -1226,6 +1207,9 @@
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.js" />
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Content\vendors\modernizr\modernizr.js" />
+    <Content Include="Scripts\smartstore.dialogs.js" />
+    <Content Include="Scripts\smartstore.media.js" />
+    <Content Include="Scripts\smartstore.tree.js" />
     <Content Include="Scripts\smartstore.linkbuilder.js" />
     <Content Include="Scripts\smartstore.rangeslider.js" />
     <Content Include="Scripts\smartstore.keynav.js" />
@@ -1792,8 +1776,8 @@
     <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.Tools.cshtml" />
     <Content Include="Themes\Flex\Content\_menu.scss" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Menu.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Home.cshtml" />
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
     <Content Include="Views\Search\Partials\Filters.cshtml" />
     <Content Include="Views\Search\Partials\Filters.Active.cshtml" />
@@ -1801,8 +1785,8 @@
     <Content Include="Views\Search\FacetTemplates\SingleSelect.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Price.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
-    <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
-    <Content Include="Views\Common\Partials\Breadcrumb.cshtml" />
+    <Content Include="Views\Menu\OffCanvas.Brands.cshtml" />
+    <Content Include="Views\Menu\Breadcrumb.cshtml" />
     <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
     <Content Include="Views\Shared\Layouts\_MyAccount.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageManufacturers.cshtml" />
@@ -1835,13 +1819,12 @@
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Themes\Flex\Content\_fonts.scss" />
     <Content Include="Views\ShoppingCart\Partials\_RefreshCartScript.cshtml" />
-    <Content Include="Views\Common\Partials\CookieConsentBadge.cshtml" />
     <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Byte.cshtml" />
     <Content Include="Views\Boards\Partials\Filters.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Media.cshtml" />
     <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
     <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
@@ -1856,6 +1839,22 @@
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
     <Content Include="Views\Shared\Menus\Main.cshtml" />
     <Content Include="Views\Catalog\Menus\Categories.cshtml" />
+    <Content Include="Content\shared\_bg.scss" />
+    <Content Include="Content\shared\_box.scss" />
+    <Content Include="Content\shared\_sections.scss" />
+    <Content Include="Themes\Flex\Content\_news.scss" />
+    <Content Include="Views\Blog\Partials\BlogSummaryList.cshtml" />
+    <Content Include="Views\Blog\Partials\BlogSummaryHeading.cshtml" />
+    <Content Include="Views\Blog\Partials\BlogSummary.cshtml" />
+    <Content Include="Views\Common\Partials\CookieManager.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Int64.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Image.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Video.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Audio.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Document.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Text.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\Bin.cshtml" />
+    <Content Include="Views\Shared\MediaTemplates\_Thumbnail.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1908,10 +1907,12 @@
     <Content Include="App_GlobalResources\GridLocalization.de.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.de.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="App_GlobalResources\GridLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -2047,6 +2048,16 @@
     <Copy SourceFiles="@(VC14Binariesx86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(VC14Binariesx64)" DestinationFolder="$(OutputPath)\x64\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
+  <Target Name="CopyRoslynFiles">
+    <!-- Copying Roslyn tools and their dependencies to the "bin" folder. -->
+    <PropertyGroup>
+      <RoslynFilesDestination>$(ProjectDir)bin\roslyn\</RoslynFilesDestination>
+    </PropertyGroup>
+    <ItemGroup>
+      <RoslynFiles Include="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\tools\RoslynLatest\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RoslynFiles)" DestinationFolder="$(RoslynFilesDestination)" Condition="!Exists('$(RoslynFilesDestination)csc.exe')" />
+  </Target>
   <PropertyGroup>
     <PlaceholderFile>$(ProjectDir)Content\placeholder.txt</PlaceholderFile>
   </PropertyGroup>
@@ -2056,6 +2067,7 @@
   <Target Name="AfterBuild" DependsOnTargets="MvcBuildViews">
     <CallTarget Targets="ExcludeRootBinariesDeployment" />
     <CallTarget Targets="CopyNativeBinaries" />
+    <CallTarget Targets="CopyRoslynFiles" />
     <CallTarget Targets="CreateEmptyFolders" />
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

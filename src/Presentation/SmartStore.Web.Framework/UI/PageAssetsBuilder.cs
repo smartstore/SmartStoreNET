@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Utilities;
 using System.Web.Hosting;
 using System.Web.Routing;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -22,18 +23,17 @@ namespace SmartStore.Web.Framework.UI
         private readonly HttpContextBase _httpContext;
         private readonly SeoSettings _seoSettings;
         private readonly ThemeSettings _themeSettings;
-        private readonly List<string> _titleParts;
-        private readonly List<string> _metaDescriptionParts;
-        private readonly List<string> _metaKeywordParts;
-        private readonly List<string> _canonicalUrlParts;
-		private readonly List<string> _customHeadParts;
-        private readonly List<string> _bodyCssClasses;
-        private string _htmlId;
-        private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
-        private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
-		private readonly List<RouteValueDictionary> _linkParts;
-		private readonly IStoreContext _storeContext;
         private readonly IBundleBuilder _bundleBuilder;
+
+        private List<string> _titleParts;
+        private List<string> _metaDescriptionParts;
+        private List<string> _metaKeywordParts;
+        private List<string> _canonicalUrlParts;
+		private List<string> _customHeadParts;
+        private List<RouteValueDictionary> _linkParts;
+        private Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
+        private Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts; 
+        private string _htmlId;    
 
 		private static readonly ConcurrentDictionary<string, string> s_minFiles = new ConcurrentDictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -47,46 +47,60 @@ namespace SmartStore.Web.Framework.UI
             _httpContext = httpContext;
             _seoSettings = seoSettings;
             _themeSettings = themeSettings;
-            _titleParts = new List<string>();
-            _metaDescriptionParts = new List<string>();
-            _metaKeywordParts = new List<string>();
-            _scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
-            _cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
-            _canonicalUrlParts = new List<string>();
-			_customHeadParts = new List<string>();
-            _bodyCssClasses = new List<string>();
-            _linkParts = new List<RouteValueDictionary>();
-			_storeContext = storeContext;
             _bundleBuilder = bundleBuilder;
+
+            var bodyHtmlId = storeContext.CurrentStore.HtmlBodyId;
+            if (bodyHtmlId.HasValue())
+            {
+                BodyAttributes["id"] = bodyHtmlId;
+            }
         }
 
         private bool IsValidPart<T>(T part)
         {
             bool isValid = part != null;
-            if (isValid) {
-                var str = part as string;
-                if (str != null)
+            if (isValid) 
+            {
+                if (part is string str)
+                {
                     isValid = str.HasValue();
+                }      
             }
+
             return isValid;
         }
 
-        // helper func: changes all following public funcs to remove code redundancy
-        private void AddPartsCore<T>(List<T> list, IEnumerable<T> partsToAdd, bool prepend = false)
+        // Helper func: changes all following public funcs to remove code redundancy
+        private void AddPartsCore<T>(ref List<T> list, IEnumerable<T> partsToAdd, bool prepend = false)
         {
-            if (partsToAdd != null && partsToAdd.Any())
+            var parts = (partsToAdd ?? Enumerable.Empty<T>()).Where(IsValidPart);
+
+            if (list == null)
+            {
+                list = new List<T>(parts);
+            }
+            else if (parts.Any())
             {
                 if (prepend)
                 {
                     // insertion of multiple parts at the beginning
                     // should keep order (and not vice-versa as it was originally)
-                    list.InsertRange(0, partsToAdd.Where(IsValidPart));
+                    list.InsertRange(0, parts);
                 }
                 else
                 {
-                    list.AddRange(partsToAdd.Where(IsValidPart));
+                    list.AddRange(parts);
                 }
             }
+        }
+
+        public IDictionary<string, object> BodyAttributes { get; } = new RouteValueDictionary();
+
+        public void AddBodyAttribute(string name, object value)
+        {
+            Guard.NotEmpty(name, nameof(name));
+
+            BodyAttributes[name] = value;
         }
 
         public void AddBodyCssClass(string className)
@@ -94,27 +108,15 @@ namespace SmartStore.Web.Framework.UI
 			if (className.IsEmpty())
 				return;
 
-			var classes = className.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (var clas in classes)
-			{
-				if (!_bodyCssClasses.Contains(clas))
-				{
-					_bodyCssClasses.Insert(0, clas);
-				}
-			}	
+            if (className.HasValue())
+            {
+                BodyAttributes.PrependCssClass(className);
+            }           
         }
 
         public void SetHtmlId(string htmlId)
         {
             _htmlId = htmlId;
-        }
-
-        public string GenerateBodyCssClasses()
-        {
-            if (_bodyCssClasses.Count == 0)
-                return null;
-
-            return String.Join(" ", _bodyCssClasses);
         }
 
         public string GenerateHtmlId()
@@ -127,13 +129,17 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddTitleParts(IEnumerable<string> parts, bool append = false)
         {
-            AddPartsCore(_titleParts, parts, append);
+            AddPartsCore(ref _titleParts, parts, append);
         }
 
         public virtual string GenerateTitle(bool addDefaultTitle)
         {
-            string result = "";
+            if (_titleParts == null)
+                return string.Empty;
+            
+            var result = string.Empty;
             var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
+
             if (!String.IsNullOrEmpty(specificTitle))
             {
                 if (addDefaultTitle)
@@ -172,81 +178,114 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddMetaDescriptionParts(IEnumerable<string> parts, bool append = false)
         {
-            AddPartsCore(_metaDescriptionParts, parts, append);
+            AddPartsCore(ref _metaDescriptionParts, parts, append);
         }
 
         public virtual string GenerateMetaDescription()
         {
+            var result = _seoSettings.DefaultMetaDescription;
+
+            if (_metaDescriptionParts == null)
+                return result;
+
             var metaDescription = string.Join(", ", _metaDescriptionParts.AsEnumerable().Reverse().ToArray());
-            var result = !String.IsNullOrEmpty(metaDescription) ? metaDescription : _seoSettings.DefaultMetaDescription;
+            if (metaDescription.HasValue())
+            {
+                result = metaDescription;
+            }
+
             return result;
         }
 
 
         public void AddMetaKeywordParts(IEnumerable<string> parts, bool append = false)
         {
-            AddPartsCore(_metaKeywordParts, parts, append);
+            AddPartsCore(ref _metaKeywordParts, parts, append);
         }
 
         public virtual string GenerateMetaKeywords()
         {
+            var result = _seoSettings.DefaultMetaKeywords;
+
+            if (_metaKeywordParts == null)
+                return result;
+
             var metaKeyword = string.Join(", ", _metaKeywordParts.AsEnumerable().Reverse().ToArray());
-            var result = !String.IsNullOrEmpty(metaKeyword) ? metaKeyword : _seoSettings.DefaultMetaKeywords;
+            if (metaKeyword.HasValue())
+            {
+                result = metaKeyword;
+            }
+
             return result;
         }
 
         public void AddCanonicalUrlParts(IEnumerable<string> parts, bool append = false)
         {
-            AddPartsCore(_canonicalUrlParts, parts, append);
+            AddPartsCore(ref _canonicalUrlParts, parts, append);
         }
 
         public string GenerateCanonicalUrls()
         {
-            var result = new StringBuilder();
-			var parts = _canonicalUrlParts.Distinct();
+            if (_canonicalUrlParts == null)
+                return string.Empty;
+            
+            var result = PooledStringBuilder.Rent();
+			var parts = _canonicalUrlParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
 			foreach (var part in parts)
             {
                 result.AppendFormat("<link rel=\"canonical\" href=\"{0}\" />", part);
                 result.AppendLine();
             }
-            return result.ToString();
+
+            return result.ToStringAndReturn();
         }
 
 		public void AddCustomHeadParts(IEnumerable<string> parts, bool append = false)
 		{
-			AddPartsCore(_customHeadParts, parts, append);
+			AddPartsCore(ref _customHeadParts, parts, append);
 		}
 
 		public string GenerateCustomHead()
 		{
-			var result = new StringBuilder();
-			var parts = _customHeadParts.Distinct();
+            if (_customHeadParts == null)
+                return string.Empty;
+            
+            var result = PooledStringBuilder.Rent();
+			var parts = _customHeadParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
 			foreach (var part in parts)
 			{
 				result.AppendLine(part);
 			}
-			return result.ToString();
+
+			return result.ToStringAndReturn();
 		}
 
         public void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
         {
-            if (!_scriptParts.ContainsKey(location))
-                _scriptParts.Add(location, new List<WebAssetDescriptor>());
+            if (_scriptParts == null)
+            {
+                _scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
+            }
+            
+            if (!_scriptParts.TryGetValue(location, out var assetDescriptors))
+            {
+                assetDescriptors = new List<WebAssetDescriptor>();
+                _scriptParts.Add(location, assetDescriptors);
+            }                
 
-            var descriptors = parts.Select(x => new WebAssetDescriptor { 
+            var descriptors = parts.Select(x => new WebAssetDescriptor 
+            { 
                 ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null, 
-                Part = x });
+                Part = x 
+            });
 
-            AddPartsCore(_scriptParts[location], descriptors, append);
+            AddPartsCore(ref assetDescriptors, descriptors, append);
         }
 
         public string GenerateScripts(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null)
         {
-            if (!_scriptParts.ContainsKey(location) || _scriptParts[location] == null)
-                return "";
-
-            if (_scriptParts[location].Count == 0)
-                return "";
+            if (_scriptParts == null || !_scriptParts.TryGetValue(location, out var parts) || parts == null || parts.Count == 0)
+                return string.Empty;
 
             if (!enableBundling.HasValue)
             {
@@ -256,11 +295,10 @@ namespace SmartStore.Web.Framework.UI
             var prevEnableOptimizations = BundleTable.EnableOptimizations;
             BundleTable.EnableOptimizations = enableBundling.Value;
 
-            var parts = _scriptParts[location];
-            var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
+            var bundledParts = parts.Where(x => !x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
+            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
             
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
 
             if (bundledParts.Any())
             {
@@ -278,7 +316,7 @@ namespace SmartStore.Web.Framework.UI
 
             BundleTable.EnableOptimizations = prevEnableOptimizations;
 
-            return sb.ToString();
+            return sb.ToStringAndReturn();
         }
 
 		private string TryFindMinFile(string path)
@@ -329,8 +367,16 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
         {
-            if (!_cssParts.ContainsKey(location))
-                _cssParts.Add(location, new List<WebAssetDescriptor>());
+            if (_cssParts == null)
+            {
+                _cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
+            }
+            
+            if (!_cssParts.TryGetValue(location, out var assetDescriptors))
+            {
+                assetDescriptors = new List<WebAssetDescriptor>();
+                _cssParts.Add(location, assetDescriptors);
+            }              
 
             var descriptors = parts.Select(x => new WebAssetDescriptor
             {
@@ -338,16 +384,13 @@ namespace SmartStore.Web.Framework.UI
                 Part = x
             });
 
-            AddPartsCore(_cssParts[location], descriptors, append);
+            AddPartsCore(ref assetDescriptors, descriptors, append);
         }
 
         public string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null)
         {
-            if (!_cssParts.ContainsKey(location) || _cssParts[location] == null)
-                return "";
-
-            if (_cssParts[location].Count == 0)
-                return "";
+            if (_cssParts == null || !_cssParts.TryGetValue(location, out var parts) || parts == null || parts.Count == 0)
+                return string.Empty;
 
             if (!enableBundling.HasValue)
             {
@@ -357,12 +400,10 @@ namespace SmartStore.Web.Framework.UI
             var prevEnableOptimizations = BundleTable.EnableOptimizations;
             BundleTable.EnableOptimizations = enableBundling.Value;
 
-            var parts = _cssParts[location];
+            var bundledParts = parts.Where(x => !x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
+            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
 
-            var bundledParts = parts.Where(x => !x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-            var nonBundledParts = parts.Where(x => x.ExcludeFromBundling).Select(x => x.Part).Distinct();
-
-            var sb = new StringBuilder();
+            var sb = PooledStringBuilder.Rent();
 
             if (bundledParts.Any())
             {
@@ -380,7 +421,7 @@ namespace SmartStore.Web.Framework.UI
 
             BundleTable.EnableOptimizations = prevEnableOptimizations;
 
-            return sb.ToString();
+            return sb.ToStringAndReturn();
         }
 
         private bool BundlingEnabled
@@ -409,12 +450,20 @@ namespace SmartStore.Web.Framework.UI
 			htmlAttributes["rel"] = rel;
 			htmlAttributes["href"] = href;
 
+            if (_linkParts == null)
+            {
+                _linkParts = new List<RouteValueDictionary>();
+            }
+
 			_linkParts.Add(htmlAttributes);
 		}
 
 		public string GenerateLinkRels()
 		{
-			var sb = new StringBuilder();
+            if (_linkParts == null)
+                return string.Empty;
+            
+            var sb = PooledStringBuilder.Rent();
 			
 			foreach (var part in _linkParts)
 			{
@@ -424,7 +473,7 @@ namespace SmartStore.Web.Framework.UI
 				sb.AppendLine(tag.ToString(TagRenderMode.SelfClosing));
 			}
 
-			return sb.ToString();
+			return sb.ToStringAndReturn();
 		}
 
 		public string GenerateMetaRobots()

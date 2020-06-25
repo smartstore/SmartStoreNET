@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +13,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.WebApi
 {
-	public static class WebApiExtension
+    public static class WebApiExtension
 	{
 		private static MethodInfo _createResponse = InitCreateResponse();
 
@@ -87,7 +90,29 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 		}
 
-		public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
+        /// <summary>
+        /// Gets a query string value from API request URL.
+        /// </summary>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <param name="apiController">API controller.</param>
+        /// <param name="name">Name of the query string value.</param>
+        /// <param name="defaultValue">Default value.</param>
+        /// <returns>Query string value.</returns>
+        public static T GetQueryStringValue<T>(this ApiController apiController, string name, T defaultValue = default)
+        {
+            Guard.NotEmpty(name, nameof(name));
+
+            var queries = apiController?.Request?.RequestUri?.ParseQueryString();
+
+            if (queries?.AllKeys?.Contains(name) ?? false)
+            {
+                return queries[name].Convert(defaultValue, CultureInfo.InvariantCulture);
+            }
+
+            return defaultValue;
+        }
+
+        public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
 		{
 			if (odataPath.Segments.Count > segmentIndex)
 			{

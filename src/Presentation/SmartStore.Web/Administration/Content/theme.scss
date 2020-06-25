@@ -1,6 +1,6 @@
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
-// Theme: SmartStore.NET Admin
+// Theme: Smartstore Admin
 // ========================================
 
 
@@ -19,7 +19,6 @@
 @import "../../Content/vendors/select2/scss/core.scss";
 @import "../../Content/vendors/colorpicker/scss/_colorpicker.scss";
 @import "../../Content/vendors/datetimepicker/scss/_tempusdominus.scss";
-
 
 // Button tweaks:
 // Must come BEFORE custom button import because of
@@ -93,10 +92,14 @@
 @import "../../Content/shared/_spinner.scss";
 @import "../../Content/shared/_sortable-grip.scss";
 @import "../../Content/shared/_entity-picker.scss";
+@import "../../Content/shared/_tree.scss";
 @import '../../Content/shared/_choice.scss';
 @import '../../Content/shared/_switch.scss';
 @import '../../Content/shared/_rangeslider.scss';
+@import '../../Content/shared/_bg.scss';
+@import '../../Content/shared/_custom-scrollbar.scss';
 @import "../../Content/shared/_utils.scss";
+@import "../../Content/shared/_media.scss";
 
 //
 // Skinning
@@ -116,6 +119,13 @@
 
 
 //
+// Dashboard 
+// --------------------------------------------------
+@import "_dashboard.scss";
+
+
+
+//
 // Custom imports from plugins
 // --------------------------------------------------
 
@@ -129,3 +139,4 @@
 // --------------------------------------------------
 
 @import "_telerik.scss";
+

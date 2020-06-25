@@ -7,7 +7,7 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
@@ -19,10 +19,9 @@ namespace SmartStore.Services.Catalog.Importer
     public class CategoryImporter : EntityImporterBase
 	{
 		private readonly IRepository<Category> _categoryRepository;
-		private readonly IRepository<Picture> _pictureRepository;
 		private readonly ICategoryTemplateService _categoryTemplateService;
-		private readonly IPictureService _pictureService;
-		private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IMediaService _mediaService;
+        private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly FileDownloadManager _fileDownloadManager;
 
 		private static readonly Dictionary<string, Expression<Func<Category, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Category, string>>>
@@ -38,16 +37,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public CategoryImporter(
 			IRepository<Category> categoryRepository,
-			IRepository<Picture> pictureRepository,
 			ICategoryTemplateService categoryTemplateService,
-			IPictureService pictureService,
-			ILocalizedEntityService localizedEntityService,
+            IMediaService mediaService,
+            ILocalizedEntityService localizedEntityService,
 			FileDownloadManager fileDownloadManager)
 		{
 			_categoryRepository = categoryRepository;
-			_pictureRepository = pictureRepository;
 			_categoryTemplateService = categoryTemplateService;
-			_pictureService = pictureService;
+            _mediaService = mediaService;
 			_localizedEntityService = localizedEntityService;
 			_fileDownloadManager = fileDownloadManager;
 		}
@@ -160,7 +157,7 @@ namespace SmartStore.Services.Catalog.Importer
 					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 					{
 						var batch = segmenter.GetCurrentBatch<Category>();
-						_categoryRepository.Context.DetachAll(false);
+						_categoryRepository.Context.DetachAll(unchangedEntitiesOnly: false);
 
 						try
 						{
@@ -190,9 +187,7 @@ namespace SmartStore.Services.Catalog.Importer
                         continue;
                     }
 
-                    var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
-                    var image = CreateDownloadImage(context, imageUrl, seoName, 1);
-
+                    var image = CreateDownloadImage(context, imageUrl, 1);
                     if (image.Url.HasValue() && !image.Success.HasValue)
                     {
                         AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
@@ -201,35 +196,31 @@ namespace SmartStore.Services.Catalog.Importer
                     if ((image.Success ?? false) && File.Exists(image.Path))
                     {
                         Succeeded(image);
-                        var pictureBinary = File.ReadAllBytes(image.Path);
-
-                        if (pictureBinary != null && pictureBinary.Length > 0)
+                        using (var stream = File.OpenRead(image.Path))
                         {
-                            var currentPictures = new List<Picture>();
-                            var pictureId = row.Entity.PictureId ?? 0;
-                            if (pictureId != 0)
+                            if ((stream?.Length ?? 0) > 0)
                             {
-                                var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
-                                if (picture != null)
+                                var currentFiles = new List<MediaFileInfo>();
+                                var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
+                                if (file != null)
                                 {
-                                    currentPictures.Add(picture);
+                                    currentFiles.Add(file);
                                 }
-                            }
 
-                            pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out var equalPictureId);
-
-                            if (pictureBinary != null && pictureBinary.Length > 0)
-                            {
-                                var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
-                                if (picture != null)
+                                if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
                                 {
-                                    row.Entity.PictureId = picture.Id;
-                                    _categoryRepository.Update(row.Entity);
+                                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
+                                    var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
+                                    if ((newFile?.Id ?? 0) != 0)
+                                    {
+                                        row.Entity.MediaFileId = newFile.Id;
+                                        _categoryRepository.Update(row.Entity);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+                                else
+                                {
+                                    context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+                                }
                             }
                         }
                     }

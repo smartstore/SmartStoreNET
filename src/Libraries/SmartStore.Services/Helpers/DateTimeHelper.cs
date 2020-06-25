@@ -1,9 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 
@@ -12,50 +12,54 @@ namespace SmartStore.Services.Helpers
     public partial class DateTimeHelper : IDateTimeHelper
     {
         private readonly IWorkContext _workContext;
-		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ISettingService _settingService;
         private readonly DateTimeSettings _dateTimeSettings;
+        private readonly ICustomerService _customerService;
 
-		private TimeZoneInfo _cachedUserTimeZone;
+        private TimeZoneInfo _cachedUserTimeZone;
 
         public DateTimeHelper(
 			IWorkContext workContext,
-			IGenericAttributeService genericAttributeService,
             ISettingService settingService, 
-            DateTimeSettings dateTimeSettings)
+            DateTimeSettings dateTimeSettings,
+            ICustomerService customerService)
         {
             _workContext = workContext;
-			_genericAttributeService = genericAttributeService;
             _settingService = settingService;
             _dateTimeSettings = dateTimeSettings;
+            _customerService = customerService;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual TimeZoneInfo FindTimeZoneById(string id)
         {
             return TimeZoneInfo.FindSystemTimeZoneById(id);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual ReadOnlyCollection<TimeZoneInfo> GetSystemTimeZones()
         {
             return TimeZoneInfo.GetSystemTimeZones();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt)
         {
             return ConvertToUserTime(dt, dt.Kind);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt, DateTimeKind sourceDateTimeKind)
         {
-            dt = DateTime.SpecifyKind(dt, sourceDateTimeKind);
-            var currentUserTimeZoneInfo = this.CurrentTimeZone;
-            return TimeZoneInfo.ConvertTime(dt, currentUserTimeZoneInfo);
+            return TimeZoneInfo.ConvertTime(
+                DateTime.SpecifyKind(dt, sourceDateTimeKind), 
+                this.CurrentTimeZone);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUserTime(DateTime dt, TimeZoneInfo sourceTimeZone)
         {
-            var currentUserTimeZoneInfo = this.CurrentTimeZone;
-            return ConvertToUserTime(dt, sourceTimeZone, currentUserTimeZoneInfo);
+            return ConvertToUserTime(dt, sourceTimeZone, this.CurrentTimeZone);
         }
 
         public virtual DateTime ConvertToUserTime(DateTime dt, TimeZoneInfo sourceTimeZone, TimeZoneInfo destinationTimeZone)
@@ -63,11 +67,13 @@ namespace SmartStore.Services.Helpers
             return TimeZoneInfo.ConvertTime(dt, sourceTimeZone, destinationTimeZone);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUtcTime(DateTime dt)
         {
             return ConvertToUtcTime(dt, dt.Kind);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual DateTime ConvertToUtcTime(DateTime dt, DateTimeKind sourceDateTimeKind)
         {
             dt = DateTime.SpecifyKind(dt, sourceDateTimeKind);
@@ -98,7 +104,7 @@ namespace SmartStore.Services.Helpers
             {
                 string timeZoneId = string.Empty;
                 if (customer != null)
-					timeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId, _genericAttributeService);
+					timeZoneId = customer.TimeZoneId;
 
                 try
                 {
@@ -172,7 +178,9 @@ namespace SmartStore.Services.Helpers
                     timeZoneId = value.Id;
                 }
 
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.TimeZoneId, timeZoneId);
+                _workContext.CurrentCustomer.TimeZoneId = timeZoneId;
+                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
+
 				_cachedUserTimeZone = null;
 			}
         }

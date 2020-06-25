@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
@@ -37,6 +39,25 @@ namespace SmartStore.Core.Domain.News
         /// Gets or sets a value indicating whether the news item is published
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// Gets or sets the media file identifier
+        /// </summary>
+        public int? MediaFileId { get; set; }
+
+        /// Gets or sets the media file.
+        /// </summary>
+        public virtual MediaFile MediaFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview media file identifier
+        /// </summary>
+        public int? PreviewMediaFileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview media file.
+        /// </summary>
+        public virtual MediaFile PreviewMediaFile { get; set; }
 
         /// <summary>
         /// Gets or sets the news item start date and time

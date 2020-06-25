@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Routing;
-using System.Globalization;
 using System.Dynamic;
 using SmartStore.Utilities;
+using System.Runtime.CompilerServices;
+using System.Web.Routing;
 
 namespace SmartStore
 {
@@ -24,20 +22,23 @@ namespace SmartStore
             }
         }
 
-        public static void Merge(this IDictionary<string, object> instance, string key, object value, bool replaceExisting = true)
+        public static IDictionary<string, object> Merge(this IDictionary<string, object> instance, string key, object value, bool replaceExisting = true)
         {
             if (replaceExisting || !instance.ContainsKey(key))
             {
                 instance[key] = value;
             }
+
+            return instance;
         }
 
-        public static void Merge(this IDictionary<string, object> instance, object values, bool replaceExisting = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IDictionary<string, object> Merge(this IDictionary<string, object> instance, object values, bool replaceExisting = true)
         {
-			instance.Merge(CommonHelper.ObjectToDictionary(values), replaceExisting);
+			return instance.Merge(CommonHelper.ObjectToDictionary(values), replaceExisting);
         }
 
-        public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> instance, IDictionary<TKey, TValue> from, bool replaceExisting = true)
+        public static IDictionary<TKey, TValue> Merge<TKey, TValue>(this IDictionary<TKey, TValue> instance, IDictionary<TKey, TValue> from, bool replaceExisting = true)
         {
             foreach (var kvp in from)
             {
@@ -46,19 +47,23 @@ namespace SmartStore
                     instance[kvp.Key] = kvp.Value;
                 }
             }
+
+            return instance;
         }
 
-        public static void AppendInValue(this IDictionary<string, object> instance, string key, string separator, string value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IDictionary<string, object> AppendInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
-			AddInValue(instance, key, separator, value, false);
+			return AddInValue(instance, key, separator, value, false);
 		}
 
-        public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, string value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IDictionary<string, object> PrependInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
-			AddInValue(instance, key, separator, value, true);
+			return AddInValue(instance, key, separator, value, true);
         }
 
-		private static void AddInValue(IDictionary<string, object> instance, string key, string separator, string value, bool prepend = false)
+		private static IDictionary<string, object> AddInValue(IDictionary<string, object> instance, string key, string separator, string value, bool prepend = false)
 		{
 			if (!instance.TryGetValue(key, out var obj))
 			{
@@ -73,9 +78,13 @@ namespace SmartStore
 
 				instance[key] = string.Join(separator, arr);
 			}
-		}
 
-		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
+            return instance;
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
 		{
 			if (instance == null)
 				throw new ArgumentNullException(nameof(instance));
@@ -101,7 +110,7 @@ namespace SmartStore
         }
 
 
-		public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, TValue value, bool updateIfExists = false)
+		public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value, bool updateIfExists = false)
 		{
 			if (source == null || key == null)
 			{
@@ -125,18 +134,18 @@ namespace SmartStore
 			return false;
 		}
 
-		public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, out TValue value)
-		{
-			value = default(TValue);
+        public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TValue value)
+        {
+            value = default(TValue);
 
-			if (source != null && key != null && source.TryGetValue(key, out value))
-			{
-				source.Remove(key);
-				return true;
-			}
+            if (source != null && key != null && source.TryGetValue(key, out value))
+            {
+                source.Remove(key);
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
     }
 
 }

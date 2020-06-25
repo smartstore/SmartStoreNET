@@ -127,6 +127,8 @@
 
 .tabs-left .nav-tabs .nav-link {
 	border-radius: $nav-tabs-border-radius 0 0 $nav-tabs-border-radius;
+	display: flex;
+	align-items: baseline;
 }
 
 @include media-breakpoint-up(lg) {

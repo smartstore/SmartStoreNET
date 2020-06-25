@@ -1,48 +1,50 @@
 ﻿@using SmartStore.Core;
 
 <!DOCTYPE html>
-<html @(Html.HtmlId()) @Html.LanguageAttributes() data-pnotify-firstpos1="140">
+<html @(Html.HtmlId()) @Html.LanguageAttributes() data-pnotify-firstpos1="0">
 <head>
-	<meta charset="utf-8">
-	<title itemprop="name">@Html.SmartTitle(true)</title>
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="description" content="@(Html.SmartMetaDescription())" />
-	<meta name="keywords" content="@(Html.SmartMetaKeywords())" />
-	<meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />
+    <meta charset="utf-8">
+    <title itemprop="name">@Html.SmartTitle(true)</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="description" content="@(Html.SmartMetaDescription())" />
+    <meta name="keywords" content="@(Html.SmartMetaKeywords())" />
+    <meta name="generator" content="Smartstore @SmartStoreVersion.CurrentFullVersion" />
+    <meta property="sm:root" content="@Url.Content("~/")" />
 
-	@{ Html.RenderPartial("_Assets"); }
+    @{ Html.RenderPartial("_Assets"); }
 
-	@*This is used so that themes can inject content into the header*@
-	@{ Html.RenderPartial("Head"); }
+    @*This is used so that themes can inject content into the header*@
+    @{ Html.RenderPartial("Head"); }
 
-	@Html.SmartMetaRobots()
-	@Html.MetaAcceptLanguage()
-	@{ Html.RenderPartial("_ClientRes"); }
-	@{ Html.RenderPartial("_GoogleFonts"); }
+    @Html.SmartMetaRobots()
+    @Html.MetaAcceptLanguage()
+    @{ Html.RenderPartial("_ClientRes"); }
+    @{ Html.RenderPartial("_GoogleFonts"); }
 
-	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
-	@Html.SmartScripts(this.Url, ResourceLocation.Head)
+    @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
+    @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-	@{ Html.RenderWidget("head_html_tag"); }
+    @{ Html.RenderWidget("head_html_tag"); }
 
-	@Html.CanonicalUrls()
-	@Html.LinkRels()
-	@{
-		Html.RenderAction("RssHeaderLink", "News", new { area = "" });
-		Html.RenderAction("RssHeaderLink", "Blog", new { area = "" });
-	}
-	@*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
-	@{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
+    @Html.CanonicalUrls()
+    @Html.LinkRels()
+    @{
+        Html.RenderAction("RssHeaderLink", "News", new { area = "" });
+        Html.RenderAction("RssHeaderLink", "Blog", new { area = "" });
+    }
+    @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
+    @{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
 
-	@Html.CustomHead()
+    @Html.CustomHead()
 
-	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
+    <script src="~/Scripts/smartstore.globalization.adapter.js"></script>
 
-	@{ Html.RenderZone("head"); }
-	<!--Powered by SmartStore.NET - https://www.smartstore.com-->
+    @{ Html.RenderZone("head"); }
+    <!--Powered by Smartstore - https://www.smartstore.com-->
 </head>
-<body class="@Html.BodyCssClass()" @(Html.BodyId())>
+<body @Html.BodyAttributes()>
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

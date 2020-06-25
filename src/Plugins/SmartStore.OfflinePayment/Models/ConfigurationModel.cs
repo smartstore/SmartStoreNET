@@ -22,7 +22,7 @@ namespace SmartStore.OfflinePayment.Models
 		public bool AdditionalFeePercentage { get; set; }
 
 		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.PaymentMethodLogo")]
-		[UIHint("Picture")]
+		[UIHint("Media"), AdditionalMetadata("album", "content")]
 		public int PaymentMethodLogo { get; set; }
 	}
 

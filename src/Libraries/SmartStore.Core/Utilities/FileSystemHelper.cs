@@ -224,10 +224,10 @@ namespace SmartStore.Utilities
 		/// </summary>
 		/// <param name="source">Source directory</param>
 		/// <param name="target">Target directory</param>
-		/// <param name="overwrite">Whether to override existing files</param>
+		/// <param name="overwrite">Whether to overwrite existing files</param>
 		public static bool CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
-			if (target.FullName.Contains(source.FullName))
+			if (target.FullName.EnsureEndsWith("\\").StartsWith(source.FullName.EnsureEndsWith("\\"), StringComparison.CurrentCultureIgnoreCase))
 			{
 				// Cannot copy a folder into itself.
 				return false;

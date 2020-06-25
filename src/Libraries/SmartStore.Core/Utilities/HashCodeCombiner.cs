@@ -93,7 +93,6 @@ namespace SmartStore.Utilities
 			return Add(hashCode);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public HashCodeCombiner Add(FileSystemInfo fi, bool deep = true)
 		{
 			Guard.NotNull(fi, nameof(fi));

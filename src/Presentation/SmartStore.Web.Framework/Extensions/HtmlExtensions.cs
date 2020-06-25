@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Web;
@@ -15,7 +16,9 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Settings;
@@ -104,6 +107,7 @@ namespace SmartStore.Web.Framework
             });
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MvcHtmlString DeleteConfirmation<T>(this HtmlHelper<T> helper, string buttonsSelector = null) where T : EntityModelBase
         {
             return DeleteConfirmation<T>(helper, "", buttonsSelector);
@@ -151,7 +155,7 @@ namespace SmartStore.Web.Framework
 
 		public static MvcHtmlString SmartLabel(this HtmlHelper helper, string expression, string labelText, string hint = null, object htmlAttributes = null)
 		{
-			var result = new StringBuilder();
+			var result = PooledStringBuilder.Rent();
 
 			result.Append("<div class='ctl-label'>");
 
@@ -164,7 +168,7 @@ namespace SmartStore.Web.Framework
                 var labelAttrs = new RouteValueDictionary(htmlAttributes);
                 var label = helper.Label(expression, labelText, labelAttrs);
 
-                result.Append(label);
+                result.Append(label.ToHtmlString());
             }
 
             if (hint.HasValue())
@@ -174,7 +178,7 @@ namespace SmartStore.Web.Framework
 
             result.Append("</div>");
 
-			return MvcHtmlString.Create(result.ToString());
+			return MvcHtmlString.Create(result.ToStringAndReturn());
 		}
 
         public static MvcHtmlString SmartLabelFor<TModel, TValue>(
@@ -212,7 +216,7 @@ namespace SmartStore.Web.Framework
 			bool displayHint = true, 
 			object htmlAttributes = null)
 		{
-			var result = new StringBuilder();
+			var result = PooledStringBuilder.Rent();
 			string labelText = null;
 			string hint = null;
 
@@ -261,9 +265,10 @@ namespace SmartStore.Web.Framework
 				result.Append(label);
 			}
 
-			return MvcHtmlString.Create(result.ToString());
+			return MvcHtmlString.Create(result.ToStringAndReturn());
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FieldNameFor<T, TResult>(this HtmlHelper<T> html, Expression<Func<T, TResult>> expression)
         {
             return html.ViewData.TemplateInfo.GetFullHtmlFieldName(ExpressionHelper.GetExpressionText(expression));
@@ -403,7 +408,6 @@ namespace SmartStore.Web.Framework
             Expression<Func<TModel, TEnum>> expression,
             string optionLabel = null) where TEnum : struct
         {
-
             return htmlHelper.DropDownListForEnum(expression, null, optionLabel);
         }
 
@@ -456,6 +460,7 @@ namespace SmartStore.Web.Framework
 
         #endregion
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone)
         {
 			return helper.Widget(widgetZone, null);
@@ -472,7 +477,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		public static void RenderWidget(this HtmlHelper helper, string widgetZone)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void RenderWidget(this HtmlHelper helper, string widgetZone)
 		{
 			helper.RenderWidget(widgetZone, null);
 		}
@@ -631,14 +637,15 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(sb.ToString());
         }
 
-		public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
 		{
 			return ColorBox(html, name, color, null);
 		}
 
         public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color, string defaultColor)
         {
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 
 			defaultColor = defaultColor.EmptyNull();
 			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
@@ -650,7 +657,7 @@ namespace SmartStore.Web.Framework
 
             sb.Append("</div>");
 
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlString.Create(sb.ToStringAndReturn());
         }
 
 		public static MvcHtmlString TableFormattedVariantAttributes(this HtmlHelper helper, string formattedVariantAttributes, string separatorLines = "<br />", string separatorValues = ": ") {
@@ -678,29 +685,6 @@ namespace SmartStore.Web.Framework
 			sb.Append("</table>");
 			return MvcHtmlString.Create(sb.ToString());
 		}
-
-		//public static MvcHtmlString SettingEditorFor<TModel, TValue>(
-		//	this HtmlHelper<TModel> helper,
-		//	Expression<Func<TModel, TValue>> expression,
-		//	string parentSelector = null,
-		//	object additionalViewData = null)
-		//{
-		//	var editor = helper.EditorFor(expression, additionalViewData);
-
-		//	var data = helper.ViewData[StoreDependingSettingHelper.ViewDataKey] as StoreDependingSettingData;
-		//	if (data == null || data.ActiveStoreScopeConfiguration <= 0)
-		//		return editor; // CONTROL
-
-		//	var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
-		//	sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
-		//	sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
-		//	sb.Append("</div></div>");
-		//	sb.Append("<div class='col multi-store-setting-control'>");
-		//	sb.Append(editor); // CONTROL
-		//	sb.Append("</div></div>");
-
-		//	return MvcHtmlString.Create(sb.ToString());
-		//}
 
 		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
 			this HtmlHelper<TModel> helper,
@@ -755,7 +739,7 @@ namespace SmartStore.Web.Framework
 			if (data == null || data.ActiveStoreScopeConfiguration <= 0)
 				return editor; // CONTROL
 
-			var sb = new StringBuilder("<div class='form-row flex-nowrap multi-store-setting-group'>");
+			var sb = PooledStringBuilder.Rent("<div class='form-row flex-nowrap multi-store-setting-group'>");
 			sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
 			sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
 			sb.Append("</div></div>");
@@ -763,7 +747,7 @@ namespace SmartStore.Web.Framework
 			sb.Append(editor.ToHtmlString()); // CONTROL
 			sb.Append("</div></div>");
 
-			return MvcHtmlString.Create(sb.ToString());
+			return MvcHtmlString.Create(sb.ToStringAndReturn());
 		}
 
 		private static MvcHtmlString SettingOverrideCheckboxInternal<TModel, TValue>(
@@ -784,7 +768,7 @@ namespace SmartStore.Web.Framework
 			var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
 			var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
 
-			var sb = new StringBuilder();
+			var sb = PooledStringBuilder.Rent();
 			sb.Append("<label class='switch switch-blue multi-store-override-switch'>");
 
 			sb.AppendFormat("<input type='checkbox' id='{0}' name='{0}' class='multi-store-override-option'", fieldId);
@@ -798,7 +782,7 @@ namespace SmartStore.Web.Framework
 			// Controls are not floating, so line-break prevents different distances between them.
 			sb.Append("</label>\r\n");
 
-			return MvcHtmlString.Create(sb.ToString());
+			return MvcHtmlString.Create(sb.ToStringAndReturn());
 		}
 
 		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)
@@ -818,7 +802,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result);
 		}
 
-		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
 		{
 			return IconForFileExtension(helper, fileExtension, null, renderLabel);
 		}
@@ -937,6 +922,62 @@ namespace SmartStore.Web.Framework
 
 			return MvcHtmlString.Create(result);
 		}
-	}
+
+        #region Media
+
+        public static MvcHtmlString MediaThumbnail(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            int size,
+            string extraCssClasses = null)
+        {
+            return MediaInternal(helper, file, false, size, extraCssClasses);
+        }
+
+        public static MvcHtmlString MediaViewer(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            string extraCssClasses = null)
+        {
+            return MediaInternal(helper, file, true, 0, extraCssClasses);
+        }
+
+        private static MvcHtmlString MediaInternal(
+            this HtmlHelper helper,
+            MediaFileInfo file,
+            bool renderViewer,
+            int size,
+            string extraCssClasses)
+        {
+            if (file?.File == null)
+            {
+                return MvcHtmlString.Empty;
+            }
+
+            // Validate size parameter.
+            if (file.MediaType != "image" && !renderViewer)
+            {
+                Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType.NaIfEmpty()}'.");
+            }
+
+            if (size > 0)
+            {
+                file.ThumbSize = size;
+            }
+
+			var f = file?.File;
+
+			var model = new MediaTemplateModel(file, renderViewer)
+            {
+                ExtraCssClasses = extraCssClasses,
+				Title = f?.GetLocalized(x => x.Title),
+				Alt = f?.GetLocalized(x => x.Alt)
+			};
+
+            return helper.Partial("MediaTemplates/" + file.MediaType, model);
+        }
+
+        #endregion
+    }
 }
 

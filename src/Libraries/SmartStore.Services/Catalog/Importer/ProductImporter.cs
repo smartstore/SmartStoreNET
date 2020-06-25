@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
@@ -24,7 +25,6 @@ namespace SmartStore.Services.Catalog.Importer
 {
     public class ProductImporter : EntityImporterBase
     {
-        private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
         private readonly IRepository<ProductTag> _productTagRepository;
@@ -32,8 +32,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly IRepository<ProductVariantAttributeValue> _attributeValueRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
-        private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly IPictureService _pictureService;
+        private readonly IMediaService _mediaService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
@@ -53,7 +52,6 @@ namespace SmartStore.Services.Catalog.Importer
         };
 
         public ProductImporter(
-            IRepository<ProductPicture> productPictureRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<ProductTag> productTagRepository,
@@ -61,8 +59,7 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<TierPrice> tierPriceRepository,
             IRepository<ProductVariantAttributeValue> attributeValueRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
-            ILocalizedEntityService localizedEntityService,
-            IPictureService pictureService,
+            IMediaService mediaService,
             IManufacturerService manufacturerService,
             ICategoryService categoryService,
             IProductService productService,
@@ -70,7 +67,6 @@ namespace SmartStore.Services.Catalog.Importer
             IProductAttributeService productAttributeService,
             FileDownloadManager fileDownloadManager)
         {
-            _productPictureRepository = productPictureRepository;
             _productManufacturerRepository = productManufacturerRepository;
             _productCategoryRepository = productCategoryRepository;
             _productTagRepository = productTagRepository;
@@ -78,19 +74,16 @@ namespace SmartStore.Services.Catalog.Importer
             _tierPriceRepository = tierPriceRepository;
             _attributeValueRepository = attributeValueRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
-            _localizedEntityService = localizedEntityService;
-            _pictureService = pictureService;
+            _mediaService = mediaService;
             _manufacturerService = manufacturerService;
             _categoryService = categoryService;
             _productService = productService;
             _productTemplateService = productTemplateService;
             _productAttributeService = productAttributeService;
             _fileDownloadManager = fileDownloadManager;
-
-            T = NullLocalizer.Instance;
         }
 
-        public Localizer T { get; set; }
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         protected override void Import(ImportExecuteContext context)
         {
@@ -135,7 +128,7 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
                             x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
-                            x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
+                            x is ProductMediaFile || x is MediaFile || x is ProductTag || x is TierPrice;
                 });
                 //_productRepository.Context.DetachAll(true);
 
@@ -300,7 +293,7 @@ namespace SmartStore.Services.Catalog.Importer
 
             // ===========================================================================
             // 10.) PostProcess: normalization
-            // ===========================================================================
+            // ===========================================================================          
             DataMigrator.FixProductMainPictureIds(_productRepository.Context, UtcNow);
         }
 
@@ -574,7 +567,7 @@ namespace SmartStore.Services.Catalog.Importer
                         row.SetProperty(context.Result, (x) => x.Height);
                         row.SetProperty(context.Result, (x) => x.BasePriceAmount);
                         row.SetProperty(context.Result, (x) => x.BasePriceBaseAmount);
-                        row.SetProperty(context.Result, (x) => x.AssignedPictureIds);
+                        row.SetProperty(context.Result, (x) => x.AssignedMediaFileIds);
                         row.SetProperty(context.Result, (x) => x.IsActive, true);
                         row.SetProperty(context.Result, (x) => x.AllowOutOfStockOrders);
                         row.SetProperty(context.Result, (x) => x.DeliveryTimeId);
@@ -683,7 +676,6 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 
 				row.SetProperty(context.Result, (x) => x.ProductTypeId, (int)ProductType.SimpleProduct);
-				row.SetProperty(context.Result, (x) => x.VisibleIndividually, true);
 				row.SetProperty(context.Result, (x) => x.Name);
 				row.SetProperty(context.Result, (x) => x.ShortDescription);
 				row.SetProperty(context.Result, (x) => x.FullDescription);
@@ -783,6 +775,14 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     product.QuantiyControlType = (QuantityControlType)qct;
                 }
+                if (row.TryGetDataValue("Visibility", out int visibilityValue))
+                {
+                    product.Visibility = (ProductVisibility)visibilityValue;
+                }
+                if (row.TryGetDataValue("Condition", out int conditionValue))
+                {
+                    product.Condition = (ProductCondition)conditionValue;
+                }
 
 				if (row.TryGetDataValue("ProductTemplateViewPath", out string tvp, row.IsTransient))
 				{
@@ -834,8 +834,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				if (id != 0 && parentGroupedProductId != 0 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentGroupedProductId))
 				{
-					// Only touch relationship if child and parent were inserted.
-					if (srcToDestId[id].Inserted && srcToDestId[parentGroupedProductId].Inserted && srcToDestId[id].DestinationId != 0)
+					if (srcToDestId[id].DestinationId != 0)
 					{
 						var product = _productRepository.GetById(srcToDestId[id].DestinationId);
 						if (product != null)
@@ -853,27 +852,27 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual void ProcessProductPictures(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
-			// true, cause pictures must be saved and assigned an id prior adding a mapping.
-			_productPictureRepository.AutoCommitEnabled = true;
+            _productRepository.AutoCommitEnabled = false;
 
-			var equalPictureId = 0;
-			var numberOfPictures = (context.ExtraData.NumberOfPictures ?? int.MaxValue);
+            var numberOfPictures = context.ExtraData.NumberOfPictures ?? int.MaxValue;
 
 			foreach (var row in batch)
 			{
 				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
-				if (imageUrls.IsNullOrEmpty())
-					continue;
+                if (imageUrls.IsNullOrEmpty())
+                {
+                    continue;
+                }
 
-				var imageNumber = 0;
+                var productId = row.Entity.Id;
+                var imageNumber = 0;
 				var displayOrder = -1;
-				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
 				var imageFiles = new List<FileDownloadManagerItem>();
 
 				// Collect required image file infos.
 				foreach (var urlOrPath in imageUrls)
 				{
-					var image = CreateDownloadImage(context, urlOrPath, seoName, ++imageNumber);
+					var image = CreateDownloadImage(context, urlOrPath, ++imageNumber);
 
 					if (image != null)
 						imageFiles.Add(image);
@@ -886,7 +885,7 @@ namespace SmartStore.Services.Catalog.Importer
 				if (imageFiles.Any(x => x.Url.HasValue()))
 				{
 					// Async downloading in batch processing is inefficient cause only the image processing benefits from async,
-					// not the record processing itself. a per record processing may speed up the import.
+					// not the record processing itself. A per record processing may speed up the import.
 
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
 				}
@@ -899,51 +898,50 @@ namespace SmartStore.Services.Catalog.Importer
 						if ((image.Success ?? false) && File.Exists(image.Path))
 						{
 							Succeeded(image);
-							var pictureBinary = File.ReadAllBytes(image.Path);
+                            using (var stream = File.OpenRead(image.Path))
+                            {
+                                if ((stream?.Length ?? 0) > 0)
+                                {
+                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { productId }, null, MediaLoadFlags.None);                                    
+                                    
+                                    var currentFiles = tmpFileMap.ContainsKey(productId)
+                                        ? tmpFileMap[productId]
+                                        : Enumerable.Empty<ProductMediaFile>();
 
-							if (pictureBinary != null && pictureBinary.Length > 0)
-							{
-								var currentProductPictures = _productPictureRepository.TableUntracked
-									.Expand(x => x.Picture.MediaStorage)
-									.Where(x => x.ProductId == row.Entity.Id)
-									.ToList();
+                                    if (displayOrder == -1)
+                                    {
+                                        displayOrder = currentFiles.Any() ? currentFiles.Select(x => x.DisplayOrder).Max() : 0;
+                                    }
 
-								var currentPictures = currentProductPictures
-									.Select(x => x.Picture)
-									.ToList();
+                                    if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.MediaFile), true, out var _))
+                                    {
+                                        var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
+                                        var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
+                                        if ((newFile?.Id ?? 0) != 0)
+                                        {
+                                            _productService.InsertProductPicture(new ProductMediaFile
+                                            {
+                                                ProductId = productId,
+                                                MediaFileId = newFile.Id,
+                                                DisplayOrder = ++displayOrder
+                                            });
 
-								if (displayOrder == -1)
-								{
-									displayOrder = currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0;
-								}
-                                
-								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
-
-								if (pictureBinary != null && pictureBinary.Length > 0)
-								{
-                                    var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
-
-                                    if (newPicture != null)
-									{
-										var mapping = new ProductPicture
-										{
-											ProductId = row.Entity.Id,
-											PictureId = newPicture.Id,
-											DisplayOrder = ++displayOrder
-										};
-
-										_productPictureRepository.Insert(mapping);
-									}
-								}
-								else
-								{
-									context.Result.AddInfo($"Found equal picture in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
-								}
-							}
+                                            // Update for FixProductMainPictureIds.
+                                            row.Entity.UpdatedOnUtc = DateTime.UtcNow;
+                                            // Required otherwise nothing updated.
+                                            _productRepository.Update(row.Entity);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        context.Result.AddInfo($"Found equal image in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                    }
+                                }
+                            }
 						}
 						else if (image.Url.HasValue())
 						{
-							context.Result.AddInfo($"Download failed for picture {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+							context.Result.AddInfo($"Download failed for image {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
 						}
 					}
 					catch (Exception ex)
@@ -952,7 +950,9 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 				}
 			}
-		}
+
+            _productRepository.Context.SaveChanges();
+        }
 
 		protected virtual int ProcessProductManufacturers(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
@@ -1010,7 +1010,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						foreach (var id in categoryIds)
 						{
-							if (_productCategoryRepository.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
+							if (!_productCategoryRepository.TableUntracked.Any(x => x.ProductId == row.Entity.Id && x.CategoryId == id))
 							{
 								// Ensure that category exists.
 								var category = _categoryService.GetCategoryById(id);
@@ -1042,7 +1042,7 @@ namespace SmartStore.Services.Catalog.Importer
 
         protected virtual void ProcessProductTags(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
         {
-            // true, cause product tags must be saved and assigned an id prior adding a mapping.
+            // True, cause product tags must be saved and assigned an id prior adding a mapping.
             _productTagRepository.AutoCommitEnabled = true;
 
             var productIds = batch.Select(x => x.Entity.Id).ToList();
@@ -1055,15 +1055,24 @@ namespace SmartStore.Services.Catalog.Importer
             {
                 try
                 {
-                    var tagNames = row.GetDataValue<List<string>>("TagNames");
                     var product = row.Entity;
+                    var tags = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var str in row.GetDataValue<string>("TagNames").SplitSafe("|"))
+                    {
+                        var arr = str.SplitSafe("~");
+                        if (arr.Length > 0)
+                        {
+                            tags[arr[0]] = arr.Length > 1 ? arr[1].ToBool(true) : true;
+                        }
+                    }
 
                     if (!tagsPerBatch.TryGetValue(product.Id, out var existingTags))
                     {
                         existingTags = new List<ProductTag>();
                     }
 
-                    if (tagNames.IsNullOrEmpty())
+                    if (!tags.Any())
                     {
                         // Remove all tags.
                         if (existingTags.Any())
@@ -1078,7 +1087,7 @@ namespace SmartStore.Services.Catalog.Importer
                         var tagsToRemove = new List<ProductTag>();
                         foreach (var existingTag in existingTags)
                         {
-                            if (!tagNames.Any(x => x.IsCaseInsensitiveEqual(existingTag.Name)))
+                            if (!tags.Keys.Any(x => x.IsCaseInsensitiveEqual(existingTag.Name)))
                             {
                                 tagsToRemove.Add(existingTag);
                             }
@@ -1090,14 +1099,18 @@ namespace SmartStore.Services.Catalog.Importer
                         }
 
                         // Add tags.
-                        foreach (var tagName in tagNames.Distinct())
+                        foreach (var tag in tags)
                         {
-                            if (!existingTags.Any(x => x.Name.IsCaseInsensitiveEqual(tagName)))
+                            if (!existingTags.Any(x => x.Name.IsCaseInsensitiveEqual(tag.Key)))
                             {
-                                var productTag = _productTagRepository.Table.FirstOrDefault(x => x.Name == tagName);
+                                var productTag = _productTagRepository.Table.FirstOrDefault(x => x.Name == tag.Key);
                                 if (productTag == null)
                                 {
-                                    productTag = new ProductTag { Name = tagName };
+                                    productTag = new ProductTag
+                                    {
+                                        Name = tag.Key,
+                                        Published = tag.Value
+                                    };
                                     _productTagRepository.Insert(productTag);
                                 }
 
@@ -1118,8 +1131,7 @@ namespace SmartStore.Services.Catalog.Importer
 
         private int? ZeroToNull(object value, CultureInfo culture)
 		{
-			int result;
-			if (CommonHelper.TryConvert<int>(value, culture, out result) && result > 0)
+			if (CommonHelper.TryConvert<int>(value, culture, out int result) && result > 0)
 			{
 				return result;
 			}

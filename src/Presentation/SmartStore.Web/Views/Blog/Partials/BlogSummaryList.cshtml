@@ -1,0 +1,117 @@
+﻿@model BlogPostListModel
+@using SmartStore.Web.Models.Blogs;
+
+@if (Model.BlogPosts.Count == 0)
+{
+    return;
+}
+
+@foreach (var item in Model.BlogPosts)
+{
+    var imageUrl = item.PreviewPictureModel.ImageUrl;
+    var hasImage = item.PreviewPictureModel.ImageUrl.HasValue();
+    var hasBgImage = item.HasBgImage && hasImage;
+
+    var cssClass = (new[] { "bloglist-item-root", "card", "rounded", "shadow-sm", "border-0", "mb-3 mb-md-2" }).ToList();
+    if (hasBgImage)
+    {
+        cssClass.Add("bg-tint-3 has-image-bg");
+    }
+    if (item.SectionBg.HasValue())
+    {
+        cssClass.Add("has-section-bg section-" + item.SectionBg + " shadow-" + item.SectionBg);
+    }
+    if (item.Tags.Count > 0 && item.DisplayTagsInPreview)
+    {
+        cssClass.Add("has-tags");
+    }
+    if (hasImage)
+    {
+        cssClass.Add("has-image");
+    }
+
+    <article class="@string.Join(" ", cssClass)" itemscope itemtype="http://schema.org/BlogPosting">
+        <div class="bloglist-item d-flex flex-row flex-nowrap d-md-block">
+            @if (hasBgImage)
+            {
+                @RenderTags(item, false)
+                @RenderComments(item)
+
+                <div class="card-img">
+                    <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
+                </div>
+                <div class="bg-overlay bg-@(item.SectionBg)"></div>
+                <div class="bg-overlay gradient-black scrim-linear-gradient bg-shade-@(item.SectionBg)" style="--cendpos: 50%"></div>
+            }
+            else if (!item.SectionBg.HasValue() && hasImage)
+            {
+                <div class="bloglist-item-header">
+                    <a class="d-block h-100" href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
+                        <img class="bloglist-item-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
+                    </a>
+
+                    @RenderTags(item, true)
+                    @RenderComments(item)
+                </div>
+            }
+            else
+            {
+                @RenderTags(item, false)
+                @RenderComments(item)
+            }
+
+            <div class="@(hasBgImage ? "card-img-overlay d-flex flex-column justify-content-end p-0" : "bloglist-item-body")">
+                <div class="blogpost-text text-left w-100 p-4">
+                    <div class="blogpost-date rfs mb-2 text-muted" itemprop="dateCreated">
+                        @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
+                    </div>
+
+                    <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
+                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title" itemprop="headline">
+                            @item.Title
+                        </a>
+                    </h3>
+
+                    @if (item.Intro.HasValue())
+                    {
+                        <div class="py-1 blogpost-intro rfs" itemprop="description">@Html.Raw(item.Intro)</div>
+                    }
+
+                    @{ Html.RenderWidget("bloglist_page_inside_post"); }
+
+                </div>
+            </div>
+        </div>
+    </article>
+}
+
+@helper RenderTags(BlogPostModel item, bool hasBgImage)
+{
+    if (item.Tags.Count > 0 && item.DisplayTagsInPreview)
+    {
+        <div class="blogpost-tags-overlay d-none d-md-block @(hasBgImage ? "p-2" : "p-4")">
+            @for (int i = 0, length = item.Tags.Count; i < length; i++)
+            {
+                var tag = item.Tags[i];
+                var tagClasses = "blogpost-tag badge p-1 {0}".FormatWith(item.SectionBg.HasValue() && item.SectionBg.Equals("primary") && !item.HasBgImage ? "badge-secondary" : "badge-primary");
+
+                <a class="@tagClasses" href="@Url.RouteUrl("BlogByTag", new { tag = tag.SeName })">@tag.Name</a>
+            }
+        </div>
+    }
+}
+
+@helper RenderComments(BlogPostModel item)
+{
+    if (item.Comments.AllowComments && !Model.DisableCommentCount)
+    {
+        <div class="comments-overlay">
+            <a class="fs-xs m-2 btn btn-secondary btn-circle@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+                <span class="blogpost-comments-icon fa fa-comment-alt pr-1"></span>
+                <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
+            </a>
+        </div>
+    }
+}

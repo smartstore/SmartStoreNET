@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers
@@ -26,11 +27,11 @@ namespace SmartStore.Web.Framework.Controllers
 		}
 	}
 
-	[AdminValidateIpAddress(Order = 100)]
-	[RewriteUrl(SslRequirement.Yes, Order = 110)]
-    [CustomerLastActivity(Order = 100)]
-    [StoreIpAddress(Order = 100)]
-	[AdminThemed(Order = -1)]
+	[AdminValidateIpAddress]
+	[RewriteUrl(SslRequirement.Yes, Order = 0, AppendTrailingSlash = false, LowercaseUrls = false)]
+    [CustomerLastActivity(Order = int.MaxValue)]
+    [StoreIpAddress(Order = int.MaxValue)]
+	[AdminThemed]
 	public abstract class AdminControllerBase : ManageController
     { 
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)

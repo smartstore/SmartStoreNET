@@ -39,7 +39,7 @@ namespace SmartStore.Core.Data
 
         string Alias { get; }
 
-        // increasing performance on bulk operations
+        // Increasing performance on bulk operations
         bool ProxyCreationEnabled { get; set; }
 		bool LazyLoadingEnabled { get; set; }
 		bool AutoDetectChangesEnabled { get; set; }
@@ -127,21 +127,25 @@ namespace SmartStore.Core.Data
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance to detach</param>
-		void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
+		/// <param name="deep">Whether to scan all navigation properties and detach them recursively also.</param>
+		/// <returns>The count of detached entities</returns>
+		int DetachEntity<TEntity>(TEntity entity, bool deep = false) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Detaches all entities of type <c>TEntity</c> from the current object context
 		/// </summary>
 		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
+		/// <param name="deep">Whether to scan all navigation properties and detach them recursively also. LazyLoading should be turned off when <c>true</c>.</param>
 		/// <returns>The count of detached entities</returns>
-		int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class;
+		int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true, bool deep = false) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Detaches all entities matching the passed <paramref name="predicate"/> from the current object context
 		/// </summary>
-		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
+		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state will be detached.</param>
+		/// <param name="deep">Whether to scan all navigation properties and detach them recursively also.</param>
 		/// <returns>The count of detached entities</returns>
-		int DetachEntities(Func<object, bool> predicate, bool unchangedEntitiesOnly = true);
+		int DetachEntities(Func<BaseEntity, bool> predicate, bool unchangedEntitiesOnly = true, bool deep = false);
 
 		/// <summary>
 		/// Change the state of an entity object

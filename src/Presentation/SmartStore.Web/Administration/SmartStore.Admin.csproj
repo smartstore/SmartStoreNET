@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -74,9 +73,6 @@
       <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -87,6 +83,11 @@
     </Reference>
     <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -108,6 +109,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -208,7 +210,7 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PackagingController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
-    <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\PollController.cs" />
     <Compile Include="Controllers\ProductAttributeController.cs" />
@@ -218,6 +220,7 @@
     <Compile Include="Controllers\RecurringPaymentController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\RoxyFileManagerController.cs" />
+    <Compile Include="Controllers\RuleController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\AdminModelHelper.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
@@ -236,9 +239,9 @@
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
+    <Compile Include="Infrastructure\SettingsMenu.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
-    <Compile Include="Infrastructure\AutoMapperAdminProfile.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />
@@ -259,6 +262,10 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
+    <Compile Include="Models\Customers\RegisteredCustomersDashboardReportModel.cs" />
+    <Compile Include="Models\Customers\CustomerRoleMappingModel.cs" />
+    <Compile Include="Models\Customers\TopCustomersDashboardReportModel.cs" />
+    <Compile Include="Models\Dashboard\DashboardChartReportModel.cs" />
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
@@ -279,7 +286,9 @@
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
+    <Compile Include="Models\Orders\BestsellersDashboardReportModel.cs" />
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
+    <Compile Include="Models\Orders\LatestOrdersDashboardReportModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
     <Compile Include="Models\Payments\PaymentMethodEditModel.cs" />
     <Compile Include="Models\Plugins\LicenseLabelModel.cs" />
@@ -287,10 +296,15 @@
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Polls\PollVotingRecordModel.cs" />
+    <Compile Include="Models\Rules\RuleEditItem.cs" />
+    <Compile Include="Models\Rules\RuleSetModel.cs" />
+    <Compile Include="Models\Rules\RuleSetListModel.cs" />
+    <Compile Include="Models\Rules\RuleSelectItem.cs" />
     <Compile Include="Models\Settings\ForumSearchSettingsModel.cs" />
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
+    <Compile Include="Models\Stores\StoreDashboardReportModel.cs" />
     <Compile Include="Models\Tasks\ScheduleTaskHistoryModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
@@ -318,13 +332,13 @@
     <Compile Include="Models\Affiliates\AffiliateModel.cs" />
     <Compile Include="Models\Messages\CampaignModel.cs" />
     <Compile Include="Models\Blogs\BlogPostModel.cs" />
-    <Compile Include="Models\Orders\OrderIncompleteReportLineModel.cs" />
+    <Compile Include="Models\Orders\OrdersIncompleteDashboardReportModel.cs" />
     <Compile Include="Models\Orders\OrderAverageReportLineSummaryModel.cs" />
     <Compile Include="Models\Settings\BlogSettingsModel.cs" />
     <Compile Include="Models\Blogs\BlogCommentModel.cs" />
     <Compile Include="Models\Settings\CatalogSettingsModel.cs" />
-    <Compile Include="Models\Customers\BestCustomersReportModel.cs" />
-    <Compile Include="Models\Customers\BestCustomerReportLineModel.cs" />
+    <Compile Include="Models\Customers\TopCustomersReportModel.cs" />
+    <Compile Include="Models\Customers\TopCustomerReportLineModel.cs" />
     <Compile Include="Models\Customers\RegisteredCustomerReportLineModel.cs" />
     <Compile Include="Models\Customers\CustomerReportsModel.cs" />
     <Compile Include="Models\Orders\BestsellersReportLineModel.cs" />
@@ -484,6 +498,7 @@
     <Content Include="Content\telerik\img\sprite-vertical.png" />
     <Content Include="Content\telerik\img\sprite.png" />
     <Content Include="favicon.ico" />
+    <Content Include="Scripts\admin.dashboard.js" />
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Content\filemanager\conf.json" />
     <Content Include="Content\filemanager\lang\bg.js" />
@@ -509,11 +524,13 @@
     <Content Include="Scripts\jquery-shims.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\admin.media.js" />
+    <Content Include="Scripts\smartstore.rules.js" />
     <Content Include="Scripts\smartstore.iconchooser.js" />
     <Content Include="Scripts\smartstore.download.js" />
-    <Content Include="Scripts\smartstore.discountrules.js" />
     <Content Include="Content\theme-rtl.scss" />
     <Content Include="Content\_rtl.scss" />
+    <Content Include="Content\_dashboard.scss" />
     <None Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>
@@ -529,8 +546,6 @@
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
     <Content Include="Views\QuantityUnit\_CreateOrUpdate.cshtml" />
-    <Content Include="Views\QuantityUnit\Create.cshtml" />
-    <Content Include="Views\QuantityUnit\Edit.cshtml" />
     <Content Include="Views\QuantityUnit\List.cshtml" />
     <Content Include="Views\Home\UaTester.cshtml" />
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
@@ -578,8 +593,6 @@
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
     <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
     <Content Include="Views\MessageTemplate\Preview.cshtml" />
-    <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
-    <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
     <Content Include="Views\Order\_Edit.Products.cshtml" />
     <Content Include="Views\Order\_Edit.BillingAndShipment.cshtml" />
     <Content Include="Views\Order\_Edit.Info.cshtml" />
@@ -602,6 +615,45 @@
     <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
     <Content Include="Views\Shared\Menus\Admin.cshtml" />
     <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Rule\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Rule\Create.cshtml" />
+    <Content Include="Views\Rule\Edit.cshtml" />
+    <Content Include="Views\Rule\List.cshtml" />
+    <Content Include="Views\Rule\_RuleSet.cshtml" />
+    <Content Include="Views\Rule\_Rule.cshtml" />
+    <Content Include="Views\Rule\_Rule.Descriptor.cshtml" />
+    <Content Include="Views\Rule\_Rule.Operator.cshtml" />
+    <Content Include="Views\Measure\CreateWeightPopup.cshtml" />
+    <Content Include="Views\Measure\EditWeightPopup.cshtml" />
+    <Content Include="Views\Measure\_CreateOrUpdateWeight.cshtml" />
+    <Content Include="Views\Measure\_CreateOrUpdateDimension.cshtml" />
+    <Content Include="Views\Measure\CreateDimensionPopup.cshtml" />
+    <Content Include="Views\Measure\EditDimensionPopup.cshtml" />
+    <Content Include="Views\QuantityUnit\CreateQuantityUnitPopup.cshtml" />
+    <Content Include="Views\QuantityUnit\EditQuantityUnitPopup.cshtml" />
+    <Content Include="Views\DeliveryTime\CreateDeliveryTimePopup.cshtml" />
+    <Content Include="Views\DeliveryTime\EditDeliveryTimePopup.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Stores.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CustomerRoles.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\TextBox.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Boolean.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Int32.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Float.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Decimal.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\DateTime.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\Dropdown.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Discounts.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RuleSets.cshtml" />
+    <Content Include="Views\Shared\Layouts\_SettingLayout.cshtml" />
+    <Content Include="Views\Shared\Menus\Settings.cshtml" />
+    <Content Include="Views\Rule\Preview.cshtml" />
+    <Content Include="Views\Shared\Layouts\_MinimalLayout.cshtml" />
+    <Content Include="Views\Customer\TopCustomersDashboardReport.cshtml" />
+    <Content Include="Views\Order\LatestOrdersDashboardReport.cshtml" />
+    <Content Include="Views\Store\StoreDashboardReport.cshtml" />
+    <Content Include="Views\Order\OrdersDashboardReport.cshtml" />
+    <Content Include="Views\Customer\RegisteredCustomersDashboardReport.cshtml" />
+    <Content Include="Views\Media\FileConflictResolutionDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />
@@ -1035,10 +1087,10 @@
     <Content Include="Views\Customer\Reports.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Customer\_ReportBestCustomersByOrderTotal.cshtml" />
+    <Content Include="Views\Customer\_ReportTopCustomersByOrderTotal.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Customer\_ReportBestCustomersByNumberOfOrders.cshtml" />
+    <Content Include="Views\Customer\_ReportTopCustomersByNumberOfOrders.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Customer\ReportRegisteredCustomers.cshtml" />
@@ -1053,7 +1105,7 @@
     <Content Include="Views\Order\OrderAverageReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Order\OrderIncompleteReport.cshtml" />
+    <Content Include="Views\Order\OrdersIncompleteDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\Maintenance.cshtml" />
@@ -1063,6 +1115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\BestsellersBriefReportByAmount.cshtml" />
+    <Content Include="Views\Order\BestsellersDashboardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Setting\GeneralCommon.cshtml" />
@@ -1189,12 +1242,6 @@
     <Content Include="Views\DeliveryTime\_CreateOrUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\DeliveryTime\Create.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\DeliveryTime\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1237,13 +1284,7 @@
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Acl.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Categories.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Discounts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.Info.cshtml" />
@@ -1262,9 +1303,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.SpecificationAttributes.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />

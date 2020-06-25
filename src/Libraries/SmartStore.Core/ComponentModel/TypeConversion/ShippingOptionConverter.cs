@@ -10,7 +10,7 @@ using SmartStore.Core.Domain.Shipping;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
-	public class ShippingOptionConverter : TypeConverterBase
+	public class ShippingOptionConverter : DefaultTypeConverter
 	{
 		private readonly bool _forList;
 

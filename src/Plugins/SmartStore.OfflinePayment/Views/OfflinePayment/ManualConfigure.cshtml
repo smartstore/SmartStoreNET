@@ -29,10 +29,10 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.PaymentMethodLogo)
 			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PaymentMethodLogo, Html.EditorFor(m => m.PaymentMethodLogo, "Picture", new { transientUpload = true, validate = true }))
-				@Html.ValidationMessageFor(model => model.PaymentMethodLogo)
-			</td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PaymentMethodLogo, Html.EditorFor(m => m.PaymentMethodLogo, new { transientUpload = true, path = "content" }))
+                @Html.ValidationMessageFor(model => model.PaymentMethodLogo)
+            </td>
 		</tr>
         <tr>
             <td class="adminTitle">

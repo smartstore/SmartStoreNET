@@ -1,0 +1,244 @@
+﻿/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Common
+// ------------------------------------
+
+.bg-black {
+    background-color: #000;
+}
+
+.bg-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--border-radius, 0);
+    transition: opacity $box-transition-duration $box-transition-timing;
+}
+
+.bg-video {
+    overflow: hidden;
+
+    > video {
+        position: relative;
+        left: 50%;
+        top: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+    /* CSS specific to iOS devices (only iOS supports -webkit-overflow-scrolling: touch) */
+    .bg-img {
+        background-attachment: initial !important;
+    }   
+}
+
+
+// Gradients
+// ------------------------------------
+
+@mixin make-gradient-vars($color, $value, $mode: darken) {
+    $cstart: $value;
+    $cend: $value;
+
+    @if $mode == "hue" or $mode == "hue-rev" {
+        $mindeg: 30;
+        $maxdeg: 60;
+        $deg: ($maxdeg - $mindeg) / 360 * (hue($value) - 360) + $maxdeg;
+        $cshade: theme-color-level($color, 2);
+        $cstart: adjust-hue($cshade, $deg);
+    }
+    @else if $mode == "lighten" or $mode == "lighten-rev" {
+        $minlevel: -4;
+        $maxlevel: -2;
+        $level: ($maxlevel - $minlevel) / 100 * (lightness($value) - 100) + $maxlevel;
+        $cstart: theme-color-level($color, $level);
+    }
+    @else {
+        $minlevel: 4;
+        $maxlevel: 2;
+        $level: ($maxlevel - $minlevel) / 100 * (lightness($value) - 100) + $maxlevel;
+        $cend: theme-color-level($color, $level);
+    }
+
+    @if (str-index($mode, "-rev")) {
+        $cend2: $cend;
+        $cend: $cstart;
+        $cstart: $cend2;
+    }
+
+    --cstart: #{$cstart};
+    --cstart-rgb: #{red($cstart)}, #{green($cstart)}, #{blue($cstart)};
+    --cend: #{$cend};
+    --cend-rgb: #{red($cend)}, #{green($cend)}, #{blue($cend)};
+}
+
+
+
+// Gradient styles
+// ------------------------------
+
+.linear-gradient {
+    background-image: linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.radial-gradient {
+    background-image: radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.repeating-linear-gradient {
+    background-image: repeating-linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.repeating-radial-gradient {
+    background-image: repeating-radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cstartpos, 0%), 
+        var(--cend) var(--cendpos, 100%));
+}
+
+.striped-linear-gradient,
+.striped-radial-gradient {
+    --cp1: var(--cstartpos, 0%);
+    --cp3: var(--cendpos, 100%);
+    --cp2: calc(var(--cp1) + ((var(--cp3) - var(--cp1)) * var(--cmidpos, 0.5)));
+}
+
+.striped-linear-gradient {
+    background-image: repeating-linear-gradient(
+        var(--gdir, 0deg), 
+        var(--cstart) var(--cp1),
+        var(--cstart) var(--cp2),
+        var(--cend) var(--cp2),
+        var(--cend) var(--cp3));
+}
+
+.striped-radial-gradient {
+    background-image: repeating-radial-gradient(
+        var(--gdir, circle), 
+        var(--cstart) var(--cp1),
+        var(--cstart) var(--cp2),
+        var(--cend) var(--cp2),
+        var(--cend) var(--cp3));
+}
+
+.scrim-linear-gradient {
+    background-image: scrim-gradient-generic('var(--gdir, 0deg)', false);
+}
+
+.scrim-radial-gradient {
+    background-image: scrim-gradient-generic('var(--gdir, center)', true);
+}
+
+
+// Gradient colors
+// ------------------------------
+
+.gradient-white {
+    --cstart: #fff;
+    --cstart-rgb: 255,255,255;
+    --cend: #{$gray-100};
+    --cend-rgb: #{red($gray-100)},#{green($gray-100)},#{blue($gray-100)};
+}
+
+.gradient-black {
+    --cstart: #000;
+    --cstart-rgb: 0,0,0;
+    --cend: #{$gray-900};
+    --cend-rgb: #{red($gray-900)},#{green($gray-900)},#{blue($gray-900)};
+}
+
+@each $color, $value in $theme-colors {
+    .gradient-#{$color} {
+        @include make-gradient-vars($color, $value, "darken");
+    }
+    .gradient-#{$color}-light {
+        @include make-gradient-vars($color, $value, "lighten");
+    }
+    .gradient-#{$color}-hue {
+        @include make-gradient-vars($color, $value, "hue");
+    }
+    .gradient-#{$color}-rev {
+        @include make-gradient-vars($color, $value, "darken-rev");
+    }
+    .gradient-#{$color}-light-rev {
+        @include make-gradient-vars($color, $value, "lighten-rev");
+    }
+    .gradient-#{$color}-hue-rev {
+        @include make-gradient-vars($color, $value, "hue-rev");
+    } 
+}
+
+.gradient-shade {
+    --cend: rgba(var(--cstart-rgb), 0);
+    --cend-rgb: var(--cstart-rgb);
+}
+
+
+// Utils
+// ------------------------------------
+
+.bg-rev {
+    transform: rotate(180deg);
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: 0;
+}
+
+.bg-o-1 { opacity: 0.97; }
+.bg-o-2 { opacity: 0.92; }
+.bg-o-3 { opacity: 0.87; }
+.bg-o-4 { opacity: 0.82; }
+.bg-o-5 { opacity: 0.75; }
+.bg-o-6 { opacity: 0.70; }
+.bg-o-7 { opacity: 0.65; }
+.bg-o-8 { opacity: 0.50; }
+.bg-o-9 { opacity: 0.40; }
+.bg-o-0 { opacity: 0.00; }
+
+
+// Tint (change opacity on hover)
+// ------------------------------
+
+@each $size in (1, 2, 3) {
+    $step: 0.15;
+    $o1: 1 - ($step * $size);
+    $o2: $o1 - $step;
+
+    .bg-tint-#{$size} {
+        .bg-overlay:not(.bg-divider) { opacity: $o1 !important; }
+        &:hover .bg-overlay:not(.bg-divider) { opacity: $o2 !important; }
+    }
+
+    .bg-tint-#{$size}-rev {
+        .bg-overlay:not(.bg-divider) { opacity: $o2 !important; }
+        &:hover .bg-overlay:not(.bg-divider) { opacity: $o1 !important; }
+    }
+}
+
+
+// Blur
+// ------------------------------
+
+.bg-blur {
+    margin: -20px;
+    filter: blur(10px);
+}

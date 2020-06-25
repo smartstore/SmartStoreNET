@@ -1,0 +1,53 @@
+﻿@model List<OrdersIncompleteDashboardReportModel>
+
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+    var labels = new string[]
+    {
+        @T("Admin.Report.Today"),
+        @T("Admin.Report.LastWeek"),
+        @T("Admin.Report.LastMonth"),
+        @T("Admin.Report.ThisYear")
+            };
+    Html.AddScriptParts("~/bundles/charting");
+    Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
+}
+
+<div class="report chart-colors" id="incomplete-orders-report">
+    <div class="report-title-row">
+        <div class="report-title">@T("Admin.SalesReport.Incomplete")</div>
+    </div>
+    <div class="d-flex justify-content-around px-4 pb-4 flex-wrap incomplete-orders-row">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div class="incomplete-orders-container">
+                <div class="incomplete-orders-title">@labels[i]</div>
+                <div class="incomplete-orders-chart-container">
+                    <div class="incomplete-orders-chart-text">
+                        <div class="incomplete-orders-quantity">@Model[i].QuantityTotal</div>
+                        <div class="incomplete-orders-amount" title="@Model[i].AmountTotal @T("Enums.SmartStore.Core.Domain.Tax.TaxDisplayType.IncludingTax")">@Model[i].AmountTotal</div>
+                    </div>
+                    <div class="canvas-container w-100 h-100">
+                        <canvas id="incomplete-orders-chart-@i">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $(function () {
+        SmartStore.Admin.Charts.Create.IncompleteOrdersCharts(
+        @Html.Raw(jsonData),
+            '@T("Admin.SalesReport.NoIncompleteOrders")',
+            '@T("Admin.SalesReport.Incomplete.TotalNotShippedOrders")',
+            '@T("Admin.SalesReport.Incomplete.TotalUnpaidOrders")',
+            '@T("Admin.SalesReport.NewOrders")',
+            '@T("Admin.Orders")',
+            '@T("Admin.SalesReport.Sales")'
+        );
+    });
+</script>

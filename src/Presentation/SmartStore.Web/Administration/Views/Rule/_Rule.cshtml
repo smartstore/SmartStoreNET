@@ -1,0 +1,44 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var templateSelector = ViewBag.TemplateSelector as IRuleTemplateSelector;
+    var templateInfo = templateSelector.GetTemplate(Model.Descriptor);
+    var error = Model.Metadata.TryGetValue("Error", out var errorObj) ? errorObj.ToString() : string.Empty;
+}
+
+<div class="rule row xs-gutters" data-rule-id="@Model.Id" data-has-error="@error.HasValue().ToString().ToLower()">
+    <div class="col-4 col-md-3 col-xl-2">
+        @{ Html.RenderPartial("_Rule.Descriptor", Model); }
+    </div>
+    <div class="col-4 col-md-3 col-xl-2">
+        @{ Html.RenderPartial("_Rule.Operator", Model); }
+    </div>
+    <div class="col-4 col-md-6 col-xl-8">
+        <div class="input-group flex-nowrap">
+            @{ 
+                try
+                {
+                    Html.RenderPartial(templateInfo.TemplateName, Model);
+                }
+                catch (Exception ex)
+                {
+                    <div class="d-flex flex-grow-1 w-75">
+                        <div class="alert alert-danger text-truncate w-100 mb-0" title="@ex.Message" style="padding-top: 0.6rem; padding-bottom: 0.6rem;">
+                            @T("Common.CannotDisplayView", templateInfo.TemplateName.NaIfEmpty())
+                            @(ex.Message.Truncate(300, "…"))
+                        </div>
+                    </div>
+                }
+
+                <div class="input-group-append">
+                    <button class="btn btn-light btn-to-danger r-delete-rule" type="button" tabindex="-1">
+                        <i class="fa fa-trash-alt"></i>
+                    </button>
+                </div>
+            }
+        </div>
+        <div class="r-rule-error@(error.HasValue() ? "" : " hide")">
+            <span class="field-validation-error">@error</span>
+        </div>
+    </div>
+</div>

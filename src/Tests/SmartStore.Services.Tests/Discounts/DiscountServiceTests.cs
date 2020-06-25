@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
 using SmartStore.Tests;
@@ -19,12 +20,12 @@ namespace SmartStore.Services.Tests.Discounts
     public class DiscountServiceTests : ServiceTest
     {
         IRepository<Discount> _discountRepo;
-        IRepository<DiscountRequirement> _discountRequirementRepo;
         IRepository<DiscountUsageHistory> _discountUsageHistoryRepo;
 		IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
 		IStoreContext _storeContext;
-        
+        ICartRuleProvider _cartRuleProvider;
+
         [SetUp]
         public new void SetUp()
         {
@@ -54,7 +55,7 @@ namespace SmartStore.Services.Tests.Discounts
                 LimitationTimes = 3,
             };
 
-            _discountRepo.Expect(x => x.Table).Return(new List<Discount>() { discount1, discount2 }.AsQueryable());
+            _discountRepo.Expect(x => x.Table).Return(new List<Discount> { discount1, discount2 }.AsQueryable());
 
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(new Store 
@@ -63,12 +64,11 @@ namespace SmartStore.Services.Tests.Discounts
 				Name = "MyStore"
 			});
 
-            _discountRequirementRepo = MockRepository.GenerateMock<IRepository<DiscountRequirement>>();
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
-			_discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
-				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, ProviderManager);
+            _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountUsageHistoryRepo, _storeContext, _genericAttributeService, _cartRuleProvider);
         }
 
         [Test]
@@ -77,21 +77,6 @@ namespace SmartStore.Services.Tests.Discounts
             var discounts = _discountService.GetAllDiscounts(null);
             discounts.ShouldNotBeNull();
             (discounts.Count() > 0).ShouldBeTrue();
-        }
-
-        [Test]
-        public void Can_load_discountRequirementRules()
-        {
-            var rules = _discountService.LoadAllDiscountRequirementRules();
-            rules.ShouldNotBeNull();
-            (rules.Any()).ShouldBeTrue();
-        }
-
-        [Test]
-        public void Can_load_discountRequirementRuleBySystemKeyword()
-        {
-            var rule = _discountService.LoadDiscountRequirementRuleBySystemName("TestDiscountRequirementRule");
-            rule.ShouldNotBeNull();
         }
 
         [Test]
@@ -121,6 +106,8 @@ namespace SmartStore.Services.Tests.Discounts
 
             _genericAttributeService.Expect(x => x.GetAttribute<string>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.DiscountCouponCode, 0))
                 .Return("CouponCode 1");
+
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount, customer);
             result1.ShouldEqual(true);
@@ -196,6 +183,8 @@ namespace SmartStore.Services.Tests.Discounts
                 RequiresCouponCode = false,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
             };
+
+            _cartRuleProvider.Expect(x => x.RuleMatches(discount1)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount1, customer);
 			result1.ShouldEqual(true);

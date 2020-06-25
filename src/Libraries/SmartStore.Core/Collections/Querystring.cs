@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Web;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Collections
 {
@@ -76,6 +77,7 @@ namespace SmartStore.Collections
                 string[] split = keyValuePair.Split('=');
                 base.Add(split[0], split.Length == 2 ? (urlDecode ? HttpUtility.UrlDecode(split[1]) : split[1]) : "");
             }
+
             return this;
         }
 
@@ -210,31 +212,33 @@ namespace SmartStore.Collections
 		/// <returns>the encoded querystring as it would appear in a browser</returns>
 		public string ToString(bool splitValues)
 		{
-			var builder = new StringBuilder();
-			for (var i = 0; i < base.Keys.Count; i++)
-			{
-				var key = base.Keys[i];
-				var value = base[key];
+            var psb = PooledStringBuilder.Rent();
+            var builder = (StringBuilder)psb;
 
-				if (!string.IsNullOrEmpty(key))
-				{
-					builder.Append((builder.Length == 0) ? "?" : "&");
+            for (var i = 0; i < base.Keys.Count; i++)
+            {
+                var key = base.Keys[i];
+                var value = base[key];
 
-					if (splitValues)
-					{
-						foreach (string val in value.EmptyNull().Split(','))
-						{
-							builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(val);
-						}
-					}
-					else
-					{
-						builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(value);
-					}
-				}
-			}
+                if (!string.IsNullOrEmpty(key))
+                {
+                    builder.Append((builder.Length == 0) ? "?" : "&");
 
-			return builder.ToString();
+                    if (splitValues)
+                    {
+                        foreach (string val in value.EmptyNull().Split(','))
+                        {
+                            builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(val);
+                        }
+                    }
+                    else
+                    {
+                        builder.Append(HttpUtility.UrlEncode(key)).Append("=").Append(value);
+                    }
+                }
+            }
+
+            return psb.ToStringAndReturn();
 		}
 	}
 }

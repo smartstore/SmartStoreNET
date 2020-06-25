@@ -12,7 +12,7 @@
 			@for (int i = 0; i < Model.StoreLicenses.Count; ++i)
 			{
 				var storeLicense = Model.StoreLicenses[i];
-				var keyAttributes = new RouteValueDictionary(new { autocomplete = "off" });
+				var keyAttributes = new RouteValueDictionary(new { autocomplete = "new-password" });
 				if (storeLicense.LicenseLabel.LicenseState == LicensingState.Licensed && string.IsNullOrWhiteSpace(storeLicense.LicenseKey) && !storeLicense.LicenseLabel.HideLabel)
 				{
 					keyAttributes.Add("disabled", "disabled");
@@ -24,7 +24,7 @@
 								<span>
 									@storeLicense.StoreName
 								</span>
-								<span class="license-label float-right">
+								<span class="license-label ml-2">
 									@Html.Partial("Partials/LicenseLabel", storeLicense.LicenseLabel)
 								</span>
 							</div>

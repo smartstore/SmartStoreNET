@@ -10,6 +10,15 @@
 			{
 				value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
 			}
+            else
+            {
+                var htmlAttributes = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
+                if (htmlAttributes.TryGetValue("value", out var rawValue))
+                {
+                    value = Convert.ToInt32(rawValue, System.Globalization.CultureInfo.InvariantCulture);
+                }
+            }
+
 			return value;
 		}
 	}
@@ -33,7 +42,7 @@
 <div class="@CssClass">
 	@(Html.Telerik().IntegerTextBox()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
-			.EmptyMessage(T("Common.EnterValue"))
+			.EmptyMessage(GetMetadata<string>("placeholder") ?? T("Common.EnterValue"))
             .ButtonTitleUp(T("Common.IncreaseValue"))
             .ButtonTitleDown(T("Common.DecreaseValue"))
 			.MinValue(GetMetadata<int?>("min"))

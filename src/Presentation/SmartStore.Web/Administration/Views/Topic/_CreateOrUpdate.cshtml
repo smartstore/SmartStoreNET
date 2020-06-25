@@ -9,8 +9,6 @@
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 	if (Model.Id > 0)
 	{
@@ -77,6 +75,24 @@
                 @Html.ValidationMessageFor(model => model.IncludeInSitemap)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedCustomerRoleIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedCustomerRoleIds)
+                @Html.ValidationMessageFor(model => model.SelectedCustomerRoleIds)
+            </td>
+        </tr>
         @if (Model.Id > 0)
         {
             <tr>
@@ -89,6 +105,24 @@
 					</div>
                 </td>
             </tr>
+            if (Model.MenuLinks.Any())
+            {
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.MenuLinks)
+                    </td>
+                    <td class="adminData">
+					    <div class="form-control-plaintext">
+                            @foreach (var link in Model.MenuLinks)
+                            {
+                                <div>
+                                    <a href="@link.Key" target="_blank">@link.Value</a>
+                                </div>
+                            }
+					    </div>
+                    </td>
+                </tr>
+            }
         }
         <tr>
             <td colspan="2">
@@ -346,16 +380,6 @@
                 </td>
             </tr>
         </table>))
-}
-
-@helper TabStores()
-{
-	@Html.Partial("StoreSelector", Model)
-}
-
-@helper TabAcl()
-{
-	@Html.Partial("AclSelector", Model)
 }
 
 @helper TabGenericAttributes()

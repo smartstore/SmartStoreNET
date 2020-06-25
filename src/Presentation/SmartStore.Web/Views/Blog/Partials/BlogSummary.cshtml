@@ -1,0 +1,25 @@
+﻿@model BlogPostListModel
+@using SmartStore.Web.Models.Blogs;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "";
+    Html.AppendScriptParts(true, "~/Content/vendors/imagesloaded/imagesloaded.pkgd.min.js");
+}
+
+@if (Model.RenderHeading)
+{
+    <div>
+        @{ Html.RenderPartial("BlogSummaryHeading", Model); }
+    </div>
+}
+
+<div class="blogposts blog-summary" style="visibility: hidden;">
+    @{ Html.RenderPartial("BlogSummaryList", Model); }
+</div>
+
+<script>
+    $(function () {
+        $(".blogposts").masonaryGrid(".bloglist-item");
+    });
+</script>

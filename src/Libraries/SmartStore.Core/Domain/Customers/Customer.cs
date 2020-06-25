@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Customers
     {
         private ICollection<ExternalAuthenticationRecord> _externalAuthenticationRecords;
         private ICollection<CustomerContent> _customerContent;
-        private ICollection<CustomerRole> _customerRoles;
+        private ICollection<CustomerRoleMapping> _customerRoleMappings;
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
         private ICollection<RewardPointsHistory> _rewardPointsHistory;
@@ -171,12 +171,33 @@ namespace SmartStore.Core.Domain.Customers
 		[DataMember, Index("IX_Customer_BirthDate")]
 		public DateTime? BirthDate { get; set; }
 
-		#region Navigation properties
+        [DataMember]
+        public string Gender { get; set; }
 
-		/// <summary>
-		/// Gets or sets customer generated content
-		/// </summary>
-		public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
+        [DataMember]
+        public int VatNumberStatusId { get; set; }
+
+        [DataMember]
+        public string TimeZoneId { get; set; }
+
+        [DataMember]
+        public int TaxDisplayTypeId { get; set; }
+
+        [DataMember]
+        public DateTime? LastForumVisit { get; set; }
+
+        [DataMember]
+        public string LastUserAgent { get; set; }
+
+        [DataMember]
+        public string LastUserDeviceType { get; set; }
+
+        #region Navigation properties
+
+        /// <summary>
+        /// Gets or sets customer generated content
+        /// </summary>
+        public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
         {
 			get { return _externalAuthenticationRecords ?? (_externalAuthenticationRecords = new HashSet<ExternalAuthenticationRecord>()); }
             protected set { _externalAuthenticationRecords = value; }
@@ -191,14 +212,14 @@ namespace SmartStore.Core.Domain.Customers
             protected set { _customerContent = value; }
         }
 
-		/// <summary>
-		/// Gets or sets the customer roles
-		/// </summary>
-		[DataMember]
-		public virtual ICollection<CustomerRole> CustomerRoles
+        /// <summary>
+        /// Gets or sets the customer role mappings.
+        /// </summary>
+        [DataMember]
+        public virtual ICollection<CustomerRoleMapping> CustomerRoleMappings
         {
-			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
-            protected set { _customerRoles = value; }
+            get { return _customerRoleMappings ?? (_customerRoleMappings = new HashSet<CustomerRoleMapping>()); }
+            protected set { _customerRoleMappings = value; }
         }
 
         /// <summary>
@@ -217,7 +238,7 @@ namespace SmartStore.Core.Domain.Customers
 		public virtual ICollection<Order> Orders
         {
 			get { return _orders ?? (_orders = new HashSet<Order>()); }
-            protected set { _orders = value; }            
+            protected internal set { _orders = value; }            
         }
 
         /// <summary>
@@ -306,8 +327,22 @@ namespace SmartStore.Core.Domain.Customers
 		/// <returns>The identifier</returns>
 		public string GetRolesIdent(bool onlyActiveCustomerRoles = true)
 		{
-			return string.Join(",", this.CustomerRoles.Where(x => !onlyActiveCustomerRoles || x.Active).Select(x => x.Id));
+            return string.Join(",", GetRoleIds(onlyActiveCustomerRoles));
 		}
+
+        /// <summary>
+        /// Get identifiers of assigned customer roles.
+        /// </summary>
+        /// <param name="onlyActiveCustomerRoles"><c>true</c> ignores all inactive roles</param>
+        /// <returns>Customer role identifiers.</returns>
+        public int[] GetRoleIds(bool onlyActiveCustomerRoles = true)
+        {
+            return CustomerRoleMappings
+                .Select(x => x.CustomerRole)
+                .Where(x => !onlyActiveCustomerRoles || x.Active)
+                .Select(x => x.Id)
+                .ToArray();
+        }
 
 		public virtual void RemoveAddress(Address address)
 		{

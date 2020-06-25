@@ -1,0 +1,95 @@
+﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@using SmartStore.Admin.Models.Customers
+@model RuleSetPreviewModel
+@{
+    ViewBag.Title = string.Concat(T("Admin.Common.Preview"), " - ", Model.Name);
+}
+
+<div class="section-header">
+    <div class="title">
+        @ViewBag.Title @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
+    </div>
+</div>
+<div>
+    @if (Model.Scope == RuleScope.Customer)
+    {
+		@(Html.Telerik().Grid<CustomerModel>()
+				.Name("preview-customer-grid")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+			        columns.Bound(x => x.Email)
+				        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+					columns.Bound(x => x.Username)
+						.Visible(Model.UsernamesEnabled);
+					columns.Bound(x => x.FullName);
+					columns.Bound(x => x.Active)
+						 .ClientTemplate(Html.SymbolForBool("Active"))
+						 .Centered();
+					columns.Bound(x => x.CreatedOn);
+					columns.Bound(x => x.LastActivityDate);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Rule", new { id = Model.Id }))
+				.ClientEvents(events => events.OnDataBound("onCustomerPreviewRowDataBound"))
+				.EnableCustomBinding(true))
+    }
+    else if (Model.Scope == RuleScope.Product)
+	{
+		@(Html.Telerik().Grid<ProductModel>()
+			.Name("preview-products-grid")
+			.Columns(columns =>
+			{
+				if (Model.DisplayProductPictures)
+				{
+					columns.Bound(x => x.PictureThumbnailUrl)
+						.Width(50)
+						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
+				}
+				columns.Bound(x => x.Name)
+					.ClientTemplate(Html.LabeledProductName("Id", "Name"));
+				columns.Bound(x => x.Sku);
+				columns.Bound(x => x.Price)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(x => x.StockQuantity)
+					.Centered();
+				columns.Bound(x => x.LimitedToStores)
+					.ClientTemplate(Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.IsSingleStoreMode)
+					.Centered();
+				columns.Bound(x => x.CreatedOn);
+				columns.Bound(x => x.UpdatedOn);
+				columns.Bound(x => x.Published)
+					.ClientTemplate(Html.SymbolForBool("Published"))
+					.Centered();
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Rule", new { id = Model.Id }))
+			.ClientEvents(events => events.OnDataBound("onProductPreviewRowDataBound"))
+			.EnableCustomBinding(true))
+	}
+	else
+	{
+		<div class="alert alert-warning">@T("Common.NoPreview")</div>
+	}
+</div>
+<script>
+    function onCustomerPreviewRowDataBound(e) {
+		if (e.dataItem && !e.dataItem.Active) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+    }
+
+    function onProductPreviewRowDataBound(e) {
+		if (e.dataItem && !e.dataItem.Published) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+    }
+
+	$(function () {
+		$('#preview-products-grid').thumbZoomer();
+    });
+</script>

@@ -1,38 +1,54 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Tests.Media.Storage
 {
-	public class TestDatabaseMediaStorageProvider : IMediaStorageProvider
+    public class TestDatabaseMediaStorageProvider : IMediaStorageProvider
 	{
-		public Stream OpenRead(MediaItem media)
+		public Stream OpenRead(MediaFile media)
 		{
-			return new MemoryStream(media.Entity.MediaStorage.Data);
+			return new MemoryStream(media.MediaStorage.Data);
 		}
 
-		public byte[] Load(MediaItem media)
+		public bool IsCloudStorage { get; } = false;
+
+		public string GetPublicUrl(MediaFile mediaFile)
 		{
-			return media.Entity.MediaStorage.Data;
+			return null;
 		}
 
-		public Task<byte[]> LoadAsync(MediaItem media)
+		public byte[] Load(MediaFile media)
+		{
+			return media.MediaStorage.Data;
+		}
+
+		public Task<byte[]> LoadAsync(MediaFile media)
 		{
 			return Task.FromResult(Load(media));
 		}
 
-		public void Save(MediaItem media, byte[] data)
+		public void Save(MediaFile media, Stream stream)
 		{
 		}
 
-		public Task SaveAsync(MediaItem media, byte[] data)
+		public Task SaveAsync(MediaFile media, Stream stream)
 		{
 			return Task.FromResult(0);
 		}
 
-		public void Remove(params MediaItem[] medias)
+		public void Remove(params MediaFile[] medias)
 		{
 		}
-	}
+
+		public long GetSize(MediaFile media)
+		{
+			return media.MediaStorage?.Data?.Length ?? 0;
+		}
+
+        public void ChangeExtension(MediaFile mediaFile, string extension)
+        {
+        }
+    }
 }

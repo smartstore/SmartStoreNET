@@ -1,6 +1,8 @@
 ﻿@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
+
 @model ProductModel
+
 @{
 	Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
 	Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
@@ -60,13 +62,6 @@
             .Ajax();
     }
 
-    x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
-        .Name("tab-discounts")
-        .Visible(!(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing))
-        .Icon("fa fa-percent fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Discounts" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
-        .Ajax();
     x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
         .Icon("far fa-image fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Pictures" })
@@ -106,16 +101,6 @@
         .Icon("fa fa-search fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "SEO" })
         .Content(Html.Partial("_CreateOrUpdate.SEO", Model).ToHtmlString());
-    x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
-        .Icon("fa fa-users fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Acl" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Acl" })
-        .Ajax();
-    x.Add().Text(T("Admin.Common.Stores").Text)
-        .Icon("fa fa-globe fa-lg fa-fw")
-        .LinkHtmlAttributes(new { data_tab_name = "Stores" })
-        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Stores" })
-        .Ajax();
     x.Add().Text(T("Common.Downloads").Text)
         .Icon("fa fa-download fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Downloads" })

@@ -1,12 +1,13 @@
-﻿using SmartStore.Core.Data;
-using SmartStore.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using SmartStore.Core.Data;
+using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Plugins
 {
@@ -14,6 +15,11 @@ namespace SmartStore.Core.Plugins
 	{
 		private static int? _lastPluginsHash;
 		private static ICollection<string> _lastPluginAssemblies;
+
+        /// <summary>
+        /// <c>true</c> when any plugin file has been changed since previous application start.
+        /// </summary>
+        public static bool PluginChangeDetected { get; private set; }
 
 		/// <summary>
 		/// This checks if any of our plugins have changed, if so it will go 
@@ -29,9 +35,10 @@ namespace SmartStore.Core.Plugins
 			// Check if anything has been changed, or if we are in debug mode then always perform cleanup
 			if (currentHash != lastHash)
 			{
-				Debug.WriteLine("Plugin changes detected in hash");
+                PluginChangeDetected = true;
+                Logger.DebugFormat("Plugin changes detected in hash.");
 
-				var lastAssemblies = GetLastPluginsAssemblies();
+                var lastAssemblies = GetLastPluginsAssemblies();
 
 				// We need to read the old assembly list and clean them out from the shadow copy folder 
 				var staleFiles = lastAssemblies
@@ -176,6 +183,7 @@ namespace SmartStore.Core.Plugins
 
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "Description.txt"));
 				hashCombiner.Add(Path.Combine(p.PhysicalPath, "web.config"));
+				hashCombiner.Add(p.Installed);
 			}
 
 			return hashCombiner.CombinedHash;
@@ -212,11 +220,13 @@ namespace SmartStore.Core.Plugins
 			}
 			catch (UnauthorizedAccessException)
 			{
-				throw new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", Path.GetDirectoryName(newName)));
+				var ex = new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", Path.GetDirectoryName(newName)));
+                Logger.Error(ex.Message);
+                throw ex;
 			}
 			catch (IOException)
 			{
-				Debug.WriteLine(f.FullName + " rename failed, cannot remove stale plugin");
+                Logger.Error(f.FullName + " rename failed, cannot remove stale plugin");
 				throw;
 			}
 
@@ -227,7 +237,7 @@ namespace SmartStore.Core.Plugins
 			}
 			catch { }
 
-			Debug.WriteLine("Stale plugin " + f.FullName + " failed to cleanup successfully. A .delete file has been created for it");
+            Logger.Error("Stale plugin " + f.FullName + " failed to cleanup successfully. A .delete file has been created for it.");
 
 			return false;
 		}
@@ -249,9 +259,9 @@ namespace SmartStore.Core.Plugins
 			}
 			catch
 			{
-				Debug.WriteLine("Cannot remove file " + deleteName + ". It is locked, renaming to .delete file with GUID");
-				// Cannot delete, so we will need to use a GUID
-				deleteName = pluginFile.FullName + Guid.NewGuid().ToString("N") + ".delete";
+                Logger.Error("Cannot remove file " + deleteName + ".It is locked, renaming to.delete file with GUID");
+                // Cannot delete, so we will need to use a GUID
+                deleteName = pluginFile.FullName + Guid.NewGuid().ToString("N") + ".delete";
 			}
 
 			return deleteName;

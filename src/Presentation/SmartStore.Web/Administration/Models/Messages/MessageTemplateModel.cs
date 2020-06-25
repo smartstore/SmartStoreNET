@@ -1,24 +1,27 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using FluentValidation;
 using FluentValidation.Attributes;
 using Newtonsoft.Json;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Services;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
 
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(MessageTemplateValidator))]
-    public class MessageTemplateModel : TabbableModel, ILocalizedModel<MessageTemplateLocalizedModel>, IStoreSelector
+    public class MessageTemplateModel : TabbableModel, ILocalizedModel<MessageTemplateLocalizedModel>
     {
         public MessageTemplateModel()
         {
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
-		}
+        }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
         [ScriptIgnore, JsonIgnore]
@@ -62,21 +65,27 @@ namespace SmartStore.Admin.Models.Messages
 		public bool SendManually { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-		public int? Attachment1FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-		public int? Attachment2FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-		public int? Attachment3FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment3FileId { get; set; }
 
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
+        // Store mapping.
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
 
-		public IList<MessageTemplateLocalizedModel> Locales { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
+        public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
 	}
 
@@ -108,13 +117,16 @@ namespace SmartStore.Admin.Models.Messages
         public int EmailAccountId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
-		public int? Attachment1FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment1FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
-		public int? Attachment2FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment2FileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
-		public int? Attachment3FileId { get; set; }
+        [UIHint("Media"), AdditionalMetadata("album", "content")]
+        public int? Attachment3FileId { get; set; }
     }
 
     public partial class MessageTemplateValidator : AbstractValidator<MessageTemplateModel>

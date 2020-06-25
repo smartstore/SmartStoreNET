@@ -4,53 +4,30 @@ namespace SmartStore.Core.Domain.Media
 {
     public class MediaSettings : ISettings
     {
-		public MediaSettings()
-		{
-			AvatarPictureSize = 250;
-			ProductThumbPictureSize = 250;
-			CategoryThumbPictureSize = 250;
-			ManufacturerThumbPictureSize = 250;
-			ProductDetailsPictureSize = 600;
-			ProductThumbPictureSizeOnProductDetailsPage = 70;
-			MessageProductThumbPictureSize = 70;
-			AssociatedProductPictureSize = 600;
-			BundledProductPictureSize = 70;
-			CartThumbPictureSize = ProductThumbPictureSize;
-			CartThumbBundleItemPictureSize = 32;
-			MiniCartThumbPictureSize = ProductThumbPictureSize;
-			VariantValueThumbPictureSize = 70;
-			MaximumImageSize = 2048;
-			DefaultPictureZoomEnabled = true;
-			PictureZoomType = "window";
-			DefaultImageQuality = 90;
-			MultipleThumbDirectories = true;
-			DefaultThumbnailAspectRatio = 1;
-			AutoGenerateAbsoluteUrls = true;
-		}
+		public int AvatarPictureSize { get; set; } = 256;
+        public int ProductThumbPictureSize { get; set; } = 256;
+		public int ProductDetailsPictureSize { get; set; } = 600;
+		public int ProductThumbPictureSizeOnProductDetailsPage { get; set; } = 72;
+		public int MessageProductThumbPictureSize { get; set; } = 72;
+		public int AssociatedProductPictureSize { get; set; } = 600;
+		public int BundledProductPictureSize { get; set; } = 72;
+		public int CategoryThumbPictureSize { get; set; } = 256;
+		public int ManufacturerThumbPictureSize { get; set; } = 256;
+		public int CartThumbPictureSize { get; set; } = 256;
+		public int CartThumbBundleItemPictureSize { get; set; } = 32;
+		public int MiniCartThumbPictureSize { get; set; } = 256;
+		public int VariantValueThumbPictureSize { get; set; } = 72;
+		public int AttributeOptionThumbPictureSize { get; set; } = 72;
 
-		public int AvatarPictureSize { get; set; }
-        public int ProductThumbPictureSize { get; set; }
-        public int ProductDetailsPictureSize { get; set; }
-        public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
-		public int MessageProductThumbPictureSize { get; set; }
-		public int AssociatedProductPictureSize { get; set; }
-		public int BundledProductPictureSize { get; set; }
-		public int CategoryThumbPictureSize { get; set; }
-        public int ManufacturerThumbPictureSize { get; set; }
-        public int CartThumbPictureSize { get; set; }
-		public int CartThumbBundleItemPictureSize { get; set; }
-        public int MiniCartThumbPictureSize { get; set; }
-        public int VariantValueThumbPictureSize { get; set; }
+		public bool DefaultPictureZoomEnabled { get; set; } = true;
+		public string PictureZoomType { get; set; } = "window";
 
-		public bool DefaultPictureZoomEnabled { get; set; }
-        public string PictureZoomType { get; set; }
+		public int MaximumImageSize { get; set; } = 2048;
 
-        public int MaximumImageSize { get; set; }
-
-        /// <summary>
-        /// Geta or sets a default quality used for image generation
-        /// </summary>
-        public int DefaultImageQuality { get; set; }
+		/// <summary>
+		/// Geta or sets a default quality used for image generation
+		/// </summary>
+		public int DefaultImageQuality { get; set; } = 90;
 
 		/// <summary>
 		/// Gets or sets the height to width ratio for thumbnails in grid style lists (0.2 - 2)
@@ -59,16 +36,60 @@ namespace SmartStore.Core.Domain.Media
 		/// A value greater than 1 indicates, that your product pictures are generally
 		/// in portrait format, less than 1 indicates landscape format.
 		/// </remarks>
-		public int DefaultThumbnailAspectRatio { get; set; }
+		public float DefaultThumbnailAspectRatio { get; set; } = 1;
 
-        /// <summary>
-        /// Geta or sets a vaue indicating whether single (/media/thumbs/) or multiple (/media/thumbs/0001/ and /media/thumbs/0002/) directories will used for picture thumbs
-        /// </summary>
-        public bool MultipleThumbDirectories { get; set; }
+		/// <summary>
+		/// Geta or sets a vaue indicating whether single (/media/thumbs/) or multiple (/media/thumbs/0001/ and /media/thumbs/0002/) directories will used for picture thumbs
+		/// </summary>
+		public bool MultipleThumbDirectories { get; set; } = true;
 
 		/// <summary>
 		/// Generates absolute media urls based upon current request uri instead of relative urls.
 		/// </summary>
-		public bool AutoGenerateAbsoluteUrls { get; set; }
-	}
+		public bool AutoGenerateAbsoluteUrls { get; set; } = true;
+
+		/// <summary>
+		/// Whether orphaned files should automatically be marked as transient so that the daily cleanup task may delete them.
+		/// </summary>
+		public bool MakeFilesTransientWhenOrphaned { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the maximum size (in KB) of an uploaded media file. The default is 102,400 (100 MB).
+        /// </summary>
+        public long MaxUploadFileSize { get; set; } = 102400;
+
+        #region Media types
+
+        /// <summary>
+        /// A space separated list of image type file extensions (dotless)
+        /// </summary>
+        public string ImageTypes { get; set; }
+
+		/// <summary>
+		/// A space separated list of video type file extensions (dotless)
+		/// </summary>
+		public string VideoTypes { get; set; }
+
+		/// <summary>
+		/// A space separated list of audio type file extensions (dotless)
+		/// </summary>
+		public string AudioTypes { get; set; }
+
+		/// <summary>
+		/// A space separated list of document type file extensions (dotless)
+		/// </summary>
+		public string DocumentTypes { get; set; }
+
+		/// <summary>
+		/// A space separated list of text type file extensions (dotless)
+		/// </summary>
+		public string TextTypes { get; set; }
+
+        /// <summary>
+        /// A space separated list of other types file extensions (dotless)
+        /// </summary>
+        public string BinTypes { get; set; }
+
+        #endregion
+    }
 }

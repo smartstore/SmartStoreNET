@@ -10,24 +10,25 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Cart.Rules;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Payments
 {
-    /// <summary>
-    /// Payment service
-    /// </summary>
     public partial class PaymentService : IPaymentService
     {
-		private readonly static object _lock = new object();
+        private const string PAYMENT_METHODS_ALL_KEY = "SmartStore.paymentmethod.all-{0}-";
+        private const string PAYMENT_METHODS_PATTERN_KEY = "SmartStore.paymentmethod.*";
+
+        private readonly static object _lock = new object();
 		private static IList<Type> _paymentMethodFilterTypes = null;
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly PaymentSettings _paymentSettings;
-        private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly IProviderManager _providerManager;
+        private readonly ICartRuleProvider _cartRuleProvider;
+        private readonly IProviderManager _providerManager;
 		private readonly ICommonServices _services;
 		private readonly ITypeFinder _typeFinder;
 
@@ -36,8 +37,8 @@ namespace SmartStore.Services.Payments
 			IRepository<StoreMapping> storeMappingRepository,
 			IStoreMappingService storeMappingService,
 			PaymentSettings paymentSettings, 
-            ShoppingCartSettings shoppingCartSettings,
-			IProviderManager providerManager,
+            ICartRuleProvider cartRuleProvider,
+            IProviderManager providerManager,
 			ICommonServices services,
 			ITypeFinder typeFinder)
         {
@@ -45,46 +46,39 @@ namespace SmartStore.Services.Payments
 			_storeMappingRepository = storeMappingRepository;
 			_storeMappingService = storeMappingService;
 			_paymentSettings = paymentSettings;
-            _shoppingCartSettings = shoppingCartSettings;
+            _cartRuleProvider = cartRuleProvider;
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
-
-			T = NullLocalizer.Instance;
-            Logger = NullLogger.Instance;
-            QuerySettings = DbQuerySettings.Default;
 		}
 
-		public Localizer T { get; set; }
-        public ILogger Logger { get; set; }
-        public DbQuerySettings QuerySettings { get; set; }
+		public Localizer T { get; set; } = NullLocalizer.Instance;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
+        public DbQuerySettings QuerySettings { get; set; } = DbQuerySettings.Default;
 
         #region Methods
 
-		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
+        public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
 		{
 			var method = LoadPaymentMethodBySystemName(systemName, true, storeId);
 			return method != null;
 		}
 
-		public virtual bool IsPaymentMethodFiltered(PaymentFilterRequest filterRequest)
-		{
-			Guard.NotNull(filterRequest, nameof(filterRequest));
+        public virtual bool IsPaymentMethodActive(
+            string systemName,
+            Customer customer = null,
+            IList<OrganizedShoppingCartItem> cart = null,
+            int storeId = 0)
+        {
+            Guard.NotEmpty(systemName, nameof(systemName));
 
-			var allFilters = GetAllPaymentMethodFilters();
-			return allFilters.Any(x => x.IsExcluded(filterRequest));
-		}
+            var activePaymentMethods = LoadActivePaymentMethods(customer, cart, storeId, null, false).ToList();
+            var method = activePaymentMethods.FirstOrDefault(x => x.Metadata.SystemName.IsCaseInsensitiveEqual(systemName));
 
-		/// <summary>
-		/// Load active payment methods
-		/// </summary>
-		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
-		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
-		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
-		/// <param name="types">Filter payment methods by payment method types</param>
-		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
-		/// <returns>Payment methods</returns>
-		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
+            return method != null;
+        }
+
+        public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
 			Customer customer = null,
 			IList<OrganizedShoppingCartItem> cart = null,
 			int storeId = 0,
@@ -103,7 +97,9 @@ namespace SmartStore.Services.Payments
                 ? LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType))
                 : LoadAllPaymentMethods(storeId);
 
-			var activeProviders = allProviders
+            var paymentMethods = GetAllPaymentMethods(storeId);
+
+            var activeProviders = allProviders
 				.Where(p =>
 				{
                     try
@@ -112,6 +108,15 @@ namespace SmartStore.Services.Payments
                         if (!p.Value.IsActive || !_paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase))
                         {
                             return false;
+                        }
+
+                        // Rule sets.
+                        if (paymentMethods.TryGetValue(p.Metadata.SystemName, out var pm))
+                        {
+                            if (!_cartRuleProvider.RuleMatches(pm))
+                            {
+                                return false;
+                            }
                         }
 
                         filterRequest.PaymentMethod = p;
@@ -182,14 +187,12 @@ namespace SmartStore.Services.Payments
 
 			if (providers.Any() && !QuerySettings.IgnoreMultiStore && storeId > 0)
 			{
-				var unauthorizedMethods = _paymentMethodRepository.TableUntracked
-					.Where(x => x.LimitedToStores)
-					.ToList();
+                var paymentMethods = GetAllPaymentMethods(storeId);
 
-				var unauthorizedMethodNames = unauthorizedMethods
-					.Where(x => !_storeMappingService.Authorize(x, storeId))
-					.Select(x => x.PaymentMethodSystemName)
-					.ToList();
+                var unauthorizedMethodNames = paymentMethods.Values
+                    .Where(x => x.LimitedToStores && !_storeMappingService.Authorize(x, storeId))
+                    .Select(x => x.PaymentMethodSystemName)
+                    .ToList();
 
 				return providers.Where(x => !unauthorizedMethodNames.Contains(x.Metadata.SystemName));
 			}
@@ -197,30 +200,38 @@ namespace SmartStore.Services.Payments
 			return providers;
         }
 
-		public virtual IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0)
-		{
-			var query = _paymentMethodRepository.TableUntracked;
+        public virtual IDictionary<string, PaymentMethod> GetAllPaymentMethods(int storeId = 0)
+        {
+            var result = _services.RequestCache.Get(PAYMENT_METHODS_ALL_KEY.FormatInvariant(storeId), () =>
+            {
+                var query = _paymentMethodRepository.TableUntracked;
 
-			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-			{
-				query = 
-					from x in query
-					join sm in _storeMappingRepository.TableUntracked
-					on new { c1 = x.Id, c2 = "PaymentMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-					from sm in m_sm.DefaultIfEmpty()
-					where !x.LimitedToStores || storeId == sm.StoreId
-					select x;
+                if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+                {
+                    query =
+                        from x in query
+                        join sm in _storeMappingRepository.TableUntracked
+                        on new { c1 = x.Id, c2 = "PaymentMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+                        from sm in m_sm.DefaultIfEmpty()
+                        where !x.LimitedToStores || storeId == sm.StoreId
+                        select x;
 
-				query = 
-					from x in query
-					group x by x.Id into mGroup
-					orderby mGroup.Key
-					select mGroup.FirstOrDefault();
-			}
+                    query =
+                        from x in query
+                        group x by x.Id into mGroup
+                        orderby mGroup.Key
+                        select mGroup.FirstOrDefault();
+                }
 
-			var methods = query.ToList();
-			return methods;
-		}
+                var methods = query
+                    .ToList()
+                    .ToDictionarySafe(x => x.PaymentMethodSystemName.EmptyNull(), x => x, StringComparer.OrdinalIgnoreCase);
+
+                return methods;
+            });
+
+            return result;
+        }
 
 		/// <summary>
 		/// Gets payment method extra data by system name
@@ -243,11 +254,12 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void InsertPaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            Guard.NotNull(paymentMethod, nameof(paymentMethod));
 
 			_paymentMethodRepository.Insert(paymentMethod);
-		}
+
+            _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+        }
 
 		/// <summary>
 		/// Updates payment method extra data
@@ -255,11 +267,12 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void UpdatePaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            Guard.NotNull(paymentMethod, nameof(paymentMethod));
 
 			_paymentMethodRepository.Update(paymentMethod);
-		}
+
+            _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+        }
 
 		/// <summary>
 		/// Delete payment method extra data
@@ -267,11 +280,13 @@ namespace SmartStore.Services.Payments
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void DeletePaymentMethod(PaymentMethod paymentMethod)
 		{
-			if (paymentMethod == null)
-				throw new ArgumentNullException("paymentMethod");
+            if (paymentMethod != null)
+            {
+                _paymentMethodRepository.Delete(paymentMethod);
 
-			_paymentMethodRepository.Delete(paymentMethod);
-		}
+                _services.RequestCache.RemoveByPattern(PAYMENT_METHODS_PATTERN_KEY);
+            }
+        }
 
 
 		/// <summary>

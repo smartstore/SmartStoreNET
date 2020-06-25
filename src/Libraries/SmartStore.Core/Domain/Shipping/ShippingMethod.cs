@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Core.Domain.Shipping
 {
@@ -8,8 +10,10 @@ namespace SmartStore.Core.Domain.Shipping
 	/// Represents a shipping method (used for offline shipping rate computation methods)
 	/// </summary>
 	[DataContract]
-	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported
-	{
+	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IRulesContainer
+    {
+        private ICollection<RuleSetEntity> _ruleSets;
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -39,5 +43,14 @@ namespace SmartStore.Core.Domain.Shipping
 		/// </summary>
 		[DataMember]
 		public bool LimitedToStores { get; set; }
+
+        /// <summary>
+        /// Gets or sets assigned rule sets.
+        /// </summary>
+        public virtual ICollection<RuleSetEntity> RuleSets
+        {
+            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
+            protected set { _ruleSets = value; }
+        }
     }
 }

@@ -1,0 +1,82 @@
+﻿<div id="duplicate-window" class="modal fade" role="dialog" tabindex="-1" aria-hidden="true" aria-labelledby="duplicate-window" data-keyboard="false" data-show="true" data-focus="true" data-backdrop="static">
+	<div class="modal-dialog modal-lg">
+        <div class="modal-content" style="overflow: hidden">
+            <div class="modal-header px-4">
+                <h4 class="modal-title" id="duplicate-windowLabel">@T("FileUploader.DuplicateDialog.Title")</h4>
+                <div class="remaining-file-counter text-muted fwm">
+                    <span class="current-count"></span>
+                    <span>/</span>
+                    <span class="total-count"></span>
+                </div>
+            </div>
+            <div class="modal-body px-4">
+                <p class="intro">
+                    @T("FileUploader.DuplicateDialog.Intro")
+                </p>
+
+                <div class="row no-gutters mb-3 dupe-media-comparison">
+                    <div class="col-6 pr-3 dupe-file-display">
+                        <h6>@T("FileUploader.DuplicateDialog.DupeFile.Title")</h6>
+                        @FileInfo()
+                    </div>
+                    <div class="col-6 existing-file-display">
+                        <h6>@T("FileUploader.DuplicateDialog.ExistingFile.Title")</h6>
+                        @FileInfo()
+                    </div>
+                </div>
+
+                <div class="duoe-media-resolution">
+                    <div class="form-check my-2">
+                        <input class="form-check-input" id="replace" name="resolution-type" type="radio" value="1" checked="checked">
+                        <label for="replace" class="form-check-label">@T("FileUploader.DuplicateDialog.Option.Replace")</label>
+                    </div>
+                    <div class="form-check my-2">
+                        <input class="form-check-input" id="rename" name="resolution-type" type="radio" value="2">
+                        <label for="rename" class="form-check-label">@T("FileUploader.DuplicateDialog.Option.Rename")</label>
+                    </div>
+                    <div class="form-check my-2">
+                        <input class="form-check-input" id="skip" name="resolution-type" type="radio" value="3">
+                        <label for="skip" class="form-check-label">@T("FileUploader.DuplicateDialog.Option.Skip")</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-light px-4">
+                <div class="col pl-0">
+                    <div class="form-check">
+                        <input class="form-check-input" id="apply-to-remaining" name="apply-to-remaining" type="checkbox" />
+                        <label for="apply-to-remaining" class="form-check-label">@T("FileUploader.DuplicateDialog.Option.SaveSelection")</label>
+                    </div>
+                </div>
+                <div class="col-auto pr-0">
+                    <div class="text-right">
+                        <a href="#" class="btn btn-secondary btn-flat btn-cancel mr-1">
+                            @T("Common.Cancel")
+                        </a>
+                        <a href="#" class="btn btn-primary btn-apply">
+                            @T("Common.Apply")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+
+@helper FileInfo()
+{
+	<div class="file-display">
+		<div class="row no-gutters">
+			<div class="col-auto file-preview"></div>
+			<div class="col file-info p-1 pl-3">
+				<div class="file-name text-truncate font-weight-medium"></div>
+				<div class="text-muted fs-sm mt-1">
+					<div>
+						<span class="file-dimensions"></span>
+						<span class="file-size"></span>
+					</div>
+					<div class="file-date"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

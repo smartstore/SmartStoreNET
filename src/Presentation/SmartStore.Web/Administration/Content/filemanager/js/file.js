@@ -84,10 +84,10 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 	this.ext = RoxyUtils.GetFileExt(filePath);
 	this.path = RoxyUtils.GetPath(filePath);
 	this.image = filePath;
-	this.size = (fileSize ? fileSize : RoxyUtils.GetFileSize(filePath));
+	this.size = fileSize || RoxyUtils.GetFileSize(filePath);
 	this.time = modTime;
-	this.width = (w ? w : 0);
-	this.height = (h ? h : 0);
+	this.width = w || 0;
+	this.height = h || 0;
 	this.thumb = this.type === 'image' ? filePath : RoxyUtils.GetAssetPath("images/blank.gif");
 	this.GenerateHtml = function () {
 		var attrs = [
@@ -132,7 +132,7 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					$('li[data-path="' + item.fullPath + '"]').remove();
 					var d = Directory.Parse(item.path);
 					if (d) {
@@ -170,12 +170,13 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var newPath = RoxyUtils.MakePath(this.path, newName);
-					var fileType = RoxyUtils.GetFileIcon(newName);
+					var fileType = RoxyUtils.GetFileType(newName);
 					var icon = RoxyIconHints[fileType];
 					var li = $('li[data-path="' + item.fullPath + '"]');
-					li.toggleClass('file-image', fileType == 'image');
+
+					li.toggleClass('file-image', fileType === 'image');
 					$('.file-icon', li).attr('class', "").addClass('file-icon fa-fw ' + icon.name).css('color', icon.color);
 					$('.name', li).text(newName);
 					$('li[data-path="' + newPath + '"]').attr('data-path', newPath);
@@ -209,7 +210,7 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					var d = Directory.Parse(newPath);
 					if (d) {
 						d.files++;
@@ -250,7 +251,7 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			dataType: 'json',
 			async: false,
 			success: function (data) {
-				if (data.res.toLowerCase() == 'ok') {
+				if (data.res.toLowerCase() === 'ok') {
 					$('li[data-path="' + item.fullPath + '"]').remove();
 					var d = Directory.Parse(item.path);
 					if (d) {

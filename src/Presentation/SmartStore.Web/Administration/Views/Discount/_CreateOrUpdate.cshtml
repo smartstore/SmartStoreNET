@@ -3,22 +3,17 @@
 @using SmartStore.Core.Domain.Discounts;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
-@{
-    Html.AddScriptParts(true, "~/Administration/Scripts/jquery.tmpl.min.js");
-	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.discountrules.js");
-}
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("discount-edit").Style(TabsStyle.Material).Items(x =>
 {
     x.Add().Text(T("Admin.Promotions.Discounts.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Promotions.Discounts.Requirements").Text).Content(TabRequirements());
     if (Model.Id > 0)
     {
         x.Add().Text(T("Admin.Promotions.Discounts.History").Text).Content(TabHistory());
     }
     
-    //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "discount-edit", this.Html, this.Model));
 })
 
@@ -105,73 +100,38 @@
         </tr>
         <tr id="pnlAppliedToCategories">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AppliedToCategoryModels)
+                @Html.SmartLabelFor(model => model.AppliedToCategories)
             </td>
-            <td class="adminData form-control-plaintext">
-                @if (Model.AppliedToCategoryModels.Count > 0)
-                {
-                    for (int i = 0; i < Model.AppliedToCategoryModels.Count; i++)
-                    {
-                        var categoryId = Model.AppliedToCategoryModels[i].CategoryId;
-                        var categoryName = Model.AppliedToCategoryModels[i].Name;
-                        <a href="@Url.Action("Edit", "Category", new { id = categoryId })">@categoryName</a>
-                        if (i != Model.AppliedToCategoryModels.Count - 1)
-                        {
-                            <text>, </text>
-						}
-					}
-				}
-				else
+            <td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToCategories.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
-                }
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
 		<tr id="pnlAppliedToManufacturers">
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AppliedToManufacturerModels)
+				@Html.SmartLabelFor(model => model.AppliedToManufacturers)
 			</td>
-			<td class="adminData">
-				@if (!Model.AppliedToManufacturerModels.Any())
+			<td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToManufacturers.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
-				@foreach (var manu in Model.AppliedToManufacturerModels)
-				{
-					if (Model.AppliedToManufacturerModels.IndexOf(manu) != 0) {	<text>, </text>	}
-					<a href="@Url.Action("Edit", "Manufacturer", new { id = manu.ManufacturerId })">@manu.ManufacturerName</a>
-				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToManufacturers.Select(x => $"<a href='{Url.Action("Edit", "Manufacturer", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
 			</td>
 		</tr>
-
         <tr id="pnlAppliedToProducts">
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AppliedToProductModels)
+                @Html.SmartLabelFor(model => model.AppliedToProducts)
             </td>
-            <td class="adminData">
-                @if (Model.AppliedToProductModels.Count > 0)
-                {
-                    for (int i = 0; i < Model.AppliedToProductModels.Count; i++)
-                    {
-                        var productId = Model.AppliedToProductModels[i].ProductId;
-                        var productName = Model.AppliedToProductModels[i].ProductName;
-                        <a href="@Url.Action("Edit", "Product", new { id = productId })">@productName</a>
-                        if (i != Model.AppliedToProductModels.Count - 1)
-                        {
-                            <text>, </text>
-						}
-					}
-				}
-				else
+            <td class="adminData form-control-plaintext wide">
+				@if (!Model.AppliedToProducts.Any())
 				{
-					<div class="form-control-plaintext">
-						@T("Admin.Promotions.Discounts.NoObjectsAssigned")
-					</div>
+					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
 				}
+                @Html.Raw(string.Join(" · ", Model.AppliedToProducts.Select(x => $"<a href='{Url.Action("Edit", "Product", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
         <tr>
@@ -255,216 +215,20 @@
                 @Html.ValidationMessageFor(model => model.LimitationTimes) 
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedRuleSetIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedRuleSetIds)
+                @Html.ValidationMessageFor(model => model.SelectedRuleSetIds)
+            </td>
+        </tr>
     </table>
-}
-
-@helper TabRequirements()
-{
-    if (Model.Id > 0)
-    {
-		<script>
-				$(function () {
-					// load add requirement box
-					loadNewRequirementBox();
-
-					// load existing requirements
-					loadExistingRequirements();
-
-					$('#discountRequirementContainer').on('change', "#@Html.FieldIdFor(model => model.AddDiscountRequirement)", loadNewRequirementBox);
-
-				   //adding requirement event
-				   $("#discountRequirementContainer").on('smnewdiscountruleadded', function(e, newRequirementId) {
-						var discountId = @Model.Id;
-						$.ajax({
-							cache:false,
-							type: "POST",
-							url: "@(Url.Action("GetDiscountRequirementMetaInfo", "Discount"))",
-							data: { "discountRequirementId": newRequirementId, "discountId": discountId },
-							success: function (result) {
-								discountRequirements.push({ discountRequirementId: newRequirementId, ruleName : result.ruleName, url : result.url });
-								loadExistingRequirements();
-							},
-							error:function (xhr, ajaxOptions, thrownError) {
-								alert('Failed to load new discount requirement info. Please refresh the page');
-							}
-						});
-
-				   });
-				});
-
-				// load requirement HTML
-				function loadRequirement(configureRuleUrl, placeholderName) {
-					$.ajax({
-						cache:false,
-						url: configureRuleUrl,
-						dataType: "html",
-						success: function (result) {
-                    		$(placeholderName).html(result);
-                    		$(placeholderName).find('select').selectWrapper();
-						},
-						error:function (xhr, ajaxOptions, thrownError) {
-							$(placeholderName).html('Failed to load requirement content.');
-						}
-					});
-				}
-
-				// load HTML for adding requirement
-				function loadNewRequirementBox() {
-					//load URL
-					var ruleSystemName = $("#@Html.FieldIdFor(model => model.AddDiscountRequirement)").val();
-					var discountId = @Model.Id;
-					if (ruleSystemName) {
-						$.ajax({
-							cache:false,
-							url: "@(Url.Action("GetDiscountRequirementConfigurationUrl", "Discount"))",
-							data: { "systemName": ruleSystemName, "discountId": discountId },
-							success: function (result) {
-									var configureRuleUrl = result.url;
-									//now load the content
-									loadRequirement(configureRuleUrl, '#addrequirementplaceholder');
-							},
-							error:function (xhr, ajaxOptions, thrownError){
-								$('#addrequirementplaceholder').html('Failed to load requirement URL');
-							}
-						});
-					}
-					else {
-						$('#addrequirementplaceholder').html('');
-					}
-				}
-
-			   // array of exisiting discount requirements
-			   var discountRequirements = [
-						@for (int i = 0; i < Model.DiscountRequirementMetaInfos.Count; i++)
-						{
-							var drmi = Model.DiscountRequirementMetaInfos[i];
-							<text>{ discountRequirementId: @(drmi.DiscountRequirementId), ruleName: "@(drmi.RuleName)", url:  "@(Html.Raw(drmi.ConfigurationUrl))" } </text> if (i != Model.DiscountRequirementMetaInfos.Count - 1)
-																																											 {<text>, </text>}
-
-						}
-				   ];
-
-			   // load HTML for exisiting requirements
-			   function loadExistingRequirements() {
-				   $("#discountRequirementContainer").html('');
-				   $("#newDiscountRequirementTemplate").tmpl({}).appendTo("#discountRequirementContainer");
-				   $("#discountRequirementTemplate").tmpl(discountRequirements).prependTo("#discountRequirementContainer");
-
-				   var discountRequirementsLen = discountRequirements.length;
-				   for (var i=0; i<discountRequirementsLen; i++) {
-					   var url = discountRequirements[i].url;
-					   var discountRequirementId = discountRequirements[i].discountRequirementId;
-					   var placeholderName = '#editrequirementplaceholder' + discountRequirementId;
-
-					   $(placeholderName)
-						   .html('')
-						   .append($('<div class="spinner-container active text-center"></div>').append(createCircularSpinner(48, true, 2)));
-
-					   loadRequirement(url, placeholderName);
-				   }
-			   }
-
-			   //delete requirement rule
-			   function deleteRequirement(discountRequirementId) {
-					var discountId = @Model.Id;
-					$.ajax({
-						cache:false,
-						type: "POST",
-						url: "@(Url.Action("DeleteDiscountRequirement", "Discount"))",
-						data: { "discountId": discountId, "discountRequirementId": discountRequirementId },
-						success: function (data) {
-							removeRequirementByElement(discountRequirements, discountRequirementId)
-							loadExistingRequirements();
-						},
-						error:function (xhr, ajaxOptions, thrownError){
-							alert('Failed to delete requirement.')
-						}
-					});
-
-
-				function removeRequirementByElement(arrayName,discountRequirementId) {
-					for(var i=0; i<arrayName.length; i++) {
-						if(arrayName[i].discountRequirementId==discountRequirementId) {
-							arrayName.splice(i,1);
-						}
-					}
-				 }
-			}
-
-		</script>
-    
-		<!-- Template container -->
-		<div id="discountRequirementContainer" class="card-deck card-cols-sm-1 card-cols-lg-2 card-cols-xl-3 discountreq-list mt-5">
-		</div>
-
-		<!-- Discount requirement template -->
-		<script id="discountRequirementTemplate" type="text/html">
-			<div id="editrequirement{{= discountRequirementId }}" class="card shadow-sm discountreq-item">
-				<div class="card-header text-truncate font-weight-medium d-flex align-items-center py-0 pr-0" title="{{= ruleName }}">
-					<div>{{= ruleName }}</div>
-					<div class="ml-auto">
-						<button type="button" class="btn btn-danger btn-flat btn-icon btn-lg rounded-right"
-								style="border-bottom-right-radius: 0 !important"
-								title="@T("Common.Remove")"
-								name="deleterequirement{{= discountRequirementId }}" 
-								id="deleterequirement{{= discountRequirementId }}" 
-								onclick="deleteRequirement({{= discountRequirementId }})">
-							<i class="far fa-trash-alt"></i>
-						</button>
-					</div>
-				</div>
-				<div class="card-body">
-					<div id="editrequirementplaceholder{{= discountRequirementId }}"></div>
-				</div>
-			</div>
-		</script>
-
-		<script id="newDiscountRequirementTemplate" type="text/html">
-			<div id="newrequirement" class="card bg-light shadow-sm card x-border-gray discountreq-add">
-				<div class="card-body">
-					<h4 class="mb-5 font-weight-medium text-primary">@T("Admin.Promotions.Discounts.Requirements.AddNew")</h4>
-					<div class="form-group">
-						@Html.SmartLabelFor(model => model.AddDiscountRequirement)
-						@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
-						@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
-					</div>
-					<div id="addrequirementplaceholder">
-						<!-- Placeholder -->
-					</div>
-				</div>
-			</div>
-		</script>
-
-		@*<div class="well">
-			<div class="row">
-				<div class="col-6">
-					<h5>@T("Admin.Promotions.Discounts.Requirements.AddNew")</h5>
-					<div class="form-group">
-						@Html.SmartLabelFor(model => model.AddDiscountRequirement)
-						@Html.DropDownListFor(model => model.AddDiscountRequirement, Model.AvailableDiscountRequirementRules, new { data_select_min_results_for_search = 999 })
-						@Html.ValidationMessageFor(model => model.AddDiscountRequirement)
-					</div>
-				</div>
-				<div class="col-6">
-
-				</div>
-			</div>
-		</div>*@
-	}
-	else
-	{
-		<div class="alert alert-warning alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			@T("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
-		</div>	
-	}
 }
 
 @helper TabHistory()
 { 
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
 	@(Html.Telerik().Grid<DiscountModel.DiscountUsageHistoryModel>()
         .Name("usagehistory-grid")
         .DataKeys(x =>
@@ -483,9 +247,8 @@
             {
                 commands.Delete().Localize(T);
             }).Width(100).Title(T("Admin.Common.Delete").Text);
-
         })
-        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .DataBinding(dataBinding =>
         {
             dataBinding.Ajax().Select("UsageHistoryList", "Discount", new { discountId = Model.Id })

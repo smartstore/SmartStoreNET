@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Web.Hosting;
-using SmartStore.Core.Async;
-using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Logging;
 using SmartStore.Collections;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Caching;
 using SmartStore.Core;
 

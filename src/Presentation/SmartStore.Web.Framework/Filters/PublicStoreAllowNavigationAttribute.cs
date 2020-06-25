@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
-using SmartStore.Services.Security;
+using SmartStore.Core.Security;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class PublicStoreAllowNavigationAttribute : FilterAttribute, IActionFilter
+    public class PublicStoreAllowNavigationAttribute : FilterAttribute, IAuthorizationFilter
     {
 		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
 		{
@@ -18,12 +18,12 @@ namespace SmartStore.Web.Framework.Filters
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "PasswordRecoveryConfirm"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "AccountActivation"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "CheckUsernameAvailability"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.CatalogController", "OffCanvasMenu")
+            new Tuple<string, string>("SmartStore.Web.Controllers.MenuController", "OffCanvas")
 		};
 
 		public Lazy<IPermissionService> PermissionService { get; set; }
 		
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Filters
             if (request == null)
                 return;
 
-            //don't apply filter to child methods
+            // Don't apply filter to child methods.
             if (filterContext.IsChildAction)
                 return;
 
@@ -47,17 +47,26 @@ namespace SmartStore.Web.Framework.Filters
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-			var permissionService = PermissionService.Value;
-            var publicStoreAllowNavigation = permissionService.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation);
-            if (!publicStoreAllowNavigation && !IsPermittedRoute(controllerName, actionName))
+            if (!HasStoreAccess() && !IsPermittedRoute(controllerName, actionName))
             {
                 filterContext.Result = new HttpUnauthorizedResult();
             }
         }
 
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
+        protected virtual bool HasStoreAccess()
+        {
+            if (PermissionService.Value.Authorize(Permissions.System.AccessShop))
+            {
+                return true;
+            }
+
+            if (PermissionService.Value.AuthorizeByAlias(Permissions.System.AccessShop))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
 		private static bool IsPermittedRoute(string controllerName, string actionName)
 		{

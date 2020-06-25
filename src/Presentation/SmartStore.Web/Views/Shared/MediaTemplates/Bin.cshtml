@@ -1,0 +1,9 @@
+﻿@using SmartStore.Web.Framework.Modelling;
+@model MediaTemplateModel
+@if (Model.RenderViewer)
+{
+}
+else
+{
+    @Html.Partial("MediaTemplates/_Thumbnail")
+}

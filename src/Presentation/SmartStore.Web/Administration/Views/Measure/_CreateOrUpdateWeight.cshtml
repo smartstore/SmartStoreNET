@@ -1,0 +1,95 @@
+﻿@model MeasureWeightModel
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+
+@(Html.LocalizedEditor<MeasureWeightModel, MeasureWeightLocalizedModel>("measure-weight-localized",
+@<div class="adminContent">
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Locales[item].Name)
+        </div>
+        <div class="adminData">
+			@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+            @Html.EditorFor(model => Model.Locales[item].Name)
+            @Html.ValidationMessageFor(model => model.Locales[item].Name)
+        </div>
+    </div>
+</div>
+,
+@<div class="adminContent">
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Name)
+        </div>
+        <div class="adminData">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+    </div>
+</div>
+))
+
+<div class="adminContent">
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.SystemKeyword)
+        </div>
+        <div class="adminData">
+            @Html.EditorFor(model => model.SystemKeyword)
+            @Html.ValidationMessageFor(model => model.SystemKeyword)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.Ratio)
+        </div>
+        <div class="adminData">
+            @Html.EditorFor(model => model.Ratio)
+            @Html.ValidationMessageFor(model => model.Ratio)
+        </div>
+    </div>
+    <div class="adminRow">
+        <div class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayOrder)
+        </div>
+        <div class="adminData">
+            @Html.EditorFor(model => model.DisplayOrder)
+            @Html.ValidationMessageFor(model => model.DisplayOrder)
+        </div>
+    </div>
+    @if (Model.IsPrimaryWeight)
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsPrimaryWeight)
+            </div>
+            <div class="adminData">
+                @Html.CheckBoxFor(model => model.IsPrimaryWeight, new { @readonly = "readonly" })
+                @Html.ValidationMessageFor(model => model.IsPrimaryWeight)
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsPrimaryWeight)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.IsPrimaryWeight)
+                @Html.ValidationMessageFor(model => model.IsPrimaryWeight)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                &nbsp;
+            </div>
+            <div class="adminData">
+                <div class="alert alert-warning">
+	                @T("Admin.Configuration.Measures.Weights.Description")
+                </div>
+            </div>
+        </div>
+    }
+</div>

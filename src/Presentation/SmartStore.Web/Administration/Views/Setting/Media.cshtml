@@ -1,7 +1,10 @@
 ﻿@model MediaSettingsModel
+
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Media").Text;
+    Layout = "_SettingLayout";
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -157,6 +160,91 @@
                 @Html.ValidationMessageFor(model => model.MaximumImageSize)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
+                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MakeFilesTransientWhenOrphaned)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MakeFilesTransientWhenOrphaned)
+                @Html.ValidationMessageFor(model => model.MakeFilesTransientWhenOrphaned)
+            </td>
+        </tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Admin.Configuration.Settings.Media.MediaTypes")
+					</div>
+                    <div class="text-muted">
+                        @T("Admin.Configuration.Settings.Media.MediaTypesNotes")
+                    </div>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ImageTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.ImageTypes, Html.TextAreaFor(model => Model.ImageTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.ImageTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.VideoTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.VideoTypes, Html.TextAreaFor(model => Model.VideoTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.VideoTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AudioTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.AudioTypes, Html.TextAreaFor(model => Model.AudioTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.AudioTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DocumentTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.DocumentTypes, Html.TextAreaFor(model => Model.DocumentTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.DocumentTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TextTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.TextTypes, Html.TextAreaFor(model => Model.TextTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.TextTypes)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BinTypes)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.BinTypes, Html.TextAreaFor(model => Model.BinTypes, new { rows = 2 }))
+                @Html.ValidationMessageFor(model => model.BinTypes)
+            </td>
+        </tr>
+
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">

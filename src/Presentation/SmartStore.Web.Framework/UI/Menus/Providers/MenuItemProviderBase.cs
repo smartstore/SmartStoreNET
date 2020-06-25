@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework.UI
 			var menuItem = new MenuItem
 			{
                 EntityId = entity.Id,
-                EntityName = nameof(MenuItemRecord),
+                EntityName = "MenuItem", // nameof(MenuItemRecord),
                 MenuItemId = entity.Id,
 				Text = title,
                 Summary = shortDescription,
@@ -85,10 +85,25 @@ namespace SmartStore.Web.Framework.UI
                 PermissionNames = entity.PermissionNames
             };
 
+            // Common attributes
+
             if (shortDescription.HasValue())
             {
-                menuItem.LinkHtmlAttributes.Add("title", shortDescription);
+                menuItem.HtmlAttributes.Add("title", shortDescription);
             }
+
+            if (entity.CssClass.HasValue())
+            {
+                menuItem.HtmlAttributes.Add("class", entity.CssClass);
+            }
+
+            if (entity.HtmlId.HasValue())
+            {
+                menuItem.HtmlAttributes.Add("id", entity.HtmlId);
+                menuItem.Id = entity.HtmlId;
+            }
+
+            // Link attributes
 
             if (entity.NoFollow)
             {
@@ -100,20 +115,16 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("target", "_blank");
             }
 
-            if (entity.CssClass.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
-            }
-
-            if (entity.HtmlId.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
-                menuItem.Id = entity.HtmlId;
-            }
+            // Icon
 
             if (entity.Icon.HasValue() && !request.IsEditMode)
             {
                 menuItem.Icon = IconExplorer.GetIconByName(entity.Icon).GetCssClass(entity.Style);
+
+                if (entity.IconColor.HasValue())
+                {
+                    menuItem.Icon += " text-" + entity.IconColor;
+                }
             }
 
             // For future use: entity.ShowExpanded

@@ -1,0 +1,59 @@
+﻿@model List<DashboardChartReportModel>
+@using SmartStore.Admin.Models.Dashboard
+@using Newtonsoft.Json;
+@{
+    var jsonData = JsonConvert.SerializeObject(Model);
+    Html.AddScriptParts("~/bundles/charting");
+    Html.AddScriptParts(true, "~/Administration/Scripts/admin.dashboard.js");
+}
+
+<div class="report chart-colors" id="orders-report">
+    <div class="report-title-row">
+        <div class="report-title pr-3">@T("Admin.Orders")</div>
+        <div class="pl-1 fs-h5 pr-3">
+            <span id="orders-sum-amount" class="text-muted text-nowrap"></span>
+        </div>
+        <div class="fs-h6 font-weight-medium">
+            <span id="orders-delta-percentage"></span><span id="orders-delta-percentage-chevron" class="chevron pl-1 d-none"></span>
+        </div>
+        <div class="btn-group btn-group-toggle ml-auto flex-wrap" data-toggle="buttons">
+            <label class="btn btn-secondary btn-dashboard active">
+                <input type="radio" name="orders-toggle" data-period="0" autocomplete="off" checked>
+                @T("Admin.Report.Today")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="orders-toggle" data-period="1" autocomplete="off">
+                @T("Admin.Report.Yesterday")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="orders-toggle" data-period="2" autocomplete="off">
+                @T("Admin.Report.LastWeek")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="orders-toggle" data-period="3" autocomplete="off">
+                @T("Admin.Report.LastMonth")
+            </label>
+            <label class="btn btn-secondary btn-dashboard">
+                <input type="radio" name="orders-toggle" data-period="4" autocomplete="off">
+                @T("Admin.Report.ThisYear")
+            </label>
+        </div>
+    </div>
+    <div class="px-4 pt-2" id="orders-chart-legend"></div>
+    <div class="canvas-container h-100" style="min-height: 380px; max-height: 380px;">
+        <canvas id="orders-chart"></canvas>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        SmartStore.Admin.Charts.Create.OrdersChart(
+        @Html.Raw(jsonData),
+            '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled")',
+            '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Pending")',
+            '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Processing")',
+            '@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")',
+            '@T("Admin.Orders")'
+        );
+    });
+</script>

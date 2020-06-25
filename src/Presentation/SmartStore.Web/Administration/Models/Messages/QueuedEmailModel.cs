@@ -1,11 +1,14 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Messages;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -14,7 +17,7 @@ namespace SmartStore.Admin.Models.Messages
     {
 		public QueuedEmailModel()
 		{
-			this.Attachments = new List<QueuedEmailAttachmentModel>();
+			Attachments = new List<QueuedEmailAttachmentModel>();
 		}
 		
 		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Id")]
@@ -84,6 +87,20 @@ namespace SmartStore.Admin.Models.Messages
             RuleFor(x => x.From).NotEmpty();
             RuleFor(x => x.To).NotEmpty();
             RuleFor(x => x.SentTries).InclusiveBetween(0, 99999);
+        }
+    }
+
+    public class QueuedEmailMapper :
+        IMapper<QueuedEmail, QueuedEmailModel>
+    {
+        public void Map(QueuedEmail from, QueuedEmailModel to)
+        {
+            MiniMapper.Map(from, to);
+            to.EmailAccountName = from.EmailAccount?.FriendlyName ?? string.Empty;
+            to.AttachmentsCount = from.Attachments?.Count ?? 0;
+            to.Attachments = from.Attachments
+                .Select(x => new QueuedEmailModel.QueuedEmailAttachmentModel { Id = x.Id, Name = x.Name, MimeType = x.MimeType })
+                .ToList();
         }
     }
 }

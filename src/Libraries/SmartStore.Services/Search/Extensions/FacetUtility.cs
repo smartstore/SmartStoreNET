@@ -40,18 +40,6 @@ namespace SmartStore.Services.Search.Extensions
 			{ 50000000, 5000000 }
 		};
 
-        private static string GetPublicName(string firstName, string lastName)
-        {
-            string result = firstName;
-
-            if (!string.IsNullOrWhiteSpace(result) && !string.IsNullOrWhiteSpace(lastName))
-            {
-                result = string.Concat(result, " ", lastName.First(), ".");
-            }
-
-            return result;
-        }
-
 		public static double GetNextPrice(double price)
 		{
 			for (var i = 0; i <= _priceThresholds.GetUpperBound(0); ++i)
@@ -178,7 +166,7 @@ namespace SmartStore.Services.Search.Extensions
             var query = groupQuery
                 .OrderByDescending(x => x.Count)
                 .Select(x => x.Customer)
-                .Where(x => x.CustomerRoles.FirstOrDefault(y => y.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
+                .Where(x => x.CustomerRoleMappings.FirstOrDefault(y => y.CustomerRole.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
 
             return query;
         }

@@ -10,28 +10,29 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	[SetWorkingCulture(Order = -1)]
-	[JsonNet(Order = -1)]
-	[Notify(Order = 100)]
-	public abstract partial class SmartController : Controller
+    /// <remarks>
+    /// <see cref="FilterAttribute.Order"/> for <see cref="JsonNetAttribute"/> must be -1, otherwise <see cref="JsonNetResult.ExecuteResult(ControllerContext)"/> is not executed.
+    /// </remarks>
+    [SetWorkingCulture(Order = 2)]
+    [JsonNet(Order = -1)] // Run first (OnActionExecuted)
+    [Notify(Order = 1000)] // Run last (OnResultExecuting)
+    public abstract partial class SmartController : Controller
 	{
 		protected SmartController()
 		{
-			this.Logger = NullLogger.Instance;
-			this.T = NullLocalizer.Instance;
 		}
 
 		public ILogger Logger
 		{
 			get;
 			set;
-		}
+		} = NullLogger.Instance;
 
 		public Localizer T
 		{
 			get;
 			set;
-		}
+		} = NullLocalizer.Instance;
 
 		public ICommonServices Services
 		{

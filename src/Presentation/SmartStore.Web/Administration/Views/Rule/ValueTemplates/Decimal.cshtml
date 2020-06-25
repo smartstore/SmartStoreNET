@@ -1,0 +1,32 @@
+﻿@using SmartStore.Rules
+@model IRuleExpression
+@{
+    var metadata = Model.Descriptor.Metadata;
+    var id = string.Concat("rule-value-", Model.Id);
+    var min = metadata.Get("min") as decimal?;
+    var max = metadata.Get("max") as decimal?;
+    var step = metadata.Get("step") as decimal?;
+    var postfix = metadata.Get("postfix") as string;
+
+    var value = Model.Value != null
+        ? Convert.ToDecimal(Model.Value, System.Globalization.CultureInfo.InvariantCulture)
+        : decimal.Zero;
+}
+<div class="numerictextbox-group flex-grow-1">
+	@(Html.Telerik().NumericTextBox<decimal>()
+        .Name(id)
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .MinValue(min)
+        .MaxValue(max)
+        .IncrementStep(step ?? 1)
+        .DecimalDigits(4)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
+        .Value(value)
+	)
+    @if (postfix.HasValue())
+    {
+        <span class="numerictextbox-postfix">@postfix</span>
+    }
+</div>

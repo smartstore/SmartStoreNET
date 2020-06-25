@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Stores
 {
@@ -46,10 +47,10 @@ namespace SmartStore.Core.Domain.Stores
 		public string Hosts { get; set; }
 
 		/// <summary>
-		/// Gets or sets the logo picture id
+		/// Gets or sets the logo media file id
 		/// </summary>
 		[DataMember]
-		public int LogoPictureId { get; set; }
+		public int LogoMediaFileId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the display order

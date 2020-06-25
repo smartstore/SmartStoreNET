@@ -32,19 +32,17 @@
 
 	var formatRe = /\{(\d+)\}/g;
 	
-	String.prototype.format = function() {
-	    var s = this, args = arguments;
-	    return s.replace(formatRe, function(m, i) {
-	        return args[i];
-	    });
-	};
+    String.prototype.format = function() {
+        var s = this, args = arguments;
+        return s.replace(formatRe, function(m, i) {
+            return args[i];
+        });
+    };
 
 	// define noop funcs for window.console in order
 	// to prevent scripting errors
 	var c = window.console = window.console || {};
-	function noop() { };
-	var funcs = ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml', 'group', 'groupEnd', 
-					'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'],
+	var funcs = ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml', 'group', 'groupEnd', 'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'],
 		flen = funcs.length,
 		noop = function(){};
 	while (flen) {
@@ -55,7 +53,7 @@
 		
 	// define default secure-casts
 	jQuery.extend(window, {
-			
+
 		toBool: function(val) {
 			var defVal = typeof arguments[1] === "boolean" ? arguments[1] : false;
 			var t = typeof val;
@@ -90,22 +88,45 @@
 		},
 
 		toInt: function(val) {
-			var defVal = typeof arguments[1] === "number" ? arguments[1] : 0;
 			var x = parseInt(val);
-			if (isNaN(x)) {
+            if (isNaN(x)) {
+                var defVal = 0;
+                if (arguments.length > 1) {
+                    var arg = arguments[1];
+                    defVal = arg === null || typeof arg === "number" ? arg : 0;
+                }
 				return defVal;	
-			}
+            }
+
 			return x;
 		},
 			
 		toFloat: function(val) {
-			var defVal = typeof arguments[1] === "number" ? arguments[1] : 0;
 			var x = parseFloat(val);
-			if (isNaN(x)) {
+            if (isNaN(x)) {
+                var defVal = 0;
+                if (arguments.length > 1) {
+                    var arg = arguments[1];
+                    defVal = arg === null || typeof arg === "number" ? arg : 0;
+                }
 				return defVal;	
 			}
 			return x;
-		}				
+        },
+
+        requestAnimationFrame: window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            window.oRequestAnimationFrame || function (callback) {
+            setTimeout(callback, 10);
+        },
+
+        cancelAnimationFrame: window.cancelAnimationFrame  ||
+            window.webkitCancelAnimationFrame  ||
+            window.mozCancelAnimationFrame  ||
+            window.msCancelAnimationFrame ||
+            window.oCancelAnimationFrame 
 	});
 	
 	// provide main app namespace

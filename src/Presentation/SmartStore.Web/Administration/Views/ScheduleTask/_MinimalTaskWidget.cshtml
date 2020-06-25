@@ -1,9 +1,9 @@
 ﻿@model ScheduleTaskModel
-
 @{
 	Layout = null;
 	var returnUrl = (string)ViewBag.ReturnUrl;
-	var hasPermission = ViewBag.HasPermission == true;
+    var canRead = ViewBag.CanRead == true;
+    var canExecute = ViewBag.CanExecute == true;
 }
 
 <div class="d-inline-flex align-items-center py-1">
@@ -23,7 +23,7 @@
 		<span class="mr-1">@T("Admin.System.ScheduleTasks.LastStart"): </span>
 		<span class="text-muted">@(Model.LastHistoryEntry.FinishedOn.HasValue ? Model.LastHistoryEntry.FinishedOnPretty : T("Common.Never").Text)</span>
 	}
-	@if (hasPermission)
+	@if (canRead || canExecute)
 	{
 		<div class="dropdown btn-actions ml-3">
 			<a class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">
@@ -31,22 +31,28 @@
 				<span>@T("Admin.Common.Actions")</span>
 			</a>
 			<div class="dropdown-menu">
-				<a class="dropdown-item" href="@Url.Action("Edit", new { id = Model.Id, returnUrl = returnUrl })">
-					@if (Model.Enabled)
-					{
-						<i class="fa fa-fw fa-edit"></i>
-						<span>@T("Admin.System.ScheduleTasks.EditTask")</span>
-					}
-					else
-					{
-						<i class="far fa-fw fa-clock"></i>
-						<span>@T("Admin.System.ScheduleTasks.ScheduleExecution")</span>
-					}
-				</a>
-				<a class="dropdown-item" href="@Model.ExecuteUrl" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
-					<i class="fa fa-fw fa-play"></i>
-					<span>@T("Admin.System.ScheduleTasks.RunNow")</span>
-				</a>
+                @if (canRead)
+                {
+				    <a class="dropdown-item" href="@Url.Action("Edit", new { id = Model.Id, returnUrl = returnUrl })">
+					    @if (Model.Enabled)
+                        {
+						    <i class="fa fa-fw fa-edit"></i>
+						    <span>@T("Admin.System.ScheduleTasks.EditTask")</span>
+                        }
+                        else
+                        {
+						    <i class="far fa-fw fa-clock"></i>
+						    <span>@T("Admin.System.ScheduleTasks.ScheduleExecution")</span>
+                        }
+				    </a>
+                }
+                @if (canExecute)
+                {
+				    <a class="dropdown-item" href="@Model.ExecuteUrl" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+					    <i class="fa fa-fw fa-play"></i>
+					    <span>@T("Admin.System.ScheduleTasks.RunNow")</span>
+				    </a>
+                }
 			</div>
 		</div>
 	}

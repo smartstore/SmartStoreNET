@@ -229,7 +229,7 @@
     <value>ist falsch</value>
   </data>
   <data name="FilterBoolIsTrue" xml:space="preserve">
-    <value>ist richtig</value>
+    <value>ist wahr</value>
   </data>
   <data name="NoRecords" xml:space="preserve">
     <value>keine Daten</value>

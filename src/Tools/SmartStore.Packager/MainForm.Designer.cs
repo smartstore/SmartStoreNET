@@ -229,7 +229,7 @@
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(400, 500);
 			this.Name = "MainForm";
-			this.Text = " SmartStore.NET Extension Packager";
+			this.Text = " Smartstore Extension Packager";
 			this.tabMain.ResumeLayout(false);
 			this.Plugins.ResumeLayout(false);
 			this.Themes.ResumeLayout(false);

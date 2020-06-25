@@ -1,0 +1,35 @@
+﻿@using SmartStore.Web.Framework.Modelling;
+@model MediaTemplateModel
+@{
+    dynamic iconHint = GetIconHint(Model.File.MediaType);
+}
+<figure class="file-figure">
+    <i class="file-icon show fa-5x fa-fw @iconHint.Name" style="color: @iconHint.Color"></i>
+    @* Title must be on the Picture attribute, otherwise it's covered by the CSS play-video symbol. *@
+    <picture class="file-thumb" data-type="@Model.File.MediaType" title="@Model.Title">
+        <img class="@("file-img".Grow(Model.ExtraCssClasses, " "))" 
+             alt="@Model.Alt" 
+             data-src="@Model.File.ThumbUrl" />
+    </picture>
+</figure>
+@functions {
+    private object GetIconHint(string mediaType)
+    {
+        switch (mediaType)
+        {
+            case "image":
+                return new { Name = "far fa-file-image", Color = "#e77c00" };
+            case "video":
+                return new { Name = "far fa-file-video", Color = "#ff5722" };
+            case "audio":
+                return new { Name = "far fa-file-audio", Color = "#009688" };
+            case "document":
+                return new { Name = "fas fa-file-alt", Color = "#2b579a" };
+            case "text":
+                return new { Name = "far fa-file-alt", Color = "#607d8B" };
+            case "bin":
+            default:
+                return new { Name = "far fa-file", Color = "#bbb" };
+        }
+    }
+}

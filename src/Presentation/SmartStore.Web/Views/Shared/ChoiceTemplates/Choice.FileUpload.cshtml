@@ -1,51 +1,64 @@
 ﻿@using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.UI.Choices;
+@using SmartStore.Core.Domain.Media;
 
 @model ChoiceModel
-@{ 
-	var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
-	var controlId = Model.BuildControlId();
-	var disabled = Model.IsDisabled;	// TODO?
-	var clientId = "upload" + CommonHelper.GenerateRandomInteger();
-	var containerId = clientId + "container";
+@{
+    var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
+    var controlId = Model.BuildControlId();
+    var clientId = "upload" + CommonHelper.GenerateRandomInteger();
+    var containerId = clientId + "container";
+    //var disabled = Model.IsDisabled;    // TODO?
 
-	//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
-	var allowedFileExtensions = string.Join("|", Model.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+    //ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+    var allowedFileExtensions = string.Join("|", Model.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+
+    var mediaService = this.CommonServices.MediaService;
+    var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 }
 
 <div id="@containerId">
-	<input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
+    <div class="fu-container">
+        <div class="dropzone-container">
+            <div class="fu-thumb fu-filename rounded" data-current-filename="@(Model.UploadedFileName)"></div>
+            <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" data-fileupload="true" />
+            <div class="fu-controls">
+                @(Html.SmartStore().FileUploader()
+                    .Name(clientId)
+                    .UploadUrl(Model.GetFileUploadUrl(Url))
+                    .ShowBrowseMedia(false)
+                    .TypeFilter(allowedFileExtensions)
+                    .ShowRemoveButton(Model.UploadedFileGuid.HasValue())
+                    .ShowRemoveButtonAfterUpload(true)
+                    .UploadText(T("Common.FileUploader.Upload"))
+                    .OnUploadCompletedHandlerName("onFileUploaded" + clientId)
+                    .OnFileRemoveHandlerName("onFileRemoved" + clientId)
+                    .Multifile(false)
+                    .HasTemplatePreview(true)
+                    .DownloadEnabled(true)
+                )
+            </div>
+        </div>
 
-	@(Html.SmartStore().FileUploader()
-		.Name(clientId)
-		.UploadUrl(Model.GetFileUploadUrl(Url))
-		.AcceptedFileTypes(allowedFileExtensions)
-		.ShowRemoveButton(Model.UploadedFileGuid.HasValue())
-		.ShowRemoveButtonAfterUpload(true)
-		.UploadText(T("Common.FileUploader.Upload"))
-		.OnUploadCompletedHandlerName("onFileUploaded" + clientId)
-		.OnFileRemoveHandlerName("onFileRemoved" + clientId)
-	)
-
-	<div class="uploaded-file mt-2 hide"></div>
+        <div class="fu-progress">
+            <!-- The single upload progress bar -->
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
-	window['onFileUploaded@(clientId)'] = function (e, el, data) {
-		var result = data.result;
-
-		if (result.downloadGuid) {
-			setUploadedFile(result.downloadGuid, data.files[0].name, "@(containerId)");
-		}
-
-		if (result.message) {
-			displayNotification(result.message, "success");
-		}
+    window['onFileUploaded@(clientId)'] = function (file, result, progress) {
+        if (result.success && result.downloadGuid) {
+            setUploadedFile(result.downloadGuid, file.name, "@(containerId)");
+            displayNotification(result.message, "success");
+        }
 	};
 
-	window['onFileRemoved@(clientId)'] = function (e, el) {
-		$('#@containerId .hidden').val('');
-		$('#@containerId .uploaded-file').empty().hide();
+    window['onFileRemoved@(clientId)'] = function (e, el) {
+        $('#@containerId .hidden').val('');
     }
 
     function setUploadedFile(downloadGuid, fileName, containerId) {
@@ -55,11 +68,7 @@
         	var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
         	var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
-            $('#' + containerId + ' .uploaded-file').html(fileLink).show();
+            $('#' + containerId + ' .fu-message').html(fileLink);
         }
     }
-
-    $(function () {
-        setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
-    });
 </script>

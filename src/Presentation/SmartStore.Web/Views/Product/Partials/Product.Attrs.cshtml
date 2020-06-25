@@ -3,20 +3,28 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	var showDimensions = Model.ShowDimensions && (Model.Length.HasValue() || Model.Width.HasValue() || Model.Height.HasValue());
-	var showAttrs = (Model.ShowSku && Model.Sku.HasValue())
-		|| (Model.ShowWeight && Model.Weight.HasValue())
-		|| showDimensions
-		|| (Model.ShowGtin && Model.Gtin.HasValue())
-		|| (Model.ShowManufacturerPartNumber && Model.ManufacturerPartNumber.HasValue());
+    var showDimensions = Model.ShowDimensions && (Model.Length.HasValue() || Model.Width.HasValue() || Model.Height.HasValue());
+    var showAttrs = (Model.ShowCondition && Model.LocalizedCondition.HasValue())
+        || (Model.ShowSku && Model.Sku.HasValue())
+        || (Model.ShowWeight && Model.Weight.HasValue())
+        || showDimensions
+        || (Model.ShowGtin && Model.Gtin.HasValue())
+        || (Model.ShowManufacturerPartNumber && Model.ManufacturerPartNumber.HasValue());
 
-	if (!showAttrs)
-	{
-		return;
-	}
+    if (!showAttrs)
+    {
+        return;
+    }
 }
 
 <table class="pd-attrs pd-group">
+    @if (Model.ShowCondition && Model.LocalizedCondition.HasValue())
+    {
+        <tr class="pd-attr-condition">
+            <td>@T("Products.Condition")</td>
+            <td>@Model.LocalizedCondition</td>
+        </tr>
+    }
 
     @if (Model.ShowSku && Model.Sku.HasValue())
     {
@@ -63,7 +71,7 @@
         {
             <tr class="pd-attr-length">
                 <td>@T("Products.Length")</td>
-                <td itemprop="length">@Model.Length</td>
+                <td itemprop="depth">@Model.Length</td>
             </tr>
         }
         if (Model.Height.HasValue())

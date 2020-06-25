@@ -1,26 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Web;
 using System.IO;
+using System.Runtime.CompilerServices;
+using SmartStore.Core.IO;
 using System.Diagnostics;
 
 namespace SmartStore
 {
 	public static class StreamExtensions
 	{
-		public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
 		{
 			return new StreamReader(stream, Encoding.UTF8, true, 0x400, leaveOpen);
 		}
 
-		public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
 		{
 			return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
 		}
 
-		public static bool ToFile(this Stream srcStream, string path) 
+        public static Stream MakeSeekable(this Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                Debug.WriteLine("The stream is seekable already.");
+            }
+
+            return new SeekableReadOnlyStream(stream, (int)stream.Length);
+        }
+
+        public static bool ToFile(this Stream srcStream, string path) 
         {
 			if (srcStream == null)
 				return false;
@@ -57,7 +68,7 @@ namespace SmartStore
 			return (result && File.Exists(path));
 		}
 
-        public static bool ContentsEqual(this Stream src, Stream other) 
+        public static bool ContentsEqual(this Stream src, Stream other, bool? forceLengthCompare = null) 
         {
 			if (src == null)
 				throw new ArgumentNullException(nameof(src));
@@ -65,11 +76,26 @@ namespace SmartStore
 			if (other == null)
 				throw new ArgumentNullException(nameof(other));
 
-			if (src.Length != other.Length)
-                return false;
+            if (src == other)
+            {
+                // This is not merely an optimization, as incrementing one stream's position
+                // should not affect the position of the other.
+                return true;
+            }
 
-			const int intSize = sizeof(Int64);
-			const int bufferSize = 2048;
+            // This is not 100% correct, as a stream can be non-seekable but still have a known
+            // length (but hopefully the opposite can never happen). I don't know how to check
+            // if the length is available without throwing an exception if it's not.
+            if ((!forceLengthCompare.HasValue && src.CanSeek && other.CanSeek) || (forceLengthCompare == true))
+            {
+                if (src.Length != other.Length)
+                {
+                    return false;
+                }
+            }
+
+            const int intSize = sizeof(Int64);
+            const int bufferSize = 1024 * intSize; // 2048;
             var buffer1 = new byte[bufferSize];
             var buffer2 = new byte[bufferSize];
             
@@ -85,6 +111,7 @@ namespace SmartStore
                     return true;
 
                 int iterations = (int)Math.Ceiling((double)len1 / sizeof(Int64));
+
                 for (int i = 0; i < iterations; i++)
                 {
                     if (BitConverter.ToInt64(buffer1, i * intSize) != BitConverter.ToInt64(buffer2, i * intSize))
@@ -92,9 +119,10 @@ namespace SmartStore
                         return false;
                     }
                 }
+
+				return true;
             }
         }
+    }
 
-	}
-    
 }

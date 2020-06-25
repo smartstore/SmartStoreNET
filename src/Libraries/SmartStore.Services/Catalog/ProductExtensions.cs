@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -14,7 +15,8 @@ namespace SmartStore.Services.Catalog
 {
     public static class ProductExtensions
     {
-		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
             return product.MergeWithCombination(selectedAttributes, EngineContext.Current.Resolve<IProductAttributeParser>());
         }
@@ -98,8 +100,8 @@ namespace SmartStore.Services.Catalog
 			if (combinations != null)
 			{
 				var data = combinations
-					.Where(x => x.IsActive && x.AssignedPictureIds != null)
-					.Select(x => x.AssignedPictureIds)
+					.Where(x => x.IsActive && x.AssignedMediaFileIds != null)
+					.Select(x => x.AssignedMediaFileIds)
 					.ToList();
 
 				if (data.Count > 0)
@@ -456,7 +458,7 @@ namespace SmartStore.Services.Catalog
 				Sku = item.Product.Sku,
 				ProductName = bundleItemName ?? item.Product.GetLocalized(x => x.Name),
 				ProductSeName = item.Product.GetSeName(),
-				VisibleIndividually = item.Product.VisibleIndividually,
+				VisibleIndividually = item.Product.Visibility != ProductVisibility.Hidden,
 				Quantity = item.Quantity,
 				DisplayOrder = item.DisplayOrder,
 				PriceWithDiscount = priceWithDiscount,

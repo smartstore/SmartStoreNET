@@ -1,10 +1,10 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Xml.Serialization;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.GoogleMerchantCenter.Models
 {
@@ -14,7 +14,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 	{
 		public ProfileConfigurationModel()
 		{
-			Condition = "new";
 			AdditionalImages = true;
 			SpecialPrice = true;
 		}
@@ -30,9 +29,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.AdditionalImages")]
 		public bool AdditionalImages { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Condition")]
-		public string Condition { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Availability")]
 		public string Availability { get; set; }

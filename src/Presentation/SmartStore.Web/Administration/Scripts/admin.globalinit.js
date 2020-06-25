@@ -37,9 +37,6 @@
 				// reject .t-button that has a .t-group-indicator as parent
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
-
-			//// skin telerik grids with bootstrap table (obsolete: styled per Sass @extend now)
-			//ctx.find(".t-grid > table").addClass("table");
 		},
 		// btn-trigger
 		function (ctx) {
@@ -56,6 +53,10 @@
 		// ColorPicker
 		function (ctx) {
 			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
+        },
+        // RangeSlider
+        function (ctx) {
+            ctx.find(".range-slider").rangeSlider();
         }
 	];
 
@@ -81,6 +82,7 @@
 			SmartStore.Admin.togglePanel(e.target, true);
         });
 
+		// Tooltips
         $("#page").tooltip({
             selector: "a[rel=tooltip], .tooltip-toggle",
             trigger: 'hover'
@@ -141,9 +143,72 @@
             }).trigger('resize');
         }
 
+        // Pane resizer
+        $(document).on('mousedown', '.resizer', function (e) {
+            var resizer = this;
+            var resizeNext = resizer.classList.contains('resize-next');
+            var initialPageX = e.pageX;
+            var pane = resizeNext ? resizer.nextElementSibling : resizer.previousElementSibling;
+
+            if (!pane)
+                return;
+
+            var container = resizer.parentNode;
+            var initialPaneWidth = pane.offsetWidth;
+
+            var usePercentage = !!(pane.style.width + '').match('%');
+
+            var addEventListener = document.addEventListener;
+            var removeEventListener = document.removeEventListener;
+
+            var resize = function (initialSize, offset) {
+                if (offset === void 0) offset = 0;
+
+                if (resizeNext)
+                    offset = offset * -1;
+
+                var containerWidth = container.clientWidth;
+                var paneWidth = initialSize + offset;
+
+                return (pane.style.width = usePercentage
+                    ? paneWidth / containerWidth * 100 + '%'
+                    : paneWidth + 'px');
+            };
+
+            resizer.classList.add('is-resizing');
+
+            // Resize once to get current computed size
+            var size = resize();
+
+            var onMouseMove = function (ref) {
+                var pageX = ref.pageX;
+                size = resize(initialPaneWidth, pageX - initialPageX);
+            };
+
+            var onMouseUp = function () {
+                // Run resize one more time to set computed width/height.
+                size = resize(pane.clientWidth);
+
+                resizer.classList.remove('is-resizing');
+
+                removeEventListener('mousemove', onMouseMove);
+                removeEventListener('mouseup', onMouseUp);
+
+                // Create resized event
+                var data = { "pane": pane, "resizer": resizer, "width": pane.style.width, "initialWidth": initialPaneWidth };
+                var event = new CustomEvent("resized", { "detail": data });
+
+                // Trigger the event
+                resizer.dispatchEvent(event);
+            };
+
+            addEventListener('mousemove', onMouseMove);
+            addEventListener('mouseup', onMouseUp);
+        });
+
         $(window).on('load', function () {
-        	// swap classes onload and domready
-        	html.removeClass("loading").addClass("loaded");
+			// swap classes onload and domready
+			html.removeClass("loading").addClass("loaded");
         });
 
     });

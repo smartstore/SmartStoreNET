@@ -1,12 +1,16 @@
 ﻿namespace SmartStore.Data.Migrations
 {
 	using System;
+    using System.Linq;
 	using System.Data.Entity.Migrations;
 	using Setup;
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Catalog;
 	using SmartStore.Core.Domain.Common;
-	using SmartStore.Utilities;
+    using SmartStore.Core.Domain.Configuration;
+    using SmartStore.Core.Domain.Media;
+    using SmartStore.Core.Domain.Tasks;
+    using SmartStore.Utilities;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -39,14 +43,14 @@
 
 		protected override void Seed(SmartObjectContext context)
 		{
-			context.MigrateLocaleResources(MigrateLocaleResources);
+            context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
         }
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
 
-		}
+        }
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{

@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Search.Extensions;
 using SmartStore.Services.Security;
@@ -101,11 +102,19 @@ namespace SmartStore.Services.Search.Modelling
 				.OriginatesFrom(origin)
 				.WithLanguage(_services.WorkContext.WorkingLanguage)
 				.WithCurrency(_services.WorkContext.WorkingCurrency)
-				.VisibleIndividuallyOnly(true)
 				.BuildFacetMap(!isInstantSearch);
 
 			// Visibility.
 			query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
+
+            if (isInstantSearch || origin.IsCaseInsensitiveEqual("Search/Search"))
+            {
+                query.WithVisibility(ProductVisibility.SearchResults);
+            }
+            else
+            {
+                query.WithVisibility(ProductVisibility.Full);
+            }
 
 			// Store.
 			if (!QuerySettings.IgnoreMultiStore)
@@ -297,7 +306,7 @@ namespace SmartStore.Services.Search.Modelling
 					displayOrder = _searchSettings.BrandDisplayOrder;
 					break;
 				case FacetGroupKind.Price:
-					if (_searchSettings.PriceDisabled || !_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
+					if (_searchSettings.PriceDisabled || !_services.Permissions.Authorize(Permissions.Catalog.DisplayPrice))
 						return;
 					fieldName = "price";
 					displayOrder = _searchSettings.PriceDisplayOrder;

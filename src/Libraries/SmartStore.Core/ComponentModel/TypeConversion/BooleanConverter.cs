@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SmartStore.ComponentModel
 {
 	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
-	public class BooleanConverter : TypeConverterBase
+	public class BooleanConverter : DefaultTypeConverter
 	{
 		private readonly HashSet<string> _trueValues;
 		private readonly HashSet<string> _falseValues;
@@ -49,14 +49,12 @@ namespace SmartStore.ComponentModel
 			{
 				var str = (string)value;
 
-				bool b;
-				if (bool.TryParse(str, out b))
+				if (bool.TryParse(str, out var b))
 				{
 					return b;
 				}
 
-				short sh;
-				if (short.TryParse(str, out sh))
+				if (short.TryParse(str, out var sh))
 				{
 					if (sh == 0)
 					{

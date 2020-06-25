@@ -13,8 +13,8 @@
         <div class="options">
 			@if (Model.Id > 0)
 			{
-				<button type="submit" id="send-mass-email" name="send-mass-email" value="send-mass-email" class="btn btn-outline-secondary btn-to-primary px-5 mr-3">
-					<i class="fa fa-send"></i>
+				<button type="submit" id="send-campaign" name="send-campaign" value="send-campaign" class="btn btn-outline-secondary btn-to-primary px-5 mr-3">
+					<i class="fa fa fa-envelope"></i>
 					<span>@T("Common.Send")</span>
 				</button>
 
@@ -49,7 +49,7 @@
 			return false;
 		});
 
-		$('#send-mass-email').on('click', function (e) {
+		$('#send-campaign').on('click', function (e) {
 			if (!confirm(@T("Common.AreYouSure").JsText)) {
 				e.preventDefault();
 				return false;

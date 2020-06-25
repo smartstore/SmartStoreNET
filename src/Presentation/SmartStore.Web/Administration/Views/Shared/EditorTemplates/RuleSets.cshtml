@@ -1,0 +1,72 @@
+﻿@using SmartStore.Rules;
+@using System.Globalization;
+@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+    var strValue = Value;
+    var ruleScope = TryGetMetadata<RuleScope>("scope", out var scope) ? scope : (RuleScope?)null;
+    var url = Url.Action("Edit", "Rule", new { id = "__id__", area = "Admin" });
+
+    var attributes = CommonHelper.ObjectToDictionary(ViewData["htmlAttributes"] ?? new object());
+    attributes["data-select-url"] = Url.Action("AllRuleSets", "Rule", new { selectedIds = strValue, scope = ruleScope, area = "admin" });
+    attributes["data-select-init-load"] = strValue.HasValue().ToString().ToLower();
+
+    if (!attributes.ContainsKey("data-placeholder"))
+    {
+        attributes["data-placeholder"] = T("Common.Unspecified").Text;
+    }
+    if (!attributes.ContainsKey("multiple") && GetMetadata<bool>("multiple"))
+    {
+        attributes["multiple"] = "multiple";
+    }
+}
+<select id="@id" name="@name" class="form-control" @Html.Attrs(attributes)></select>
+<script>
+    $(function () {
+        $('#@id')
+            .selectWrapper()
+            .on('select2:selecting select2:unselecting', function (e) {
+                try {
+                    // Prevent selection when a link has been clicked.
+                    if ($(e.params.args.originalEvent.target).hasClass('prevent-selection')) {
+                        var data = e.params.args.data;
+
+                        if (data.id === '-1' && !_.isEmpty(data.url)) {
+                            window.location = data.url;
+                        }
+
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            });
+    });
+</script>
+
+@functions
+{
+    private string Value
+    {
+        get
+        {
+            if (ViewData.Model != null)
+            {
+                // Be careful with the conversion here because it's very vulnerable to errors.
+                if (ViewData.Model is int[])
+                {
+                    return string.Join(",", ViewData.Model);
+                }
+
+                if (CommonHelper.TryConvert(ViewData.Model, typeof(string), CultureInfo.InvariantCulture, out object obj) && obj != null)
+                {
+                    return obj.ToString();
+                }
+            }
+
+            return null;
+        }
+    }
+}

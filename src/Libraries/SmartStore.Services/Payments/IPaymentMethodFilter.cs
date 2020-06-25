@@ -5,21 +5,17 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
 {
+    /// <summary>
+    /// Allows to filter out payment methods.
+    /// </summary>
 	public partial interface IPaymentMethodFilter
 	{
 		/// <summary>
-		/// Gets a value indicating whether a payment method should be filtered out
+		/// Gets a value indicating whether a payment method should be filtered out.
 		/// </summary>
-		/// <param name="request">Payment filter request</param>
-		/// <returns><c>true</c> filter out method, <c>false</c> do not filter out method</returns>
+		/// <param name="request">Payment filter request.</param>
+		/// <returns><c>true</c> filter out method, <c>false</c> do not filter out method.</returns>
 		bool IsExcluded(PaymentFilterRequest request);
-
-		/// <summary>
-		/// Get URL for filter configuration
-		/// </summary>
-		/// <param name="systemName">Payment provider system name</param>
-		/// <returns>URL for filter configuration</returns>
-		string GetConfigurationUrl(string systemName);
 	}
 
 

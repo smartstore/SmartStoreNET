@@ -5,7 +5,8 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using System.Linq;
 	using SmartStore.Collections;
-	using SmartStore.Core.Domain.Localization;
+    using SmartStore.Core.Data;
+    using SmartStore.Core.Domain.Localization;
 	using SmartStore.Data.Setup;
 
 	public partial class SyncStringResources : DbMigration, IDataSeeder<SmartObjectContext>
@@ -79,87 +80,94 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			var resourceSet = context.Set<LocaleStringResource>();
-			var allLanguages = context.Set<Language>().ToList();
-
-			// Accidents.
-			var accidents = resourceSet.Where(x => x.ResourceName == "Admin.Configuration.ActivityLog.ActivityLogType").ToList();
-			if (accidents.Any())
+			using (var scope = new DbContextScope(context, autoDetectChanges: false, validateOnSave: false))
 			{
-				accidents.Each(x => x.ResourceName = "Admin.Configuration.ActivityLog.ActivityLogType");
-				context.SaveChanges();
-			}
+				var resourceSet = context.Set<LocaleStringResource>();
+				var allLanguages = context.Set<Language>().AsNoTracking().ToList();
 
-			// Remove unused resources that could be included in the German set.
-			var unusedResources = resourceSet.Where(x => _unusedNames.Contains(x.ResourceName)).ToList();
-			if (unusedResources.Any())
-			{
-				resourceSet.RemoveRange(unusedResources);
-				context.SaveChanges();
-				unusedResources.Clear();
-			}
-
-			// Remove duplicate resources.
-			foreach (var language in allLanguages)
-			{
-				var resources = resourceSet.Where(x => x.LanguageId == language.Id).ToList();
-				var deleteResources = new List<LocaleStringResource>();
-				var resourcesMap = new Multimap<string, LocaleStringResource>(StringComparer.OrdinalIgnoreCase);
-				resources.Each(x => resourcesMap.Add(x.ResourceName, x));
-
-				foreach (var item in resourcesMap)
+				// Accidents.
+				var accidents = resourceSet.Where(x => x.ResourceName == "Admin.Configuration.ActivityLog.ActivityLogType").ToList();
+				if (accidents.Any())
 				{
-					if (item.Value.Count > 1)
+					accidents.Each(x => x.ResourceName = "Admin.Configuration.ActivityLog.ActivityLogType");
+					context.SaveChanges();
+				}
+
+				// Remove unused resources that could be included in the German set.
+				var unusedResources = resourceSet.Where(x => _unusedNames.Contains(x.ResourceName)).ToList();
+				if (unusedResources.Any())
+				{
+					resourceSet.RemoveRange(unusedResources);
+					context.SaveChanges();
+					unusedResources.Clear();
+				}
+
+				context.DetachEntities<LocaleStringResource>();
+
+				// Remove duplicate resources.
+				foreach (var language in allLanguages)
+				{
+					var resources = resourceSet.Where(x => x.LanguageId == language.Id).ToList();
+					var deleteResources = new List<LocaleStringResource>();
+					var resourcesMap = new Multimap<string, LocaleStringResource>(StringComparer.OrdinalIgnoreCase);
+					resources.Each(x => resourcesMap.Add(x.ResourceName, x));
+
+					foreach (var item in resourcesMap)
 					{
-						// First is ok, rest is bad.
-						foreach (var resource in item.Value.OrderByDescending(x => x.IsTouched).Skip(1))
+						if (item.Value.Count > 1)
 						{
-							deleteResources.Add(resource);
+							// First is ok, rest is bad.
+							foreach (var resource in item.Value.OrderByDescending(x => x.IsTouched).Skip(1))
+							{
+								deleteResources.Add(resource);
+							}
 						}
 					}
-				}
 
-				if (deleteResources.Any())
-				{
-					resourceSet.RemoveRange(deleteResources);
-					context.SaveChanges();
-					deleteResources.Clear();
-				}
-			}
-
-			// Remove resources that are not included in the German set.
-			// Unfortunately we cannot do that. We have no information about the origin of a resource. We would delete resources of other developers.
-
-			// Add resources included in the German set but missing in the English set.
-			var deLanguage = allLanguages.FirstOrDefault(x => x.LanguageCulture.IsCaseInsensitiveEqual("de-DE"));
-			var enLanguage = allLanguages.FirstOrDefault(x => x.LanguageCulture.IsCaseInsensitiveEqual("en-US"));
-			if (deLanguage != null && enLanguage != null)
-			{
-				var deResources = resourceSet.AsNoTracking().Where(x => x.LanguageId == deLanguage.Id).ToList();
-
-				var enNames = resourceSet
-					.Where(x => x.LanguageId == enLanguage.Id)
-					.Select(x => x.ResourceName)
-					.Distinct()
-					.ToList();
-				var enNamesSet = new HashSet<string>(enNames, StringComparer.OrdinalIgnoreCase);
-
-				foreach (var resource in deResources)
-				{
-					if (!enNames.Contains(resource.ResourceName) && _missingEnglishResources.TryGetValue(resource.ResourceName, out string value))
+					if (deleteResources.Any())
 					{
-						resourceSet.Add(new LocaleStringResource
-						{
-							LanguageId = enLanguage.Id,
-							ResourceName = resource.ResourceName,
-							ResourceValue = value,
-							IsFromPlugin = resource.IsFromPlugin
-						});
+						resourceSet.RemoveRange(deleteResources);
+						context.SaveChanges();
+						deleteResources.Clear();
+						context.DetachEntities<LocaleStringResource>();
 					}
 				}
 
-				context.SaveChanges();
-				deResources.Clear();
+				// Remove resources that are not included in the German set.
+				// Unfortunately we cannot do that. We have no information about the origin of a resource. We would delete resources of other developers.
+
+				// Add resources included in the German set but missing in the English set.
+				var deLanguage = allLanguages.FirstOrDefault(x => x.LanguageCulture.IsCaseInsensitiveEqual("de-DE"));
+				var enLanguage = allLanguages.FirstOrDefault(x => x.LanguageCulture.IsCaseInsensitiveEqual("en-US"));
+				if (deLanguage != null && enLanguage != null)
+				{
+					var deResources = resourceSet.AsNoTracking().Where(x => x.LanguageId == deLanguage.Id).ToList();
+
+					var enNames = resourceSet
+						.Where(x => x.LanguageId == enLanguage.Id)
+						.Select(x => x.ResourceName)
+						.Distinct()
+						.ToList();
+					var enNamesSet = new HashSet<string>(enNames, StringComparer.OrdinalIgnoreCase);
+
+					foreach (var resource in deResources)
+					{
+						if (!enNames.Contains(resource.ResourceName) && _missingEnglishResources.TryGetValue(resource.ResourceName, out string value))
+						{
+							resourceSet.Add(new LocaleStringResource
+							{
+								LanguageId = enLanguage.Id,
+								ResourceName = resource.ResourceName,
+								ResourceValue = value,
+								IsFromPlugin = resource.IsFromPlugin
+							});
+						}
+					}
+
+					context.SaveChanges();
+					deResources.Clear();
+					context.DetachEntities<LocaleStringResource>();
+				}
 			}
 		}
 	}

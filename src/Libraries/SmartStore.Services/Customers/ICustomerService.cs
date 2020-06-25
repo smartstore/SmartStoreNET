@@ -5,7 +5,6 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -14,14 +13,14 @@ namespace SmartStore.Services.Customers
     /// </summary>
     public partial interface ICustomerService
     {
-		#region Customers
+        #region Customers
 
-		/// <summary>
-		/// Finds customer records matching all criteria specified by <paramref name="q"/>
-		/// </summary>
-		/// <param name="q">The filter query</param>
-		/// <returns>Customer collection</returns>
-		IPagedList<Customer> SearchCustomers(CustomerSearchQuery q);
+        /// <summary>
+        /// Finds customer records matching all criteria specified by <paramref name="q"/>
+        /// </summary>
+        /// <param name="q">The filter query</param>
+        /// <returns>Customer collection</returns>
+        IPagedList<Customer> SearchCustomers(CustomerSearchQuery q);
 
 		/// <summary>
 		/// Gets all customers by customer format (including deleted ones)
@@ -195,15 +194,62 @@ namespace SmartStore.Services.Customers
 
         #endregion
 
-		#region Reward points
+        #region Customer role mappings
 
-		/// <summary>
-		/// Add or remove reward points for a product review
-		/// </summary>
-		/// <param name="customer">The customer</param>
-		/// <param name="product">The product</param>
-		/// <param name="add">Whether to add or remove points</param>
-		void RewardPointsForProductReview(Customer customer, Product product, bool add);
+        /// <summary>
+        /// Gets a customer role mapping by identifier.
+        /// </summary>
+        /// <param name="mappingId">Mapping identifier.</param>
+        /// <returns>Customer role mapping.</returns>
+        CustomerRoleMapping GetCustomerRoleMappingById(int mappingId);
+
+        /// <summary>
+        /// Gets customer role mappings.
+        /// </summary>
+        /// <param name="customerIds">Customer identifiers to be filtered by.</param>
+        /// <param name="customerRoleIds">Customer role identifiers to be filtered by.</param>
+        /// <param name="isSystemMapping">Whether to filter by system or user mappings.</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="withCustomers">Whether to include customers through navigation property.</param>
+        /// <returns>Customer role mappings.</returns>
+        IPagedList<CustomerRoleMapping> GetCustomerRoleMappings(
+            int[] customerIds,
+            int[] customerRoleIds,
+            bool? isSystemMapping,
+            int pageIndex,
+            int pageSize,
+            bool withCustomers = true);
+
+        /// <summary>
+        /// Inserts a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void InsertCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        /// <summary>
+        /// Updates a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void UpdateCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        /// <summary>
+        /// Deletes a customer role mapping.
+        /// </summary>
+        /// <param name="mapping">Customer role mapping.</param>
+        void DeleteCustomerRoleMapping(CustomerRoleMapping mapping);
+
+        #endregion
+
+        #region Reward points
+
+        /// <summary>
+        /// Add or remove reward points for a product review
+        /// </summary>
+        /// <param name="customer">The customer</param>
+        /// <param name="product">The product</param>
+        /// <param name="add">Whether to add or remove points</param>
+        void RewardPointsForProductReview(Customer customer, Product product, bool add);
 
 		/// <summary>
 		/// Gets reward points histories
@@ -212,6 +258,6 @@ namespace SmartStore.Services.Customers
 		/// <returns>Reward points histories</returns>
 		Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds);
 
-		#endregion Reward points
+		#endregion
 	}
 }

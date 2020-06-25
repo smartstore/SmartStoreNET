@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore.Utilities.Threading
 {
@@ -10,6 +11,7 @@ namespace SmartStore.Utilities.Threading
         /// Acquires a disposable reader lock that can be used with a using statement.
         /// </summary>
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDisposable GetReadLock(this ReaderWriterLockSlim rwLock)
         {
             return rwLock.GetReadLock(-1);
@@ -42,6 +44,7 @@ namespace SmartStore.Utilities.Threading
         /// Acquires a disposable and upgradeable reader lock that can be used with a using statement.
         /// </summary>
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDisposable GetUpgradeableReadLock(this ReaderWriterLockSlim rwLock)
         {
             return rwLock.GetUpgradeableReadLock(-1);
@@ -74,6 +77,7 @@ namespace SmartStore.Utilities.Threading
         /// Acquires a disposable writer lock that can be used with a using statement.
         /// </summary>
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDisposable GetWriteLock(this ReaderWriterLockSlim rwLock)
         {
             return rwLock.GetWriteLock(-1);

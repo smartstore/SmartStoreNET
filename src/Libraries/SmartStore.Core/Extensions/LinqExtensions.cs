@@ -4,16 +4,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
     public static class LinqExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static PropertyInfo ExtractPropertyInfo(this LambdaExpression propertyAccessor)
         {
             return propertyAccessor.ExtractMemberInfo() as PropertyInfo;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FieldInfo ExtractFieldInfo(this LambdaExpression propertyAccessor)
         {
             return propertyAccessor.ExtractMemberInfo() as FieldInfo;

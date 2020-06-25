@@ -7,12 +7,13 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
-using AutoMapper;
 using FluentValidation;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Msie;
 using JavaScriptEngineSwitcher.V8;
+using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
@@ -47,6 +48,9 @@ namespace SmartStore.Web
 
 		public static void RegisterRoutes(RouteCollection routes, IEngine engine, bool databaseInstalled = true)
 		{
+			//routes.AppendTrailingSlash = true;
+			routes.LowercaseUrls = true;
+			
 			//routes.IgnoreRoute("favicon.ico");
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 			routes.IgnoreRoute("{resource}.ashx/{*pathInfo}");
@@ -62,22 +66,6 @@ namespace SmartStore.Web
 			// register custom bundles
 			var bundlePublisher = engine.Resolve<IBundlePublisher>();
 			bundlePublisher.RegisterBundles(bundles);
-		}
-
-		public static void RegisterClassMaps(IEngine engine)
-		{
-			// register AutoMapper maps
-			var profileTypes = engine.Resolve<ITypeFinder>().FindClassesOfType<Profile>();
-
-			if (profileTypes.Any())
-			{
-				Mapper.Initialize(cfg => {
-					foreach (var profileType in profileTypes)
-					{
-						cfg.AddProfile(profileType);
-					}
-				});
-			}
 		}
 
 		public static void RegisterJsEngines()
@@ -131,7 +119,7 @@ namespace SmartStore.Web
 			// Routes
 			RegisterRoutes(RouteTable.Routes, engine, installed);
 
-			// localize MVC resources
+			// Localize MVC resources
 			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
 			DefaultModelBinder.ResourceClassKey = "MvcLocalization";
 			ErrorMessageProvider.SetResourceClassKey("MvcLocalization");
@@ -142,7 +130,13 @@ namespace SmartStore.Web
 			// VPPs
 			RegisterVirtualPathProviders();
 
-			if (installed)
+            // This settings will automatically be used by JsonConvert.SerializeObject/DeserializeObject
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = SmartContractResolver.Instance
+            };
+
+            if (installed)
 			{
 				// register our themeable razor view engine we use
 				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
@@ -153,49 +147,49 @@ namespace SmartStore.Web
 				// Bundles
 				RegisterBundles(BundleTable.Bundles, engine);
 
-				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
-				GlobalFilters.Filters.Add(new InitializeSchedulerFilter(), int.MinValue);
-
-				// register AutoMapper class maps
-				RegisterClassMaps(engine);
+				// "throw-away" filter for post startup initialization (the filter removes itself when processed)
+				GlobalFilters.Filters.Add(new PostApplicationStartFilter(), int.MinValue);
 			}
 			else
 			{
 				// app not installed
 
 				// Install filter
-				GlobalFilters.Filters.Add(new HandleInstallFilter(), -1000);
+				GlobalFilters.Filters.Add(new HandleInstallFilter());
 			}
 		}
 
 		private static void InitializeFluentValidator()
 		{
-			FluentValidationModelValidatorProvider.Configure(x =>
-			{
-				x.ValidatorFactory = new SmartValidatorFactory();
-			});
+            // It sais 'not recommended', but who cares: SAVE RAM!
+            ValidatorOptions.DisableAccessorCache = true;
 
-			// Setup custom resources
-			ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
+            FluentValidationModelValidatorProvider.Configure(x =>
+            {
+                x.ValidatorFactory = new SmartValidatorFactory();
+            });
 
-			// Setup our custom DisplayName handling
-			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
-			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
-			{
-				string name = null;
+            // Setup custom resources
+            ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
 
-				if (HostingEnvironment.IsHosted && member != null)
-				{
-					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
-					if (attr != null)
-					{
-						name = attr.DisplayName;
-					}
-				}
+            // Setup our custom DisplayName handling
+            var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
+            ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
+            {
+                string name = null;
 
-				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
-			};
-		}
+                if (HostingEnvironment.IsHosted && member != null)
+                {
+                    var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+                    if (attr != null)
+                    {
+                        name = attr.DisplayName;
+                    }
+                }
+
+                return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
+            };
+        }
 
 		private void RegisterVirtualPathProviders()
 		{

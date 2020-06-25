@@ -316,11 +316,13 @@
 							@foreach (var item in Model.Shipments)
 							{
 								<tr>
-									<td>@item.Id.ToString()</td>
 									<td>
 										<a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")">
-											@(item.TrackingNumber.NullEmpty() ?? T("Order.Shipments.ViewDetails").Text)
+											@item.Id
 										</a>
+                                    </td>
+									<td>
+                                        @item.TrackingNumber
 									</td>
 									<td>
 										@if (item.ShippedDate.HasValue)
@@ -466,21 +468,34 @@
 							<!-- Spacer -->
 						</div>
 						<div class="col">
-							@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
-							{
-								<span class="font-weight-medium">@(item.Quantity)&nbsp;&#215;</span>
-							}
-							@if (item.VisibleIndividually)
-							{
-								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" dir="auto">@item.ProductName</a>
-							}
-							else
-							{
-								<span class="cart-item-link" dir="auto">@item.ProductName</span>
-							}
+                            <div class="d-flex w-100 align-items-center justify-content-start flex-nowrap">
+                                @if (Model.ShowProductBundleImages)
+                                {
+                                    <div class="mr-3" style="@("width: {0}px;".FormatInvariant(Math.Min(Model.BundleThumbSize, 60)))">
+                                        @if (item.Picture.ImageUrl.HasValue() && !item.HideThumbnail)
+                                        {
+                                            <img class="img-fluid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
+                                        }
+                                    </div>
+                                }
+                                <div>
+							        @if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
+							        {
+								        <span class="font-weight-medium">@(item.Quantity)&nbsp;&#215;</span>
+							        }
+							        @if (item.VisibleIndividually)
+							        {
+								        <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" dir="auto">@item.ProductName</a>
+							        }
+							        else
+							        {
+								        <span class="cart-item-link" dir="auto">@item.ProductName</span>
+							        }
+                                </div>
+                            </div>
 							@if (item.AttributeInfo.HasValue())
 							{
-								<div class="cart-item-attrs">
+								<div class="cart-item-attrs text-muted mt-1">
 									@Html.Raw(item.AttributeInfo)
 								</div>
 							}

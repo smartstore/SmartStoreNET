@@ -155,14 +155,14 @@ namespace SmartStore.Collections
             get { return _dict.Values; }
         }
 
-        public IEnumerable<TValue> Find(TKey key, Expression<Func<TValue, bool>> predicate)
+        public IEnumerable<TValue> Find(TKey key, Func<TValue, bool> predicate)
         {
 			Guard.NotNull(key, nameof(key));
 			Guard.NotNull(predicate, nameof(predicate));
 
 			if (_dict.ContainsKey(key))
             {
-                return _dict[key].Where(predicate.Compile());
+                return _dict[key].Where(predicate);
             }
 
             return Enumerable.Empty<TValue>();

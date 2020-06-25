@@ -46,7 +46,8 @@ namespace SmartStore.Core
 			new Version("3.1.5"),
             new Version("3.2"),
             new Version("3.2.1"),
-            new Version("3.2.2")
+            new Version("3.2.2"),
+            new Version("4.0.0")
         };
 
 		private const string HELP_BASEURL = "https://docs.smartstore.com/display/";
@@ -116,8 +117,8 @@ namespace SmartStore.Core
 		public static string GetUserGuideSpaceKey(string languageCode)
 		{
 			return languageCode.IsCaseInsensitiveEqual("de") 
-				? "SDDE32" 
-				: "SMNET32";
+				? "SDDE40" 
+				: "SMNET40";
 		}
 
         /// <summary>

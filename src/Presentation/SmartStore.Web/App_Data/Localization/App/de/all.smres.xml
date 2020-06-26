@@ -780,9 +780,6 @@
 	<LocaleResource Name="Admin.AccessDenied.DetailedDescription">
 		<Value>&lt;div&gt;Sie haben keine Berechtigung, diesen Vorgang durchzuführen.&lt;/div&gt;&lt;div&gt;Zugriffsrecht: {0}&lt;/div&gt;&lt;div&gt;Systemname: {1}&lt;/div&gt;</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.AccessDenied.DetailedDescription">
-		<Value>&lt;div&gt;Sie haben keine Berechtigung, diesen Vorgang durchzuführen.&lt;/div&gt;&lt;div&gt;Zugriffsrecht: {0}&lt;/div&gt;&lt;div&gt;Systemname: {1}&lt;/div&gt;</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.AccessDenied.Title">
 		<Value>Zugriff verweigert</Value>
 	</LocaleResource>
@@ -1227,12 +1224,6 @@
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.ColorSquaresRgb">
 		<Value>RGB-Farbe</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.ColorSquaresRgb">
-		<Value>RGB-Farbe</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.ColorSquaresRgb.Hint">
-		<Value>Legt eine Farbe für das Farbquadrat-Steuerelement fest.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.ColorSquaresRgb.Hint">
 		<Value>Legt eine Farbe für das Farbquadrat-Steuerelement fest.</Value>
 	</LocaleResource>
@@ -1259,12 +1250,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture">
 		<Value>Bild</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture">
-		<Value>Bild</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture.Hint">
-		<Value>Legt ein Bild als Auswahlelement fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Picture.Hint">
 		<Value>Legt ein Bild als Auswahlelement fest.</Value>
@@ -1334,12 +1319,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.AutomatedAssignmentRules">
 		<Value>Regeln für automatische Zuordnung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.AutomatedAssignmentRules">
-		<Value>Regeln für automatische Zuordnung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.AutomatedAssignmentRules.Hint">
-		<Value>Produkte werden automatisch per geplanter Aufgabe dieser Warengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.AutomatedAssignmentRules.Hint">
 		<Value>Produkte werden automatisch per geplanter Aufgabe dieser Warengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.</Value>
@@ -1539,9 +1518,6 @@
 	<LocaleResource Name="Admin.Catalog.Categories.ProductListDescription">
 		<Value>Die Liste zeigt Produkte, die dieser Warengruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie aktive Regeln festgelegt sind.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.ProductListDescription">
-		<Value>Die Liste zeigt Produkte, die dieser Warengruppe zugeordnet sind. Produkte werden automatisch per geplanter Aufgabe zugeordnet, sofern die Warengruppe veröffentlicht ist und für sie aktive Regeln festgelegt sind.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Products">
 		<Value>Produkte</Value>
 	</LocaleResource>
@@ -1598,12 +1574,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.BottomDescription">
 		<Value>Untere Beschreibung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.BottomDescription">
-		<Value>Untere Beschreibung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.BottomDescription.Hint">
-		<Value>Optionale zweite Beschreibung, die auf der Herstellerseite unterhalb der Produkte angezeigt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.BottomDescription.Hint">
 		<Value>Optionale zweite Beschreibung, die auf der Herstellerseite unterhalb der Produkte angezeigt wird.</Value>
@@ -2149,12 +2119,6 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Condition">
 		<Value>Artikelzustand</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.Condition">
-		<Value>Artikelzustand</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.Condition.Hint">
-		<Value>Legt den Artikelzustand fest.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Condition.Hint">
 		<Value>Legt den Artikelzustand fest.</Value>
 	</LocaleResource>
@@ -2608,12 +2572,6 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Visibility">
 		<Value>Sichtbarkeit</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.Visibility">
-		<Value>Sichtbarkeit</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.Visibility.Hint">
-		<Value>Schränkt die Sichtbarkeit des Produktes ein. Bei "Nicht sichtbar" erscheint das Produkt nur noch als verknüpftes Produkt auf der übergeordneten Produktdetailseite, jedoch ohne Verlinkung auf eine eigenständige Seite.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Visibility.Hint">
 		<Value>Schränkt die Sichtbarkeit des Produktes ein. Bei "Nicht sichtbar" erscheint das Produkt nur noch als verknüpftes Produkt auf der übergeordneten Produktdetailseite, jedoch ohne Verlinkung auf eine eigenständige Seite.</Value>
 	</LocaleResource>
@@ -2746,9 +2704,6 @@
 	<LocaleResource Name="Admin.Catalog.Products.ProductPictures.Delete.Success">
 		<Value>Die Zuordnung wurde erfolgreich entfernt.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductPictures.Delete.Success">
-		<Value>Die Zuordnung wurde erfolgreich entfernt.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductType.BundledProduct.Label">
 		<Value>Bundle</Value>
 	</LocaleResource>
@@ -2808,9 +2763,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity.Hint">
 		<Value>Gibt den Lagerbestand an.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short">
-		<Value>Kombinationen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Short">
 		<Value>Kombinationen</Value>
@@ -3187,12 +3139,6 @@
 	<LocaleResource Name="Admin.Common.CustomerRole.LimitedTo">
 		<Value>Auf Kundengruppen begrenzt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Common.CustomerRole.LimitedTo">
-		<Value>Auf Kundengruppen begrenzt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Common.CustomerRole.LimitedTo.Hint">
-		<Value>Legt fest, ob das Objekt nur für bestimmte Kundengruppen verfügbar ist.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Common.CustomerRole.LimitedTo.Hint">
 		<Value>Legt fest, ob das Objekt nur für bestimmte Kundengruppen verfügbar ist.</Value>
 	</LocaleResource>
@@ -3366,9 +3312,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Info">
 		<Value>Info</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Common.IsPublished">
-		<Value>Veröffentlicht</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.IsPublished">
 		<Value>Veröffentlicht</Value>
@@ -4264,17 +4207,11 @@
 	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.AddDimension">
 		<Value>Abmessung hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.AddDimension">
-		<Value>Abmessung hinzufügen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.CantDeletePrimary">
 		<Value>Die Standard-Maßeinheit kann nicht gelöscht werden. Deklarieren Sie zuvor eine andere Standard-Maßeinheit.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.Description">
 		<Value>Achtung: Wenn die Standard-Maßeinheit geändert wird, müssen auch die zugehörigen Umrechnungseinheiten (Verhältnis) angepasst werden.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.EditDimension">
-		<Value>Abmessung bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Dimensions.EditDimension">
 		<Value>Abmessung bearbeiten</Value>
@@ -4297,17 +4234,11 @@
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.AddWeight">
 		<Value>Gewicht hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Measures.Weights.AddWeight">
-		<Value>Gewicht hinzufügen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.CantDeletePrimary">
 		<Value>Die Standardgewichtseinheit kann nicht gelöscht werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.Description">
 		<Value>Achtung: Wenn die Standardgewichtseinheit geändert wird, müssen auch die zugehörigen Umrechnungseinheiten (Verhältnis) angepasst werden.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Measures.Weights.EditWeight">
-		<Value>Gewicht bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.EditWeight">
 		<Value>Gewicht bearbeiten</Value>
@@ -4374,12 +4305,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Requirements">
 		<Value>Voraussetzungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Payment.Methods.Requirements">
-		<Value>Voraussetzungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Payment.Methods.Requirements.Hint">
-		<Value>Legt Voraussetzungen für die Verfügbarkeit der Zahlart fest. Die Zahlart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Requirements.Hint">
 		<Value>Legt Voraussetzungen für die Verfügbarkeit der Zahlart fest. Die Zahlart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
@@ -4537,12 +4462,6 @@
 	<LocaleResource Name="Admin.Configuration.QuantityUnit.AddQuantityUnit">
 		<Value>Verpackungseinheit hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.QuantityUnit.AddQuantityUnit">
-		<Value>Verpackungseinheit hinzufügen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.QuantityUnit.EditQuantityUnit">
-		<Value>Verpackungseinheit bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.QuantityUnit.EditQuantityUnit">
 		<Value>Verpackungseinheit bearbeiten</Value>
 	</LocaleResource>
@@ -4671,12 +4590,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice">
 		<Value>Prozentuale Rabatte auf Staffelpreise anwenden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice">
-		<Value>Prozentuale Rabatte auf Staffelpreise anwenden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice.Hint">
-		<Value>Legt fest, ob prozentuale Rabatte auch auf Staffelpreise angewendet werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ApplyPercentageDiscountOnTierPrice.Hint">
 		<Value>Legt fest, ob prozentuale Rabatte auch auf Staffelpreise angewendet werden sollen.</Value>
@@ -5143,12 +5056,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductCondition">
 		<Value>Artikelzustand anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductCondition">
-		<Value>Artikelzustand anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductCondition.Hint">
-		<Value>Legt fest, ob der Artikelzustand im Shop angezeigt werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductCondition.Hint">
 		<Value>Legt fest, ob der Artikelzustand im Shop angezeigt werden soll.</Value>
@@ -6428,17 +6335,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled">
 		<Value>XML-Sitemap aktivieren</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled">
-		<Value>XML-Sitemap aktivieren</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled.Hint">
 		<Value>Die XML-Sitemap enthält URLs zu Shop-Seiten, welche von Suchmaschinen wie Google oder Bing automatisch gelesen und indiziert werden können.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled.Hint">
-		<Value>Die XML-Sitemap enthält URLs zu Shop-Seiten, welche von Suchmaschinen wie Google oder Bing automatisch gelesen und indiziert werden können.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog">
-		<Value>Blog-Einträge einbeziehen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog">
 		<Value>Blog-Einträge einbeziehen</Value>
@@ -6446,17 +6344,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog.Hint">
 		<Value>Fügt Blog-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesBlog.Hint">
-		<Value>Fügt Blog-Seiten zur Sitemap hinzu.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories">
 		<Value>Warengruppen einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories">
-		<Value>Warengruppen einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories.Hint">
-		<Value>Fügt Warengruppen-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesCategories.Hint">
 		<Value>Fügt Warengruppen-Seiten zur Sitemap hinzu.</Value>
@@ -6464,17 +6353,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum">
 		<Value>Foren einbeziehen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum">
-		<Value>Foren einbeziehen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum.Hint">
 		<Value>Fügt Forum-Seiten zur Sitemap hinzu.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesForum.Hint">
-		<Value>Fügt Forum-Seiten zur Sitemap hinzu.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers">
-		<Value>Hersteller einbeziehen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers">
 		<Value>Hersteller einbeziehen</Value>
@@ -6482,17 +6362,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers.Hint">
 		<Value>Fügt Hersteller-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesManufacturers.Hint">
-		<Value>Fügt Hersteller-Seiten zur Sitemap hinzu.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews">
 		<Value>News einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews">
-		<Value>News einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews.Hint">
-		<Value>Fügt News-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesNews.Hint">
 		<Value>Fügt News-Seiten zur Sitemap hinzu.</Value>
@@ -6500,23 +6371,11 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts">
 		<Value>Produkte einbeziehen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts">
-		<Value>Produkte einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts.Hint">
-		<Value>Fügt Produkt-Seiten zur Sitemap hinzu.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesProducts.Hint">
 		<Value>Fügt Produkt-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics">
 		<Value>Seiten einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics">
-		<Value>Seiten einbeziehen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics.Hint">
-		<Value>Fügt Inhalts-Seiten zur Sitemap hinzu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.XmlSitemapIncludesTopics.Hint">
 		<Value>Fügt Inhalts-Seiten zur Sitemap hinzu.</Value>
@@ -6575,12 +6434,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned">
 		<Value>Verwaiste Dateien automatisch löschen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned">
-		<Value>Verwaiste Dateien automatisch löschen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned.Hint">
-		<Value>Legt fest, ob verwaiste Mediendateien beim nächsten Aufräumvorgang automatisch gelöscht werden sollen.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned.Hint">
 		<Value>Legt fest, ob verwaiste Mediendateien beim nächsten Aufräumvorgang automatisch gelöscht werden sollen.</Value>
 	</LocaleResource>
@@ -6599,12 +6452,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MaxUploadFileSize">
 		<Value>Maximale Dateigröße</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MaxUploadFileSize">
-		<Value>Maximale Dateigröße</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MaxUploadFileSize.Hint">
-		<Value>Legt die maximale Dateigröße eines Uploads in KB fest. Der Standardwert ist 102.400 (100 MB).</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MaxUploadFileSize.Hint">
 		<Value>Legt die maximale Dateigröße eines Uploads in KB fest. Der Standardwert ist 102.400 (100 MB).</Value>
 	</LocaleResource>
@@ -6613,12 +6460,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MediaTypes">
 		<Value>Medientypen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MediaTypes">
-		<Value>Medientypen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MediaTypesNotes">
-		<Value>Medientypen steuern, welche Dateien hochgeladen werden können. Alle anderen Medientypen werden grundsätzlich abgelehnt. Die Typen bitte Leerzeichen getrennt und ohne Punkt angeben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MediaTypesNotes">
 		<Value>Medientypen steuern, welche Dateien hochgeladen werden können. Alle anderen Medientypen werden grundsätzlich abgelehnt. Die Typen bitte Leerzeichen getrennt und ohne Punkt angeben.</Value>
@@ -6680,17 +6521,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Audio">
 		<Value>Audio</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Audio">
-		<Value>Audio</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Bin">
 		<Value>Sonstige</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Bin">
-		<Value>Sonstige</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Document">
-		<Value>Dokument</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Document">
 		<Value>Dokument</Value>
@@ -6698,17 +6530,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Image">
 		<Value>Bild</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Image">
-		<Value>Bild</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Text">
 		<Value>Text</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Text">
-		<Value>Text</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Video">
-		<Value>Video</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.Type.Video">
 		<Value>Video</Value>
@@ -7502,12 +7325,6 @@
 	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.Requirements">
 		<Value>Voraussetzungen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.Requirements">
-		<Value>Voraussetzungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.Requirements.Hint">
-		<Value>Legt Voraussetzungen für die Verfügbarkeit der Versandart fest. Die Versandart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Shipping.Methods.Fields.Requirements.Hint">
 		<Value>Legt Voraussetzungen für die Verfügbarkeit der Versandart fest. Die Versandart wird angeboten, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
 	</LocaleResource>
@@ -7931,12 +7748,6 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.Heading.Display">
 		<Value>Darstellung</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.Heading.Display">
-		<Value>Darstellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.Heading.Publish">
-		<Value>Veröffentlichung</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.Heading.Publish">
 		<Value>Veröffentlichung</Value>
 	</LocaleResource>
@@ -8296,9 +8107,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.Comments.Fields.NewsItem">
 		<Value>Nachricht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.Heading.Publish">
-		<Value>Veröffentlichung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.Heading.Publish">
 		<Value>Veröffentlichung</Value>
@@ -8672,9 +8480,6 @@
 	<LocaleResource Name="Admin.CurrentCarts.Short">
 		<Value>Warenkörbe</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.CurrentCarts.Short">
-		<Value>Warenkörbe</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.CurrentCarts.Total">
 		<Value>Gesamt</Value>
 	</LocaleResource>
@@ -8692,12 +8497,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.CurrentWishlists.Short">
 		<Value>Wunschlisten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CurrentWishlists.Short">
-		<Value>Wunschlisten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CustomerRoleMapping.RoleMappingListDescription">
-		<Value>Die Liste zeigt Kunden, die dieser Kundengruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie aktive Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.CustomerRoleMapping.RoleMappingListDescription">
 		<Value>Die Liste zeigt Kunden, die dieser Kundengruppe zugeordnet sind. Kunden werden automatisch per geplanter Aufgabe zugeordnet, sofern die Gruppe aktiv ist und für sie aktive Regeln festgelegt sind. Eine manuelle Zuordnung können Sie über die Kundengruppenauswahl beim jeweiligen Kunden vornehmen.</Value>
@@ -8719,12 +8518,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.AutomatedAssignmentRules">
 		<Value>Regeln für automatische Zuordnung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.CustomerRoles.AutomatedAssignmentRules">
-		<Value>Regeln für automatische Zuordnung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.CustomerRoles.AutomatedAssignmentRules.Hint">
-		<Value>Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.AutomatedAssignmentRules.Hint">
 		<Value>Kunden werden automatisch per geplanter Aufgabe dieser Kundengruppe zugeordnet, wenn sie eine der gewählten Regeln erfüllen.</Value>
@@ -9257,9 +9050,6 @@
 	<LocaleResource Name="Admin.Customers.PermissionViewNote">
 		<Value>Die Ansicht zeigt die Rechte, die für diesen Kunden auf Basis der ihm zugeordneten Kundengruppen gelten. Um Rechte zu ändern, wechseln Sie bitte zur betreffenden &lt;a class="alert-link" href="{0}"&gt;Kundengruppe&lt;/a&gt;.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.PermissionViewNote">
-		<Value>Die Ansicht zeigt die Rechte, die für diesen Kunden auf Basis der ihm zugeordneten Kundengruppen gelten. Um Rechte zu ändern, wechseln Sie bitte zur betreffenden &lt;a class="alert-link" href="{0}"&gt;Kundengruppe&lt;/a&gt;.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Reports">
 		<Value>Kundenauswertungen</Value>
 	</LocaleResource>
@@ -9784,12 +9574,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.Visibility">
 		<Value>Sichtbarkeit</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Export.Filter.Visibility">
-		<Value>Sichtbarkeit</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Export.Filter.Visibility.Hint">
-		<Value>Nach Sichtbarkeit filter. "In Suchergebnissen" schließt überall sichtbare Produkte mit ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.Visibility.Hint">
 		<Value>Nach Sichtbarkeit filter. "In Suchergebnissen" schließt überall sichtbare Produkte mit ein.</Value>
@@ -10319,17 +10103,8 @@
 	<LocaleResource Name="Admin.Media.Album.Content">
 		<Value>Inhalte</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Album.Content">
-		<Value>Inhalte</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Album.File">
 		<Value>Dateien</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Album.File">
-		<Value>Dateien</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Album.Message">
-		<Value>Nachrichten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Album.Message">
 		<Value>Nachrichten</Value>
@@ -10340,17 +10115,8 @@
 	<LocaleResource Name="Admin.Media.Exception.AlbumNonexistent">
 		<Value>Das Album '{0}' existiert nicht.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.AlbumNonexistent">
-		<Value>Das Album '{0}' existiert nicht.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.AlbumNoTrack">
 		<Value>Das Album '{0}' unterstützt die Erkennung von Verweisen nicht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.AlbumNoTrack">
-		<Value>Das Album '{0}' unterstützt die Erkennung von Verweisen nicht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.AlterRootAlbum">
-		<Value>Das Verschieben oder Umbenennen von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.AlterRootAlbum">
 		<Value>Das Verschieben oder Umbenennen von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.</Value>
@@ -10358,17 +10124,8 @@
 	<LocaleResource Name="Admin.Media.Exception.CopyRootAlbum">
 		<Value>Das Kopieren von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.CopyRootAlbum">
-		<Value>Das Kopieren von Album-Stammordnern wird nicht unterstützt. Ordner: {0}.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.DeleteReferenzedFile">
 		<Value>Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DeleteReferenzedFile">
-		<Value>Die Datei '{0}' wird von mind. einer Entität referenziert. Endgültiges Löschen referenzierter Mediendateien wird nicht unterstützt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DeniedMediaType">
-		<Value>Der Medientyp von '{0}' ist unzulässig. Wenn Sie wollen, dass der Medientyp '{1}' unterstützt wird, tragen Sie die Dateiendung in die Medienkonfiguration unter 'Konfiguration &gt; Einstellungen &gt; Medien &gt; Medientypen' ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.DeniedMediaType">
 		<Value>Der Medientyp von '{0}' ist unzulässig. Wenn Sie wollen, dass der Medientyp '{1}' unterstützt wird, tragen Sie die Dateiendung in die Medienkonfiguration unter 'Konfiguration &gt; Einstellungen &gt; Medien &gt; Medientypen' ein.</Value>
@@ -10376,17 +10133,8 @@
 	<LocaleResource Name="Admin.Media.Exception.DeniedMediaType.Hint">
 		<Value> Akzeptiert: {0}, ausgewählt: {1}.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DeniedMediaType.Hint">
-		<Value> Akzeptiert: {0}, ausgewählt: {1}.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.DescendantFolder">
 		<Value>Der Zielordner '{0}' darf kein Unterordner von '{1}' sein.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DescendantFolder">
-		<Value>Der Zielordner '{0}' darf kein Unterordner von '{1}' sein.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DuplicateFile">
-		<Value>Die Datei '{0}' existiert bereits.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.DuplicateFile">
 		<Value>Die Datei '{0}' existiert bereits.</Value>
@@ -10394,17 +10142,8 @@
 	<LocaleResource Name="Admin.Media.Exception.DuplicateFolder">
 		<Value>Der Ordner '{0}' existiert bereits.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.DuplicateFolder">
-		<Value>Der Ordner '{0}' existiert bereits.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.ExtractThumbnail">
 		<Value>Thumbnail-Erstellung für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.ExtractThumbnail">
-		<Value>Thumbnail-Erstellung für die Datei '{0}' ist fehlgeschlagen. Grund: {1}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.FileExtension">
-		<Value>Dateien ohne Dateiendung können nicht verarbeitet werden. Pfad: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.FileExtension">
 		<Value>Dateien ohne Dateiendung können nicht verarbeitet werden. Pfad: {0}</Value>
@@ -10412,17 +10151,8 @@
 	<LocaleResource Name="Admin.Media.Exception.FileNamesIdentical">
 		<Value>Der Quell- und Zieldateiname sind identisch. Pfad: {0}</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.FileNamesIdentical">
-		<Value>Der Quell- und Zieldateiname sind identisch. Pfad: {0}</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.FileNotFound">
 		<Value>Die Mediendatei mit der Id '{0}' existiert nicht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.FileNotFound">
-		<Value>Die Mediendatei mit der Id '{0}' existiert nicht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.FolderAssignment">
-		<Value>Kann nicht mit Dateien ohne Ordnerzuweisung arbeiten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.FolderAssignment">
 		<Value>Kann nicht mit Dateien ohne Ordnerzuweisung arbeiten.</Value>
@@ -10430,17 +10160,8 @@
 	<LocaleResource Name="Admin.Media.Exception.FolderNotFound">
 		<Value>Der Medienordner '{0}' existiert nicht.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.FolderNotFound">
-		<Value>Der Medienordner '{0}' existiert nicht.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.InUse">
 		<Value>Datei '{0}' kann nicht gelöscht werden, da sie von einem anderen Prozess verwendet wird.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.InUse">
-		<Value>Datei '{0}' kann nicht gelöscht werden, da sie von einem anderen Prozess verwendet wird.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.InvalidPath">
-		<Value>Ungültiger Pfad '{0}'.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.InvalidPath">
 		<Value>Ungültiger Pfad '{0}'.</Value>
@@ -10448,17 +10169,8 @@
 	<LocaleResource Name="Admin.Media.Exception.InvalidPathExample">
 		<Value>Ungültiger Pfad '{0}'. Ein gültiger Pfadausdruck lautet: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.InvalidPathExample">
-		<Value>Ungültiger Pfad '{0}'. Ein gültiger Pfadausdruck lautet: {{albumName}}[/subfolders]/{{fileName}}.{{extension}}</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.MaxFileSizeExceeded">
 		<Value>Die Datei '{0}' mit einer Größe von {1} überschreitet die maximal zulässige Dateigröße von {2}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.MaxFileSizeExceeded">
-		<Value>Die Datei '{0}' mit einer Größe von {1} überschreitet die maximal zulässige Dateigröße von {2}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.MimeType">
-		<Value>Die Dateioperation '{0}' erlaubt keine Änderung des MIME-Typs. Quell-MIME: {1}, Ziel-MIME: {2}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.MimeType">
 		<Value>Die Dateioperation '{0}' erlaubt keine Änderung des MIME-Typs. Quell-MIME: {1}, Ziel-MIME: {2}.</Value>
@@ -10466,17 +10178,8 @@
 	<LocaleResource Name="Admin.Media.Exception.NotSameAlbum">
 		<Value>Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.NotSameAlbum">
-		<Value>Die Dateioperation erfordert, dass der Zielpfad zum Ursprungsalbum gehört. Quelle: {0}, Ziel: {1}.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.NullInputStream">
 		<Value>Eingabe-Stream war null</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.NullInputStream">
-		<Value>Eingabe-Stream war null</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.Overwrite">
-		<Value>Ein Überschreibvorgang ist nicht möglich, wenn Quell- und Zielordner identisch sind.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.Overwrite">
 		<Value>Ein Überschreibvorgang ist nicht möglich, wenn Quell- und Zielordner identisch sind.</Value>
@@ -10484,17 +10187,8 @@
 	<LocaleResource Name="Admin.Media.Exception.PathSpecification">
 		<Value>Ungültige Pfadangabe '{0}' für den Befehl '{1}'.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.PathSpecification">
-		<Value>Ungültige Pfadangabe '{0}' für den Befehl '{1}'.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.TopLevelAlbum">
 		<Value>Das Erstellen von Ordnern auf oberster Ebene (Album) wird nicht unterstützt. Ordner: {0}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.TopLevelAlbum">
-		<Value>Das Erstellen von Ordnern auf oberster Ebene (Album) wird nicht unterstützt. Ordner: {0}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Media.Exception.TrackUnassignedFile">
-		<Value>Es kann keine Mediendatei verfolgt werden, die keinem Album zugeordnet ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Media.Exception.TrackUnassignedFile">
 		<Value>Es kann keine Mediendatei verfolgt werden, die keinem Album zugeordnet ist.</Value>
@@ -11249,9 +10943,6 @@
 	<LocaleResource Name="Admin.Orders.Overall">
 		<Value>Aufträge insgesamt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Orders.Overall">
-		<Value>Aufträge insgesamt</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Payments.NewIpn">
 		<Value>Neue IPN</Value>
 	</LocaleResource>
@@ -11522,12 +11213,6 @@
 	<LocaleResource Name="Admin.Orders.Shipments.TrackingUrl">
 		<Value>Tracking-URL</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Orders.Shipments.TrackingUrl">
-		<Value>Tracking-URL</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Orders.Shipments.TrackingUrl.Hint">
-		<Value>Legt die URL zur Sendungsverfolgung fest.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Shipments.TrackingUrl.Hint">
 		<Value>Legt die URL zur Sendungsverfolgung fest.</Value>
 	</LocaleResource>
@@ -11560,9 +11245,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess">
 		<Value>Paket wurde hochgeladen und erfolgreich installiert.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Packaging.InstallSuccess.Theme">
-		<Value>Theme wurde hochgeladen und erfolgreich installiert. Bitte laden Sie die Liste neu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess.Theme">
 		<Value>Theme wurde hochgeladen und erfolgreich installiert. Bitte laden Sie die Liste neu.</Value>
@@ -11600,23 +11282,11 @@
 	<LocaleResource Name="Admin.Permissions.AddedPermissions">
 		<Value>Hinzugefügte Zugriffsrechte: {0}</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Permissions.AddedPermissions">
-		<Value>Hinzugefügte Zugriffsrechte: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Permissions.AllowInherited">
-		<Value>Erlaubt (geerbt)</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Permissions.AllowInherited">
 		<Value>Erlaubt (geerbt)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Permissions.DenyInherited">
 		<Value>Verweigert (geerbt)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Permissions.DenyInherited">
-		<Value>Verweigert (geerbt)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Permissions.RemovedPermissions">
-		<Value>Zugriffsrechte wurden entfernt: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Permissions.RemovedPermissions">
 		<Value>Zugriffsrechte wurden entfernt: {0}</Value>
@@ -11804,12 +11474,6 @@
 	<LocaleResource Name="Admin.Promotions.Discounts.AppliedDiscounts">
 		<Value>Rabatte</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.Discounts.AppliedDiscounts">
-		<Value>Rabatte</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.Discounts.AppliedDiscounts.Hint">
-		<Value>Legt auf das Objekt anzuwendende Rabatte fest.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.AppliedDiscounts.Hint">
 		<Value>Legt auf das Objekt anzuwendende Rabatte fest.</Value>
 	</LocaleResource>
@@ -11948,12 +11612,6 @@
 	<LocaleResource Name="Admin.Promotions.Discounts.RuleSetRequirements">
 		<Value>Voraussetzungen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.Discounts.RuleSetRequirements">
-		<Value>Voraussetzungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.Discounts.RuleSetRequirements.Hint">
-		<Value>Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.RuleSetRequirements.Hint">
 		<Value>Legt Voraussetzungen für die Anwendung des Rabatts fest. Der Rabatt wird gewährt, wenn eine der ausgewählten Regeln erfüllt ist.</Value>
 	</LocaleResource>
@@ -11974,12 +11632,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.NewsLetterSubscriptions.Short">
 		<Value>Newsletter Abos</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.NewsLetterSubscriptions.Short">
-		<Value>Newsletter Abos</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Promotions.SalesReport.Sales">
-		<Value>Verkäufe</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.SalesReport.Sales">
 		<Value>Verkäufe</Value>
@@ -12098,17 +11750,8 @@
 	<LocaleResource Name="Admin.Report.CustomerRegistrations">
 		<Value>Kundenregistrierungen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Report.CustomerRegistrations">
-		<Value>Kundenregistrierungen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Report.LastMonth">
 		<Value>Letzte 28 Tage</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.LastMonth">
-		<Value>Letzte 28 Tage</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.LastWeek">
-		<Value>Letzte 7 Tage</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Report.LastWeek">
 		<Value>Letzte 7 Tage</Value>
@@ -12116,17 +11759,8 @@
 	<LocaleResource Name="Admin.Report.OnlineCustomers">
 		<Value>Kunden in den letzten 15 Minuten online</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Report.OnlineCustomers">
-		<Value>Kunden in den letzten 15 Minuten online</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Report.Overall">
 		<Value>Insgesamt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.Overall">
-		<Value>Insgesamt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.Registrations">
-		<Value>Registrierungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Report.Registrations">
 		<Value>Registrierungen</Value>
@@ -12134,23 +11768,11 @@
 	<LocaleResource Name="Admin.Report.StoreStatistics">
 		<Value>Statistiken</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Report.StoreStatistics">
-		<Value>Statistiken</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.ThisYear">
-		<Value>Dieses Jahr</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Report.ThisYear">
 		<Value>Dieses Jahr</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Report.Today">
 		<Value>Heute</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.Today">
-		<Value>Heute</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Report.Yesterday">
-		<Value>Gestern</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Report.Yesterday">
 		<Value>Gestern</Value>
@@ -12260,17 +11882,8 @@
 	<LocaleResource Name="Admin.Rules.AddCondition">
 		<Value>Bedingung hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.AddCondition">
-		<Value>Bedingung hinzufügen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.AddedByRule">
 		<Value>Durch Regel hinzugefügt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.AddedByRule">
-		<Value>Durch Regel hinzugefügt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.AddGroup">
-		<Value>Gruppe hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.AddGroup">
 		<Value>Gruppe hinzufügen</Value>
@@ -12278,17 +11891,8 @@
 	<LocaleResource Name="Admin.Rules.AddRule">
 		<Value>Regel hinzufügen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.AddRule">
-		<Value>Regel hinzufügen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.AllConditions">
 		<Value>&lt;span&gt;Wenn&lt;/span&gt; {0} &lt;span&gt;der folgenden Bedingungen erfüllt sind.&lt;/span&gt;</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.AllConditions">
-		<Value>&lt;span&gt;Wenn&lt;/span&gt; {0} &lt;span&gt;der folgenden Bedingungen erfüllt sind.&lt;/span&gt;</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.DeleteGroup">
-		<Value>Gruppe löschen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.DeleteGroup">
 		<Value>Gruppe löschen</Value>
@@ -12296,17 +11900,8 @@
 	<LocaleResource Name="Admin.Rules.EditRule">
 		<Value>Regel bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.EditRule">
-		<Value>Regel bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Execute.DoesNotMatchCart">
 		<Value>Die Regelbedingungen sind für den aktuellen Kunden {0} &lt;b class="font-weight-medium"&gt;falsch&lt;/b&gt;.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Execute.DoesNotMatchCart">
-		<Value>Die Regelbedingungen sind für den aktuellen Kunden {0} &lt;b class="font-weight-medium"&gt;falsch&lt;/b&gt;.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Execute.MatchCart">
-		<Value>Die Regelbedingungen sind für den aktuellen Kunden {0} &lt;b class="font-weight-medium"&gt;wahr&lt;/b&gt;.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Execute.MatchCart">
 		<Value>Die Regelbedingungen sind für den aktuellen Kunden {0} &lt;b class="font-weight-medium"&gt;wahr&lt;/b&gt;.</Value>
@@ -12314,17 +11909,8 @@
 	<LocaleResource Name="Admin.Rules.Execute.MatchCustomers">
 		<Value>&lt;b class="font-weight-medium"&gt;{0}&lt;/b&gt; Kunden entsprechen den Regelbedingungen.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Execute.MatchCustomers">
-		<Value>&lt;b class="font-weight-medium"&gt;{0}&lt;/b&gt; Kunden entsprechen den Regelbedingungen.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Execute.MatchProducts">
 		<Value>&lt;b class="font-weight-medium"&gt;{0}&lt;/b&gt; Produkte entsprechen den Regelbedingungen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Execute.MatchProducts">
-		<Value>&lt;b class="font-weight-medium"&gt;{0}&lt;/b&gt; Produkte entsprechen den Regelbedingungen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver">
-		<Value>Akzeptiert Weitergabe der E-Mail Adresse an Dritte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.AcceptThirdPartyEmailHandOver">
 		<Value>Akzeptiert Weitergabe der E-Mail Adresse an Dritte</Value>
@@ -12332,17 +11918,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Active">
 		<Value>Ist aktiv</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Active">
-		<Value>Ist aktiv</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.AvailableByDate">
 		<Value>Nach Datum verfügbar</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.AvailableByDate">
-		<Value>Nach Datum verfügbar</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.BillingCountry">
-		<Value>Rechnungsland</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.BillingCountry">
 		<Value>Rechnungsland</Value>
@@ -12350,17 +11927,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.BirthDate">
 		<Value>Tage seit dem Geburtsdatum</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.BirthDate">
-		<Value>Tage seit dem Geburtsdatum</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserMajorVersion">
 		<Value>Browser Hauptversionsnummer</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserMajorVersion">
-		<Value>Browser Hauptversionsnummer</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserMinorVersion">
-		<Value>Browser Nebenversionsnummer</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserMinorVersion">
 		<Value>Browser Nebenversionsnummer</Value>
@@ -12368,17 +11936,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserName">
 		<Value>Browser Name</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.BrowserName">
-		<Value>Browser Name</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
 		<Value>Anzahl stornierter Bestellungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
-		<Value>Anzahl stornierter Bestellungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartSubtotal">
-		<Value>Zwischensumme des Warenkorbes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartSubtotal">
 		<Value>Zwischensumme des Warenkorbes</Value>
@@ -12386,17 +11945,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartTotal">
 		<Value>Gesamtbetrag des Warenkorbes</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartTotal">
-		<Value>Gesamtbetrag des Warenkorbes</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Company">
 		<Value>Firma</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Company">
-		<Value>Firma</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CompletedOrderCount">
-		<Value>Anzahl abgeschlossener Bestellungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CompletedOrderCount">
 		<Value>Anzahl abgeschlossener Bestellungen</Value>
@@ -12404,17 +11954,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CreatedDays">
 		<Value>Tage seit Registrierung</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CreatedDays">
-		<Value>Tage seit Registrierung</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Currency">
 		<Value>Währung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Currency">
-		<Value>Währung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.CustomerNumber">
-		<Value>Kundennummer</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CustomerNumber">
 		<Value>Kundennummer</Value>
@@ -12422,17 +11963,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.DeviceFamily">
 		<Value>Endgerätefamilie</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.DeviceFamily">
-		<Value>Endgerätefamilie</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Gender">
 		<Value>Geschlecht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Gender">
-		<Value>Geschlecht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.HasPurchasedAllProducts">
-		<Value>Hat alle folgenden Produkte gekauft</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.HasPurchasedAllProducts">
 		<Value>Hat alle folgenden Produkte gekauft</Value>
@@ -12440,17 +11972,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.HasPurchasedProduct">
 		<Value>Hat eines der folgenden Produkte gekauft</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.HasPurchasedProduct">
-		<Value>Hat eines der folgenden Produkte gekauft</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.IPCountry">
 		<Value>IP gehört zu Land</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.IPCountry">
-		<Value>IP gehört zu Land</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.IsInCustomerRole">
-		<Value>In Kundengruppe</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.IsInCustomerRole">
 		<Value>In Kundengruppe</Value>
@@ -12458,17 +11981,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Language">
 		<Value>Sprache</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Language">
-		<Value>Sprache</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastActivityDays">
 		<Value>Tage seit letztem Besuch</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastActivityDays">
-		<Value>Tage seit letztem Besuch</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastForumVisit">
-		<Value>Tage seit letztem Forenbesuch</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastForumVisit">
 		<Value>Tage seit letztem Forenbesuch</Value>
@@ -12476,17 +11990,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastLoginDays">
 		<Value>Tage seit letztem Login</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastLoginDays">
-		<Value>Tage seit letztem Login</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastOrderDateDays">
 		<Value>Tage seit letzter Bestellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastOrderDateDays">
-		<Value>Tage seit letzter Bestellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastUserAgent">
-		<Value>Zuletzt genutzter User-Agent</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.LastUserAgent">
 		<Value>Zuletzt genutzter User-Agent</Value>
@@ -12494,17 +11999,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.MobileDevice">
 		<Value>Mobiles Endgerät</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.MobileDevice">
-		<Value>Mobiles Endgerät</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.NewOrderCount">
 		<Value>Anzahl neuer Bestellungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.NewOrderCount">
-		<Value>Anzahl neuer Bestellungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OperatingSystem">
-		<Value>Betriebssystem</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OperatingSystem">
 		<Value>Betriebssystem</Value>
@@ -12512,17 +12008,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderCount">
 		<Value>Anzahl der Aufträge</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderCount">
-		<Value>Anzahl der Aufträge</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderInStore">
 		<Value>Bestellungen im Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderInStore">
-		<Value>Bestellungen im Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderSubtotalExclTax">
-		<Value>Gesamtbetrag der Bestellung (Netto)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderSubtotalExclTax">
 		<Value>Gesamtbetrag der Bestellung (Netto)</Value>
@@ -12530,17 +12017,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderSubtotalInclTax">
 		<Value>Gesamtbetrag der Bestellung (Brutto)</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderSubtotalInclTax">
-		<Value>Gesamtbetrag der Bestellung (Brutto)</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderTotal">
 		<Value>Gesamtbetrag der Bestellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.OrderTotal">
-		<Value>Gesamtbetrag der Bestellung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaidBy">
-		<Value>Bezahlt mit</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaidBy">
 		<Value>Bezahlt mit</Value>
@@ -12548,17 +12026,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentMethod">
 		<Value>Gewählte Zahlart</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentMethod">
-		<Value>Gewählte Zahlart</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentStatus">
 		<Value>Zahlungsstatus</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentStatus">
-		<Value>Zahlungsstatus</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductFromCategoryInCart">
-		<Value>Produkt aus Kategorie im Warenkorb</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductFromCategoryInCart">
 		<Value>Produkt aus Kategorie im Warenkorb</Value>
@@ -12566,17 +12035,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductFromManufacturerInCart">
 		<Value>Produkt von Hersteller im Warenkorb</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductFromManufacturerInCart">
-		<Value>Produkt von Hersteller im Warenkorb</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductInCart">
 		<Value>Produkt im Warenkorb</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductInCart">
-		<Value>Produkt im Warenkorb</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductOnWishlist">
-		<Value>Produkt auf der Wunschliste</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductOnWishlist">
 		<Value>Produkt auf der Wunschliste</Value>
@@ -12584,17 +12044,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductReviewCount">
 		<Value>Anzahl der Produkt Rezensionen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ProductReviewCount">
-		<Value>Anzahl der Produkt Rezensionen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PurchasedFromManufacturer">
 		<Value>Gekauft von Hersteller</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.PurchasedFromManufacturer">
-		<Value>Gekauft von Hersteller</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.PurchasedProduct">
-		<Value>Gekauftes Produkt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PurchasedProduct">
 		<Value>Gekauftes Produkt</Value>
@@ -12602,17 +12053,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ReturnRequestCount">
 		<Value>Anzahl Rücksendeaufträge</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ReturnRequestCount">
-		<Value>Anzahl Rücksendeaufträge</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.RewardPointsBalance">
 		<Value>Anzahl der Bonuspunkte</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.RewardPointsBalance">
-		<Value>Anzahl der Bonuspunkte</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.RuleSet">
-		<Value>Anderer Regelsatz</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.RuleSet">
 		<Value>Anderer Regelsatz</Value>
@@ -12620,17 +12062,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Salutation">
 		<Value>Anrede</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Salutation">
-		<Value>Anrede</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingCountry">
 		<Value>Lieferland</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingCountry">
-		<Value>Lieferland</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingMethod">
-		<Value>Versandart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingMethod">
 		<Value>Versandart</Value>
@@ -12638,17 +12071,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingRateComputationMethod">
 		<Value>Berechnungsmethode für Versandkosten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingRateComputationMethod">
-		<Value>Berechnungsmethode für Versandkosten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingStatus">
 		<Value>Lieferstatus</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ShippingStatus">
-		<Value>Lieferstatus</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.SpentAmount">
-		<Value>Ausgegebener Betrag</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.SpentAmount">
 		<Value>Ausgegebener Betrag</Value>
@@ -12656,17 +12080,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Store">
 		<Value>Shop</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Store">
-		<Value>Shop</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.TaxDisplayType">
 		<Value>Steueranzeigetyp</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.TaxDisplayType">
-		<Value>Steueranzeigetyp</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.TaxExempt">
-		<Value>Steuerbefreit</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.TaxExempt">
 		<Value>Steuerbefreit</Value>
@@ -12674,17 +12089,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.TimeZone">
 		<Value>Zeitzone</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.TimeZone">
-		<Value>Zeitzone</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Title">
 		<Value>Titel</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.Title">
-		<Value>Titel</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.VatNumberStatus">
-		<Value>Steuernummerstatus</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.VatNumberStatus">
 		<Value>Steuernummerstatus</Value>
@@ -12692,17 +12098,8 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ZipPostalCode">
 		<Value>PLZ</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.FilterDescriptor.ZipPostalCode">
-		<Value>PLZ</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.GroupNotFound">
 		<Value>Die Gruppe mit der ID {0} wurde nicht gefunden.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.GroupNotFound">
-		<Value>Die Gruppe mit der ID {0} wurde nicht gefunden.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.InvalidDescriptor">
-		<Value>Ungültige Regel. Diese Regel wird nicht mehr unterstützt und sollte gelöscht werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.InvalidDescriptor">
 		<Value>Ungültige Regel. Diese Regel wird nicht mehr unterstützt und sollte gelöscht werden.</Value>
@@ -12710,17 +12107,8 @@
 	<LocaleResource Name="Admin.Rules.NotFound">
 		<Value>Die Regel mit der ID {0} wurde nicht gefunden.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.NotFound">
-		<Value>Die Regel mit der ID {0} wurde nicht gefunden.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.NumberOfRules">
 		<Value>Anzahl an Regeln</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.NumberOfRules">
-		<Value>Anzahl an Regeln</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.OneCondition">
-		<Value>&lt;span&gt;Wenn mindestens&lt;/span&gt; {0} &lt;span&gt;der folgenden Bedingungen zutrifft.&lt;/span&gt;</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.OneCondition">
 		<Value>&lt;span&gt;Wenn mindestens&lt;/span&gt; {0} &lt;span&gt;der folgenden Bedingungen zutrifft.&lt;/span&gt;</Value>
@@ -12728,17 +12116,8 @@
 	<LocaleResource Name="Admin.Rules.OpenRule">
 		<Value>Regel öffnen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.OpenRule">
-		<Value>Regel öffnen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Operator.All">
 		<Value>ALLE</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Operator.All">
-		<Value>ALLE</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Operator.One">
-		<Value>EINE</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Operator.One">
 		<Value>EINE</Value>
@@ -12746,17 +12125,8 @@
 	<LocaleResource Name="Admin.Rules.OperatorNotSupported">
 		<Value>Die Regelart unterstützt diesen Operator nicht.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.OperatorNotSupported">
-		<Value>Die Regelart unterstützt diesen Operator nicht.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.ReapplyRules">
 		<Value>Regeln neu anwenden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.ReapplyRules">
-		<Value>Regeln neu anwenden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.AllInOperator">
-		<Value>Sind alle von</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.AllInOperator">
 		<Value>Sind alle von</Value>
@@ -12764,17 +12134,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.ContainsOperator">
 		<Value>Enthält</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.ContainsOperator">
-		<Value>Enthält</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.EndsWithOperator">
 		<Value>Endet auf</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.EndsWithOperator">
-		<Value>Endet auf</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.EqualOperator">
-		<Value>Gleich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.EqualOperator">
 		<Value>Gleich</Value>
@@ -12782,17 +12143,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.GreaterThanOperator">
 		<Value>Größer als</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.GreaterThanOperator">
-		<Value>Größer als</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.GreaterThanOrEqualOperator">
 		<Value>Größer oder gleich</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.GreaterThanOrEqualOperator">
-		<Value>Größer oder gleich</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.InOperator">
-		<Value>Ist eine von</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.InOperator">
 		<Value>Ist eine von</Value>
@@ -12800,17 +12152,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.IsEmptyOperator">
 		<Value>Ist leer</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.IsEmptyOperator">
-		<Value>Ist leer</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.IsNotEmptyOperator">
 		<Value>Ist nicht leer</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.IsNotEmptyOperator">
-		<Value>Ist nicht leer</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.IsNotNullOperator">
-		<Value>Ist nicht NULL</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.IsNotNullOperator">
 		<Value>Ist nicht NULL</Value>
@@ -12818,17 +12161,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.IsNullOperator">
 		<Value>Ist NULL</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.IsNullOperator">
-		<Value>Ist NULL</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.LessThanOperator">
 		<Value>Kleiner als</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.LessThanOperator">
-		<Value>Kleiner als</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.LessThanOrEqualOperator">
-		<Value>Kleiner oder gleich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.LessThanOrEqualOperator">
 		<Value>Kleiner oder gleich</Value>
@@ -12836,17 +12170,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.NotAllInOperator">
 		<Value>Sind nicht alle von</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.NotAllInOperator">
-		<Value>Sind nicht alle von</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.NotContainsOperator">
 		<Value>Enthält nicht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.NotContainsOperator">
-		<Value>Enthält nicht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.NotEqualOperator">
-		<Value>Ungleich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.NotEqualOperator">
 		<Value>Ungleich</Value>
@@ -12854,17 +12179,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.NotInOperator">
 		<Value>Ist KEINE von</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.NotInOperator">
-		<Value>Ist KEINE von</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.AllInOperator">
 		<Value>Rechts enthält ALLE Werte von links</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.AllInOperator">
-		<Value>Rechts enthält ALLE Werte von links</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.AllInOperator.Hint">
-		<Value>Wahr für links {3,2,1} und rechts {0,1,2,3}. Falsch für links {1,2,9} und rechts {9,8,2}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.AllInOperator.Hint">
 		<Value>Wahr für links {3,2,1} und rechts {0,1,2,3}. Falsch für links {1,2,9} und rechts {9,8,2}.</Value>
@@ -12872,17 +12188,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.ContainsOperator">
 		<Value>Links enthält ALLE Werte von rechts</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.ContainsOperator">
-		<Value>Links enthält ALLE Werte von rechts</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.ContainsOperator.Hint">
 		<Value>Wahr für links {3,2,1,0} und rechts {2,3}. Falsch für links {3,2,1} und rechts {0,1,2,3}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.ContainsOperator.Hint">
-		<Value>Wahr für links {3,2,1,0} und rechts {2,3}. Falsch für links {3,2,1} und rechts {0,1,2,3}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.EqualOperator">
-		<Value>Links und rechts enthalten dieselben Werte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.EqualOperator">
 		<Value>Links und rechts enthalten dieselben Werte</Value>
@@ -12890,17 +12197,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.EqualOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {3,1,2}. Falsch für links {1,2,3} und rechts {1,2,3,4}.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.EqualOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {3,1,2}. Falsch für links {1,2,3} und rechts {1,2,3,4}.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.InOperator">
 		<Value>Mind. ein Wert links ist rechts enthalten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.InOperator">
-		<Value>Mind. ein Wert links ist rechts enthalten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.InOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {5,4,3}. Falsch für links {1,2,3} und rechts {6,5,4}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.InOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {5,4,3}. Falsch für links {1,2,3} und rechts {6,5,4}.</Value>
@@ -12908,17 +12206,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotAllInOperator">
 		<Value>Rechts enthält KEINEN Wert von links</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotAllInOperator">
-		<Value>Rechts enthält KEINEN Wert von links</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotAllInOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {4,5}. Falsch für links {1,2,3} und rechts {3,4,5}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotAllInOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {4,5}. Falsch für links {1,2,3} und rechts {3,4,5}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotContainsOperator">
-		<Value>Links enthält KEINEN Wert von rechts</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotContainsOperator">
 		<Value>Links enthält KEINEN Wert von rechts</Value>
@@ -12926,17 +12215,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotContainsOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {9,8}. Falsch für links {1,2,3} und rechts {9,8,2}.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotContainsOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {9,8}. Falsch für links {1,2,3} und rechts {9,8,2}.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotEqualOperator">
 		<Value>Links und rechts unterscheiden sich in mind. einem Wert</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotEqualOperator">
-		<Value>Links und rechts unterscheiden sich in mind. einem Wert</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotEqualOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {1,2,3,4}. Falsch für links {1,2,3} und rechts {3,1,2}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotEqualOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {1,2,3,4}. Falsch für links {1,2,3} und rechts {3,1,2}.</Value>
@@ -12944,17 +12224,8 @@
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotInOperator">
 		<Value>Mind. ein Wert links fehlt rechts</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotInOperator">
-		<Value>Mind. ein Wert links fehlt rechts</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotInOperator.Hint">
 		<Value>Wahr für links {1,2,3} und rechts {3,4,5,6}. Falsch für links {1,2,3} und rechts {5,4,3,2,1}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.Sequence.NotInOperator.Hint">
-		<Value>Wahr für links {1,2,3} und rechts {3,4,5,6}. Falsch für links {1,2,3} und rechts {5,4,3,2,1}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleOperator.StartsWithOperator">
-		<Value>Beginnt mit</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleOperator.StartsWithOperator">
 		<Value>Beginnt mit</Value>
@@ -12962,17 +12233,8 @@
 	<LocaleResource Name="Admin.Rules.RuleSet.Added">
 		<Value>Die Regel wurde erfolgreich hinzugefügt.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Added">
-		<Value>Die Regel wurde erfolgreich hinzugefügt.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.AssignedObjects">
 		<Value>Zugeordnete {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.AssignedObjects">
-		<Value>Zugeordnete {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.AssignedObjects.Hint">
-		<Value>Eine Liste von Objekten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite des Objektes vorgenommen werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.AssignedObjects.Hint">
 		<Value>Eine Liste von Objekten, denen die Regel zugeordnet ist. Die Zuordnung kann auf der Detailseite des Objektes vorgenommen werden.</Value>
@@ -12980,17 +12242,8 @@
 	<LocaleResource Name="Admin.Rules.RuleSet.Deleted">
 		<Value>Die Regel wurde erfolgreich gelöscht.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Deleted">
-		<Value>Die Regel wurde erfolgreich gelöscht.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Description">
 		<Value>Beschreibung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Description">
-		<Value>Beschreibung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.IsActive">
-		<Value>Ist aktiv</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.IsActive">
 		<Value>Ist aktiv</Value>
@@ -12998,17 +12251,8 @@
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.IsSubGroup">
 		<Value>Ist Untergruppe</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.IsSubGroup">
-		<Value>Ist Untergruppe</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.LogicalOperator">
 		<Value>Logischer Operator</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.LogicalOperator">
-		<Value>Logischer Operator</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Name">
-		<Value>Name</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Name">
 		<Value>Name</Value>
@@ -13016,17 +12260,8 @@
 	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Scope">
 		<Value>Art</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.RuleSet.Fields.Scope">
-		<Value>Art</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.SaveConditions">
 		<Value>Alle Bedingungen speichern</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.SaveConditions">
-		<Value>Alle Bedingungen speichern</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.SaveToCreateConditions">
-		<Value>Bedingungen können erst nach Speichern der Regel festgelegt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.SaveToCreateConditions">
 		<Value>Bedingungen können erst nach Speichern der Regel festgelegt werden.</Value>
@@ -13034,26 +12269,14 @@
 	<LocaleResource Name="Admin.Rules.SystemName">
 		<Value>Systemname</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.SystemName">
-		<Value>Systemname</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.TestConditions">
 		<Value>Bedingungen {0} Testen {1}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.TestConditions">
-		<Value>Bedingungen {0} Testen {1}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Rules.Title">
-		<Value>Titel</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.Title">
 		<Value>Titel</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Sales">
 		<Value>Verkauf</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.Attribute">
-		<Value>Attribute</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Attribute">
 		<Value>Attribute</Value>
@@ -13133,12 +12356,6 @@
 	<LocaleResource Name="Admin.SalesReport.ByAmount">
 		<Value>Nach Betrag</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.ByAmount">
-		<Value>Nach Betrag</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.ByQuantity">
-		<Value>Nach Anzahl</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.ByQuantity">
 		<Value>Nach Anzahl</Value>
 	</LocaleResource>
@@ -13162,9 +12379,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Incomplete.TotalUnpaidOrders">
 		<Value>Unbezahlte Aufträge</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.LatestOrders">
-		<Value>Neueste Bestellungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.LatestOrders">
 		<Value>Neueste Bestellungen</Value>
@@ -13193,17 +12407,8 @@
 	<LocaleResource Name="Admin.SalesReport.NewOrders">
 		<Value>Neue Aufträge</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.NewOrders">
-		<Value>Neue Aufträge</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.NoIncompleteOrders">
 		<Value>Keine unvollständigen Aufträge</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.NoIncompleteOrders">
-		<Value>Keine unvollständigen Aufträge</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.Sales">
-		<Value>Umsatz</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Sales">
 		<Value>Umsatz</Value>
@@ -13211,17 +12416,8 @@
 	<LocaleResource Name="Admin.SalesReport.Sales.Hint">
 		<Value>Gesamtwert aller Aufträge</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.Sales.Hint">
-		<Value>Gesamtwert aller Aufträge</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.TopCustomers">
 		<Value>Top Kunden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.TopCustomers">
-		<Value>Top Kunden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.Value">
-		<Value>Werte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Value">
 		<Value>Werte</Value>
@@ -13688,9 +12884,6 @@
 	<LocaleResource Name="Admin.System.ScheduleTasks.TaskNotFound">
 		<Value>Die geplante Aufgabe "{0}" wurde nicht gefunden.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.System.ScheduleTasks.TaskNotFound">
-		<Value>Die geplante Aufgabe "{0}" wurde nicht gefunden.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.UpdateLocked">
 		<Value>Die Aufgabe kann nicht bearbeitet werden, während sie ausgeführt wird.</Value>
 	</LocaleResource>
@@ -13933,9 +13126,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.URL.NoMatch">
 		<Value>Die angegebene URL des Shops ({0}) stimmt nicht mit der Shop-URL ({1}) überein.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.System.XMLSitemap">
-		<Value>XML-Sitemap</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.XMLSitemap">
 		<Value>XML-Sitemap</Value>
@@ -14252,9 +13442,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Validation.InvalidPath">
 		<Value>Der Pfad "{0}" ist ungültig. Bitte geben Sie einen gültigen Pfad ein.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Validation.Url">
-		<Value>Bitte geben Sie eine gültige URL ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Validation.Url">
 		<Value>Bitte geben Sie eine gültige URL ein.</Value>
@@ -14622,12 +13809,6 @@
 	<LocaleResource Name="Common.Allow">
 		<Value>Erlaubt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Allow">
-		<Value>Erlaubt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.AltKey">
-		<Value>Alt</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.AltKey">
 		<Value>Alt</Value>
 	</LocaleResource>
@@ -14645,9 +13826,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Apply">
 		<Value>Übernehmen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Approve">
-		<Value>Genehmigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Approve">
 		<Value>Genehmigen</Value>
@@ -14712,9 +13890,6 @@
 	<LocaleResource Name="Common.CannotDisplayView">
 		<Value>Die Ansicht "{0}" konnte nicht angezeigt werden.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.CannotDisplayView">
-		<Value>Die Ansicht "{0}" konnte nicht angezeigt werden.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.CaptchaUnableToVerify">
 		<Value>Der API-Aufruf zur Prüfung eines CAPTCHAs ist fehlgeschlagen.</Value>
 	</LocaleResource>
@@ -14748,9 +13923,6 @@
 	<LocaleResource Name="Common.Copy">
 		<Value>Kopieren</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Copy">
-		<Value>Kopieren</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.CopyToClipboard">
 		<Value>In die Zwischenablage kopieren</Value>
 	</LocaleResource>
@@ -14769,9 +13941,6 @@
 	<LocaleResource Name="Common.Create">
 		<Value>Erstellen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Create">
-		<Value>Erstellen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.CreatedOn">
 		<Value>Erstellt am</Value>
 	</LocaleResource>
@@ -14784,17 +13953,11 @@
 	<LocaleResource Name="Common.CtrlKey">
 		<Value>Strg</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.CtrlKey">
-		<Value>Strg</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.CustomerId">
 		<Value>Kunden ID</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.CustomerNumberAlreadyExists">
 		<Value>Die von Ihnen gewählte Kundennummer existiert bereits. Bitte geben Sie eine andere Kundennummer an.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Cut">
-		<Value>Ausschneiden</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Cut">
 		<Value>Ausschneiden</Value>
@@ -14822,12 +13985,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.DelKey">
 		<Value>Entf</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.DelKey">
-		<Value>Entf</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Deny">
-		<Value>Verweigert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Deny">
 		<Value>Verweigert</Value>
@@ -14883,12 +14040,6 @@
 	<LocaleResource Name="Common.Download.Version.Hint">
 		<Value>Geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Download.Version.Hint">
-		<Value>Geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Download.Version.Placeholder">
-		<Value>z.B.: 1.0.0.0, 2.0 oder 3.1.5</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Download.Version.Placeholder">
 		<Value>z.B.: 1.0.0.0, 2.0 oder 3.1.5</Value>
 	</LocaleResource>
@@ -14910,14 +14061,8 @@
 	<LocaleResource Name="Common.EnterKey">
 		<Value>Eingabe</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.EnterKey">
-		<Value>Eingabe</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.EnterValue">
 		<Value>Wert</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.BlogPost">
-		<Value>Blog-Eintrag</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.BlogPost">
 		<Value>Blog-Eintrag</Value>
@@ -14928,12 +14073,6 @@
 	<LocaleResource Name="Common.Entity.Customer">
 		<Value>Kunde</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Entity.Customer">
-		<Value>Kunde</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.Download">
-		<Value>Download</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Entity.Download">
 		<Value>Download</Value>
 	</LocaleResource>
@@ -14943,12 +14082,6 @@
 	<LocaleResource Name="Common.Entity.MessageTemplate">
 		<Value>Nachrichtenvorlage</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Entity.MessageTemplate">
-		<Value>Nachrichtenvorlage</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.NewsItem">
-		<Value>News</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Entity.NewsItem">
 		<Value>News</Value>
 	</LocaleResource>
@@ -14957,12 +14090,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.ProductAttributeOption">
 		<Value>Produktattribut-Options-Set</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.ProductAttributeOption">
-		<Value>Produktattribut-Options-Set</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.ProductVariantAttributeValue">
-		<Value>Produktattribut-Option</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.ProductVariantAttributeValue">
 		<Value>Produktattribut-Option</Value>
@@ -14978,9 +14105,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.SelectTopic">
 		<Value>Seite auswählen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Entity.SpecificationAttributeOption">
-		<Value>Spezifikationsattribut-Option</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.SpecificationAttributeOption">
 		<Value>Spezifikationsattribut-Option</Value>
@@ -15030,9 +14154,6 @@
 	<LocaleResource Name="Common.EscKey">
 		<Value>Esc</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.EscKey">
-		<Value>Esc</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Example">
 		<Value>Beispiel</Value>
 	</LocaleResource>
@@ -15041,9 +14162,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Execution">
 		<Value>Ausführung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.ExpandCollapseAll">
-		<Value>Alle auf-\zuklappen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.ExpandCollapseAll">
 		<Value>Alle auf-\zuklappen</Value>
@@ -15083,9 +14201,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.FileUploader.Upload">
 		<Value>Zum Hochladen Dateien hier ablegen oder klicken.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.FileUploader.UploadAvatar">
-		<Value>Zum Hochladen eines Avatarbildes Dateien hier platzieren oder klicken.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.FileUploader.UploadAvatar">
 		<Value>Zum Hochladen eines Avatarbildes Dateien hier platzieren oder klicken.</Value>
@@ -15228,9 +14343,6 @@
 	<LocaleResource Name="Common.NoPreview">
 		<Value>Eine Vorschau ist nicht verfügbar.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.NoPreview">
-		<Value>Eine Vorschau ist nicht verfügbar.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.NoProcessingSecurityIssue">
 		<Value>Der Vorgang wurde aus Sicherheitsgründen nicht ausgeführt.</Value>
 	</LocaleResource>
@@ -15239,9 +14351,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Notification">
 		<Value>Benachrichtigung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Notify">
-		<Value>Benachrichtigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Notify">
 		<Value>Benachrichtigen</Value>
@@ -15267,9 +14376,6 @@
 	<LocaleResource Name="Common.OpenUrl">
 		<Value>URL öffnen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.OpenUrl">
-		<Value>URL öffnen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Optional">
 		<Value>Optional</Value>
 	</LocaleResource>
@@ -15287,9 +14393,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Partition">
 		<Value>Aufteilung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Paste">
-		<Value>Einfügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Paste">
 		<Value>Einfügen</Value>
@@ -15348,9 +14451,6 @@
 	<LocaleResource Name="Common.Read">
 		<Value>Lesen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Read">
-		<Value>Lesen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Recommended">
 		<Value>Empfohlen</Value>
 	</LocaleResource>
@@ -15366,17 +14466,11 @@
 	<LocaleResource Name="Common.Rename">
 		<Value>Umbenennen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Rename">
-		<Value>Umbenennen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Replace">
 		<Value>Ersetzen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.RequestProcessingFailed">
 		<Value>Die Anfrage konnte nicht ausgeführt werden.&lt;br /&gt;Controller: {0}, Action: {1}, Grund: {2}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.Resume">
-		<Value>Fortsetzen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Resume">
 		<Value>Fortsetzen</Value>
@@ -15393,9 +14487,6 @@
 	<LocaleResource Name="Common.Rules">
 		<Value>Regeln</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Rules">
-		<Value>Regeln</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Save">
 		<Value>Speichern</Value>
 	</LocaleResource>
@@ -15408,14 +14499,8 @@
 	<LocaleResource Name="Common.SelectAll">
 		<Value>Alles auswählen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.SelectAll">
-		<Value>Alles auswählen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Send">
 		<Value>Senden</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.ShiftKey">
-		<Value>Umschalt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.ShiftKey">
 		<Value>Umschalt</Value>
@@ -15501,9 +14586,6 @@
 	<LocaleResource Name="Common.Trash">
 		<Value>Papierkorb</Value>
 	</LocaleResource>
-	<LocaleResource Name="Common.Trash">
-		<Value>Papierkorb</Value>
-	</LocaleResource>
 	<LocaleResource Name="Common.Unavailable">
 		<Value>Nicht verfügbar</Value>
 	</LocaleResource>
@@ -15557,9 +14639,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.WrongEmail">
 		<Value>Falsche E-Mail</Value>
-	</LocaleResource>
-	<LocaleResource Name="Common.WrongInvisibleCaptcha">
-		<Value>reCAPTCHA ist fehlgeschlagen. Bitte versuchen Sie es erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.WrongInvisibleCaptcha">
 		<Value>reCAPTCHA ist fehlgeschlagen. Bitte versuchen Sie es erneut.</Value>
@@ -15765,23 +14844,11 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Damaged">
 		<Value>Defekt</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Damaged">
-		<Value>Defekt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.New">
-		<Value>Neu</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.New">
 		<Value>Neu</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Refurbished">
 		<Value>Generalüberholt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Refurbished">
-		<Value>Generalüberholt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Used">
-		<Value>Gebraucht</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductCondition.Used">
 		<Value>Gebraucht</Value>
@@ -15828,23 +14895,11 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.Full">
 		<Value>Überall sichtbar</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.Full">
-		<Value>Überall sichtbar</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.Hidden">
-		<Value>Nicht sichtbar</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.Hidden">
 		<Value>Nicht sichtbar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.ProductPage">
 		<Value>Auf Produktdetailseiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.ProductPage">
-		<Value>Auf Produktdetailseiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.SearchResults">
-		<Value>In Suchergebnissen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductVisibility.SearchResults">
 		<Value>In Suchergebnissen</Value>
@@ -16422,17 +15477,8 @@
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Cart">
 		<Value>Warenkorb</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Cart">
-		<Value>Warenkorb</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Cart.Hint">
 		<Value>Regel, um dem Kunden Rabatte zu gewähren oder Versand- und Zahlarten anzubieten.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Cart.Hint">
-		<Value>Regel, um dem Kunden Rabatte zu gewähren oder Versand- und Zahlarten anzubieten.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Customer">
-		<Value>Kunde</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Customer">
 		<Value>Kunde</Value>
@@ -16440,23 +15486,11 @@
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Customer.Hint">
 		<Value>Regel, um Kunden automatisch per geplanter Aufgabe Kundengruppen zuzuordnen.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Customer.Hint">
-		<Value>Regel, um Kunden automatisch per geplanter Aufgabe Kundengruppen zuzuordnen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.OrderItem">
-		<Value>Bestellposition</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.OrderItem">
 		<Value>Bestellposition</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Product">
 		<Value>Produkt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Product">
-		<Value>Produkt</Value>
-	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Product.Hint">
-		<Value>Regel, um Produkte automatisch per geplanter Aufgabe Warengruppen zuzuordnen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Rules.RuleScope.Product.Hint">
 		<Value>Regel, um Produkte automatisch per geplanter Aufgabe Warengruppen zuzuordnen.</Value>
@@ -16504,17 +15538,8 @@
 	<LocaleResource Name="FileUploader.Dropzone.DictCancelUpload">
 		<Value>Upload abbrechen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictCancelUpload">
-		<Value>Upload abbrechen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictCancelUploadConfirmation">
 		<Value>Sind Sie sicher, dass Sie den Upload abbrechen wollen?</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictCancelUploadConfirmation">
-		<Value>Sind Sie sicher, dass Sie den Upload abbrechen wollen?</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictDefaultMessage">
-		<Value>Dateien zum Hochladen hier ablegen</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictDefaultMessage">
 		<Value>Dateien zum Hochladen hier ablegen</Value>
@@ -16522,17 +15547,8 @@
 	<LocaleResource Name="FileUploader.Dropzone.DictFallbackMessage">
 		<Value>Ihr Browser unterstützt keine Datei-Uploads per Drag'n'Drop.</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictFallbackMessage">
-		<Value>Ihr Browser unterstützt keine Datei-Uploads per Drag'n'Drop.</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictFallbackText">
 		<Value>Bitte benutzen Sie das untenstehende Formular, um Ihre Dateien wie in längst vergangenen Zeiten hochzuladen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictFallbackText">
-		<Value>Bitte benutzen Sie das untenstehende Formular, um Ihre Dateien wie in längst vergangenen Zeiten hochzuladen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictFileTooBig">
-		<Value>Die Datei ist zu groß ({{filesize}}MB). Maximale Dateigröße: {{maxFilesize}}MB.</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictFileTooBig">
 		<Value>Die Datei ist zu groß ({{filesize}}MB). Maximale Dateigröße: {{maxFilesize}}MB.</Value>
@@ -16540,17 +15556,8 @@
 	<LocaleResource Name="FileUploader.Dropzone.DictInvalidFileType">
 		<Value>Dateien dieses Typs können nicht hochgeladen werden.</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictInvalidFileType">
-		<Value>Dateien dieses Typs können nicht hochgeladen werden.</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictMaxFilesExceeded">
 		<Value>Sie können keine weiteren Dateien hochladen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictMaxFilesExceeded">
-		<Value>Sie können keine weiteren Dateien hochladen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictRemoveFile">
-		<Value>Datei entfernen</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictRemoveFile">
 		<Value>Datei entfernen</Value>
@@ -16558,17 +15565,8 @@
 	<LocaleResource Name="FileUploader.Dropzone.DictResponseError">
 		<Value>Der Server gab die Antwort {{statusCode}} zurück.</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictResponseError">
-		<Value>Der Server gab die Antwort {{statusCode}} zurück.</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.DictUploadCanceled">
 		<Value>Upload abgebrochen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.DictUploadCanceled">
-		<Value>Upload abgebrochen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Dropzone.Message">
-		<Value>Zum Hochladen Dateien hier ablegen oder klicken</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.Dropzone.Message">
 		<Value>Zum Hochladen Dateien hier ablegen oder klicken</Value>
@@ -16576,17 +15574,8 @@
 	<LocaleResource Name="FileUploader.DuplicateDialog.DupeFile.Title">
 		<Value>Quelldatei</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.DupeFile.Title">
-		<Value>Quelldatei</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.DuplicateDialog.ExistingFile.Title">
 		<Value>Zieldatei</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.ExistingFile.Title">
-		<Value>Zieldatei</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Intro">
-		<Value>Im Ziel ist bereits eine Datei mit dem Namen &lt;span class='current-file'&gt;&lt;/span&gt; vorhanden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.DuplicateDialog.Intro">
 		<Value>Im Ziel ist bereits eine Datei mit dem Namen &lt;span class='current-file'&gt;&lt;/span&gt; vorhanden.</Value>
@@ -16594,17 +15583,8 @@
 	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Rename">
 		<Value>Datei umbenennen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Rename">
-		<Value>Datei umbenennen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Replace">
 		<Value>Datei im Ziel ersetzen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Replace">
-		<Value>Datei im Ziel ersetzen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Option.SaveSelection">
-		<Value>Auswahl merken und auf verbleibende Konflikte anwenden</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.DuplicateDialog.Option.SaveSelection">
 		<Value>Auswahl merken und auf verbleibende Konflikte anwenden</Value>
@@ -16612,17 +15592,8 @@
 	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Skip">
 		<Value>Diese Datei überspringen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Option.Skip">
-		<Value>Diese Datei überspringen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.DuplicateDialog.Title">
 		<Value>Ersetzen oder überspringen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.DuplicateDialog.Title">
-		<Value>Ersetzen oder überspringen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.MultiFiles.MainMediaFile">
-		<Value>Hauptbild</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.MultiFiles.MainMediaFile">
 		<Value>Hauptbild</Value>
@@ -16630,17 +15601,8 @@
 	<LocaleResource Name="FileUploader.Preview.DeleteEntityMedia.Title">
 		<Value>Zuordnung entfernen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.Preview.DeleteEntityMedia.Title">
-		<Value>Zuordnung entfernen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.Preview.SetMainMedia.Title">
 		<Value>Zum Hauptbild machen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.Preview.SetMainMedia.Title">
-		<Value>Zum Hauptbild machen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Canceled.File">
-		<Value>Upload abgebrochen</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.StatusWindow.Canceled.File">
 		<Value>Upload abgebrochen</Value>
@@ -16648,17 +15610,8 @@
 	<LocaleResource Name="FileUploader.StatusWindow.Canceled.Files">
 		<Value>Uploads abgebrochen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Canceled.Files">
-		<Value>Uploads abgebrochen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.StatusWindow.Collapse.Title">
 		<Value>Minimieren</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Collapse.Title">
-		<Value>Minimieren</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Complete.File">
-		<Value>Upload abgeschlossen</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.StatusWindow.Complete.File">
 		<Value>Upload abgeschlossen</Value>
@@ -16666,17 +15619,8 @@
 	<LocaleResource Name="FileUploader.StatusWindow.Complete.Files">
 		<Value>Uploads abgeschlossen</Value>
 	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Complete.Files">
-		<Value>Uploads abgeschlossen</Value>
-	</LocaleResource>
 	<LocaleResource Name="FileUploader.StatusWindow.Uploading.File">
 		<Value>Datei wird hochgeladen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Uploading.File">
-		<Value>Datei wird hochgeladen</Value>
-	</LocaleResource>
-	<LocaleResource Name="FileUploader.StatusWindow.Uploading.Files">
-		<Value>Dateien werden hochgeladen</Value>
 	</LocaleResource>
 	<LocaleResource Name="FileUploader.StatusWindow.Uploading.Files">
 		<Value>Dateien werden hochgeladen</Value>
@@ -17860,17 +16804,8 @@
 	<LocaleResource Name="Permissions.DisplayName.AccessBackend">
 		<Value>Auf Backend zugreifen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.AccessBackend">
-		<Value>Auf Backend zugreifen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.AccessShop">
 		<Value>Zugang zum Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.AccessShop">
-		<Value>Zugang zum Shop</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.AccessShoppingCart">
-		<Value>Auf Warenkorb zugreifen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.AccessShoppingCart">
 		<Value>Auf Warenkorb zugreifen</Value>
@@ -17878,17 +16813,8 @@
 	<LocaleResource Name="Permissions.DisplayName.AccessWishlist">
 		<Value>Auf Wunschliste zugreifen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.AccessWishlist">
-		<Value>Auf Wunschliste zugreifen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.DisplayPrice">
 		<Value>Preise anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.DisplayPrice">
-		<Value>Preise anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditAddress">
-		<Value>Adressen bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditAddress">
 		<Value>Adressen bearbeiten</Value>
@@ -17896,17 +16822,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditAnswer">
 		<Value>Antworten bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditAnswer">
-		<Value>Antworten bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditAssociatedProduct">
 		<Value>Verknüpfte Produkte bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditAssociatedProduct">
-		<Value>Verknüpfte Produkte bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditAttribute">
-		<Value>Attribute bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditAttribute">
 		<Value>Attribute bearbeiten</Value>
@@ -17914,17 +16831,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditBundle">
 		<Value>Bundles bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditBundle">
-		<Value>Bundles bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditCategory">
 		<Value>Warengruppen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditCategory">
-		<Value>Warengruppen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditComment">
-		<Value>Kommentare bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditComment">
 		<Value>Kommentare bearbeiten</Value>
@@ -17932,17 +16840,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditCustomerRole">
 		<Value>Kundengruppen bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditCustomerRole">
-		<Value>Kundengruppen bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditManufacturer">
 		<Value>Hersteller bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditManufacturer">
-		<Value>Hersteller bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditOption">
-		<Value>Optionen bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditOption">
 		<Value>Optionen bearbeiten</Value>
@@ -17950,17 +16849,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditOptionSet">
 		<Value>Options-Sets bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditOptionSet">
-		<Value>Options-Sets bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditOrderItem">
 		<Value>Auftragspositionen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditOrderItem">
-		<Value>Auftragspositionen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditPicture">
-		<Value>Bilder bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditPicture">
 		<Value>Bilder bearbeiten</Value>
@@ -17968,17 +16858,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditProduct">
 		<Value>Produkte bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditProduct">
-		<Value>Produkte bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditPromotion">
 		<Value>Promotion bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditPromotion">
-		<Value>Promotion bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditRecurringPayment">
-		<Value>Wiederkehrende Zahlungen bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditRecurringPayment">
 		<Value>Wiederkehrende Zahlungen bearbeiten</Value>
@@ -17986,17 +16867,8 @@
 	<LocaleResource Name="Permissions.DisplayName.EditResource">
 		<Value>Ressourcen bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditResource">
-		<Value>Ressourcen bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditShipment">
 		<Value>Sendungen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditShipment">
-		<Value>Sendungen bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditTag">
-		<Value>Tags bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditTag">
 		<Value>Tags bearbeiten</Value>
@@ -18004,23 +16876,11 @@
 	<LocaleResource Name="Permissions.DisplayName.EditTierPrice">
 		<Value>Staffelpreise bearbeiten</Value>
 	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditTierPrice">
-		<Value>Staffelpreise bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.EditVariant">
-		<Value>Varianten bearbeiten</Value>
-	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.EditVariant">
 		<Value>Varianten bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.ReadStats">
 		<Value>Übersicht anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.ReadStats">
-		<Value>Übersicht anzeigen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Permissions.DisplayName.SendPM">
-		<Value>Private Nachrichten senden</Value>
 	</LocaleResource>
 	<LocaleResource Name="Permissions.DisplayName.SendPM">
 		<Value>Private Nachrichten senden</Value>
@@ -18267,9 +17127,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Compare.Title">
 		<Value>Produkte vergleichen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Condition">
-		<Value>Artikelzustand</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Condition">
 		<Value>Artikelzustand</Value>
@@ -19281,12 +18138,6 @@
 	</LocaleResource>
 	<LocaleResource Name="SmartStore.Blog.Button">
 		<Value>Zum Blog</Value>
-	</LocaleResource>
-	<LocaleResource Name="SmartStore.Blog.Button">
-		<Value>Zum Blog</Value>
-	</LocaleResource>
-	<LocaleResource Name="SmartStore.Blog.Button.Hint">
-		<Value>Klicken Sie hier um zu unserem Blog weitergeleitet zu werden</Value>
 	</LocaleResource>
 	<LocaleResource Name="SmartStore.Blog.Button.Hint">
 		<Value>Klicken Sie hier um zu unserem Blog weitergeleitet zu werden</Value>

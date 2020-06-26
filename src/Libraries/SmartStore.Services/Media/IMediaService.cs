@@ -9,6 +9,8 @@ using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
+    #region Enums
+
     [Flags]
     public enum MediaLoadFlags
     {
@@ -54,6 +56,10 @@ namespace SmartStore.Services.Media
         Skip
     }
 
+    #endregion
+
+    #region Result & Cargo objects
+
     public class DuplicateFileInfo
     {
         [JsonProperty("source")]
@@ -92,6 +98,11 @@ namespace SmartStore.Services.Media
         public string UniquePath { get; set; }
     }
 
+    #endregion
+
+    /// <summary>
+    /// Media service interface.
+    /// </summary>
     public partial interface IMediaService
     {
         /// <summary>
@@ -99,10 +110,43 @@ namespace SmartStore.Services.Media
         /// </summary>
         IMediaStorageProvider StorageProvider { get; }
 
+        /// <summary>
+        /// Determines the number of files that match the filter criteria in <paramref name="query"/>.
+        /// </summary>
+        /// <param name="query">The query that defines the criteria.</param>
+        /// <returns>The number of matching files.</returns>
         int CountFiles(MediaSearchQuery query);
+
+        /// <summary>
+        /// Determines the number of files that match the filter criteria in <paramref name="query"/> asynchronously.
+        /// </summary>
+        /// <param name="query">The query that defines the criteria.</param>
+        /// <returns>The number of matching files.</returns>
         Task<int> CountFilesAsync(MediaSearchQuery query);
+
+        /// <summary>
+        /// Determines the number of files that match the filter criteria in <paramref name="query"/> and groups them by folders.
+        /// </summary>
+        /// <param name="query">The filter that defines the criteria.</param>
+        /// <returns>The grouped file counts (all, trash, unassigned, transient, all folders as dictionary)</returns>
         FileCountResult CountFilesGrouped(MediaFilesFilter filter);
+
+        /// <summary>
+        /// Searches files that match the filter criteria in <paramref name="query"/>.
+        /// </summary>
+        /// <param name="query">The query that defines the criteria.</param>
+        /// <param name="queryModifier">An optional modifier function for the LINQ query that was internally derived from <paramref name="query"/>. Can be null.</param>
+        /// <param name="flags">Flags that affect the loading behaviour (eager-loading, tracking etc.)</param>
+        /// <returns>The search result.</returns>
         MediaSearchResult SearchFiles(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
+
+        /// <summary>
+        /// Searches files that match the filter criteria in <paramref name="query"/>.
+        /// </summary>
+        /// <param name="query">The query that defines the criteria.</param>
+        /// <param name="queryModifier">An optional modifier function for the LINQ query that was internally derived from <paramref name="query"/>. Can be null.</param>
+        /// <param name="flags">Flags that affect the loading behaviour (eager-loading, tracking etc.)</param>
+        /// <returns>The search result.</returns>
         Task<MediaSearchResult> SearchFilesAsync(MediaSearchQuery query, Func<IQueryable<MediaFile>, IQueryable<MediaFile>> queryModifier, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
 
         bool FileExists(string path);

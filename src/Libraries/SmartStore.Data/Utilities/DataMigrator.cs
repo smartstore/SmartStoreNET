@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -462,37 +463,44 @@ namespace SmartStore.Data.Utilities
         {
             var ctx = context as SmartObjectContext;
             if (ctx == null)
+            {
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
 
-            // We delete attrs only if the WHOLE migration succeeded
-            var attrIdsToDelete = new List<int>(1000);
+            // We delete attrs only if the WHOLE migration succeeded.
+            var attrIdsToDelete = new List<int>();
+            var guestCustomerIds = new HashSet<int>();
+
             var gaTable = context.Set<GenericAttribute>();
+            var customerSet = context.Set<Customer>();
             var candidates = new[] { "Gender", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType" };
 
             var query = gaTable
                 .AsNoTracking()
-                .Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
-                .OrderBy(x => x.Id);
+                .Where(x => candidates.Contains(x.Key) && x.KeyGroup == "Customer");
 
             int numUpdated = 0;
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+                var pager = new FastPager<GenericAttribute>(query, 500);
+
+                while (pager.ReadNextPage(out var attrs))
                 {
-                    var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
-
                     var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
-                    var customers = context.Set<Customer>()
-                        .Where(x => customerIds.Contains(x.Id))
-                        .ToDictionary(x => x.Id);
 
-                    // Move attrs one by one to customer
+                    // Perf: skip guest customers.
+                    var customers = customerSet
+                        .Where(x => customerIds.Contains(x.Id) && (x.Username != null || x.Email != null))
+                        .ToDictionarySafe(x => x.Id);
+
+                    // Move attrs one by one to customer.
                     foreach (var attr in attrs)
                     {
-                        var customer = customers.Get(attr.EntityId);
-                        if (customer == null)
+                        if (!customers.TryGetValue(attr.EntityId, out var customer))
+                        {
                             continue;
+                        }
 
                         switch (attr.Key)
                         {
@@ -529,11 +537,17 @@ namespace SmartStore.Data.Utilities
                     // Breathe
                     context.DetachAll();
 
-                    if (!attrs.HasNextPage)
-                        break;
+                    // Customer IDs of guests whose generic attributes can be deleted later.
+                    var guestCustomerIdsBatch = customerSet
+                        .AsNoTracking()
+                        .Where(x => customerIds.Contains(x.Id) && x.Username == null && x.Email == null)
+                        .Select(x => x.Id)
+                        .ToArray();
+
+                    guestCustomerIds.AddRange(guestCustomerIdsBatch);
                 }
 
-                // Everything worked out, now delete all orpahned attributes
+                // Everything worked out, now delete all orpahned attributes.
                 if (attrIdsToDelete.Count > 0)
                 {
                     try
@@ -549,7 +563,29 @@ namespace SmartStore.Data.Utilities
                     }
                     catch (Exception ex)
                     {
-                        var msg = ex.Message;
+                        ex.Dump();
+                    }
+                }
+
+                if (guestCustomerIds.Any())
+                {
+                    try
+                    {
+                        foreach (var customerIds in guestCustomerIds.Slice(500))
+                        {
+                            var chunk = gaTable
+                                .Where(x => candidates.Contains(x.Key) && customerIds.Contains(x.EntityId) && x.KeyGroup == "Customer")
+                                .ToList();
+
+                            gaTable.RemoveRange(chunk);
+                            scope.Commit();
+
+                            context.DetachEntities<GenericAttribute>();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.Dump();
                     }
                 }
             }
@@ -947,7 +983,10 @@ namespace SmartStore.Data.Utilities
             var permissionSet = ctx.Set<PermissionRecord>();
             var allPermissions = permissionSet.ToList();
             var oldPermissions = GetOldPermissions();
-            var allRoles = ctx.Set<CustomerRole>().ToList().ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
+            var allRoles = ctx.Set<CustomerRole>()
+                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                .ToList()
+                .ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
 
             allRoles.TryGetValue(SystemCustomerRoleNames.Administrators, out var adminRole);
             allRoles.TryGetValue(SystemCustomerRoleNames.ForumModerators, out var forumModRole);

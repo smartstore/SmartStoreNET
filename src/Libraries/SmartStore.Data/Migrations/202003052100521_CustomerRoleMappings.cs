@@ -101,14 +101,19 @@ namespace SmartStore.Data.Migrations
         public void Seed(SmartObjectContext context)
         {
             if (!DataSettings.DatabaseIsInstalled())
+            {
                 return;
+            }
 
             try
             {
-                // Copy role mappings.
-                context.ExecuteSqlCommand("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]");
+                // Copy role mappings. Keep it running as long as it takes.
+                context.ExecuteSqlCommand("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]", false, 60 * 120);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ex.Dump();
+            }
 
             var defaultLang = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First();
             var isGerman = defaultLang.UniqueSeoCode.IsCaseInsensitiveEqual("de");

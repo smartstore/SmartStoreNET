@@ -101,6 +101,9 @@ namespace SmartStore.Core.Infrastructure
 			{
 				try
 				{
+					if (assembly == null)
+						continue;
+					
 					if (!alreadyLoadedAssemblyNames.Contains(assembly.FullName))
 					{
 						App.Load(assembly.FullName); 

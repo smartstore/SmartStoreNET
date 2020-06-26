@@ -504,7 +504,6 @@ namespace SmartStore.Data
 			}
 
 			entry.State = EfState.Detached;
-			
 			numDetached++;
 
 			return numDetached;

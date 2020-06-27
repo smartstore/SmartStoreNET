@@ -2,6 +2,7 @@ namespace SmartStore.Data.Migrations
 {
     using System;
 	using System.Data.Entity.Migrations;
+    using System.Linq;
     using SmartStore.Core.Domain.Common;
     using SmartStore.Core.Domain.Customers;
     using SmartStore.Data.Setup;
@@ -78,9 +79,13 @@ namespace SmartStore.Data.Migrations
                     customer.BirthDate = attr.Value?.Convert<DateTime?>();
                     break;
             }
+
+            // Update FullName
+            var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
+            customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
         }
 
-		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.Delete(
 				"Admin.Customers.Customers.List.SearchFirstName",

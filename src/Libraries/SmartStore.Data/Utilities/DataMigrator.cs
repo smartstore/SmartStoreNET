@@ -393,31 +393,7 @@ namespace SmartStore.Data.Utilities
                         if (customer == null)
                             continue;
 
-                        switch (attr.Key)
-                        {
-                            case "Title":
-                                customer.Title = attr.Value?.Truncate(100);
-                                break;
-                            case "FirstName":
-                                customer.FirstName = attr.Value?.Truncate(225);
-                                break;
-                            case "LastName":
-                                customer.LastName = attr.Value?.Truncate(225);
-                                break;
-                            case "Company":
-                                customer.Company = attr.Value?.Truncate(255);
-                                break;
-                            case "CustomerNumber":
-                                customer.CustomerNumber = attr.Value?.Truncate(100);
-                                break;
-                            case "DateOfBirth":
-                                customer.BirthDate = attr.Value?.Convert<DateTime?>();
-                                break;
-                        }
-
-                        // Update FullName
-                        var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
-                        customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
+                        updater(customer, attr);
 
                         attrIdsToDelete.Add(attr.Id);
                     }
@@ -468,7 +444,7 @@ namespace SmartStore.Data.Utilities
 
             var sql = @"
 DELETE TOP(50000) [g]
-  FROM [2rideshop].[dbo].[GenericAttribute] AS [g]
+  FROM [dbo].[GenericAttribute] AS [g]
   LEFT OUTER JOIN [dbo].[Customer] AS [c] ON c.Id = g.EntityId
   LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
   LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
@@ -508,7 +484,7 @@ DELETE TOP(50000) [g]
 
             var sql = @"
 DELETE TOP(20000) [c]
-  FROM [2rideshop].[dbo].[Customer] AS [c]
+  FROM [dbo].[Customer] AS [c]
   LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
   LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
   LEFT OUTER JOIN [dbo].[Forums_PrivateMessage] AS [pm] ON c.Id = pm.ToCustomerId

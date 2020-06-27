@@ -415,7 +415,12 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
-            foreach (var role in customer.CustomerRoleMappings.Select(x => x.CustomerRole).Where(x => x.Active))
+            var roles = customer.CustomerRoleMappings
+                .Where(x => x.CustomerRole?.Active ?? false)
+                .Select(x => x.CustomerRole)
+                .ToArray();
+
+            foreach (var role in roles)
             {
                 var tree = GetPermissionTree(role);
                 var node = tree.SelectNodeById(permissionSystemName);

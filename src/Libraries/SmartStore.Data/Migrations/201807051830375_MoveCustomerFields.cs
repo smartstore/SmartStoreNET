@@ -2,7 +2,10 @@ namespace SmartStore.Data.Migrations
 {
     using System;
 	using System.Data.Entity.Migrations;
-	using SmartStore.Data.Setup;
+    using System.Linq;
+    using SmartStore.Core.Domain.Common;
+    using SmartStore.Core.Domain.Customers;
+    using SmartStore.Data.Setup;
 	using SmartStore.Data.Utilities;
 
 	public partial class MoveCustomerFields : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -45,10 +48,44 @@ namespace SmartStore.Data.Migrations
 		{
             context.MigrateLocaleResources(MigrateLocaleResources);
 
-			DataMigrator.MoveCustomerFields(context);
+            // Perf
+            var numDeletedAttrs = DataMigrator.DeleteGuestCustomerGenericAttributes(context, TimeSpan.FromDays(30));
+            var numDeletedCustomers = DataMigrator.DeleteGuestCustomers(context, TimeSpan.FromDays(30));
+
+            var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
+            var numUpdatedCustomers = DataMigrator.MoveCustomerFields(context, UpdateCustomer, candidates);
 		}
 
-		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        private static void UpdateCustomer(Customer customer, GenericAttribute attr)
+        {
+            switch (attr.Key)
+            {
+                case "Title":
+                    customer.Title = attr.Value?.Truncate(100);
+                    break;
+                case "FirstName":
+                    customer.FirstName = attr.Value?.Truncate(225);
+                    break;
+                case "LastName":
+                    customer.LastName = attr.Value?.Truncate(225);
+                    break;
+                case "Company":
+                    customer.Company = attr.Value?.Truncate(255);
+                    break;
+                case "CustomerNumber":
+                    customer.CustomerNumber = attr.Value?.Truncate(100);
+                    break;
+                case "DateOfBirth":
+                    customer.BirthDate = attr.Value?.Convert<DateTime?>();
+                    break;
+            }
+
+            // Update FullName
+            var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
+            customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
+        }
+
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.Delete(
 				"Admin.Customers.Customers.List.SearchFirstName",

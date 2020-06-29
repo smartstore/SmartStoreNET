@@ -1,5 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
+    using SmartStore.Core.Domain.Common;
+    using SmartStore.Core.Domain.Customers;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
     using System;
@@ -41,7 +43,41 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-            DataMigrator.MoveFurtherCustomerFields(context);
+            // Perf
+            var numDeletedAttrs = DataMigrator.DeleteGuestCustomerGenericAttributes(context, TimeSpan.FromDays(30));
+            var numDeletedCustomers = DataMigrator.DeleteGuestCustomers(context, TimeSpan.FromDays(30));
+
+            var candidates = new[] { "Gender", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType" };
+            var numUpdatedCustomers = DataMigrator.MoveCustomerFields(context, UpdateCustomer, candidates);
+        }
+
+        private static void UpdateCustomer(Customer customer, GenericAttribute attr)
+        {
+            switch (attr.Key)
+            {
+                case "Gender":
+                    customer.Gender = attr.Value?.Truncate(100);
+                    break;
+                case "VatNumberStatusId":
+                    customer.VatNumberStatusId = attr.Value.Convert<int>();
+                    break;
+                case "TimeZoneId":
+                    customer.TimeZoneId = attr.Value?.Truncate(255);
+                    break;
+                case "TaxDisplayTypeId":
+                    customer.TaxDisplayTypeId = attr.Value.Convert<int>();
+                    break;
+                case "LastForumVisit":
+                    customer.LastForumVisit = attr.Value.Convert<DateTime>();
+                    break;
+                case "LastUserAgent":
+                    customer.LastUserAgent = attr.Value.Convert<string>();
+                    break;
+                case "LastUserDeviceType":
+                    // TODO: split
+                    customer.LastUserDeviceType = attr.Value.Convert<string>();
+                    break;
+            }
         }
     }
 }

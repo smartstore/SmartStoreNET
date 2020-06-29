@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -343,131 +344,29 @@ namespace SmartStore.Data.Utilities
 			return ctx.SaveChanges();
 		}
 
-		#endregion
+        #endregion
 
-		#region MoveCustomerFields (V3.2)
-
-		/// <summary>
-		/// Moves several customer fields saved as generic attributes to customer entity (Title, FirstName, LastName, BirthDate, Company, CustomerNumber)
-		/// </summary>
-		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
-		/// <returns>The total count of fixed and updated customer entities</returns>
-		public static int MoveCustomerFields(IDbContext context)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
-
-			// We delete attrs only if the WHOLE migration succeeded
-			var attrIdsToDelete = new List<int>(1000);
-			var gaTable = context.Set<GenericAttribute>();
-			var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
-
-			var query = gaTable
-				.AsNoTracking()
-				.Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
-				.OrderBy(x => x.Id);
-
-			int numUpdated = 0;
-
-			using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
-			{
-				for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
-				{
-					var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
-
-					var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
-					var customers = context.Set<Customer>()
-						.Where(x => customerIds.Contains(x.Id))
-						.ToDictionary(x => x.Id);
-
-					// Move attrs one by one to customer
-					foreach (var attr in attrs)
-					{
-						var customer = customers.Get(attr.EntityId);
-						if (customer == null)
-							continue;
-
-						switch (attr.Key)
-						{
-							case "Title":
-								customer.Title = attr.Value?.Truncate(100);
-								break;
-							case "FirstName":
-								customer.FirstName = attr.Value?.Truncate(225);
-								break;
-							case "LastName":
-								customer.LastName = attr.Value?.Truncate(225);
-								break;
-							case "Company":
-								customer.Company = attr.Value?.Truncate(255);
-								break;
-							case "CustomerNumber":
-								customer.CustomerNumber = attr.Value?.Truncate(100);
-								break;
-							case "DateOfBirth":
-								customer.BirthDate = attr.Value?.Convert<DateTime?>();
-								break;
-						}
-
-						// Update FullName
-						var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
-						customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
-
-						attrIdsToDelete.Add(attr.Id);
-					}
-
-					// Save batch
-					numUpdated += scope.Commit();
-
-					// Breathe
-					context.DetachAll();
-
-					if (!attrs.HasNextPage)
-						break;
-				}
-
-				// Everything worked out, now delete all orpahned attributes
-				if (attrIdsToDelete.Count > 0)
-				{
-					try
-					{
-						// Don't rollback migration when this fails
-						var stubs = attrIdsToDelete.Select(x => new GenericAttribute { Id = x }).ToList();
-						foreach (var chunk in stubs.Slice(500))
-						{
-							chunk.Each(x => gaTable.Attach(x));
-							gaTable.RemoveRange(chunk);
-							scope.Commit();
-						}
-					}
-					catch (Exception ex)
-					{
-						var msg = ex.Message;
-					}
-				}
-			}
-
-			return numUpdated;
-		}
-
+        #region MoveCustomerFields (V3.2)
 
         /// <summary>
-        /// Moves several customer fields saved as generic attributes to customer entity 
-        /// (Gender, ZipPostalCode, VatNumberStatusId, TimeZoneId, TaxDisplayTypeId, CountryId, CurrencyId, LanguageId, LastForumVisit, LastUserAgent)
+        /// Moves several customer fields saved as generic attributes to customer entity (Title, FirstName, LastName, BirthDate, Company, CustomerNumber)
         /// </summary>
         /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
         /// <returns>The total count of fixed and updated customer entities</returns>
-        public static int MoveFurtherCustomerFields(IDbContext context)
+        public static int MoveCustomerFields(IDbContext context, Action<Customer, GenericAttribute> updater, params string[] candidates)
         {
-            var ctx = context as SmartObjectContext;
-            if (ctx == null)
+            Guard.NotNull(updater, nameof(updater));
+            
+            if (!(context is SmartObjectContext ctx))
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+
+            if (candidates.Length == 0)
+                return 0;
 
             // We delete attrs only if the WHOLE migration succeeded
             var attrIdsToDelete = new List<int>(1000);
             var gaTable = context.Set<GenericAttribute>();
-            var candidates = new[] { "Gender", "VatNumberStatusId", "TimeZoneId", "TaxDisplayTypeId", "LastForumVisit", "LastUserAgent", "LastUserDeviceType" };
+            //var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
 
             var query = gaTable
                 .AsNoTracking()
@@ -494,31 +393,7 @@ namespace SmartStore.Data.Utilities
                         if (customer == null)
                             continue;
 
-                        switch (attr.Key)
-                        {
-                            case "Gender":
-                                customer.Gender = attr.Value?.Truncate(100);
-                                break;
-                            case "VatNumberStatusId":
-                                customer.VatNumberStatusId = attr.Value.Convert<int>();
-                                break;
-                            case "TimeZoneId":
-                                customer.TimeZoneId = attr.Value?.Truncate(255);
-                                break;
-                            case "TaxDisplayTypeId":
-                                customer.TaxDisplayTypeId = attr.Value.Convert<int>();
-                                break;
-                            case "LastForumVisit":
-                                customer.LastForumVisit = attr.Value.Convert<DateTime>();
-                                break;
-                            case "LastUserAgent":
-                                customer.LastUserAgent = attr.Value.Convert<string>();
-                                break;
-                            case "LastUserDeviceType":
-                                // TODO: split
-                                customer.LastUserDeviceType = attr.Value.Convert<string>();
-                                break;
-                        }
+                        updater(customer, attr);
 
                         attrIdsToDelete.Add(attr.Id);
                     }
@@ -557,6 +432,84 @@ namespace SmartStore.Data.Utilities
             return numUpdated;
         }
 
+        public static int DeleteGuestCustomerGenericAttributes(IDbContext context, TimeSpan olderThan)
+        {
+            if (!(context is SmartObjectContext ctx))
+            {
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
+
+            int numTotalDeleted = 0;
+            var maxDate = DateTime.UtcNow - olderThan;
+
+            var sql = @"
+DELETE TOP(50000) [g]
+  FROM [dbo].[GenericAttribute] AS [g]
+  LEFT OUTER JOIN [dbo].[Customer] AS [c] ON c.Id = g.EntityId
+  LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
+  LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_PrivateMessage] AS [pm] ON c.Id = pm.ToCustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Post] AS [fp] ON c.Id = fp.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Topic] AS [ft] ON c.Id = ft.CustomerId
+  WHERE g.KeyGroup = 'Customer' AND c.Username IS Null AND c.Email IS NULL AND c.IsSystemAccount = 0 AND c.LastActivityDateUtc < @p0
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[ShoppingCartItem] AS [sci] WHERE c.Id = sci.CustomerId ))  
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Order] AS [o1] WHERE c.Id = o1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[CustomerContent] AS [cc1] WHERE c.Id = cc1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_PrivateMessage] AS [pm1] WHERE c.Id = pm1.ToCustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_Post] AS [fp1] WHERE c.Id = fp1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_Topic] AS [ft1] WHERE c.Id = ft1.CustomerId ))
+";
+
+            while (true)
+            {
+                var numDeleted = ctx.Execute(sql, maxDate);
+                if (numDeleted == 0)
+                    break;
+
+                numTotalDeleted += numDeleted;
+            }
+
+            return numTotalDeleted;
+        }
+
+        public static int DeleteGuestCustomers(IDbContext context, TimeSpan olderThan)
+        {
+            if (!(context is SmartObjectContext ctx))
+            {
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            }
+
+            int numTotalDeleted = 0;
+            var maxDate = DateTime.UtcNow - olderThan;
+
+            var sql = @"
+DELETE TOP(20000) [c]
+  FROM [dbo].[Customer] AS [c]
+  LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
+  LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_PrivateMessage] AS [pm] ON c.Id = pm.ToCustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Post] AS [fp] ON c.Id = fp.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Topic] AS [ft] ON c.Id = ft.CustomerId
+  WHERE c.Username IS Null AND c.Email IS NULL AND c.IsSystemAccount = 0 AND c.LastActivityDateUtc < @p0
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[ShoppingCartItem] AS [sci] WHERE c.Id = sci.CustomerId ))  
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Order] AS [o1] WHERE c.Id = o1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[CustomerContent] AS [cc1] WHERE c.Id = cc1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_PrivateMessage] AS [pm1] WHERE c.Id = pm1.ToCustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_Post] AS [fp1] WHERE c.Id = fp1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_Topic] AS [ft1] WHERE c.Id = ft1.CustomerId ))
+";
+
+            while (true)
+            {
+                var numDeleted = ctx.Execute(sql, maxDate);
+                if (numDeleted == 0)
+                    break;
+
+                numTotalDeleted += numDeleted;
+            }
+
+            return numTotalDeleted;
+        }
 
         #endregion
 
@@ -947,7 +900,10 @@ namespace SmartStore.Data.Utilities
             var permissionSet = ctx.Set<PermissionRecord>();
             var allPermissions = permissionSet.ToList();
             var oldPermissions = GetOldPermissions();
-            var allRoles = ctx.Set<CustomerRole>().ToList().ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
+            var allRoles = ctx.Set<CustomerRole>()
+                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                .ToList()
+                .ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
 
             allRoles.TryGetValue(SystemCustomerRoleNames.Administrators, out var adminRole);
             allRoles.TryGetValue(SystemCustomerRoleNames.ForumModerators, out var forumModRole);

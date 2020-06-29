@@ -517,6 +517,8 @@
     </Content>
     <Content Include="App_Data\Samples\brand\wilson.png" />
     <Content Include="App_Data\Samples\category\0000930_spiegel-bestseller.png" />
+    <Content Include="App_Data\Samples\category\sofas.jpg" />
+    <Content Include="App_Data\Samples\category\tables.jpg" />
     <Content Include="App_Data\Samples\product\0000932_uberman-der-roman.jpeg" />
     <Content Include="App_Data\Samples\product\0000935_der-gefangene-des-himmels-roman_300.jpeg" />
     <Content Include="App_Data\Samples\category\0000936_kochen-geniesen.jpeg" />
@@ -683,7 +685,10 @@
     <Content Include="App_Data\Samples\product\iphone-plus_silver.jpg" />
     <Content Include="App_Data\Samples\product\iphoneplus_1.jpg" />
     <Content Include="App_Data\Samples\product\iphoneplus_2.jpg" />
+    <Content Include="App_Data\Samples\product\isamu_noguchi_coffeetable_1.jpg" />
+    <Content Include="App_Data\Samples\product\isamu_noguchi_coffeetable_2.jpg" />
     <Content Include="App_Data\Samples\product\jack_wolfskin_kanuka_point_1.png" />
+    <Content Include="App_Data\Samples\product\josef_hoffmann_sofa_cubus_1.jpg" />
     <Content Include="App_Data\Samples\product\ladies_jacket_black.jpg" />
     <Content Include="App_Data\Samples\product\ladies_jacket_blue.jpg" />
     <Content Include="App_Data\Samples\product\ladies_jacket_green.jpg" />
@@ -692,6 +697,9 @@
     <Content Include="App_Data\Samples\product\ladies_jacket_red.jpg" />
     <Content Include="App_Data\Samples\product\ladies_jacket_silver.jpg" />
     <Content Include="App_Data\Samples\product\legoworlds.jpg" />
+    <Content Include="App_Data\Samples\product\le_corbusier_lc2_sofa_1.jpg" />
+    <Content Include="App_Data\Samples\product\mies_van_der_rohe_sofa_barcelona_1.jpg" />
+    <Content Include="App_Data\Samples\product\mies_van_der_rohe_tisch_barcelona_1.jpg" />
     <Content Include="App_Data\Samples\product\minecraft.jpg" />
     <Content Include="App_Data\Samples\product\nike-strike-football.jpg" />
     <Content Include="App_Data\Samples\product\nike-vopower-53-trainer-hs-ball.jpg" />

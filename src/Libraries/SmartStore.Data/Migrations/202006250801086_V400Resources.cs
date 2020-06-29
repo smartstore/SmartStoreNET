@@ -6,11 +6,18 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Domain.Media;
     using SmartStore.Core.Domain.Configuration;
     using System.Linq;
+    using System.Web.Hosting;
+    using SmartStore.Core.Data;
 
     public partial class V400Resources : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
+            if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
+            {
+                // MaxUploadFileSize setting is stored with an empty string in some databases, which leads to type conversion problems.
+                Sql("UPDATE [dbo].[Setting] SET [Value] = '102400' WHERE [Name] = 'MediaSettings.MaxUploadFileSize' And [Value] = ''");
+            }
         }
         
         public override void Down()
@@ -44,9 +51,6 @@ namespace SmartStore.Data.Migrations
             ChangeMediaSetting(nameof(MediaSettings.BundledProductPictureSize), "72", x => x == 70);
             ChangeMediaSetting(nameof(MediaSettings.VariantValueThumbPictureSize), "72", x => x == 70);
             ChangeMediaSetting(nameof(MediaSettings.AttributeOptionThumbPictureSize), "72", x => x == 70);
-
-            // MaxUploadFileSize setting is stored with an empty string in some databases, which leads to type conversion problems.
-            context.ExecuteSqlCommandSafe("UPDATE [dbo].[Setting] SET [Value] = '102400' WHERE [Name] = 'MediaSettings.MaxUploadFileSize' And [Value] = ''");
 
             void ChangeMediaSetting(string propName, string newVal, Func<int, bool> predicate)
             {

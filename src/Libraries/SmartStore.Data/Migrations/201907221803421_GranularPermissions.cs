@@ -35,7 +35,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.PermissionRoleMapping");
         }
 
-        public bool RollbackOnFailure => false;
+        public bool RollbackOnFailure => true;
 
         public void Seed(SmartObjectContext context)
         {

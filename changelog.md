@@ -1,5 +1,14 @@
 # Release Notes
 
+## Smartstore 4.1.0
+### New Features
+
+### Improvements
+
+### Bugfixes
+* Order placement validation should also check whether the selected payment method has been filtered out.
+
+
 ## Smartstore 4.0.0
 ### Highlights
 * (NEW) **Media Manager**: Powerful and lightning-fast explorer/manager for media files (commercial plugin exclusively bundled with Pro Edition)

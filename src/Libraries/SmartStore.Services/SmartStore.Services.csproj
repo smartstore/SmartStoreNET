@@ -184,6 +184,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\CartProductCountRule.cs" />
     <Compile Include="Cart\Rules\Impl\ProductFromCategoryInCartRule.cs" />
     <Compile Include="Cart\Rules\Impl\ProductFromManufacturerInCartRule.cs" />
     <Compile Include="Cart\Rules\Impl\ProductOnWishlistRule.cs" />

@@ -4,7 +4,9 @@
 ### New Features
 
 ### Improvements
-* #1969 Rule Builder: display preview grid in a modal dialog, don't leave page.
+* **Rule Builder**:
+	* #1969 Display preview grid in a modal dialog, don't leave page.
+	* #1980 Add a cart rule for total quantity of products in cart.
 
 ### Bugfixes
 * Order placement validation should also check whether the selected payment method has been filtered out.

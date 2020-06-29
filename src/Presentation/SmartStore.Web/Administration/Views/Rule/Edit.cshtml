@@ -14,7 +14,7 @@
         <div class="options">
 			@if (Model.Id != 0 && (Model.Scope == RuleScope.Customer || Model.Scope == RuleScope.Product))
 			{
-				<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn btn-secondary">
+				<a id="btn-preview-ruleset" href="@Url.Action("Preview", new { id = Model.Id })" class="btn btn-secondary">
 					<i class="far fa-eye"></i>
 					<span>@T("Admin.Common.Preview")</span>
 				</a>
@@ -36,3 +36,13 @@
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("rule-delete")
+
+<script>
+	$(function () {
+		$('#btn-preview-ruleset').on('click', function (e) {
+			e.preventDefault();
+			openPopup($(this).attr('href'), true /* large */, true /* flex */);
+			return false;
+		});
+	});
+</script>

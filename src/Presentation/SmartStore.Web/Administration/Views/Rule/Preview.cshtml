@@ -3,12 +3,13 @@
 @using SmartStore.Admin.Models.Customers
 @model RuleSetPreviewModel
 @{
+	Layout = "_AdminPopupLayout";
     ViewBag.Title = string.Concat(T("Admin.Common.Preview"), " - ", Model.Name);
 }
 
 <div class="section-header">
     <div class="title">
-        @ViewBag.Title @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
+        @ViewBag.Title
     </div>
 </div>
 <div>
@@ -21,7 +22,7 @@
 				.Columns(columns =>
 				{
 			        columns.Bound(x => x.Email)
-				        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+				        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\" target=\"_blank\"><#= Email #></a>");
 					columns.Bound(x => x.Username)
 						.Visible(Model.UsernamesEnabled);
 					columns.Bound(x => x.FullName);
@@ -49,7 +50,7 @@
 						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
 				}
 				columns.Bound(x => x.Name)
-					.ClientTemplate(Html.LabeledProductName("Id", "Name"));
+					.ClientTemplate(Html.LabeledProductName("Id", "Name", target: "_blank"));
 				columns.Bound(x => x.Sku);
 				columns.Bound(x => x.Price)
 					.Format("{0:0.00}")

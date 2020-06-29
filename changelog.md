@@ -4,6 +4,7 @@
 ### New Features
 
 ### Improvements
+* #1969 Rule Builder: display preview grid in a modal dialog, don't leave page.
 
 ### Bugfixes
 * Order placement validation should also check whether the selected payment method has been filtered out.

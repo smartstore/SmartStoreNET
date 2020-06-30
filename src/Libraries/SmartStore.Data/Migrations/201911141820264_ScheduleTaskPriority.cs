@@ -6,7 +6,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Domain.Tasks;
     using SmartStore.Data.Setup;
 
-    public partial class ScheduleTaskPriority : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class ScheduleTaskPriority : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

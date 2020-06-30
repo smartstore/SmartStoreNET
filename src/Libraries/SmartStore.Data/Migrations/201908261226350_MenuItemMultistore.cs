@@ -4,7 +4,7 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
-    public partial class MenuItemMultistore : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class MenuItemMultistore : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

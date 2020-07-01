@@ -213,7 +213,7 @@ namespace SmartStore.Web.Controllers
                         FullSizeImageWidth = file?.Dimensions.Width,
                         FullSizeImageHeight = file?.Dimensions.Height,
                         Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), name),
-                        AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), name),
+                        AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Category.ImageAlternateTextFormat"), name),
                         File = file
                     };
 
@@ -641,7 +641,6 @@ namespace SmartStore.Web.Controllers
 			model.Name = name;
 			model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
 			model.PictureZoomType = _mediaSettings.PictureZoomType;
-			model.AlternateText = T("Media.Product.ImageAlternateTextFormat", model.Name);
 
 			MediaFile defaultFile = null;
 			var combiAssignedImages = combination?.GetAssignedMediaIds();
@@ -706,6 +705,8 @@ namespace SmartStore.Web.Controllers
 
 				scope.Commit();
 			}
+
+			model.AlternateText = defaultFile?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", model.Name);
 
 			if (defaultFile == null)
 			{
@@ -1503,7 +1504,7 @@ namespace SmartStore.Web.Controllers
 				Size = _mediaSettings.ManufacturerThumbPictureSize,
 				ImageUrl = _mediaService.GetUrl(file, _mediaSettings.ManufacturerThumbPictureSize, null, !_catalogSettings.HideManufacturerDefaultPictures),
 				Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
-				AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName),
+				AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName),
                 File = file
 			};
 

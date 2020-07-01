@@ -462,7 +462,7 @@ namespace SmartStore.Web.Controllers
 					FullSizeImageWidth = file?.Dimensions.Width,
 					FullSizeImageHeight = file?.Dimensions.Height,
 					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
-					AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
+					AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
                     File = file
 				};
 			}

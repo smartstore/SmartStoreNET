@@ -7,6 +7,7 @@
 * **Rule Builder**:
 	* #1969 The preview grid is now displayed in a modal dialog.
 	* #1980 Added a cart rule for total quantity of products in cart.
+* #1995 The localized ALT text of media files is now respected for all frontend images.
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.

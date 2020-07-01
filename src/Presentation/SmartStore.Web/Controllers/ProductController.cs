@@ -204,14 +204,16 @@ namespace SmartStore.Web.Controllers
 						if (preparePictureModel)
 						{
                             var fileId = x.Manufacturer.MediaFileId.GetValueOrDefault();
-                            m.PictureModel.ImageUrl = _mediaService.GetUrl(fileId, 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
+							var file = x.Manufacturer.MediaFile ?? _mediaService.GetFileById(fileId)?.File;
 
-                            var fileUrl = _mediaService.GetUrl(fileId, 0);
+							m.PictureModel.ImageUrl = _mediaService.GetUrl(file, 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
+
+                            var fileUrl = _mediaService.GetUrl(file, 0);
 							if (fileUrl != null)
 							{
 								m.PictureModel.PictureId = fileId;
 								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
-								m.PictureModel.AlternateText = string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
+								m.PictureModel.AlternateText = file?.GetLocalized(f => f.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
 							}
 						}
 						return m;

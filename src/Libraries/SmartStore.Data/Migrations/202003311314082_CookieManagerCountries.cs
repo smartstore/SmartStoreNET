@@ -9,14 +9,13 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Country", "DisplayCookieManager", c => c.Boolean(nullable: false));
+            AddColumn("dbo.Country", "DisplayCookieManager", c => c.Boolean(nullable: false, defaultValue: true));
         }
         
         public override void Down()
         {
             DropColumn("dbo.Country", "DisplayCookieManager");
         }
-
 
         public bool RollbackOnFailure => true;
 

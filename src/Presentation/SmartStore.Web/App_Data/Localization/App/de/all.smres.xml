@@ -2998,6 +2998,12 @@
 	<LocaleResource Name="Admin.Catalog.ProductTags.Fields.ProductCount">
 		<Value>Anzahl Artikel</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.ProductTags.Published">
+		<Value>Veröffentlicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.ProductTags.Published.Hint">
+		<Value>Nicht veröffentlichte Tags sind im Shop nicht sichtbar, werden aber bei der Produktsuche berücksichtigt.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.CatalogSettings.CompareProducts">
 		<Value>Produktvergleich</Value>
 	</LocaleResource>
@@ -3633,6 +3639,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.AllowsShipping.Hint">
 		<Value>Ermöglicht den Versand an Kunden aus diesem Land.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayCookieManager">
+		<Value>Cookie-Manager anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayCookieManager.Hint">
+		<Value>Bestimmt, ob der Cookie-Manager Shop-Besuchern aus diesem Land angezeigt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayOrder.Hint">
 		<Value>Legt die Anzeigereihenfolge fest. Der Wert 1 bedeutet, dass dieses Land ganz oben in der Liste angezeigt wird.</Value>
@@ -4479,6 +4491,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.Name.Hint">
 		<Value>Legt den Namen der Verpackungseinheit fest</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.NamePlural">
+		<Value>Name Mehrzahl</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.NamePlural.Hint">
+		<Value>Legt den Namen in Mehrzahl fest. Beispiel: "Fässer" für die Verpackungseinheit "Fass".</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Quantityunits.Updated">
 		<Value>Verpackungseinheit wurde erfolgreich aktualisiert</Value>
@@ -5494,12 +5512,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy">
 		<Value>Datenschutz</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext">
-		<Value>Cookie-Hinweistext</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext.Hint">
-		<Value>Bestimmt den Text, der Ihren Kunden beim Besuch der Seite angezeigt wird, sofern Sie ihre Zustimmung zur Nutzung von Cookies noch nicht gegeben haben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms">
 		<Value>Einwilligungserklärung in Formularen fordern</Value>
@@ -7676,6 +7688,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.EndDate.Hint">
 		<Value>Setze das Enddatum für den Blogeintrag, (optional).</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro">
+		<Value>Intro</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro.Hint">
+		<Value>Legt das Intro des Blog-Posts fest.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language">
 		<Value>Sprache</Value>
 	</LocaleResource>
@@ -7699,6 +7717,24 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle.Hint">
 		<Value>Überschreibt den Titel der Seite als Meta title. Sonst ist die Überschrift des Blog-Eintrages das "Meta title".</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture">
+		<Value>Bild</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture.Hint">
+		<Value>Legt das Bild des Blog-Posts fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture">
+		<Value>Vorschaubild</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture.Hint">
+		<Value>Legt das Vorschaubild des Blog-Posts fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg">
+		<Value>Hintergrundfarbe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg.Hint">
+		<Value>Legt die Hintergrundfarbe des Blog-Posts fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SeName">
 		<Value>SEO Namen</Value>
@@ -7904,6 +7940,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.Icon.Hint">
 		<Value>Legt ein optionales Icon fest.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.IconColor">
+		<Value>Icon Farbe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.IconColor.Hint">
+		<Value>Legt die Farbe des Icons fest.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.InvalidRouteValues">
 		<Value>Bitte überprüfen Sie die Link-Daten. Auf Basis Ihrer Eingabe kann kein Link erzeugt werden.</Value>
 	</LocaleResource>
@@ -8090,6 +8132,24 @@
 	<LocaleResource Name="Admin.ContentManagement.News">
 		<Value>News</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.DisplayTagsInPreview">
+		<Value>Tags in Vorschau anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.DisplayTagsInPreview.Hint">
+		<Value>Bestimmt, ob Tags in der Vorschau eines Blog-Eintrags angezeigt werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.IsPublished">
+		<Value>Veröffentlicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.IsPublished.Hint">
+		<Value>Bestimmt, ob der Blog-Eintrag veröffentlicht ist und somit im Frontend dargestellt wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.PreviewDisplayType">
+		<Value>Vorschau-Darstellung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.PreviewDisplayType.Hint">
+		<Value>Legt die Darstellung der Vorschau für einen Blog-Eintrag fest.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.Comments">
 		<Value>Kommentare</Value>
 	</LocaleResource>
@@ -8173,6 +8233,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaTitle.Hint">
 		<Value>Überschreibt den Titel der Seite als Meta title. Sonst ist die Überschrift des News-Eintrags das "Meta title".</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture">
+		<Value>Bild</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture.Hint">
+		<Value>Legt das Bild des News-Eintrags fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.PreviewPicture">
+		<Value>Vorschaubild</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.PreviewPicture.Hint">
+		<Value>Legt das Vorschaubild des News-Eintrags fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Published">
 		<Value>Veröffentlicht</Value>
@@ -8993,6 +9065,9 @@
 	<LocaleResource Name="Admin.Customers.Customers.SendEmail.Body.Hint">
 		<Value>Geben Sie eine E-Mail-Nachricht ein.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.Customers.SendEmail.EmailNotValid">
+		<Value>Für den Kunden ist keine gültige E-Mail-Adresse hinterlegt.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendEmail.Queued">
 		<Value>Die E-Mail wurde versandt.</Value>
 	</LocaleResource>
@@ -9008,17 +9083,11 @@
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Message">
 		<Value>Nachricht</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Customers.SendPM.Message.Hint">
-		<Value>Eine private Nachricht eingeben.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Sent">
 		<Value>Die private Nachricht wurde versandt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Subject">
 		<Value>Betreff</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Customers.SendPM.Subject.Hint">
-		<Value>Betreff eingeben.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.Updated">
 		<Value>Der Benutzer wurde erfolgreich bearbeitet</Value>
@@ -11939,6 +12008,9 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
 		<Value>Anzahl stornierter Bestellungen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartProductCount">
+		<Value>Anzahl der Produkte</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartSubtotal">
 		<Value>Zwischensumme des Warenkorbes</Value>
 	</LocaleResource>
@@ -12844,6 +12916,21 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.NextRun.Hint">
 		<Value>Datum der nächsten geplanten Ausführung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority">
+		<Value>Wichtigkeit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.High">
+		<Value>Hoch</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Hint">
+		<Value>Aufgaben mit höherer Wichtigkeit werden zuerst ausgeführt, wenn mehrere Aufgaben zur Ausführung anstehen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Low">
+		<Value>Niedrig</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Normal">
+		<Value>Normal</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.RunningError">
 		<Value>Fehler beim Ausführen der Aufgabe "{0}"</Value>
@@ -13905,6 +13992,15 @@
 	<LocaleResource Name="Common.Close">
 		<Value>Schließen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Cms.EditBlogPost">
+		<Value>Blog-Post bearbeiten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Cms.EditNewsItem">
+		<Value>News-Eintrag bearbeiten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Cms.ReadMore">
+		<Value>Mehr lesen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Columns">
 		<Value>Spalten</Value>
 	</LocaleResource>
@@ -14421,6 +14517,9 @@
 	<LocaleResource Name="Common.Plugin">
 		<Value>Plugin</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Plural">
+		<Value>Mehrzahl</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Product">
 		<Value>Artikel</Value>
 	</LocaleResource>
@@ -14634,6 +14733,9 @@
 	<LocaleResource Name="Common.Website">
 		<Value>Web-Seite</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.White">
+		<Value>Weiß</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.WrongCaptcha">
 		<Value>Bitte bestätigen Sie, dass Sie kein "Roboter" sind.</Value>
 	</LocaleResource>
@@ -14685,11 +14787,47 @@
 	<LocaleResource Name="Content.CopyrightNotice">
 		<Value>Copyright &amp;copy; {0} {1}. Alle Rechte vorbehalten.</Value>
 	</LocaleResource>
-	<LocaleResource Name="CookieConsent.BadgeText">
-		<Value>{0} benutzt Cookies, um Ihnen das beste Einkaufserlebnis zu ermöglichen. Zum Teil werden Cookies auch von Drittanbietern gesetzt. &lt;a href='{1}'&gt;Datenschutzerklärung&lt;/a&gt;</Value>
+	<LocaleResource Name="CookieManager.Dialog.Analytics.Heading">
+		<Value>Analytische Cookies</Value>
 	</LocaleResource>
-	<LocaleResource Name="CookieConsent.Button">
-		<Value>Ok, verstanden</Value>
+	<LocaleResource Name="CookieManager.Dialog.Analytics.Intro">
+		<Value>Diese Cookies helfen uns, unsere Website zu verbessern, indem wir anonym die Leistung und die Verwendung unserer Seite verstehen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Button.AcceptAll">
+		<Value>Alle auswählen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Button.AcceptSelected">
+		<Value>Auswahl bestätigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Heading">
+		<Value>Ja, wir verwenden Cookies</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Intro">
+		<Value>Sie entscheiden, welche Cookies Sie zulassen oder ablehnen. Ihre Entscheidung können Sie jederzeit in Ihrem &lt;a href='{0}'&gt;My-Account-Bereich&lt;/a&gt; ändern. Weitere Infos auch in unserer &lt;a href='{1}'&gt;Datenschutzerklärung&lt;/a&gt;.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ReadMore">
+		<Value>Weiterlesen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Required.Heading">
+		<Value>Notwendige Cookies</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Required.Intro">
+		<Value>Technisch erforderliche Cookies helfen uns dabei, die Bedienung der Webseite zu ermöglichen. Sie stellen Grundfunktionen, wie die Darstellung von Produkten oder den Login sicher und sind daher eine Voraussetzung zur Nutzung der Seite.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Show">
+		<Value>Anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ThirdParty.Heading">
+		<Value>Cookies von Drittanbietern</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ThirdParty.Intro">
+		<Value>Diese Cookies helfen uns, Komfort-Funktionen von anderen Dienstanbietern zu nutzen und in unseren Shop einzubinden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Title">
+		<Value>Cookie-Einstellungen</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.MyAccount.Button">
+		<Value>Cookie Manager</Value>
 	</LocaleResource>
 	<LocaleResource Name="Currencies">
 		<Value>Währungen</Value>
@@ -14741,6 +14879,24 @@
 	</LocaleResource>
 	<LocaleResource Name="DownloadableProducts.UserAgreementConfirmation">
 		<Value>Ja, ich stimme der &lt;a href='javascript:void(0)' data-id='{0}' class='download-user-agreement'&gt;Nutzungsvereinbarung&lt;/a&gt; für dieses Produkt zu.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Bare">
+		<Value>Minimal (kein Bild, kein Hintergrund)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Default">
+		<Value>Bild über Text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.DefaultSectionBg">
+		<Value>Bild hinter Text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Preview">
+		<Value>Galleriebild über Text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.PreviewSectionBg">
+		<Value>Galleriebild hinter Text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.SectionBg">
+		<Value>Hintergrundfarbe</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes">
 		<Value>Kästchen (Farbe &amp; Bild)</Value>

@@ -24,7 +24,7 @@
 		@if (picture.Title.HasValue())
 		{
 			<a class='art-picture img-center-container@(addPictureClass)' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
-				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" loading="lazy" />
 			</a>
 		}
 	</div>

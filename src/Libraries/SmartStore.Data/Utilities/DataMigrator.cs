@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Policy;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -897,18 +898,20 @@ DELETE TOP(20000) [c]
             }
 
             var mappingSet = ctx.Set<PermissionRoleMapping>();
-            var permissionSet = ctx.Set<PermissionRecord>();
-            var allPermissions = permissionSet.ToList();
             var oldPermissions = GetOldPermissions();
-            var allRoles = ctx.Set<CustomerRole>()
-                .Where(x => !string.IsNullOrEmpty(x.SystemName))
-                .ToList()
-                .ToDictionarySafe(x => x.SystemName, x => x, StringComparer.OrdinalIgnoreCase);
 
-            allRoles.TryGetValue(SystemCustomerRoleNames.Administrators, out var adminRole);
-            allRoles.TryGetValue(SystemCustomerRoleNames.ForumModerators, out var forumModRole);
-            allRoles.TryGetValue(SystemCustomerRoleNames.Registered, out var registeredRole);
-            allRoles.TryGetValue(SystemCustomerRoleNames.Guests, out var guestRole);
+            var allRoleIds = ctx.Set<CustomerRole>()
+                .AsNoTracking()
+                .Where(x => !string.IsNullOrEmpty(x.SystemName))
+                .Select(x => new { x.Id, x.SystemName })
+                .ToList()
+                .ToDictionarySafe(x => x.SystemName, x => x.Id, StringComparer.OrdinalIgnoreCase);
+
+            allRoleIds.TryGetValue(SystemCustomerRoleNames.Administrators, out var adminRoleId);
+            allRoleIds.TryGetValue(SystemCustomerRoleNames.ForumModerators, out var forumModRoleId);
+            allRoleIds.TryGetValue(SystemCustomerRoleNames.Registered, out var registeredRoleId);
+            allRoleIds.TryGetValue(SystemCustomerRoleNames.Guests, out var guestRoleId);
+            allRoleIds.Clear();
 
             // Mapping has no entity and no navigation property -> use SQL.
             var oldMappings = context.SqlQuery<OldPermissionRoleMapping>("select * from [dbo].[PermissionRecord_Role_Mapping]")
@@ -916,6 +919,11 @@ DELETE TOP(20000) [c]
                 .ToMultimap(x => x.PermissionRecord_Id, x => x.CustomerRole_Id);
 
             var permissionToRoles = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
+            var allPermissions = ctx.Set<PermissionRecord>()
+                .AsNoTracking()
+                .Select(x => new { x.Id, x.SystemName })
+                .ToList();
+
             foreach (var permission in allPermissions)
             {
                 var roleIds = oldMappings.ContainsKey(permission.Id)
@@ -924,26 +932,13 @@ DELETE TOP(20000) [c]
 
                 permissionToRoles.AddRange(permission.SystemName, roleIds);
             }
+            allPermissions.Clear();
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                // Name and category property cannot be null, exist in database, but not in the domain model -> use SQL.
-                var insertSql = "Insert Into PermissionRecord (SystemName, Name, Category) Values({0}, {1}, {2})";
                 var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
 
-                // Delete existing granular permissions to ensure correct order in tree.
-                permissionSet.RemoveRange(permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName)).ToList());
-                scope.Commit();
-
-                // Insert new granular permissions.
-                foreach (var permissionName in permissionSystemNames)
-                {
-                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
-                }
-                
-                var newPermissions = permissionSet.Where(x => permissionSystemNames.Contains(x.SystemName))
-                    .ToList()
-                    .ToDictionarySafe(x => x.SystemName, x => x);
+                var newPermissions = InsertPermissions(scope, permissionSystemNames);
 
                 // Migrate mappings of standard permissions (whether the new permission is granted).
                 foreach (var kvp in oldPermissions)
@@ -957,20 +952,19 @@ DELETE TOP(20000) [c]
                 scope.Commit();
 
                 // Add mappings for new permissions.
-                AllowForRole(adminRole,
+                AllowForRole(adminRoleId,
                     newPermissions[Permissions.Cart.Read],
                     newPermissions[Permissions.System.Rule.Self]);
 
                 // Add mappings originally added by old migrations.
                 // We had to remove these migration statements again because the table does not yet exist at this time.
-                AllowForRole(adminRole,
+                AllowForRole(adminRoleId,
                     newPermissions[Permissions.Configuration.Export.Self],
                     newPermissions[Permissions.Configuration.Import.Self],
                     newPermissions[Permissions.System.UrlRecord.Self],
                     newPermissions[Permissions.Cms.Menu.Self]);
 
                 scope.Commit();
-                newPermissions.Clear();
 
                 // Migrate known plugin permissions.
                 var pluginPermissionNames = new Dictionary<string, string>
@@ -1011,19 +1005,8 @@ DELETE TOP(20000) [c]
                     }
                 }
 
-                // Delete existing granular permissions to ensure correct order in tree.
-                permissionSet.RemoveRange(permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName)).ToList());
-                scope.Commit();
-
-                // Insert new granular permissions.
-                foreach (var permissionName in allPluginPermissionNames)
-                {
-                    ctx.Database.ExecuteSqlCommand(insertSql, permissionName, string.Empty, string.Empty);
-                }
-
-                newPermissions = permissionSet.Where(x => allPluginPermissionNames.Contains(x.SystemName))
-                    .ToList()
-                    .ToDictionarySafe(x => x.SystemName, x => x);
+                newPermissions.Clear();
+                newPermissions = InsertPermissions(scope, allPluginPermissionNames);
 
                 // Add PermissionRoleMapping for old plugin permissions.
                 PermissionRecord pr;
@@ -1075,15 +1058,15 @@ DELETE TOP(20000) [c]
                 // Add PermissionRoleMapping for default plugin permissions.
                 if (newPermissions.TryGetValue("pagebuilder.displaystory", out pr))
                 {
-                    AllowForRole(forumModRole, pr);
-                    AllowForRole(guestRole, pr);
-                    AllowForRole(registeredRole, pr);
+                    AllowForRole(forumModRoleId, pr);
+                    AllowForRole(guestRoleId, pr);
+                    AllowForRole(registeredRoleId, pr);
                 }
                 if (newPermissions.TryGetValue("contentslider.displayslider", out pr))
                 {
-                    AllowForRole(forumModRole, pr);
-                    AllowForRole(guestRole, pr);
-                    AllowForRole(registeredRole, pr);
+                    AllowForRole(forumModRoleId, pr);
+                    AllowForRole(guestRoleId, pr);
+                    AllowForRole(registeredRoleId, pr);
                 }
 
                 scope.Commit();
@@ -1132,17 +1115,17 @@ DELETE TOP(20000) [c]
                 }
             }
 
-            void AllowForRole(CustomerRole role, params PermissionRecord[] permissions)
+            void AllowForRole(int roleId, params PermissionRecord[] permissions)
             {
                 foreach (var permission in permissions)
                 {
-                    if (!mappingSet.Any(x => x.PermissionRecordId == permission.Id && x.CustomerRoleId == role.Id))
+                    if (!mappingSet.Any(x => x.PermissionRecordId == permission.Id && x.CustomerRoleId == roleId))
                     {
                         mappingSet.Add(new PermissionRoleMapping
                         {
                             Allow = true,
                             PermissionRecordId = permission.Id,
-                            CustomerRoleId = role.Id
+                            CustomerRoleId = roleId
                         });
                     }
                 }
@@ -1201,6 +1184,44 @@ DELETE TOP(20000) [c]
                 map.Add("PublicStoreAllowNavigation", Permissions.System.AccessShop);
 
                 return map;
+            }
+
+            Dictionary<string, PermissionRecord> InsertPermissions(DbContextScope scope, IEnumerable<string> systemNames)
+            {
+                var newPermissions = new Dictionary<string, PermissionRecord>();
+                var newPermissionSql = "Select * From [dbo].[PermissionRecord] Where [Name] = '' And [Category] = ''";
+
+                // Delete existing granular permissions to ensure correct order in tree.
+                // Maybe this step is not required anymore but doesn't hurt.
+                var existingPermissions = ctx.SqlQuery<PermissionRecord>(newPermissionSql);
+                foreach (var permission in existingPermissions)
+                {
+                    if (systemNames.Contains(permission.SystemName))
+                    {
+                        ctx.Database.ExecuteSqlCommand("Delete From [dbo].[PermissionRecord] Where [Id] = {0}", permission.Id);
+                    }
+                }
+
+                // Insert new granular permissions.
+                // Name and category property cannot be null, exist in database, but not in the domain model -> use SQL.
+                foreach (var name in systemNames)
+                {
+                    ctx.Database.ExecuteSqlCommand("Insert Into PermissionRecord (SystemName, Name, Category) Values({0}, {1}, {2})",
+                        name, string.Empty, string.Empty);
+                }
+
+                // Now load new permissions.
+                var permissions = ctx.SqlQuery<PermissionRecord>(newPermissionSql);
+                foreach (var permission in permissions)
+                {
+                    if (systemNames.Contains(permission.SystemName))
+                    {
+                        // It's a new granular permission.
+                        newPermissions[permission.SystemName] = permission;
+                    }
+                }
+
+                return newPermissions;
             }
         }
 

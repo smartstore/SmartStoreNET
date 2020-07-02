@@ -2,7 +2,6 @@
 using System.Text;
 using System.Web.Mvc;
 using System.Web.WebPages;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
@@ -22,21 +21,28 @@ namespace SmartStore.Web.Framework.UI
             return new HelperResult(writer => writer.Write("<i class='fa fa-fw icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
         }
 
-		public static string LabeledProductName<T>(this HtmlHelper<T> helper, string id, string name, string typeName = "ProductTypeName", string typeLabelHint = "ProductTypeLabelHint")
+		public static string LabeledProductName<T>(
+			this HtmlHelper<T> helper,
+			string id,
+			string name,
+			string typeName = "ProductTypeName",
+			string typeLabelHint = "ProductTypeLabelHint",
+			string target = null)
 		{
-			string namePart = null;
-
-			if (id.HasValue())
+            string namePart;
+            if (id.HasValue())
 			{
-				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, name);
+				var url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
+				var targetAttr = target.HasValue() ? $" target=\"{target}\"" : string.Empty;
+
+				namePart = "<a href=\"{0}<#= {1} #>\"{2}><#= {3} #></a>".FormatInvariant(url, id, targetAttr, name);
 			}
 			else
 			{
 				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
 			}
 
-			string result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			var result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
 			
 			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}

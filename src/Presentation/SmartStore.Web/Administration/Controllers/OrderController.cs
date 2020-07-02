@@ -2796,7 +2796,6 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
-
         [NonAction]
         protected void SetOrderReportData(List<DashboardChartReportModel> reports, OrderDataPoint dataPoint)
         {
@@ -2837,21 +2836,21 @@ namespace SmartStore.Admin.Controllers
                 today.Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
                 today.Quantity[dataPoint.CreatedOn.Hour]++;
                 // Ignore yesterday if today
-                week.Amount[reports[2].DataSets[0].Amount.Length - 1] += dataPoint.OrderTotal;
-                week.Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
+                week.Amount[6] += dataPoint.OrderTotal;
+                week.Quantity[6]++;
             }
             else if (periodStatus == PeriodState.Yesterday)
             {
                 // Ignore today if yesterday
                 reports[1].DataSets[dataIndex].Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
                 reports[1].DataSets[dataIndex].Quantity[dataPoint.CreatedOn.Hour]++;
-                reports[2].DataSets[dataIndex].Amount[reports[2].DataSets[0].Amount.Length - 2] += dataPoint.OrderTotal;
-                reports[2].DataSets[dataIndex].Quantity[reports[2].DataSets[0].Quantity.Length - 2]++;
+                reports[2].DataSets[dataIndex].Amount[5] += dataPoint.OrderTotal;
+                reports[2].DataSets[dataIndex].Quantity[5]++;
             }
             else if (periodStatus == PeriodState.Week)
             {
                 // Ignore today and yesterday
-                var weekIndex = (userTime - dataPoint.CreatedOn).Days;
+                var weekIndex = 6 - (userTime - dataPoint.CreatedOn).Days;
                 reports[2].DataSets[dataIndex].Amount[weekIndex] += dataPoint.OrderTotal;
                 reports[2].DataSets[dataIndex].Quantity[weekIndex]++;
             }

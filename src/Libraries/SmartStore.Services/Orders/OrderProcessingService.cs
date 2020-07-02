@@ -629,12 +629,8 @@ namespace SmartStore.Services.Orders
             // Payment.
             if (!warnings.Any() && !skipPaymentWorkflow)
             {
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
-                if (paymentMethod == null)
-                {
-                    warnings.Add(T("Payment.CouldNotLoadMethod"));
-                }
-                else if (!paymentMethod.IsPaymentMethodActive(_paymentSettings))
+                var isPaymentMethodActive = _paymentService.IsPaymentMethodActive(paymentMethodSystemName, customer, cart, processPaymentRequest.StoreId);
+                if (!isPaymentMethodActive)
                 {
                     warnings.Add(T("Payment.MethodNotAvailable"));
                 }

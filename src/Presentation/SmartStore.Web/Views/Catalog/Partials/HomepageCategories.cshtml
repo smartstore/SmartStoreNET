@@ -18,7 +18,7 @@
 				@if (picture != null && picture.ImageUrl.HasValue())
 				{
 					<a class="art-picture img-center-container" href="@item.Url" title="@picture.Title">
-						<img src="@picture.ImageUrl" alt="@picture.AlternateText" />
+						<img src="@picture.ImageUrl" alt="@picture.AlternateText" loading="lazy" />
 					</a>
 				}
 			</div>

@@ -6,7 +6,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Domain.Messages;
     using SmartStore.Data.Setup;
 
-    public partial class GenericMessageTemplate : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class GenericMessageTemplate : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

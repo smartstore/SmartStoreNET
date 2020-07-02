@@ -356,6 +356,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         padding-bottom: $s2bs-padding-base-vertical;
         padding-left: $s2bs-padding-base-horizontal;
         padding-right: calc(#{$s2sm-caret-width} + #{$s2bs-padding-base-horizontal / 2});
+        --border-radius: #{$input-border-radius};
         //padding-right: ($s2bs-padding-base-horizontal + ($s2bs-caret-width-base * 3));
         /**
      * Adjust the single Select2's dropdown arrow button appearance.
@@ -374,6 +375,9 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
             border-left-width: 1px;
             width: calc(#{$s2sm-caret-width} - 2px);
             background-color: $s2sm-shade-bg;
+            border-radius: var(--border-radius);
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
 
             b {
                 border-color: $s2bs-dropdown-arrow-color transparent transparent transparent;
@@ -491,9 +495,11 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         height: $s2bs-input-height-small;
         line-height: $s2bs-line-height-small;
         padding: $s2bs-padding-small-vertical $s2bs-padding-small-horizontal + $s2bs-caret-width-base*3 $s2bs-padding-small-vertical $s2bs-padding-small-horizontal;
+        --border-radius: #{$input-border-radius-sm};
         /* 2 */
         .select2-selection__arrow {
             width: calc(#{$input-height-sm} - 2px);
+            border-radius: $border-radius;
         }
     }
 
@@ -536,6 +542,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         padding-right: calc(#{$s2bs-input-height-large} + #{$s2bs-caret-width-large*2});
         padding-bottom: $s2bs-padding-large-vertical;
         padding-left: $s2bs-padding-large-horizontal;
+        --border-radius: #{$input-border-radius-lg};
         /* 1 */
         .select2-selection__arrow {
             width: calc(#{$input-height-lg} - 2px);
@@ -714,6 +721,10 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
                 right: auto;
                 border-left-width: 0;
                 border-right-width: 1px;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                border-top-left-radius: var(--border-radius);
+                border-bottom-left-radius: var(--border-radius);
             }
         }
 

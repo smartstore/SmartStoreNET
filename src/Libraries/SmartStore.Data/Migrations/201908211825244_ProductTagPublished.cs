@@ -5,7 +5,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Data;
     using SmartStore.Data.Setup;
 
-    public partial class ProductTagPublished : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class ProductTagPublished : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

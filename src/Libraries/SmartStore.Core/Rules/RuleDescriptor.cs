@@ -10,6 +10,7 @@ namespace SmartStore.Rules
         protected RuleDescriptor(RuleScope scope)
         {
             Scope = scope;
+            Constraints = new IRuleConstraint[0];
             Metadata = new Dictionary<string, object>();
         }
 

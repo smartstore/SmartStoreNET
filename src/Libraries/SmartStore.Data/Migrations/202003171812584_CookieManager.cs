@@ -8,7 +8,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Domain.Localization;
     using SmartStore.Data.Setup;
 
-    public partial class CookieManager : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class CookieManager : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

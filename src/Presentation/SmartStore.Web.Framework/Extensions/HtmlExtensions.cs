@@ -146,6 +146,8 @@ namespace SmartStore.Web.Framework
 
 			helper.SmartStore().Window().Name(modalId)
 				.Title(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.AreYouSure"))
+				.AddCssClass("modal-confirm-delete")
+				.BodyHtmlAttributes(new { @class = "pt-0" })
 				.Content(helper.Partial("Delete", deleteConfirmationModel).ToHtmlString())
 				.Show(false)
 				.Render();

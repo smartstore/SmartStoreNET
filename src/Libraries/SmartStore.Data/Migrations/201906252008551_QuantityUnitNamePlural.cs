@@ -8,7 +8,7 @@ namespace SmartStore.Data.Migrations
     using SmartStore.Core.Domain.Localization;
     using SmartStore.Data.Setup;
 
-    public partial class QuantityUnitNamePlural : DbMigration, IDataSeeder<SmartObjectContext>
+    public partial class QuantityUnitNamePlural : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

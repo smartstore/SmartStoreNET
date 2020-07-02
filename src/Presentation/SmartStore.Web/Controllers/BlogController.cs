@@ -114,7 +114,7 @@ namespace SmartStore.Web.Controllers
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
                 Title = blogPost.Title,
-                AlternateText = blogPost.Title,
+                AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? blogPost.Title,
                 File = file
             };
 

@@ -299,6 +299,17 @@ namespace SmartStore.Services.Tasks
         {
             var query = _taskHistoryRepository.TableUntracked;
 
+            if (lastEntryOnly)
+            {
+                query =
+                    from th in query
+                    group th by th.ScheduleTaskId into grp
+                    select grp
+                        .OrderByDescending(x => x.StartedOnUtc)
+                        .ThenByDescending(x => x.Id)
+                        .FirstOrDefault();
+            }
+
             if (taskId != 0)
             {
                 query = query.Where(x => x.ScheduleTaskId == taskId);
@@ -311,17 +322,6 @@ namespace SmartStore.Services.Tasks
             if (isRunning.HasValue)
             {
                 query = query.Where(x => x.IsRunning == isRunning.Value);
-            }
-
-            if (lastEntryOnly)
-            {
-                query =
-                    from th in query
-                    group th by th.ScheduleTaskId into grp
-                    select grp
-                        .OrderByDescending(x => x.StartedOnUtc)
-                        .ThenByDescending(x => x.Id)
-                        .FirstOrDefault();
             }
 
             query = query

@@ -54,7 +54,7 @@
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-
-        }
+			builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartProductCount", "Number of products", "Anzahl der Produkte");
+		}
     }
 }

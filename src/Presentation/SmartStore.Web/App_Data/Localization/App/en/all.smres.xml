@@ -3091,6 +3091,12 @@
 	<LocaleResource Name="Admin.Catalog.ProductTags.Fields.ProductCount">
 		<Value>Tagged products</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.ProductTags.Published">
+		<Value>Published</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.ProductTags.Published.Hint">
+		<Value>Tags that have not been published are not visible in the shop, but are taken into account in the product search.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.CatalogSettings.CompareProducts">
 		<Value>Compare products</Value>
 	</LocaleResource>
@@ -3735,6 +3741,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.AllowsShipping.Hint">
 		<Value>Allow shipping to customers located in this country.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayCookieManager">
+		<Value>Display Cookie Manager</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayCookieManager.Hint">
+		<Value>Specifies whether the Cookie Manager will be displayed to shop visitors from this country.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayOrder.Hint">
 		<Value>The display order for this country. 1 represents the top of the list.</Value>
@@ -4626,6 +4638,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.Name.Hint">
 		<Value>Set the name of quantity unit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.NamePlural">
+		<Value>Name plural</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.NamePlural.Hint">
+		<Value>Sets the name in plural. Example: "Barrels" for the unit "Barrel".</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Quantityunits.Updated">
 		<Value>Quantity unit successfully updated</Value>
@@ -5644,12 +5662,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy">
 		<Value>Privacy</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext">
-		<Value>Cookie consent display text</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext.Hint">
-		<Value>Specifies the text, that will be displayed to your customers if they havn't agreed to the usage of cookis yet.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms">
 		<Value>Get privacy consent for form submissions</Value>
@@ -7859,6 +7871,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.EndDate.Hint">
 		<Value>Set the blog post end date or leave empty.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro">
+		<Value>Intro</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro.Hint">
+		<Value>Specifies the intro of the blog post.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language">
 		<Value>Language</Value>
 	</LocaleResource>
@@ -7882,6 +7900,24 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle.Hint">
 		<Value>Override the page title. The default is the title of the blog post.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture">
+		<Value>Picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture.Hint">
+		<Value>Specifies the picture of the blog post.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture">
+		<Value>Preview picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.PreviewPicture.Hint">
+		<Value>Specifies the preview picture of the blog post.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg">
+		<Value>Background color</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg.Hint">
+		<Value>Specifies the background color of the blog post.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SeName">
 		<Value>Search engine friendly page name</Value>
@@ -8096,6 +8132,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.Icon.Hint">
 		<Value>Specifies an optional icon.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.IconColor">
+		<Value>Icon color</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Menus.Item.IconColor.Hint">
+		<Value>Specifies the color of the icon.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Menus.Item.InvalidRouteValues">
 		<Value>Please check the link data. No link can be created on the basis of your input.</Value>
 	</LocaleResource>
@@ -8285,6 +8327,24 @@
 	<LocaleResource Name="Admin.ContentManagement.News">
 		<Value>News</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.DisplayTagsInPreview">
+		<Value>Display tags on preview</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.DisplayTagsInPreview.Hint">
+		<Value>Specifies whether tags are display in the preview for blog item.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.IsPublished">
+		<Value>Is published</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.IsPublished.Hint">
+		<Value>Specifies whether the blog post is published and thus will be displayed in the frontend</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.PreviewDisplayType">
+		<Value>Preview display type</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.Blog.BlogPosts.Fields.PreviewDisplayType.Hint">
+		<Value>Specifies display type of the preview for a blog item.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.Comments">
 		<Value>News comments</Value>
 	</LocaleResource>
@@ -8374,6 +8434,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaTitle.Hint">
 		<Value>Override the page title. The default is the title of the news.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture">
+		<Value>Picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture.Hint">
+		<Value>Specifies the picture of the news item.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.PreviewPicture">
+		<Value>Preview picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.PreviewPicture.Hint">
+		<Value>Specifies the preview picture of the news item.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Published">
 		<Value>Published</Value>
@@ -9218,6 +9290,9 @@
 	<LocaleResource Name="Admin.Customers.Customers.SendEmail.Body.Hint">
 		<Value>Enter the message of email.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.Customers.SendEmail.EmailNotValid">
+		<Value>No valid e-mail address is stored for the customer.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendEmail.Queued">
 		<Value>The email has been queued successfully.</Value>
 	</LocaleResource>
@@ -9233,17 +9308,11 @@
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Message">
 		<Value>The message</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Customers.SendPM.Message.Hint">
-		<Value>Enter the message of PM.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Sent">
 		<Value>The PM has been sent successfully.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.SendPM.Subject">
 		<Value>The subject</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Customers.SendPM.Subject.Hint">
-		<Value>Enter the subject of PM.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.Updated">
 		<Value>The customer has been updated successfully.</Value>
@@ -12230,6 +12299,9 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
 		<Value>Cancelled order count</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartProductCount">
+		<Value>Number of products</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartSubtotal">
 		<Value>Subtotal amount of cart</Value>
 	</LocaleResource>
@@ -13156,6 +13228,21 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.NextRun.Hint">
 		<Value>Date of the next scheduled execution</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority">
+		<Value>Priority</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.High">
+		<Value>High</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Hint">
+		<Value>Tasks with higher priority run first when multiple tasks are pending.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Low">
+		<Value>Low</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Priority.Normal">
+		<Value>Normal</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.RunningError">
 		<Value>Error while running scheduled task "{0}"</Value>
@@ -14259,6 +14346,15 @@
 	<LocaleResource Name="Common.Close">
 		<Value>Close</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Cms.EditBlogPost">
+		<Value>Edit blog post</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Cms.EditNewsItem">
+		<Value>Edit news item</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Cms.ReadMore">
+		<Value>Read more</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Columns">
 		<Value>Columns</Value>
 	</LocaleResource>
@@ -14775,6 +14871,9 @@
 	<LocaleResource Name="Common.Plugin">
 		<Value>Plugin</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Plural">
+		<Value>Plural</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Product">
 		<Value>Product</Value>
 	</LocaleResource>
@@ -14988,6 +15087,9 @@
 	<LocaleResource Name="Common.Website">
 		<Value>Website</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.White">
+		<Value>White</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.WrongCaptcha">
 		<Value>Please confirm that you are not a "robot".</Value>
 	</LocaleResource>
@@ -15039,11 +15141,47 @@
 	<LocaleResource Name="Content.CopyrightNotice">
 		<Value>Copyright &amp;copy; {0} {1}. All rights reserved.</Value>
 	</LocaleResource>
-	<LocaleResource Name="CookieConsent.BadgeText">
-		<Value>{0} is using cookies, to guarantee the best shopping experience. Partially cookies will be set by third parties. &lt;a href='{1}'&gt;Privacy Info&lt;/a&gt;</Value>
+	<LocaleResource Name="CookieManager.Dialog.Analytics.Heading">
+		<Value>Analytical cookies</Value>
 	</LocaleResource>
-	<LocaleResource Name="CookieConsent.Button">
-		<Value>Okay, got it</Value>
+	<LocaleResource Name="CookieManager.Dialog.Analytics.Intro">
+		<Value>These cookies help us to improve our website by anonymously understanding the performance and use of our site.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Button.AcceptAll">
+		<Value>Accept all</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Button.AcceptSelected">
+		<Value>Accept selected</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Heading">
+		<Value>Yes, we use cookies</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Intro">
+		<Value>You decide which cookies you allow or reject. You can change your decision at any time in your &lt;a href='{0}'&gt;My Account area&lt;/a&gt;. Further information can also be found in our &lt;a href='{1}'&gt;privacy policy&lt;/a&gt;.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ReadMore">
+		<Value>Read more</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Required.Heading">
+		<Value>Required cookies</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Required.Intro">
+		<Value>Technically required cookies help us to make the operation of the website possible. They provide basic functions such as the display of products or login and are therefore a prerequisite for using the site.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Show">
+		<Value>Show</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ThirdParty.Heading">
+		<Value>Third party cookies</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.ThirdParty.Intro">
+		<Value>These cookies help us to use comfort functions of other service providers and integrate them into our shop.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Title">
+		<Value>Cookie settings</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieManager.MyAccount.Button">
+		<Value>Cookie Manager</Value>
 	</LocaleResource>
 	<LocaleResource Name="Currencies">
 		<Value>Currencies</Value>
@@ -15095,6 +15233,24 @@
 	</LocaleResource>
 	<LocaleResource Name="DownloadableProducts.UserAgreementConfirmation">
 		<Value>Yes, I agree to the &lt;a href='javascript:void(0)' data-id='{0}' class='download-user-agreement'&gt;user agreement&lt;/a&gt; for this product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Bare">
+		<Value>Minimal (no image, no background)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Default">
+		<Value>Picture over text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.DefaultSectionBg">
+		<Value>Picture behind text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.Preview">
+		<Value>Preview picture over text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.PreviewSectionBg">
+		<Value>Preview picture behind text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.SectionBg">
+		<Value>Background color</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes">
 		<Value>Boxes (color &amp; image)</Value>

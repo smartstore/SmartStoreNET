@@ -111,6 +111,10 @@ $h6-font-size: 1rem;
 $small-font-size:               90%;
 $headings-font-weight:			400;
 
+$border-radius:		0.25rem;
+$border-radius-sm:	0.2rem;
+$border-radius-lg:	0.3rem;
+
 
 // Shadows
 
@@ -144,11 +148,12 @@ $input-btn-line-height:         1.5;
 $input-box-shadow:              none;
 $input-focus-border-color:		lighten($sm-blue2, 30%);
 $input-focus-box-shadow:        none;
-$input-border-radius:           2px;
-$input-border-radius-lg:        3px;
-$input-border-radius-sm:        2px;
+$input-border-radius:           0.2rem;
+$input-border-radius-lg:        0.25rem;
+$input-border-radius-sm:        0.2rem;
 $input-transition:              none;
 $input-group-addon-bg:			$gray-100;
+$input-border-color:			$gray-300;
 
 $btn-font-weight:				600;
 $btn-focus-width:				0; //$input-btn-focus-width;
@@ -189,7 +194,10 @@ $component-active-bg:			lighten($primary, 36%);
 $component-active-color:		inherit;
 
 
+$modal-inner-padding:               1.25rem;
+$modal-header-padding:              1.25rem;
 $modal-content-border-width:        0;
+$modal-content-border-radius:		$border-radius;
 $modal-backdrop-opacity:            .75;
 $modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
 $modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .12), 0 15px 35px rgba(#32325d, .27), 0 5px 15px rgba(#000, .25);
@@ -204,14 +212,6 @@ $embed-responsive-aspect-ratios: (
   (1 1)
 );
 
-
-/*$custom-control-indicator-bg:				$gray-200;
-$custom-control-indicator-disabled-bg:		$gray-100;
-$custom-control-indicator-checked-color:	#fff;
-$custom-control-indicator-checked-bg:		$primary;
-$custom-control-indicator-active-color:		#fff;
-$custom-control-indicator-active-bg:		$component-active-bg;
-$custom-checkbox-indicator-indeterminate-bg:$primary;*/
 
 $custom-control-indicator-bg:					$gray-200;
 $custom-control-indicator-disabled-bg:			$gray-100;

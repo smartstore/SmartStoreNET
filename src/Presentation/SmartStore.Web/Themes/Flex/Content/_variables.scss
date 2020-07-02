@@ -207,7 +207,10 @@ $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
 // Modal
 
+$modal-inner-padding:               1.25rem;
+$modal-header-padding:              1.25rem;
 $modal-content-border-width:        0;
+$modal-content-border-radius:		$border-radius;
 $modal-backdrop-opacity:            .75;
 $modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
 $modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .1), 0 15px 35px rgba(#32325d, .15), 0 5px 15px rgba(#000, .1);

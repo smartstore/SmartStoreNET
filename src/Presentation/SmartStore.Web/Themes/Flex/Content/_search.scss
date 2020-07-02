@@ -27,7 +27,7 @@ $facet-selection-color:             darken($success, 15%);
     position: relative;
     padding-left: 1rem;
     padding-right: 1rem;
-    border-radius: 2px;
+    //border-radius: 2px;
     background: $searchbox-bg;
     border-color: $searchbox-border-color;
     box-shadow: none;
@@ -35,7 +35,8 @@ $facet-selection-color:             darken($success, 15%);
     padding-right: 60px;
 
     &:hover, &:focus, &:active {
-        box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
+        //box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
+        box-shadow: $box-shadow-sm-var;
     }
      &:focus, &:active {
         background-color: $searchbox-focus-bg;
@@ -73,10 +74,10 @@ $facet-selection-color:             darken($success, 15%);
     max-width: 100%;
     min-height: 50px;
     border: 1px solid $searchbox-border-active-color;
-    box-shadow: 0 6px 6px 0 rgba(0,0,0, 0.12);
+    box-shadow: $box-shadow-var; // 0 6px 6px 0 rgba(0,0,0, 0.12);
     background-color: $dropdown-bg;
     z-index: $zindex-dropdown + 100;
-    border-radius: 0 0 2px 2px;   
+    border-radius: 0 0 $border-radius $border-radius;   
 
     &.open {
         display: block;

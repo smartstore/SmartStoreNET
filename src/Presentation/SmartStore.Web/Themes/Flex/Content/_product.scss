@@ -43,6 +43,10 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-tabs {
     margin-bottom: 1rem;
+
+    > .nav-tabs {
+        justify-content: center;
+    }
 }
 
 
@@ -75,11 +79,12 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 // =====================================================
 
 .pd-name {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
+    font-weight: $font-weight-bold;
 }
 
 .pd-name-sm {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: $font-weight-medium;
 }
 
@@ -166,6 +171,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     padding: $pd-offer-spacing;
     line-height: $pd-line-height;
     width: 100%;
+    border-radius: $border-radius;
 }
 
 .row.pd-offer-actions {

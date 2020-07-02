@@ -218,6 +218,7 @@
 .menubar {
     display: flex;
     flex-direction: row;
+    padding: 0;
 }
 
 .menubar-group {
@@ -229,7 +230,7 @@
     position: relative;
     display: block;
     font-size: $font-size-xs;
-    padding: 1em 0.8em;
+    padding: 1.25em 0.8em;
     text-decoration: none !important;
     text-transform: uppercase;
 

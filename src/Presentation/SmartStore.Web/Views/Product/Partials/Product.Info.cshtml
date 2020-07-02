@@ -27,7 +27,7 @@
 
 	<!-- Title -->
 	<div class="page-title">
-		<h1 @Html.LanguageAttributes(Model.Name) class="pd-name pd-name-sm" itemprop="name">
+		<h1 @Html.LanguageAttributes(Model.Name) class="pd-name" itemprop="name">
 			@if (Model.IsAssociatedProduct && Model.VisibleIndividually)
 			{
 				<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>

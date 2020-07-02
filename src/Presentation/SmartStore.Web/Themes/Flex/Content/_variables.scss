@@ -46,8 +46,8 @@ $megamenu-rotator-bg:           rgba(255, 255, 255, 0.92) !default;
 
 $searchbox-bg:                  #fff !default;
 $searchbox-focus-bg:            #fff !default;
-$searchbox-border-color:        rgba(0,0,0, 0.12) !default;
-$searchbox-border-active-color: rgba(0,0,0, 0.2) !default;
+$searchbox-border-color:        rgba(0,0,0, 0.1) !default;
+$searchbox-border-active-color: rgba(0,0,0, 0.1) !default;
 $searchbox-hit-tag-color:       darken($warning, 10%) !default;
 
 $footer-bg:                     $gray-100 !default;
@@ -68,8 +68,8 @@ $font-size-root-sm:             14px !default;
 // Material tabs
 // ==============================================================
 
-$mtab-text-transform:		uppercase;
-$mtab-font-weight:			$font-weight-normal;
+$mtab-text-transform:		none;
+$mtab-font-weight:			$font-weight-medium;
 $mtab-color:				inherit;
 
 //
@@ -134,9 +134,9 @@ $display2-weight:               $font-weight-light;
 $display3-weight:               $font-weight-light;
 $display4-weight:               $font-weight-light;
 
-$btn-border-radius:             .125rem;
-$btn-border-radius-lg:          .1875rem;
-$btn-border-radius-sm:          .125rem;
+$btn-border-radius:             $border-radius;
+$btn-border-radius-lg:          $border-radius-lg;
+$btn-border-radius-sm:          $border-radius-sm;
 
 // Shadows
 
@@ -150,6 +150,9 @@ $box-shadow-lg-var:             0 1px 2px rgba(var(--shadow-color-rgb), calc(var
                                 0 3px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
                                 0 8px 20px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
                                 0 16px 42px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
+$box-shadow-xs-var:             0 0 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                                0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
+                                0 2px 5px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.125));
 
 $box-shadow-sm:                 var(--box-shadow);
 $box-shadow:                    var(--box-shadow);
@@ -275,13 +278,13 @@ $custom-control-indicator-checked-disabled-bg:  rgba($blue, .5);
 
 // Misc
 
-$card-deck-margin:              10px;
-$alert-border-radius:           0;
-$product-price-color:           $body-color !default;
-$login-box-bg:                  #fcfcfc !default;
-$cart-footer-bg:                $gray-100 !default;
-$costep-progress-color:         $warning !default;
-$offcanvas-cart-footer:         $success !default;
-$art-active-bg-color:           #fff !default;
-$art-active-border-color:       rgba(0,0,0, 0.2) !default;
+$card-deck-margin:                  10px;
+$alert-border-radius:               $border-radius;
+$product-price-color:               $body-color !default;
+$login-box-bg:                      $gray-100 !default;
+$cart-footer-bg:                    $gray-100 !default;
+$costep-progress-color:             $warning !default;
+$offcanvas-cart-footer:             $success !default;
+$art-active-bg-color:               #fff !default;
+$art-active-border-color:           rgba(0,0,0, 0) !default;
 $product-detail-addtocart-box-bg:   $gray-100 !default;

@@ -140,19 +140,16 @@ $btn-border-radius-sm:          $border-radius-sm;
 
 // Shadows
 
-$box-shadow-sm-var:             0 1px 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
-                                0 2px 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
-                                0 3px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1));
-$box-shadow-var:                0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
-                                0 3px 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.08)), 
-                                0 6px 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
-$box-shadow-lg-var:             0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
-                                0 3px 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
-                                0 8px 20px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
-                                0 16px 42px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
-$box-shadow-xs-var:             0 0 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
-                                0 1px 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12)), 
-                                0 2px 5px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.125));
+$box-shadow-sm-var:             0 calc(1px * var(--shadow-color-yoffset, 1)) 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(2px * var(--shadow-color-yoffset, 1)) 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1));
+$box-shadow-var:                0 calc(1px * var(--shadow-color-yoffset, 1)) 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.08)), 
+                                0 calc(6px * var(--shadow-color-yoffset, 1)) 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
+$box-shadow-lg-var:             0 calc(1px * var(--shadow-color-yoffset, 1)) 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(8px * var(--shadow-color-yoffset, 1)) 20px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                                0 calc(16px * var(--shadow-color-yoffset, 1)) 42px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
 
 $box-shadow-sm:                 var(--box-shadow);
 $box-shadow:                    var(--box-shadow);
@@ -199,8 +196,8 @@ $badge-font-weight:             $font-weight-medium !default;
 
 // Dropdown
 
-$dropdown-box-shadow:			$box-shadow-var;
-$dropdown-border-color:			rgba(#000, 0.025); 
+$dropdown-box-shadow:			$box-shadow-lg-var;
+$dropdown-border-color:			$gray-300; 
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
@@ -212,8 +209,8 @@ $modal-header-padding:              1.25rem;
 $modal-content-border-width:        0;
 $modal-content-border-radius:		$border-radius;
 $modal-backdrop-opacity:            .75;
-$modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
-$modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .1), 0 15px 35px rgba(#32325d, .15), 0 5px 15px rgba(#000, .1);
+$modal-content-box-shadow-xs:       $box-shadow-var;
+$modal-content-box-shadow-sm-up:    $box-shadow-lg-var;
 
 
 // Popover

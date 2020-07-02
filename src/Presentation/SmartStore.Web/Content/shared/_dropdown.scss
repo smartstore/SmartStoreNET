@@ -3,6 +3,13 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 
+// Common
+// ==============================================================
+
+.dropdown-menu {
+	--shadow-color-intensity: 0.5;
+}
+
 // Add nested dropdown support to BS4
 // ==============================================================
 

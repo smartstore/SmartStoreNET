@@ -118,9 +118,20 @@ $border-radius-lg:	0.3rem;
 
 // Shadows
 
-$box-shadow-sm-var:             0 0 .75rem 0 rgba(#000, .05);
-$box-shadow-var:                0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg-var:             0 1rem 3rem rgba(#000, .125);
+//$box-shadow-sm-var:             0 0 .75rem 0 rgba(#000, .05);
+//$box-shadow-var:                0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+//$box-shadow-lg-var:             0 1rem 3rem rgba(#000, .125);
+
+$box-shadow-sm-var:             0 calc(1px * var(--shadow-color-yoffset, 1)) 1px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(2px * var(--shadow-color-yoffset, 1)) 4px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1));
+$box-shadow-var:                0 calc(1px * var(--shadow-color-yoffset, 1)) 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 6px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.08)), 
+                                0 calc(6px * var(--shadow-color-yoffset, 1)) 16px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
+$box-shadow-lg-var:             0 calc(1px * var(--shadow-color-yoffset, 1)) 2px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(3px * var(--shadow-color-yoffset, 1)) 8px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.06)), 
+                                0 calc(8px * var(--shadow-color-yoffset, 1)) 20px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.1)), 
+                                0 calc(16px * var(--shadow-color-yoffset, 1)) 42px rgba(var(--shadow-color-rgb), calc(var(--shadow-color-intensity, 1) * 0.12));
 
 $box-shadow-sm:                 var(--box-shadow);
 $box-shadow:                    var(--box-shadow);
@@ -166,8 +177,10 @@ $btn-border-radius-lg:          $input-border-radius-lg; //.1875rem;
 $btn-border-radius-sm:          $input-border-radius-sm; //.125rem;
 $btn-disabled-opacity:			0.5;
 
-$dropdown-box-shadow:			$box-shadow-var; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
-$dropdown-border-color:			rgba(#000, 0.05); 
+//$dropdown-box-shadow:			$box-shadow-var; // 0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
+//$dropdown-border-color:			rgba(#000, 0.05); 
+$dropdown-box-shadow:			$box-shadow-lg-var;
+$dropdown-border-color:			$gray-300; 
 $dropdown-link-color:			$body-color; //$gray-800;
 $dropdown-link-hover-color:		darken($dropdown-link-color, 5%);
 $dropdown-link-hover-bg:        lighten($gray-200, 3%);
@@ -199,8 +212,8 @@ $modal-header-padding:              1.25rem;
 $modal-content-border-width:        0;
 $modal-content-border-radius:		$border-radius;
 $modal-backdrop-opacity:            .75;
-$modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px rgba(#000, .08);
-$modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .12), 0 15px 35px rgba(#32325d, .27), 0 5px 15px rgba(#000, .25);
+$modal-content-box-shadow-xs:       $box-shadow-var;
+$modal-content-box-shadow-sm-up:    $box-shadow-lg-var;
 
 
 // Embeds (TODO: Use from v4.3 onwards)

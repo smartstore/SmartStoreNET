@@ -45,7 +45,7 @@ $s2bs-input-height-small: $input-height-sm !default;
 // -------------------------
 $s2bs-dropdown-arrow-color: $input-color !default;
 $s2bs-dropdown-box-shadow: $dropdown-box-shadow !default;
-$s2bs-dropdown-box-shadow-above: 0 -3px 12px rgba(27, 31, 35, 0.15) !default;
+
 $s2bs-clear-selection-color: $s2bs-input-color-placeholder !default;
 $s2bs-clear-selection-hover-color: $body-color !default;
 $s2bs-remove-choice-color: $input-placeholder-color !default;
@@ -123,6 +123,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 .select2-container--bootstrap {
     display: block;
+    --shadow-color-intensity: 0.5;
     /*------------------------------------*\
       #COMMON STYLES
   \*------------------------------------*/
@@ -264,7 +265,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
         }
 
         &.select2-container--above .select2-selection {
-            @include box-shadow(0 0px 12px rgba(27, 31, 35, 0.15));
+            --shadow-color-yoffset: -0.5;
         }
     }
 
@@ -330,12 +331,14 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
    */
     .select2-dropdown {
         box-shadow: $s2bs-dropdown-box-shadow;
+        clip-path: inset(0 -100px -100px -100px); // cut off top shadow
         border-color: $s2bs-input-border-focus;
         overflow-x: hidden;
         margin-top: -1px;
 
         &--above {
-            box-shadow: $s2bs-dropdown-box-shadow-above;
+            --shadow-color-yoffset: -0.5;
+            clip-path: inset(-100px -100px 0 -100px); // cut off bottom shadow
             margin-top: 1px;
         }
     }

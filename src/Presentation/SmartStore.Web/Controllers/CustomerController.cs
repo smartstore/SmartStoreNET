@@ -362,16 +362,16 @@ namespace SmartStore.Web.Controllers
         }
         
         [NonAction]
-        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer, int pageIndex)
+        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer, int orderPageIndex, int recurringPaymentPageIndex)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+            Guard.NotNull(customer, nameof(customer));
 
-            var roundingAmount = decimal.Zero;
-            var storeScope = _orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id;
+            var store = _storeContext.CurrentStore;
             var model = new CustomerOrderListModel();
 
-			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
+            // Orders.
+			var orders = _orderService.SearchOrders(_orderSettings.DisplayOrdersOfAllStores ? 0 : store.Id, customer.Id,
+                null, null, null, null, null, null, null, null, orderPageIndex, _orderSettings.OrderListPageSize);
 
 			var orderModels = orders
 				.Select(x =>
@@ -385,7 +385,7 @@ namespace SmartStore.Web.Controllers
 						IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(x)
 					};
 
-                    var orderTotal = x.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out roundingAmount);
+                    var orderTotal = x.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out _);
                     orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotal, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
 					return orderModel;
@@ -394,25 +394,29 @@ namespace SmartStore.Web.Controllers
 
 			model.Orders = new PagedList<CustomerOrderListModel.OrderDetailsModel>(orderModels, orders.PageIndex, orders.PageSize, orders.TotalCount);
 
+            // Recurring payments.
+			var recurringPayments = _orderService.SearchRecurringPayments(store.Id, customer.Id, 0, null, false, recurringPaymentPageIndex, _orderSettings.RecurringPaymentListPageSize);
 
-			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, customer.Id, 0, null);
-
-            foreach (var recurringPayment in recurringPayments)
-            {
-                var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel
+            var rpModels = recurringPayments
+                .Select(x =>
                 {
-                    Id = recurringPayment.Id,
-                    StartDate = _dateTimeHelper.ConvertToUserTime(recurringPayment.StartDateUtc, DateTimeKind.Utc).ToString(),
-                    CycleInfo = string.Format("{0} {1}", recurringPayment.CycleLength, recurringPayment.CyclePeriod.GetLocalizedEnum(_localizationService, _workContext)),
-                    NextPayment = recurringPayment.NextPaymentDate.HasValue ? _dateTimeHelper.ConvertToUserTime(recurringPayment.NextPaymentDate.Value, DateTimeKind.Utc).ToString() : "",
-                    TotalCycles = recurringPayment.TotalCycles,
-                    CyclesRemaining = recurringPayment.CyclesRemaining,
-                    InitialOrderId = recurringPayment.InitialOrder.Id,
-                    CanCancel = _orderProcessingService.CanCancelRecurringPayment(customer, recurringPayment),
-                };
+                    var rpModel = new CustomerOrderListModel.RecurringPaymentModel
+                    {
+                        Id = x.Id,
+                        StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc, DateTimeKind.Utc).ToString(),
+                        CycleInfo = string.Format("{0} {1}", x.CycleLength, x.CyclePeriod.GetLocalizedEnum(_localizationService, _workContext)),
+                        NextPayment = x.NextPaymentDate.HasValue ? _dateTimeHelper.ConvertToUserTime(x.NextPaymentDate.Value, DateTimeKind.Utc).ToString() : "",
+                        TotalCycles = x.TotalCycles,
+                        CyclesRemaining = x.CyclesRemaining,
+                        InitialOrderId = x.InitialOrder.Id,
+                        CanCancel = _orderProcessingService.CanCancelRecurringPayment(customer, x),
+                    };
 
-                model.RecurringOrders.Add(recurringPaymentModel);
-            }
+                    return rpModel;
+                })
+                .ToList();
+
+            model.RecurringPayments = new PagedList<CustomerOrderListModel.RecurringPaymentModel>(rpModels, recurringPayments.PageIndex, recurringPayments.PageSize, recurringPayments.TotalCount);
 
             return model;
         }
@@ -1285,12 +1289,19 @@ namespace SmartStore.Web.Controllers
         #region Orders
 
         [RewriteUrl(SslRequirement.Yes)]
-        public ActionResult Orders(int? page)
+        public ActionResult Orders(int? page, int? recurringPaymentsPage)
         {
             if (!IsCurrentUserRegistered())
+            {
                 return new HttpUnauthorizedResult();
+            }
 
-            var model = PrepareCustomerOrderListModel(_workContext.CurrentCustomer, Math.Max((page ?? 0) - 1, 0));
+            var ordersPageIndex = Math.Max((page ?? 0) - 1, 0);
+            var rpPageIndex = Math.Max((recurringPaymentsPage ?? 0) - 1, 0);
+
+            var model = PrepareCustomerOrderListModel(_workContext.CurrentCustomer, ordersPageIndex, rpPageIndex);
+            model.OrdersPage = page;
+            model.RecurringPaymentsPage = recurringPaymentsPage;
 
             return View(model);
         }
@@ -1300,10 +1311,12 @@ namespace SmartStore.Web.Controllers
         public ActionResult CancelRecurringPayment(FormCollection form)
         {
             if (!IsCurrentUserRegistered())
+            {
                 return new HttpUnauthorizedResult();
+            }
 
-            //get recurring payment identifier
-            int recurringPaymentId = 0;
+            // Get recurring payment identifier.
+            var recurringPaymentId = 0;
 			foreach (var formValue in form.AllKeys)
 			{
 				if (formValue.StartsWith("cancelRecurringPayment", StringComparison.InvariantCultureIgnoreCase))
@@ -1323,7 +1336,7 @@ namespace SmartStore.Web.Controllers
             {
                 var errors = _orderProcessingService.CancelRecurringPayment(recurringPayment);
 
-                var model = PrepareCustomerOrderListModel(customer, 0);
+                var model = PrepareCustomerOrderListModel(customer, 0, 0);
                 model.CancelRecurringPaymentErrors = errors;
 
                 return View(model);

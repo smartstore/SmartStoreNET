@@ -252,13 +252,21 @@ namespace SmartStore.Services.Orders
         /// Search recurring payments
         /// </summary>
         /// <param name="customerId">The customer identifier; 0 to load all records</param>
-		/// <param name="storeId">The store identifier; 0 to load all records</param>
+        /// <param name="storeId">The store identifier; 0 to load all records</param>
         /// <param name="initialOrderId">The initial order identifier; 0 to load all records</param>
         /// <param name="initialOrderStatus">Initial order status identifier; null to load all records</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
         /// <returns>Recurring payment collection</returns>
-		IList<RecurringPayment> SearchRecurringPayments(int storeId, 
-			int customerId, int initialOrderId, OrderStatus? initialOrderStatus, bool showHidden = false);
+        IPagedList<RecurringPayment> SearchRecurringPayments(
+            int storeId, 
+			int customerId,
+            int initialOrderId,
+            OrderStatus? initialOrderStatus,
+            bool showHidden = false,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue);
 
         #endregion
 

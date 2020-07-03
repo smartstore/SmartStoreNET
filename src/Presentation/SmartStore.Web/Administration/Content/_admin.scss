@@ -393,14 +393,14 @@ body {
             text-align: center;
             color: #fff;
             background: rgba(#fff, 0);
-            opacity: 0.8;
-            transition: opacity 0.1s linear, background-color 0.1s linear;
+            transition: color 0.1s linear, opacity 0.1s linear, background-color 0.1s linear;
+            color: mix($indigo, #fff, 22%);
         }
 
         .nav-link:hover,
         &.show .nav-link {
             background: rgba(#fff, .15);
-            opacity: 1;
+            color: #fff;
         }
 
         .navbar-icon {
@@ -410,7 +410,6 @@ body {
             font-size: 20px;
             height: 22px;
             line-height: 22px;
-            color: #fff;
         }
 
         .navbar-label {

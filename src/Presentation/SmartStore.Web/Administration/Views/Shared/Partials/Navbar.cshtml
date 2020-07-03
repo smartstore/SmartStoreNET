@@ -4,16 +4,18 @@
 @using SmartStore.Core;
 
 @{
-	var currentCustomer = this.WorkContext.CurrentCustomer;
-	var currentLanguage = this.WorkContext.WorkingLanguage;
-	var userName = (string)ViewBag.UserName;
-	var stores = ((IList<Store>)ViewBag.Stores) ?? new List<Store>();
-	string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
-	string communityUrl = (currentLanguageCode == "de" ?
-		"http://community.smartstore.com" :
-		"http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
-	string docsUrl = GenerateHelpUrl("");
-	var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
+    var currentCustomer = this.WorkContext.CurrentCustomer;
+    var currentLanguage = this.WorkContext.WorkingLanguage;
+    var userName = (string)ViewBag.UserName;
+    var stores = ((IList<Store>)ViewBag.Stores) ?? new List<Store>();
+    string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
+    string communityUrl = (currentLanguageCode == "de" ?
+        "http://community.smartstore.com" :
+        "http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
+    string docsUrl = GenerateHelpUrl("");
+    var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
+
+    Html.AddLinkPart("preload", Url.Content("~/Administration/Content/images/smartstore.svg"), new { @as = "image" });
 }
 
 <nav id="navbar" class="navbar navbar-slide navbar-dark navbar-expand">

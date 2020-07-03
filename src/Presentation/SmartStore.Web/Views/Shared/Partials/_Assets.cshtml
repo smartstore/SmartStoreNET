@@ -15,6 +15,11 @@
     {
         // TODO: (mc) make UI for FA5 CDN URL
         cssParts.Insert(0, vendorsRoot + "fa5/css/all.css");
+
+        // Preload web font files to avoid FOIT (Flash of Invisible Text) and FOUT (Flash of Unstyled Text)
+        Html.AddLinkPart("preload", Url.Content(contentRoot + "/fontastic/fonts/fontastic.woff"), new { @as = "font", crossorigin = (string)null });
+        Html.AddLinkPart("preload", Url.Content(vendorsRoot + "/fa5/webfonts/fa-solid-900.woff2"), new { @as = "font", crossorigin = (string)null });
+        Html.AddLinkPart("preload", Url.Content(vendorsRoot + "/fa5/webfonts/fa-regular-400.woff2"), new { @as = "font", crossorigin = (string)null });
     }
 
     // add css assets
@@ -22,8 +27,7 @@
 
     Html.AppendScriptParts(ResourceLocation.Head,
         vendorsRoot + "modernizr/modernizr.js",
-        vendorsRoot + "jquery/jquery-3.4.1.js"/*,
-		vendorsRoot + "jquery/jquery-migrate-3.0.0.js"*/);
+        vendorsRoot + "jquery/jquery-3.4.1.js");
 
     Html.AppendScriptParts(ResourceLocation.Foot,
         // Vendors

@@ -72,6 +72,7 @@ body {
     z-index: 1;
     background: $body-bg;
     box-shadow: 0 0 24px rgba(#000, 0.2);
+    min-height: 100vh;
 }
 
 @media screen {

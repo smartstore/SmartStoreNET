@@ -5,6 +5,7 @@
 
 ### Improvements
 * Theming: minimal but effective tweaks (rounding, shadows, typo)
+* (SEO) (PERF) Preload logo to prevent flashing and web fonts to avoid FOUT on slow internet connection
 * **Rule Builder**:
 	* #1969 The preview grid is now displayed in a modal dialog.
 	* #1980 Added a cart rule for total quantity of products in cart.

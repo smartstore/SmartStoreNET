@@ -17,6 +17,11 @@
     var contentRoot = "~/Content/";
     var jsRoot = "~/Scripts/";
 
+    // Preload web font files to avoid FOIT (Flash of Invisible Text) and FOUT (Flash of Unstyled Text)
+    Html.AddLinkPart("preload", Url.Content(contentRoot + "/fontastic/fonts/fontastic.woff"), new { @as = "font", crossorigin = (string)null });
+    Html.AddLinkPart("preload", Url.Content(vendorsRoot + "/fa5/webfonts/fa-solid-900.woff2"), new { @as = "font", crossorigin = (string)null });
+    Html.AddLinkPart("preload", Url.Content(vendorsRoot + "/fa5/webfonts/fa-regular-400.woff2"), new { @as = "font", crossorigin = (string)null });
+
     // add css assets
     var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
 
@@ -90,10 +95,10 @@
         jsRoot + "smartstore.tree.js",
         jsRoot + "smartstore.media.js",
 
-	    // Admin
-	    adminJsRoot + "admin.common.js",
-	    adminJsRoot + "admin.media.js",
-	    adminJsRoot + "admin.globalinit.js");
+        // Admin
+        adminJsRoot + "admin.common.js",
+        adminJsRoot + "admin.media.js",
+        adminJsRoot + "admin.globalinit.js");
 }
 <!DOCTYPE html>
 <html @Html.LanguageAttributes() class="no-js not-ready loading" data-pnotify-firstpos1="0">
@@ -107,6 +112,7 @@
     @{ Html.RenderPartial("_ClientRes"); }
     @{ Html.RenderPartial("ConditionalComments"); }
     @Html.MetaAcceptLanguage()
+    @Html.LinkRels()
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)

@@ -128,8 +128,8 @@ namespace SmartStore.Web.Framework.UI
 
 		public static void AddLinkPart(this IPageAssetsBuilder builder, string rel, string href, object htmlAttributes)
 		{
-			var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			builder.AddLinkPart(rel, href, attrs);
+            var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+            builder.AddLinkPart(rel, href, attrs);
 		}
 
 		public static void AddLinkPart(this IPageAssetsBuilder builder, string rel, string href, string type = null, string media = null, string sizes = null, string hreflang = null)

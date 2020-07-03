@@ -16,6 +16,7 @@
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.
 * #1976 The button to cancel recurring payments in my-account was out of function.
+* Store logo is handled by "content" album, not "file"
 
 
 ## Smartstore 4.0.0

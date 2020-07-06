@@ -216,21 +216,24 @@ namespace SmartStore.Services.Cart.Rules
                     Name = "UserAgent.Device",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.DeviceFamily"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(DeviceRule)
+                    ProcessorType = typeof(DeviceRule),
+                    SelectList = new LocalRuleValueSelectList(DeviceRule.DefaultValues) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {
                     Name = "UserAgent.OS",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OperatingSystem"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(OSRule)
+                    ProcessorType = typeof(OSRule),
+                    SelectList = new LocalRuleValueSelectList(OSRule.DefaultValues) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {
                     Name = "UserAgent.Browser",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BrowserName"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(BrowserRule)
+                    ProcessorType = typeof(BrowserRule),
+                    SelectList = new LocalRuleValueSelectList(BrowserRule.DefaultValues) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {

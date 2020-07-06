@@ -6,6 +6,7 @@ namespace SmartStore.Rules
     public abstract class RuleValueSelectList
     {
         public bool Multiple { get; set; }
+        public bool Tags { get; set; }
     }
 
     public class RuleValueSelectListOption

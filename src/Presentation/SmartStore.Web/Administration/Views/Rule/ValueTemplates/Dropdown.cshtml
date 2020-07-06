@@ -5,19 +5,27 @@
     var id = string.Concat("rule-value-", Model.Id);
     var list = Model.Descriptor.SelectList;
     var isMultiple = list?.Multiple ?? true;
+    var tags = list == null || list.Tags;
     var values = Model.RawValue.SplitSafe(",");
+    var enteredValues = new string[0];
     string remoteUrl = null;
 
     if (list is RemoteRuleValueSelectList remoteList)
     {
+        // Values are provided remotely.
         remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.SelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+    }
+    else if (list is LocalRuleValueSelectList localList)
+    {
+        // Values entered by user but not included in predefined list.
+        enteredValues = values.Where(x => !localList.Options.Any(y => y.Value.IsCaseSensitiveEqual(x))).OrderBy(x => x).ToArray();
     }
 
     var attributes = new Dictionary<string, object>
     {
         { "data-placeholder", T("Common.Unspecified").Text },
         { "data-remote-url", remoteUrl },
-        { "data-tags", list == null }
+        { "data-tags", tags.ToString().ToLower() }
     };
     if (isMultiple)
     {
@@ -43,6 +51,10 @@
         if (!values.Any() && !isMultiple)
         {
             <option></option>
+        }
+        foreach (var value in enteredValues)
+        {
+            <option value="@value" selected="selected">@value</option>
         }
         foreach (var grp in ((LocalRuleValueSelectList)list).Options.OrderBy(x => x.Group?.Order ?? 0).GroupBy(x => x.Group?.Name ?? ""))
         {
@@ -74,5 +86,5 @@
 <script>
     $(function () {
         $('#@id').selectWrapper();
-	});
+    });
 </script>

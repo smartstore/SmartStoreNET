@@ -304,9 +304,9 @@ namespace SmartStore.Services.Media.Migration
 
         public void MigrateMediaFiles(SmartObjectContext ctx)
         {
-            var query = ctx.Set<MediaFile>()
+            var query = ctx.Set<MediaFile>();
                 //.Where(x => x.Version == 0)
-                .Include(x => x.MediaStorage);
+                //.Include(x => x.MediaStorage);
 
             var pager = new FastPager<MediaFile>(query, 1000);
 

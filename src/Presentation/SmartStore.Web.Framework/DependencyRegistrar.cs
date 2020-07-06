@@ -1112,7 +1112,6 @@ namespace SmartStore.Web.Framework
 		}
 
 		#endregion
-
 	}
 
     internal class TasksModule : Module

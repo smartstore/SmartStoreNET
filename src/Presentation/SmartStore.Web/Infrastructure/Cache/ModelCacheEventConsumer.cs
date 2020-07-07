@@ -168,20 +168,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 		public const string PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY = "pres:alsopuchased*";
 
 		/// <summary>
-		/// Key for cart picture caching
-		/// </summary>
-		/// <remarks>
-		/// {0} : product id
-		/// {1} : product attribute combination id
-		/// {2} : picture size
-		/// {3} : value indicating whether a default picture is displayed in case if no real picture exists
-		/// {4} : language ID ("alt" and "title" can depend on localized product name)
-		/// {6} : current store ID
-		/// </remarks>
-		public const string CART_PICTURE_MODEL_KEY = "pres:cart:picture-{0}-{1}-{2}-{3}-{4}-{5}";
-		public const string CART_PICTURE_PATTERN_KEY = "pres:cart:picture*";
-
-		/// <summary>
 		/// Key for home page polls
 		/// </summary>
 		/// <remarks>
@@ -298,7 +284,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 				}
 				else
 				{
-					_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
@@ -375,10 +360,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 			{
 				_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
-			}
-			else if (entity is MediaFile)
-			{
-				_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 			}
 			else if (entity is Poll)
 			{

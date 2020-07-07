@@ -215,52 +215,44 @@ namespace SmartStore.Web.Controllers
 
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
-            var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
-				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+            MediaFileInfo file = null;
 
-            var model = _cacheManager.Get(pictureCacheKey, () =>
+            if (combination != null)
             {
-                MediaFileInfo file = null;
-
-                if (combination != null)
+                var fileIds = combination.GetAssignedMediaIds();
+                if (fileIds?.Any() ?? false)
                 {
-                    var fileIds = combination.GetAssignedMediaIds();
-                    if (fileIds?.Any() ?? false)
-                    {
-                        file = _mediaService.GetFileById(fileIds[0], MediaLoadFlags.AsNoTracking);
-                    }
+                    file = _mediaService.GetFileById(fileIds[0], MediaLoadFlags.AsNoTracking);
                 }
+            }
 
-                // No attribute combination image, then load product picture.
-                if (file == null)
-                {
-                    file = _productService.GetProductPicturesByProductId(product.Id, 1)
-                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
-                        .FirstOrDefault();
-                }
+            // No attribute combination image, then load product picture.
+            if (file == null)
+            {
+                file = _productService.GetProductPicturesByProductId(product.Id, 1)
+                    .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                    .FirstOrDefault();
+            }
 
-                // Let's check whether this product has some parent "grouped" product.
-                if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
-                {
-                    file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
-                        .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
-                        .FirstOrDefault();
-                }
+            // Let's check whether this product has some parent "grouped" product.
+            if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
+            {
+                file = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                    .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+                    .FirstOrDefault();
+            }
 
-                var pm = new PictureModel
-                {
-                    PictureId = file?.Id ?? 0,
-                    Size = pictureSize,
-                    ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !_catalogSettings.HideProductDefaultPictures),
-                    Title = T("Media.Product.ImageLinkTitleFormat", productName),
-                    AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", productName),
-                    File = file
-                };
+            var pm = new PictureModel
+            {
+                PictureId = file?.Id ?? 0,
+                Size = pictureSize,
+                ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !_catalogSettings.HideProductDefaultPictures),
+                Title = T("Media.Product.ImageLinkTitleFormat", productName),
+                AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", productName),
+                File = file
+            };
 
-                return pm;
-            });
-
-            return model;
+            return pm;
         }
 
 		private ShoppingCartModel.ShoppingCartItemModel PrepareShoppingCartItemModel(OrganizedShoppingCartItem sci)

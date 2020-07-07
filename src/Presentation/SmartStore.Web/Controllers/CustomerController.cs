@@ -1569,7 +1569,7 @@ namespace SmartStore.Web.Controllers
             }
 
 			var model = new CustomerAvatarEditModel();
-            model.Avatar = _workContext.CurrentCustomer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, null, true);
+            model.Avatar = _workContext.CurrentCustomer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, null, true);
             model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
 
             return View(model);

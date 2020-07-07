@@ -11,7 +11,7 @@
 
     Html.AddTitleParts(T("PageTitle.Account").Text);
 
-    var fileId = Model?.Avatar?.PictureId ?? 0;
+    var fileId = Model?.Avatar?.FileId ?? 0;
     var mediaService = this.CommonServices.MediaService;
     var currentFile = mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
 }
@@ -35,7 +35,7 @@
                     .UploadUrl(Url.Action("UploadAvatar", "Customer"))
                     .TypeFilter("image")
                     .ShowBrowseMedia(false)
-                    .ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
+                    .ShowRemoveButton(fileId != 0)
                     .ShowRemoveButtonAfterUpload(true)
                     .UploadText(T("Common.FileUploader.UploadAvatar"))
                     .OnUploadCompletedHandlerName("onAvatarUploaded")

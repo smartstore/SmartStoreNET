@@ -123,7 +123,7 @@ namespace SmartStore.Web.Controllers
                 PostsPageSize = _forumSettings.PostsPageSize
             };
 
-            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, model.CustomerName);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, model.CustomerName);
 
             if (topic.LastPostId != 0 && lastPosts.TryGetValue(topic.LastPostId, out var lastPost))
             {
@@ -735,7 +735,7 @@ namespace SmartStore.Web.Controllers
                     ? post.CreatedOnUtc.RelativeFormat(true, "f")
                     : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
 
-                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
+                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, postModel.CustomerName, true);
 
                 // Location.
                 postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;

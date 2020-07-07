@@ -139,7 +139,7 @@ namespace SmartStore.Web.Controllers
                         AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest,
                     };
 
-                    commentModel.Avatar = nc.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
+                    commentModel.Avatar = nc.Customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }

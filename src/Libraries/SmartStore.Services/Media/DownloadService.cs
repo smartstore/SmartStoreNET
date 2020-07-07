@@ -20,20 +20,11 @@ namespace SmartStore.Services.Media
     {
         private readonly IRepository<Download> _downloadRepository;
         private readonly IMediaService _mediaService;
-        private readonly Provider<IMediaStorageProvider> _storageProvider;
 
-		public DownloadService(
-			IRepository<Download> downloadRepository,
-            IMediaService mediaService,
-            ISettingService settingService,
-			IProviderManager providerManager)
+		public DownloadService(IRepository<Download> downloadRepository, IMediaService mediaService)
         {
             _downloadRepository = downloadRepository;
             _mediaService = mediaService;
-
-			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
-
-			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
 		}
 
 		public virtual Download GetDownloadById(int downloadId)
@@ -253,8 +244,7 @@ namespace SmartStore.Services.Media
 		public virtual byte[] LoadDownloadBinary(Download download)
 		{
 			Guard.NotNull(download, nameof(download));
-
-			return _storageProvider.Value.Load(download.MediaFile);
+			return _mediaService.StorageProvider.Load(download.MediaFile);
 		}
     }
 }

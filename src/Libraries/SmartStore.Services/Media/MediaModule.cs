@@ -62,7 +62,7 @@ namespace SmartStore.Services.Media
 
         private static Func<IMediaStorageProvider> MediaStorageProviderFactory(IComponentContext c)
         {
-            var systemName = c.Resolve<ISettingService>().GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+            var systemName = c.Resolve<ISettingService>().GetSettingByKey("Media.Storage.Provider", FileSystemMediaStorageProvider.SystemName);
             var provider = c.Resolve<IProviderManager>().GetProvider<IMediaStorageProvider>(systemName);
             return () => provider.Value;
         }

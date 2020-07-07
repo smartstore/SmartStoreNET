@@ -41,12 +41,13 @@ namespace SmartStore.Services.Media.Migration
             // Load all db albums into a dictionary (Key = AlbumName)
             var albums = setFolders.OfType<MediaAlbum>().ToDictionary(x => x.Name);
 
-            // Reorganize all files (product/brand/category >> catalog && news/blog/forum >> content)
+            // Reorganize files (product/category/brand >> catalog)
             foreach (var oldName in new[] { "product", "category", "brand" })
             {
                 UpdateFolderId(oldName, catalogAlbum);
             }
 
+            // Reorganize files (news/blog/forum >> content)
             foreach (var oldName in new[] { "blog", "news", "forum" })
             {
                 UpdateFolderId(oldName, contentAlbum);
@@ -61,7 +62,11 @@ namespace SmartStore.Services.Media.Migration
                 .Select(x => x.Value)
                 .Where(x => namesToDelete.Contains(x.Name))
                 .ToList();
-            setFolders.RemoveRange(toDelete);
+
+            if (toDelete.Any())
+            {
+                setFolders.RemoveRange(toDelete);
+            }         
 
             _db.SaveChanges();
 

@@ -21,7 +21,7 @@ namespace SmartStore.Services.Media.Migration
             var setFolders = _db.Set<MediaFolder>();
 
             // Insert new Albums: Catalog & Content
-            // Entity has an unique index of ParentId and Name.
+            // Entity has a unique index of ParentId and Name.
             var catalogAlbum = setFolders.FirstOrDefault(x => x.ParentId == null && x.Name == SystemAlbumProvider.Catalog) as MediaAlbum;
             if (catalogAlbum == null)
             {

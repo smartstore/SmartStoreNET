@@ -219,11 +219,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!command.Tag.HasValue())
             {
-				blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize);
+				blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
             else
             {
-				blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize);
+				blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
 
             model.PagingFilteringContext.LoadPagedList(blogPosts);
@@ -379,7 +379,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
-            if (blogPost == null || !blogPost.IsPublished ||
+            if (blogPost == null || (!blogPost.IsPublished && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
 				return HttpNotFound();

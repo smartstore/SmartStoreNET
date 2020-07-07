@@ -161,7 +161,7 @@ namespace SmartStore.Web.Controllers
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-				var newsItems = _newsService.GetAllNews(workingLanguageId, currentStoreId, 0, _newsSettings.MainPageNewsCount);
+				var newsItems = _newsService.GetAllNews(workingLanguageId, currentStoreId, 0, _newsSettings.MainPageNewsCount, _services.WorkContext.CurrentCustomer.IsAdmin());
 
 				Services.DisplayControl.AnnounceRange(newsItems);
 
@@ -205,7 +205,7 @@ namespace SmartStore.Web.Controllers
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
-			var newsItems = _newsService.GetAllNews(workingLanguageId, _services.StoreContext.CurrentStore.Id, command.PageNumber - 1, command.PageSize);
+			var newsItems = _newsService.GetAllNews(workingLanguageId, _services.StoreContext.CurrentStore.Id, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             model.PagingFilteringContext.LoadPagedList(newsItems);
 
             model.NewsItems = newsItems
@@ -277,7 +277,7 @@ namespace SmartStore.Web.Controllers
 
             var newsItem = _newsService.GetNewsById(newsItemId);
             if (newsItem == null ||
-                !newsItem.Published ||
+                (!newsItem.Published && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
                 (newsItem.StartDateUtc.HasValue && newsItem.StartDateUtc.Value >= DateTime.UtcNow) ||
 				(newsItem.EndDateUtc.HasValue && newsItem.EndDateUtc.Value <= DateTime.UtcNow) ||
 				//Store mapping

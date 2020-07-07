@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
@@ -23,7 +22,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for ManufacturerNavigationModel caching
         /// </summary>
         /// <remarks>
-        /// {0} : value indicating whether a default picture is displayed in case if no real picture exists
+        /// {0} : various settings values
         /// {1} : language id
         /// {2} : current store ID
         /// {3} : customer role IDs

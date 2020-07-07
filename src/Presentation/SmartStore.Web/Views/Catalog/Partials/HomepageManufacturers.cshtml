@@ -27,18 +27,19 @@
 @helper RenderManufacturer(ManufacturerBriefInfoModel item)
 {
     var url = Url.RouteUrl("Manufacturer", new { SeName = item.SeName });
-
     <article class="art" data-id="@item.Id">
-        
-        @if (item.PictureUrl.HasValue() && Model.DisplayImages)
+        @if (Model.DisplayImages)
         {
-            <div class="art-picture-block">
-                <a class="art-picture img-center-container" href="@url" title="@item.Name">
-                    <img src="@item.PictureUrl" alt="@item.Name" loading="lazy" />
-                </a>
-            </div>
+            var mediaUrl = Url.Media(item.FileId, Model.ManufacturerThumbPictureSize, null, !Model.HideManufacturerDefaultPictures);
+            if (mediaUrl.HasValue())
+            {
+                <div class="art-picture-block">
+                    <a class="art-picture img-center-container" href="@url">
+                        <img src="@mediaUrl" alt="@item.AlternateText" title="@item.Title" loading="lazy" />
+                    </a>
+                </div>
+            }
         }
-                
         <div class="art-genericname">
             <a href="@url" title="@item.Name">
                 <span @Html.LanguageAttributes(item.Name)>@item.Name</span>

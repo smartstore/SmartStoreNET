@@ -18,11 +18,12 @@
                 <div class="row sm-gutters align-items-center">
                     @if (Model.DisplayImages)
                     {
+                        var mediaUrl = Url.Media(manufacturer.FileId, Model.ManufacturerThumbPictureSize, null, !Model.HideManufacturerDefaultPictures);
                         <div class="col col-img">
-                            @if(manufacturer.PictureUrl.HasValue())
+                            @if (mediaUrl.HasValue())
                             { 
                                 <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-img-link">
-                                    <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                                    <img src="@mediaUrl" alt="@manufacturer.AlternateText" title="@manufacturer.Title" />
                                 </a>
                             }
                         </div>

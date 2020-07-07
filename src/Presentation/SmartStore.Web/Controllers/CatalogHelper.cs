@@ -1517,8 +1517,14 @@ namespace SmartStore.Web.Controllers
             var storeToken = QuerySettings.IgnoreMultiStore ? "0" : storeId.ToString();
             var rolesToken = QuerySettings.IgnoreAcl ? "0" : _services.WorkContext.CurrentCustomer.GetRolesIdent();
 
+			var settingsKeyPart = string.Join(",",
+				_catalogSettings.ShowManufacturersOnHomepage,
+				_catalogSettings.ShowManufacturerPictures,
+				_catalogSettings.HideManufacturerDefaultPictures,
+				_mediaSettings.ManufacturerThumbPictureSize).ToLower();
+
             var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
-                !_catalogSettings.HideManufacturerDefaultPictures,
+				settingsKeyPart,
                 _services.WorkContext.WorkingLanguage.Id,
                 storeToken,
                 rolesToken,
@@ -1527,35 +1533,43 @@ namespace SmartStore.Web.Controllers
             var cacheModel = _services.Cache.Get(cacheKey, () =>
             {
                 var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, manufacturerItemsToDisplay + 1, storeId);
-                var fileIds = manufacturers
-                    .Select(x => x.MediaFileId ?? 0)
-                    .Where(x => x != 0)
-                    .Distinct()
-                    .ToArray();
-                var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+				var files = new Dictionary<int, MediaFileInfo>();
+
+				if (_catalogSettings.ShowManufacturerPictures)
+				{
+					var fileIds = manufacturers
+						.Select(x => x.MediaFileId ?? 0)
+						.Where(x => x != 0)
+						.Distinct()
+						.ToArray();
+					files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+				}
 
                 var model = new ManufacturerNavigationModel
                 {
                     DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
                     DisplayImages = _catalogSettings.ShowManufacturerPictures,
-                    DisplayAllManufacturersLink = manufacturers.Count > manufacturerItemsToDisplay
+                    DisplayAllManufacturersLink = manufacturers.Count > manufacturerItemsToDisplay,
+					HideManufacturerDefaultPictures = _catalogSettings.HideManufacturerDefaultPictures,
+					ManufacturerThumbPictureSize = _mediaSettings.ManufacturerThumbPictureSize
                 };
 
                 foreach (var manufacturer in manufacturers.Take(manufacturerItemsToDisplay))
                 {
                     files.TryGetValue(manufacturer.MediaFileId ?? 0, out var file);
 
-                    var mm = new ManufacturerBriefInfoModel
-                    {
-                        Id = manufacturer.Id,
-                        Name = manufacturer.GetLocalized(x => x.Name),
-                        SeName = manufacturer.GetSeName(),
-                        DisplayOrder = manufacturer.DisplayOrder,
-						PictureId = manufacturer.MediaFileId,
-						PictureUrl = _mediaService.GetUrl(file, _mediaSettings.ManufacturerThumbPictureSize, null, !_catalogSettings.HideManufacturerDefaultPictures),
-						HasPicture = manufacturer.MediaFileId != null
-                    };
-                    model.Manufacturers.Add(mm);
+					var name = manufacturer.GetLocalized(x => x.Name);
+
+                    model.Manufacturers.Add(new ManufacturerBriefInfoModel
+					{
+						Id = manufacturer.Id,
+						Name = name,
+						SeName = manufacturer.GetSeName(),
+						DisplayOrder = manufacturer.DisplayOrder,
+						FileId = manufacturer.MediaFileId,
+						AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? name,
+						Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? name
+					});
                 }
                 
                 return model;

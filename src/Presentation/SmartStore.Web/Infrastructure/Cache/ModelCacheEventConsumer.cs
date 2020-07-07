@@ -75,18 +75,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 		public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "pres:producttag:popular*";
 
 		/// <summary>
-		/// Key for ProductManufacturers model caching
-		/// </summary>
-		/// <remarks>
-		/// {0} : product id
-		/// {1} : value indicating whether a default picture is displayed in case if no real picture exists
-		/// {2} : language id
-		/// {3} : current store ID
-		/// </remarks>
-		public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "pres:product:manufacturers-{0}-{1}-{2}-{3}";
-		public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "pres:product:manufacturers*";
-
-		/// <summary>
 		/// Key for ProductSpecificationModel caching
 		/// </summary>
 		/// <remarks>
@@ -292,11 +280,9 @@ namespace SmartStore.Web.Infrastructure.Cache
 			else if (entity is Manufacturer)
 			{
 				_cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
-				_cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
 			}
 			else if (entity is ProductManufacturer)
 			{
-				_cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(MANUFACTURER_HAS_FEATURED_PRODUCTS_PATTERN_KEY);
 			}
 			else if (entity is ProductCategory)
@@ -350,7 +336,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 				_cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(PRODUCT_SPECS_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
-				_cacheManager.RemoveByPattern(PRODUCT_MANUFACTURERS_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(AVAILABLE_LANGUAGES_PATTERN_KEY);
 				_cacheManager.RemoveByPattern(AVAILABLE_CURRENCIES_PATTERN_KEY);

@@ -64,6 +64,16 @@ $facet-selection-color:             darken($success, 15%);
     top: 0.12rem;
 }
 
+/*.instasearch-term:not(:focus) {
+    border-radius: 50rem;
+    background-color: var(--light);
+
+    + .instasearch-button {
+        border-top-right-radius: 50rem;
+        border-bottom-right-radius: 50rem;
+    }
+}*/
+
 .instasearch-drop {
     position: absolute;
     display: none;
@@ -82,6 +92,7 @@ $facet-selection-color:             darken($success, 15%);
 
     &.open {
         display: block;
+        clip-path: inset(0 -50px -50px -50px);
     } 
 }
 
@@ -220,14 +231,14 @@ $facet-selection-color:             darken($success, 15%);
     &:after {
 	    display: block;
 	    position: absolute;
-        @include fontawesome-font("\f106", light); // angle-up
-	    font-size: 1.2rem;
+        @include fontawesome-font("\f077", light); // chevron-up
+	    font-size: $font-size-base;
 	    line-height: 1;
         color: $body-color;
         right: 0;
 	    top: 50%;
 	    margin-top: -7px;
-	    transition: transform 0.3s ease-in-out;
+	    transition: transform 0.3s ease;
     }
 
     &.collapsed:after {

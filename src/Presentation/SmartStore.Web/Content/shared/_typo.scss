@@ -133,9 +133,13 @@ h6, .h6 {
 // ======================================
 
 .long-text {
-    font-size: 1.0625rem;
-    line-height: 1.75rem;
-    letter-spacing: .015625rem;
+    font-size: 1rem;
+
+    @include media-breakpoint-up(lg) {
+        font-size: 1.0625rem;
+        line-height: 1.75rem;
+        letter-spacing: .015625rem;
+    }
 
     h2, h3, h4 {
         font-weight: $font-weight-bold;

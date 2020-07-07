@@ -29,7 +29,7 @@
 		    });
 
 		    box.on('keydown', function (e) {
-			    if (e.which == 13 /* Enter */) {
+			    if (e.which === 13 /* Enter */) {
 				    if (keyNav && dropBody.find('.key-hover').length > 0) {
 					    // Do not post form when key navigation is in progress
 					    e.preventDefault();
@@ -38,7 +38,7 @@
 		    });
 
 		    box.on('keyup', function (e) {
-			    if (e.which == 27 /* ESC */) {
+			    if (e.which === 27 /* ESC */) {
 				    closeDrop();
 			    }
 		    });
@@ -133,14 +133,16 @@
                 }
 		    }
 
-		    function openDrop() {
+			function openDrop() {
+				form.addClass('open');
 			    if (!drop.hasClass('open')) {
 				    drop.addClass('open');
 				    beginKeyEvents();
 			    }
 		    }
 		
-		    function closeDrop() {
+			function closeDrop() {
+				form.removeClass('open');
 			    drop.removeClass('open');
 			    endKeyEvents();
 		    }

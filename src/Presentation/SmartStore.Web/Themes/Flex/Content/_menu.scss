@@ -232,6 +232,9 @@ $ocm-selected-color:                    $warning;
 #ocm-service {
     .menubar {
         flex-direction: column;
+        padding: 0;
+        align-items: unset;
+        justify-content: unset;
     }
 
     .menubar-group {

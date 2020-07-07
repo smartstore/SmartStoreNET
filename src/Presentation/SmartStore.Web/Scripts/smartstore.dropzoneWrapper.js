@@ -310,14 +310,13 @@
 			el.on("queuecomplete", function () {
 				logEvent("queuecomplete");
 
-				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR)
-					.filter(file => file.media && file.media.dupe === true);
+				var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR).filter(file => file.media && file.media.dupe === true);
 				var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS);
 
 				// If there are duplicates & dialog isn't already open > open duplicate file handler dialog.
 				if (dupeFiles.length !== 0 && dialog && !dialog.isOpen) {
 
-					// Close confirmation dialog. User was to slow. Uploads are complete.
+					// Close confirmation dialog. User was too slow. Uploads are complete.
 					if (elStatusWindow.data("confirmation-requested")) {
 						$("#modal-confirm-shared").modal("hide");
 					}
@@ -363,7 +362,7 @@
 					// SingleFile
 					dzResetProgressBar(elProgressBar);
 				}
-				else if (!displayPreviewInList || (displayPreviewInList && dupeFiles.length !== 0)) {		// Don't reset progress bar for status window if dupefiles = 0
+				else if (!displayPreviewInList || (displayPreviewInList && dupeFiles.length !== 0)) { // Don't reset progress bar for status window if dupefiles = 0
 					// MultiFile
 					var uploadedFiles = this.files;
 					
@@ -823,7 +822,7 @@
 			dropzone.processFile(firstFile);
 			resumeUpload = displayPreviewInList;
 
-			// If current file is last file > close dialog else display next file.
+			// If current file is last file: close dialog else display next file.
 			if (dupeFiles.length === 1) {
 				dialog.close();
 			}

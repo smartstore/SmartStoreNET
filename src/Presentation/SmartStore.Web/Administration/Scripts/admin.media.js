@@ -1,36 +1,36 @@
 SmartStore.Admin.Media = (function () {
-	function FileConflictResolutionDialog() {
-		var self = this;
 
-		// Private variables.
-		var _url = $('head > meta[property="sm:root"]').attr('content') + 'admin/media/fileconflictresolutiondialog';
-		var _dialog = null;
-		var _dupeFileDisplay = null;
+	class FileConflictResolutionDialog {
+		constructor() {
+			// Private variables.
+			this._url = $('head > meta[property="sm:root"]').attr('content') + 'admin/media/fileconflictresolutiondialog';
+			this._dialog = null;
+			this._dupeFileDisplay = null;
+		}
 
-		// Public variables.
-		Object.defineProperty(this, 'currentConflict', {
-			get: function () {
-				return this.queue ? this.queue[this.currentIndex] : null;
-			}
-		});
+		// Public properties
+		get currentConflict() {
+			return this.queue ? this.queue[this.currentIndex] : null;
+		}
 
-		Object.defineProperty(this, 'isOpen', {
-			get: function () { return $(_dialog).hasClass("show"); }
-		});
+		get isOpen() {
+			return $(this._dialog).hasClass("show");
+		}
 
-		Object.defineProperty(this, 'resolutionType', {
-			get: function () {
-				if (!_dialog)
-					return undefined;
+		get resolutionType() {
+			let dialog = this._dialog;
+			if (!dialog)
+				return undefined;
 
-				return parseInt(_dialog.find('input[name=resolution-type]:checked').val());
-			}
-		});
+			return parseInt(dialog.find('input[name=resolution-type]:checked').val());
+		}
 
-		// Public functions.
-		this.open = function (opts) {
+		// Public methods
+		open(opts) {
 			if (this.isOpen)
 				return;
+
+			const self = this;
 
 			// Public variables.
 			this.currentIndex = 0;
@@ -42,20 +42,20 @@ SmartStore.Admin.Media = (function () {
 			this.closeOnCompleted = toBool(opts.closeOnCompleted, true);
 
 			if (this.queue && this.queue.length) {
-				ensureDialog(function () {
+				this._ensureDialog(function () {
 					this.modal('show');
 					self.refresh();
 				});
 			}
-		};
+		}
 
-		this.close = function () {
-			if (_dialog && _dialog.length) {
-				_dialog.modal('hide');
+		close() {
+			if (this._dialog && this._dialog.length) {
+				this._dialog.modal('hide');
 			}
-		};
+		}
 
-		this.next = function () {
+		next() {
 			if (!this.isOpen)
 				return;
 
@@ -73,38 +73,41 @@ SmartStore.Admin.Media = (function () {
 				else {
 					if (_.isFunction(this.onComplete))
 						this.onComplete.apply(this, [false]);
-                }
+				}
 			}
-		};
+		}
 
-		this.refresh = function (conflict) {
+		refresh(conflict) {
 			conflict = conflict || this.currentConflict;
 			if (!conflict)
 				return;
 
-			// Enable apply button.
-			_dialog.find(".btn-apply").removeClass("disabled");
+			let dialog = this._dialog;
+			let dupeFileDisplay = this._dupeFileDisplay;
 
-			var existingFileDisplay = _dialog.find(".existing-file-display");
-			var source = conflict.source;
-			var dest = conflict.dest;
+			const existingFileDisplay = dialog.find(".existing-file-display");
+			const source = conflict.source;
+			const dest = conflict.dest;
+
+			// Enable apply button.
+			dialog.find(".btn-apply").removeClass("disabled");
 
 			// Display current filename in intro text.
-			_dialog.find(".intro .current-file").html('<b class="fwm">' + source.name + '</b>');
+			dialog.find(".intro .current-file").html('<b class="fwm">' + source.name + '</b>');
 
 			// Display remaining file count.
-			_dialog.find(".remaining-file-counter .current-count").text(this.currentIndex + 1);
-			_dialog.find(".remaining-file-counter .total-count").text(this.queue.length);
+			dialog.find(".remaining-file-counter .current-count").text(this.currentIndex + 1);
+			dialog.find(".remaining-file-counter .total-count").text(this.queue.length);
 
-			refreshFileDisplay(_dupeFileDisplay, source);
-			refreshFileDisplay(existingFileDisplay, dest);
+			this._refreshFileDisplay(dupeFileDisplay, source);
+			this._refreshFileDisplay(existingFileDisplay, dest);
 
 			// Trigger change to display changed filename immediately.
 			$("input[name=resolution-type]:checked").trigger("change");
-		};
+		}
 
-		// Private functions.
-		var refreshFileDisplay = function (el, file) {
+		// Private methods
+		_refreshFileDisplay(el, file) {
 			var preview = SmartStore.media.getPreview(file, { iconCssClasses: "fa-4x" });
 			el.find(".file-preview").html(preview.thumbHtml);
 			SmartStore.media.lazyLoadThumbnails(el);
@@ -122,16 +125,18 @@ SmartStore.Admin.Media = (function () {
 					el.find(".file-dimensions").text(width + " x " + height);
 				}
 			}
-		};
+		}
 
-		function ensureDialog(onReady) {
-			if (!_dialog || !_dialog.length) {
-				_dialog = $("#duplicate-window");
+		_ensureDialog(onReady) {
+			const self = this;
+
+			if (!this._dialog || !this._dialog.length) {
+				this._dialog = $("#duplicate-window");
 			}
 
-			if (_dialog.length) {
-				_dupeFileDisplay = _dialog.find(".dupe-file-display");
-				onReady.apply(_dialog);
+			if (this._dialog.length) {
+				this._dupeFileDisplay = this._dialog.find(".dupe-file-display");
+				onReady.apply(this._dialog);
 				return;
 			}
 
@@ -140,19 +145,19 @@ SmartStore.Admin.Media = (function () {
 				async: true,
 				cache: false,
 				type: 'POST',
-				url: _url,
-				success: function (response) {
+				url: this._url,
+				success(response) {
 					$("body").append($(response));
-					_dialog = $("#duplicate-window");
-					_dupeFileDisplay = _dialog.find(".dupe-file-display");
+					self._dialog = $("#duplicate-window");
+					self._dupeFileDisplay = self._dialog.find(".dupe-file-display");
 
 					if (self.isSingleFileUpload) {
-						_dialog.find("#apply-to-remaining").parent().hide();
-						_dialog.find(".remaining-file-counter").hide();
+						self._dialog.find("#apply-to-remaining").parent().hide();
+						self._dialog.find(".remaining-file-counter").hide();
 					}
 
 					// Listen to change events of radio group (dupe handling type) and display name of renamed file accordingly.
-					$(_dialog).on("change", 'input[name=resolution-type]', function (e) {
+					$(self._dialog).on("change", 'input[name=resolution-type]', (e) => {
 						var fileName = self.currentConflict.dest.name;
 
 						if ($(e.target).val() === "2") {
@@ -160,15 +165,15 @@ SmartStore.Admin.Media = (function () {
 							fileName = uniquePath.substr(uniquePath.lastIndexOf("/") + 1);
 						}
 
-						_dupeFileDisplay
+						self._dupeFileDisplay
 							.find(".file-name")
 							.attr("title", fileName)
 							.text(fileName);
 					});
 
-					$(_dialog).on("click", ".btn-apply", function () {
-						_dialog.data('canceled', false);
-						var applyToRemaining = _dialog.find('#apply-to-remaining').is(":checked");
+					$(self._dialog).on("click", ".btn-apply", () => {
+						self._dialog.data('canceled', false);
+						var applyToRemaining = self._dialog.find('#apply-to-remaining').is(":checked");
 
 						// Display apply button until current item is processed & next item is called by refresh (prevents double clicks while the server is still busy).
 						$(this).addClass("disabled");
@@ -191,19 +196,19 @@ SmartStore.Admin.Media = (function () {
 						return false;
 					});
 
-					$(_dialog).on("click", ".btn-cancel", function () {
-						_dialog.data('canceled', true);
+					$(self._dialog).on("click", ".btn-cancel", () => {
+						self._dialog.data('canceled', true);
 						self.queue = null;
 						self.close();
 						return false;
 					});
 
-					$(_dialog).on("hidden.bs.modal", function () {
+					$(self._dialog).on("hidden.bs.modal", () => {
 						if (_.isFunction(self.onComplete)) {
-							self.onComplete.apply(self, [_dialog.data('canceled')]);
-                        }
+							self.onComplete.apply(self, [self._dialog.data('canceled')]);
+						}
 
-						_dialog.trigger("resolution-complete");
+						self._dialog.trigger("resolution-complete");
 
 						self.currentIndex = 0;
 						self.callerId = null;
@@ -212,12 +217,12 @@ SmartStore.Admin.Media = (function () {
 						self.onComplete = _.noop;
 					});
 
-					onReady.apply(_dialog);
+					onReady.apply(self._dialog);
 				}
 			});
-		};
-	};
-
+        }
+	}
+	
 	return {
 		convertDropzoneFileQueue: function (queue) {
 			return _.map(queue, function (dzfile) {

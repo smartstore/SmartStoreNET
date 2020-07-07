@@ -43,7 +43,13 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
-		public string Breakpoint
+        public bool HideSingleItem
+        {
+            get;
+            set;
+        }
+
+        public string Breakpoint
 		{
 			get;
 			set;

@@ -191,6 +191,7 @@
     position: relative;
 
     .nav-tabs {
+		display: flex !important;
         flex-direction: column;
 
         .nav-link { 

@@ -55,6 +55,7 @@
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartProductCount", "Number of products", "Anzahl der Produkte");
+			builder.AddOrUpdate("Admin.Rules.FilterDescriptor.Weekday", "Weekday", "Wochentag");
 
 			builder.AddOrUpdate("ShoppingCart.QuantityExceedsStock")
 				.Value("de", "Die Bestellmenge übersteigt den Lagerbestand. Es können maximal {0} bestellt werden.");

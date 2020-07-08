@@ -13,29 +13,26 @@ namespace SmartStore.Services.Cart.Rules.Impl
             _userAgent = userAgent;
         }
 
-        public static RuleValueSelectListOption[] DefaultValues
+        public static RuleValueSelectListOption[] GetDefaultValues()
         {
-            get
+            return new[]
             {
-                return new[]
-                {
-                    "Chrome",
-                    "Chrome Mobile",
-                    "Edge",
-                    "Firefox",
-                    "Firefox Mobile",
-                    "IE",
-                    "IE Mobile",
-                    "Mobile Safari",
-                    "Opera",
-                    "Opera Mobile",
-                    "Opera Mini",
-                    "Safari",
-                    "Samsung Internet"
-                }
-                .Select(x => new RuleValueSelectListOption { Value = x, Text = x })
-                .ToArray();
+                "Chrome",
+                "Chrome Mobile",
+                "Edge",
+                "Firefox",
+                "Firefox Mobile",
+                "IE",
+                "IE Mobile",
+                "Mobile Safari",
+                "Opera",
+                "Opera Mobile",
+                "Opera Mini",
+                "Safari",
+                "Samsung Internet"
             }
+            .Select(x => new RuleValueSelectListOption { Value = x, Text = x })
+            .ToArray();
         }
 
         protected override string GetValue(CartRuleContext context)

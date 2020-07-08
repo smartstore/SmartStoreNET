@@ -122,18 +122,21 @@
 // Animate dropdown menus in navbars
 // ==============================================================
 
-.navbar.navbar-slide .dropdown-menu {
+@mixin sliding-dropdown-menu() {
     opacity: 0;
-    transform: translateY(-16px);
     display: block;
     visibility: hidden;
-    transition-property: transform, opacity;
-    transition-duration: 0.15s;
-    transition-timing-function: cubic-bezier(0,.1,.1,1);
+    transform: translateY(16px);
+    transition: transform 0.2s ease, opacity 0.275s ease-out;
+    will-change: transform;
 
     &.show {
         visibility: visible;
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+.navbar.navbar-slide .dropdown-menu {
+	@include sliding-dropdown-menu();
 }

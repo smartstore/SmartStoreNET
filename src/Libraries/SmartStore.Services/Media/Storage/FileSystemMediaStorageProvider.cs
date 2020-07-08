@@ -116,8 +116,12 @@ namespace SmartStore.Services.Media.Storage
 
 			if (stream != null)
 			{
-				// create folder if it does not exist yet
-				_fileSystem.CreateFolder(Path.GetDirectoryName(filePath));
+				// Create folder if it does not exist yet
+				var dir = Path.GetDirectoryName(filePath);
+				if (!_fileSystem.FolderExists(dir))
+                {
+					_fileSystem.CreateFolder(dir);
+				}
 
 				using (stream)
 				{
@@ -141,6 +145,13 @@ namespace SmartStore.Services.Media.Storage
 
 			if (stream != null)
 			{
+				// Create folder if it does not exist yet
+				var dir = Path.GetDirectoryName(filePath);
+				if (!_fileSystem.FolderExists(dir))
+				{
+					_fileSystem.CreateFolder(dir);
+				}
+
 				using (stream)
 				{
 					await _fileSystem.SaveStreamAsync(filePath, stream);
@@ -206,12 +217,20 @@ namespace SmartStore.Services.Media.Storage
 
 				if (!_fileSystem.FileExists(filePath))
 				{
-					// TBD: (mc) We only save the file if it doesn't exist yet.
-					// This should save time and bandwidth in the case where the target
-					// is a cloud based file system (like Azure BLOB).
-					// In such a scenario it'd be advisable to copy the files manually
-					// with other - maybe more performant - tools before performing the provider switch.
-					using (stream)
+                    // TBD: (mc) We only save the file if it doesn't exist yet.
+                    // This should save time and bandwidth in the case where the target
+                    // is a cloud based file system (like Azure BLOB).
+                    // In such a scenario it'd be advisable to copy the files manually
+                    // with other - maybe more performant - tools before performing the provider switch.
+
+                    // Create folder if it does not exist yet
+                    var dir = Path.GetDirectoryName(filePath);
+                    if (!_fileSystem.FolderExists(dir))
+                    {
+                        _fileSystem.CreateFolder(dir);
+                    }
+
+                    using (stream)
 					{
 						_fileSystem.SaveStream(filePath, stream);
 					}
@@ -233,12 +252,20 @@ namespace SmartStore.Services.Media.Storage
 
 				if (!_fileSystem.FileExists(filePath))
 				{
-					// TBD: (mc) We only save the file if it doesn't exist yet.
-					// This should save time and bandwidth in the case where the target
-					// is a cloud based file system (like Azure BLOB).
-					// In such a scenario it'd be advisable to copy the files manually
-					// with other - maybe more performant - tools before performing the provider switch.
-					using (stream)
+                    // TBD: (mc) We only save the file if it doesn't exist yet.
+                    // This should save time and bandwidth in the case where the target
+                    // is a cloud based file system (like Azure BLOB).
+                    // In such a scenario it'd be advisable to copy the files manually
+                    // with other - maybe more performant - tools before performing the provider switch.
+
+                    // Create folder if it does not exist yet
+                    var dir = Path.GetDirectoryName(filePath);
+                    if (!_fileSystem.FolderExists(dir))
+                    {
+                        _fileSystem.CreateFolder(dir);
+                    }
+
+                    using (stream)
 					{
 						await _fileSystem.SaveStreamAsync(filePath, stream);
 					}

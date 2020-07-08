@@ -93,18 +93,18 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (_isSqlServer)
-			{
-				if (mediaFile.MediaStorageId > 0)
-				{
-					return CreateBlobStream(mediaFile.MediaStorageId.Value);
-				}
+            if (_isSqlServer)
+            {
+                if (mediaFile.MediaStorageId > 0)
+                {
+                    return CreateBlobStream(mediaFile.MediaStorageId.Value);
+                }
 
-				return null;
-			}
-			else
-			{
-				return mediaFile.MediaStorage?.Data?.ToStream();
+                return null;
+            }
+            else
+            {
+                return mediaFile.MediaStorage?.Data?.ToStream();
 			}
 		}
 
@@ -144,7 +144,13 @@ namespace SmartStore.Services.Media.Storage
 
 			if (_isSqlServer)
 			{
-				SaveFast(mediaFile, stream);
+				if (stream != null)
+                {
+					using (stream)
+					{
+						SaveFast(mediaFile, stream);
+					}
+				}
 			}
 			else
 			{
@@ -165,7 +171,13 @@ namespace SmartStore.Services.Media.Storage
 
 			if (_isSqlServer)
 			{
-				SaveFast(mediaFile, stream);
+				if (stream != null)
+				{
+					using (stream)
+					{
+						SaveFast(mediaFile, stream);
+					}
+				}
 			}
 			else
 			{
@@ -221,8 +233,10 @@ namespace SmartStore.Services.Media.Storage
 				// Remove picture binary from DB
 				try
 				{
-					mediaFile.MediaStorageId = null;
-					mediaFile.MediaStorage = null;
+					_mediaStorageRepo.Delete(mediaFile.MediaStorageId.Value);
+					//mediaFile.MediaStorageId = null;
+					//mediaFile.MediaStorage = null;
+
 					_mediaFileRepo.Update(mediaFile);
 				}
 				catch { }

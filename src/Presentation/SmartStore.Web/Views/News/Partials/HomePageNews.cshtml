@@ -23,11 +23,11 @@
         </div>
 
         <div class="block-body news-items">
-
             @if (Model.NewsItems.Count == 1)
             {
                 var item = Model.NewsItems.FirstOrDefault();
-                var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+                var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
+                var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
 
                 <article class="row" itemscope itemtype="http://schema.org/NewsArticle">
                     @if (imageUrl.HasValue())
@@ -83,7 +83,6 @@
             }
             else if (Model.NewsItems.Count > 4)
             {
-
                 var aspectRatio = 0.5;
                 if (Model.NewsItems.Count >= 10)
                 {
@@ -105,14 +104,14 @@
                     </div>
                 </div>
             }
-
         </div>
     </div>
 }
 
 @helper FirstNewsItem(NewsItemModel item)
 {
-    var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+    var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
+    var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
 
     if (imageUrl.HasValue())
     {
@@ -146,7 +145,8 @@
 {
     foreach (var item in items)
     {
-        var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+        var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
+        var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
         var btnClasses = isMinimal ? "p-0" : "btn btn-sm btn-primary";
 
         <article class="row sm-gutters mb-4@(isMinimal ? " col-12 col-md-6" : "")" itemscope itemtype="http://schema.org/NewsArticle">
@@ -160,7 +160,6 @@
             }
 
             <div class="col-12 col-md mt-3 mt-md-0">
-
                 @RenderTitle(item.Title, item.SeName, isMinimal)
 
                 @if (!isMinimal)

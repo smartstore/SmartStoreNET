@@ -304,7 +304,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)
         {
-			// INFO: param 'tag' redunadant, because OutputCache does not include
+			// INFO: param 'tag' redundant, because OutputCache does not include
 			// complex type params in cache key computing
 
 			if (!_blogSettings.Enabled)
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByMonth(string month, BlogPagingFilteringModel command)
         {
-			// INFO: param 'month' redunadant, because OutputCache does not include
+			// INFO: param 'month' redundant, because OutputCache does not include
 			// complex type params in cache key computing
 
 			if (!_blogSettings.Enabled)

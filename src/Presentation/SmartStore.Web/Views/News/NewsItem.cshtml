@@ -1,5 +1,4 @@
 ﻿@model NewsItemModel
-
 @using SmartStore.Web.Models.News;
 
 @{
@@ -8,10 +7,11 @@
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+	var imageUrl = Url.Media(Model.PictureModel.File, 0, null, false);
 }
 
 <article class="page news-item-page" itemscope itemtype="http://schema.org/NewsArticle">
-
     @if (Model.DisplayAdminLink)
 	{
 		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
@@ -20,12 +20,16 @@
 		</a>
 	}
 
-    @if (Model.PictureModel.FullSizeImageUrl.HasValue())
+    @if (imageUrl.HasValue())
     {
-        var pic = Model.PictureModel;
         <div class="shadow-sm shadow-primary mb-3">
             <figure class="single-media-item-image">
-                <img class="img-fluid" src="@pic.FullSizeImageUrl" alt="@pic.AlternateText" title="@pic.Title" width="@pic.FullSizeImageWidth.Value" height="@pic.FullSizeImageHeight.Value" itemprop="image" />
+                <img class="img-fluid" src="@imageUrl" 
+					 alt="@Model.PictureModel.AlternateText" 
+					 title="@Model.PictureModel.Title" 
+					 width="@Model.PictureModel.FullSizeImageWidth"
+					 height="@Model.PictureModel.FullSizeImageHeight"
+					 itemprop="image" />
             </figure>
         </div>
     }

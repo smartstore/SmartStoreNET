@@ -153,21 +153,24 @@ namespace SmartStore.Web.Controllers
         public ActionResult HomePageNews()
         {
             if (!_newsSettings.Enabled || !_newsSettings.ShowNewsOnMainPage)
-                return Content("");
+            {
+                return new EmptyResult();
+            }
 
-            var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
-            var currentStoreId = _services.StoreContext.CurrentStore.Id;
-            var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_NEWSMODEL_KEY, workingLanguageId, currentStoreId);
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
+            var storeId = _services.StoreContext.CurrentStore.Id;
+            var includeHidden = _services.WorkContext.CurrentCustomer.IsAdmin();
+            var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_NEWSMODEL_KEY, languageId, storeId, _newsSettings.MainPageNewsCount, includeHidden);
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-				var newsItems = _newsService.GetAllNews(workingLanguageId, currentStoreId, 0, _newsSettings.MainPageNewsCount, _services.WorkContext.CurrentCustomer.IsAdmin());
+				var newsItems = _newsService.GetAllNews(languageId, storeId, 0, _newsSettings.MainPageNewsCount, includeHidden);
 
 				Services.DisplayControl.AnnounceRange(newsItems);
 
-				return new HomePageNewsItemsModel()
+				return new HomePageNewsItemsModel
                 {
-                    WorkingLanguageId = workingLanguageId,
+                    WorkingLanguageId = languageId,
                     NewsItems = newsItems
                         .Select(x =>
                         {
@@ -273,16 +276,26 @@ namespace SmartStore.Web.Controllers
 		public ActionResult NewsItem(int newsItemId)
         {
             if (!_newsSettings.Enabled)
-				return HttpNotFound();
+            {
+                return HttpNotFound();
+            }
 
             var newsItem = _newsService.GetNewsById(newsItemId);
-            if (newsItem == null ||
-                (!newsItem.Published && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
+            if (newsItem == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!newsItem.Published ||
                 (newsItem.StartDateUtc.HasValue && newsItem.StartDateUtc.Value >= DateTime.UtcNow) ||
-				(newsItem.EndDateUtc.HasValue && newsItem.EndDateUtc.Value <= DateTime.UtcNow) ||
-				//Store mapping
-				!_storeMappingService.Authorize(newsItem))
-				return HttpNotFound();
+                (newsItem.EndDateUtc.HasValue && newsItem.EndDateUtc.Value <= DateTime.UtcNow) ||
+                !_storeMappingService.Authorize(newsItem))
+            {
+                if (!_services.WorkContext.CurrentCustomer.IsAdmin())
+                {
+                    return HttpNotFound();
+                }
+            }
 
             var model = new NewsItemModel();
             PrepareNewsItemModel(model, newsItem, true);
@@ -367,8 +380,6 @@ namespace SmartStore.Web.Controllers
             {
                 PictureId = newsItem.MediaFileId.GetValueOrDefault(),
                 Size = 512,
-                ImageUrl = _mediaService.GetUrl(file, 512, null, false),
-                FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
                 Title = newsItem.Title,

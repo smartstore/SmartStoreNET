@@ -197,8 +197,10 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// <remarks>
 		/// {0} : language ID
 		/// {1} : store ID
+		/// {2} : news count setting.
+		/// {3} : whether to include hidden news.
 		/// </remarks>
-		public const string HOMEPAGE_NEWSMODEL_KEY = "pres:news:homepage-{0}-{1}";
+		public const string HOMEPAGE_NEWSMODEL_KEY = "pres:news:homepage-{0}-{1}-{2}-{3}";
 		public const string NEWS_PATTERN_KEY = "pres:news:*";
 
 		/// <summary>

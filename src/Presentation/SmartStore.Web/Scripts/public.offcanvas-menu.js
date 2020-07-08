@@ -181,7 +181,7 @@
 
         AjaxMenu.prototype._initServiceTab = function (pane, callback) {
             // Menubar is the top menu (above logo section)
-            var menubar = $(".menubar-section .menubar").clone();
+            var menubar = $(".menubar-section .menubar").clone().removeClass('navbar navbar-slide');
 
             // remove currency & language selectors 
             menubar.find(".currency-selector, .language-selector").remove();

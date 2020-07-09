@@ -266,6 +266,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
             position: absolute;
             right: 0;
             bottom: 0;
+            pointer-events: none;
         }
 
         .below-preview-pic-text {

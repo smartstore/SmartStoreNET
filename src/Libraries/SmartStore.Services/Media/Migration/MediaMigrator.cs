@@ -395,18 +395,7 @@ namespace SmartStore.Services.Media.Migration
 
                         ProcessMediaFile(file);
 
-                        if (!_isFsProvider)
-                        {
-                            using (var stream = uploadedFile.OpenRead())
-                            {
-                                file.MediaStorage = new MediaStorage { Data = stream.ToByteArray() };
-                            }
-                        }
-                        else
-                        {
-                            newFiles.Add(new FilePair { MediaFile = file, UploadedFile = uploadedFile });
-                        }
-
+                        newFiles.Add(new FilePair { MediaFile = file, UploadedFile = uploadedFile });
                         fileSet.Add(file);
                     }
 
@@ -417,9 +406,9 @@ namespace SmartStore.Services.Media.Migration
                         int num = scope.Commit();
 
                         // Copy/Move files
-                        if (_isFsProvider)
+                        foreach (var newFile in newFiles)
                         {
-                            foreach (var newFile in newFiles)
+                            if (_isFsProvider)
                             {
                                 var newPath = GetStoragePath(newFile.MediaFile);
                                 if (!_mediaFileSystem.FileExists(newPath))
@@ -428,6 +417,16 @@ namespace SmartStore.Services.Media.Migration
                                     _mediaFileSystem.CopyFile(newFile.UploadedFile.Path, newPath);
                                 }
                             }
+                            else
+                            {
+                                _mediaStorageProvider.Save(newFile.MediaFile, newFile.UploadedFile.OpenRead());
+                            }
+                        }
+
+                        if (!_isFsProvider)
+                        {
+                            // MediaFile.MediaStorageId has been updated, we need to save again.
+                            num = scope.Commit();
                         }
                     }
                     catch

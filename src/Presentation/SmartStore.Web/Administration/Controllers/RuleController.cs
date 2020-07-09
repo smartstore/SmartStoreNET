@@ -735,7 +735,12 @@ namespace SmartStore.Admin.Controllers
                             }
                             else if (descriptor.RuleType == RuleType.DateTime || descriptor.RuleType == RuleType.NullableDateTime)
                             {
-                                data.Value = data.Value.Convert<DateTime>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                                if (data.Value.HasValue())
+                                {
+                                    // Always store invariant formatted UTC values, otherwise database queries return inaccurate results.
+                                    var dt = data.Value.Convert<DateTime>(CultureInfo.CurrentCulture).ToUniversalTime();
+                                    data.Value = dt.ToString(CultureInfo.InvariantCulture);
+                                }
                             }
                         }
                         //if (data.Value?.Contains(',') ?? false)

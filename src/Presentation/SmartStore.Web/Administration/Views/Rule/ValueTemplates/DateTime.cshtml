@@ -8,9 +8,12 @@
     var pickTime = format == "L LT";
     var timeOnly = format == "LT";
 
-    var value = Model.Value != null
-        ? Convert.ToDateTime(Model.Value, System.Globalization.CultureInfo.CurrentCulture)
-        : (DateTime?)null;
+    DateTime? value = null;
+    if (Model.Value != null)
+    {
+        value = Convert.ToDateTime(Model.Value, System.Globalization.CultureInfo.CurrentCulture);
+        value = value.ToLocalTime();
+    }
 
     var strValue = string.Empty;
     if (value.HasValue && value.Value > DateTime.MinValue)

@@ -365,14 +365,17 @@ namespace SmartStore.Services.Security
                     // Remove permissions no longer supported by providers.
                     if (removeUnusedPermissions)
                     {
-                        var toDelete = existing.Except(providerPermissions);
+                        var toDelete = existing.Except(providerPermissions).ToList();
                         if (toDelete.Any())
                         {
                             clearCache = true;
 
-                            var entities = _permissionRepository.Table.Where(x => toDelete.Contains(x.SystemName)).ToList();
-                            entities.Each(x => _permissionRepository.Delete(x));
-                            scope.Commit();
+                            foreach (var chunk in toDelete.Slice(500))
+                            {
+                                var entities = _permissionRepository.Table.Where(x => chunk.Contains(x.SystemName)).ToList();
+                                entities.Each(x => _permissionRepository.Delete(x));
+                                scope.Commit();
+                            }
 
                             if (log)
                             {

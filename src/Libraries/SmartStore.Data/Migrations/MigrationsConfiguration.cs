@@ -65,6 +65,19 @@
 				"Bestelldetails (ID - {0})");
 
 			builder.Delete("Account.CustomerOrders.RecurringOrders.InitialOrder");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Unavailable",
+				"Unavailable",
+				"Nicht vorhanden");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Idle",
+				"Idle",
+				"Bereit");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Rebuilding",
+				"Rebuilding",
+				"Reindexierend");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Updating",
+				"Updating",
+				"Aktualisierend");
 		}
 	}
 }

@@ -27,20 +27,27 @@ $facet-selection-color:             darken($success, 15%);
     position: relative;
     padding-left: 1rem;
     padding-right: 1rem;
-    //border-radius: 2px;
-    background: $searchbox-bg;
+    background-color: $searchbox-bg-1;
     border-color: $searchbox-border-color;
     box-shadow: none;
-    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition-property: background-color, color, box-shadow, border;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
     padding-right: 60px;
 
+    &:hover:not(:focus):not(:active) {
+        background-color: $searchbox-bg-2;
+    }
     &:hover, &:focus, &:active {
-        //box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
         box-shadow: $box-shadow-sm-var;
     }
      &:focus, &:active {
-        background-color: $searchbox-focus-bg;
+        background-color: $searchbox-bg-3;
         border-color: $searchbox-border-active-color;
+    }
+
+    @include media-breakpoint-up(lg) {
+        background-color: $searchbox-bg-2;
     }
 }
 
@@ -64,24 +71,40 @@ $facet-selection-color:             darken($success, 15%);
     top: 0.12rem;
 }
 
-/*.instasearch-term:not(:focus) {
-    border-radius: 50rem;
-    background-color: var(--light);
+@if ($searchbox-pill == true) {
+    .instasearch-form:not(.open) {
+        .instasearch-term {
+            border-radius: 50rem;
+        }
 
-    + .instasearch-button {
-        border-top-right-radius: 50rem;
-        border-bottom-right-radius: 50rem;
+        .instasearch-button {
+            border-top-right-radius: 50rem;
+            border-bottom-right-radius: 50rem;
+        }
     }
-}*/
+}
+
+.instasearch-form.open {
+    > .instasearch-term {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: $searchbox-bg-3 !important;
+    }
+
+    > .instasearch-button {
+        border-bottom-right-radius: 0;
+    }
+}
 
 .instasearch-drop {
     position: absolute;
     display: none;
-    left: 0;
+    left: 1px;
+    right: 1px;
     top: 100%;
     margin-top: -1px;
-    min-width: 100%;
-    max-width: 100%;
+    min-width: calc(100% - 2px);
+    max-width: calc(100% - 2px);
     min-height: 50px;
     border: 1px solid $searchbox-border-active-color;
     --shadow-color-intensity: 0.5;
@@ -143,6 +166,7 @@ $facet-selection-color:             darken($success, 15%);
 @include media-breakpoint-up(lg) {
     .instasearch-drop {
         max-width: none;
+        right: auto;
     }
     .instasearch-row {
         width: 850px;

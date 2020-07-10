@@ -44,8 +44,10 @@ $megamenu-heading-color:        #222 !default;
 $megamenu-subitem-color:        #999 !default;
 $megamenu-rotator-bg:           rgba(255, 255, 255, 0.92) !default;
 
-$searchbox-bg:                  #fff !default;
-$searchbox-focus-bg:            #fff !default;
+$searchbox-pill:                true;
+$searchbox-bg-1:                $light !default;
+$searchbox-bg-2:                #fff !default;
+$searchbox-bg-3:                #fff !default;
 $searchbox-border-color:        rgba(0,0,0, 0.1) !default;
 $searchbox-border-active-color: rgba(0,0,0, 0.1) !default;
 $searchbox-hit-tag-color:       darken($warning, 10%) !default;

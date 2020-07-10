@@ -11,8 +11,10 @@
 	* Added more cart rules: weekday, total quantity of products in cart.
 	* Added list with example values for browser, operating system and device family rule.
 * #1995 The localized ALT text of media files is now respected for all frontend images.
-* SEO: most images in frontend now carry `loading="lazy"` attribute which loads images only when they enter visible viewport
-* Media Manager: improved image lazy loading behavior
+* SEO: most images in frontend now carry `loading="lazy"` attribute which loads images only when they enter visible viewport.
+* **Media Manager**:
+	* Improved image lazy loading behavior.
+	* Keep references table open once data was loaded for a file.
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.

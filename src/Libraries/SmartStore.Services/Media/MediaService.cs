@@ -196,9 +196,7 @@ namespace SmartStore.Services.Media
 
             if (_helper.TokenizePath(path, out var tokens))
             {
-                var table = _fileRepo.Table;
-
-                // TODO: (mm) (mc) LoadFlags > Blob | Tags | Tracks
+                var table = _searcher.ApplyLoadFlags(_fileRepo.Table, flags);
 
                 var entity = table.FirstOrDefault(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
                 if (entity != null)

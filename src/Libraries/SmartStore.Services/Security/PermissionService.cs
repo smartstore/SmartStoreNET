@@ -312,6 +312,8 @@ namespace SmartStore.Services.Security
                                             existingRoles = new Dictionary<string, CustomerRole>();
 
                                             var rolesQuery = _customerService.Value.GetAllCustomerRoles(true).SourceQuery;
+                                            rolesQuery = rolesQuery.Where(x => !string.IsNullOrEmpty(x.SystemName));
+
                                             var rolesPager = new FastPager<CustomerRole>(rolesQuery, 500);
 
                                             while (rolesPager.ReadNextPage(out var roles))

@@ -197,6 +197,9 @@ SmartStore.Admin.Charts = {
                 completeGradient.addColorStop(0, chartElement.css('--chart-color-primary'));
                 completeGradient.addColorStop(1, chartElement.css('--chart-color-primary-light'));
 
+                var initialY = Math.max(...dataSets[0].DataSets[3].Amount);
+                initialY = initialY == 0 ? 1 : initialY * 1.1;
+
                 // Chart config
                 var order_config = {
                     type: 'line',
@@ -210,6 +213,7 @@ SmartStore.Admin.Charts = {
                             pointBackgroundColor: colorDanger,
                             pointHoverBackgroundColor: colorDanger,
                             pointHoverBorderColor: 'transparent',
+                            lineTension: 0.3,
                         }, {
                             label: textPending,
                             data: dataSets[0].DataSets[1].Amount,
@@ -219,6 +223,7 @@ SmartStore.Admin.Charts = {
                             pointBackgroundColor: colorWarning,
                             pointHoverBackgroundColor: colorWarning,
                             pointHoverBorderColor: 'transparent',
+                            lineTension: 0.3,
                         }, {
                             label: textProcessing,
                             data: dataSets[0].DataSets[2].Amount,
@@ -228,6 +233,7 @@ SmartStore.Admin.Charts = {
                             pointBackgroundColor: colorSuccess,
                             pointHoverBackgroundColor: colorSuccess,
                             pointHoverBorderColor: 'transparent',
+                            lineTension: 0.3,
                         }, {
                             label: textComplete,
                             data: dataSets[0].DataSets[3].Amount,
@@ -236,6 +242,7 @@ SmartStore.Admin.Charts = {
                             pointBackgroundColor: colorPrimary,
                             pointHoverBackgroundColor: colorPrimary,
                             pointHoverBorderColor: 'transparent',
+                            lineTension: 0.3,
                         }]
                     },
                     options: {
@@ -245,12 +252,6 @@ SmartStore.Admin.Charts = {
                         stacked: true,
                         animation: {
                             duration: 400,
-                            hide: {
-                                visible: {
-                                    type: true,
-                                    easing: 'easeInOutSine'
-                                },
-                            },
                             easing: 'easeInOutSine',
                         },
                         hover: {
@@ -262,7 +263,7 @@ SmartStore.Admin.Charts = {
                             padding: {
                                 left: 0,
                                 right: 0,
-                                top: 6,
+                                top: 0,
                                 bottom: 0
                             }
                         },
@@ -295,7 +296,7 @@ SmartStore.Admin.Charts = {
                             },
                             line: {
                                 borderWidth: 0.5,
-                                lineTension: 0.2,
+                                lineTension: 0.3,
                                 fill: true,
                             }
                         },
@@ -331,6 +332,10 @@ SmartStore.Admin.Charts = {
                             yAxes: [{
                                 display: false,
                                 stacked: true,
+
+                                ticks: {
+                                    max: initialY,
+                                }
                             }],
                             xAxes: [{
                                 display: false,
@@ -365,10 +370,17 @@ SmartStore.Admin.Charts = {
                     for (var i = 0; i < order_config.data.datasets.length; i++) {
                         order_config.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
                     }
+                    order_config.options.scales.yAxes[0].ticks.max = getYaxis(ordersChart.data);
                     ordersChart = new Chart(orders_ctx, order_config);
                     setPercentageDelta(period, dataSets);
                     currentPeriod = period;
                     createLegend();
+                }
+
+                function getYaxis(chartData) {                    
+                    // Get highest Y Axis value from not hidden dataSets
+                    let yAxisSize = Math.max(...chartData.datasets.filter(e => !e.hidden).map(e => Math.max(...e.data)))
+                    return yAxisSize == 0 ? 1 : yAxisSize * 1.1;
                 }
 
                 function setPercentageDelta(period) {
@@ -422,6 +434,7 @@ SmartStore.Admin.Charts = {
                     }
                     meta.hidden = !chart.data.datasets[index].hidden;
                     chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
+                    chart.config.options.scales.yAxes[0].ticks.max = getYaxis(chart.data);
                     chart.update();
                 }
             },
@@ -451,6 +464,7 @@ SmartStore.Admin.Charts = {
                             pointBackgroundColor: colorSuccess,
                             pointHoverBackgroundColor: colorSuccess,
                             pointHoverBorderColor: 'transparent',
+                            lineTension: 0.3,
                         }]
                     },
                     options: {
@@ -477,7 +491,7 @@ SmartStore.Admin.Charts = {
                             padding: {
                                 left: 0,
                                 right: 0,
-                                top: 7,
+                                top: 0,
                                 bottom: 0
                             }
                         },
@@ -490,7 +504,7 @@ SmartStore.Admin.Charts = {
                             },
                             line: {
                                 borderWidth: .5,
-                                lineTension: 0.2,
+                                lineTension: 0.3,
                                 fill: true,
                             }
                         },
@@ -526,6 +540,10 @@ SmartStore.Admin.Charts = {
                             yAxes: [{
                                 display: false,
                                 stacked: true,
+
+                                ticks: {
+                                    max: getYaxis(dataSets[0]),
+                                }
                             }],
                             xAxes: [{
                                 display: false,
@@ -558,9 +576,15 @@ SmartStore.Admin.Charts = {
                     for (var i = 0; i < customer_config.data.datasets.length; i++) {
                         customer_config.data.datasets[i].data = dataSets[period].DataSets[i].Quantity;
                     }
+                    customer_config.options.scales.yAxes[0].ticks.max = getYaxis(dataSets[period]);
                     customersChart = new Chart(customers_ctx, customer_config);
                     setPercentageDelta(period, dataSets);
                     currentPeriod = period;
+                }
+
+                function getYaxis(chartData) {
+                    let yAxisSize = Math.max(...chartData.DataSets.map(e => Math.max(...e.Quantity)))
+                    return yAxisSize == 0 ? 1 : yAxisSize * 1.1;
                 }
 
                 function setPercentageDelta(period) {

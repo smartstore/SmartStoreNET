@@ -176,9 +176,11 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Gets all customer roles
         /// </summary>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Customer role collection</returns>
-        IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false);
+        IPagedList<CustomerRole> GetAllCustomerRoles(bool showHidden = false, int pageIndex = 0, int pageSize = int.MaxValue);
 
         /// <summary>
         /// Inserts a customer role

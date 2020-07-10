@@ -713,15 +713,14 @@ namespace SmartStore.Services.Customers
 			return customerRole;
 		}
 
-        public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
+        public virtual IPagedList<CustomerRole> GetAllCustomerRoles(bool showHidden = false, int pageIndex = 0, int pageSize = int.MaxValue)
         {
 			var query = from cr in _customerRoleRepository.Table
 						orderby cr.Name
 						where (showHidden || cr.Active)
 						select cr;
 
-			var customerRoles = query.ToListCached();
-			return customerRoles;
+			return new PagedList<CustomerRole>(query, pageIndex, pageSize);
 		}
         
         public virtual void InsertCustomerRole(CustomerRole role)

@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 
@@ -308,11 +309,15 @@ namespace SmartStore.Services.Security
                                     {
                                         if (existingRoles == null)
                                         {
-                                            var allRoles = _customerService.Value.GetAllCustomerRoles(true);
+                                            existingRoles = new Dictionary<string, CustomerRole>();
 
-                                            existingRoles = allRoles
-                                                .Where(x => !string.IsNullOrEmpty(x.SystemName))
-                                                .ToDictionarySafe(x => x.SystemName, x => x);
+                                            var rolesQuery = _customerService.Value.GetAllCustomerRoles(true).SourceQuery;
+                                            var rolesPager = new FastPager<CustomerRole>(rolesQuery, 500);
+
+                                            while (rolesPager.ReadNextPage(out var roles))
+                                            {
+                                                roles.Each(x => existingRoles[x.SystemName] = x);
+                                            }
                                         }
 
                                         if (!existingRoles.TryGetValue(roleName, out var role))

@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using SmartStore.Collections;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Data.Setup
 {
 	public class DbMigrationContext
 	{
-		private static DbMigrationContext _dbMigrationContext;
+		private static DbMigrationContext _instance;
 		private readonly ConcurrentDictionary<Type, bool> _map = new ConcurrentDictionary<Type, bool>();
+		private Multimap<Type, string> _appliedMigrations;
+		private readonly object _lock = new object();
 
 		private DbMigrationContext()
 		{
@@ -20,12 +24,12 @@ namespace SmartStore.Data.Setup
 		{
 			get
 			{
-				if (_dbMigrationContext == null)
+				if (_instance == null)
 				{
-					_dbMigrationContext = new DbMigrationContext();
+					_instance = new DbMigrationContext();
 				}
 
-				return _dbMigrationContext;
+				return _instance;
 			}
 		}
 
@@ -42,6 +46,42 @@ namespace SmartStore.Data.Setup
 			}
 			
 			return false;
+		}
+
+		internal void AddAppliedMigration(Type contextType, string migrationName)
+        {
+			if (_appliedMigrations == null)
+			{
+				lock (_lock)
+                {
+					if (_appliedMigrations == null)
+					{
+						_appliedMigrations = new Multimap<Type, string>();
+					}	
+				}
+			}
+
+			_appliedMigrations.Add(contextType, migrationName);
+		}
+
+		public IEnumerable<string> GetAppliedMigrations()
+        {
+			if (_appliedMigrations != null)
+            {
+				return _appliedMigrations.SelectMany(x => x.Value);
+            }
+			
+			return Enumerable.Empty<string>();
+        }
+
+		public IEnumerable<string> GetAppliedMigrations<TContext>() where TContext : DbContext
+		{
+			if (_appliedMigrations != null && _appliedMigrations.ContainsKey(typeof(TContext)))
+			{
+				return _appliedMigrations[typeof(TContext)].AsReadOnly();
+			}
+
+			return Enumerable.Empty<string>();
 		}
 	}
 }

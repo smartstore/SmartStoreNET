@@ -8,6 +8,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Security;
+using SmartStore.Data.Setup;
 
 namespace SmartStore.Services.Security
 {
@@ -43,8 +44,12 @@ namespace SmartStore.Services.Security
             var removeUnusedPermissions = true;
             var providers = new List<IPermissionProvider>();
 
-            if (PluginManager.PluginChangeDetected || !_permissionRepository.TableUntracked.Any())
+            if (PluginManager.PluginChangeDetected || DbMigrationContext.Current.GetAppliedMigrations().Any() || !_permissionRepository.TableUntracked.Any())
             {
+                // INFO: even if no plugin has changed: directly after a DB migration this code block MUST run. It seems awkward
+                // that pending migrations exist when binaries has not changed. But after a manual DB reset for a migration rerun
+                // nobody touches the binaries usually.
+                
                 // Standard permission provider and all plugin providers.
                 var types = _typeFinder.FindClassesOfType<IPermissionProvider>(ignoreInactivePlugins: true).ToList();
                 foreach (var type in types)

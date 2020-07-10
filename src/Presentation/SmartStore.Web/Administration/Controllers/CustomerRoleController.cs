@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Tasks;
@@ -53,8 +54,15 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult AllCustomerRoles(string label, string selectedIds)
         {
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var rolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
+            var rolesPager = new FastPager<CustomerRole>(rolesQuery, 500);
+            var customerRoles = new List<CustomerRole>();
             var ids = selectedIds.ToIntArray();
+
+            while (rolesPager.ReadNextPage(out var roles))
+            {
+                customerRoles.AddRange(roles);
+            }
 
             if (label.HasValue())
             {
@@ -83,13 +91,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Role.Read)]
         public ActionResult List()
         {
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
-            var gridModel = new GridModel<CustomerRoleModel>
-            {
-                Data = customerRoles.Select(x => x.ToModel()),
-                Total = customerRoles.Count()
-            };
-            return View(gridModel);
+            ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
+
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -97,11 +101,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command)
         {
             var model = new GridModel<CustomerRoleModel>();
-
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var customerRoles = _customerService.GetAllCustomerRoles(true, command.Page - 1, command.PageSize);
 
             model.Data = customerRoles.Select(x => x.ToModel());
-            model.Total = customerRoles.Count();
+            model.Total = customerRoles.TotalCount;
 
             return new JsonResult
             {

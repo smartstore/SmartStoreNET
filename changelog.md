@@ -14,7 +14,8 @@
 * SEO: most images in frontend now carry `loading="lazy"` attribute which loads images only when they enter visible viewport.
 * **Media Manager**:
 	* Improved image lazy loading behavior.
-	* Keep references table open once data was loaded for a file.
+	* The reference table of a file now remains open if its data has been loaded.
+* Added paging for customer role grid.
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.

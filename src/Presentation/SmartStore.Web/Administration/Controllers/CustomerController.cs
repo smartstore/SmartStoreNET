@@ -421,36 +421,17 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List()
         {
             // Load registered customers by default.
-            var allRoles = _customerService.GetAllCustomerRoles(true);
-            var registeredRoleId = allRoles.First(x => x.SystemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Registered)).Id;
+            var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
 
             var listModel = new CustomerListModel
             {
+                GridPageSize = _adminAreaSettings.GridPageSize,
                 UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email,
                 DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled,
                 CompanyEnabled = _customerSettings.CompanyEnabled,
                 PhoneEnabled = _customerSettings.PhoneEnabled,
                 ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled,
-                SearchCustomerRoleIds = registeredRoleId.ToString()
-            };
-
-            listModel.AvailableCustomerRoles = allRoles
-                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-                .ToList();
-
-            var q = new CustomerSearchQuery
-            {
-                CustomerRoleIds = new int[] { registeredRoleId },
-                PageSize = _adminAreaSettings.GridPageSize
-            };
-
-            var customers = _customerService.SearchCustomers(q);
-
-            // Customer list.
-            listModel.Customers = new GridModel<CustomerModel>
-            {
-                Data = customers.Select(PrepareCustomerModelForList),
-                Total = customers.TotalCount
+                SearchCustomerRoleIds = new int[] { registeredRole.Id }
             };
 
             return View(listModel);
@@ -465,7 +446,7 @@ namespace SmartStore.Admin.Controllers
 
             var q = new CustomerSearchQuery
             {
-                CustomerRoleIds = model.SearchCustomerRoleIds.ToIntArray(),
+                CustomerRoleIds = model.SearchCustomerRoleIds,
                 Email = model.SearchEmail,
                 Username = model.SearchUsername,
                 SearchTerm = model.SearchTerm,

@@ -1,9 +1,7 @@
 ﻿@model CustomerListModel
 @using Telerik.Web.Mvc.UI;
 @using System.Globalization;
-@{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
+@{   
     ViewBag.Title = T("Admin.Customers.Customers").Text;
 }
 @using (Html.BeginForm())
@@ -97,7 +95,7 @@
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
-			@Html.DropDownList("SearchCustomerRoleIds", Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })
+			@Html.EditorFor(model => model.SearchCustomerRoleIds)
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -112,8 +110,7 @@
 		</div>
 	</div>
 
-
-    @(Html.Telerik().Grid<CustomerModel>(Model.Customers.Data)
+    @(Html.Telerik().Grid<CustomerModel>()
 		.Name("customers-grid")
 		.ClientEvents(events => events
 			.OnDataBinding("onDataBinding")
@@ -122,15 +119,13 @@
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Id)
-				.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
 				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
 				.Title("<input id='mastercheckbox' type='checkbox'/>")
 				.HtmlAttributes(new { style = "text-align:center" })
 				.HeaderHtmlAttributes(new { style = "text-align:center" });
 			columns.Bound(x => x.Id);
 			columns.Bound(x => x.Email)
-				.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
 			columns.Bound(x => x.Username)
 				.Visible(Model.UsernamesEnabled);
 			columns.Bound(x => x.FullName);
@@ -142,35 +137,33 @@
 			columns.Bound(x => x.ZipPostalCode)
 				.Visible(Model.ZipPostalCodeEnabled);
 			columns.Bound(x => x.Active)
-					.Template(item => @Html.SymbolForBool(item.Active))
-					.ClientTemplate(@Html.SymbolForBool("Active"))
-					.Centered();
+				.ClientTemplate(Html.SymbolForBool("Active"))
+				.Centered();
 			columns.Bound(x => x.CreatedOn);
 			columns.Bound(x => x.LastActivityDate);
 			columns.Bound(x => x.Id)
 				.Centered()
-				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
 				.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
 				.Title(String.Empty)
 				.HtmlAttributes(new { align = "right", @class = "omega" });
 		})
-		.Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
 		.PreserveGridState()
 		.EnableCustomBinding(true))
 
-    <script type="text/javascript">
-		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+    <script>
+		@*Used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
-		$(document).ready(function () {
+		$(function () {
 
-			// Filter toggler
+			// Filter toggler.
 			$('.btn-toggle-filter').on('click', function (e) {
 				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
 			});
 
-			//search button
+			// Search button.
 			$('#search-customers').click(function () {
 				var grid = $('#customers-grid').data('tGrid');
 				grid.currentPage = 1; //new search. Set page size to 1
@@ -189,7 +182,7 @@
 				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
 			});
 
-			//wire up checkboxes.
+			// Wire up checkboxes.
 			$(document).on('change', '#customers-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
 				var $check = $(this);
 				if ($check.is(":checked") == true) {
@@ -216,7 +209,7 @@
 			$('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
 				var currentId = $(this).val();
 				var checked = jQuery.inArray(currentId, selectedIds);
-				//set checked based on if current checkbox's value is in selectedIds.
+				// Set checked based on if current checkbox's value is in selectedIds.
 				$(this).attr('checked', checked > -1);
 			});
 
@@ -236,8 +229,7 @@
 		}
 
 		function onDataBinding(e) {
-			var searchModel = {
-				SearchCustomerRoleIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.SearchCustomerRoleIds)').val()).join(),
+			e.data = {
 				SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
 				SearchUsername: $('#@Html.FieldIdFor(model => model.SearchUsername)').val(),
 				SearchTerm: $('#@Html.FieldIdFor(model => model.SearchTerm)').val(),
@@ -247,7 +239,15 @@
 				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val(),
 				SearchActiveOnly: $('#@Html.FieldIdFor(model => model.SearchActiveOnly)').val()
 			};
-			e.data = searchModel;
+
+			var customerGrid = $('#customers-grid');
+			if (customerGrid.data('init-loaded')) {
+				e.data.SearchCustomerRoleIds = $('#@(Html.FieldIdFor(x => x.SearchCustomerRoleIds))').val();
+			}
+			else {
+				customerGrid.data('init-loaded', true);
+				e.data.SearchCustomerRoleIds = '@(string.Join(",", Model.SearchCustomerRoleIds))';
+			}
 		}
     </script>
 }

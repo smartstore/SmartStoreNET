@@ -51,7 +51,7 @@ namespace SmartStore.Admin.Controllers
             _adminAreaSettings = adminAreaSettings;
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllCustomerRoles(string label, string selectedIds)
         {
             var rolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
@@ -69,14 +69,14 @@ namespace SmartStore.Admin.Controllers
                 customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
             }
 
-            var list =
-                from c in customerRoles
-                select new
+            var list = customerRoles
+                .OrderBy(x => x.Name)
+                .Select(x => new
                 {
-                    id = c.Id.ToString(),
-                    text = c.Name,
-                    selected = ids.Contains(c.Id)
-                };
+                    id = x.Id.ToString(),
+                    text = x.Name,
+                    selected = ids.Contains(x.Id)
+                });
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }

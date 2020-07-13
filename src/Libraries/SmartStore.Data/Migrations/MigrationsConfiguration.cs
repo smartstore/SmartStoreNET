@@ -64,7 +64,10 @@
 				"Order Details (ID - {0})",
 				"Bestelldetails (ID - {0})");
 
-			builder.Delete("Account.CustomerOrders.RecurringOrders.InitialOrder");
+			builder.Delete(
+				"Account.CustomerOrders.RecurringOrders.InitialOrder",
+				"Admin.System.Warnings.NoCustomerRolesDefined",
+				"Admin.Configuration.ACL.Permission");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Unavailable",
 				"Unavailable",

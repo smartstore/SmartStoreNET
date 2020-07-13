@@ -320,8 +320,6 @@
     <Compile Include="Models\Plugins\PluginModel.cs" />
     <Compile Include="Models\Polls\PollAnswerModel.cs" />
     <Compile Include="Models\Polls\PollModel.cs" />
-    <Compile Include="Models\Security\PermissionRecordModel.cs" />
-    <Compile Include="Models\Security\PermissionMappingModel.cs" />
     <Compile Include="Models\Logging\ActivityLogModel.cs" />
     <Compile Include="Models\Logging\ActivityLogSearchModel.cs" />
     <Compile Include="Models\Logging\ActivityLogTypeModel.cs" />
@@ -1128,9 +1126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateAttributeCombinationPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Security\Permissions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Log\View.cshtml" />

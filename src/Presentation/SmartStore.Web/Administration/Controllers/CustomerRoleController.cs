@@ -52,9 +52,15 @@ namespace SmartStore.Admin.Controllers
         }
 
         // AJAX.
-        public ActionResult AllCustomerRoles(string label, string selectedIds)
+        public ActionResult AllCustomerRoles(string label, string selectedIds, bool? includeSystemRoles)
         {
             var rolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
+
+            if (!(includeSystemRoles ?? true))
+            {
+                rolesQuery = rolesQuery.Where(x => !x.IsSystemRole);
+            }
+
             var rolesPager = new FastPager<CustomerRole>(rolesQuery, 500);
             var customerRoles = new List<CustomerRole>();
             var ids = selectedIds.ToIntArray();
@@ -64,11 +70,6 @@ namespace SmartStore.Admin.Controllers
                 customerRoles.AddRange(roles);
             }
 
-            if (label.HasValue())
-            {
-                customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
-            }
-
             var list = customerRoles
                 .OrderBy(x => x.Name)
                 .Select(x => new
@@ -76,9 +77,15 @@ namespace SmartStore.Admin.Controllers
                     id = x.Id.ToString(),
                     text = x.Name,
                     selected = ids.Contains(x.Id)
-                });
+                })
+                .ToList();
 
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            if (label.HasValue())
+            {
+                list.Insert(0, new { id = "0", text = label, selected = false });
+            }
+
+            return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         #region List / Create / Edit / Delete

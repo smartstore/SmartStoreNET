@@ -28,6 +28,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -890,8 +891,6 @@ namespace SmartStore.Admin.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			StoreDependingSettings.CreateViewDataObject(storeScope);
 
-			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-
 			var customerSettings = Services.Settings.LoadSetting<CustomerSettings>(storeScope);
 			var addressSettings = Services.Settings.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
@@ -910,7 +909,7 @@ namespace SmartStore.Admin.Controllers
             model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
             model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
 
-            foreach (TimeZoneInfo timeZone in _dateTimeHelper.GetSystemTimeZones())
+            foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
             {
                 model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
                 {
@@ -925,11 +924,6 @@ namespace SmartStore.Admin.Controllers
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
 			StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, Services.Settings, false);
-
-			model.CustomerSettings.AvailableRegisterCustomerRoles = allCustomerRoles
-				.Where(x => x.SystemName != SystemCustomerRoleNames.Registered && x.SystemName != SystemCustomerRoleNames.Guests)
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
 
 			model.PrivacySettings = privacySettings.ToModel();
 

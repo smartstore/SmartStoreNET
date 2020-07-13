@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
@@ -31,8 +32,6 @@ namespace SmartStore.Admin.Models.Settings
 
         public partial class CustomerSettingsModel
         {
-			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerLoginType")]
             public CustomerLoginType CustomerLoginType { get; set; }
 
@@ -51,10 +50,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UserRegistrationType")]
             public UserRegistrationType UserRegistrationType { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole")]
+            [UIHint("CustomerRoles")]
+            [AdditionalMetadata("includeSystemRoles", false)]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole")]
 			public int RegisterCustomerRoleId { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
             public bool AllowCustomersToUploadAvatars { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ShowCustomersLocation")]

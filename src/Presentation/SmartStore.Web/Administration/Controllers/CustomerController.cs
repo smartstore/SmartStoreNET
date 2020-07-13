@@ -62,7 +62,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly AdminAreaSettings _adminAreaSettings;
-        private readonly IQueuedEmailService _queuedEmailService;
         private readonly IEmailAccountService _emailAccountService;
         private readonly ForumSettings _forumSettings;
         private readonly IForumService _forumService;
@@ -92,7 +91,6 @@ namespace SmartStore.Admin.Controllers
             IOrderService orderService,
             IPriceCalculationService priceCalculationService,
             AdminAreaSettings adminAreaSettings,
-            IQueuedEmailService queuedEmailService,
             IEmailAccountService emailAccountService,
             ForumSettings forumSettings,
             IForumService forumService,
@@ -121,7 +119,6 @@ namespace SmartStore.Admin.Controllers
             _orderService = orderService;
             _priceCalculationService = priceCalculationService;
             _adminAreaSettings = adminAreaSettings;
-            _queuedEmailService = queuedEmailService;
             _emailAccountService = emailAccountService;
             _forumSettings = forumSettings;
             _forumService = forumService;
@@ -380,32 +377,51 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
         }
 
-        [NonAction]
-        protected string ValidateCustomerRoles(IList<CustomerRole> customerRoles)
+        private string ValidateCustomerRoles(int[] selectedCustomerRoleIds, List<int> allCustomerRoleIds, out List<CustomerRole> newCustomerRoles)
         {
-            if (customerRoles == null)
-                throw new ArgumentNullException("customerRoles");
+            Guard.NotNull(allCustomerRoleIds, nameof(allCustomerRoleIds));
 
-            //ensure a customer is not added to both 'Guests' and 'Registered' customer roles
-            //ensure that a customer is in at least one required role ('Guests' and 'Registered')
-            bool isInGuestsRole = customerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Guests) != null;
-            bool isInRegisteredRole = customerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Registered) != null;
+            newCustomerRoles = new List<CustomerRole>();
+
+            var newCustomerRoleIds = new HashSet<int>();
+
+            if (selectedCustomerRoleIds != null)
+            {
+                foreach (var roleId in allCustomerRoleIds)
+                {
+                    if (selectedCustomerRoleIds.Contains(roleId))
+                    {
+                        newCustomerRoleIds.Add(roleId);
+                    }
+                }
+            }
+
+            if (newCustomerRoleIds.Any())
+            {
+                var customerRolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
+                newCustomerRoles = customerRolesQuery.Where(x => newCustomerRoleIds.Contains(x.Id)).ToList();
+            }
+
+            var isInGuestsRole = newCustomerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Guests) != null;
+            var isInRegisteredRole = newCustomerRoles.FirstOrDefault(cr => cr.SystemName == SystemCustomerRoleNames.Registered) != null;
+
+            // Ensure a customer is not added to both 'Guests' and 'Registered' customer roles.
             if (isInGuestsRole && isInRegisteredRole)
             {
-                //return "The customer cannot be in both 'Guests' and 'Registered' customer roles";
-                return String.Format(T("Admin.Customers.CanOnlyBeCustomerOrGuest"),
+                return string.Format(T("Admin.Customers.CanOnlyBeCustomerOrGuest"),
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests).Name,
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Name);
             }
+
+            // Ensure that a customer is in at least one required role ('Guests' and 'Registered').
             if (!isInGuestsRole && !isInRegisteredRole)
             {
-                //return "Add the customer to 'Guests' or 'Registered' customer role";
-                return String.Format(T("Admin.Customers.MustBeCustomerOrGuest"),
+                return string.Format(T("Admin.Customers.MustBeCustomerOrGuest"),
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests).Name,
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Name);
             }
-            //no errors
-            return "";
+
+            return string.Empty;
         }
 
         #endregion
@@ -491,22 +507,9 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
         {
             // Validate customer roles.
-            var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var newCustomerRoles = new List<CustomerRole>();
+            var allCustomerRoleIds = _customerService.GetAllCustomerRoles(true).SourceQuery.Select(x => x.Id).ToList();
 
-            if (model.SelectedCustomerRoleIds != null)
-            {
-                foreach (var customerRole in allCustomerRoles)
-                {
-                    if (model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                    {
-                        newCustomerRoles.Add(customerRole);
-                    }
-                }
-            }
-
-            var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
+            var customerRolesError = ValidateCustomerRoles(model.SelectedCustomerRoleIds, allCustomerRoleIds, out var newCustomerRoles);
             if (customerRolesError.HasValue())
             {
                 ModelState.AddModelError("", customerRolesError);
@@ -603,10 +606,7 @@ namespace SmartStore.Admin.Controllers
                     }
 
                     // Customer roles.
-                    if (allowManagingCustomerRoles)
-                    {
-                        newCustomerRoles.Each(x => _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = x.Id }));
-                    }
+                    newCustomerRoles.Each(x => _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = x.Id }));
 
                     Services.EventPublisher.Publish(new ModelBoundEvent(model, customer, form));
                     Services.CustomerActivity.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
@@ -684,25 +684,20 @@ namespace SmartStore.Admin.Controllers
         {
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null || customer.Deleted)
+            {
                 return RedirectToAction("List");
+            }
 
             // Validate customer roles.
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
+
+            var allCustomerRoleIds = allowManagingCustomerRoles
+                ? _customerService.GetAllCustomerRoles(true).SourceQuery.Select(x => x.Id).ToList()
+                : new List<int>();
 
             if (allowManagingCustomerRoles)
             {
-                var newCustomerRoles = new List<CustomerRole>();
-
-                foreach (var customerRole in allCustomerRoles)
-                {
-                    if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                    {
-                        newCustomerRoles.Add(customerRole);
-                    }
-                }
-
-                var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
+                var customerRolesError = ValidateCustomerRoles(model.SelectedCustomerRoleIds, allCustomerRoleIds, out _);
                 if (customerRolesError.HasValue())
                 {
                     ModelState.AddModelError("", customerRolesError);
@@ -816,18 +811,18 @@ namespace SmartStore.Admin.Controllers
                                 .Where(x => !x.IsSystemMapping)
                                 .ToMultimap(x => x.CustomerRoleId, x => x);
 
-                            foreach (var role in allCustomerRoles)
+                            foreach (var roleId in allCustomerRoleIds)
                             {
-                                if (model.SelectedCustomerRoleIds?.Contains(role.Id) ?? false)
+                                if (model.SelectedCustomerRoleIds?.Contains(roleId) ?? false)
                                 {
-                                    if (!existingMappings.ContainsKey(role.Id))
+                                    if (!existingMappings.ContainsKey(roleId))
                                     {
-                                        _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = role.Id });
+                                        _customerService.InsertCustomerRoleMapping(new CustomerRoleMapping { CustomerId = customer.Id, CustomerRoleId = roleId });
                                     }
                                 }
-                                else if (existingMappings.ContainsKey(role.Id))
+                                else if (existingMappings.ContainsKey(roleId))
                                 {
-                                    existingMappings[role.Id].Each(x => _customerService.DeleteCustomerRoleMapping(x));
+                                    existingMappings[roleId].Each(x => _customerService.DeleteCustomerRoleMapping(x));
                                 }
                             }
 

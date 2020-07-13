@@ -2784,7 +2784,7 @@ namespace SmartStore.Admin.Controllers
                 model.LatestOrders.Add(
                     new DashboardOrderModel(
                         order.CustomerId,
-                        order.Customer.FormatUserName() ?? order.Customer.FindEmail(),
+                        order.Customer.FindEmail() ?? order.Customer.FormatUserName(),
                         order.OrderItems.Sum(x => x.Quantity),
                         order.OrderTotal.ToString("C0"),
                         _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc).ToString("g"),

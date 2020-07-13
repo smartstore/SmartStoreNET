@@ -1341,7 +1341,7 @@ namespace SmartStore.Admin.Controllers
                  var customer = customers.Where(y => y.Id == x.CustomerId).FirstOrDefault();
                  if (customer != null)
                  {
-                     m.CustomerDisplayName = customer.FormatUserName() ?? customer.FindEmail();
+                     m.CustomerDisplayName = customer.FindEmail() ?? customer.FormatUserName();
                  }
 
                  return m;

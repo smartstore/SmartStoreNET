@@ -110,8 +110,9 @@
 	}
 
 	<a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' 
-		class="btn btn-secondary btn-lg art-btn col" 
-		title="@T("Products.Details")">
+	   class="btn btn-secondary btn-lg art-btn col" 
+	   title="@T("Products.Details")"
+	   data-toggle="tooltip" data-placement="bottom">
 		<i class="fa fa-info"></i>
 	</a>
 </div>

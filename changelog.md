@@ -20,6 +20,7 @@
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.
 * #1976 The button to cancel recurring payments in my-account was out of function.
+* (pb) Flat Box did not invert text color if concrete colors were specified for text parts
 * (mm) Store logo is handled by "content" album, not "file"
 * (mm) Tracker tracks only the last media file property
 

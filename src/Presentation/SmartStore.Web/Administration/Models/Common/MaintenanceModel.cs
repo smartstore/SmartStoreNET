@@ -32,8 +32,6 @@ namespace SmartStore.Admin.Models.Common
 
             [SmartResourceDisplayName("Admin.System.Maintenance.DeleteGuests.OnlyWithoutShoppingCart")]
             public bool OnlyWithoutShoppingCart { get; set; }
-
-            public int? NumberOfDeletedCustomers { get; set; }
         }
 
         public class DeleteExportedFilesModel : ModelBase

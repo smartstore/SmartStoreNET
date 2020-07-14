@@ -874,7 +874,7 @@ namespace SmartStore.Admin.Controllers
         {
             _imageCache.Value.Clear();
 
-            // get rid of cached image metadata
+            // Get rid of cached image metadata.
             _services.Cache.Clear();
 
             return RedirectToAction("Maintenance");
@@ -883,17 +883,21 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Maintenance")]
         [FormValueRequired("delete-guests")]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public async Task<ActionResult> MaintenanceDeleteGuests(MaintenanceModel model)
+        public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
         {
-            DateTime? startDateValue = (model.DeleteGuests.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
+            DateTime? startDateValue = model.DeleteGuests.StartDate == null
+                ? null
+                : (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.DeleteGuests.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
+            DateTime? endDateValue = model.DeleteGuests.EndDate == null
+                ? null
+                : (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
 
-            model.DeleteGuests.NumberOfDeletedCustomers = await _customerService.DeleteGuestCustomersAsync(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
+            var numberOfDeletedCustomers = _customerService.DeleteGuestCustomers(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
 
-            return View(model);
+            NotifyInfo(T("Admin.System.Maintenance.DeleteGuests.TotalDeleted", numberOfDeletedCustomers));
+
+            return RedirectToAction("Maintenance");
         }
 
         [HttpPost, ActionName("Maintenance")]

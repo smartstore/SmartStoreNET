@@ -16,6 +16,7 @@
 	* Improved image lazy loading behavior.
 	* The reference table of a file now remains open if its data has been loaded.
 * Improved handling of customer roles, e.g. paging for customer role grid.
+* (PERF) Use direct SQL to delete guest customers.
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.

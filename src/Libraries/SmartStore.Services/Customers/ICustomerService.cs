@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -140,14 +139,17 @@ namespace SmartStore.Services.Customers
             bool clearPaymentMethod = true,
 			bool clearCreditBalance = false);
 
-		/// <summary>
-		/// Delete guest customer records
-		/// </summary>
-		/// <param name="registrationFrom">Customer registration from; null to load all customers</param>
-		/// <param name="registrationTo">Customer registration to; null to load all customers</param>
-		/// <param name="onlyWithoutShoppingCart">A value indicating whether to delete customers only without shopping cart</param>
-		/// <returns>Number of deleted customers</returns>
-		Task<int> DeleteGuestCustomersAsync(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart, int maxItemsToDelete = 5000);
+        /// <summary>
+        /// Delete guest customer records including generic attributes.
+        /// </summary>
+        /// <param name="registrationFrom">Customer registration from. <c>null</c> to ignore.</param>
+        /// <param name="registrationTo">Customer registration to. <c>null</c> to ignore.</param>
+        /// <param name="onlyWithoutShoppingCart">A value indicating whether to delete only customers without shopping cart.</param>
+        /// <returns>Number of deleted guest customers.</returns>
+        int DeleteGuestCustomers(
+            DateTime? registrationFrom,
+            DateTime? registrationTo,
+            bool onlyWithoutShoppingCart);
 
         #endregion
 

@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Text;
 using System.Web;
-using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Fakes;
@@ -20,7 +19,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
-using System.Threading.Tasks;
 using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Customers
@@ -547,130 +545,98 @@ namespace SmartStore.Services.Customers
 
             UpdateCustomer(customer);
         }
-        
-        public virtual async Task<int> DeleteGuestCustomersAsync(
-			DateTime? registrationFrom, 
-			DateTime? registrationTo, 
-			bool onlyWithoutShoppingCart, 
-			int maxItemsToDelete = 5000)
-        {
-			var ctx = _customerRepository.Context;
 
-			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true, autoCommit: false))
-			{
-				var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
-				if (guestRole == null)
-					throw new SmartException("'Guests' role could not be loaded");
-				
-				var query = _customerRepository.Table;
+		public virtual int DeleteGuestCustomers(
+			DateTime? registrationFrom,
+			DateTime? registrationTo,
+			bool onlyWithoutShoppingCart)
+		{
+			var genericAttributesSql = @"
+DELETE TOP(50000) [g]
+  FROM [dbo].[GenericAttribute] AS [g]
+  LEFT OUTER JOIN [dbo].[Customer] AS [c] ON c.Id = g.EntityId
+  LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
+  LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_PrivateMessage] AS [pm] ON c.Id = pm.ToCustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Post] AS [fp] ON c.Id = fp.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Topic] AS [ft] ON c.Id = ft.CustomerId
+  WHERE g.KeyGroup = 'Customer' AND c.Username IS Null AND c.Email IS NULL AND c.IsSystemAccount = 0{0}
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Order] AS [o1] WHERE c.Id = o1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[CustomerContent] AS [cc1] WHERE c.Id = cc1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_PrivateMessage] AS [pm1] WHERE c.Id = pm1.ToCustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_Post] AS [fp1] WHERE c.Id = fp1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[Forums_Topic] AS [ft1] WHERE c.Id = ft1.CustomerId ))
+";
 
-				if (registrationFrom.HasValue)
-					query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
-				if (registrationTo.HasValue)
-					query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
+			var guestCustomersSql = @"
+DELETE TOP(20000) [c]
+  FROM [dbo].[Customer] AS [c]
+  LEFT OUTER JOIN [dbo].[Order] AS [o] ON c.Id = o.CustomerId
+  LEFT OUTER JOIN [dbo].[CustomerContent] AS [cc] ON c.Id = cc.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_PrivateMessage] AS [pm] ON c.Id = pm.ToCustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Post] AS [fp] ON c.Id = fp.CustomerId
+  LEFT OUTER JOIN [dbo].[Forums_Topic] AS [ft] ON c.Id = ft.CustomerId
+  WHERE c.Username IS Null AND c.Email IS NULL AND c.IsSystemAccount = 0{0}
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Order] AS [o1] WHERE c.Id = o1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[CustomerContent] AS [cc1] WHERE c.Id = cc1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_PrivateMessage] AS [pm1] WHERE c.Id = pm1.ToCustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_Post] AS [fp1] WHERE c.Id = fp1.CustomerId ))
+	AND (NOT EXISTS (SELECT 1 AS x FROM [dbo].[Forums_Topic] AS [ft1] WHERE c.Id = ft1.CustomerId ))
+";
 
-				query = query.Where(c => c.CustomerRoleMappings.Select(rm => rm.CustomerRoleId).Contains(guestRole.Id));
+            var ctx = _customerRepository.Context;
+            var paramClauses = new StringBuilder();
+            var parameters = new List<object>();
+            var numberOfDeletedCustomers = 0;
+            var numberOfDeletedAttributes = 0;
+            var pIndex = 0;
 
-				if (onlyWithoutShoppingCart)
-					query = query.Where(c => !c.ShoppingCartItems.Any());
+            if (registrationFrom.HasValue)
+            {
+                paramClauses.AppendFormat(" AND @p{0} <= c.CreatedOnUtc", pIndex++);
+                parameters.Add(registrationFrom.Value);
+            }
+            if (registrationTo.HasValue)
+            {
+                paramClauses.AppendFormat(" AND @p{0} >= c.CreatedOnUtc", pIndex++);
+                parameters.Add(registrationTo.Value);
+            }
+            if (onlyWithoutShoppingCart)
+            {
+                paramClauses.Append(" AND (NOT EXISTS (SELECT 1 AS [C1] FROM [dbo].[ShoppingCartItem] AS [sci] WHERE c.Id = sci.CustomerId ))");
+            }
 
-				// no orders
-				query = JoinWith<Order>(query, x => x.CustomerId);
+            genericAttributesSql = genericAttributesSql.FormatInvariant(paramClauses.ToString());
+            guestCustomersSql = guestCustomersSql.FormatInvariant(paramClauses.ToString());
 
-				// no customer content
-				query = JoinWith<CustomerContent>(query, x => x.CustomerId);
 
-				// no private messages (guests can only receive but not send messages)
-				query = JoinWith<PrivateMessage>(query, x => x.ToCustomerId);
-
-				// no forum posts
-				query = JoinWith<ForumPost>(query, x => x.CustomerId);
-
-				// no forum topics
-				query = JoinWith<ForumTopic>(query, x => x.CustomerId);
-
-				// don't delete system accounts
-				query = query.Where(c => !c.IsSystemAccount);
-
-				// only distinct items
-				query = from c in query
-						group c by c.Id
-							into cGroup
-							orderby cGroup.Key
-							select cGroup.FirstOrDefault();
-				query = query.OrderBy(c => c.Id);
-
-				var customers = await query.Take(() => maxItemsToDelete).ToListAsync();
-
-				int numberOfDeletedCustomers = 0;
-				foreach (var c in customers)
+			// Delete generic attributes.
+			while (true)
+            {
+				var numDeleted = ctx.ExecuteSqlCommand(genericAttributesSql, false, null, parameters.ToArray());
+				if (numDeleted <= 0)
 				{
-					try
-					{
-						// delete attributes (using GenericAttributeService would incorporate caching... which is bad in long running processes)
-						var gaQuery = from ga in _gaRepository.Table
-									  where ga.EntityId == c.Id && ga.KeyGroup == "Customer"
-									  select ga;
-						var attributes = await gaQuery.ToListAsync();
-
-						_gaRepository.DeleteRange(attributes);
-						
-						// delete customer
-						_customerRepository.Delete(c);
-						numberOfDeletedCustomers++;
-
-						if (numberOfDeletedCustomers % 1000 == 0)
-						{
-							// save changes all 1000th item
-							try
-							{
-								await ctx.SaveChangesAsync();
-							}
-							catch (Exception ex) 
-							{
-								Debug.WriteLine(ex);
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						Debug.WriteLine(ex);
-					}
+					break;
 				}
 
-				// save the rest
-				await ctx.SaveChangesAsync();
-
-				return numberOfDeletedCustomers;
+				numberOfDeletedAttributes += numDeleted;
 			}
-        }
 
-		private IQueryable<Customer> JoinWith<T>(IQueryable<Customer> query, Expression<Func<T, int>> customerIdSelector) where T : BaseEntity
-		{
-			var inner = _customerRepository.Context.Set<T>().AsNoTracking();
+			// Delete guest customers.
+			while (true)
+			{
+				var numDeleted = ctx.ExecuteSqlCommand(guestCustomersSql, false, null, parameters.ToArray());
+				if (numDeleted <= 0)
+				{
+					break;
+				}
 
-			/* 
-			 * Lamda join created with LinqPad. ORIGINAL:
-				 from c in customers
-					join inner in ctx.Set<TInner>().AsNoTracking() on c.Id equals inner.CustomerId into c_inner
-					from inner in c_inner.DefaultIfEmpty()
-					where !c_inner.Any()
-					select c;
-			*/
-			query = query
-				.GroupJoin(
-					inner,
-					c => c.Id,
-					customerIdSelector,
-					(c, i) => new { Customer = c, Inner = i })
-				.SelectMany(
-					x => x.Inner.DefaultIfEmpty(),
-					(a, b) => new { a, b }
-				)
-				.Where(x => !(x.a.Inner.Any()))
-				.Select(x => x.a.Customer);
+				numberOfDeletedCustomers += numDeleted;
+			}
 
-			return query;
+            Debug.WriteLine("Deleted {0} guest customers including {1} generic attributes.", numberOfDeletedCustomers, numberOfDeletedAttributes);
+
+            return numberOfDeletedCustomers;
 		}
 
         #endregion

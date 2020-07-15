@@ -1085,12 +1085,6 @@
     <Content Include="Views\Customer\Reports.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Customer\_ReportTopCustomersByOrderTotal.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Customer\_ReportTopCustomersByNumberOfOrders.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Customer\ReportRegisteredCustomers.cshtml" />
   </ItemGroup>
   <ItemGroup>

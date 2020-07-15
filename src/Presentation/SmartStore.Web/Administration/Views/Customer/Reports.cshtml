@@ -14,27 +14,94 @@
 
 @Html.SmartStore().TabStrip().Name("customer-reports").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.Customers.Reports.BestBy.BestByOrderTotal").Text).Content(TabBestByOrderTotal()).Selected(true);
-    x.Add().Text(T("Admin.Customers.Reports.BestBy.BestByNumberOfOrders").Text).Content(TabBestByNumberOfOrders());
+    x.Add().Text("Admin.Customers.Reports.BestCustomers").Content(TabBestCustomers()).Selected(true);
     x.Add().Text(T("Admin.Customers.Reports.RegisteredCustomers").Text).Content(TabRegisteredCustomers());
-    
-    //generate an event
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-reports", this.Html, this.Model));
 })
 
-@helper TabBestByOrderTotal()
+@helper TabBestCustomers()
 {
-    var dataDictAttributes = new ViewDataDictionary();
-    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
-    @Html.Partial("_ReportTopCustomersByOrderTotal", Model.TopCustomersByOrderTotal, dataDictAttributes)
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TopCustomers.StartDate)
+			@Html.EditorFor(model => Model.TopCustomers.StartDate, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TopCustomers.EndDate)
+			@Html.EditorFor(model => model.TopCustomers.EndDate, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TopCustomers.OrderStatusId)
+			@Html.DropDownListFor(model => model.TopCustomers.OrderStatusId, Model.TopCustomers.AvailableOrderStatuses, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TopCustomers.PaymentStatusId)
+			@Html.DropDownListFor(model => model.TopCustomers.PaymentStatusId, Model.TopCustomers.AvailablePaymentStatuses, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TopCustomers.ShippingStatusId)
+			@Html.DropDownListFor(model => model.TopCustomers.ShippingStatusId, Model.TopCustomers.AvailableShippingStatuses, T("Admin.Common.All"))
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabel(string.Empty, string.Empty)
+			<button type="submit" id="btn-search-best-customers" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+
+	@(Html.Telerik().Grid<TopCustomerReportLineModel>()
+		.Name("best-customers-grid")
+		.ClientEvents(events => events.OnDataBinding("bestCustomersOnDataBinding"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.OrderTotal)
+				.RightAlign()
+				.Width(160);
+			columns.Bound(x => x.OrderCount)
+				.Centered()
+				.Width(200);
+			columns.Bound(x => x.CustomerId)
+				.Sortable(false)
+				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerDisplayName #></a>");
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .Sortable(x =>
+        {
+            x.AllowUnsort(true);
+            x.SortMode(GridSortMode.SingleColumn);
+        })
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersList", "Customer"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+
+    <script>
+        $(function () {
+
+			$('#btn-search-best-customers').click(function () {
+				var grid = $('#best-customers-grid').data('tGrid');
+				grid.currentPage = 1;
+				grid.ajaxRequest();
+				return false;
+			});
+
+        });
+
+        function bestCustomersOnDataBinding(e) {
+            var searchModel = {
+				StartDate: $('#@Html.FieldIdFor(model => model.TopCustomers.StartDate)').val(),
+				EndDate: $('#@Html.FieldIdFor(model => model.TopCustomers.EndDate)').val(),
+				OrderStatusId: $('#@Html.FieldIdFor(model => model.TopCustomers.OrderStatusId)').val(),
+				PaymentStatusId: $('#@Html.FieldIdFor(model => model.TopCustomers.PaymentStatusId)').val(),
+				ShippingStatusId: $('#@Html.FieldIdFor(model => model.TopCustomers.ShippingStatusId)').val()
+            };
+            e.data = searchModel;
+        }
+    </script>
 }
 
-@helper TabBestByNumberOfOrders()
-{
-    var dataDictAttributes = new ViewDataDictionary();
-    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
-    @Html.Partial("_ReportTopCustomersByNumberOfOrders", Model.TopCustomersByOrderTotal, dataDictAttributes)
-}
 @helper TabRegisteredCustomers()
 {
     @Html.Action("ReportRegisteredCustomers")

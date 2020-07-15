@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -146,40 +147,6 @@ namespace SmartStore.Admin.Controllers
                 }
             }
             return sb.ToString();
-        }
-
-        [NonAction]
-        public List<RegistredCustomersDate> GetRegisteredCustomersReport()
-        {
-            return _customerReportService.GetRegisteredCustomersDate();
-        }
-
-        [NonAction]
-        protected IList<RegisteredCustomerReportLineModel> GetReportRegisteredCustomersModel()
-        {
-            var report = new List<RegisteredCustomerReportLineModel>();
-            report.Add(new RegisteredCustomerReportLineModel()
-            {
-                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.7days"),
-                Customers = _customerReportService.GetRegisteredCustomersReport(7)
-            });
-            report.Add(new RegisteredCustomerReportLineModel()
-            {
-                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.14days"),
-                Customers = _customerReportService.GetRegisteredCustomersReport(14)
-            });
-            report.Add(new RegisteredCustomerReportLineModel()
-            {
-                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.month"),
-                Customers = _customerReportService.GetRegisteredCustomersReport(30)
-            });
-            report.Add(new RegisteredCustomerReportLineModel()
-            {
-                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.year"),
-                Customers = _customerReportService.GetRegisteredCustomersReport(365)
-            });
-
-            return report;
         }
 
         [NonAction]
@@ -1325,27 +1292,26 @@ namespace SmartStore.Admin.Controllers
 
         #region Reports
 
-        [NonAction]
         private List<TopCustomerReportLineModel> CreateCustomerReportLineModel(IList<TopCustomerReportLine> items)
         {
-            var customers = _customerService.GetCustomersByIds(items.Distinct().Select(x => x.CustomerId).ToArray());
+            var customerIds = items.Distinct().Select(x => x.CustomerId).ToArray();
+            var customers = _customerService.GetCustomersByIds(customerIds).ToDictionarySafe(x => x.Id);
+
             return items.Select(x =>
-             {
-                 var m = new TopCustomerReportLineModel()
-                 {
-                     CustomerId = x.CustomerId,
-                     OrderTotal = x.OrderTotal.ToString("C0"),
-                     OrderCount = x.OrderCount.ToString("N0"),
-                 };
+            {
+                customers.TryGetValue(x.CustomerId, out var customer);
 
-                 var customer = customers.Where(y => y.Id == x.CustomerId).FirstOrDefault();
-                 if (customer != null)
-                 {
-                     m.CustomerDisplayName = customer.FindEmail() ?? customer.FormatUserName();
-                 }
+                var m = new TopCustomerReportLineModel
+                {
+                    CustomerId = x.CustomerId,
+                    OrderTotal = x.OrderTotal.ToString("C0"),
+                    OrderCount = x.OrderCount.ToString("N0"),
+                    CustomerDisplayName = customer?.FindEmail() ?? customer?.FormatUserName(_customerSettings, T, false) ?? "".NaIfEmpty()
+                };
 
-                 return m;
-             }).ToList();
+                return m;
+            })
+            .ToList();
         }
 
         [Permission(Permissions.Customer.Read, false)]
@@ -1353,8 +1319,8 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new TopCustomersDashboardReportModel
             {
-                TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 1, 7)),
-                TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, 2, 7))
+                TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByAmountDesc, 0, 7)),
+                TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByQuantityDesc, 0, 7))
             };
 
             return PartialView(model);
@@ -1364,7 +1330,29 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult ReportRegisteredCustomers()
         {
-            var model = GetReportRegisteredCustomersModel();
+            var model = new List<RegisteredCustomerReportLineModel>();
+
+            model.Add(new RegisteredCustomerReportLineModel
+            {
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.7days"),
+                Customers = _customerReportService.GetRegisteredCustomersReport(7)
+            });
+            model.Add(new RegisteredCustomerReportLineModel
+            {
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.14days"),
+                Customers = _customerReportService.GetRegisteredCustomersReport(14)
+            });
+            model.Add(new RegisteredCustomerReportLineModel
+            {
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.month"),
+                Customers = _customerReportService.GetRegisteredCustomersReport(30)
+            });
+            model.Add(new RegisteredCustomerReportLineModel
+            {
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.year"),
+                Customers = _customerReportService.GetRegisteredCustomersReport(365)
+            });
+
             return PartialView(model);
         }
 
@@ -1559,53 +1547,23 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read)]
         public ActionResult Reports()
         {
-            var model = new CustomerReportsModel();
-
-            //customers by number of orders
-            model.TopCustomersByNumberOfOrders = new TopCustomersReportModel();
-            model.TopCustomersByNumberOfOrders.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.TopCustomersByNumberOfOrders.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.TopCustomersByNumberOfOrders.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
-
-            //customers by order total
-            model.TopCustomersByOrderTotal = new TopCustomersReportModel();
-            model.TopCustomersByOrderTotal.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.TopCustomersByOrderTotal.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.TopCustomersByOrderTotal.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+            var model = new CustomerReportsModel
+            {
+                GridPageSize = _adminAreaSettings.GridPageSize,
+                TopCustomers = new TopCustomersReportModel
+                {
+                    AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList(),
+                    AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList(),
+                    AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList()
+                }
+            };
 
             return View(model);
         }
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportTopCustomersByOrderTotalList(GridCommand command, TopCustomersReportModel model)
-        {
-            DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.StartDate.Value, Services.DateTimeHelper.CurrentTimeZone);
-
-            DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.EndDate.Value, Services.DateTimeHelper.CurrentTimeZone).AddDays(1);
-
-            OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
-            PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
-            ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
-
-            var items = _customerReportService.GetTopCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1, 20);
-
-            var gridModel = new GridModel<TopCustomerReportLineModel>
-            {
-                Data = CreateCustomerReportLineModel(items),
-                Total = items.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportTopCustomersByNumberOfOrdersList(GridCommand command, TopCustomersReportModel model)
+        public ActionResult ReportTopCustomersList(GridCommand command, TopCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null)
                 ? null
@@ -1615,17 +1573,46 @@ namespace SmartStore.Admin.Controllers
                 ? null
                 : (DateTime?)Services.DateTimeHelper.ConvertToUtcTime(model.EndDate.Value, Services.DateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
-            PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
-            ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
+            OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)model.OrderStatusId : null;
+            PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)model.PaymentStatusId : null;
+            ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)model.ShippingStatusId : null;
 
-            var items = _customerReportService.GetTopCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2, 20);
+            // Sorting.
+            var sorting = ReportSorting.ByAmountDesc;
+
+            if (command.SortDescriptors?.Any() ?? false)
+            {
+                var sort = command.SortDescriptors.First();
+                if (sort.Member == "OrderCount")
+                {
+                    sorting = sort.SortDirection == ListSortDirection.Ascending
+                        ? ReportSorting.ByQuantityAsc
+                        : ReportSorting.ByQuantityDesc;
+                }
+                else if (sort.Member == "OrderTotal")
+                {
+                    sorting = sort.SortDirection == ListSortDirection.Ascending
+                        ? ReportSorting.ByAmountAsc
+                        : ReportSorting.ByAmountDesc;
+                }
+            }
+
+            var items = _customerReportService.GetTopCustomersReport(
+                startDateValue,
+                endDateValue,
+                orderStatus,
+                paymentStatus,
+                shippingStatus,
+                sorting,
+                command.Page - 1,
+                command.PageSize);
 
             var gridModel = new GridModel<TopCustomerReportLineModel>
             {
-                Data = CreateCustomerReportLineModel(items),
-                Total = items.Count
+                Total = items.TotalCount
             };
+
+            gridModel.Data = CreateCustomerReportLineModel(items);
 
             return new JsonResult
             {
@@ -1650,24 +1637,6 @@ namespace SmartStore.Admin.Controllers
                 );
 
             report.PercentageDelta = sumBefore <= 0 ? 0 : (int)Math.Round(totalAmount / (double)sumBefore * 100 - 100);
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        [Permission(Permissions.Customer.Read)]
-        public ActionResult ReportRegisteredCustomersList(GridCommand command)
-        {
-            var model = GetReportRegisteredCustomersModel();
-
-            var gridModel = new GridModel<RegisteredCustomerReportLineModel>
-            {
-                Data = model,
-                Total = model.Count
-            };
-
-            return new JsonResult
-            {
-                Data = gridModel
-            };
         }
 
         #endregion

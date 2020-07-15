@@ -54,9 +54,9 @@ namespace SmartStore.Services.Orders
         /// Get order average report.
         /// </summary>
         /// <param name="storeId">Store identifier</param>
-        /// <param name="os">Order status</param>
+        /// <param name="orderStatus">Order status</param>
         /// <returns>Order average report.</returns>
-        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
+        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus orderStatus);
 
         /// <summary>
         /// Get best sellers report.
@@ -64,26 +64,26 @@ namespace SmartStore.Services.Orders
 		/// <param name="storeId">Store identifier</param>
         /// <param name="startTime">Order start time; null to load all</param>
         /// <param name="endTime">Order end time; null to load all</param>
-        /// <param name="os">Order status; null to load all records</param>
-        /// <param name="ps">Order payment status; null to load all records</param>
-        /// <param name="ss">Shipping status; null to load all records</param>
+        /// <param name="orderStatus">Order status; null to load all records</param>
+        /// <param name="paymentStatus">Order payment status; null to load all records</param>
+        /// <param name="shippingStatus">Shipping status; null to load all records</param>
         /// <param name="billingCountryId">Billing country identifier; 0 to load all records</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
-        /// <param name="order">Order of report items.</param>
+        /// <param name="sorting">Sorting of report items.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Best selling products.</returns>
 		IPagedList<BestsellersReportLine> BestSellersReport(
             int storeId,
             DateTime? startTime,
             DateTime? endTime,
-            OrderStatus? os, 
-            PaymentStatus? ps, 
-            ShippingStatus? ss,
+            OrderStatus? orderStatus, 
+            PaymentStatus? paymentStatus, 
+            ShippingStatus? shippingStatus,
             int billingCountryId = 0,
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            ReportSorting order = ReportSorting.ByQuantityDesc,
+            ReportSorting sorting = ReportSorting.ByQuantityDesc,
             bool showHidden = false);
 
         /// <summary>

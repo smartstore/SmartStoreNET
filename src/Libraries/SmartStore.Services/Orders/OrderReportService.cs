@@ -191,7 +191,7 @@ namespace SmartStore.Services.Orders
             int billingCountryId = 0,
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            ReportSorting order = ReportSorting.ByQuantityDesc,
+            ReportSorting sorting = ReportSorting.ByQuantityDesc,
             bool showHidden = false)
         {
             var orderStatusId = orderStatus.HasValue ? (int)orderStatus.Value : (int?)null;
@@ -225,7 +225,7 @@ namespace SmartStore.Services.Orders
                     TotalQuantity = g.Sum(x => x.Quantity)
                 };
 
-            switch (order)
+            switch (sorting)
             {
                 case ReportSorting.ByAmountAsc:
                     groupedQuery = groupedQuery.OrderBy(x => x.TotalAmount);

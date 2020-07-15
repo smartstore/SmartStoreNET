@@ -18,7 +18,7 @@
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
                             <th class="display-row text-center">@T("Account.CustomerOrders")</th>
-                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                            <th class="display-row text-right">@T("Common.Amount")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,7 +28,6 @@
                                 <td class="display-row" title="@x.CustomerDisplayName">
                                     @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                                 </td>
-
                                 <td class="display-row text-center font-weight-medium" title="@x.OrderCount">@x.OrderCount</td>
                                 <td class="display-row text-right" title="@x.OrderTotal">@x.OrderTotal</td>
                             </tr>
@@ -44,7 +43,7 @@
                         <tr>
                             <th class="display-row">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
                             <th class="display-row text-center">@T("Account.CustomerOrders")</th>
-                            <th class="display-row text-right" title="@T("Admin.Configuration.Settings.Tax.PricesExcludeTax")">@T("Common.Amount")</th>
+                            <th class="display-row text-right">@T("Common.Amount")</th>
                         </tr>
                     </thead>
                     <tbody>

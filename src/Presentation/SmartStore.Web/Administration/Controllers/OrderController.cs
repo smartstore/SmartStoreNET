@@ -2639,7 +2639,11 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult NeverSoldReport()
         {
-            var model = new NeverSoldReportModel();
+            var model = new NeverSoldReportModel
+            {
+                GridPageSize = _adminAreaSettings.GridPageSize
+            };
+
             return View(model);
         }
 
@@ -2657,19 +2661,16 @@ namespace SmartStore.Admin.Controllers
 
             var gridModel = new GridModel<NeverSoldReportLineModel>
             {
-                Data = items.Select(x =>
-                {
-                    var m = new NeverSoldReportLineModel
-                    {
-                        ProductId = x.Id,
-                        ProductName = x.Name,
-                        ProductTypeName = x.GetProductTypeLabel(_localizationService),
-                        ProductTypeLabelHint = x.ProductTypeLabelHint
-                    };
-                    return m;
-                }),
                 Total = items.TotalCount
             };
+
+            gridModel.Data = items.Select(x => new NeverSoldReportLineModel
+            {
+                ProductId = x.Id,
+                ProductName = x.Name,
+                ProductTypeName = x.GetProductTypeLabel(_localizationService),
+                ProductTypeLabelHint = x.ProductTypeLabelHint
+            });
 
             return new JsonResult
             {

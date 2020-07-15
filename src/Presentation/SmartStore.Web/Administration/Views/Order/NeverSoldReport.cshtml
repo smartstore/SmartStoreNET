@@ -1,8 +1,6 @@
 ﻿@model NeverSoldReportModel
 @using Telerik.Web.Mvc.UI
-@{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
+@{   
     ViewBag.Title = T("Admin.SalesReport.NeverSold").Text;
 }
 @using (Html.BeginForm())
@@ -29,34 +27,33 @@
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabel(string.Empty, string.Empty)
 			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-				<span>@T("Admin.SalesReport.NeverSold.RunReport")</span>
+				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
 		</div>
 	</div>
 
 	<div>
 		@(Html.Telerik().Grid<BestsellersReportLineModel>()
-				.Name("neversoldreport-grid")
-				.ClientEvents(events => events.OnDataBinding("onDataBinding"))
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.ProductName)
-						.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-				})
-				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
-				.PreserveGridState()
-				.EnableCustomBinding(true))
+			.Name("neversoldreport-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ClientTemplate(Html.LabeledProductName("ProductId", "ProductName"));
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
 	 </div>
 
-    <script type="text/javascript">
-
-        $(document).ready(function () {
+    <script>
+        $(function () {
 
             $('#btnSearch').click(function () {
-                var grid = $('#neversoldreport-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
+				var grid = $('#neversoldreport-grid').data('tGrid');
+				// New search. Set page size to 1.
+                grid.currentPage = 1;
                 grid.ajaxRequest();
                 return false;
             });
@@ -70,6 +67,5 @@
 			};
 			e.data = searchModel;
 		}
-
    </script>
 }

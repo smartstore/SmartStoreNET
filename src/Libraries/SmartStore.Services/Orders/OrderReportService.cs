@@ -313,19 +313,18 @@ namespace SmartStore.Services.Orders
         {
             var groupedProductId = (int)ProductType.GroupedProduct;
 
-            // This inner query should retrieve all purchased order product varint identifiers.
-            var query1 = (from orderItem in _orderItemRepository.Table
-                          join o in _orderRepository.Table on orderItem.OrderId equals o.Id
-                          where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
-                                (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
-                                (!o.Deleted)
+            var query1 = (from orderItem in _orderItemRepository.TableUntracked
+                          join o in _orderRepository.TableUntracked on orderItem.OrderId equals o.Id
+                          where !o.Deleted &&
+                                (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
+                                (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc)
                           select orderItem.ProductId).Distinct();
 
-            var query2 = from p in _productRepository.Table
+            var query2 = from p in _productRepository.TableUntracked
                          where !query1.Contains(p.Id) &&
-                                p.ProductTypeId != groupedProductId &&
-                               !p.Deleted &&
-                               (showHidden || p.Published)
+                                !p.Deleted && !p.IsSystemProduct &&
+                               (showHidden || p.Published) &&
+                                p.ProductTypeId != groupedProductId
                          orderby p.Name
                          select p;
 

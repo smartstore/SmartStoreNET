@@ -27,11 +27,14 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.OrderStatus")]
         public int OrderStatusId { get; set; }
+
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.PaymentStatus")]
         public int PaymentStatusId { get; set; }
 
         public IList<SelectListItem> AvailableOrderStatuses { get; set; }
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }
         public IList<SelectListItem> AvailableCountries { get; set; }
+
+        public int GridPageSize { get; set; }
     }
 }

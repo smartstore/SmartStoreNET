@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -10,6 +9,14 @@ using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.Orders
 {
+    public enum ReportSorting
+    {
+        ByQuantityAsc = 0,
+        ByQuantityDesc,
+        ByAmountAsc,
+        ByAmountDesc
+    }
+
     /// <summary>
     /// Order report service interface
     /// </summary>
@@ -52,7 +59,7 @@ namespace SmartStore.Services.Orders
         OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
 
         /// <summary>
-        /// Get best sellers report
+        /// Get best sellers report.
         /// </summary>
 		/// <param name="storeId">Store identifier</param>
         /// <param name="startTime">Order start time; null to load all</param>
@@ -61,11 +68,12 @@ namespace SmartStore.Services.Orders
         /// <param name="ps">Order payment status; null to load all records</param>
         /// <param name="ss">Shipping status; null to load all records</param>
         /// <param name="billingCountryId">Billing country identifier; 0 to load all records</param>
-        /// <param name="recordsToReturn">Records to return</param>
-        /// <param name="orderBy">1 - order by quantity, 2 - order by total amount</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="order">Order of report items.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Result</returns>
-		IList<BestsellersReportLine> BestSellersReport(
+        /// <returns>Best selling products.</returns>
+		IPagedList<BestsellersReportLine> BestSellersReport(
             int storeId,
             DateTime? startTime,
             DateTime? endTime,
@@ -73,8 +81,9 @@ namespace SmartStore.Services.Orders
             PaymentStatus? ps, 
             ShippingStatus? ss,
             int billingCountryId = 0,
-            int recordsToReturn = 5,
-            int orderBy = 1,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            ReportSorting order = ReportSorting.ByQuantityDesc,
             bool showHidden = false);
 
         /// <summary>

@@ -408,13 +408,13 @@ namespace SmartStore.Web.Controllers
 		{
 			if (!_catalogSettings.ShowBestsellersOnHomepage || _catalogSettings.NumberOfBestsellersOnHomepage == 0)
 			{
-				return Content("");
+				return new EmptyResult();
 			}
 
 			// Load report from cache
 			var report = Services.Cache.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, Services.StoreContext.CurrentStore.Id), () => 
 			{
-				return _orderReportService.BestSellersReport(Services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
+				return _orderReportService.BestSellersReport(Services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
 			});
 
 			// Load products

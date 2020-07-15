@@ -104,10 +104,11 @@ namespace SmartStore.Services.Media
 
             var q = _fileRepo.Table;
 
-            // Deleted
-            if (filter.Deleted != null)
+            // Term
+            if (filter.Term.HasValue() && filter.Term != "*")
             {
-                q = q.Where(x => x.Deleted == filter.Deleted.Value);
+                // Convert file pattern to SQL 'LIKE' expression
+                q = ApplySearchTerm(q, filter.Term, filter.IncludeAltForTerm, filter.ExactMatch);
             }
 
             // Hidden
@@ -170,11 +171,10 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            // Term
-            if (filter.Term.HasValue() && filter.Term != "*")
+            // Deleted
+            if (filter.Deleted != null)
             {
-                // Convert file pattern to SQL 'LIKE' expression
-                q = ApplySearchTerm(q, filter.Term, filter.IncludeAltForTerm, filter.ExactMatch);
+                q = q.Where(x => x.Deleted == filter.Deleted.Value);
             }
 
             return q;

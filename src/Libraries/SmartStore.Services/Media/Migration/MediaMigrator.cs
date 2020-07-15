@@ -16,6 +16,7 @@ using SmartStore.Data;
 using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Messages;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace SmartStore.Services.Media.Migration
 {
@@ -77,6 +78,7 @@ namespace SmartStore.Services.Media.Migration
                 Execute("MigrateMediaFiles", () => MigrateMediaFiles(ctx));
                 Execute("MigrateUploadedFiles", () => MigrateUploadedFiles(ctx));
                 Execute("DetectTracks", () => DetectTracks());
+                Execute("DetectDupeFiles", () => DetectDupeFiles(ctx));
                 Execute("ClearImageCache", () => ClearImageCache());
 
                 _folderService.ClearCache();
@@ -164,12 +166,17 @@ namespace SmartStore.Services.Media.Migration
                         if (stub == null)
                             continue;
 
-                        if (stub.UseDownloadUrl || stub.Filename == "undefined" || string.IsNullOrEmpty(stub.Filename) || string.IsNullOrEmpty(stub.Extension))
+                        if (stub.UseDownloadUrl || string.IsNullOrEmpty(stub.Extension))
                         {
                             // Something weird has happened in the past
                             continue;
-                        }     
-                        
+                        }
+
+                        if (stub.Filename == "undefined" || string.IsNullOrEmpty(stub.Filename))
+                        {
+                            stub.Filename = stub.Id.ToString(CultureInfo.InvariantCulture);
+                        }
+
                         var isMailAttachment = false;
                         if (messageTemplatesDict.TryGetValue(stub.Id, out var mt))
                         {
@@ -481,6 +488,12 @@ namespace SmartStore.Services.Media.Migration
                         file.Height = size.Height;
                         file.PixelSize = size.Width * size.Height;
                     }
+                    catch
+                    {
+                        // Don't attempt again
+                        file.Width = 0;
+                        file.Height = 0;
+                    }
                     finally
                     {
                         stream.Dispose();
@@ -504,6 +517,20 @@ namespace SmartStore.Services.Media.Migration
                 
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
+        }
+
+        public void DetectDupeFiles(SmartObjectContext ctx)
+        {
+            //var lookup = ctx.Set<MediaFile>()
+            //            .Select(f => new { f.Id, f.FolderId, f.Name })
+            //            .GroupBy(f => f.FolderId)
+            //            .ToList();
+
+            //foreach (var folder in lookup)
+            //{
+            //    var allFileNames = new HashSet<string>(folder.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+            //    //folder.
+            //}
         }
 
         public void ClearImageCache()

@@ -294,42 +294,13 @@ namespace SmartStore.Services.Media
             var query = _searcher.PrepareQuery(q, MediaLoadFlags.AsNoTracking).Select(x => x.Name);
             var files = new HashSet<string>(query.ToList(), StringComparer.CurrentCultureIgnoreCase);
 
-            if (InternalCheckUniqueFileName(pathData.FileTitle, pathData.Extension, files, out var uniqueName))
+            if (_helper.CheckUniqueFileName(pathData.FileTitle, pathData.Extension, files, out var uniqueName))
             {
                 pathData.FileName = uniqueName;
                 return true;
             }
 
             return false;
-        }
-
-        private bool InternalCheckUniqueFileName(string title, string ext, string destFileName, out string uniqueName)
-        {
-            return InternalCheckUniqueFileName(title, ext, new HashSet<string>( new[] { destFileName }, StringComparer.CurrentCultureIgnoreCase), out uniqueName);
-        }
-
-        private bool InternalCheckUniqueFileName(string title, string ext, HashSet<string> destFileNames, out string uniqueName)
-        {
-            uniqueName = null;
-
-            if (destFileNames.Count == 0)
-            {
-                return false;
-            }
-
-            int i = 1;
-            while (true)
-            {
-                var test = string.Concat(title, "-", i, ".", ext.TrimStart('.'));
-                if (!destFileNames.Contains(test))
-                {
-                    // Found our gap
-                    uniqueName = test;
-                    return true;
-                }
-
-                i++;
-            }
         }
 
         public string CombinePaths(params string[] paths)
@@ -885,10 +856,10 @@ namespace SmartStore.Services.Media
                     {
                         case DuplicateFileHandling.ThrowError:
                             var fullPath = destPathData.FullPath;
-                            InternalCheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out _);
+                            _helper.CheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out _);
                             throw _exceptionFactory.DuplicateFile(fullPath, ConvertMediaFile(dupe, destPathData.Folder), destPathData.FullPath);
                         case DuplicateFileHandling.Rename:
-                            if (InternalCheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out var uniqueName))
+                            if (_helper.CheckUniqueFileName(destPathData.FileTitle, destPathData.Extension, dupe.Name, out var uniqueName))
                             {
                                 nameChanged = true;
                                 destPathData.FileName = uniqueName;

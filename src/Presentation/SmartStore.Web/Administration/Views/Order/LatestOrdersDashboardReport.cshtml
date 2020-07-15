@@ -11,7 +11,7 @@
                 <tr>
                     <th class="display-row" style="width: 30%">@T("Admin.Customers.Reports.BestBy.Fields.Customer")</th>
                     <th class="display-row text-center px-3 d-none d-sm-table-cell" style="width: 10%">@T("Admin.Catalog.Categories.Products")</th>
-                    <th class="display-row text-right" style="width: 20%; padding-right: 2rem" title="@T("Admin.Configuration.Settings.Tax.PricesIncludeTax")">@T("Common.Amount")</th>
+                    <th class="display-row text-right" style="width: 20%; padding-right: 2rem">@T("Common.Amount")</th>
                     <th class="display-row d-none d-sm-table-cell" style="width: 20%;">@T("Account.CustomerOrders.OrderDate")</th>
                     <th class="display-row" style="width: 20%">@T("Account.CustomerOrders.OrderStatus")</th>
                 </tr>
@@ -24,7 +24,7 @@
                             @Html.ActionLink(x.CustomerDisplayName, "Edit", "Customer", new { id = x.CustomerId }, new { })
                         </td>
                         <td class="display-row text-center d-none d-sm-table-cell" title="@x.ProductsTotal">@x.ProductsTotal</td>
-                        <td class="display-row text-right" style="padding-right: 2rem" title="@x.TotalAmount">@x.TotalAmount</td>
+                        <td class="display-row text-right" style="padding-right: 2rem" title="@x.TotalAmount @T("Tax.InclVAT")">@x.TotalAmount</td>
                         <td class="display-row d-none d-sm-table-cell" title="@x.Created">@x.Created</td>
 
                         @if (x.OrderState == OrderStatus.Pending)

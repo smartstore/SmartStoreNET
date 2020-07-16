@@ -17,11 +17,21 @@ using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Messages;
 using System.Diagnostics;
 using System.Globalization;
+using NReco.PdfGenerator;
 
 namespace SmartStore.Services.Media.Migration
 {
     public class MediaMigrator
     {
+        public class FileMin
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public bool IsDupe { get; set; }
+            public string UniqueName { get; set; }
+            public int UniqueIndex { get; set; }
+        }
+        
         internal static bool Executed;
         internal const string MigrationName = "MediaManager";
         
@@ -521,15 +531,39 @@ namespace SmartStore.Services.Media.Migration
 
         public void DetectDupeFiles(SmartObjectContext ctx)
         {
-            //var lookup = ctx.Set<MediaFile>()
-            //            .Select(f => new { f.Id, f.FolderId, f.Name })
-            //            .GroupBy(f => f.FolderId)
-            //            .ToList();
+            //const int pageSize = 5000;
+            //int pageIndex = 0;
+            //FileMin last = null;
 
-            //foreach (var folder in lookup)
+            //while (true)
             //{
-            //    var allFileNames = new HashSet<string>(folder.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
-            //    //folder.
+            //    var batch = ctx.Set<MediaFile>()
+            //        .Where(x => x.FolderId == 1)
+            //        .Select(x => new FileMin { Id = x.Id, Name = x.Name })
+            //        .OrderBy(x => x.Name)
+            //        .Skip(pageIndex * pageSize)
+            //        .Take(pageSize)
+            //        .ToList();
+
+            //    if (batch.Count == 0)
+            //        break;
+
+            //    last = ProcessBatch(batch, last);
+
+            //    pageIndex++;
+            //}
+
+            //FileMin ProcessBatch(List<FileMin> batch, FileMin last)
+            //{
+            //    FileMin prev = null;
+
+            //    foreach (var file in batch)
+            //    {
+            //        // ...
+            //        prev = file;
+            //    }
+                
+            //    return prev;
             //}
         }
 

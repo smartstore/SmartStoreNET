@@ -72,7 +72,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.RuleSet_PaymentMethod_Mapping");
         }
 
-        public bool RollbackOnFailure => false;
+        public bool RollbackOnFailure => true;
 
         public void Seed(SmartObjectContext context)
         {

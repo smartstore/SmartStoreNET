@@ -1296,31 +1296,44 @@ namespace SmartStore.Admin.Controllers
         {
             var customerIds = items.Distinct().Select(x => x.CustomerId).ToArray();
             var customers = _customerService.GetCustomersByIds(customerIds).ToDictionarySafe(x => x.Id);
+            var guestStr = T("Admin.Customers.Guest").Text;
 
-            return items.Select(x =>
+            var model = items.Select(x =>
             {
                 customers.TryGetValue(x.CustomerId, out var customer);
 
                 var m = new TopCustomerReportLineModel
                 {
-                    CustomerId = x.CustomerId,
-                    OrderTotal = x.OrderTotal.ToString("C0"),
+                    OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                     OrderCount = x.OrderCount.ToString("N0"),
-                    CustomerDisplayName = customer?.FindEmail() ?? customer?.FormatUserName(_customerSettings, T, false) ?? "".NaIfEmpty()
+                    CustomerId = x.CustomerId,
+                    CustomerNumber = customer?.CustomerNumber,
+                    CustomerDisplayName = customer?.FindEmail() ?? customer?.FormatUserName(_customerSettings, T, false) ?? "".NaIfEmpty(),
+                    Email = customer?.Email.NullEmpty() ?? (customer.IsGuest() ? guestStr : "".NaIfEmpty()),
+                    Username = customer?.Username,
+                    FullName = customer?.GetFullName(),
+                    Active = customer?.Active ?? false,
+                    LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer?.LastActivityDateUtc ?? DateTime.MinValue, DateTimeKind.Utc)
                 };
 
                 return m;
             })
             .ToList();
+
+            return model;
         }
 
         [Permission(Permissions.Customer.Read, false)]
         public ActionResult TopCustomersDashboardReport()
         {
+            var pageSize = 7;
+            var reportByQuantity = _customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByQuantityDesc, 0, pageSize);
+            var reportByAmount = _customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByAmountDesc, 0, pageSize);
+
             var model = new TopCustomersDashboardReportModel
             {
-                TopCustomersByAmount = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByAmountDesc, 0, 7)),
-                TopCustomersByQuantity = CreateCustomerReportLineModel(_customerReportService.GetTopCustomersReport(null, null, null, null, null, ReportSorting.ByQuantityDesc, 0, 7))
+                TopCustomersByQuantity = CreateCustomerReportLineModel(reportByQuantity),
+                TopCustomersByAmount = CreateCustomerReportLineModel(reportByAmount)
             };
 
             return PartialView(model);
@@ -1550,6 +1563,7 @@ namespace SmartStore.Admin.Controllers
             var model = new CustomerReportsModel
             {
                 GridPageSize = _adminAreaSettings.GridPageSize,
+                UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email,
                 TopCustomers = new TopCustomersReportModel
                 {
                     AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList(),
@@ -1583,13 +1597,13 @@ namespace SmartStore.Admin.Controllers
             if (command.SortDescriptors?.Any() ?? false)
             {
                 var sort = command.SortDescriptors.First();
-                if (sort.Member == "OrderCount")
+                if (sort.Member == nameof(TopCustomerReportLineModel.OrderCount))
                 {
                     sorting = sort.SortDirection == ListSortDirection.Ascending
                         ? ReportSorting.ByQuantityAsc
                         : ReportSorting.ByQuantityDesc;
                 }
-                else if (sort.Member == "OrderTotal")
+                else if (sort.Member == nameof(TopCustomerReportLineModel.OrderTotal))
                 {
                     sorting = sort.SortDirection == ListSortDirection.Ascending
                         ? ReportSorting.ByAmountAsc
@@ -1609,10 +1623,9 @@ namespace SmartStore.Admin.Controllers
 
             var gridModel = new GridModel<TopCustomerReportLineModel>
             {
-                Total = items.TotalCount
+                Total = items.TotalCount,
+                Data = CreateCustomerReportLineModel(items)
             };
-
-            gridModel.Data = CreateCustomerReportLineModel(items);
 
             return new JsonResult
             {

@@ -53,29 +53,46 @@
 	</div>
 
 	@(Html.Telerik().Grid<TopCustomerReportLineModel>()
-		.Name("best-customers-grid")
-		.ClientEvents(events => events.OnDataBinding("bestCustomersOnDataBinding"))
-		.Columns(columns =>
-		{
-			columns.Bound(x => x.OrderTotal)
-				.RightAlign()
-				.Width(160);
-			columns.Bound(x => x.OrderCount)
-				.Centered()
-				.Width(200);
-			columns.Bound(x => x.CustomerId)
-				.Sortable(false)
-				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerDisplayName #></a>");
-		})
-		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .Name("best-customers-grid")
+        .ClientEvents(events =>
+        {
+            events.OnDataBinding("bestCustomersOnDataBinding");
+        })
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.CustomerId)
+                .Sortable(false);
+            columns.Bound(x => x.Email)
+                .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>")
+                .Sortable(false);
+            columns.Bound(x => x.Username)
+                .Sortable(false)
+                .Visible(Model.UsernamesEnabled);
+            columns.Bound(x => x.FullName)
+                .Sortable(false);
+            columns.Bound(x => x.Active)
+                .ClientTemplate(Html.SymbolForBool("Active"))
+                .Sortable(false)
+                .Centered();
+            columns.Bound(x => x.LastActivityDate)
+                .Sortable(false);
+            columns.Bound(x => x.OrderCount)
+                .Centered()
+                .Width(200);
+            columns.Bound(x => x.OrderTotal)
+                .RightAlign()
+                .Width(200);
+        })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .Sortable(x =>
         {
             x.AllowUnsort(true);
             x.SortMode(GridSortMode.SingleColumn);
+            x.OrderBy(o => o.Add(y => y.OrderTotal).Descending());
         })
-		.DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersList", "Customer"))
-		.PreserveGridState()
-		.EnableCustomBinding(true))
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("ReportTopCustomersList", "Customer"))
+        .PreserveGridState()
+        .EnableCustomBinding(true))
 
     <script>
         $(function () {

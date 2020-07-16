@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Dashboard;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -97,6 +98,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly SearchSettings _searchSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
+        private readonly Lazy<MediaSettings> _mediaSettings;
 
         #endregion
 
@@ -143,7 +145,8 @@ namespace SmartStore.Admin.Controllers
             AddressSettings addressSettings,
             AdminAreaSettings adminAreaSettings,
             SearchSettings searchSettings,
-            ShoppingCartSettings shoppingCartSettings)
+            ShoppingCartSettings shoppingCartSettings,
+            Lazy<MediaSettings> mediaSettings)
         {
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -187,6 +190,7 @@ namespace SmartStore.Admin.Controllers
             _adminAreaSettings = adminAreaSettings;
             _searchSettings = searchSettings;
             _shoppingCartSettings = shoppingCartSettings;
+            _mediaSettings = mediaSettings;
         }
 
         #endregion
@@ -2495,30 +2499,49 @@ namespace SmartStore.Admin.Controllers
 
         #region Reports
 
-        [NonAction]
-        protected IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(int recordsToReturn, ReportSorting order)
+        private IList<BestsellersReportLineModel> GetBestsellersBriefReportModel(IPagedList<BestsellersReportLine> report, bool includeFiles = false)
         {
-            var reportLines = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, 0, recordsToReturn, order, true);
-            var products = _productService.GetProductsByIds(reportLines.Select(x => x.ProductId).ToArray()).ToDictionarySafe(x => x.Id);
+            var productIds = report.Select(x => x.ProductId).Distinct().ToArray();
+            var products = _productService.GetProductsByIds(productIds).ToDictionarySafe(x => x.Id);
+            Dictionary<int, MediaFileInfo> files = null;
 
-            var model = reportLines.Select(x =>
+            if (includeFiles)
+            {
+                var fileIds = products.Values
+                    .Select(x => x.MainPictureId ?? 0)
+                    .Where(x => x != 0)
+                    .Distinct()
+                    .ToArray();
+                files = Services.MediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+            }
+
+            var model = report.Select(x =>
             {
                 var m = new BestsellersReportLineModel
                 {
                     ProductId = x.ProductId,
-                    TotalAmount = x.TotalAmount.ToString("C0"),
+                    TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
                     TotalQuantity = x.TotalQuantity.ToString("N0")
                 };
 
                 var product = products.Get(x.ProductId);
                 if (product != null)
                 {
+                    var file = files?.Get(product.MainPictureId ?? 0);
+
                     m.ProductName = product.Name;
                     m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
                     m.ProductTypeLabelHint = product.ProductTypeLabelHint;
+                    m.Sku = product.Sku;
+                    m.StockQuantity = product.StockQuantity;
+                    m.Price = product.Price;
+                    m.PictureThumbnailUrl = Services.MediaService.GetUrl(file, _mediaSettings.Value.CartThumbPictureSize, null, false);
+                    m.NoThumb = file == null;
                 }
+
                 return m;
-            }).ToList();
+            })
+            .ToList();
 
             return model;
         }
@@ -2526,10 +2549,14 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read, false)]
         public ActionResult BestsellersDashboardReport()
         {
+            var pageSize = 7;
+            var reportByQuantity = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, 0, pageSize, ReportSorting.ByQuantityDesc, true);
+            var reportByAmount = _orderReportService.BestSellersReport(0, null, null, null, null, null, 0, 0, pageSize, ReportSorting.ByAmountDesc, true);
+
             var model = new BestsellersDashboardReportModel
             {
-                BestsellersByQuantity = GetBestsellersBriefReportModel(7, ReportSorting.ByQuantityDesc),
-                BestsellersByAmount = GetBestsellersBriefReportModel(7, ReportSorting.ByAmountDesc)
+                BestsellersByQuantity = GetBestsellersBriefReportModel(reportByQuantity),
+                BestsellersByAmount = GetBestsellersBriefReportModel(reportByAmount)
             };
 
             return PartialView(model);
@@ -2542,7 +2569,9 @@ namespace SmartStore.Admin.Controllers
             {
                 AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList(),
                 AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList(),
-                GridPageSize = _adminAreaSettings.GridPageSize
+                AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList(),
+                GridPageSize = _adminAreaSettings.GridPageSize,
+                DisplayProductPictures = _adminAreaSettings.DisplayProductPictures
             };
 
             foreach (var c in _countryService.GetAllCountriesForBilling())
@@ -2567,6 +2596,7 @@ namespace SmartStore.Admin.Controllers
 
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)model.OrderStatusId : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)model.PaymentStatusId : null;
+            ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)model.ShippingStatusId : null;
 
             // Sorting.
             var sorting = ReportSorting.ByAmountDesc;
@@ -2574,13 +2604,13 @@ namespace SmartStore.Admin.Controllers
             if (command.SortDescriptors?.Any() ?? false)
             {
                 var sort = command.SortDescriptors.First();
-                if (sort.Member == "TotalQuantity")
+                if (sort.Member == nameof(BestsellersReportLineModel.TotalQuantity))
                 {
                     sorting = sort.SortDirection == ListSortDirection.Ascending
                         ? ReportSorting.ByQuantityAsc
                         : ReportSorting.ByQuantityDesc;
                 }
-                else if (sort.Member == "TotalAmount")
+                else if (sort.Member == nameof(BestsellersReportLineModel.TotalAmount))
                 {
                     sorting = sort.SortDirection == ListSortDirection.Ascending
                         ? ReportSorting.ByAmountAsc
@@ -2588,47 +2618,24 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            var items = _orderReportService.BestSellersReport(
+            var report = _orderReportService.BestSellersReport(
                 0,
                 startDateValue,
                 endDateValue,
                 orderStatus,
                 paymentStatus,
-                null,
+                shippingStatus,
                 model.BillingCountryId,
                 command.Page - 1,
                 command.PageSize,
                 sorting,
                 true);
 
-            var productIds = items.Select(x => x.ProductId).Distinct().ToArray();
-            var products = _productService.GetProductsByIds(productIds).ToDictionary(x => x.Id);
-
             var gridModel = new GridModel<BestsellersReportLineModel>
             {
-                Total = items.TotalCount
+                Total = report.TotalCount,
+                Data = GetBestsellersBriefReportModel(report, true)
             };
-
-            gridModel.Data = items.Select(x =>
-            {
-                products.TryGetValue(x.ProductId, out var product);
-
-                var m = new BestsellersReportLineModel
-                {
-                    ProductId = x.ProductId,
-                    TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
-                    TotalQuantity = x.TotalQuantity.ToString("N0")
-                };
-
-                if (product != null)
-                {
-                    m.ProductName = product.Name;
-                    m.ProductTypeName = product.GetProductTypeLabel(_localizationService);
-                    m.ProductTypeLabelHint = product.ProductTypeLabelHint;
-                }
-
-                return m;
-            });
 
             return new JsonResult
             {

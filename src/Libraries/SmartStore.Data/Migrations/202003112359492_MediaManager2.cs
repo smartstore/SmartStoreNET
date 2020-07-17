@@ -66,7 +66,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.MediaTrack", new[] { "MediaFileId", "EntityId", "EntityName" }, unique: true, name: "IX_MediaTrack_Composite");
         }
 
-        public void Seed(SmartObjectContext context)
+        public void Seed(SmartObjectContext context) 
         {
             // We cannot tear down obsolete DB structure during regular migration, but only 
             // AFTER a successfull data seed, 'cause during the seed we need the data.

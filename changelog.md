@@ -29,6 +29,7 @@
 * (mm) Tracker tracks only the last media file property
 * (mm) Migration: `Download` entity was teared down too early in the migration process.
 * (perf) Plugin hash calculation was broken in a way that every plugin was redeployed on each app startup
+* A rule was not applied if more than one rule was assigned to an object.
 
 
 ## Smartstore 4.0.0

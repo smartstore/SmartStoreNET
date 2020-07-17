@@ -142,15 +142,15 @@ namespace SmartStore.Services.Cart.Rules
 
         public IRule GetProcessor(RuleExpression expression)
         {
+            var group = expression as RuleExpressionGroup;
             var descriptor = expression.Descriptor as CartRuleDescriptor;
-            if (descriptor == null)
+            
+            if (group == null && descriptor == null)
             {
-                // TODO: ErrHandling
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"Missing cart rule descriptor for expression {expression.Id} ('{expression.RawValue.EmptyNull()}').");
             }
 
             IRule instance;
-            var group = expression as RuleExpressionGroup;
 
             if (group == null && descriptor.ProcessorType != typeof(CompositeRule))
             {

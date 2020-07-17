@@ -9,7 +9,7 @@ SmartStore.Admin.Charts = {
         var fontFamily = root.css('--font-family-sans-serif');
 
         return {
-            IncompleteOrdersCharts: function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {                
+            IncompleteOrdersCharts: function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {
                 for (var i = 0; i < dataSets.length; i++) {
                     // If there are no incomplete orders for set i > add 1 to new orders (data index 2) so tooltip gets displayed
                     if (dataSets[i].Data[0].Quantity == 0 && dataSets[i].Data[1].Quantity == 0) {
@@ -173,7 +173,7 @@ SmartStore.Admin.Charts = {
                 );
             },
             OrdersChart: function (dataSets, textCancelled, textPending, textProcessing, textComplete, textOrders) {
-                var chartElement = $('#orders-report');               
+                var chartElement = $('#orders-report');
                 var percentageElement = $("#orders-delta-percentage");
                 var chevronElement = $("#orders-delta-percentage-chevron");
                 var sumElement = $("#orders-sum-amount");
@@ -196,9 +196,6 @@ SmartStore.Admin.Charts = {
                 var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.parent().height());
                 completeGradient.addColorStop(0, chartElement.css('--chart-color-primary'));
                 completeGradient.addColorStop(1, chartElement.css('--chart-color-primary-light'));
-
-                var initialY = Math.max(...dataSets[0].DataSets[3].Amount);
-                initialY = initialY == 0 ? 1 : initialY * 1.1;
 
                 // Chart config
                 var order_config = {
@@ -332,10 +329,6 @@ SmartStore.Admin.Charts = {
                             yAxes: [{
                                 display: false,
                                 stacked: true,
-
-                                ticks: {
-                                    max: initialY,
-                                }
                             }],
                             xAxes: [{
                                 display: false,
@@ -353,11 +346,12 @@ SmartStore.Admin.Charts = {
                         }
                     },
                 }
-
                 var ordersChart = new Chart(orders_ctx, order_config);
                 setPercentageDelta(currentPeriod);
                 var $ordersLegendElement = $("#orders-chart-legend").get(0);
                 createLegend();
+                setYaxis(ordersChart);
+                ordersChart.update();
 
                 // EventHandler to display selected period data     
                 $('input[type=radio][name=orders-toggle]').on('change', function () {
@@ -370,17 +364,26 @@ SmartStore.Admin.Charts = {
                     for (var i = 0; i < order_config.data.datasets.length; i++) {
                         order_config.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
                     }
-                    order_config.options.scales.yAxes[0].ticks.max = getYaxis(ordersChart.data);
+                    setYaxis(ordersChart);
                     ordersChart = new Chart(orders_ctx, order_config);
                     setPercentageDelta(period, dataSets);
                     currentPeriod = period;
                     createLegend();
                 }
 
-                function getYaxis(chartData) {                    
-                    // Get highest Y Axis value from not hidden dataSets
-                    let yAxisSize = Math.max(...chartData.datasets.filter(e => !e.hidden).map(e => Math.max(...e.data)))
-                    return yAxisSize == 0 ? 1 : yAxisSize * 1.1;
+                // Get highest combined yAxis value from not hidden datasets
+                function setYaxis(chart) {
+                    let sumArr = [];
+                    let datasets = chart.data.datasets;
+                    for (var i = 0; i < datasets["0"].data.length; i++) {
+                        let num = 0;
+                        for (var j = 0; j < datasets.length; j++) {
+                            num += datasets[j].hidden ? 0 : datasets[j].data[i];
+                        }
+                        sumArr[i] = num;
+                    }
+                    let yAxisSize = Math.max(...sumArr);
+                    chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
                 }
 
                 function setPercentageDelta(period) {
@@ -434,7 +437,7 @@ SmartStore.Admin.Charts = {
                     }
                     meta.hidden = !chart.data.datasets[index].hidden;
                     chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
-                    chart.config.options.scales.yAxes[0].ticks.max = getYaxis(chart.data);
+                    setYaxis(chart);
                     chart.update();
                 }
             },

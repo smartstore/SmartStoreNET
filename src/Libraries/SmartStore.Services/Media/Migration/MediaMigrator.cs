@@ -356,15 +356,15 @@ namespace SmartStore.Services.Media.Migration
                         var fixedName = name;
                         if (name.IsEmpty())
                         {
-                            name = file.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                            name = fixedName = file.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
                         }
                         else
                         {
-                            name = file.Name.Truncate(292).ToValidFileName();
+                            name = fixedName = file.Name.Truncate(292).ToValidFileName();
                             if (name == prevName)
                             {
                                 // Make file name unique
-                                fixedName = name + "-" + ++fileIndex;
+                                fixedName = name + "-" + ++fileIndex; 
                             }
                             else
                             {

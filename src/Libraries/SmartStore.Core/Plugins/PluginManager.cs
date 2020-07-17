@@ -172,7 +172,7 @@ namespace SmartStore.Core.Plugins
             {
                 // Save current hash of all deployed plugins to disk
                 //var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());
-                SavePluginsHash(currentHash);
+                SavePluginsHash(currentHash); 
 
                 // Save names of all deployed assemblies to disk (so we can nuke them later)
                 SavePluginsAssemblies(_referencedPlugins.Values);

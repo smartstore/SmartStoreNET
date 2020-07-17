@@ -135,12 +135,15 @@ namespace SmartStore.Services.Catalog
 				if (oldProductId != productId)
 					newProductIds.Add(oldProductId);
 			}
-
+            
             var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
 			if (compareCookie == null)
 			{
-				compareCookie = new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
-				compareCookie.HttpOnly = true;
+				compareCookie = new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME) 
+                {
+                    HttpOnly = true,
+                    Secure = _httpContext.Request.IsHttps()
+                };
 			}
 
             compareCookie.Values.Clear();

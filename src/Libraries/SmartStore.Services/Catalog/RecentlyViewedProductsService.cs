@@ -118,9 +118,12 @@ namespace SmartStore.Services.Catalog
             var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts");
 			if (recentlyViewedCookie == null)
 			{
-				recentlyViewedCookie = new HttpCookie("SmartStore.RecentlyViewedProducts");
-				recentlyViewedCookie.HttpOnly = true;
-			}
+                recentlyViewedCookie = new HttpCookie("SmartStore.RecentlyViewedProducts")
+                {
+                    HttpOnly = true,
+                    Secure = _services.WebHelper.IsCurrentConnectionSecured()
+                };
+            }
             recentlyViewedCookie.Values.Clear();
 
             int maxProducts = _catalogSettings.RecentlyViewedProductsNumber;

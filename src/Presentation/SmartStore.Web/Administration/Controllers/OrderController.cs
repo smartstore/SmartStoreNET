@@ -2931,7 +2931,7 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t");
+                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t") + " - " + userTime.Date.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // This year
                     else if (i == 4)

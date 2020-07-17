@@ -90,6 +90,11 @@ namespace SmartStore.Services.Cms.Blocks
             // Default impl does nothing.
         }
 
+        public virtual void BeforeRender(IBlockContainer container, StoryViewMode viewMode, IBlockHtmlParts htmlParts)
+        {
+            // Default impl does nothing.
+        }
+
         public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
 		{
 			return sourceEntity.Model;

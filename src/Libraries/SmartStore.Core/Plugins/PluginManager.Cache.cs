@@ -27,9 +27,9 @@ namespace SmartStore.Core.Plugins
 		/// <returns>
 		/// Returns true if there were changes to plugins and a cleanup was required, otherwise false is returned.
 		/// </returns>
-		private static bool DetectAndCleanStalePlugins(IEnumerable<PluginDescriptor> plugins)
+		private static bool DetectAndCleanStalePlugins(IEnumerable<PluginDescriptor> plugins, out int currentHash)
 		{
-			var currentHash = ComputePluginsHash(plugins);
+			currentHash = ComputePluginsHash(plugins);
 			var lastHash = GetLastPluginsHash();
 			
 			// Check if anything has been changed, or if we are in debug mode then always perform cleanup
@@ -172,7 +172,8 @@ namespace SmartStore.Core.Plugins
 			var hashCombiner = new HashCodeCombiner();
 
 			// Add each *.dll, Description.txt, web.config to the hash
-			foreach (var p in plugins)
+			var arrPlugins = plugins.OrderBy(x => x.FolderName).ToArray();
+			foreach (var p in arrPlugins)
 			{
 				if (p.Assembly.OriginalFile != null)
 				{
@@ -325,8 +326,7 @@ namespace SmartStore.Core.Plugins
 
 		internal static int ConvertPluginsHash(string val)
 		{
-			int outVal;
-			if (Int32.TryParse(val, NumberStyles.Integer, CultureInfo.InvariantCulture, out outVal))
+			if (Int32.TryParse(val, NumberStyles.Integer, CultureInfo.InvariantCulture, out var outVal))
 			{
 				return outVal;
 			}

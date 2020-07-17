@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.Entity.Migrations.Model;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using SmartStore.Core.Data;
-using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
-	
 	public static class IDbMigrationExtensions
 	{
-
 		public static void SqlFileOrResource(this IDbMigration migration, string fileName, Assembly assembly = null, string location = null)
 		{
 			Guard.NotEmpty(fileName, nameof(fileName));
@@ -38,7 +30,5 @@ namespace SmartStore.Data.Setup
 			};
 			migration.AddOperation(operation);
 		}
-
 	}
-
 }

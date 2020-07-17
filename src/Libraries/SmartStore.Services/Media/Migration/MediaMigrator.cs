@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Messages;
 using System.Diagnostics;
 using System.Globalization;
 using NReco.PdfGenerator;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Media.Migration
 {
@@ -88,7 +89,6 @@ namespace SmartStore.Services.Media.Migration
                 Execute("MigrateMediaFiles", () => MigrateMediaFiles(ctx));
                 Execute("MigrateUploadedFiles", () => MigrateUploadedFiles(ctx));
                 Execute("DetectTracks", () => DetectTracks());
-                Execute("DetectDupeFiles", () => DetectDupeFiles(ctx));
                 Execute("ClearImageCache", () => ClearImageCache());
 
                 _folderService.ClearCache();
@@ -321,6 +321,82 @@ namespace SmartStore.Services.Media.Migration
 
         public void MigrateMediaFiles(SmartObjectContext ctx)
         {
+            string prevName = null;
+            int fileIndex = 0;
+
+            var query = ctx.Set<MediaFile>().OrderBy(x => x.Name);
+            var totalCount = query.Count();
+            var pageSize = Math.Max(1000, Math.Min(5000, totalCount / 200));
+            var pageIndex = 0;
+
+            using (var scope = new DbContextScope(ctx,
+                hooksEnabled: false,
+                autoCommit: false,
+                proxyCreation: false,
+                validateOnSave: false,
+                lazyLoading: false))
+            {
+                while (true)
+                {
+                    var files = new PagedList<MediaFile>(query, pageIndex, pageSize);
+                    if (files.Count == 0)
+                        break;
+
+                    foreach (var file in files)
+                    {
+                        if (file.Version > 0)
+                            continue;
+
+                        if (file.Extension.IsEmpty())
+                        {
+                            file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
+                        }
+
+                        var name = file.Name;
+                        var fixedName = name;
+                        if (name.IsEmpty())
+                        {
+                            name = file.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            name = file.Name.Truncate(292).ToValidFileName();
+                            if (name == prevName)
+                            {
+                                // Make file name unique
+                                fixedName = name + "-" + ++fileIndex;
+                            }
+                            else
+                            {
+                                fileIndex = 0;
+                            }
+                        }
+
+                        prevName = name;
+
+                        file.Name = fixedName + "." + file.Extension;
+                        file.CreatedOnUtc = file.UpdatedOnUtc;
+                        file.Version = 1;
+
+                        ProcessMediaFile(file);
+                    }
+
+                    // Save to DB
+                    int num = scope.Commit();
+
+                    // Breathe
+                    ctx.DetachEntities<MediaFile>(deep: true);
+
+                    if (!files.HasNextPage)
+                        break;
+
+                    pageIndex++;
+                }
+            }
+        }
+
+        public void MigrateMediaFiles_Old(SmartObjectContext ctx)
+        {
             var query = ctx.Set<MediaFile>();
                 //.Where(x => x.Version == 0)
                 //.Include(x => x.MediaStorage);
@@ -527,44 +603,6 @@ namespace SmartStore.Services.Media.Migration
                 
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
-        }
-
-        public void DetectDupeFiles(SmartObjectContext ctx)
-        {
-            //const int pageSize = 5000;
-            //int pageIndex = 0;
-            //FileMin last = null;
-
-            //while (true)
-            //{
-            //    var batch = ctx.Set<MediaFile>()
-            //        .Where(x => x.FolderId == 1)
-            //        .Select(x => new FileMin { Id = x.Id, Name = x.Name })
-            //        .OrderBy(x => x.Name)
-            //        .Skip(pageIndex * pageSize)
-            //        .Take(pageSize)
-            //        .ToList();
-
-            //    if (batch.Count == 0)
-            //        break;
-
-            //    last = ProcessBatch(batch, last);
-
-            //    pageIndex++;
-            //}
-
-            //FileMin ProcessBatch(List<FileMin> batch, FileMin last)
-            //{
-            //    FileMin prev = null;
-
-            //    foreach (var file in batch)
-            //    {
-            //        // ...
-            //        prev = file;
-            //    }
-                
-            //    return prev;
-            //}
         }
 
         public void ClearImageCache()

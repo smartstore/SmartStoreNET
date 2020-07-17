@@ -325,6 +325,7 @@
     <Compile Include="Plugins\ICookiePublisher.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\PluginManager.Cache.cs" />
+    <Compile Include="Plugins\PluginLocalizationDiffer.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IsHiddenAttribute.cs" />

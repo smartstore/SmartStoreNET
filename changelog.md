@@ -3,6 +3,8 @@
 ## Smartstore 4.0.1
 ### New Features
 
+- Check on app startup whether any plugin has changed and refresh all plugin locale resources.
+
 ### Improvements
 * Theming: minimal but effective tweaks (rounding, shadows, typo)
 * (SEO) (PERF) Preload logo to prevent flashing and web fonts to avoid FOUT on slow internet connection
@@ -15,6 +17,7 @@
 * **Media Manager**:
 	* Improved image lazy loading behavior.
 	* The reference table of a file now remains open if its data has been loaded.
+	* Migration: detect duplicate file names.
 * Improved handling of customer roles, e.g. paging for customer role grid.
 * (PERF) Use direct SQL to delete guest customers.
 
@@ -24,6 +27,8 @@
 * (pb) Flat Box did not invert text color if concrete colors were specified for text parts
 * (mm) Store logo is handled by "content" album, not "file"
 * (mm) Tracker tracks only the last media file property
+* (mm) Migration: `Download` entity was teared down too early in the migration process.
+* (perf) Plugin hash calculation was broken in a way that every plugin was redeployed on each app startup
 
 
 ## Smartstore 4.0.0

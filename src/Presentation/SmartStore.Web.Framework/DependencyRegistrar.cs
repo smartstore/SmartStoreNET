@@ -501,7 +501,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LocalizationFileResolver>().As<ILocalizationFileResolver>().InstancePerRequest();
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
             builder.RegisterType<LocalizedEntityHelper>().InstancePerRequest();
-			builder.RegisterType<PluginLocalizationDiffer>().As<IPluginLocalizationDiffer>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

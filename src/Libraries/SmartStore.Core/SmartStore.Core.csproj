@@ -295,6 +295,7 @@
     <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
+    <Compile Include="IO\DirectoryHasher.cs" />
     <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\SeekableReadOnlyStream.cs" />
     <Compile Include="IO\SymLink\FileSystemInfoExtensions.cs" />
@@ -325,7 +326,6 @@
     <Compile Include="Plugins\ICookiePublisher.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\PluginManager.Cache.cs" />
-    <Compile Include="Plugins\PluginLocalizationDiffer.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IsHiddenAttribute.cs" />

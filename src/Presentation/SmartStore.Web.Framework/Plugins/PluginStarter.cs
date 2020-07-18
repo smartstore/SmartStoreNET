@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
@@ -16,13 +12,11 @@ namespace SmartStore.Web.Framework.Plugins
     public sealed class PluginStarter : IPostApplicationStart
     {
         private readonly IPluginFinder _pluginFinder;
-        private readonly IPluginLocalizationDiffer _differ;
         private readonly ILocalizationService _locService;
 
-        public PluginStarter(IPluginFinder pluginFinder, IPluginLocalizationDiffer differ, ILocalizationService locService)
+        public PluginStarter(IPluginFinder pluginFinder, ILocalizationService locService)
         {
             _pluginFinder = pluginFinder;
-            _differ = differ;
             _locService = locService;
         }
 
@@ -38,10 +32,10 @@ namespace SmartStore.Web.Framework.Plugins
             var descriptors = _pluginFinder.GetPluginDescriptors(true);
             foreach (var d in descriptors)
             {
-                var status = _differ.GetStatus(d);
-                if (status != null && status.Differs)
+                var hasher = _locService.CreatePluginResourcesHasher(d);
+                if (hasher.HasChanged)
                 {
-                    _locService.ImportPluginResourcesFromXml(status.Descriptor, null, false);
+                    _locService.ImportPluginResourcesFromXml(d, null, false);
                 }
             }
         }

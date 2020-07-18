@@ -32,7 +32,7 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
-		/// Checks whether path is starts with '~/'
+		/// Checks whether path starts with '~/'
 		/// </summary>
 		public static bool IsAppRelativePath(string path)
 		{
@@ -54,6 +54,27 @@ namespace SmartStore.Utilities
 
 			// If it's longer, checks if it starts with "~/" or "~\"
 			return path[1] == '\\' || path[1] == '/';
+		}
+
+		/// <summary>
+		/// Determines the relative path from <paramref name="fromPath"/> to <paramref name="toPath"/>
+		/// </summary>
+		/// <param name="fromPath">From path</param>
+		/// <param name="toPath">To path</param>
+		/// <param name="sep">Directory separator</param>
+		/// <returns>The relative path</returns>
+		public static string MakeRelativePath(string fromPath, string toPath, string sep = "\\")
+		{
+			var fromParts = fromPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			var toParts = toPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+			var matchedParts = fromParts
+				.Zip(toParts, (x, y) => string.Compare(x, y, true) == 0)
+				.TakeWhile(x => x).Count();
+
+			return string.Join("", Enumerable.Range(0, fromParts.Length - matchedParts)
+				.Select(x => ".." + sep)) +
+					string.Join(sep, toParts.Skip(matchedParts));
 		}
 
 		/// <summary>

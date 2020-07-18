@@ -136,6 +136,7 @@ namespace SmartStore.Core.Plugins
 
             var plugins = LoadPluginDescriptors().ToArray();
             var compatiblePlugins = plugins.Where(x => !x.Incompatible).ToArray();
+			var hasher = new PluginsHasher(compatiblePlugins);
 
             Logger.DebugFormat("Loaded plugin descriptors. {0} total, {1} incompatible.", plugins.Length, plugins.Length - compatiblePlugins.Length);
 
@@ -144,7 +145,7 @@ namespace SmartStore.Core.Plugins
 
             // If plugins state is dirty, we copy files over to the dynamic folder,
             // otherwise we just reference the previously copied file.
-            dirty = DetectAndCleanStalePlugins(compatiblePlugins, out var currentHash);
+            dirty = DetectAndCleanStalePlugins(compatiblePlugins, hasher);
 
             // Perf: Initialize/probe all plugins in parallel
             plugins.AsParallel().ForAll(x =>
@@ -170,9 +171,8 @@ namespace SmartStore.Core.Plugins
 
             if (dirty && DataSettings.DatabaseIsInstalled())
             {
-                // Save current hash of all deployed plugins to disk
-                //var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());
-                SavePluginsHash(currentHash); 
+				// Save current hash of all deployed plugins to disk
+				hasher.Persist();
 
                 // Save names of all deployed assemblies to disk (so we can nuke them later)
                 SavePluginsAssemblies(_referencedPlugins.Values);

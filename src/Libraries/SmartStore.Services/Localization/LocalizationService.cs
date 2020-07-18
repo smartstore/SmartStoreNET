@@ -17,6 +17,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Localization;
 using System.Globalization;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Localization
 {
@@ -34,7 +35,6 @@ namespace SmartStore.Services.Localization
         private readonly ILanguageService _languageService;
         private readonly ICacheManager _cacheManager;
         private readonly IDbContext _dbContext;
-		private readonly IPluginLocalizationDiffer _locDiffer;
 
 		private int _notFoundLogCount = 0;
 		private int? _defaultLanguageId;
@@ -44,8 +44,7 @@ namespace SmartStore.Services.Localization
             ILogger logger, 
 			IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
-            ILanguageService languageService,
-			IPluginLocalizationDiffer locDiffer)
+            ILanguageService languageService)
         {
             _cacheManager = cacheManager;
             _logger = logger;
@@ -53,7 +52,6 @@ namespace SmartStore.Services.Localization
             _lsrRepo = lsrRepository;
             _languageService = languageService;
 			_dbContext = lsrRepository.Context;
-			_locDiffer = locDiffer;
         }
 
         public virtual void DeleteLocaleStringResource(LocaleStringResource resource)
@@ -313,6 +311,11 @@ namespace SmartStore.Services.Localization
             return stringWriter.ToString();
         }
 
+		public DirectoryHasher CreatePluginResourcesHasher(PluginDescriptor pluginDescriptor)
+        {
+			return new DirectoryHasher(Path.Combine(pluginDescriptor.PhysicalPath, "Localization"), "resources.*.xml");
+		}
+
 		public virtual void ImportPluginResourcesFromXml(
 			PluginDescriptor pluginDescriptor,
 			IList<LocaleStringResource> targetList = null,
@@ -377,11 +380,12 @@ namespace SmartStore.Services.Localization
 				}
 			}
 
-			var status = _locDiffer.GetStatus(pluginDescriptor);
-			if (status != null)
+			try
             {
-				_locDiffer.SaveStatus(status);
-            }
+				var hasher = CreatePluginResourcesHasher(pluginDescriptor);
+				hasher.Persist();
+			}
+			catch { }
 		}
 
 		private string ImportPluginResourcesForLanguage(

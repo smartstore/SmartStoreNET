@@ -493,8 +493,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullLogger.Instance,
 						null /* IWorkContext: not needed during install */,
 						rsResources,
-						languageService,
-						new PluginLocalizationDiffer(PluginFinder.Current));
+						languageService);
 				}
 
 				return _locService;

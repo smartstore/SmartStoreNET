@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -61,7 +62,8 @@ namespace SmartStore.Web.Framework.Security
                                 }
                                 else
                                 {
-                                    foreach (var error in result.ErrorCodes)
+                                    // Do not log 'missing input'. Could be a regular case.
+                                    foreach (var error in result.ErrorCodes.Where(x => x.HasValue() && x != "missing-input-response"))
                                     {
                                         Logger.Error("Error while getting Google Recaptcha response: " + error);
                                     }
@@ -76,7 +78,7 @@ namespace SmartStore.Web.Framework.Security
 				Logger.ErrorsAll(ex);
 			}
 
-			// This will push the result value into a parameter in our Action.
+			// This will push the result value into a parameter in our action method.
 			filterContext.ActionParameters["captchaValid"] = valid;
 
             filterContext.ActionParameters["captchaError"] = !valid && CaptchaSettings.Value.CanDisplayCaptcha

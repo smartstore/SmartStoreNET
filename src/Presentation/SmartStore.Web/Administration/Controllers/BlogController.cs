@@ -292,10 +292,10 @@ namespace SmartStore.Admin.Controllers
             if (filterByBlogPostId.HasValue)
             {
                 // Filter comments by blog.
-                var blogPost = _blogService.GetBlogPostById(filterByBlogPostId.Value);
-                var blogComments = blogPost.BlogComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+                var query = _customerContentService.GetAllCustomerContent<BlogComment>(0, null).SourceQuery;
+                query = query.Where(x => x.BlogPostId == filterByBlogPostId.Value);
 
-                comments = new PagedList<BlogComment>(blogComments, command.Page - 1, command.PageSize);
+                comments = new PagedList<BlogComment>(query, command.Page - 1, command.PageSize);
             }
             else
             {

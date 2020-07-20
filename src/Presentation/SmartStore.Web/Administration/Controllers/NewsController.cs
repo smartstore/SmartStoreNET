@@ -289,10 +289,10 @@ namespace SmartStore.Admin.Controllers
             if (filterByNewsItemId.HasValue)
             {
                 // Filter comments by news item.
-                var newsItem = _newsService.GetNewsById(filterByNewsItemId.Value);
-                var newsComments = newsItem.NewsComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+                var query = _customerContentService.GetAllCustomerContent<NewsComment>(0, null).SourceQuery;
+                query = query.Where(x => x.NewsItemId == filterByNewsItemId.Value);
 
-                comments = new PagedList<NewsComment>(newsComments, command.Page - 1, command.PageSize);
+                comments = new PagedList<NewsComment>(query, command.Page - 1, command.PageSize);
             }
             else
             {
@@ -302,7 +302,6 @@ namespace SmartStore.Admin.Controllers
 
             var customerIds = comments.Select(x => x.CustomerId).Distinct().ToArray();
             var customers = _customerService.GetCustomersByIds(customerIds).ToDictionarySafe(x => x.Id);
-
 
             var model = new GridModel<NewsCommentModel>
             {

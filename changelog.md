@@ -30,6 +30,7 @@
 * (mm) Migration: `Download` entity was teared down too early in the migration process.
 * (perf) Plugin hash calculation was broken in a way that every plugin was redeployed on each app startup
 * A cart rule was not applied if more than one cart rule was assigned to an object.
+* MegaSearch: fixed the incorrect featured sorting.
 * Missing paging for shipment list.
 
 

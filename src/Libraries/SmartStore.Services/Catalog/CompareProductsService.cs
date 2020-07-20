@@ -66,6 +66,9 @@ namespace SmartStore.Services.Catalog
             {
                 compareCookie.Values.Clear();
                 compareCookie.Expires = DateTime.Now.AddYears(-1);
+                compareCookie.HttpOnly = true;
+                compareCookie.Secure = _httpContext.Request.IsHttps();
+
                 _httpContext.Response.Cookies.Set(compareCookie);
             }
         }
@@ -98,7 +101,6 @@ namespace SmartStore.Services.Catalog
             return result.TotalHitsCount;
         }
 
-
         /// <summary>
         /// Removes a product from a "compare products" list
         /// </summary>
@@ -112,11 +114,20 @@ namespace SmartStore.Services.Catalog
 
             var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
             if ((compareCookie == null) || (compareCookie.Values == null))
+            {
                 return;
+            }
+
             compareCookie.Values.Clear();
             foreach (int newProductId in newProductIds)
+            {
                 compareCookie.Values.Add("CompareProductIds", newProductId.ToString());
+            }
+
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
+            compareCookie.HttpOnly = true;
+            compareCookie.Secure = _httpContext.Request.IsHttps();
+
             _httpContext.Response.Cookies.Set(compareCookie);
         }
 
@@ -135,15 +146,10 @@ namespace SmartStore.Services.Catalog
 				if (oldProductId != productId)
 					newProductIds.Add(oldProductId);
 			}
-
-            var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
-			if (compareCookie == null)
-			{
-				compareCookie = new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
-				compareCookie.HttpOnly = true;
-			}
-
+            
+            var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME) ?? new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
             compareCookie.Values.Clear();
+
             int maxProducts = 4;
             int i = 1;
             foreach (int newProductId in newProductIds)
@@ -153,7 +159,11 @@ namespace SmartStore.Services.Catalog
                     break;
                 i++;
             }
+
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
+            compareCookie.HttpOnly = true;
+            compareCookie.Secure = _httpContext.Request.IsHttps();
+
             _httpContext.Response.Cookies.Set(compareCookie);
         }
 

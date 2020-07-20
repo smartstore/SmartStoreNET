@@ -711,7 +711,7 @@ namespace SmartStore.Admin.Controllers
                 NotifyError(error);
             }
 
-            return Json(new { success, tempFile, error });
+            return Json(new { success, tempFile, error, name = postedFile.FileName, ext = postedFile.FileExtension });
         }
 
         [Permission(Permissions.Configuration.Import.Read)]

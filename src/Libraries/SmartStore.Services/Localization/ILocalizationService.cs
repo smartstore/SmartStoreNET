@@ -5,6 +5,7 @@ using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Localization
@@ -96,32 +97,37 @@ namespace SmartStore.Services.Localization
         /// <returns>Result in XML format</returns>
         string ExportResourcesToXml(Language language);
 
-		/// <summary>
-		/// Import language resources from XML file
-		/// </summary>
-		/// <remarks>codehint: sm-edit</remarks>
-		/// <param name="language">Language</param>
-		/// <param name="xmlDocument">XML document</param>
-		/// <param name="rootKey">Prefix for resource key name</param>
-		/// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
-		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
-		/// <returns>The number of processed (added or updated) resource entries</returns>
-		int ImportResourcesFromXml(Language language,
+        /// <summary>
+        /// Import language resources from XML file
+        /// </summary>
+        /// <param name="language">Language</param>
+        /// <param name="xmlDocument">XML document</param>
+        /// <param name="rootKey">Prefix for resource key name</param>
+        /// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
+        /// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
+        /// <returns>The number of processed (added or updated) resource entries</returns>
+        int ImportResourcesFromXml(Language language,
             XmlDocument xmlDocument,
             string rootKey = null,
             bool sourceIsPlugin = false,
             ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false);
 
-		/// <summary>
-		/// Import plugin resources from xml files in plugin's localization directory. Notes: Deletes existing resources before importing.
-		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
-		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
-		/// <param name="targetList">Load them into the passed list rather than into database</param>
-		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
-		/// <param name="filterLanguages">Import only files for particular languages</param>
-		void ImportPluginResourcesFromXml(
+        /// <summary>
+        /// Creates a directory hasher used to determine plugin localization changes across app startups.
+        /// </summary>
+        /// <param name="pluginDescriptor">Descriptor of the plugin</param>
+        /// <returns>The hasher impl</returns>
+        DirectoryHasher CreatePluginResourcesHasher(PluginDescriptor pluginDescriptor);
+
+        /// <summary>
+        /// Import plugin resources from xml files in plugin's localization directory. Notes: Deletes existing resources before importing.
+        /// </summary>
+        /// <param name="pluginDescriptor">Descriptor of the plugin</param>
+        /// <param name="targetList">Load them into the passed list rather than into database</param>
+        /// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
+        /// <param name="filterLanguages">Import only files for particular languages</param>
+        void ImportPluginResourcesFromXml(
 			PluginDescriptor pluginDescriptor,
 			IList<LocaleStringResource> targetList = null, 
 			bool updateTouchedResources = true, 

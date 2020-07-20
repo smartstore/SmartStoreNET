@@ -111,11 +111,15 @@ namespace SmartStore.Core
 				var skip = PageIndex * PageSize;
 				if (_isEfQuery)
 				{
-					return query.Skip(() => skip).Take(() => PageSize);
+					return skip == 0 
+						? query.Take(() => PageSize) 
+						: query.Skip(() => skip).Take(() => PageSize);
 				}
 				else
 				{
-					return query.Skip(skip).Take(PageSize);
+					return skip == 0 
+						? query.Take(PageSize) 
+						: query.Skip(skip).Take(PageSize);
 				}
 			}
 		}

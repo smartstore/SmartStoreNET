@@ -101,7 +101,7 @@ namespace SmartStore.Services.Media
             Guard.NotNull(filter, nameof(filter));
 
             // Base db query
-            var q = _searcher.PrepareFilterQuery(filter);
+            var q = _searcher.ApplyFilterQuery(filter);
 
             // Get ids of untrackable folders, 'cause no orphan check can be made for them.
             var untrackableFolderIds = _folderService.GetRootNode()

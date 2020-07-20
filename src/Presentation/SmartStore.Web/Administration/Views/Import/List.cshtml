@@ -133,8 +133,8 @@ else
 						.UploadUrl(Url.Action("FileUpload", new { id = Model.Id }))
 						.TypeFilter(".csv,.xlsx,.txt,.tab")
 						.ShowBrowseMedia(false)
-						.ShowRemoveButton(false)
-						.ShowRemoveButtonAfterUpload(false)
+						.ShowRemoveButton(true)
+						.ShowRemoveButtonAfterUpload(true)
 						.UploadText(T("Admin.DataExchange.Import.FileUpload").Text)
 						.OnUploadCompletedHandlerName("onUploadCompleted")
 					)
@@ -156,9 +156,6 @@ else
 <script>
     window['onUploadCompleted'] = function (file, data) {
 		if (!_.isEmpty(data.tempFile)) {
-			$('#import-profile-dialog').find('input[name=TempFileName]').val(data.tempFile);
-			$('#ImportFileList').html(data.tempFile).show();
-			$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 			$('#import-profile-dialog').find('.btn-primary').prop('disabled', false);
 		}
 		else if (!_.isEmpty(data.error)) {

@@ -51,7 +51,7 @@ var summernote_image_upload_url;
 			},
 			imageShapes: {
 				tooltip: 'Shape',
-				tooltipShapeOptions: ['Responsive', 'Rounded', 'Circle', 'Thumbnail']
+				tooltipShapeOptions: ['Responsive', 'Border', 'Rounded', 'Circle', 'Thumbnail', 'Shadow (small)', 'Shadow (medium)', 'Shadow (large)']
 			}
 		}
 	});
@@ -65,7 +65,7 @@ var summernote_image_upload_url;
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
 			var c = url[0];
-			if (c == "/" || c == "~" || c == "\\" || c == "." || c == "#") {
+			if (c === "/" || c === "~" || c === "\\" || c === "." || c === "#") {
 				return url;
 			}
 

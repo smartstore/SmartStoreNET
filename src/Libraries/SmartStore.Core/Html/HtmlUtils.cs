@@ -11,6 +11,7 @@ using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 using Ganss.XSS;
 using SmartStore.Utilities.ObjectPools;
+using AngleSharp.Extensions;
 
 namespace SmartStore.Core.Html
 {
@@ -119,31 +120,85 @@ namespace SmartStore.Core.Html
 			if (html.IsEmpty())
 				return string.Empty;
 
-			var ignoreTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
+			var removeTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
 			var parser = new HtmlParser();
-			var doc = parser.Parse(html);
 
-			List<IElement> removeElements = new List<IElement>();
+			using (var doc = parser.Parse(html))
+            {
+				List<IElement> removeElements = new List<IElement>();
 
-			foreach (var ignoreTag in ignoreTags)
-			{
-				removeElements.AddRange(doc.QuerySelectorAll(ignoreTag));
+				foreach (var el in doc.All)
+				{
+					if (removeTags.Contains(el.TagName))
+					{
+						removeElements.Add(el);
+					}
+				}
+
+				foreach (var el in removeElements)
+				{
+					el.Remove();
+				}
+
+				return doc.Body.TextContent;
 			}
-
-			foreach (var el in removeElements)
-			{
-				el.Remove();
-			}
-
-			return doc.Body.TextContent;
 		}
 
-        /// <summary>
-        /// Replace anchor text (remove a tag from the following url <a href="http://example.com">Name</a> and output only the string "Name")
-        /// </summary>
-        /// <param name="text">Text</param>
-        /// <returns>Text</returns>
-        public static string ReplaceAnchorTags(string text)
+		/// <summary>
+		/// Checks whether HTML code only contains whitespace stuff (<![CDATA[<p>&nbsp;</p>]]>)
+		/// </summary>
+		public static bool IsEmptyHtml(string html)
+		{
+			if (html.IsEmpty())
+            {
+				return true;
+			}
+
+			if (html.Length > 500)
+            {
+				// (perf) we simply assume content if length is larger
+				return false;
+            }
+
+			var parser = new HtmlParser();
+			using (var doc = parser.Parse(html))
+            {
+				foreach (var el in doc.All)
+				{
+					switch (el.TagName.ToLower())
+					{
+						case "html":
+						case "head":
+						case "body":
+						case "br":
+							continue;
+						case "p":
+						case "div":
+						case "span":
+							var text = el.Text().Trim();
+							if (text.IsEmpty() || text == "&nbsp;")
+							{
+								continue;
+							}
+							else
+							{
+								return false;
+							}
+						default:
+							return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Replace anchor text (remove a tag from the following url <a href="http://example.com">Name</a> and output only the string "Name")
+		/// </summary>
+		/// <param name="text">Text</param>
+		/// <returns>Text</returns>
+		public static string ReplaceAnchorTags(string text)
         {
             if (String.IsNullOrEmpty(text))
                 return string.Empty;

@@ -2125,7 +2125,7 @@ namespace SmartStore.Admin.Controllers
             var gridModel = new GridModel<ShipmentModel>
             {
                 Data = shipmentModels,
-                Total = shipmentModels.Count
+                Total = shipments.TotalCount
             };
 
             return new JsonResult
@@ -2975,7 +2975,7 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t");
+                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t") + " - " + userTime.Date.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // This year
                     else if (i == 4)

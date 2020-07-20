@@ -489,8 +489,8 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerRequest();
 			
+			builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerRequest();
 			builder.RegisterType<TelerikLocalizationServiceFactory>().As<Telerik.Web.Mvc.Infrastructure.ILocalizationServiceFactory>().InstancePerRequest();
 			builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerRequest();
 
@@ -501,7 +501,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LocalizationFileResolver>().As<ILocalizationFileResolver>().InstancePerRequest();
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
             builder.RegisterType<LocalizedEntityHelper>().InstancePerRequest();
-        }
+		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{

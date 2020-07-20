@@ -136,6 +136,7 @@ namespace SmartStore.Core.Plugins
 
             var plugins = LoadPluginDescriptors().ToArray();
             var compatiblePlugins = plugins.Where(x => !x.Incompatible).ToArray();
+			var hasher = new PluginsHasher(compatiblePlugins);
 
             Logger.DebugFormat("Loaded plugin descriptors. {0} total, {1} incompatible.", plugins.Length, plugins.Length - compatiblePlugins.Length);
 
@@ -144,7 +145,7 @@ namespace SmartStore.Core.Plugins
 
             // If plugins state is dirty, we copy files over to the dynamic folder,
             // otherwise we just reference the previously copied file.
-            dirty = DetectAndCleanStalePlugins(compatiblePlugins);
+            dirty = DetectAndCleanStalePlugins(compatiblePlugins, hasher);
 
             // Perf: Initialize/probe all plugins in parallel
             plugins.AsParallel().ForAll(x =>
@@ -170,9 +171,8 @@ namespace SmartStore.Core.Plugins
 
             if (dirty && DataSettings.DatabaseIsInstalled())
             {
-                // Save current hash of all deployed plugins to disk
-                var hash = ComputePluginsHash(_referencedPlugins.Values.OrderBy(x => x.FolderName).ToArray());
-                SavePluginsHash(hash);
+				// Save current hash of all deployed plugins to disk
+				hasher.Persist();
 
                 // Save names of all deployed assemblies to disk (so we can nuke them later)
                 SavePluginsAssemblies(_referencedPlugins.Values);
@@ -275,46 +275,6 @@ namespace SmartStore.Core.Plugins
 				.Select(d => LoadPluginDescriptor(d, installedPluginSystemNames))
 				.Where(x => x != null);
 		}
-
-		///// <summary>
-		///// Loads and parses the descriptors of all installed plugins
-		///// </summary>
-		///// <returns>All descriptors</returns>
-		//private static Task ReadPluginDescriptors(BlockingCollection<PluginDescriptor> bag)
-		//{
-		//	// TODO: Add verbose exception handling / raising here since this is happening on app startup and could
-		//	// prevent app from starting altogether
-
-		//	return Task.Factory.StartNew(() => 
-		//	{
-		//		var pluginsDir = new DirectoryInfo(CommonHelper.MapPath(_pluginsPath));
-
-		//		if (!pluginsDir.Exists)
-		//		{
-		//			pluginsDir.Create();
-		//		}
-		//		else
-		//		{
-		//			// Determine all plugin folders: ~/Plugins/{SystemName}
-		//			var allPluginDirs = pluginsDir.EnumerateDirectories().ToArray()
-		//				.Where(x => !x.Name.IsMatch("bin") && !x.Name.IsMatch("_Backup"))
-		//				.OrderBy(x => x.Name)
-		//				.ToArray();
-
-		//			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile().AsSynchronized();
-
-		//			// Load/activate all plugins
-		//			allPluginDirs
-		//				.AsParallel()
-		//				.AsOrdered()
-		//				.Select(d => LoadPluginDescriptor(d, installedPluginSystemNames))
-		//				.Where(x => x != null)
-		//				.ForAll(x => bag.Add(x));
-		//		}
-
-		//		bag.CompleteAdding();
-		//	});
-		//}
 
 		private static PluginDescriptor LoadPluginDescriptor(DirectoryInfo d, ICollection<string> installedPluginSystemNames)
 		{

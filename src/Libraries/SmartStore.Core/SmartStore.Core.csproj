@@ -295,6 +295,7 @@
     <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
+    <Compile Include="IO\DirectoryHasher.cs" />
     <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\SeekableReadOnlyStream.cs" />
     <Compile Include="IO\SymLink\FileSystemInfoExtensions.cs" />

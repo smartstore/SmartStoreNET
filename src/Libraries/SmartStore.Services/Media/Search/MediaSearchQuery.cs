@@ -66,7 +66,7 @@ namespace SmartStore.Services.Media
         public int PageSize { get; set; } = int.MaxValue;
 
         [JsonProperty("sortBy")]
-        public string SortBy { get; set; } = nameof(MediaFile.Name);
+        public string SortBy { get; set; } = nameof(MediaFile.Id);
 
         [JsonProperty("sortDesc")]
         public bool SortDesc { get; set; }

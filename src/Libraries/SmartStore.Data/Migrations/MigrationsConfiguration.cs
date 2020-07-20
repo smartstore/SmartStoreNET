@@ -81,6 +81,10 @@
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.IndexingStatus.Updating",
 				"Updating",
 				"Aktualisierend");
+
+			builder.AddOrUpdate("Admin.Packaging.InstallSuccess",
+				"Package was uploaded and unzipped successfully. Please reload the list.",
+				"Paket wurde hochgeladen und erfolgreich entpackt. Bitte laden Sie die Liste neu.");
 		}
 	}
 }

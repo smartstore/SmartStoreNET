@@ -150,9 +150,9 @@ namespace SmartStore
         /// <param name="request"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsSecureConnection(this HttpRequest request)
+        public static bool IsHttps(this HttpRequest request)
         {
-            return IsSecureConnection(new HttpRequestWrapper(request));
+            return IsHttps(new HttpRequestWrapper(request));
         }
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace SmartStore
 		/// </summary>
 		/// <param name="request"></param>
 		/// <returns></returns>
-		public static bool IsSecureConnection(this HttpRequestBase request)
+		public static bool IsHttps(this HttpRequestBase request)
 		{
 			if (request.IsSecureConnection)
 			{

@@ -106,9 +106,13 @@
 			if (typeof options.cssclass.imageShapes === 'undefined') {
 				options.cssclass.imageShapes = {
 					"img-fluid": { inline: true },
+					"border": { inline: true },
 					"rounded": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true },
 					"rounded-circle": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true  },
-					"img-thumbnail": { toggle: /^rounded(-.+)?$/, inline: true  }
+					"img-thumbnail": { toggle: /^rounded(-.+)?$/, inline: true },
+					"shadow-sm": { toggle: /^(shadow(-.+)?)$/, inline: true },
+					"shadow": { toggle: /^(shadow(-.+)?)$/, inline: true },
+					"shadow-lg": { toggle: /^(shadow(-.+)?)$/, inline: true }
 				};
 			}
 

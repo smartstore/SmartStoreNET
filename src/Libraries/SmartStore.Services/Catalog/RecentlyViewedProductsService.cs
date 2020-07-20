@@ -105,39 +105,35 @@ namespace SmartStore.Services.Catalog
         public virtual void AddProductToRecentlyViewedList(int productId)
         {
             if (!_catalogSettings.RecentlyViewedProductsEnabled)
+            {
                 return;
+            }
 
             var oldProductIds = GetRecentlyViewedProductsIds();
             var newProductIds = new List<int>(oldProductIds);
 
-            if (!newProductIds.Contains(productId)) 
-            {
-                newProductIds.Add(productId);
-            }
+            newProductIds.Remove(productId);
+            newProductIds.Insert(0, productId);           
 
-            var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts");
-			if (recentlyViewedCookie == null)
-			{
-				recentlyViewedCookie = new HttpCookie("SmartStore.RecentlyViewedProducts");
-				recentlyViewedCookie.HttpOnly = true;
-			}
+            var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts") ?? new HttpCookie("SmartStore.RecentlyViewedProducts");
             recentlyViewedCookie.Values.Clear();
 
-            int maxProducts = _catalogSettings.RecentlyViewedProductsNumber;
+            var maxProducts = _catalogSettings.RecentlyViewedProductsNumber;
             if (maxProducts <= 0)
-                maxProducts = 10;
+            {
+                maxProducts = 8;
+            }
 
-            int skip = Math.Max(0, newProductIds.Count - maxProducts);
-            newProductIds.Skip(skip).Take(maxProducts).Each(x => {
+            var skip = Math.Max(0, newProductIds.Count - maxProducts);
+            newProductIds.Skip(skip).Take(maxProducts).Each(x =>
+            {
                 recentlyViewedCookie.Values.Add("RecentlyViewedProductIds", x.ToString());
             });
 
-            if (_services.WebHelper.IsCurrentConnectionSecured())
-            {
-                recentlyViewedCookie.Secure = true;
-            }
-
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
+            recentlyViewedCookie.HttpOnly = true;
+            recentlyViewedCookie.Secure = _services.WebHelper.IsCurrentConnectionSecured();
+
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);
         }
         

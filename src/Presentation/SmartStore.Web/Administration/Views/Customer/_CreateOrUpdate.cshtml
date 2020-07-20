@@ -514,20 +514,14 @@
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Id)
-				.Template(x => Html.ActionLink(x.Id.ToString(), "Edit", "Order", new { id = x.Id }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\"><#= Id #></a>");
-			columns.Bound(x => x.OrderTotal)
-				.RightAlign();
+				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\"><#= Id #></a>");
 			columns.Bound(x => x.OrderStatus);
 			columns.Bound(x => x.PaymentStatus);
 			columns.Bound(x => x.ShippingStatus);
 			columns.Bound(x => x.StoreName);
 			columns.Bound(x => x.CreatedOn);
-			columns.Bound(x => x.Id)
-				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.Id }, new { @class = "btn btn-secondary" }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\" class=\"btn btn-secondary\">" + T("Admin.Common.View").Text + "</a>")
-				.HtmlAttributes(new { align = "right" })
-				.Title(string.Empty);
+			columns.Bound(x => x.OrderTotal)
+				.RightAlign();
 		})
 		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding =>

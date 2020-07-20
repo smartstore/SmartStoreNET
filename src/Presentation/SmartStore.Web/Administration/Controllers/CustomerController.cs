@@ -1259,28 +1259,31 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult OrderList(int customerId, GridCommand command)
         {
-            var model = new GridModel<CustomerModel.OrderModel>();
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, command.Page - 1, command.PageSize);
 
-            var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+            var model = new GridModel<CustomerModel.OrderModel>
+            {
+                Total = orders.TotalCount
+            };
 
-            model.Data = orders.PagedForCommand(command)
-                .Select(order =>
+            model.Data = orders.Select(order =>
+            {
+                allStores.TryGetValue(order.StoreId, out var store);
+
+                var orderModel = new CustomerModel.OrderModel
                 {
-                    var store = Services.StoreService.GetStoreById(order.StoreId);
-                    var orderModel = new CustomerModel.OrderModel()
-                    {
-                        Id = order.Id,
-                        OrderStatus = order.OrderStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
-                        PaymentStatus = order.PaymentStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
-                        ShippingStatus = order.ShippingStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
-                        OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-                        StoreName = store != null ? store.Name : "".NaIfEmpty(),
-                        CreatedOn = Services.DateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
-                    };
-                    return orderModel;
-                });
+                    Id = order.Id,
+                    OrderStatus = order.OrderStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+                    PaymentStatus = order.PaymentStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+                    ShippingStatus = order.ShippingStatus.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+                    OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
+                    StoreName = store?.Name.NullEmpty() ?? "".NaIfEmpty(),
+                    CreatedOn = Services.DateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
+                };
 
-            model.Total = orders.Count;
+                return orderModel;
+            });
 
             return new JsonResult
             {

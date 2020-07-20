@@ -1,11 +1,8 @@
-﻿@model Telerik.Web.Mvc.GridModel<BlogCommentModel>
-@using Telerik.Web.Mvc.UI
-
+﻿@using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+	int? filterByBlogPostId = ViewBag.FilterByBlogPostId;
 
     ViewBag.Title = T("Admin.ContentManagement.Blog.Comments").Text;
-    int? filterByBlogPostId = ViewBag.FilterByBlogPostId;
 }
 
 <div class="section-header">
@@ -18,7 +15,7 @@
 </div>
 
 <div>
-	@(Html.Telerik().Grid<BlogCommentModel>(Model.Data)
+	@(Html.Telerik().Grid<BlogCommentModel>()
 		.Name("comments-grid")
 		.DataKeys(x =>
 		{
@@ -26,32 +23,22 @@
 		})
 		.Columns(columns =>
 		{
-			columns.Bound(x => x.Id)
-				.Width(50);
+			columns.Bound(x => x.Id);
 			columns.Bound(x => x.BlogPostTitle)
-				.Width("20%")
-				.Template(x => Html.ActionLink(x.BlogPostTitle, "Edit", "Blog", new { id = x.BlogPostId }, new { }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Blog/Edit/") + "<#= BlogPostId #>\"><#= BlogPostTitle #></a>");
+				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Blog/Edit/") + "<#= BlogPostId #>\"><#= BlogPostTitle #></a>");
 			columns.Bound(x => x.CustomerId)
-				.Width("10%")
-				.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+				.ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
 			columns.Bound(x => x.Comment)
-                .Width("50%")
 				.Encoded(false);
-			columns.Bound(x => x.IpAddress)
-                .Width("10%")
-				.Width(100);
-			columns.Bound(x => x.CreatedOn)
-				.Width("10%");
+			columns.Bound(x => x.IpAddress);
+			columns.Bound(x => x.CreatedOn);
 			columns.Command(commands =>
 			{
 				commands.Delete().Localize(T);
 			})
-			.Width(90)
-			.HtmlAttributes(new { align = "right" }); ;
+			.HtmlAttributes(new { align = "right" });
 		})
-		.Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.Pageable(settings => settings.PageSize((int)ViewBag.GridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding =>
 		{
 			var settingBuilder = dataBinding.Ajax();

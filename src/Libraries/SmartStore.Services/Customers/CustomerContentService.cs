@@ -1,21 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Customers
 {
     public partial class CustomerContentService : ICustomerContentService
     {
         private readonly IRepository<CustomerContent> _contentRepository;
-        private readonly IEventPublisher _eventPublisher;
 
-        public CustomerContentService(IRepository<CustomerContent> contentRepository, IEventPublisher eventPublisher)
+        public CustomerContentService(IRepository<CustomerContent> contentRepository)
         {
             _contentRepository = contentRepository;
-            _eventPublisher = eventPublisher;
         }
 
         public virtual void DeleteCustomerContent(CustomerContent content)
@@ -25,19 +22,30 @@ namespace SmartStore.Services.Customers
             _contentRepository.Delete(content);
         }
 
-        public virtual IList<CustomerContent> GetAllCustomerContent(int customerId, bool? approved)
+        public virtual IPagedList<CustomerContent> GetAllCustomerContent(
+            int customerId,
+            bool? approved,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue)
         {
-            var query = from c in _contentRepository.Table
-                        orderby c.CreatedOnUtc descending
-                        where !approved.HasValue || c.IsApproved == approved &&
-                        (customerId == 0 || c.CustomerId == customerId)
-                        select c;
+            var query = _contentRepository.Table;
 
-            var content = query.ToList();
+            if (approved.HasValue)
+                query = query.Where(c => c.IsApproved == approved);
+            if (customerId > 0)
+                query = query.Where(c => c.CustomerId == customerId);
+
+            var content = new PagedList<CustomerContent>(query, pageIndex, pageSize);
             return content;
         }
 
-        public virtual IList<T> GetAllCustomerContent<T>(int customerId, bool? approved, DateTime? fromUtc = null, DateTime? toUtc = null) where T : CustomerContent
+        public virtual IPagedList<T> GetAllCustomerContent<T>(
+            int customerId,
+            bool? approved,
+            DateTime? fromUtc = null,
+            DateTime? toUtc = null,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue) where T : CustomerContent
         {
             var query = _contentRepository.Table;
 
@@ -52,7 +60,7 @@ namespace SmartStore.Services.Customers
 
             query = query.OrderByDescending(c => c.CreatedOnUtc);
 
-            var content = query.OfType<T>().ToList();
+            var content = new PagedList<T>(query.OfType<T>(), pageIndex, pageSize);
             return content;
         }
 

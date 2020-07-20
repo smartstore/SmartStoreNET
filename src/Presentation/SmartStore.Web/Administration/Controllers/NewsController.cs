@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.News;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Html;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -35,6 +35,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreService _storeService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly ICustomerService _customerService;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         #endregion
 
@@ -48,7 +49,8 @@ namespace SmartStore.Admin.Controllers
             IUrlRecordService urlRecordService,
             IStoreService storeService,
             IStoreMappingService storeMappingService,
-            ICustomerService customerService)
+            ICustomerService customerService,
+            AdminAreaSettings adminAreaSettings)
         {
             _newsService = newsService;
             _languageService = languageService;
@@ -58,6 +60,7 @@ namespace SmartStore.Admin.Controllers
             _storeService = storeService;
             _storeMappingService = storeMappingService;
             _customerService = customerService;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -101,19 +104,25 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List(GridCommand command, NewsItemListModel model)
         {
-            var gridModel = new GridModel<NewsItemModel>();
-
             var news = _newsService.GetAllNews(0, model.SearchStoreId, command.Page - 1, command.PageSize, true);
+
+            var gridModel = new GridModel<NewsItemModel>
+            {
+                Total = news.TotalCount
+            };
 
             gridModel.Data = news.Select(x =>
             {
                 var m = x.ToModel();
 
                 if (x.StartDateUtc.HasValue)
+                {
                     m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
-
+                }
                 if (x.EndDateUtc.HasValue)
+                {
                     m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
+                }
 
                 m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
                 m.LanguageName = x.Language.Name;
@@ -121,8 +130,6 @@ namespace SmartStore.Admin.Controllers
 
                 return m;
             });
-
-            gridModel.Total = news.TotalCount;
 
             return new JsonResult
             {
@@ -134,12 +141,14 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Create()
         {
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-            var model = new NewsItemModel();
-            //Stores
+
+            var model = new NewsItemModel
+            {
+                Published = true,
+                AllowComments = true
+            };
+
             PrepareStoresMappingModel(model, null, false);
-            //default values
-            model.Published = true;
-            model.AllowComments = true;
             return View(model);
         }
 
@@ -189,7 +198,6 @@ namespace SmartStore.Admin.Controllers
             model.StartDate = newsItem.StartDateUtc;
             model.EndDate = newsItem.EndDateUtc;
 
-            //stores
             PrepareStoresMappingModel(model, newsItem, false);
 
             return View(model);
@@ -267,57 +275,63 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Comments(int? filterByNewsItemId)
         {
             ViewBag.FilterByNewsItemId = filterByNewsItemId;
-            var model = new GridModel<NewsCommentModel>();
-            return View(model);
+            ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
+
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult Comments(int? filterByNewsItemId, GridCommand command)
         {
-            var gridModel = new GridModel<NewsCommentModel>();
+            IPagedList<NewsComment> comments;
 
-            IList<NewsComment> comments;
             if (filterByNewsItemId.HasValue)
             {
-                //filter comments by news item
+                // Filter comments by news item.
                 var newsItem = _newsService.GetNewsById(filterByNewsItemId.Value);
-                comments = newsItem.NewsComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+                var newsComments = newsItem.NewsComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+
+                comments = new PagedList<NewsComment>(newsComments, command.Page - 1, command.PageSize);
             }
             else
             {
-                //load all news comments
-                comments = _customerContentService.GetAllCustomerContent<NewsComment>(0, null);
+                // Load all news comments.
+                comments = _customerContentService.GetAllCustomerContent<NewsComment>(0, null, null, null, command.Page - 1, command.PageSize);
             }
 
-            gridModel.Data = comments.PagedForCommand(command).Select(newsComment =>
+            var customerIds = comments.Select(x => x.CustomerId).Distinct().ToArray();
+            var customers = _customerService.GetCustomersByIds(customerIds).ToDictionarySafe(x => x.Id);
+
+
+            var model = new GridModel<NewsCommentModel>
             {
-                var commentModel = new NewsCommentModel();
-                var customer = _customerService.GetCustomerById(newsComment.CustomerId);
+                Total = comments.TotalCount
+            };
 
-                commentModel.Id = newsComment.Id;
-                commentModel.NewsItemId = newsComment.NewsItemId;
-                commentModel.NewsItemTitle = newsComment.NewsItem.Title;
-                commentModel.CustomerId = newsComment.CustomerId;
-                commentModel.IpAddress = newsComment.IpAddress;
-                commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc);
-                commentModel.CommentTitle = newsComment.CommentTitle;
-                commentModel.CommentText = HtmlUtils.ConvertPlainTextToHtml(newsComment.CommentText.HtmlEncode());
+            model.Data = comments.Select(newsComment =>
+            {
+                customers.TryGetValue(newsComment.CustomerId, out var customer);
 
-                if (customer == null)
-                    commentModel.CustomerName = "".NaIfEmpty();
-                else
-                    commentModel.CustomerName = customer.GetFullName();
+                var commentModel = new NewsCommentModel
+                {
+                    Id = newsComment.Id,
+                    NewsItemId = newsComment.NewsItemId,
+                    NewsItemTitle = newsComment.NewsItem.Title,
+                    CustomerId = newsComment.CustomerId,
+                    IpAddress = newsComment.IpAddress,
+                    CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc),
+                    CommentTitle = newsComment.CommentTitle,
+                    CommentText = HtmlUtils.ConvertPlainTextToHtml(newsComment.CommentText.HtmlEncode()),
+                    CustomerName = customer.GetDisplayName(T)
+                };
 
                 return commentModel;
             });
 
-            gridModel.Total = comments.Count;
-
-
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
 

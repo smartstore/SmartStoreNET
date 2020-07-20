@@ -10,7 +10,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -53,15 +52,10 @@ namespace SmartStore.Admin.Controllers
 			model.ProductTypeName = productReview.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = productReview.Product.ProductTypeLabelHint;
             model.CustomerId = productReview.CustomerId;
-			model.CustomerName = productReview.Customer.GetFullName();
+            model.CustomerName = productReview.Customer.GetDisplayName(T);
             model.IpAddress = productReview.IpAddress;
             model.Rating = productReview.Rating;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(productReview.CreatedOnUtc, DateTimeKind.Utc);
-
-			if (string.IsNullOrWhiteSpace(model.CustomerName) && !productReview.Customer.IsRegistered())
-			{
-				model.CustomerName = T("Admin.Customers.Guest");
-			}
 
             if (!excludeProperties)
             {
@@ -90,24 +84,31 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Catalog.ProductReview.Read)]
         public ActionResult List(GridCommand command, ProductReviewListModel model)
         {
-			var gridModel = new GridModel<ProductReviewModel>();
-
-			DateTime? createdOnFromValue = (model.CreatedOnFrom == null) ? null
+			DateTime? createdFrom = (model.CreatedOnFrom == null) ? null
 				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
 
-			DateTime? createdToFromValue = (model.CreatedOnTo == null) ? null
+			DateTime? createdTo = (model.CreatedOnTo == null) ? null
 				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-			var productReviews = _customerContentService.GetAllCustomerContent<ProductReview>(0, null, createdOnFromValue, createdToFromValue);
+			var productReviews = _customerContentService.GetAllCustomerContent<ProductReview>(
+                0,
+                null,
+                createdFrom,
+                createdTo,
+                command.Page - 1,
+                command.PageSize);
 
-			gridModel.Data = productReviews.PagedForCommand(command).Select(x =>
+            var gridModel = new GridModel<ProductReviewModel>
+            {
+                Total = productReviews.TotalCount
+            };
+
+            gridModel.Data = productReviews.Select(x =>
 			{
 				var m = new ProductReviewModel();
 				PrepareProductReviewModel(m, x, false, true);
 				return m;
 			});
-
-			gridModel.Total = productReviews.Count;
 
             return new JsonResult
             {

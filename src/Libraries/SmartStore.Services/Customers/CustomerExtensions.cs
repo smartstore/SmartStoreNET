@@ -147,7 +147,12 @@ namespace SmartStore.Services.Customers
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.Guests, onlyActiveCustomerRoles);
         }
-        
+
+        /// <summary>
+        /// Gets the customer's full name.
+        /// </summary>
+        /// <param name="customer">Customer.</param>
+        /// <returns>Customer full name.</returns>
         public static string GetFullName(this Customer customer)
         {
 			if (customer == null)
@@ -170,6 +175,24 @@ namespace SmartStore.Services.Customers
 
 			return name.TrimSafe();
 		}
+
+        /// <summary>
+        /// Gets the display name of a customer (full name, user name or email).
+        /// </summary>
+        /// <param name="customer">Customer.</param>
+        /// <param name="T">Localizer.</param>
+        /// <returns>Display name of a customer.</returns>
+        public static string GetDisplayName(this Customer customer, Localizer T)
+        {
+            if (customer != null)
+            {
+                return customer.IsGuest()
+                    ? T("Customer.Guest").Text
+                    : customer.GetFullName().NullEmpty() ?? customer.Username ?? customer.FindEmail();
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Formats the customer name.

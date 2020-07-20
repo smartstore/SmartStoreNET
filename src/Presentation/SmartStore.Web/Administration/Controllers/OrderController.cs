@@ -2120,7 +2120,7 @@ namespace SmartStore.Admin.Controllers
             var gridModel = new GridModel<ShipmentModel>
             {
                 Data = shipmentModels,
-                Total = shipmentModels.Count
+                Total = shipments.TotalCount
             };
 
             return new JsonResult

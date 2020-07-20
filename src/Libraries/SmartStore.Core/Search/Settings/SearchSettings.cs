@@ -76,14 +76,19 @@ namespace SmartStore.Core.Search
         /// </summary>
         public bool UseCatalogSearchInBackend { get; set; }
 
-        // TBD: what about area specific searchin setting (product, blog, etc.)
+		/// <summary>
+		/// Specifies whether the product page should be opened directly if the search term matches a SKU, MPN or GTIN.
+		/// </summary>
+		public bool SearchProductByIdentificationNumber { get; set; }
 
-        #region Common facet settings
+		// TBD: what about area specific searchin setting (product, blog, etc.)
 
-        /// <summary>
-        /// Gets or sets the a value indicating whether to include or exclude not available products by default.
-        /// </summary>
-        public bool IncludeNotAvailable { get; set; }
+		#region Common facet settings
+
+		/// <summary>
+		/// Gets or sets the a value indicating whether to include or exclude not available products by default.
+		/// </summary>
+		public bool IncludeNotAvailable { get; set; }
 
 		public bool BrandDisabled { get; set; }
 		public bool PriceDisabled { get; set; }

@@ -85,6 +85,15 @@
             </td>
         </tr>
 		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.SearchProductByIdentificationNumber)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(x => x.SearchProductByIdentificationNumber)
+				@Html.ValidationMessageFor(x => x.SearchProductByIdentificationNumber)
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
 					<div class="title">@T("Search.InstantSearch")</div>

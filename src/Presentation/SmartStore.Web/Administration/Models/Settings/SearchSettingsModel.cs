@@ -59,6 +59,9 @@ namespace SmartStore.Admin.Models.Settings
         public ProductSortingEnum DefaultSortOrder { get; set; }
         public SelectList AvailableSortOrderModes { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.SearchProductByIdentificationNumber")]
+		public bool SearchProductByIdentificationNumber { get; set; }
+
 		public CommonFacetSettingsModel CategoryFacet { get; set; }
 		public CommonFacetSettingsModel BrandFacet { get; set; }
 		public CommonFacetSettingsModel PriceFacet { get; set; }

@@ -7,6 +7,8 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Security;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
@@ -32,6 +34,8 @@ namespace SmartStore.Web.Controllers
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IUrlRecordService _urlRecordService;
 		private readonly Lazy<IFacetTemplateProvider> _templateProvider;
+		private readonly Lazy<IProductService> _productService;
+		private readonly ProductUrlHelper _productUrlHelper;
 
 		public SearchController(
 			ICatalogSearchQueryFactory queryFactory,
@@ -43,7 +47,9 @@ namespace SmartStore.Web.Controllers
 			CatalogHelper catalogHelper,
 			ILocalizedEntityService localizedEntityService,
 			IUrlRecordService urlRecordService,
-			Lazy<IFacetTemplateProvider> templateProvider)
+			Lazy<IFacetTemplateProvider> templateProvider,
+			Lazy<IProductService> productService,
+			ProductUrlHelper productUrlHelper)
 		{
 			_queryFactory = queryFactory;
 			_catalogSearchService = catalogSearchService;
@@ -55,6 +61,8 @@ namespace SmartStore.Web.Controllers
 			_localizedEntityService = localizedEntityService;
 			_urlRecordService = urlRecordService;
 			_templateProvider = templateProvider;
+			_productService = productService;
+			_productUrlHelper = productUrlHelper;
 		}
 
 		[ChildActionOnly]
@@ -142,7 +150,7 @@ namespace SmartStore.Web.Controllers
 				return View(model);
 			}
 			
-			// 'Continue shopping' URL
+			// 'Continue shopping' URL.
 			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				Services.WebHelper.GetThisPageUrl(false),
@@ -150,6 +158,20 @@ namespace SmartStore.Web.Controllers
 
 			try
 			{
+				if (_searchSettings.SearchProductByIdentificationNumber)
+				{
+					var product = _productService.Value.GetProductByIdentificationNumber(query.Term, out var attributeCombination);
+					if (product != null)
+					{
+						if (attributeCombination != null)
+						{
+							return Redirect(_productUrlHelper.GetProductUrl(product.Id, product.GetSeName(), attributeCombination.AttributesXml));
+						}
+
+						return RedirectToRoute("Product", new { SeName = product.GetSeName() });
+					}
+				}
+
 				result = _catalogSearchService.Search(query);
 			}
 			catch (Exception ex)

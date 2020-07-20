@@ -107,12 +107,26 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Product</returns>
 		Product GetProductByManufacturerPartNumber(string manufacturerPartNumber);
 
-		/// <summary>
-		/// Gets a product by name
-		/// </summary>
-		/// <param name="name">Product name</param>
-		/// <returns>Product</returns>
-		Product GetProductByName(string name);
+        /// <summary>
+        /// Gets a product by SKU, GTIN or MPN.
+        /// </summary>
+        /// <param name="identificationNumber">SKU, GTIN or MPN.</param>
+        /// <param name="attributeCombination">Returns the attribute combination if one with the identification number exists.</param>
+        /// <param name="includeHidden">Whether to include hidden products.</param>
+        /// <param name="untracked">Specifies whether loaded entities should be tracked by the state manager.</param>
+        /// <returns>Product.</returns>
+        Product GetProductByIdentificationNumber(
+            string identificationNumber,
+            out ProductVariantAttributeCombination attributeCombination,
+            bool includeHidden = false,
+            bool untracked = true);
+
+        /// <summary>
+        /// Gets a product by name
+        /// </summary>
+        /// <param name="name">Product name</param>
+        /// <returns>Product</returns>
+        Product GetProductByName(string name);
 
 		/// <summary>
 		/// Adjusts inventory

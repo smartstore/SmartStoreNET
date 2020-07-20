@@ -429,6 +429,52 @@ namespace SmartStore.Services.Catalog
 			return product;
 		}
 
+		public virtual Product GetProductByIdentificationNumber(
+			string identificationNumber,
+			out ProductVariantAttributeCombination attributeCombination,
+			bool includeHidden = false,
+			bool untracked = true)
+		{
+			attributeCombination = null;
+
+			if (string.IsNullOrWhiteSpace(identificationNumber))
+			{
+				return null;
+			}
+
+			identificationNumber = identificationNumber.Trim();
+
+			var pq =
+				from x in untracked ? _productRepository.TableUntracked : _productRepository.Table
+				where !x.Deleted && (x.Sku == identificationNumber || x.ManufacturerPartNumber == identificationNumber || x.Gtin == identificationNumber)
+				select x;
+
+			if (!includeHidden)
+			{
+				pq = pq.Where(x => x.Visibility <= ProductVisibility.SearchResults && x.Published);
+			}
+
+			var product = pq.FirstOrDefault();
+			if (product != null)
+			{
+				return product;
+			}
+
+			var pvaq =
+				from x in untracked ? _productVariantAttributeCombinationRepository.TableUntracked : _productVariantAttributeCombinationRepository.Table
+				where !x.Product.Deleted && (x.Sku == identificationNumber || x.ManufacturerPartNumber == identificationNumber || x.Gtin == identificationNumber)
+				select x;
+
+			if (!includeHidden)
+			{
+				pvaq = pvaq.Where(x => x.Product.Visibility <= ProductVisibility.SearchResults && x.Product.Published && x.IsActive);
+			}
+
+			attributeCombination = pvaq.FirstOrDefault();
+
+			return attributeCombination?.Product;
+		}
+
 		public virtual Product GetProductByName(string name)
 		{
 			if (name.IsEmpty())

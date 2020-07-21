@@ -1554,7 +1554,12 @@ namespace SmartStore.Web.Controllers
 					ManufacturerThumbPictureSize = _mediaSettings.ManufacturerThumbPictureSize
                 };
 
-                foreach (var manufacturer in manufacturers.Take(manufacturerItemsToDisplay))
+				if (model.DisplayAllManufacturersLink)
+				{
+					manufacturerItemsToDisplay -= 1;
+				}
+				
+				foreach (var manufacturer in manufacturers.Take(manufacturerItemsToDisplay))
                 {
                     files.TryGetValue(manufacturer.MediaFileId ?? 0, out var file);
 

@@ -1386,24 +1386,24 @@ namespace SmartStore.Admin.Controllers
             // Yesterday
             else if (dataPoint >= userTime.AddDays(-1).Date)
             {
-                var data = reports[1].DataSets[0];
-                data.Quantity[data.Quantity.Length - 1 - dataPoint.Hour]++;
+                var yesterday = reports[1].DataSets[0];
+                yesterday.Quantity[yesterday.Quantity.Length - 1 - dataPoint.Hour]++;
             }
 
             // Within last 7 days (older than today and yesterday)
             if (dataPoint >= userTime.AddDays(-6).Date)
             {
+                var week = reports[2].DataSets[0];
                 var weekIndex = (userTime - dataPoint).Days;
-                var data = reports[2].DataSets[0];
-                data.Quantity[data.Quantity.Length - weekIndex]++;
+                week.Quantity[week.Quantity.Length - weekIndex]++;
             }
 
             // Within last 28 days (older than last 7 days)            
             if (dataPoint >= userTime.AddDays(-27).Date)
             {
+                var month = reports[3].DataSets[0];
                 var monthIndex = (userTime - dataPoint).Days / 7;
-                var data = reports[3].DataSets[0];
-                data.Quantity[data.Amount.Length - monthIndex - 1]++;
+                month.Quantity[month.Amount.Length - monthIndex - 1]++;
             }
 
             // Within this year
@@ -1451,7 +1451,7 @@ namespace SmartStore.Admin.Controllers
                 SetCustomerReportData(model, _dateTimeHelper.ConvertToUserTime(dataPoint, DateTimeKind.Utc));
             }
 
-            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc);
+            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc).Date;
             // Format and sum values, create labels for all dataPoints
             for (int i = 0; i < model.Count; i++)
             {
@@ -1472,20 +1472,20 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t") + " - " + userTime.Date.AddHours(j).AddMinutes(59).ToString("t");
+                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - " + userTime.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // Last 7 days
                     else if (i == 2)
                     {
-                        model[i].Labels[j] = userTime.Date.AddDays(-6 + j).ToString("m");
+                        model[i].Labels[j] = userTime.AddDays(-6 + j).ToString("m");
                     }
                     // Last 28 days
                     else if (i == 3)
                     {
                         var fromDay = -(7 * model[i].Labels.Length);
                         var toDayOffset = j == model[i].Labels.Length - 1 ? 0 : 1;
-                        model[i].Labels[j] = userTime.Date.AddDays(fromDay + 7 * j).ToString("m") + " - "
-                            + userTime.Date.AddDays(fromDay + 7 * (j + 1) - toDayOffset).ToString("m");
+                        model[i].Labels[j] = userTime.AddDays(fromDay + 7 * j).ToString("m") + " - "
+                            + userTime.AddDays(fromDay + 7 * (j + 1) - toDayOffset).ToString("m");
                     }
                     // This year
                     else if (i == 4)
@@ -1521,7 +1521,7 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta = model[i].TotalAmount <= 0 ? 0
+                model[i].PercentageDelta =  model[i].TotalAmount <= 0 ? 0
                     : sumBefore[i] <= 0 ? 100
                         : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
             }

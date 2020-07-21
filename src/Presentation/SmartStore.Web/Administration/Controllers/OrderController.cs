@@ -2645,43 +2645,44 @@ namespace SmartStore.Admin.Controllers
         protected void IncompleteOrdersReportAddData(OrderDataPoint dataPoint, List<OrdersIncompleteDashboardReportModel> reports, int dataIndex)
         {
             var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
+
+            // Within this year
+            if (dataPoint.CreatedOn.Year == userTime.Year)
+            {
+                var year = reports[reports.Count - 1].Data[dataIndex];
+                year.Quantity++;
+                year.Amount += dataPoint.OrderTotal;
+            }
+
             // Today
             if (dataPoint.CreatedOn >= userTime.Date)
             {
-                // Apply data to all periods
-                for (int i = 0; i < reports.Count; i++)
+                // Apply data to all periods (but year)
+                for (int i = 0; i < reports.Count - 1; i++)
                 {
-                    reports[i].Data[dataIndex].Quantity++;
-                    reports[i].Data[dataIndex].Amount += dataPoint.OrderTotal;
+                    var today = reports[i].Data[dataIndex];
+                    today.Amount += dataPoint.OrderTotal;
+                    today.Quantity++;
                 }
-                return;
             }
-            // This week
-            if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
+            // Within last 7 days
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
             {
-                // Apply data to all periods but today
-                for (int i = 1; i < reports.Count; i++)
+                // Apply data to week and month periods
+                for (int i = 1; i < reports.Count - 1; i++)
                 {
-                    reports[i].Data[dataIndex].Quantity++;
-                    reports[i].Data[dataIndex].Amount += dataPoint.OrderTotal;
+                    var week = reports[i].Data[dataIndex];
+                    week.Amount += dataPoint.OrderTotal;
+                    week.Quantity++;
                 }
-                return;
             }
-            // This month
-            if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
+            // Within last 28 days
+            else if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
             {
-                // Apply data to month and year period
-                for (int i = 2; i < reports.Count; i++)
-                {
-                    reports[i].Data[dataIndex].Quantity++;
-                    reports[i].Data[dataIndex].Amount += dataPoint.OrderTotal;
-                }
-                return;
+                var month = reports[2].Data[dataIndex];
+                month.Amount += dataPoint.OrderTotal;
+                month.Quantity++;
             }
-
-            // This year only
-            reports[reports.Count - 1].Data[dataIndex].Quantity++;
-            reports[reports.Count - 1].Data[dataIndex].Amount += dataPoint.OrderTotal;
         }
 
         [NonAction]
@@ -2710,10 +2711,11 @@ namespace SmartStore.Admin.Controllers
             };
 
             // Query to get all incomplete orders of at least the last 28 days (if year is younger)
-            var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
-            var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-28).Date : beginningOfYear;
+            var utcNow = DateTime.UtcNow;
+            var beginningOfYear = new DateTime(utcNow.Year, 1, 1);
+            var startDate = (utcNow.Date - beginningOfYear).Days < 28 ? utcNow.AddDays(-28).Date : beginningOfYear;
             var dataPoints = _orderReportService.GetIncompleteOrders(0, startDate, null).ToList();
-            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
+            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc);
             // Sort pending orders by status and period
             foreach (var dataPoint in dataPoints)
             {
@@ -2753,7 +2755,7 @@ namespace SmartStore.Admin.Controllers
                         IncompleteOrdersReportAddTotal(dataPoint, model, 2);
                     }
                     // This year 
-                    else
+                    else if (dataPoint.CreatedOn.Year == userTime.Year)
                     {
                         IncompleteOrdersReportAddTotal(dataPoint, model, 3);
                     }
@@ -2766,8 +2768,9 @@ namespace SmartStore.Admin.Controllers
                 report.AmountTotal = report.Amount.ToString("C0");
                 for (int i = 0; i < report.Data.Count; i++)
                 {
-                    report.Data[i].QuantityFormatted = report.Data[i].Quantity.ToString("N0");
-                    report.Data[i].AmountFormatted = report.Data[i].Amount.ToString("C0");
+                    var data = report.Data[i];
+                    data.QuantityFormatted = data.Quantity.ToString("N0");
+                    data.AmountFormatted = data.Amount.ToString("C0");
                 }
             }
 
@@ -2802,14 +2805,14 @@ namespace SmartStore.Admin.Controllers
             var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
             var dataIndex = dataPoint.OrderStatusId == 40 ? 0 : dataPoint.OrderStatusId / 10;
 
-            // Today (includes all but yesterday)
+            // Today
             if (dataPoint.CreatedOn >= userTime.Date)
             {
                 var today = reports[0].DataSets[dataIndex];
                 today.Amount[dataPoint.CreatedOn.Hour] += dataPoint.OrderTotal;
                 today.Quantity[dataPoint.CreatedOn.Hour]++;
             }
-            // Yesterday (includes all but today)
+            // Yesterday
             else if (dataPoint.CreatedOn >= userTime.AddDays(-1).Date)
             {
                 var yesterday = reports[1].DataSets[dataIndex];
@@ -2872,7 +2875,7 @@ namespace SmartStore.Admin.Controllers
                 SetOrderReportData(model, dataPoint);
             }
 
-            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc);
+            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc).Date;
             // Format and sum values
             for (int i = 0; i < model.Count; i++)
             {
@@ -2896,20 +2899,21 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t") + " - " + userTime.Date.AddHours(j).AddMinutes(59).ToString("t");
+                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - "
+                            + userTime.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // Last 7 days
                     else if (i == 2)
                     {
-                        model[i].Labels[j] = userTime.Date.AddDays(-6 + j).ToString("m");
+                        model[i].Labels[j] = userTime.AddDays(-6 + j).ToString("m");
                     }
                     // Last 28 days
                     else if (i == 3)
                     {
                         var fromDay = -(7 * model[i].Labels.Length);
-                        var toDayOffset = j == model[i].Labels.Length - 1 ? 0 : 1;                        
-                        model[i].Labels[j] = userTime.Date.AddDays(fromDay + 7 * j).ToString("m") + " - "
-                            + userTime.Date.AddDays(fromDay + 7 * (j + 1) - toDayOffset).ToString("m");
+                        var toDayOffset = j == model[i].Labels.Length - 1 ? 0 : 1;
+                        model[i].Labels[j] = userTime.AddDays(fromDay + 7 * j).ToString("m") + " - "
+                            + userTime.AddDays(fromDay + 7 * (j + 1) - toDayOffset).ToString("m");
                     }
                     // This year
                     else if (i == 4)

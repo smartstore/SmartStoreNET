@@ -62,9 +62,24 @@ namespace SmartStore.Core.Domain.Customers
         public string HashedPasswordFormat { get; set; }
 
         /// <summary>
-        /// Gets or sets a minimum password length
+        /// Gets or sets a minimum password length.
         /// </summary>
         public int PasswordMinLength { get; set; }
+
+        /// <summary>
+        /// Specifies the minimum number of digits for a password.
+        /// </summary>
+        public int MinDigitsInPassword { get; set; }
+
+        /// <summary>
+        /// Specifies the minimum number of special characters for a password (not numeric and not alphabetic).
+        /// </summary>
+        public int MinSpecialCharsInPassword { get; set; }
+
+        /// <summary>
+        /// Specifies the minimum number of uppercase characters for a password.
+        /// </summary>
+        public int MinUppercaseCharsInPassword { get; set; }
 
         /// <summary>
         /// User registration type

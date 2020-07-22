@@ -5,10 +5,11 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Validators;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(ChangePasswordValidator))]
+    [Validator(typeof(ChangePasswordValidator))]
     public partial class ChangePasswordModel : ModelBase
     {
         [DataType(DataType.Password)]
@@ -31,10 +32,10 @@ namespace SmartStore.Web.Models.Customer
         public ChangePasswordValidator(Localizer T, CustomerSettings customerSettings)
         {
             RuleFor(x => x.OldPassword).NotEmpty();
-            RuleFor(x => x.NewPassword).NotEmpty();
-            RuleFor(x => x.ConfirmNewPassword).NotEmpty();
-            RuleFor(x => x.NewPassword).Length(customerSettings.PasswordMinLength, 999);
 
+            RuleFor(x => x.NewPassword).Password(T, customerSettings);
+
+            RuleFor(x => x.ConfirmNewPassword).NotEmpty();
             RuleFor(x => x.ConfirmNewPassword).Equal(x => x.NewPassword).WithMessage(T("Account.ChangePassword.Fields.NewPassword.EnteredPasswordsDoNotMatch"));
         }
     }

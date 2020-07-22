@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -8,10 +9,11 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Validators;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(RegisterValidator))]
+    [Validator(typeof(RegisterValidator))]
     public partial class RegisterModel : ModelBase
     {
         public RegisterModel()
@@ -39,7 +41,7 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.ConfirmPassword")]
         public string ConfirmPassword { get; set; }
 
-        //form fields & properties
+        // Form fields & properties.
         public bool GenderEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
@@ -116,13 +118,13 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Newsletter")]
         public bool Newsletter { get; set; }
 
-        //time zone
+        // Time zone.
         [SmartResourceDisplayName("Account.Fields.TimeZone")]
         public string TimeZoneId { get; set; }
         public bool AllowCustomersToSetTimeZone { get; set; }
         public IList<SelectListItem> AvailableTimeZones { get; set; }
 
-        //EU VAT
+        // EU VAT.
         [SmartResourceDisplayName("Account.Fields.VatNumber")]
         public string VatNumber { get; set; }
         public string VatNumberStatusNote { get; set; }
@@ -139,12 +141,12 @@ namespace SmartStore.Web.Models.Customer
             RuleFor(x => x.Email).NotEmpty();
             RuleFor(x => x.Email).EmailAddress();
 
-            RuleFor(x => x.Password).NotEmpty();
-            RuleFor(x => x.Password).Length(customerSettings.PasswordMinLength, 999);
+            RuleFor(x => x.Password).Password(T, customerSettings);
+
             RuleFor(x => x.ConfirmPassword).NotEmpty();
             RuleFor(x => x.ConfirmPassword).Equal(x => x.Password).WithMessage(T("Account.Fields.Password.EnteredPasswordsDoNotMatch"));
 
-            //form fields
+            // Form fields.
             if (customerSettings.FirstNameRequired)
             {
                 RuleFor(x => x.FirstName).NotEmpty();

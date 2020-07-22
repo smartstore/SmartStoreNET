@@ -941,6 +941,20 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ValidateInput(false)]
 		public ActionResult CustomerUser(CustomerUserSettingsModel model, FormCollection form)
         {
+			var ignoreKey = $"{nameof(model.CustomerSettings)}.{nameof(model.CustomerSettings.RegisterCustomerRoleId)}";
+
+			foreach (var key in ModelState.Keys.Where(x => x.IsCaseInsensitiveEqual(ignoreKey)))
+			{
+				ModelState[key].Errors.Clear();
+			}
+
+			if (!ModelState.IsValid)
+			{
+				return CustomerUser();
+			}
+
+			ModelState.Clear();
+
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 
 			var customerSettings = Services.Settings.LoadSetting<CustomerSettings>(storeScope);

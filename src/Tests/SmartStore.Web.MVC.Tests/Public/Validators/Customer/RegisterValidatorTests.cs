@@ -155,11 +155,61 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
 
             var model = new RegisterModel();
             model.Password = "1234";
-            //we know that password should equal confirmation password
             model.ConfirmPassword = model.Password;
             _validator.ShouldHaveValidationErrorFor(x => x.Password, model);
+
             model.Password = "12345";
-            //we know that password should equal confirmation password
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldNotHaveValidationErrorFor(x => x.Password, model);
+        }
+
+        [Test]
+        public void Should_validate_password_min_digits()
+        {
+            _customerSettings.MinDigitsInPassword = 3;
+            _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
+
+            var model = new RegisterModel();
+
+            model.Password = "abcdef2";
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldHaveValidationErrorFor(x => x.Password, model);
+
+            model.Password = "ab4cd6ef2";
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldNotHaveValidationErrorFor(x => x.Password, model);
+        }
+
+        [Test]
+        public void Should_validate_password_min_special_chars()
+        {
+            _customerSettings.MinSpecialCharsInPassword = 2;
+            _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
+
+            var model = new RegisterModel();
+
+            model.Password = "abcdef2";
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldHaveValidationErrorFor(x => x.Password, model);
+
+            model.Password = "ab4&cd6e%f2";
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldNotHaveValidationErrorFor(x => x.Password, model);
+        }
+
+        [Test]
+        public void Should_validate_password_min_uppercase_chars()
+        {
+            _customerSettings.MinUppercaseCharsInPassword = 4;
+            _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
+
+            var model = new RegisterModel();
+
+            model.Password = "abcdeGf2";
+            model.ConfirmPassword = model.Password;
+            _validator.ShouldHaveValidationErrorFor(x => x.Password, model);
+
+            model.Password = "aB4cDeFM";
             model.ConfirmPassword = model.Password;
             _validator.ShouldNotHaveValidationErrorFor(x => x.Password, model);
         }

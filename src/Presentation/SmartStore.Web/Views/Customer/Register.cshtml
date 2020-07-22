@@ -17,7 +17,7 @@
         <div class="page-body row">
             
 			<div class="col-12 col-lg-9 col-xl-8">
-				@if (!ViewData.ModelState.IsValid)
+				@if (ViewContext.ViewData.ModelState.ContainsKey(""))
 				{
 					@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 				}

@@ -127,15 +127,6 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
-				@Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
@@ -230,6 +221,60 @@
             </td>
         </tr>
     </table>
+
+    <div class="adminContent">
+        <div class="adminRow">
+            <div class="admin-config-group">
+                <div class="title">@T("Account.Fields.Password")</div>
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
+            </div>
+            <div class="adminData">
+                @*Single store scope (no SettingEditorFor).*@
+                @Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.PasswordMinLength)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.PasswordMinLength)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.PasswordMinLength)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinDigitsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinDigitsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinDigitsInPassword)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+            </div>
+        </div>
+    </div>
 }
 
 @helper TabCustomerFormFields()

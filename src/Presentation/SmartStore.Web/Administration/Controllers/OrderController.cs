@@ -2948,9 +2948,9 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta = model[i].TotalAmount <= 0 ? 0
-                    : sumBefore[i] <= 0 ? 100
-                    : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
+                model[i].PercentageDelta = model[i].TotalAmount != 0 && sumBefore[i] != 0
+                    ? (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100)
+                    : 0;
             }
 
             return PartialView(model);

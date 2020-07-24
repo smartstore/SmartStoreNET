@@ -8,14 +8,18 @@
 // ==============================================================
 
 @include media-breakpoint-down(md) {
-    html {
-        font-size: $font-size-root-md;
+    @if ($font-size-root-md != '16px') {
+        html {
+            font-size: $font-size-root-md;
+        }
     }
 }
 
 @include media-breakpoint-down(sm) {
-    html {
-        font-size: $font-size-root-sm;
+    @if ($font-size-root-sm != '16px') {
+        html {
+            font-size: $font-size-root-sm;
+        }
     }
 }
 
@@ -72,6 +76,7 @@ body {
     z-index: 1;
     background: $body-bg;
     box-shadow: 0 0 24px rgba(#000, 0.2);
+    min-height: 100vh;
 }
 
 @media screen {

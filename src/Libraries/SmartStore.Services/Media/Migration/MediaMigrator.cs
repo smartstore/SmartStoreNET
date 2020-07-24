@@ -16,11 +16,23 @@ using SmartStore.Data;
 using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Messages;
 using System.Diagnostics;
+using System.Globalization;
+using NReco.PdfGenerator;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Media.Migration
 {
     public class MediaMigrator
     {
+        public class FileMin
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public bool IsDupe { get; set; }
+            public string UniqueName { get; set; }
+            public int UniqueIndex { get; set; }
+        }
+        
         internal static bool Executed;
         internal const string MigrationName = "MediaManager";
         
@@ -164,12 +176,17 @@ namespace SmartStore.Services.Media.Migration
                         if (stub == null)
                             continue;
 
-                        if (stub.UseDownloadUrl || stub.Filename == "undefined" || string.IsNullOrEmpty(stub.Filename) || string.IsNullOrEmpty(stub.Extension))
+                        if (stub.UseDownloadUrl || string.IsNullOrEmpty(stub.Extension))
                         {
                             // Something weird has happened in the past
                             continue;
-                        }     
-                        
+                        }
+
+                        if (stub.Filename == "undefined" || string.IsNullOrEmpty(stub.Filename))
+                        {
+                            stub.Filename = stub.Id.ToString(CultureInfo.InvariantCulture);
+                        }
+
                         var isMailAttachment = false;
                         if (messageTemplatesDict.TryGetValue(stub.Id, out var mt))
                         {
@@ -304,9 +321,85 @@ namespace SmartStore.Services.Media.Migration
 
         public void MigrateMediaFiles(SmartObjectContext ctx)
         {
-            var query = ctx.Set<MediaFile>()
+            string prevName = null;
+            int fileIndex = 0;
+
+            var query = ctx.Set<MediaFile>().OrderBy(x => x.Name);
+            var totalCount = query.Count();
+            var pageSize = Math.Max(1000, Math.Min(5000, totalCount / 200));
+            var pageIndex = 0;
+
+            using (var scope = new DbContextScope(ctx,
+                hooksEnabled: false,
+                autoCommit: false,
+                proxyCreation: false,
+                validateOnSave: false,
+                lazyLoading: false))
+            {
+                while (true)
+                {
+                    var files = new PagedList<MediaFile>(query, pageIndex, pageSize);
+                    if (files.Count == 0)
+                        break;
+
+                    foreach (var file in files)
+                    {
+                        if (file.Version > 0)
+                            continue;
+
+                        if (file.Extension.IsEmpty())
+                        {
+                            file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
+                        }
+
+                        var name = file.Name;
+                        var fixedName = name;
+                        if (name.IsEmpty())
+                        {
+                            name = fixedName = file.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            name = fixedName = file.Name.Truncate(292).ToValidFileName();
+                            if (name == prevName)
+                            {
+                                // Make file name unique
+                                fixedName = name + "-" + ++fileIndex; 
+                            }
+                            else
+                            {
+                                fileIndex = 0;
+                            }
+                        }
+
+                        prevName = name;
+
+                        file.Name = fixedName + "." + file.Extension;
+                        file.CreatedOnUtc = file.UpdatedOnUtc;
+                        file.Version = 1;
+
+                        ProcessMediaFile(file);
+                    }
+
+                    // Save to DB
+                    int num = scope.Commit();
+
+                    // Breathe
+                    ctx.DetachEntities<MediaFile>(deep: true);
+
+                    if (!files.HasNextPage)
+                        break;
+
+                    pageIndex++;
+                }
+            }
+        }
+
+        public void MigrateMediaFiles_Old(SmartObjectContext ctx)
+        {
+            var query = ctx.Set<MediaFile>();
                 //.Where(x => x.Version == 0)
-                .Include(x => x.MediaStorage);
+                //.Include(x => x.MediaStorage);
 
             var pager = new FastPager<MediaFile>(query, 1000);
 
@@ -395,18 +488,7 @@ namespace SmartStore.Services.Media.Migration
 
                         ProcessMediaFile(file);
 
-                        if (!_isFsProvider)
-                        {
-                            using (var stream = uploadedFile.OpenRead())
-                            {
-                                file.MediaStorage = new MediaStorage { Data = stream.ToByteArray() };
-                            }
-                        }
-                        else
-                        {
-                            newFiles.Add(new FilePair { MediaFile = file, UploadedFile = uploadedFile });
-                        }
-
+                        newFiles.Add(new FilePair { MediaFile = file, UploadedFile = uploadedFile });
                         fileSet.Add(file);
                     }
 
@@ -417,9 +499,9 @@ namespace SmartStore.Services.Media.Migration
                         int num = scope.Commit();
 
                         // Copy/Move files
-                        if (_isFsProvider)
+                        foreach (var newFile in newFiles)
                         {
-                            foreach (var newFile in newFiles)
+                            if (_isFsProvider)
                             {
                                 var newPath = GetStoragePath(newFile.MediaFile);
                                 if (!_mediaFileSystem.FileExists(newPath))
@@ -428,6 +510,16 @@ namespace SmartStore.Services.Media.Migration
                                     _mediaFileSystem.CopyFile(newFile.UploadedFile.Path, newPath);
                                 }
                             }
+                            else
+                            {
+                                _mediaStorageProvider.Save(newFile.MediaFile, newFile.UploadedFile.OpenRead());
+                            }
+                        }
+
+                        if (!_isFsProvider)
+                        {
+                            // MediaFile.MediaStorageId has been updated, we need to save again.
+                            num = scope.Commit();
                         }
                     }
                     catch
@@ -481,6 +573,12 @@ namespace SmartStore.Services.Media.Migration
                         file.Width = size.Width;
                         file.Height = size.Height;
                         file.PixelSize = size.Width * size.Height;
+                    }
+                    catch
+                    {
+                        // Don't attempt again
+                        file.Width = 0;
+                        file.Height = 0;
                     }
                     finally
                     {

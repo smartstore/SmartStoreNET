@@ -1,4 +1,6 @@
-﻿using SmartStore.Services.Common;
+﻿using System.Linq;
+using SmartStore.Rules;
+using SmartStore.Services.Common;
 
 namespace SmartStore.Services.Cart.Rules.Impl
 {
@@ -9,6 +11,28 @@ namespace SmartStore.Services.Cart.Rules.Impl
         public BrowserRule(IUserAgent userAgent)
         {
             _userAgent = userAgent;
+        }
+
+        public static RuleValueSelectListOption[] GetDefaultValues()
+        {
+            return new[]
+            {
+                "Chrome",
+                "Chrome Mobile",
+                "Edge",
+                "Firefox",
+                "Firefox Mobile",
+                "IE",
+                "IE Mobile",
+                "Mobile Safari",
+                "Opera",
+                "Opera Mobile",
+                "Opera Mini",
+                "Safari",
+                "Samsung Internet"
+            }
+            .Select(x => new RuleValueSelectListOption { Value = x, Text = x })
+            .ToArray();
         }
 
         protected override string GetValue(CartRuleContext context)

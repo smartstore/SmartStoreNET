@@ -37,7 +37,6 @@ namespace SmartStore.Web.Controllers
     public partial class ProductController : PublicControllerBase
 	{
 		private readonly ICommonServices _services;
-		private readonly IManufacturerService _manufacturerService;
 		private readonly IProductService _productService;
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly ITaxService _taxService;
@@ -63,7 +62,6 @@ namespace SmartStore.Web.Controllers
 
 		public ProductController(
 			ICommonServices services,
-			IManufacturerService manufacturerService,
 			IProductService productService,
 			IProductAttributeService productAttributeService,
 			ITaxService taxService,
@@ -88,7 +86,6 @@ namespace SmartStore.Web.Controllers
             Lazy<TaxSettings> taxSettings)
         {
 			_services = services;
-			_manufacturerService = manufacturerService;
 			_productService = productService;
 			_productAttributeService = productAttributeService;
 			_taxService = taxService;
@@ -184,50 +181,6 @@ namespace SmartStore.Web.Controllers
 			}
 
 			return View(model.ProductTemplateViewPath, model);
-		}
-
-		[ChildActionOnly]
-		public ActionResult ProductManufacturers(int productId, bool preparePictureModel = false)
-		{
-			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY,
-				productId,
-				!_catalogSettings.HideManufacturerDefaultPictures,
-				_services.WorkContext.WorkingLanguage.Id,
-				_services.StoreContext.CurrentStore.Id);
-
-			var cacheModel = _services.Cache.Get(cacheKey, () =>
-			{
-				var model = _manufacturerService.GetProductManufacturersByProductId(productId)
-					.Select(x =>
-					{
-						var m = x.Manufacturer.ToModel();
-						if (preparePictureModel)
-						{
-                            var fileId = x.Manufacturer.MediaFileId.GetValueOrDefault();
-							var file = x.Manufacturer.MediaFile ?? _mediaService.GetFileById(fileId)?.File;
-
-							m.PictureModel.ImageUrl = _mediaService.GetUrl(file, 0, null, !_catalogSettings.HideManufacturerDefaultPictures);
-
-                            var fileUrl = _mediaService.GetUrl(file, 0);
-							if (fileUrl != null)
-							{
-								m.PictureModel.PictureId = fileId;
-								m.PictureModel.Title = string.Format(T("Media.Product.ImageLinkTitleFormat"), m.Name);
-								m.PictureModel.AlternateText = file?.GetLocalized(f => f.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Product.ImageAlternateTextFormat"), m.Name);
-							}
-						}
-						return m;
-					})
-					.ToList();
-				return model;
-			}, TimeSpan.FromHours(6));
-
-            if (cacheModel.Count == 0)
-            {
-                return new EmptyResult();
-            }
-
-			return PartialView(cacheModel);
 		}
 
 		[ChildActionOnly]

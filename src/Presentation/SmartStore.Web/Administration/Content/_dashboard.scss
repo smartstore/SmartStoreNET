@@ -273,7 +273,7 @@
             margin: 0;
         }
 
-        & li {
+        li {
             display: inline-block;
             user-select: none;
 
@@ -287,18 +287,22 @@
             }
         }
 
-        & .total-amount {
+        .total-amount {
             text-decoration: none !important;
             display: inline-block;
             user-select: text;
         }
 
-        & .legend {
+        .legend {
             border-radius: 7px;
             display: inline-block;
             height: 11px;
             margin-right: .3rem;
             width: 11px;
+        }
+
+        .hidden > .legend {
+            background-color: $gray-400 !important;
         }
     }
 
@@ -313,6 +317,122 @@
         &.negative:after {
             color: var(--danger);
             transform: rotate(180deg);
+        }
+    }
+
+    .chart-tooltip {
+        opacity: 1;
+        position: absolute;
+        background: rgba(#000, 0.8);
+        color: $light;
+        border-radius: $border-radius-sm;
+        transition: all 0.2s ease-in-out;
+        pointer-events: none;
+        transform: translateX(-50%);
+        z-index: 10;
+        padding: 0.4rem 0.7rem 0.5rem 0.7rem;
+
+        &:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            background-color: transparent;
+        }
+
+        &.bottom:after,
+        &.top:not(.right):not(.left):after {
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            transform: translateX(-50%);
+            transition: left 0.1s ease-in-out;
+            left: 50%;
+        }
+
+        &.bottom {
+            transform: translate(-50%, calc(-100% - 15px));
+
+            &:after {
+                border-top: 9px solid rgba($black, 0.8);
+                top: 100%;
+            }
+
+            &.left {
+                transform: translate(-10%, calc(-100% - 15px));
+
+                &:after {
+                    left: 10%;
+                }
+            }
+
+            &.right {
+                transform: translate(-90%, calc(-100% - 15px));
+
+                &:after {
+                    left: 90%;
+                }
+            }
+        }
+
+        &.top:not(.right):not(.left) {
+            transform: translate(-50%, 15px);
+
+            &:after {
+                border-bottom: 9px solid rgba($black, 0.8);
+                top: -9px;
+            }
+        }
+
+        &.left:not(.bottom):after,
+        &.right:not(.bottom):after {
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            transform: translateY(-50%);
+            transition: top 0.1s ease-in-out;
+            top: 50%;
+        }
+
+        &.left:not(.bottom) {
+            transform: translate(15px, -50%);
+
+            &:after {
+                border-right: 9px solid rgba($black, 0.8);
+                left: -9px;
+            }
+        }
+
+        &.right:not(.bottom) {
+            transform: translate(calc(-100% - 15px), -50%);
+
+            &:after {
+                border-left: 9px solid rgba($black, 0.8);
+                left: 100%;
+            }
+        }
+
+        .chart-tooltip-indicator {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            margin-right: 0.33rem;
+            border-radius: 50%;
+            margin-bottom: -1px;
+        }
+
+        .chart-tooltip-title {
+            font-size: $font-size-sm;
+            line-height: initial;
+            font-weight: $font-weight-bold;
+            padding-bottom: 0.2rem;
+        }
+
+        .chart-tooltip-body {
+            font-size: $font-size-xs;
+            line-height: initial;
+
+            &:not(:last-child) {
+                padding-bottom: 0.1rem;
+            }
         }
     }
 }
@@ -479,6 +599,7 @@
         grid-row: 4 / 5;
     }
 }
+
 .table-prevent-overflow {
     tr > th,
     tr > td {

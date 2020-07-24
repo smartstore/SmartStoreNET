@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using SmartStore.ComponentModel;
@@ -39,6 +40,35 @@ namespace SmartStore.Services.Media
 			}
 
 			return false;
+		}
+
+		public bool CheckUniqueFileName(string title, string ext, string destFileName, out string uniqueName)
+		{
+			return CheckUniqueFileName(title, ext, new HashSet<string>(new[] { destFileName }, StringComparer.CurrentCultureIgnoreCase), out uniqueName);
+		}
+
+		public bool CheckUniqueFileName(string title, string ext, HashSet<string> destFileNames, out string uniqueName)
+		{
+			uniqueName = null;
+
+			if (destFileNames.Count == 0)
+			{
+				return false;
+			}
+
+			int i = 1;
+			while (true)
+			{
+				var test = string.Concat(title, "-", i, ".", ext.TrimStart('.'));
+				if (!destFileNames.Contains(test))
+				{
+					// Found our gap
+					uniqueName = test;
+					return true;
+				}
+
+				i++;
+			}
 		}
 
 		#region Legacy (remove later)

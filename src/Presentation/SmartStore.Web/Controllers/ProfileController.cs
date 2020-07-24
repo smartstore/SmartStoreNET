@@ -92,7 +92,7 @@ namespace SmartStore.Web.Controllers
                 Id = customer.Id
             };
 
-            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, null, true);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, null, true);
 
             // Location.
             if (_customerSettings.ShowCustomersLocation)

@@ -175,6 +175,7 @@ namespace SmartStore.Data.Setup
 					});
 
 				lastSuccessfulMigration = migrationId;
+				DbMigrationContext.Current.AddAppliedMigration(typeof(TContext), migrationId);
 			}
 
 			if (coreSeeders.Any())

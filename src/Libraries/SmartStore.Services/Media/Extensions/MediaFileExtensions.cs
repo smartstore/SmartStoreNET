@@ -57,7 +57,13 @@ namespace SmartStore.Services.Media
 					file.Height = size.Height;
 					file.PixelSize = size.Width * size.Height;
 				}
-				catch { }
+				catch 
+				{
+					// Don't attempt again
+					file.Width = 0;
+					file.Height = 0;
+					file.PixelSize = 0;
+				}
 			}
 		}
 	}

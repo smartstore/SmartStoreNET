@@ -97,7 +97,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 
 			"~/customer/info/".ShouldMapTo<CustomerController>(c => c.Info());
 			"~/customer/addresses/".ShouldMapTo<CustomerController>(c => c.Addresses());
-			"~/customer/orders/".ShouldMapTo<CustomerController>(c => c.Orders(null));
+			"~/customer/orders/".ShouldMapTo<CustomerController>(c => c.Orders(null, null));
 			"~/customer/returnrequests/".ShouldMapTo<CustomerController>(c => c.ReturnRequests());
 			"~/customer/downloadableproducts/".ShouldMapTo<CustomerController>(c => c.DownloadableProducts());
 			"~/customer/backinstocksubscriptions/".ShouldMapTo<CustomerController>(c => c.BackInStockSubscriptions(null));

@@ -1,20 +1,20 @@
 ﻿@model PdfReceiptHeaderFooterModel
 @using SmartStore.Web.Framework.Pdf;
-
 @{
     Layout = ViewBag.IsPartial == true ? "" : "_Print";
+
+	var imageUrl = Url.Media(Model.LogoId, 0, null, false);
 }
 
-<header>
-	
+<header>	
     @{ Html.RenderWidget("invoice_header_before"); }
 
 	<table style="height: 100px;">
 		<tr>
 			<td style="width: 50%; text-align: left; vertical-align: middle">
-				@if (Model.LogoUrl.HasValue())
+				@if (imageUrl.HasValue())
                 {
-					<img src="@Model.LogoUrl" alt="" style="max-height: 100px" />
+					<img src="@imageUrl" alt="" style="max-height: 100px" />
                 }
                 else
                 {
@@ -28,6 +28,5 @@
 	</table>
 	
     @{ Html.RenderWidget("invoice_header_after"); }
-
 </header>
 

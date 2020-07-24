@@ -25,6 +25,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public TabStripBuilder<TModel> HideSingleItem(bool value)
+		{
+			base.Component.HideSingleItem = value;
+			return this;
+		}
+
 		public TabStripBuilder<TModel> TabContentHeaderContent(string value)
 		{
 			if (value.IsEmpty())

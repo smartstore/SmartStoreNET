@@ -74,7 +74,10 @@
 
     &.box-flat-inverse:hover,
     &.box-flat-inverse:hover .g-icon > i {
-        color: $yiq-text-light !important; 
+        $c2: rgba($yiq-text-light, 0.85);
+        --box-color: #{$yiq-text-light};
+        --box-color-2: #{$c2};
+        color: var(--box-color) !important;
     }
 }
 

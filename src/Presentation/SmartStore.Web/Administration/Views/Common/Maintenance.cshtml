@@ -55,16 +55,6 @@
 				<div class="title">@T("Admin.System.Maintenance.DeleteGuests")</div>
 			</td>
 		</tr>
-		@if (Model.DeleteGuests.NumberOfDeletedCustomers.HasValue)
-		{
-			<tr>
-				<td colspan="2">
-					<div class="alert alert-info">
-						@string.Format(T("Admin.System.Maintenance.DeleteGuests.TotalDeleted").Text, Model.DeleteGuests.NumberOfDeletedCustomers.Value)
-					</div>
-				</td>
-			</tr>
-		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DeleteGuests.StartDate)

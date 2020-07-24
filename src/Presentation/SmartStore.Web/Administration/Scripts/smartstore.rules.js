@@ -5,19 +5,20 @@
     function enableRuleValueControl(el) {
         var rule = el.closest('.rule');
         var ruleId = rule.data('rule-id');
+        var valCtrl = rule.find(':input[name="rule-value-' + ruleId + '"]');
         var op = rule.find('.rule-operator').data('value');
-        var disable = false;
 
         switch (op) {
             case 'IsEmpty':
             case 'IsNotEmpty':
             case 'IsNotNull':
             case 'IsNull':
-                disable = true;
+                valCtrl.prop('disabled', true);
+                break;
+            default:
+                valCtrl.prop('disabled', false);
                 break;
         }
-
-        rule.find(':input[name="rule-value-' + ruleId + '"]').prop('disabled', disable);
     }
 
     function appendToRuleSetBody(ruleSet, html) {

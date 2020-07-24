@@ -12,7 +12,6 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
@@ -77,10 +76,8 @@ namespace SmartStore.Web
         public static CustomerAvatarModel ToAvatarModel(
             this Customer customer,
             IGenericAttributeService genericAttributeService,
-            IMediaService mediaService,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings,
-            UrlHelper urlHelper,
             string userName = null,
             bool large = false)
         {
@@ -88,8 +85,11 @@ namespace SmartStore.Web
 
             var model = new CustomerAvatarModel
             {
+                Id = customer.Id,
                 Large = large,
-                UserName = userName
+                UserName = userName,
+                AllowViewingProfiles = customerSettings.AllowViewingProfiles,
+                AvatarPictureSize = mediaSettings.AvatarPictureSize
             };
 
             if (customer.IsGuest())
@@ -124,22 +124,12 @@ namespace SmartStore.Web
                     model.AvatarLetter = '?';
                 }
 
-                if (customerSettings.AllowViewingProfiles)
-                {
-                    model.LinkUrl = urlHelper.RouteUrl("CustomerProfile", new { id = customer.Id });
-                }
-
                 if (customerSettings.AllowCustomersToUploadAvatars)
                 {
-                    var avatarId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId, genericAttributeService);
-                    if (avatarId > 0)
-                    {
-                        model.PictureId = avatarId;
-                        model.PictureUrl = mediaService.GetUrl(avatarId, mediaSettings.AvatarPictureSize, null, false);
-                    }
+                    model.FileId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId, genericAttributeService);
                 }
 
-                if (model.PictureUrl.IsEmpty())
+                if (!model.FileId.HasValue)
                 {
                     model.AvatarColor = customer.GetAvatarColor(genericAttributeService);
                 }

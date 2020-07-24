@@ -21,6 +21,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Data.Utilities;
@@ -492,8 +493,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullLogger.Instance,
 						null /* IWorkContext: not needed during install */,
 						rsResources,
-						languageService,
-						NullEventPublisher.Instance);
+						languageService);
 				}
 
 				return _locService;

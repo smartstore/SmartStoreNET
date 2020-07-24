@@ -16,7 +16,8 @@ namespace SmartStore.Core.Domain.Orders
 			NumberOfDaysReturnRequestAvailable = 365;
 			MinimumOrderPlacementInterval = 30;
 			OrderListPageSize = 10;
-		}
+            RecurringPaymentListPageSize = 10;
+        }
 		
 		/// <summary>
         /// Gets or sets a value indicating whether customer can make re-order
@@ -92,5 +93,10 @@ namespace SmartStore.Core.Domain.Orders
 		/// Page size of the order list
 		/// </summary>
 		public int OrderListPageSize { get; set; }
-	}
+
+        /// <summary>
+        /// Page size of the recurring payment list
+        /// </summary>
+        public int RecurringPaymentListPageSize { get; set; }
+    }
 }

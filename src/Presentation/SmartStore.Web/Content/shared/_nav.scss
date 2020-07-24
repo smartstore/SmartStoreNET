@@ -182,6 +182,8 @@
 
 .tab-content-header {
     display: none;
+	background-color: $light;
+	    border-bottom: 1px solid rgba(#000, 0.08);
 }
 
 // The collapsable tab strip in page body
@@ -189,6 +191,7 @@
     position: relative;
 
     .nav-tabs {
+		display: flex !important;
         flex-direction: column;
 
         .nav-link { 
@@ -201,7 +204,7 @@
             background-color: $list-group-bg;
             border: $list-group-border-width solid $list-group-border-color;
             border-radius: 0;
-            padding: .75rem 2.2rem .75rem 1.25rem;
+            padding: .75rem 2.5rem .75rem 1.25rem;
             // Place the border on the list items and negative margin up for better styling
             margin-bottom: -$list-group-border-width;
             @include transition(background-color 0.12s linear);
@@ -225,11 +228,12 @@
             }
 
             &:not(.disabled):after {
-                @include fontawesome-font('\f105', light); // angle-right
+                @include fontawesome-font('\f054', light); // chevron-right
                 font-size: 1.5rem;
                 line-height: 1;
                 position: absolute;
-                right: 1rem;
+				font-size: $font-size-base;
+                right: 0.875rem;
                 top: 50%;
                 transform: translateY(-50%);
             }

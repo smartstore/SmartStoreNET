@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Tasks;
@@ -50,27 +51,41 @@ namespace SmartStore.Admin.Controllers
             _adminAreaSettings = adminAreaSettings;
         }
 
-        // Ajax.
-        public ActionResult AllCustomerRoles(string label, string selectedIds)
+        // AJAX.
+        public ActionResult AllCustomerRoles(string label, string selectedIds, bool? includeSystemRoles)
         {
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var rolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
+
+            if (!(includeSystemRoles ?? true))
+            {
+                rolesQuery = rolesQuery.Where(x => !x.IsSystemRole);
+            }
+
+            var rolesPager = new FastPager<CustomerRole>(rolesQuery, 500);
+            var customerRoles = new List<CustomerRole>();
             var ids = selectedIds.ToIntArray();
+
+            while (rolesPager.ReadNextPage(out var roles))
+            {
+                customerRoles.AddRange(roles);
+            }
+
+            var list = customerRoles
+                .OrderBy(x => x.Name)
+                .Select(x => new
+                {
+                    id = x.Id.ToString(),
+                    text = x.Name,
+                    selected = ids.Contains(x.Id)
+                })
+                .ToList();
 
             if (label.HasValue())
             {
-                customerRoles.Insert(0, new CustomerRole { Name = label, Id = 0 });
+                list.Insert(0, new { id = "0", text = label, selected = false });
             }
 
-            var list =
-                from c in customerRoles
-                select new
-                {
-                    id = c.Id.ToString(),
-                    text = c.Name,
-                    selected = ids.Contains(c.Id)
-                };
-
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         #region List / Create / Edit / Delete
@@ -83,13 +98,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Role.Read)]
         public ActionResult List()
         {
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
-            var gridModel = new GridModel<CustomerRoleModel>
-            {
-                Data = customerRoles.Select(x => x.ToModel()),
-                Total = customerRoles.Count()
-            };
-            return View(gridModel);
+            ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
+
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -97,11 +108,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command)
         {
             var model = new GridModel<CustomerRoleModel>();
-
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
+            var customerRoles = _customerService.GetAllCustomerRoles(true, command.Page - 1, command.PageSize);
 
             model.Data = customerRoles.Select(x => x.ToModel());
-            model.Total = customerRoles.Count();
+            model.Total = customerRoles.TotalCount;
 
             return new JsonResult
             {

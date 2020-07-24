@@ -104,6 +104,11 @@ namespace SmartStore.Web.Framework.UI
 					ulAttrs.AppendCssClass("nav-tabs nav-tabs-line");
 				}
 
+				if (tab.HideSingleItem && tab.Items.Count == 1)
+                {
+					ulAttrs.AppendCssClass("d-none");
+                }
+
 				if (isStacked)
 				{
 					ulAttrs.AppendCssClass("flex-row flex-lg-column");

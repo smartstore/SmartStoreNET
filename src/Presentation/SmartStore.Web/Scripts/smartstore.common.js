@@ -63,7 +63,7 @@
 
 	// http://stackoverflow.com/questions/2907482
 	// Gets Querystring from window.location and converts all keys to lowercase
-	window.getQueryStrings = function(search) {
+	window.getQueryStrings = function (search) {
 		var assoc = {};
 		var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
 		var queryString = (search || location.search).substring(1);
@@ -91,14 +91,13 @@
 			return;
 
 		var notify = function (msg) {
-
 			if (!msg)
 				return;
 
 			EventBroker.publish("message", {
 				text: msg,
 				type: type,
-				delay: delay || (type == "success" ? 2000 : 5000),
+				delay: delay || (type === "success" ? 2500 : 5000),
 				hide: !sticky
 			})
 		};
@@ -135,7 +134,7 @@
 		function prefixCss(prop) {
 			return cssProps[prop] || (cssProps[prop] = Modernizr.prefixedCSS(prop));
 		}
-		
+
 		function prefixCssValue(prop, value) {
 			var key = prop + '.' + value;
 			return cssValues[key] || (cssValues[key] = Modernizr.prefixedCSSValue(prop, value));
@@ -177,7 +176,7 @@
 
 		if (isProgress) {
 			svg.wrap('<div class="wrapper"></div>');
-			
+
 			if (showtext) {
 				spinner.append('<div class="progress-text">0</div>');
 				// TODO: set font-size according to size param :-/ maybe subtract a fixed value???
@@ -255,51 +254,51 @@
 		};
 	}
 
-    window.renderGoogleRecaptcha = function (containerId, sitekey, invisible) {
-        var frm = $('#' + containerId).closest('form');
+	window.renderGoogleRecaptcha = function (containerId, sitekey, invisible) {
+		var frm = $('#' + containerId).closest('form');
 
-        if (frm.length === 0)
-            return;
+		if (frm.length === 0)
+			return;
 
-        var holderId = grecaptcha.render(containerId, {
-            sitekey: sitekey,
-            size: invisible ? 'invisible' : undefined,
-            badge: 'bottomleft',
-            callback: function (token) {
-                if (invisible) {
-                    if (frm.data('ajax')) {
-                        frm.find("#g-recaptcha-response").val(token);
-                    }
-                    else if (frm) {
-                        frm[0].submit();
-                    }
-                }
-            }
-        });
+		var holderId = grecaptcha.render(containerId, {
+			sitekey: sitekey,
+			size: invisible ? 'invisible' : undefined,
+			badge: 'bottomleft',
+			callback: function (token) {
+				if (invisible) {
+					if (frm.data('ajax')) {
+						frm.find("#g-recaptcha-response").val(token);
+					}
+					else if (frm) {
+						frm[0].submit();
+					}
+				}
+			}
+		});
 
-        if (invisible) {
+		if (invisible) {
 
-            // if form has attr data-ajax
-            if (frm.data('ajax')) {
-                frm.on('ajaxsubmit', function (e) {
-                    grecaptcha.execute(holderId);
-                });
-            }
-            
-            frm.on('submit', function (e) {
-                if ($.validator === undefined || frm.valid() == true) {
-                    e.preventDefault();
-                    grecaptcha.execute(holderId);
-                }
-            });
-        }
-    }
+			// if form has attr data-ajax
+			if (frm.data('ajax')) {
+				frm.on('ajaxsubmit', function (e) {
+					grecaptcha.execute(holderId);
+				});
+			}
 
-    // on document ready
+			frm.on('submit', function (e) {
+				if ($.validator === undefined || frm.valid() == true) {
+					e.preventDefault();
+					grecaptcha.execute(holderId);
+				}
+			});
+		}
+	}
+
+	// on document ready
 	$(function () {
-        var rtl = SmartStore.globalization !== undefined ? SmartStore.globalization.culture.isRTL : false,
-            win = $(window),
-            body = $(document.body);
+		var rtl = SmartStore.globalization !== undefined ? SmartStore.globalization.culture.isRTL : false,
+			win = $(window),
+			body = $(document.body);
 
 		function getFunction(code, argNames) {
 			var fn = window, parts = (code || "").split(".");
@@ -376,7 +375,6 @@
 
 		// Global notification subscriber
 		if (window.EventBroker && window._ && typeof PNotify !== 'undefined') {
-			var stack_bottomcenter = { "dir1": "up", "dir2": "right", "firstpos1": 100, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
 				new PNotify(opts);
@@ -401,7 +399,7 @@
 					data: { navId: strip.attr('id'), tabId: hash, path: location.pathname + location.search },
 					global: false
 				});
-			}		
+			}
 		});
 
 		// Telerik grid smart AJAX state preserving
@@ -492,7 +490,7 @@
 					}
 				}
 			}
-		);
+			);
 
 		// .mf-dropdown (mobile friendly dropdown)
 		(function () {
@@ -513,7 +511,7 @@
 				else if (e.type == "mousedown") {
 					btn.addClass('active focus').removeClass('hover');
 					_.delay(function () {
-                        body.one('mousedown touch', function (e) { btn.removeClass('active focus'); });
+						body.one('mousedown touch', function (e) { btn.removeClass('active focus'); });
 					}, 50);
 				}
 				else if (e.type == "mouseleave") {
@@ -526,7 +524,7 @@
 				}
 			});
 		})();
-		
+
 
 		(function () {
 			var currentDrop,
@@ -586,23 +584,23 @@
 		// html text collapser
 		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
-        }
+		}
 
-        // Unselectable radio button groups
-        $(document).on('click', '.btn-group-toggle.unselectable > .btn', function (e) {
-            var btn = $(this);
-            var radio = btn.find('input:radio');
+		// Unselectable radio button groups
+		$(document).on('click', '.btn-group-toggle.unselectable > .btn', function (e) {
+			var btn = $(this);
+			var radio = btn.find('input:radio');
 
-            if (radio.length && radio.prop('checked')) {
-                _.delay(function () {
-                    radio.prop('checked', false);
-                    btn.removeClass('active focus');
+			if (radio.length && radio.prop('checked')) {
+				_.delay(function () {
+					radio.prop('checked', false);
+					btn.removeClass('active focus');
 
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, 50);
-            }
-        });
+					e.preventDefault();
+					e.stopPropagation();
+				}, 50);
+			}
+		});
 
 		// state region dropdown
 		$(document).on('change', '.country-selector', function () {
@@ -612,7 +610,7 @@
 			var ajaxUrl = el.data("states-ajax-url");
 			var addEmptyStateIfRequired = el.data("addemptystateifrequired");
 			var addAsterisk = el.data("addasterisk");
-				
+
 			$.ajax({
 				cache: false,
 				type: "GET",
@@ -633,23 +631,23 @@
 				}
 			});
 		});
-		
+
 		// Waypoint / scroll top
 		(function () {
-            $(document).on('click', 'a.scrollto', function (e) {
-                e.preventDefault();
-                var href = $(this).attr('href');
-                var target = href === '#' ? $('body') : $(href);
-                var offset = $(this).data('offset') || 0;
+			$(document).on('click', 'a.scrollto', function (e) {
+				e.preventDefault();
+				var href = $(this).attr('href');
+				var target = href === '#' ? $('body') : $(href);
+				var offset = $(this).data('offset') || 0;
 
-                $(window).scrollTo(target, { duration: 800, offset: offset });
-                return false;
-            });
+				$(window).scrollTo(target, { duration: 800, offset: offset });
+				return false;
+			});
 
 			var prevY;
 
 			var throttledScroll = _.throttle(function (e) {
-                var y = win.scrollTop();
+				var y = win.scrollTop();
 				if (_.isNumber(prevY)) {
 					// Show scroll button only when scrolled up
 					if (y < prevY && y > 500) {
@@ -663,13 +661,13 @@
 				prevY = y;
 			}, 100);
 
-            win.on("scroll", throttledScroll);
-        })();
-        
-        // Modal stuff
-        $(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); });
-        $(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); });
-    });
+			win.on("scroll", throttledScroll);
+		})();
 
-})( jQuery, this, document );
+		// Modal stuff
+		$(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); });
+		$(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); });
+	});
+
+})(jQuery, this, document);
 

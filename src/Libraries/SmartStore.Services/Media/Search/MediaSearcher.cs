@@ -35,7 +35,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(query, nameof(query));
 
-            var q = PrepareFilterQuery(query);
+            var q = _fileRepo.Table;
             bool? shouldIncludeDeleted = false;
 
             // Folder
@@ -81,6 +81,13 @@ namespace SmartStore.Services.Media
                     q = q.Where(x => x.FolderId == null);
                 }
             }
+            else
+            {
+                // (perf) Composite index
+                q = q.Where(x => x.FolderId == null || x.FolderId.HasValue);
+            }
+
+            q = ApplyFilterQuery(query, q);
 
             if (query.Deleted == null && shouldIncludeDeleted.HasValue)
             {
@@ -88,50 +95,62 @@ namespace SmartStore.Services.Media
             }
 
             // Sorting
-            var ordering = query.SortBy;
-            if (ordering.HasValue())
-            {
-                if (query.SortDesc) ordering += " descending";
-                q = q.OrderBy(ordering);
-            }
+            var ordering = query.SortBy.NullEmpty() ?? "Id";
+            if (query.SortDesc) ordering += " descending";
+            q = q.OrderBy(ordering);
 
             return ApplyLoadFlags(q, flags);
         }
 
-        public virtual IQueryable<MediaFile> PrepareFilterQuery(MediaFilesFilter filter)
+        public virtual IQueryable<MediaFile> ApplyFilterQuery(MediaFilesFilter filter, IQueryable<MediaFile> sourceQuery = null)
         {
             Guard.NotNull(filter, nameof(filter));
 
-            var q = _fileRepo.Table;
+            var q = sourceQuery ?? _fileRepo.Table;
 
-            // Deleted
-            if (filter.Deleted != null)
+            // Term
+            if (filter.Term.HasValue() && filter.Term != "*")
             {
-                q = q.Where(x => x.Deleted == filter.Deleted.Value);
-            }
-
-            // Hidden
-            if (filter.Hidden != null)
-            {
-                q = q.Where(x => x.Hidden == filter.Hidden.Value);
-            }
-
-            // MimeType
-            if (filter.MimeTypes != null && filter.MimeTypes.Length > 0)
-            {
-                q = q.Where(x => filter.MimeTypes.Contains(x.MimeType));
-            }
-
-            // Extension
-            if (filter.Extensions != null && filter.Extensions.Length > 0)
-            {
-                q = q.Where(x => filter.Extensions.Contains(x.Extension));
+                // Convert file pattern to SQL 'LIKE' expression
+                q = ApplySearchTerm(q, filter.Term, filter.IncludeAltForTerm, filter.ExactMatch);
             }
 
             // MediaType
             if (filter.MediaTypes != null && filter.MediaTypes.Length > 0)
             {
-                q = q.Where(x => filter.MediaTypes.Contains(x.MediaType));
+                if (filter.MediaTypes.Length == 1)
+                {
+                    var right = filter.MediaTypes[0];
+                    q = q.Where(x => x.MediaType == right);
+                }
+                else if (filter.MediaTypes.Length > 1)
+                {
+                    q = q.Where(x => filter.MediaTypes.Contains(x.MediaType));
+                }
+                else
+                {
+                    // (perf) Composite index
+                    q = q.Where(x => !string.IsNullOrEmpty(x.MediaType));
+                }
+            }
+
+            // Extension
+            if (filter.Extensions != null && filter.Extensions.Length > 0)
+            {
+                if (filter.Extensions.Length == 1)
+                {
+                    var right = filter.Extensions[0];
+                    q = q.Where(x => x.Extension == right);
+                }
+                else if (filter.Extensions.Length > 1)
+                {
+                    q = q.Where(x => filter.Extensions.Contains(x.Extension));
+                }
+                else
+                {
+                    // (perf) Composite index
+                    q = q.Where(x => !string.IsNullOrEmpty(x.Extension));
+                }
             }
 
             // Tags
@@ -140,7 +159,7 @@ namespace SmartStore.Services.Media
                 q = q.Where(x => x.Tags.Any(t => filter.Tags.Contains(t.Id)));
             }
 
-            // Extensions
+            // Image dimension
             if (filter.Dimensions != null && filter.Dimensions.Length > 0)
             {
                 var predicates = new List<Expression<Func<MediaFile, bool>>>(5);
@@ -170,12 +189,35 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            // Term
-            if (filter.Term.HasValue() && filter.Term != "*")
+            // Deleted
+            if (filter.Deleted != null)
             {
-                // Convert file pattern to SQL 'LIKE' expression
-                q = ApplySearchTerm(q, filter.Term, filter.IncludeAltForTerm, filter.ExactMatch);
+                q = q.Where(x => x.Deleted == filter.Deleted.Value);
             }
+
+            #region Currently unindexed
+
+            // MimeType
+            if (filter.MimeTypes != null && filter.MimeTypes.Length > 0)
+            {
+                if (filter.MimeTypes.Length == 1)
+                {
+                    var right = filter.MimeTypes[0];
+                    q = q.Where(x => x.MimeType == right);
+                }
+                else if (filter.MimeTypes.Length > 1)
+                {
+                    q = q.Where(x => filter.MimeTypes.Contains(x.MimeType));
+                }
+            }
+
+            // Hidden
+            if (filter.Hidden != null)
+            {
+                q = q.Where(x => x.Hidden == filter.Hidden.Value);
+            }
+
+            #endregion
 
             return q;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Html;
 using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Localization
@@ -80,7 +81,7 @@ namespace SmartStore.Services.Localization
             {
                 str = _localizedEntityService.GetLocalizedValue(requestLanguage.Id, entity.Id, localeKeyGroup, localeKey);
 
-                if (detectEmptyHtml && str.HasValue() && str.RemoveHtml().IsEmpty())
+                if (detectEmptyHtml && HtmlUtils.IsEmptyHtml(str))
                 {
                     str = string.Empty;
                 }

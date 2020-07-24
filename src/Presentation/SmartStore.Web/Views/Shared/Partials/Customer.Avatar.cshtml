@@ -8,9 +8,9 @@
 }
 
 <div class="@(Model.Large ? "customer-avatar-lg" : "customer-avatar")">
-    @if (Model.LinkUrl.HasValue())
+    @if (Model.AllowViewingProfiles)
     {
-        <a class="avatar-link" href="@Model.LinkUrl">@Avatar()</a>
+        <a class="avatar-link" href="@Url.RouteUrl("CustomerProfile", new { id = Model.Id })">@Avatar()</a>
     }
     else
     {
@@ -22,9 +22,9 @@
 {
     var textColor = Model.AvatarColor == "light" ? "text-muted" : "text-light";
 
-    if (Model.PictureUrl.HasValue())
+    if ((Model.FileId ?? 0) != 0)
     {
-        <img class="avatar-img" src="@Model.PictureUrl" title="@Model.UserName" />
+        <img class="avatar-img" src="@Url.Media(Model.FileId, Model.AvatarPictureSize, null, false)" title="@Model.UserName" />
         <span class="avatar-letter d-none bg-@(Model.AvatarColor) @(textColor)" title="@Model.UserName">
             @Model.AvatarLetter
         </span>

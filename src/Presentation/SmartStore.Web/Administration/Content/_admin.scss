@@ -22,6 +22,7 @@ $section-header-height: 70px;
     background-color: $gray-100;
     padding: 1rem;
     margin-bottom: $alert-margin-bottom;
+    border-radius: $border-radius;
 }
 
 pre {
@@ -276,6 +277,8 @@ body {
         padding: calc(var(--content-padding-y) / 2) var(--content-padding-x);
         background: #fff;
         box-shadow: 0 8px 16px 0 rgba(#32325d, .1), 0 2px 7px 0 rgba(#000, .07);
+        --shadow-color-intensity: 1;
+        box-shadow: $box-shadow-sm-var;
 
         .modal-open & {
             // add the killed scrollbar width
@@ -390,14 +393,14 @@ body {
             text-align: center;
             color: #fff;
             background: rgba(#fff, 0);
-            opacity: 0.8;
-            transition: opacity 0.1s linear, background-color 0.1s linear;
+            transition: color 0.1s linear, opacity 0.1s linear, background-color 0.1s linear;
+            color: mix($indigo, #fff, 22%);
         }
 
         .nav-link:hover,
         &.show .nav-link {
             background: rgba(#fff, .15);
-            opacity: 1;
+            color: #fff;
         }
 
         .navbar-icon {
@@ -407,7 +410,6 @@ body {
             font-size: 20px;
             height: 22px;
             line-height: 22px;
-            color: #fff;
         }
 
         .navbar-label {

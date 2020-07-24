@@ -142,15 +142,15 @@ namespace SmartStore.Services.Cart.Rules
 
         public IRule GetProcessor(RuleExpression expression)
         {
+            var group = expression as RuleExpressionGroup;
             var descriptor = expression.Descriptor as CartRuleDescriptor;
-            if (descriptor == null)
+            
+            if (group == null && descriptor == null)
             {
-                // TODO: ErrHandling
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"Missing cart rule descriptor for expression {expression.Id} ('{expression.RawValue.EmptyNull()}').");
             }
 
             IRule instance;
-            var group = expression as RuleExpressionGroup;
 
             if (group == null && descriptor.ProcessorType != typeof(CompositeRule))
             {
@@ -166,6 +166,8 @@ namespace SmartStore.Services.Cart.Rules
 
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
+            var language = _services.WorkContext.WorkingLanguage;
+
             var stores = _services.StoreService.GetAllStores()
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
@@ -206,6 +208,14 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "Weekday",
+                    DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.Weekday"),
+                    RuleType = RuleType.IntArray,
+                    ProcessorType = typeof(WeekdayRule),
+                    SelectList = new LocalRuleValueSelectList(WeekdayRule.GetDefaultValues(language)) { Multiple = true }
+                },
+                new CartRuleDescriptor
+                {
                     Name = "UserAgent.IsMobile",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.MobileDevice"),
                     RuleType = RuleType.Boolean,
@@ -216,21 +226,24 @@ namespace SmartStore.Services.Cart.Rules
                     Name = "UserAgent.Device",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.DeviceFamily"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(DeviceRule)
+                    ProcessorType = typeof(DeviceRule),
+                    SelectList = new LocalRuleValueSelectList(DeviceRule.GetDefaultValues()) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {
                     Name = "UserAgent.OS",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.OperatingSystem"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(OSRule)
+                    ProcessorType = typeof(OSRule),
+                    SelectList = new LocalRuleValueSelectList(OSRule.GetDefaultValues()) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {
                     Name = "UserAgent.Browser",
                     DisplayName = _services.Localization.GetResource("Admin.Rules.FilterDescriptor.BrowserName"),
                     RuleType = RuleType.StringArray,
-                    ProcessorType = typeof(BrowserRule)
+                    ProcessorType = typeof(BrowserRule),
+                    SelectList = new LocalRuleValueSelectList(BrowserRule.GetDefaultValues()) { Multiple = true, Tags = true }
                 },
                 new CartRuleDescriptor
                 {

@@ -3,9 +3,10 @@
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
     var strValue = Value;
+    var includeSystemRoles = GetMetadata<bool>("includeSystemRoles", true);
 
     var attributes = CommonHelper.ObjectToDictionary(ViewData["htmlAttributes"] ?? new object());
-    attributes["data-select-url"] = Url.Action("AllCustomerRoles", "CustomerRole", new { selectedIds = strValue, area = "admin" });
+    attributes["data-select-url"] = Url.Action("AllCustomerRoles", "CustomerRole", new { selectedIds = strValue, includeSystemRoles, area = "admin" });
     attributes["data-select-init-load"] = strValue.HasValue().ToString().ToLower();
 
     if (!attributes.ContainsKey("data-placeholder"))

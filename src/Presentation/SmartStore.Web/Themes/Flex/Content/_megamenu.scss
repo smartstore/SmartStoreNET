@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
 /// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="../../../Content/shared/_dropdown.scss" />
 /// <reference path="_variables.scss" />
 /// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
@@ -135,9 +136,11 @@ $mixed-megamenu-bg:             $megamenu-bg;
         margin-left: 0; 
     }
 }
+
 .touchevents .megamenu .nav-slider {
     overflow-x: auto !important;
 }
+
 @include media-breakpoint-up(xl) {
     .touchevents .megamenu .nav-slider {
         overflow-x: auto !important;
@@ -229,9 +232,17 @@ $mixed-megamenu-bg:             $megamenu-bg;
 .megamenu-container {
     position: relative;
 
+	.mega-menu-dropdown,
+	.dropdown-menu {
+        @include sliding-dropdown-menu();
+	}
+
 	.show .mega-menu-dropdown,
 	.show .dropdown-menu {
-		display: block;
+        display: block;
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
 	}
 
     .nav-link {
@@ -244,20 +255,25 @@ $mixed-megamenu-bg:             $megamenu-bg;
         .empty {
             margin-bottom: -1rem !important;
         }
+
         .megamenu-cat-img img {
             max-width: 100%;
             max-height: 100%;
             padding: 20px;
         }
+
         .picture-container {
             position: absolute;
             right: 0;
             bottom: 0;
+            pointer-events: none;
         }
+
         .below-preview-pic-text {
             margin: 10px;
             font-size: $font-size-sm;
         }
+
         .megamenu-html-text {
             overflow: hidden;
         }
@@ -423,8 +439,8 @@ $mixed-megamenu-bg:             $megamenu-bg;
 		}
     }
     .dropdown-item {
-        padding-top: 0.35rem;
-        padding-bottom: 0.35rem;
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
         font-size: $font-size-sm;
     }
     .nav-item.active:before {

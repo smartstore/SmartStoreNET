@@ -93,18 +93,18 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (_isSqlServer)
-			{
-				if (mediaFile.MediaStorageId > 0)
-				{
-					return CreateBlobStream(mediaFile.MediaStorageId.Value);
-				}
+            if (_isSqlServer)
+            {
+                if (mediaFile.MediaStorageId > 0)
+                {
+                    return CreateBlobStream(mediaFile.MediaStorageId.Value);
+                }
 
-				return null;
-			}
-			else
-			{
-				return mediaFile.MediaStorage?.Data?.ToStream();
+                return null;
+            }
+            else
+            {
+                return mediaFile.MediaStorage?.Data?.ToStream();
 			}
 		}
 
@@ -142,18 +142,31 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (_isSqlServer)
-			{
-				SaveFast(mediaFile, stream);
-			}
+			if (stream == null)
+            {
+				mediaFile.ApplyBlob(null);
+            }
 			else
+            {
+				SaveInternal(mediaFile, stream);
+            }
+
+			_mediaFileRepo.Update(mediaFile);
+		}
+
+		private void SaveInternal(MediaFile mediaFile, Stream stream)
+		{
+			using (stream)
 			{
-				byte[] buffer;
-				using (stream ?? new MemoryStream())
+				if (_isSqlServer)
 				{
-					buffer = stream.ToByteArray();
+					SaveFast(mediaFile, stream);
 				}
-				mediaFile.ApplyBlob(buffer);
+				else
+				{
+					var buffer = stream.ToByteArray();
+					mediaFile.ApplyBlob(buffer);
+				}
 			}
 
 			_mediaFileRepo.Update(mediaFile);
@@ -163,18 +176,31 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (_isSqlServer)
+			if (stream == null)
 			{
-				SaveFast(mediaFile, stream);
+				mediaFile.ApplyBlob(null);
 			}
 			else
 			{
-				byte[] buffer;
-				using (stream ?? new MemoryStream())
+				await SaveInternalAsync(mediaFile, stream);
+			}
+
+			_mediaFileRepo.Update(mediaFile);
+		}
+
+		private async Task SaveInternalAsync(MediaFile mediaFile, Stream stream)
+		{
+			using (stream)
+			{
+				if (_isSqlServer)
 				{
-					buffer = await stream.ToByteArrayAsync();
+					SaveFast(mediaFile, stream);
 				}
-				mediaFile.ApplyBlob(buffer);
+				else
+				{
+					var buffer = await stream.ToByteArrayAsync();
+					mediaFile.ApplyBlob(buffer);
+				}
 			}
 
 			_mediaFileRepo.Update(mediaFile);
@@ -182,11 +208,20 @@ namespace SmartStore.Services.Media.Storage
 
 		private int SaveFast(MediaFile mediaFile, Stream stream)
 		{
-			var sql = "INSERT INTO [MediaStorage] (Data) Values(@p0)";
-			var storageId = ((DbContext)_dbContext).InsertInto(sql, stream);
-			mediaFile.MediaStorageId = storageId;
-
-			return storageId;
+			if (mediaFile.MediaStorageId == null)
+            {
+				// Insert new blob
+				var sql = "INSERT INTO [MediaStorage] (Data) Values(@p0)";
+				mediaFile.MediaStorageId = ((DbContext)_dbContext).InsertInto(sql, stream);
+				return mediaFile.MediaStorageId.Value;
+			}
+			else
+            {
+				// Update existing blob
+				var sql = "UPDATE [MediaStorage] SET [Data] = @p0 WHERE Id = @p1";
+				_dbContext.ExecuteSqlCommand(sql, false, null, stream, mediaFile.MediaStorageId.Value);
+				return mediaFile.MediaStorageId.Value;
+            }
 		}
 
 		public void Remove(params MediaFile[] mediaFiles)
@@ -221,8 +256,10 @@ namespace SmartStore.Services.Media.Storage
 				// Remove picture binary from DB
 				try
 				{
-					mediaFile.MediaStorageId = null;
-					mediaFile.MediaStorage = null;
+					_mediaStorageRepo.Delete(mediaFile.MediaStorageId.Value);
+					//mediaFile.MediaStorageId = null;
+					//mediaFile.MediaStorage = null;
+
 					_mediaFileRepo.Update(mediaFile);
 				}
 				catch { }

@@ -236,6 +236,7 @@
     <Compile Include="Modelling\Results\PermissiveRedirectResult.cs" />
     <Compile Include="Modelling\Results\RootActionViewResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />
+    <Compile Include="Plugins\PluginStarter.cs" />
     <Compile Include="Security\Honeypot\HtmlHoneypotExtensions.cs" />
     <Compile Include="Security\Honeypot\ValidateHoneypotAttribute.cs" />
     <Compile Include="Security\Honeypot\Honeypot.cs" />

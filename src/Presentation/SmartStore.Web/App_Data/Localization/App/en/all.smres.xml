@@ -159,9 +159,6 @@
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.CyclesRemaining">
 		<Value>Cycles remaining</Value>
 	</LocaleResource>
-	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.InitialOrder">
-		<Value>Initial order</Value>
-	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.NextPayment">
 		<Value>Next payment</Value>
 	</LocaleResource>
@@ -172,7 +169,7 @@
 		<Value>Total cycles</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.ViewInitialOrder">
-		<Value>View order (ID - {0})</Value>
+		<Value>Order Details (ID - {0})</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.ReturnItems">
 		<Value>Return Item(s)</Value>
@@ -3618,9 +3615,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ACL">
 		<Value>Access control list</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ACL.Permission">
-		<Value>Permission name</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ActivityLog">
 		<Value>Activity Log</Value>
@@ -11586,7 +11580,7 @@
 		<Value>Upload &amp; Install package file</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess">
-		<Value>Package was uploaded and installed successfully.</Value>
+		<Value>Package was uploaded and unzipped successfully. Please reload the list.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess.Theme">
 		<Value>Theme was uploaded and installed successfully. Please reload the list.</Value>
@@ -12457,6 +12451,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.VatNumberStatus">
 		<Value>Vat number status</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.Weekday">
+		<Value>Weekday</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ZipPostalCode">
 		<Value>Zip postal code</Value>
@@ -13495,9 +13492,6 @@
 	</LocaleResource>
 	<LocaleResource Name="admin.system.warnings.incompatibleplugin">
 		<Value>'{0}' plugin is incompatible with your Smartstore version. Delete it or update to the latest version.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.System.Warnings.NoCustomerRolesDefined">
-		<Value>There are no customer roles defined.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.NoPermissionsDefined">
 		<Value>There are no permissions defined.</Value>
@@ -15950,6 +15944,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.NumericRange">
 		<Value>Numeric range</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Idle">
+		<Value>Idle</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Rebuilding">
+		<Value>Rebuilding</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Unavailable">
+		<Value>Unavailable</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Updating">
+		<Value>Updating</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Search.SearchMode.Contains">
 		<Value>Contains (wildcard)</Value>

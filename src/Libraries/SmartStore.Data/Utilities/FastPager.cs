@@ -22,6 +22,7 @@ namespace SmartStore.Data.Utilities
         private readonly int _pageSize;
 
         private int? _maxId;
+        private int? _currentPage;
 
         public FastPager(IQueryable<T> query, int pageSize = 1000)
         {
@@ -35,6 +36,17 @@ namespace SmartStore.Data.Utilities
         public void Reset()
         {
             _maxId = null;
+            _currentPage = null;
+        }
+
+        public int? MaxId
+        {
+            get => _maxId;
+        }
+
+        public int? CurrentPage 
+        {
+            get => _currentPage; 
         }
 
         public bool ReadNextPage(out IList<T> page)
@@ -54,6 +66,7 @@ namespace SmartStore.Data.Utilities
             if (_maxId == null)
             {
                 _maxId = int.MaxValue;
+                _currentPage = 0;
             }
             if (_maxId.Value <= 1)
             {
@@ -74,6 +87,7 @@ namespace SmartStore.Data.Utilities
                 return false;
             }
 
+            _currentPage++;
             _maxId = idSelector(page.Last());
             return true;
         }
@@ -92,6 +106,7 @@ namespace SmartStore.Data.Utilities
             if (_maxId == null)
             {
                 _maxId = int.MaxValue;
+                _currentPage = 0;
             }
             if (_maxId.Value <= 1)
             {
@@ -112,6 +127,7 @@ namespace SmartStore.Data.Utilities
                 return null;
             }
 
+            _currentPage++;
             _maxId = idSelector(page.Last());
             return page;
         }

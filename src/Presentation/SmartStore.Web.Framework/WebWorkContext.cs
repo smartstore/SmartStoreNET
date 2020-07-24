@@ -187,9 +187,12 @@ namespace SmartStore.Web.Framework
 			// Set visitor cookie
 			if ( _httpContext?.Response != null)
 			{
-				visitorCookie = new HttpCookie(VisitorCookieName);
-				visitorCookie.HttpOnly = true;
-				//visitorCookie.Secure = true;
+				visitorCookie = new HttpCookie(VisitorCookieName) 
+                {
+                    HttpOnly = true,
+                    Secure = _httpContext.Request.IsHttps()
+                };
+
 				visitorCookie.Value = customer.CustomerGuid.ToString();
 				if (customer.CustomerGuid == Guid.Empty)
 				{

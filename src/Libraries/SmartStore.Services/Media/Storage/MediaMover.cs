@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
+using System.Web.UI;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -7,54 +9,26 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Media.Storage
 {
 	public class MediaMover : IMediaMover
 	{
-		private const int PAGE_SIZE = 100;
+		private const int PAGE_SIZE = 50;
 
-		private readonly IRepository<MediaFile> _pictureRepository;
+		private readonly IRepository<MediaFile> _mediaFileRepo;
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
-		public MediaMover(
-			IRepository<MediaFile> pictureRepository,
-			ICommonServices services,
-			ILogger logger)
+		public MediaMover(IRepository<MediaFile> mediaFileRepo, ICommonServices services, ILogger logger)
 		{
-			_pictureRepository = pictureRepository;
+			_mediaFileRepo = mediaFileRepo;
 			_services = services;
 			_logger = logger;
 		}
 
 		public Localizer T { get; set; } = NullLocalizer.Instance;
-
-		protected virtual void PageEntities<TEntity>(IOrderedQueryable<TEntity> query, Action<TEntity> moveEntity) where TEntity : BaseEntity, IHasMedia
-		{
-			var pageIndex = 0;
-			IPagedList<TEntity> entities = null;
-
-			do
-			{
-				if (entities != null)
-				{
-					// detach all entities from previous page to save memory
-					_services.DbContext.DetachEntities(entities);
-					entities.Clear();
-					entities = null;
-				}
-
-				// load max 100 entities at once
-				entities = new PagedList<TEntity>(query, pageIndex++, PAGE_SIZE);
-
-				entities.Each(x => moveEntity(x));
-
-				// save the current batch to database
-				_services.DbContext.SaveChanges();
-			}
-			while (entities.HasNextPage);
-		}
 
 		public virtual bool Move(Provider<IMediaStorageProvider> sourceProvider, Provider<IMediaStorageProvider> targetProvider)
 		{
@@ -68,7 +42,7 @@ namespace SmartStore.Services.Media.Storage
 			var source = sourceProvider.Value as ISupportsMediaMoving;
 			var target = targetProvider.Value as ISupportsMediaMoving;
 
-			// source and target must support media storage moving
+			// Source and target must support media storage moving
 			if (source == null)
 			{
 				throw new ArgumentException(T("Admin.Media.StorageMovingNotSupported", sourceProvider.Metadata.SystemName));
@@ -79,37 +53,43 @@ namespace SmartStore.Services.Media.Storage
 				throw new ArgumentException(T("Admin.Media.StorageMovingNotSupported", targetProvider.Metadata.SystemName));
 			}
 
-			// source and target provider must not be equal
+			// Source and target provider must not be equal
 			if (sourceProvider.Metadata.SystemName.IsCaseInsensitiveEqual(targetProvider.Metadata.SystemName))
 			{
 				throw new ArgumentException(T("Admin.Media.CannotMoveToSameProvider"));
 			}
 
-			// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
-			// autoDetectChanges true required for newly inserted binary data.
+			// We are about to process data in chunks but want to commit ALL at once after ALL chunks have been processed successfully.
+			// AutoDetectChanges true required for newly inserted binary data.
 			using (var scope = new DbContextScope(ctx: _services.DbContext, 
 				autoDetectChanges: true, 
 				proxyCreation: false, 
 				validateOnSave: false, 
 				autoCommit: false))
 			{
-				using (var transaction = _services.DbContext.BeginTransaction())
+				using (var transaction = scope.DbContext.BeginTransaction())
 				{
 					try
 					{
-						// Files
-						var queryFiles = _pictureRepository.Table.OrderBy(x => x.Id);
+						var pager = new FastPager<MediaFile>(_mediaFileRepo.Table, PAGE_SIZE);
+						while (pager.ReadNextPage(out var files))
+                        {
+							foreach (var file in files)
+                            {
+								// Move item from source to target
+								source.MoveTo(target, context, file);
 
-						PageEntities(queryFiles, file =>
-						{
-							// move item from source to target
-							source.MoveTo(target, context, file);
+								file.UpdatedOnUtc = utcNow;
+								++context.MovedItems;
+							}
 
-							file.UpdatedOnUtc = utcNow;
-							++context.MovedItems;
-						});
+							scope.DbContext.SaveChanges();
 
-						transaction.Commit();
+							// Detach all entities from previous page to save memory
+							scope.DbContext.DetachEntities(files, deep: true);
+						}
+
+                        transaction.Commit();
 						success = true;
 					}
 					catch (Exception exception)
@@ -117,7 +97,7 @@ namespace SmartStore.Services.Media.Storage
 						success = false;
 						transaction.Rollback();
 
-						_services.Notifier.Error(exception.Message);
+						_services.Notifier.Error(exception);
 						_logger.Error(exception);
 					}
 				}

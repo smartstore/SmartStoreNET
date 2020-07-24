@@ -70,6 +70,7 @@ namespace SmartStore.Services.Media
             }
 
             var state = entry.InitialState;
+            var actions = new HashSet<MediaTrack>();
 
             foreach (var prop in properties)
             {
@@ -77,8 +78,6 @@ namespace SmartStore.Services.Media
                 {
                     if (entry.Entry.TryGetModifiedProperty(_dbContext, prop.Name, out object prevValue))
                     {
-                        var actions = new HashSet<MediaTrack>();
-                        
                         // Untrack the previous file relation (if not null)
                         TryAddTrack(prop.Album, entry.Entity, prop.Name, prevValue, MediaTrackOperation.Untrack, actions);
 
@@ -98,7 +97,7 @@ namespace SmartStore.Services.Media
                             TryAddTrack(prop.Album, entry.Entity, prop.Name, value, state == EntityState.Added ? MediaTrackOperation.Track : MediaTrackOperation.Untrack);
                             break;
                         case EntityState.Modified:
-                            if (_actionsTemp.TryGetValue(entry.Entity, out var actions))
+                            if (_actionsTemp.TryGetValue(entry.Entity, out actions))
                             {
                                 _actionsUnit.AddRange(actions);
                             }

@@ -10,7 +10,7 @@ namespace SmartStore.Services.Media
     {
         IPagedList<MediaFile> SearchFiles(MediaSearchQuery query, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         IQueryable<MediaFile> PrepareQuery(MediaSearchQuery query, MediaLoadFlags flags);
-        IQueryable<MediaFile> PrepareFilterQuery(MediaFilesFilter filter);
+        IQueryable<MediaFile> ApplyFilterQuery(MediaFilesFilter filter, IQueryable<MediaFile> sourceQuery = null);
         IQueryable<MediaFile> ApplyLoadFlags(IQueryable<MediaFile> query, MediaLoadFlags flags);
     }
 }

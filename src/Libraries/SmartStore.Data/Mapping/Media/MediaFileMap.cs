@@ -18,15 +18,6 @@ namespace SmartStore.Data.Mapping.Media
             Property(x => x.Title).HasMaxLength(400);
             Property(x => x.Metadata).IsMaxLength();
 
-            HasIndex(x => x.Name).HasName("IX_Name");
-            HasIndex(x => x.Alt).HasName("IX_Alt");
-            HasIndex(x => x.Extension).HasName("IX_Extension");
-            HasIndex(x => x.MimeType).HasName("IX_MimeType");
-            HasIndex(x => x.MediaType).HasName("IX_MediaType");
-            HasIndex(x => x.Size).HasName("IX_Size");
-            HasIndex(x => x.PixelSize).HasName("IX_PixelSize");
-            HasIndex(x => x.Deleted).HasName("IX_Deleted");
-
             HasOptional(x => x.Folder)
                 .WithMany(x => x.Files)
                 .HasForeignKey(x => x.FolderId)

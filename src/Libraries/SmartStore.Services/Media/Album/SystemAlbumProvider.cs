@@ -156,86 +156,96 @@ namespace SmartStore.Services.Media
             var ctx = _dbContext;
             var entityName = string.Empty;
 
-            // TODO: Messages, Forums (?), Store (?)
-
             // Products
             if (albumName == Catalog)
             {
                 // Products
                 {
                     var name = nameof(ProductMediaFile);
-                    var p = new FastPager<ProductMediaFile>(ctx.Set<ProductMediaFile>().AsNoTracking());
+                    var p = new FastPager<ProductMediaFile>(ctx.Set<ProductMediaFile>().AsNoTracking(), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.ProductId, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
+
+                GC.Collect();
 
                 // ProductAttributeOption
                 {
                     var name = nameof(ProductAttributeOption);
-                    var p = new FastPager<ProductAttributeOption>(ctx.Set<ProductAttributeOption>().AsNoTracking().Where(x => x.MediaFileId > 0));
+                    var p = new FastPager<ProductAttributeOption>(ctx.Set<ProductAttributeOption>().AsNoTracking().Where(x => x.MediaFileId > 0), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
                 // ProductVariantAttributeValue
                 {
                     var name = nameof(ProductVariantAttributeValue);
-                    var p = new FastPager<ProductVariantAttributeValue>(ctx.Set<ProductVariantAttributeValue>().AsNoTracking().Where(x => x.MediaFileId > 0));
+                    var p = new FastPager<ProductVariantAttributeValue>(ctx.Set<ProductVariantAttributeValue>().AsNoTracking().Where(x => x.MediaFileId > 0), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
+
+                GC.Collect();
 
                 // SpecificationAttributeOption
                 {
                     var name = nameof(SpecificationAttributeOption);
-                    var p = new FastPager<SpecificationAttributeOption>(ctx.Set<SpecificationAttributeOption>().AsNoTracking().Where(x => x.MediaFileId > 0));
+                    var p = new FastPager<SpecificationAttributeOption>(ctx.Set<SpecificationAttributeOption>().AsNoTracking().Where(x => x.MediaFileId > 0), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
                 // Categories
                 {
                     var name = nameof(Category);
-                    var p = new FastPager<Category>(ctx.Set<Category>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                    var p = new FastPager<Category>(ctx.Set<Category>().AsNoTracking().Where(x => x.MediaFileId.HasValue), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
+
+                GC.Collect();
 
                 // Brands
                 {
                     var name = nameof(Manufacturer);
-                    var p = new FastPager<Manufacturer>(ctx.Set<Manufacturer>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                    var p = new FastPager<Manufacturer>(ctx.Set<Manufacturer>().AsNoTracking().Where(x => x.MediaFileId.HasValue), 5000);
                     while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                     {
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
@@ -258,6 +268,7 @@ namespace SmartStore.Services.Media
                             if (x.PreviewMediaFileId.HasValue)
                                 yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
@@ -274,6 +285,7 @@ namespace SmartStore.Services.Media
                             if (x.PreviewMediaFileId.HasValue)
                                 yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.PreviewMediaFileId.Value, Property = nameof(x.PreviewMediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
@@ -287,6 +299,7 @@ namespace SmartStore.Services.Media
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.LogoMediaFileId, Property = nameof(x.LogoMediaFileId) };
                         }
+                        list.Clear();
                     }
                 }
 
@@ -297,13 +310,14 @@ namespace SmartStore.Services.Media
             if (albumName == Downloads)
             {
                 var name = nameof(Download);
-                var p = new FastPager<Download>(ctx.Set<Download>().AsNoTracking().Where(x => x.MediaFileId.HasValue));
+                var p = new FastPager<Download>(ctx.Set<Download>().AsNoTracking().Where(x => x.MediaFileId.HasValue), 5000);
                 while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
                 {
                     foreach (var x in list)
                     {
                         yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                     }
+                    list.Clear();
                 }
 
                 yield break;
@@ -325,6 +339,7 @@ namespace SmartStore.Services.Media
                         if (x.Attachment3FileId.HasValue)
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.Attachment3FileId.Value, Property = nameof(x.Attachment3FileId) };
                     }
+                    list.Clear();
                 }
 
                 yield break;
@@ -349,6 +364,7 @@ namespace SmartStore.Services.Media
                             yield return new MediaTrack { EntityId = x.EntityId, EntityName = name, MediaFileId = id, Property = key };
                         }
                     }
+                    list.Clear();
                 }
 
                 yield break;

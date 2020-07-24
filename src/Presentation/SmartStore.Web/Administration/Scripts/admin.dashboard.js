@@ -1,28 +1,86 @@
 // Creates dashboard charts with Chart.js
 SmartStore.Admin.Charts = {
     Create: (function () {
-        var root = $('html');
-        var colorPrimary = root.css('--primary');
-        var colorSuccess = root.css('--success');
-        var colorWarning = root.css('--warning');
-        var colorDanger = root.css('--danger');
-        var fontFamily = root.css('--font-family-sans-serif');
+        const style = getComputedStyle(document.documentElement);
+        const colorPrimary = style.getPropertyValue('--primary');
+        const colorSuccess = style.getPropertyValue('--success');
+        const colorWarning = style.getPropertyValue('--warning');
+        const colorDanger = style.getPropertyValue('--danger');
+        const fontFamily = style.getPropertyValue('--font-family-sans-serif');
+
+        const customTooltip = function (tooltip) {
+            const canvas = this._chart.canvas;
+            const chartElement = canvas.closest('.report');
+            // Get tooltip of chart element
+            let tooltipEl = document.getElementById(chartElement.id).querySelector('.chart-tooltip');
+            if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.classList.add('chart-tooltip');
+                chartElement.append(tooltipEl);
+            }
+
+            // Hide if no tooltip visible
+            if (tooltip.opacity === 0) {
+                tooltipEl.style.opacity = 0;
+                return;
+            }
+
+            // Set chart and caret position
+            tooltipEl.classList.remove('top', 'bottom', 'center');
+            if (tooltip.yAlign) {
+                tooltipEl.classList.add(tooltip.yAlign);
+            }
+            tooltipEl.classList.remove('left', 'right', 'center');
+            if (tooltip.xAlign) {
+                tooltipEl.classList.add(tooltip.xAlign);
+            }
+
+            function getBody(bodyItem) {
+                return bodyItem.lines;
+            }
+
+            // Create tooltip html
+            if (tooltip.body) {
+                const titleLines = tooltip.title || [];
+                const bodyLines = tooltip.body.map(getBody);
+                let innerHtml = '';
+
+                titleLines.forEach(function (title) {
+                    innerHtml += '<div class="chart-tooltip-title">' + title + '</div>';
+                });
+
+                bodyLines.forEach(function (body, i) {
+                    const colors = tooltip.labelColors[i];
+                    const style = 'background:' + colors.backgroundColor
+                        + '; border-color:' + colors.borderColor
+                        + '; border-width: 2px';
+                    const indicator = '<span class="chart-tooltip-indicator" style="' + style + '"></span>';
+                    innerHtml += '<div class="chart-tooltip-body">' + indicator + body + '</div>';
+                });
+
+                tooltipEl.innerHTML = innerHtml;
+            }
+
+            // Display tooltip and set position
+            const position = canvas.getBoundingClientRect();
+            const canvasHeight = parseInt(getComputedStyle(canvas).getPropertyValue('height'));
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = position.left + tooltip.caretX + 'px';
+            tooltipEl.style.marginTop = tooltip.caretY - canvasHeight + 'px';
+        };
 
         return {
-            IncompleteOrdersCharts: function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {                
-                for (var i = 0; i < dataSets.length; i++) {
-                    // If there are no incomplete orders for set i > add 1 to new orders (data index 2) so tooltip gets displayed
+            IncompleteOrdersCharts: function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {
+                for (let i = 0; i < dataSets.length; i++) {
+                    // If there are no incomplete orders for set i then add 1 to new orders (data index 2) so tooltip gets displayed
                     if (dataSets[i].Data[0].Quantity == 0 && dataSets[i].Data[1].Quantity == 0) {
                         dataSets[i].Data[2].Quantity = 1;
                     }
                 }
 
-                // Chart config
-                var orders_config = {
-                    responsive: true,
-                    responsiveAnimationDuration: 0,
+                const chartConfig = {
                     maintainAspectRatio: false,
-                    cutoutPercentage: 91,
+                    cutoutPercentage: 90,
                     rotation: -0.5 * Math.PI,
                     circumfernce: 2 * Math.PI,
                     animation: {
@@ -61,15 +119,19 @@ SmartStore.Admin.Charts = {
                         displayColors: false,
                         callbacks: {
                             label: function (item, data) {
-                                // If tooltip = newOrders (index 2) and no other data is avalable, display orders fulfilled text
-                                if (item.index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
+                                // If tooltip is newOrders (index 2) and no other data is available, display orders fulfilled text
+                                if (item.index == 2
+                                    && data.datasets[0].data[0] == 0
+                                    && data.datasets[0].data[1] == 0) {
                                     return textFulfilled;
                                 }
-                                return [textOrders + ":  " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].QuantityFormatted,
-                                textAmount + ":  " + dataSets[this._chart.id + alreadyExistingCharts].Data[item.index].AmountFormatted];
+                                const d = dataSets[this._chart.id + alreadyExistingCharts].Data[item.index];
+                                return [textOrders + ':  ' + d.QuantityFormatted, textAmount + ':  ' + d.AmountFormatted];
                             },
                             title: function (item, data) {
-                                if (item[0].index == 2 && data.datasets[0].data[0] == 0 && data.datasets[0].data[1] == 0) {
+                                if (item[0].index == 2
+                                    && data.datasets[0].data[0] == 0
+                                    && data.datasets[0].data[1] == 0) {
                                     return;
                                 }
                                 return data.labels[item[0].index];
@@ -77,8 +139,7 @@ SmartStore.Admin.Charts = {
                         }
                     },
                 };
-
-                var dataDay = {
+                const dataDay = {
                     labels: [textNotShipped, textNotPayed, textNewOrders],
                     datasets: [{
                         data: [dataSets[0].Data[0].Quantity, dataSets[0].Data[1].Quantity, dataSets[0].Data[2].Quantity],
@@ -92,18 +153,18 @@ SmartStore.Admin.Charts = {
                         hoverBorderWidth: 0,
                     }],
                 };
-                var chartDay = new Chart(
-                    $('#incomplete-orders-chart-0').get(0).getContext('2d'),
+                const chartDay = new Chart(
+                    document.getElementById('incomplete-orders-chart-0').getContext('2d'),
                     {
                         type: 'doughnut',
                         data: dataDay,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
-                // This value is needed for mapping tooltip data
-                var alreadyExistingCharts = chartDay.id;
 
-                var dataWeek = {
+                // This value is needed for mapping tooltip data
+                const alreadyExistingCharts = chartDay.id;
+                const dataWeek = {
                     labels: [textNotShipped, textNotPayed, textNewOrders],
                     datasets: [{
                         data: [dataSets[1].Data[0].Quantity, dataSets[1].Data[1].Quantity, dataSets[1].Data[2].Quantity],
@@ -117,16 +178,16 @@ SmartStore.Admin.Charts = {
                         hoverBorderWidth: 0,
                     }],
                 };
-                var chartWeek = new Chart(
-                    $('#incomplete-orders-chart-1').get(0).getContext('2d'),
+                const chartWeek = new Chart(
+                    document.getElementById('incomplete-orders-chart-1').getContext('2d'),
                     {
                         type: 'doughnut',
                         data: dataWeek,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
 
-                var dataMonth = {
+                const dataMonth = {
                     labels: [textNotShipped, textNotPayed, textNewOrders],
                     datasets: [{
                         data: [dataSets[2].Data[0].Quantity, dataSets[2].Data[1].Quantity, dataSets[2].Data[2].Quantity],
@@ -140,16 +201,16 @@ SmartStore.Admin.Charts = {
                         hoverBorderWidth: 0,
                     }],
                 };
-                var chartMonth = new Chart(
-                    $('#incomplete-orders-chart-2').get(0).getContext('2d'),
+                const chartMonth = new Chart(
+                    document.getElementById('incomplete-orders-chart-2').getContext('2d'),
                     {
                         type: 'doughnut',
                         data: dataMonth,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
 
-                var dataOverall = {
+                const dataOverall = {
                     labels: [textNotShipped, textNotPayed, textNewOrders],
                     datasets: [{
                         data: [dataSets[3].Data[0].Quantity, dataSets[3].Data[1].Quantity, dataSets[3].Data[2].Quantity],
@@ -163,42 +224,42 @@ SmartStore.Admin.Charts = {
                         hoverBorderWidth: 0,
                     }],
                 };
-                var chartOverall = new Chart(
-                    $('#incomplete-orders-chart-3').get(0).getContext('2d'),
+                const chartOverall = new Chart(
+                    document.getElementById('incomplete-orders-chart-3').getContext('2d'),
                     {
                         type: 'doughnut',
                         data: dataOverall,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
             },
             OrdersChart: function (dataSets, textCancelled, textPending, textProcessing, textComplete, textOrders) {
-                var chartElement = $('#orders-report');               
-                var percentageElement = $("#orders-delta-percentage");
-                var chevronElement = $("#orders-delta-percentage-chevron");
-                var sumElement = $("#orders-sum-amount");
-                var ordersChartElement = $('#orders-chart');
-                var orders_ctx = ordersChartElement.get(0).getContext('2d');
-                var currentPeriod = 0;
+                const reportElement = document.getElementById('orders-report');
+                const reportStyle = getComputedStyle(reportElement);
+                const percentageElement = document.getElementById('orders-delta-percentage');
+                const chevronElement = document.getElementById('orders-delta-percentage-chevron');
+                const sumElement = document.getElementById('orders-sum-amount');
+                const chartElement = document.getElementById('orders-chart');
+                const chartContext = chartElement.getContext('2d');
+                let currentPeriod = 0;
 
-                var cancelledGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.parent().height());
-                cancelledGradient.addColorStop(0, chartElement.css('--chart-color-danger'));
-                cancelledGradient.addColorStop(1, chartElement.css('--chart-color-danger-light'));
+                const cancelledGradient = chartContext.createLinearGradient(0, 0, 0, chartElement.height);
+                cancelledGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-danger'));
+                cancelledGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-danger-light'));
 
-                var pendingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.parent().height());
-                pendingGradient.addColorStop(0, chartElement.css('--chart-color-warning'));
-                pendingGradient.addColorStop(1, chartElement.css('--chart-color-warning-light'));
+                const pendingGradient = chartContext.createLinearGradient(0, 0, 0, chartElement.height);
+                pendingGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-warning'));
+                pendingGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-warning-light'));
 
-                var processingGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.parent().height());
-                processingGradient.addColorStop(0, chartElement.css('--chart-color-success'));
-                processingGradient.addColorStop(1, chartElement.css('--chart-color-success-light'));
+                const processingGradient = chartContext.createLinearGradient(0, 0, 0, chartElement.height);
+                processingGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-success'));
+                processingGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-success-light'));
 
-                var completeGradient = orders_ctx.createLinearGradient(0, 0, 0, ordersChartElement.parent().height());
-                completeGradient.addColorStop(0, chartElement.css('--chart-color-primary'));
-                completeGradient.addColorStop(1, chartElement.css('--chart-color-primary-light'));
+                const completeGradient = chartContext.createLinearGradient(0, 0, 0, chartElement.height);
+                completeGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-primary'));
+                completeGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-primary-light'));
 
-                // Chart config
-                var order_config = {
+                const chartConfig = {
                     type: 'line',
                     data: {
                         labels: dataSets[0].Labels,
@@ -239,18 +300,9 @@ SmartStore.Admin.Charts = {
                         }]
                     },
                     options: {
-                        responsive: true,
-                        responsiveAnimationDuration: 0,
                         maintainAspectRatio: false,
-                        stacked: true,
                         animation: {
                             duration: 400,
-                            hide: {
-                                visible: {
-                                    type: true,
-                                    easing: 'easeInOutSine'
-                                },
-                            },
                             easing: 'easeInOutSine',
                         },
                         hover: {
@@ -262,30 +314,32 @@ SmartStore.Admin.Charts = {
                             padding: {
                                 left: 0,
                                 right: 0,
-                                top: 6,
+                                top: 0,
                                 bottom: 0
                             }
                         },
                         legend: false,
                         legendCallback: function (chart) {
-                            var text = [];
+                            let text = [];
                             text.push('<ul class="' + chart.id + '-legend">');
-                            for (var i = chart.data.datasets.length - 1; i >= 0; i--) {
-                                if (chart.data.datasets[i].hidden) {
-                                    text.push('<li class="hidden"><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                            for (let i = chart.data.datasets.length - 1; i >= 0; i--) {
+                                const data = chart.data.datasets[i];
+                                if (data.hidden) {
+                                    text.push('<li class="hidden"><span class="legend" style="background-color:' + data.borderColor + '"></span>');
                                 }
                                 else {
-                                    text.push('<li><span class="legend" style="background-color:' + chart.data.datasets[i].borderColor + '"></span>');
+                                    text.push('<li><span class="legend" style="background-color:' + data.borderColor + '"></span>');
                                 }
 
                                 if (chart.data.labels[i]) {
-                                    text.push('<span>' + chart.data.datasets[i].label + '</span>');
-                                    text.push('<span class="font-weight-500 pl-1 total-amount">' + dataSets[currentPeriod].DataSets[i].TotalAmountFormatted + '</span>');
+                                    text.push('<span>' + data.label + '</span>');
+                                    text.push('<span class="font-weight-medium pl-1 total-amount">'
+                                        + dataSets[currentPeriod].DataSets[i].TotalAmountFormatted + '</span>');
                                 }
                                 text.push('</li>');
                             }
                             text.push('</ul>');
-                            return text.join("");
+                            return text.join('');
                         },
                         elements: {
                             point: {
@@ -295,42 +349,36 @@ SmartStore.Admin.Charts = {
                             },
                             line: {
                                 borderWidth: 0.5,
-                                lineTension: 0.2,
-                                fill: true,
+                                cubicInterpolationMode: 'monotone',
                             }
                         },
                         tooltips: {
-                            enabled: true,
+                            enabled: false,
                             mode: 'nearest',
                             intersect: false,
-                            titleFontFamily: fontFamily,
-                            titleFontSize: 13,
-                            bodyFontFamily: fontFamily,
-                            bodyFontSize: 12,
-                            xPadding: 12,
-                            yPadding: 10,
-                            caretPadding: 6,
-                            caretSize: 8,
-                            cornerRadius: 4,
-                            titleMarginBottom: 8,
-                            bodySpacing: 5,
                             callbacks: {
                                 label: function (item, data) {
-                                    return " " + textOrders + ": " + dataSets[currentPeriod].DataSets[item.datasetIndex].QuantityFormatted[item.index]
-                                        + "    " + dataSets[currentPeriod].DataSets[item.datasetIndex].AmountFormatted[item.index];
+                                    const d = dataSets[currentPeriod].DataSets[item.datasetIndex];
+                                    return '<span>' + textOrders + ': </span><span class="ml-1">' + d.QuantityFormatted[item.index]
+                                        + '</span><span class="ml-2 pl-1">' + d.AmountFormatted[item.index] + '</span>';
                                 },
                                 labelColor: function (tooltipItem, chart) {
-                                    var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
+                                    const dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
                                     return {
                                         backgroundColor: dataset.borderColor,
                                     }
                                 },
                             },
+                            custom: customTooltip,
                         },
                         scales: {
                             yAxes: [{
                                 display: false,
                                 stacked: true,
+
+                                ticks: {
+                                    max: 1,
+                                }
                             }],
                             xAxes: [{
                                 display: false,
@@ -348,98 +396,119 @@ SmartStore.Admin.Charts = {
                         }
                     },
                 }
-
-                var ordersChart = new Chart(orders_ctx, order_config);
+                let chart = new Chart(chartContext, chartConfig);
                 setPercentageDelta(currentPeriod);
-                var $ordersLegendElement = $("#orders-chart-legend").get(0);
+                const legendElement = document.getElementById('orders-chart-legend');
                 createLegend();
+                setYaxis(chart);
+                chart.update();
 
-                // EventHandler to display selected period data     
+                // EventHandler to display selected period data   
+                // TODO: Use Javascript native eventlistener
                 $('input[type=radio][name=orders-toggle]').on('change', function () {
-                    setChartData($('input:radio[name=orders-toggle]:checked').data("period"));
+                    setChartData($('input:radio[name=orders-toggle]:checked').data('period'));
                 });
 
+                //reportElement.querySelectorAll('input[type=radio][name=orders-toggle]')
+                //    .forEach(e =>
+                //        e.addEventListener('change', function () {
+                //            setChartData(reportElement.querySelector('input[type=radio][name=orders-toggle]:checked').dataset.period);
+                //        }, true)
+                //    );
+
                 function setChartData(period) {
-                    ordersChart.destroy();
-                    order_config.data.labels = dataSets[period].Labels;
-                    for (var i = 0; i < order_config.data.datasets.length; i++) {
-                        order_config.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
+                    chart.destroy();
+                    chartConfig.data.labels = dataSets[period].Labels;
+                    for (let i = 0; i < chartConfig.data.datasets.length; i++) {
+                        chartConfig.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
                     }
-                    ordersChart = new Chart(orders_ctx, order_config);
+                    setYaxis(chart);
+                    chart = new Chart(chartContext, chartConfig);
                     setPercentageDelta(period, dataSets);
                     currentPeriod = period;
                     createLegend();
                 }
 
+                // Get highest combined yAxis value (+ 10% margin) from not hidden datasets
+                function setYaxis(chart) {
+                    const sumArr = [];
+                    const datasets = chart.data.datasets;
+                    for (let i = 0; i < datasets['0'].data.length; i++) {
+                        let num = 0;
+                        for (let j = 0; j < datasets.length; j++) {
+                            num += datasets[j].hidden ? 0 : datasets[j].data[i];
+                        }
+                        sumArr[i] = num;
+                    }
+                    const yAxisSize = Math.max(...sumArr);
+                    chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
+                }
+
                 function setPercentageDelta(period) {
-                    var val = dataSets[period].PercentageDelta;
+                    let delta = '';
+                    const val = dataSets[period].PercentageDelta;
                     if (val < 0) {
-                        chevronElement.addClass("negative");
-                        chevronElement.removeClass("d-none");
-                        percentageElement.removeClass("text-success");
-                        percentageElement.addClass("text-danger");
+                        chevronElement.classList.add('negative');
+                        chevronElement.classList.remove('d-none');
+                        percentageElement.classList.remove('text-success');
+                        percentageElement.classList.add('text-danger');
+                        delta = '-' + Math.abs(val) + '%';
                     }
                     else if (val > 0) {
-                        chevronElement.removeClass("negative");
-                        chevronElement.removeClass("d-none");
-                        percentageElement.addClass("text-success");
-                        percentageElement.removeClass("text-danger");
+                        chevronElement.classList.remove('negative');
+                        chevronElement.classList.remove('d-none');
+                        percentageElement.classList.add('text-success');
+                        percentageElement.classList.remove('text-danger');
+                        delta = '+' + Math.abs(val) + '%';;
                     }
                     else {
-                        chevronElement.addClass("d-none")
+                        chevronElement.classList.add('d-none');
                     }
-                    var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%"; // TODO: format value on server
-                    percentageElement.html(delta);
-                    sumElement.html(dataSets[period].TotalAmountFormatted);
+                    percentageElement.innerText = delta;
+                    sumElement.innerText = dataSets[period].TotalAmountFormatted;
                 }
 
                 // Custom chart legend
                 function createLegend() {
-                    $($ordersLegendElement).html(ordersChart.generateLegend());
-                    var legendItems = $ordersLegendElement.getElementsByTagName('li');
-                    for (var i = 0; i < legendItems.length; i++) {
-                        legendItems[i].addEventListener("click", legendClickCallback, false);
+                    legendElement.innerHTML = chart.generateLegend();
+                    const legendItems = legendElement.getElementsByTagName('li');
+                    for (let i = 0; i < legendItems.length; i++) {
+                        legendItems[i].addEventListener('click', legendClickCallback, false);
                     }
                 }
 
                 // Custom chart legend callback
                 function legendClickCallback(event) {
-                    event = event || window.event;
-                    var target = event.target || event.srcElement;
-                    while (target.nodeName !== 'LI') {
-                        target = target.parentElement;
-                    }
-                    var parent = target.parentElement;
-                    var chartId = parseInt(parent.classList[0].split("-")[0], 10);
-                    var chart = Chart.instances[chartId];
-                    var index = (ordersChart.data.datasets.length - 1) - Array.prototype.slice.call(parent.children).indexOf(target);
-                    var meta = chart.getDatasetMeta(index);
+                    const chartId = parseInt(this.parentElement.classList[0].split('-')[0], 10);
+                    const chart = Chart.instances[chartId];
+                    const index = (chart.data.datasets.length - 1) - Array.prototype.slice.call(this.parentElement.children).indexOf(this);
                     if (chart.data.datasets[index].hidden) {
-                        target.classList.remove('hidden');
+                        this.classList.remove('hidden');
                     }
                     else {
-                        target.classList.add('hidden');
+                        this.classList.add('hidden');
                     }
-                    meta.hidden = !chart.data.datasets[index].hidden;
                     chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
+                    setYaxis(chart);
                     chart.update();
                 }
             },
             CustomersChart: function (dataSets, textRegistrations, textRegistrationsShort) {
-                var chartElement = $('#customers-report');
-                var percentageElement = $("#customers-delta-percentage");
-                var chevronElement = $("#customers-delta-percentage-chevron");
-                var sumElement = $("#customer-quantity-total");
-                var customersChartElement = $('#customers-chart');
-                var customers_ctx = customersChartElement.get(0).getContext('2d');
-                var currentPeriod = 0;
+                const reportElement = document.getElementById('customers-report');
+                const reportStyle = getComputedStyle(reportElement);
+                const percentageElement = document.getElementById('customers-delta-percentage');
+                const chevronElement = document.getElementById('customers-delta-percentage-chevron');
+                const sumElement = document.getElementById('customer-quantity-total');
+                const chartElement = document.getElementById('customers-chart');
+                const chartContext = chartElement.getContext('2d');
+                let currentPeriod = 0;
 
-                var successGradient = customers_ctx.createLinearGradient(0, 0, 0, customersChartElement.parent().height());
-                successGradient.addColorStop(0, chartElement.css('--chart-color-success'));
-                successGradient.addColorStop(1, chartElement.css('--chart-color-success-light'));
+                const successGradient = chartContext.createLinearGradient(0, 0, 0, chartElement.height);
+                successGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-success'));
+                successGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-success-light'));
 
                 // Chart config
-                var customer_config = {
+                const chartConfig = {
                     type: 'line',
                     data: {
                         labels: dataSets[0].Labels,
@@ -454,10 +523,7 @@ SmartStore.Admin.Charts = {
                         }]
                     },
                     options: {
-                        responsive: true,
-                        responsiveAnimationDuration: 0,
                         maintainAspectRatio: false,
-                        stacked: true,
                         animation: {
                             duration: 400,
                             easing: 'easeInOutSine',
@@ -477,7 +543,7 @@ SmartStore.Admin.Charts = {
                             padding: {
                                 left: 0,
                                 right: 0,
-                                top: 7,
+                                top: 0,
                                 bottom: 0
                             }
                         },
@@ -489,43 +555,35 @@ SmartStore.Admin.Charts = {
                                 hitRadius: 3,
                             },
                             line: {
-                                borderWidth: .5,
-                                lineTension: 0.2,
-                                fill: true,
+                                borderWidth: 0.5,
                             }
                         },
                         tooltips: {
-                            enabled: true,
+                            enabled: false,
                             mode: 'nearest',
                             intersect: false,
-                            titleFontFamily: fontFamily,
-                            titleFontSize: 13,
-                            bodyFontFamily: fontFamily,
-                            bodyFontSize: 12,
-                            xPadding: 12,
-                            yPadding: 10,
-                            caretPadding: 6,
-                            caretSize: 8,
-                            cornerRadius: 4,
-                            titleMarginBottom: 8,
-                            bodySpacing: 5,
                             callbacks: {
                                 label: function (item, data) {
-                                    return " " + textRegistrationsShort + ":  "
-                                        + dataSets[currentPeriod].DataSets[item.datasetIndex].QuantityFormatted[item.index];
+                                    return '<span>' + textRegistrationsShort + ': </span><span class="ml-1">'
+                                        + dataSets[currentPeriod].DataSets[item.datasetIndex].QuantityFormatted[item.index] + '</span>';
                                 },
                                 labelColor: function (tooltipItem, chart) {
-                                    var dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
+                                    const dataset = chart.config.data.datasets[tooltipItem.datasetIndex];
                                     return {
                                         backgroundColor: dataset.borderColor,
                                     }
                                 },
                             },
+                            custom: customTooltip,
                         },
                         scales: {
                             yAxes: [{
                                 display: false,
                                 stacked: true,
+
+                                ticks: {
+                                    max: 1,
+                                }
                             }],
                             xAxes: [{
                                 display: false,
@@ -543,46 +601,65 @@ SmartStore.Admin.Charts = {
                         }
                     },
                 }
-
-                var customersChart = new Chart(customers_ctx, customer_config);
+                let chart = new Chart(chartContext, chartConfig);
                 setPercentageDelta(currentPeriod);
+                setYaxis(chart);
+                chart.update();
 
                 // EventHandler to display selected period data       
+                //reportElement.querySelectorAll('input[type=radio][name=customers-toggle]')
+                //    .forEach(e =>
+                //        e.addEventListener('change', function () {
+                //            setChartData(reportElement.querySelector('input[type=radio][name=customers-toggle]:checked').dataset.period);
+                //        }, true)
+                //    );
+
+                // EventHandler to display selected period data 
+                // TODO: Use Javascript native eventlistener
                 $('input[type=radio][name=customers-toggle]').on('change', function () {
-                    setChartData($('input:radio[name=customers-toggle]:checked').data("period"));
+                    setChartData($('input:radio[name=customers-toggle]:checked').data('period'));
                 });
 
                 function setChartData(period) {
-                    customersChart.destroy();
-                    customer_config.data.labels = dataSets[period].Labels;
-                    for (var i = 0; i < customer_config.data.datasets.length; i++) {
-                        customer_config.data.datasets[i].data = dataSets[period].DataSets[i].Quantity;
+                    chart.destroy();
+                    chartConfig.data.labels = dataSets[period].Labels;
+                    for (let i = 0; i < chartConfig.data.datasets.length; i++) {
+                        chartConfig.data.datasets[i].data = dataSets[period].DataSets[i].Quantity;
                     }
-                    customersChart = new Chart(customers_ctx, customer_config);
+                    setYaxis(chart);
+                    chart = new Chart(chartContext, chartConfig);
                     setPercentageDelta(period, dataSets);
                     currentPeriod = period;
                 }
 
+                // Get highest yAxis value (+ 10% margin)
+                function setYaxis(chart) {
+                    const yAxisSize = Math.max(...chart.config.data.datasets['0'].data)
+                    chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
+                }
+
                 function setPercentageDelta(period) {
-                    var val = dataSets[period].PercentageDelta;
+                    let delta = '';
+                    const val = dataSets[period].PercentageDelta;
                     if (val < 0) {
-                        chevronElement.addClass("negative");
-                        chevronElement.removeClass("d-none");
-                        percentageElement.removeClass("text-success");
-                        percentageElement.addClass("text-danger");
+                        chevronElement.classList.add('negative');
+                        chevronElement.classList.remove('d-none');
+                        percentageElement.classList.remove('text-success');
+                        percentageElement.classList.add('text-danger');
+                        delta = '-' + Math.abs(val) + '%';
                     }
                     else if (val > 0) {
-                        chevronElement.removeClass("negative");
-                        chevronElement.removeClass("d-none");
-                        percentageElement.addClass("text-success");
-                        percentageElement.removeClass("text-danger");
+                        chevronElement.classList.remove('negative');
+                        chevronElement.classList.remove('d-none');
+                        percentageElement.classList.add('text-success');
+                        percentageElement.classList.remove('text-danger');
+                        delta = '+' + Math.abs(val) + '%';
                     }
                     else {
-                        chevronElement.addClass("d-none")
+                        chevronElement.classList.add('d-none');
                     }
-                    var delta = val == 0 ? "" : val < 0 ? "-" + Math.abs(val) + "%" : "+" + Math.abs(val) + "%";
-                    percentageElement.html(delta);
-                    sumElement.html(dataSets[period].TotalAmountFormatted);
+                    percentageElement.innerText = delta;
+                    sumElement.innerText = dataSets[period].TotalAmountFormatted;
                 }
             }
         }

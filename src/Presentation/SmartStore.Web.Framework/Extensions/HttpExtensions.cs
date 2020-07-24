@@ -182,35 +182,24 @@ namespace SmartStore
 
 		internal static void SetUserThemeChoiceInCookie(this HttpContextBase context, string value)
 		{
-			if (context == null)
+			if (context?.Request == null)
+			{
 				return;
-
-			var cookie = context.Request.Cookies.Get("sm.UserThemeChoice");
-
-			if (value.HasValue() && cookie == null)
-			{
-				cookie = new HttpCookie("sm.UserThemeChoice")
-				{
-					HttpOnly = true,
-					Expires = DateTime.UtcNow.AddYears(1)
-				};				
 			}
 
-			if (value.HasValue())
+            if (value.IsEmpty())
 			{
-				cookie.Value = value;
-				context.Request.Cookies.Set(cookie);
+				context.Request.Cookies.Remove("sm.UserThemeChoice");
+				return;
 			}
 
-			if (value.IsEmpty() && cookie != null)
-			{
-				cookie.Expires = DateTime.UtcNow.AddYears(-10);
-			}
+			var cookie = context.Request.Cookies.Get("sm.UserThemeChoice") ?? new HttpCookie("sm.UserThemeChoice");
+			cookie.Value = value;
+			cookie.Expires = DateTime.UtcNow.AddYears(1);
+			cookie.HttpOnly = true;
+			cookie.Secure = context.Request.IsHttps();
 
-			if (cookie != null)
-			{
-				context.Response.SetCookie(cookie);
-			}
+			context.Request.Cookies.Set(cookie);
 		}
 
 		internal static HttpCookie GetPreviewModeCookie(this HttpContextBase context, bool createIfMissing)

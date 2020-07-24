@@ -48,7 +48,20 @@ namespace SmartStore.Core.Logging
 			notifier.Add(NotifyType.Warning, message, durable);
 		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void Error(this INotifier notifier, Exception exception, bool durable = true)
+		{
+			if (exception == null)
+				return;
+
+			while (exception.InnerException != null)
+            {
+				exception = exception.InnerException;
+            }
+
+			notifier.Add(NotifyType.Error, exception.Message, durable);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(this INotifier notifier, LocalizedString message, bool durable = true)
 		{
 			notifier.Add(NotifyType.Error, message, durable);

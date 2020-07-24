@@ -142,7 +142,7 @@
             </td>
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.CustomerSettings.RegisterCustomerRoleId,
-					Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified")))
+					Html.EditorFor(model => model.CustomerSettings.RegisterCustomerRoleId, null, new { htmlAttributes = new { data_placeholder = T("Common.Unspecified").Text } }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>

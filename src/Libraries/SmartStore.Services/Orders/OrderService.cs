@@ -429,13 +429,21 @@ namespace SmartStore.Services.Orders
 			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
-		public virtual IList<RecurringPayment> SearchRecurringPayments(int storeId, 
-			int customerId, int initialOrderId, OrderStatus? initialOrderStatus,
-			bool showHidden = false)
+		public virtual IPagedList<RecurringPayment> SearchRecurringPayments(
+            int storeId, 
+			int customerId,
+            int initialOrderId,
+            OrderStatus? initialOrderStatus,
+			bool showHidden = false,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue)
         {
             int? initialOrderStatusId = null;
+
             if (initialOrderStatus.HasValue)
+            {
                 initialOrderStatusId = (int)initialOrderStatus.Value;
+            }
 
             var query1 = from rp in _recurringPaymentRepository.Table
                          join c in _customerRepository.Table on rp.InitialOrder.CustomerId equals c.Id
@@ -454,9 +462,8 @@ namespace SmartStore.Services.Orders
                          where query1.Contains(rp.Id)
                          orderby rp.StartDateUtc, rp.Id
                          select rp;
-            
-            var recurringPayments = query2.ToList();
-            return recurringPayments;
+
+            return new PagedList<RecurringPayment>(query2, pageIndex, pageSize);
         }
 
         #endregion

@@ -1,10 +1,15 @@
 ﻿@model ShopHeaderModel
+
 @using SmartStore.Web.Models.Common;
 
 <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">          
-    @if (Model.LogoUploaded) 
+    @if (Model.LogoUploaded)
     {
-        <img src='@Url.Content(Model.LogoUrl.EmptyNull())' 
+        // "Above the fold" image: preload logo to render it fast.
+        var logoUrl = Model.LogoUrl.EmptyNull();
+        Html.AddLinkPart("preload", logoUrl, new { @as = "image" });
+
+        <img src='@logoUrl' 
             alt="@Model.LogoTitle" 
             title="@Model.LogoTitle"
 			class="img-fluid"

@@ -550,7 +550,8 @@ namespace SmartStore.Data
 
 			public void Rollback()
 			{
-				_tx.Rollback();
+				if (_tx.UnderlyingTransaction.Connection != null)
+					_tx.Rollback();
 			}
 
 			public void Dispose()

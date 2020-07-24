@@ -40,7 +40,7 @@ namespace SmartStore.Data.Caching
 			typeof(CheckoutAttributeValue).Name,
 			typeof(Country).Name,
 			typeof(Currency).Name,
-			typeof(CustomerRole).Name,
+			//typeof(CustomerRole).Name,
 			typeof(DeliveryTime).Name,
 			typeof(Discount).Name,
 			typeof(EmailAccount).Name,

@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>latest</LangVersion>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -477,6 +478,14 @@
     <Compile Include="Migrations\202006250801086_V400Resources.Designer.cs">
       <DependentUpon>202006250801086_V400Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202007160058551_MediaFileIndexReorg.cs" />
+    <Compile Include="Migrations\202007160058551_MediaFileIndexReorg.Designer.cs">
+      <DependentUpon>202007160058551_MediaFileIndexReorg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007241131557_V401Resources.cs" />
+    <Compile Include="Migrations\202007241131557_V401Resources.Designer.cs">
+      <DependentUpon>202007241131557_V401Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -865,6 +874,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202006250801086_V400Resources.resx">
       <DependentUpon>202006250801086_V400Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007160058551_MediaFileIndexReorg.resx">
+      <DependentUpon>202007160058551_MediaFileIndexReorg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007241131557_V401Resources.resx">
+      <DependentUpon>202007241131557_V401Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

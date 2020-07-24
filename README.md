@@ -40,15 +40,15 @@ A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping
 <p align="center">
   <img src="assets/sm4-devices.png" alt="Smartstore.NET Demoshop" />
 </p>
-**Smartstoredelivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
+**Smartstore delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Bootstrap 4`, `Sass` and others. The supplied theme _Flex_ is modern, clean and fully responsive, giving buyers the best possible shopping experience on any device. 
 
-The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
+The state-of-the-art architecture of Smartstore - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
 * **Website:** [http://www.smartstore.com/en/net](http://www.smartstore.com/en/net)
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Translations:** [http://translate.smartstore.com/](http://translate.smartstore.com/)
-* **Documentation:** [Smartstore.NET Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
+* **Documentation:** [Smartstore Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
 
 <p>&nbsp;</p>
 
@@ -98,7 +98,7 @@ The state-of-the-art architecture of Smartstore.NET - with `ASP.NET 4.5` + `MVC 
 
 ## Project Status
 
-Smartstore.NET V4.0.0 has been released on 25 June, 2020. The highlights are:
+Smartstore V4.0.0 has been released on 25 June, 2020. The highlights are:
 
 * **Media Manager**: Powerful and lightning-fast explorer/manager for media files (commercial plugin exclusively bundled with Pro Edition)
 * **Rule Builder**: Powerful rule system for visual business rule creation

@@ -771,16 +771,7 @@ namespace SmartStore.Web.Controllers
 
 				model.StoreName = store.Name;
 				model.StoreUrl = store.Url;
-
-                var logo = _mediaService.Value.GetFileById(pdfSettings.LogoPictureId, MediaLoadFlags.AsNoTracking);
-                if (logo == null)
-                {
-                    logo = _mediaService.Value.GetFileById(store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
-                }
-                if (logo != null)
-                {
-                    model.LogoUrl = _mediaService.Value.GetUrl(logo, 0, null, false);
-                }
+                model.LogoId = pdfSettings.LogoPictureId != 0 ? pdfSettings.LogoPictureId : store.LogoMediaFileId;
 
 				model.MerchantCompanyInfo = companyInfoSettings;
 				model.MerchantBankAccount = bankSettings;

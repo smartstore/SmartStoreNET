@@ -8,12 +8,50 @@ using System.Diagnostics;
 using SmartStore.Core.Data;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Core.Plugins
 {
 	public partial class PluginManager
 	{
-		private static int? _lastPluginsHash;
+        #region PluginsHasher
+
+        class PluginsHasher : DirectoryHasher
+        {
+			private readonly IEnumerable<PluginDescriptor> _plugins;
+
+			public PluginsHasher(IEnumerable<PluginDescriptor> plugins)
+				: base(CommonHelper.MapPath(PluginsLocation), null, false, CommonHelper.MapPath(DataSettings.Current.TenantPath))
+            {
+				_plugins = plugins;
+            }
+
+            protected override int ComputeHash()
+            {
+				var hashCombiner = new HashCodeCombiner();
+
+				// Add each *.dll, Description.txt, web.config to the hash
+				var arrPlugins = _plugins.OrderBy(x => x.FolderName).ToArray();
+				foreach (var p in arrPlugins)
+				{
+					if (p.Assembly.OriginalFile != null)
+					{
+						hashCombiner.Add(p.Assembly.OriginalFile);
+					}
+
+					p.ReferencedLocalAssemblies.Each(x => hashCombiner.Add(x.OriginalFile));
+
+					hashCombiner.Add(Path.Combine(p.PhysicalPath, "Description.txt"));
+					hashCombiner.Add(Path.Combine(p.PhysicalPath, "web.config"));
+					hashCombiner.Add(p.Installed);
+				}
+
+				return hashCombiner.CombinedHash;
+			}
+        }
+
+		#endregion
+
 		private static ICollection<string> _lastPluginAssemblies;
 
         /// <summary>
@@ -27,18 +65,15 @@ namespace SmartStore.Core.Plugins
 		/// <returns>
 		/// Returns true if there were changes to plugins and a cleanup was required, otherwise false is returned.
 		/// </returns>
-		private static bool DetectAndCleanStalePlugins(IEnumerable<PluginDescriptor> plugins)
+		private static bool DetectAndCleanStalePlugins(IEnumerable<PluginDescriptor> plugins, PluginsHasher hasher)
 		{
-			var currentHash = ComputePluginsHash(plugins);
-			var lastHash = GetLastPluginsHash();
-			
 			// Check if anything has been changed, or if we are in debug mode then always perform cleanup
-			if (currentHash != lastHash)
+			if (hasher.HasChanged)
 			{
-                PluginChangeDetected = true;
-                Logger.DebugFormat("Plugin changes detected in hash.");
+				PluginChangeDetected = true;
+				Logger.DebugFormat("Plugin changes detected in hash.");
 
-                var lastAssemblies = GetLastPluginsAssemblies();
+				var lastAssemblies = GetLastPluginsAssemblies();
 
 				// We need to read the old assembly list and clean them out from the shadow copy folder 
 				var staleFiles = lastAssemblies
@@ -60,41 +95,6 @@ namespace SmartStore.Core.Plugins
 
 			// No plugin changes found
 			return false;
-		}
-
-		/// <summary>
-		/// Loads the hash code of the last loaded plugins from disk
-		/// </summary>
-		/// <returns></returns>
-		private static int? GetLastPluginsHash()
-		{
-			if (_lastPluginsHash == null)
-			{
-				var filePath = Path.Combine(CommonHelper.MapPath(DataSettings.Current.TenantPath), "plugins.hash");
-				if (!File.Exists(filePath))
-				{
-					_lastPluginsHash = 0;
-				}
-				else
-				{
-					var hash = File.ReadAllText(filePath, Encoding.UTF8);
-					_lastPluginsHash = ConvertPluginsHash(hash);
-				}
-			}
-
-			if (_lastPluginsHash == 0)
-			{
-				return null;
-			}
-
-			return _lastPluginsHash;
-		}
-
-		private static void SavePluginsHash(int hashCode)
-		{
-			var filePath = Path.Combine(CommonHelper.MapPath(DataSettings.Current.TenantPath), "plugins.hash");
-			File.WriteAllText(filePath, hashCode.ToString(CultureInfo.InvariantCulture), Encoding.UTF8);
-			_lastPluginsHash = null;
 		}
 
 		/// <summary>
@@ -161,32 +161,6 @@ namespace SmartStore.Core.Plugins
 			File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
 
 			_lastPluginAssemblies = null;
-		}
-
-		/// <summary>
-		/// Returns the hash for the passed plugins
-		/// </summary>
-		/// <returns></returns>
-		private static int ComputePluginsHash(IEnumerable<PluginDescriptor> plugins)
-		{
-			var hashCombiner = new HashCodeCombiner();
-
-			// Add each *.dll, Description.txt, web.config to the hash
-			foreach (var p in plugins)
-			{
-				if (p.Assembly.OriginalFile != null)
-				{
-					hashCombiner.Add(p.Assembly.OriginalFile);
-				}
-
-				p.ReferencedLocalAssemblies.Each(x => hashCombiner.Add(x.OriginalFile));
-
-				hashCombiner.Add(Path.Combine(p.PhysicalPath, "Description.txt"));
-				hashCombiner.Add(Path.Combine(p.PhysicalPath, "web.config"));
-				hashCombiner.Add(p.Installed);
-			}
-
-			return hashCombiner.CombinedHash;
 		}
 
 		/// <summary>
@@ -321,17 +295,6 @@ namespace SmartStore.Core.Plugins
 			catch { }
 
 			return true;
-		}
-
-		internal static int ConvertPluginsHash(string val)
-		{
-			int outVal;
-			if (Int32.TryParse(val, NumberStyles.Integer, CultureInfo.InvariantCulture, out outVal))
-			{
-				return outVal;
-			}
-
-			return 0;
 		}
 	}
 }

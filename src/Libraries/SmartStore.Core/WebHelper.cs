@@ -189,7 +189,7 @@ namespace SmartStore.Core
 				var httpRequest = _httpContext.SafeGetHttpRequest();
 				if (httpRequest != null)
                 {
-                    _isCurrentConnectionSecured = httpRequest.IsSecureConnection();
+                    _isCurrentConnectionSecured = httpRequest.IsHttps();
                 }
             }
 

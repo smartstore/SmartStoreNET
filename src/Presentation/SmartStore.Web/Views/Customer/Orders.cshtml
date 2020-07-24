@@ -8,46 +8,53 @@
 	ViewBag.PageTitle = T("Account.CustomerOrders").Text;
 }
 
-@if (Model.RecurringOrders.Count > 0)
+@if (Model.RecurringPayments.Count > 0)
 {
+    if (Model.CancelRecurringPaymentErrors.Count > 0)
+    {
+        <div class="alert alert-danger">
+            @for (int i = 0; i < Model.CancelRecurringPaymentErrors.Count; i++)
+            {
+                <p>@Model.CancelRecurringPaymentErrors[i]</p>
+            }
+        </div>
+    }
+
     using (Html.BeginForm())
     {
-        <div class="recurring-payments mb-3">
-            <div class="section-title">
-                @T("Account.CustomerOrders.RecurringOrders")
-            </div>
-
-            <div><hr /></div>
+        <div class="recurring-payments mb-4">
+            <fieldset class="content-group mb-0">
+                <legend class="mb-0">
+                    <span>@T("Account.CustomerOrders.RecurringOrders")</span>
+                </legend>
+            </fieldset>
 
             <div class="recurring-payments-box table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>
+                            <th class="border-0">
                                 @T("Account.CustomerOrders.RecurringOrders.StartDate")
                             </th>
-                            <th>
+                            <th class="border-0">
                                 @T("Account.CustomerOrders.RecurringOrders.CycleInfo")
                             </th>
-                            <th >
+                            <th class="border-0">
                                 @T("Account.CustomerOrders.RecurringOrders.NextPayment")
                             </th>
-                            <th>
+                            <th class="text-center border-0">
                                 @T("Account.CustomerOrders.RecurringOrders.TotalCycles")
                             </th>
-                            <th>
+                            <th class="text-center border-0">
                                 @T("Account.CustomerOrders.RecurringOrders.CyclesRemaining")
                             </th>
-                            <th>
-                                @T("Account.CustomerOrders.RecurringOrders.InitialOrder")
-                            </th>
-                            <th>
-                                @T("Account.CustomerOrders.RecurringOrders.Cancel")
+                            <th class="border-0">
+                                &nbsp;
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.RecurringOrders)
+                        @foreach (var item in Model.RecurringPayments)
                         {
                             <tr>
                                 <td>
@@ -59,24 +66,22 @@
                                 <td>
                                     @item.NextPayment
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @item.TotalCycles
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @item.CyclesRemaining
                                 </td>
                                 <td>
-									<a class="btn btn-secondary" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })" rel="nofollow">
+									<a class="btn btn-block btn-sm btn-secondary" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })" rel="nofollow">
 										<i class="far fa-list-alt"></i>
-										@string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
+										<span>@string.Format(T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)</span>
 									</a>
-                                </td>
-                                <td>
                                     @if (item.CanCancel)
                                     {
-                                        <button type="submit" name="cancelRecurringPayment@(item.Id)" class="btn btn-danger">
-											<i class="far fa-trash-alt"></i>
-                                            @T("Account.CustomerOrders.RecurringOrders.Cancel")
+                                        <button type="submit" name="cancelRecurringPayment@(item.Id)" value="cancelRecurringPayment@(item.Id)" class="btn btn-block btn-sm btn-danger">
+											<i class="fa fa-times"></i>
+                                            <span>@T("Account.CustomerOrders.RecurringOrders.Cancel")</span>
                                         </button>
                                     }
                                 </td>
@@ -84,17 +89,13 @@
                         }
                     </tbody>
                 </table>
+                @if (Model.RecurringPayments.TotalPages > 1)
+                {
+	                <div class="mt-1">
+		                @Html.SmartStore().Pager(Model.RecurringPayments).Name("rp-paginator").QueryParam("recurringPaymentsPage").Action("Orders", "Customer", new { page = Model.OrdersPage })
+	                </div>
+                }
             </div>
-        </div>
-    }
-
-    if (Model.CancelRecurringPaymentErrors.Count > 0)
-    {
-        <div class="alert alert-danger">
-            @for (int i = 0; i < Model.CancelRecurringPaymentErrors.Count; i++)
-            {
-                <p>@Model.CancelRecurringPaymentErrors[i]</p>
-            }
         </div>
     }
 }
@@ -142,6 +143,6 @@
 @if (Model.Orders.TotalPages > 1)
 {
 	<div class="mt-1">
-		@Html.SmartStore().Pager(Model.Orders).Name("paginator").QueryParam("page").Action("Orders", "Customer")
+		@Html.SmartStore().Pager(Model.Orders).Name("paginator").QueryParam("page").Action("Orders", "Customer", new { recurringPaymentsPage = Model.RecurringPaymentsPage })
 	</div>
 }

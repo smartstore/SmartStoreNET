@@ -299,7 +299,7 @@ namespace SmartStore.Services.Media
 
             void UniqueFileNameChecker(MediaPathData pathData)
             {
-                if (destNames != null && InternalCheckUniqueFileName(pathData.FileTitle, pathData.Extension, destNames, out var uniqueName))
+                if (destNames != null && _helper.CheckUniqueFileName(pathData.FileTitle, pathData.Extension, destNames, out var uniqueName))
                 {
                     pathData.FileName = uniqueName;
                 }

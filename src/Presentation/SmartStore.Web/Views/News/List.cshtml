@@ -27,10 +27,10 @@
         <div class="news-items mb-5 row">
             @foreach (var item in Model.NewsItems)
             {
-                var imageUrl = item.PreviewPictureModel.ImageUrl.HasValue() ? item.PreviewPictureModel.ImageUrl : item.PictureModel.ImageUrl;
+                var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
+                var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
 
                 <article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column" itemscope itemtype="http://schema.org/NewsArticle">
-
                     @if (imageUrl.HasValue())
                     {
                         <figure style="--img-aspect-ratio: 0.5;">

@@ -3,17 +3,38 @@
 ## Smartstore 4.0.1
 ### New Features
 
+- Check on app startup whether any plugin has changed and refresh all plugin locale resources.
+
 ### Improvements
 * Theming: minimal but effective tweaks (rounding, shadows, typo)
+* (SEO) (PERF) Preload logo to prevent flashing and web fonts to avoid FOUT on slow internet connection
 * **Rule Builder**:
 	* #1969 The preview grid is now displayed in a modal dialog.
-	* #1980 Added a cart rule for total quantity of products in cart.
+	* Added more cart rules: weekday, total quantity of products in cart.
+	* Added list with example values for browser, operating system and device family rule.
 * #1995 The localized ALT text of media files is now respected for all frontend images.
-* SEO: most images in frontend now carry `loading="lazy"` attribute which loads images only when they enter visible viewport
-* Media Manager: improved image lazy loading behavior
+* SEO: most images in frontend now carry `loading="lazy"` attribute which loads images only when they enter visible viewport.
+* **Media Manager**:
+	* Improved image lazy loading behavior.
+	* The reference table of a file now remains open if its data has been loaded.
+	* Migration: detect duplicate file names.
+* Improved handling of customer roles, e.g. paging for customer role grid.
+* (PERF) Use direct SQL to delete guest customers.
+* Blog & News items: Unpublished items are visible for shop admins now
+
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.
+* #1976 The button to cancel recurring payments in my-account was out of function.
+* (pb) Flat Box did not invert text color if concrete colors were specified for text parts
+* (mm) Store logo is handled by "content" album, not "file"
+* (mm) Tracker tracks only the last media file property
+* (mm) Migration: `Download` entity was teared down too early in the migration process.
+* (perf) Plugin hash calculation was broken in a way that every plugin was redeployed on each app startup
+* A cart rule was not applied if more than one cart rule was assigned to an object.
+* MegaSearch: fixed the incorrect featured sorting.
+* Added missing paging for shipment list.
+* #2009 "Show all" link in top brands list is always rendered in new line but should be last item in last row.
 
 
 ## Smartstore 4.0.0

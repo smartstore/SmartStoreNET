@@ -21,9 +21,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedTo")]
 		public DateTime? CreatedTo { get; set; }
 
+		[UIHint("CustomerRoles")]
+		[AdditionalMetadata("multiple", true)]
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CustomerRoleIds")]
 		public int[] CustomerRoleIds { get; set; }
-		public List<SelectListItem> AvailableCustomerRoles { get; set; }
 
 		public List<SelectListItem> AvailableCountries { get; set; }
 

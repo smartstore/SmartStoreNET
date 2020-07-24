@@ -6,37 +6,37 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.Events;
 
-@Html.SmartStore().TabStrip().Name("pd-tabs").HtmlAttributes(new { @class = "pd-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+@Html.SmartStore().TabStrip().Name("pd-tabs").HtmlAttributes(new { @class = "pd-tabs" }).SmartTabSelection(false).HideSingleItem(true).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
 {
-	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+    var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
 
-	if (Model.FullDescription.Value.HasValue())
-	{
-		var summary = Model.FullDescription.Value.RemoveHtml().Truncate(300, "...");
-		var langAttrs = Html.LanguageAttributes(Model.FullDescription);
-		x.Add().Text(@T("Products.Details"))
-				.Summary(summary)
-				.Content(Html.Raw("<div " + langAttrs + " itemprop='description' class='long-text html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
-				.Selected(true);
-	}
+    if (Model.FullDescription.Value.HasValue())
+    {
+        var summary = Model.FullDescription.Value.RemoveHtml().Truncate(300, "...");
+        var langAttrs = Html.LanguageAttributes(Model.FullDescription);
+        x.Add().Text(@T("Products.Details"))
+                .Summary(summary)
+                .Content(Html.Raw("<div " + langAttrs + " itemprop='description' class='long-text html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+                .Selected(true);
+    }
 
-	if (specificationAttributes.HasValue())
-	{
-		x.Add().Text(@T("Products.Specs"))
-				.Content(specificationAttributes)
-				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
-	}
+    if (specificationAttributes.HasValue())
+    {
+        x.Add().Text(@T("Products.Specs"))
+                .Content(specificationAttributes)
+                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+    }
 
-	if (Model.DisplayProductReviews)
-	{
-		x.Add().Text(@T("Reviews"))
-				.Content(TabReviews())
-				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Secondary, true)
-				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
-	}
+    if (Model.DisplayProductReviews)
+    {
+        x.Add().Text(@T("Reviews"))
+                .Content(TabReviews())
+                .Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Secondary, true)
+                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+    }
 
-	// Generate an event
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+    // Generate an event
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
 }).TabContentHeaderContent(TabContentHeader()).Fade(false)
 
 @helper TabReviews() {{
@@ -60,8 +60,9 @@
 }}
 
 @helper TabContentHeader() {{
-	<a href="javascript:void()" class="btn btn-success btn-no-border btn-icon offcanvas-closer rounded-0" title="@T("Common.Close")">
-		<i class="fa fa-2x fa-lg fa-angle-left"></i>
+	<a href="javascript:void()" class="btn btn-secondary btn-flat btn-no-border offcanvas-closer rounded-0" title="@T("Common.Close")">
+		<i class="fa fa-chevron-left"></i>
+		<span>@T("Common.Close")</span>
 	</a>
 }}
 

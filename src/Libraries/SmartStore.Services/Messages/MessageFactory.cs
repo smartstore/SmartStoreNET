@@ -280,7 +280,7 @@ namespace SmartStore.Services.Messages
 
 			if (fileIds.Any())
 			{
-                var files = _mediaService.GetFilesByIds(fileIds, MediaLoadFlags.WithBlob);
+                var files = _mediaService.GetFilesByIds(fileIds);
 				foreach (var file in files)
 				{
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment

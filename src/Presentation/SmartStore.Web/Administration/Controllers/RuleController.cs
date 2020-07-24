@@ -342,7 +342,16 @@ namespace SmartStore.Admin.Controllers
         {
             var provider = _ruleProvider(scope);
             var descriptor = provider.RuleDescriptors.FindDescriptor(ruleType);
-            var op = descriptor.Operators.First();
+            
+            RuleOperator op;
+            if (descriptor.RuleType == RuleType.NullableInt || descriptor.RuleType == RuleType.NullableFloat)
+            {
+                op = descriptor.Operators.FirstOrDefault(x => x == RuleOperator.GreaterThanOrEqualTo);
+            }
+            else
+            {
+                op = descriptor.Operators.First();
+            }
 
             var rule = new RuleEntity
             {
@@ -725,7 +734,12 @@ namespace SmartStore.Admin.Controllers
                         {
                             var descriptor = provider.RuleDescriptors.FindDescriptor(entity.RuleType);
 
-                            if (descriptor.RuleType == RuleType.Money)
+                            if (data.Op == RuleOperator.IsEmpty || data.Op == RuleOperator.IsNotEmpty ||
+                                data.Op == RuleOperator.IsNull || data.Op == RuleOperator.IsNotNull)
+                            {
+                                data.Value = null;
+                            }
+                            else if (descriptor.RuleType == RuleType.Money)
                             {
                                 data.Value = data.Value.Convert<decimal>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
                             }
@@ -735,7 +749,9 @@ namespace SmartStore.Admin.Controllers
                             }
                             else if (descriptor.RuleType == RuleType.DateTime || descriptor.RuleType == RuleType.NullableDateTime)
                             {
-                                data.Value = data.Value.Convert<DateTime>(CultureInfo.CurrentCulture).ToString(CultureInfo.InvariantCulture);
+                                // Always store invariant formatted UTC values, otherwise database queries return inaccurate results.
+                                var dt = data.Value.Convert<DateTime>(CultureInfo.CurrentCulture).ToUniversalTime();
+                                data.Value = dt.ToString(CultureInfo.InvariantCulture);
                             }
                         }
                         //if (data.Value?.Contains(',') ?? false)

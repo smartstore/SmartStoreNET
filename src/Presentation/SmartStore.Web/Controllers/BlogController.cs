@@ -186,7 +186,7 @@ namespace SmartStore.Web.Controllers
 						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest
                     };
 
-                    commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _mediaService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
+                    commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }
@@ -219,11 +219,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!command.Tag.HasValue())
             {
-				blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize);
+				blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
             else
             {
-				blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize);
+				blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
 
             model.PagingFilteringContext.LoadPagedList(blogPosts);
@@ -304,7 +304,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)
         {
-			// INFO: param 'tag' redunadant, because OutputCache does not include
+			// INFO: param 'tag' redundant, because OutputCache does not include
 			// complex type params in cache key computing
 
 			if (!_blogSettings.Enabled)
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByMonth(string month, BlogPagingFilteringModel command)
         {
-			// INFO: param 'month' redunadant, because OutputCache does not include
+			// INFO: param 'month' redundant, because OutputCache does not include
 			// complex type params in cache key computing
 
 			if (!_blogSettings.Enabled)
@@ -379,7 +379,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
-            if (blogPost == null || !blogPost.IsPublished ||
+            if (blogPost == null || (!blogPost.IsPublished && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
 				return HttpNotFound();

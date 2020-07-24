@@ -20,6 +20,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
@@ -2730,11 +2731,28 @@ namespace SmartStore.Admin.Controllers
 		{
 			var model = new GridModel<ProductModel.TierPriceModel>();
 			var product = _productService.GetProductById(productId);
-			var allStores = _services.StoreService.GetAllStores();
-			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
 			string allRolesString = T("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles");
 			string allStoresString = T("Admin.Common.StoresAll");
 			string deletedString = "[{0}]".FormatInvariant(T("Admin.Common.Deleted"));
+
+			var customerRoles = new Dictionary<int, CustomerRole>();
+			var stores = new Dictionary<int, Store>();
+
+			if (product.TierPrices.Any())
+			{
+				var customerRoleIds = new HashSet<int>(product.TierPrices
+					.Select(x => x.CustomerRoleId ?? 0)
+					.Where(x => x != 0));
+
+				var customerRolesQuery = _customerService.GetAllCustomerRoles(true).SourceQuery;
+				customerRoles = customerRolesQuery
+					.Where(x => customerRoleIds.Contains(x.Id))
+					.ToList()
+					.ToDictionary(x => x.Id);
+
+				stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+			}
 
 			var tierPricesModel = product.TierPrices
 				.OrderBy(x => x.StoreId)
@@ -2771,8 +2789,8 @@ namespace SmartStore.Admin.Controllers
 
 					if (x.CustomerRoleId.HasValue)
 					{
-						var role = allCustomerRoles.FirstOrDefault(r => r.Id == x.CustomerRoleId.Value);
-						tierPriceModel.CustomerRole = (role == null ? allRolesString : role.Name);
+						customerRoles.TryGetValue(x.CustomerRoleId.Value, out var role);
+						tierPriceModel.CustomerRole = role?.Name.NullEmpty() ?? allRolesString;
 					}
 					else
 					{
@@ -2781,8 +2799,8 @@ namespace SmartStore.Admin.Controllers
 
 					if (x.StoreId > 0)
 					{
-						var store = allStores.FirstOrDefault(s => s.Id == x.StoreId);
-						tierPriceModel.Store = (store == null ? deletedString : store.Name);
+						stores.TryGetValue(x.StoreId, out var store);
+						tierPriceModel.Store = store?.Name.NullEmpty() ?? deletedString;
 					}
 					else
 					{

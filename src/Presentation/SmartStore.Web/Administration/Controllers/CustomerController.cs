@@ -1387,23 +1387,23 @@ namespace SmartStore.Admin.Controllers
             else if (dataPoint >= userTime.AddDays(-1).Date)
             {
                 var yesterday = reports[1].DataSets[0];
-                yesterday.Quantity[yesterday.Quantity.Length - 1 - dataPoint.Hour]++;
+                yesterday.Quantity[dataPoint.Hour]++;
             }
 
-            // Within last 7 days (older than today and yesterday)
+            // Within last 7 days
             if (dataPoint >= userTime.AddDays(-6).Date)
             {
                 var week = reports[2].DataSets[0];
-                var weekIndex = (userTime - dataPoint).Days;
-                week.Quantity[week.Quantity.Length - weekIndex]++;
+                var weekIndex = (userTime.Date - dataPoint.Date).Days;
+                week.Quantity[week.Quantity.Length - weekIndex - 1]++;
             }
 
-            // Within last 28 days (older than last 7 days)            
+            // Within last 28 days  
             if (dataPoint >= userTime.AddDays(-27).Date)
             {
                 var month = reports[3].DataSets[0];
-                var monthIndex = (userTime - dataPoint).Days / 7;
-                month.Quantity[month.Amount.Length - monthIndex - 1]++;
+                var monthIndex = (userTime.Date - dataPoint.Date).Days / 7;
+                month.Quantity[month.Quantity.Length - monthIndex - 1]++;
             }
 
             // Within this year
@@ -1472,7 +1472,8 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - " + userTime.AddHours(j).AddMinutes(59).ToString("t");
+                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - " 
+                            + userTime.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // Last 7 days
                     else if (i == 2)
@@ -1521,9 +1522,9 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta =  model[i].TotalAmount == 0 || sumBefore[i] == 0
-                    ? 0
-                    : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
+                model[i].PercentageDelta =  model[i].TotalAmount != 0 && sumBefore[i] != 0
+                    ? (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100)
+                    : 0;
             }
 
             return PartialView(model);

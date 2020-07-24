@@ -2824,18 +2824,18 @@ namespace SmartStore.Admin.Controllers
             if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
             {
                 var week = reports[2].DataSets[dataIndex];
-                var weekIndex = 6 - (userTime - dataPoint.CreatedOn).Days;
-                week.Amount[weekIndex] += dataPoint.OrderTotal;
-                week.Quantity[weekIndex]++;
+                var weekIndex = (userTime.Date - dataPoint.CreatedOn.Date).Days;
+                week.Amount[week.Amount.Length - weekIndex - 1] += dataPoint.OrderTotal;
+                week.Quantity[week.Quantity.Length - weekIndex - 1]++;
             }
 
             // Within last 28 days
             if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
             {
                 var month = reports[3].DataSets[dataIndex];
-                var monthIndex = (userTime - dataPoint.CreatedOn).Days / 7;
+                var monthIndex = (userTime.Date - dataPoint.CreatedOn.Date).Days / 7;
                 month.Amount[month.Amount.Length - monthIndex - 1] += dataPoint.OrderTotal;
-                month.Quantity[month.Amount.Length - monthIndex - 1]++;
+                month.Quantity[month.Quantity.Length - monthIndex - 1]++;
             }
 
             // Within this year
@@ -2889,7 +2889,6 @@ namespace SmartStore.Admin.Controllers
                     data.TotalAmount = data.Amount.Sum();
                     data.TotalAmountFormatted = data.TotalAmount.ToString("C0");
                 }
-
                 model[i].TotalAmount = model[i].DataSets.Sum(x => x.TotalAmount);
                 model[i].TotalAmountFormatted = model[i].TotalAmount.ToString("C0");
 

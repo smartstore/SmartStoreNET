@@ -78,8 +78,7 @@ SmartStore.Admin.Charts = {
                     }
                 }
 
-                // Chart config
-                const orders_config = {
+                const chartConfig = {
                     maintainAspectRatio: false,
                     cutoutPercentage: 90,
                     rotation: -0.5 * Math.PI,
@@ -126,7 +125,7 @@ SmartStore.Admin.Charts = {
                                     && data.datasets[0].data[1] == 0) {
                                     return textFulfilled;
                                 }
-                                let d = dataSets[this._chart.id + alreadyExistingCharts].Data[item.index];
+                                const d = dataSets[this._chart.id + alreadyExistingCharts].Data[item.index];
                                 return [textOrders + ':  ' + d.QuantityFormatted, textAmount + ':  ' + d.AmountFormatted];
                             },
                             title: function (item, data) {
@@ -159,7 +158,7 @@ SmartStore.Admin.Charts = {
                     {
                         type: 'doughnut',
                         data: dataDay,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
 
@@ -184,7 +183,7 @@ SmartStore.Admin.Charts = {
                     {
                         type: 'doughnut',
                         data: dataWeek,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
 
@@ -207,7 +206,7 @@ SmartStore.Admin.Charts = {
                     {
                         type: 'doughnut',
                         data: dataMonth,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
 
@@ -230,7 +229,7 @@ SmartStore.Admin.Charts = {
                     {
                         type: 'doughnut',
                         data: dataOverall,
-                        options: orders_config
+                        options: chartConfig
                     }
                 );
             },
@@ -556,8 +555,7 @@ SmartStore.Admin.Charts = {
                                 hitRadius: 3,
                             },
                             line: {
-                                borderWidth: .5,
-                                cubicInterpolationMode: 'monotone',
+                                borderWidth: 0.5,
                             }
                         },
                         tooltips: {

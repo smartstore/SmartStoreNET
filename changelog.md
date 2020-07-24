@@ -20,6 +20,8 @@
 	* Migration: detect duplicate file names.
 * Improved handling of customer roles, e.g. paging for customer role grid.
 * (PERF) Use direct SQL to delete guest customers.
+* Blog & News items: Unpublished items are visible for shop admins now
+
 
 ### Bugfixes
 * Order placement validation now also checks whether the selected payment method has been filtered out.
@@ -31,7 +33,8 @@
 * (perf) Plugin hash calculation was broken in a way that every plugin was redeployed on each app startup
 * A cart rule was not applied if more than one cart rule was assigned to an object.
 * MegaSearch: fixed the incorrect featured sorting.
-* Missing paging for shipment list.
+* Added missing paging for shipment list.
+* #2009 "Show all" link in top brands list is always rendered in new line but should be last item in last row.
 
 
 ## Smartstore 4.0.0

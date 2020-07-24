@@ -26,11 +26,10 @@ SmartStore.Admin.Charts = {
             }
 
             // Set chart and caret position
-            tooltipEl.classList.remove('top', 'bottom', 'center');
+            tooltipEl.classList.remove('top', 'bottom', 'center', 'left', 'right');
             if (tooltip.yAlign) {
                 tooltipEl.classList.add(tooltip.yAlign);
             }
-            tooltipEl.classList.remove('left', 'right', 'center');
             if (tooltip.xAlign) {
                 tooltipEl.classList.add(tooltip.xAlign);
             }
@@ -51,9 +50,7 @@ SmartStore.Admin.Charts = {
 
                 bodyLines.forEach(function (body, i) {
                     const colors = tooltip.labelColors[i];
-                    const style = 'background:' + colors.backgroundColor
-                        + '; border-color:' + colors.borderColor
-                        + '; border-width: 2px';
+                    const style = 'background:' + colors.backgroundColor;
                     const indicator = '<span class="chart-tooltip-indicator" style="' + style + '"></span>';
                     innerHtml += '<div class="chart-tooltip-body">' + indicator + body + '</div>';
                 });
@@ -400,7 +397,7 @@ SmartStore.Admin.Charts = {
                 setPercentageDelta(currentPeriod);
                 const legendElement = document.getElementById('orders-chart-legend');
                 createLegend();
-                setYaxis(chart);
+                setYaxis();
                 chart.update();
 
                 // EventHandler to display selected period data   
@@ -411,9 +408,9 @@ SmartStore.Admin.Charts = {
 
                 //reportElement.querySelectorAll('input[type=radio][name=orders-toggle]')
                 //    .forEach(e =>
-                //        e.addEventListener('change', function () {
+                //        e.addEventListener('click', function (event) {
                 //            setChartData(reportElement.querySelector('input[type=radio][name=orders-toggle]:checked').dataset.period);
-                //        }, true)
+                //        }, false)
                 //    );
 
                 function setChartData(period) {
@@ -422,15 +419,16 @@ SmartStore.Admin.Charts = {
                     for (let i = 0; i < chartConfig.data.datasets.length; i++) {
                         chartConfig.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
                     }
-                    setYaxis(chart);
                     chart = new Chart(chartContext, chartConfig);
-                    setPercentageDelta(period, dataSets);
+                    setPercentageDelta(period);
                     currentPeriod = period;
                     createLegend();
+                    setYaxis();
+                    chart.update();
                 }
 
                 // Get highest combined yAxis value (+ 10% margin) from not hidden datasets
-                function setYaxis(chart) {
+                function setYaxis() {
                     const sumArr = [];
                     const datasets = chart.data.datasets;
                     for (let i = 0; i < datasets['0'].data.length; i++) {
@@ -474,6 +472,16 @@ SmartStore.Admin.Charts = {
                     const legendItems = legendElement.getElementsByTagName('li');
                     for (let i = 0; i < legendItems.length; i++) {
                         legendItems[i].addEventListener('click', legendClickCallback, false);
+                        const dataset = chart.data.datasets[i];
+                        dataset.hidden = Math.max(...dataset.data) <= 0 ? true : false;
+                        if (dataset.hidden) {
+                            legendItems[legendItems.length - i - 1].classList.add('deactive');
+                            legendItems[legendItems.length - i - 1].classList.add('hidden');
+                        }
+                        else {
+                            legendItems[legendItems.length - i - 1].classList.remove('hidden');
+                            legendItems[legendItems.length - i - 1].classList.remove('deactive');
+                        }
                     }
                 }
 
@@ -482,14 +490,15 @@ SmartStore.Admin.Charts = {
                     const chartId = parseInt(this.parentElement.classList[0].split('-')[0], 10);
                     const chart = Chart.instances[chartId];
                     const index = (chart.data.datasets.length - 1) - Array.prototype.slice.call(this.parentElement.children).indexOf(this);
-                    if (chart.data.datasets[index].hidden) {
-                        this.classList.remove('hidden');
-                    }
-                    else {
+                    const dataset = chart.data.datasets[index];
+                    dataset.hidden = Math.max(...chart.data.datasets[index].data) <= 0 ? true : !dataset.hidden;
+                    if (dataset.hidden) {
                         this.classList.add('hidden');
                     }
-                    chart.data.datasets[index].hidden = !chart.data.datasets[index].hidden;
-                    setYaxis(chart);
+                    else {
+                        this.classList.remove('hidden');
+                    }
+                    setYaxis();
                     chart.update();
                 }
             },
@@ -603,7 +612,7 @@ SmartStore.Admin.Charts = {
                 }
                 let chart = new Chart(chartContext, chartConfig);
                 setPercentageDelta(currentPeriod);
-                setYaxis(chart);
+                setYaxis();
                 chart.update();
 
                 // EventHandler to display selected period data       
@@ -626,14 +635,14 @@ SmartStore.Admin.Charts = {
                     for (let i = 0; i < chartConfig.data.datasets.length; i++) {
                         chartConfig.data.datasets[i].data = dataSets[period].DataSets[i].Quantity;
                     }
-                    setYaxis(chart);
+                    setYaxis();
                     chart = new Chart(chartContext, chartConfig);
-                    setPercentageDelta(period, dataSets);
+                    setPercentageDelta(period);
                     currentPeriod = period;
                 }
 
                 // Get highest yAxis value (+ 10% margin)
-                function setYaxis(chart) {
+                function setYaxis() {
                     const yAxisSize = Math.max(...chart.config.data.datasets['0'].data)
                     chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
                 }

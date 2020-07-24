@@ -293,8 +293,13 @@
             user-select: none;
 
             &.hidden {
-                text-decoration: line-through;
+                color: $text-muted;
                 user-select: none;
+            }
+
+            &.deactive {
+                cursor: initial;
+                text-decoration: line-through;
             }
 
             &:not(:last-child) {

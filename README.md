@@ -145,3 +145,7 @@ NOTE: Smartstore 4 requires [Visual C++ Redistributable für Visual Studio 2015]
 ## License
 
 Smartstore Community Edition is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).
+
+## Website
+
+https://smartstore.com

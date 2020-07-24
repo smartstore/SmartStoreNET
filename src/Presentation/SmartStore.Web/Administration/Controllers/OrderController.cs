@@ -2736,29 +2736,26 @@ namespace SmartStore.Admin.Controllers
                     IncompleteOrdersReportAddData(dataPoint, model, 2);
                 }
 
-                // OrdersTotal
-                if (dataPoint.OrderStatusId == (int)OrderStatus.Pending || dataPoint.OrderStatusId == (int)OrderStatus.Processing)
+                // Calculate orders Total for periods
+                // Today
+                if (dataPoint.CreatedOn >= userTime.Date)
                 {
-                    // Today
-                    if (dataPoint.CreatedOn >= userTime.Date)
-                    {
-                        IncompleteOrdersReportAddTotal(dataPoint, model, 0);
-                    }
-                    // This week
-                    else if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
-                    {
-                        IncompleteOrdersReportAddTotal(dataPoint, model, 1);
-                    }
-                    // This month 
-                    else if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
-                    {
-                        IncompleteOrdersReportAddTotal(dataPoint, model, 2);
-                    }
-                    // This year 
-                    else if (dataPoint.CreatedOn.Year == userTime.Year)
-                    {
-                        IncompleteOrdersReportAddTotal(dataPoint, model, 3);
-                    }
+                    IncompleteOrdersReportAddTotal(dataPoint, model, 0);
+                }
+                // This week
+                else if (dataPoint.CreatedOn >= userTime.AddDays(-6).Date)
+                {
+                    IncompleteOrdersReportAddTotal(dataPoint, model, 1);
+                }
+                // This month 
+                else if (dataPoint.CreatedOn >= userTime.AddDays(-27).Date)
+                {
+                    IncompleteOrdersReportAddTotal(dataPoint, model, 2);
+                }
+                // This year 
+                else if (dataPoint.CreatedOn.Year == userTime.Year)
+                {
+                    IncompleteOrdersReportAddTotal(dataPoint, model, 3);
                 }
             }
 

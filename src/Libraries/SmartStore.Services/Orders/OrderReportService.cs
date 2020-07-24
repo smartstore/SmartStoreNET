@@ -385,10 +385,8 @@ namespace SmartStore.Services.Orders
             }
 
             query = query.Where(x =>
-                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped
+                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped 
                 || x.PaymentStatusId == (int)PaymentStatus.Pending
-                || x.OrderStatusId == (int)OrderStatus.Pending
-                || x.OrderStatusId == (int)OrderStatus.Processing
             );
             var dataPoints = query.Select(x => new OrderDataPoint
             {

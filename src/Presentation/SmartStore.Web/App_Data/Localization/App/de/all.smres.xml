@@ -159,9 +159,6 @@
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.CyclesRemaining">
 		<Value>Verbleibende Wiederholungen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.InitialOrder">
-		<Value>Ursprüngliche Bestellung</Value>
-	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.NextPayment">
 		<Value>Nächste Zahlung</Value>
 	</LocaleResource>
@@ -172,7 +169,7 @@
 		<Value>Gesamtzahl</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.RecurringOrders.ViewInitialOrder">
-		<Value>Bestellungsansicht (ID - {0})</Value>
+		<Value>Bestelldetails (ID - {0})</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.CustomerOrders.ReturnItems">
 		<Value>Rücksendeartikel</Value>
@@ -3522,9 +3519,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ACL">
 		<Value>Zugriffsrechte</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ACL.Permission">
-		<Value>Zugriffsrecht</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ActivityLog">
 		<Value>Ereignisprotokoll</Value>
@@ -11313,7 +11307,7 @@
 		<Value>Paket-Datei hochladen &amp; installieren</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess">
-		<Value>Paket wurde hochgeladen und erfolgreich installiert.</Value>
+		<Value>Paket wurde hochgeladen und erfolgreich entpackt. Bitte laden Sie die Liste neu.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Packaging.InstallSuccess.Theme">
 		<Value>Theme wurde hochgeladen und erfolgreich installiert. Bitte laden Sie die Liste neu.</Value>
@@ -12166,6 +12160,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.VatNumberStatus">
 		<Value>Steuernummerstatus</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.Weekday">
+		<Value>Wochentag</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.ZipPostalCode">
 		<Value>PLZ</Value>
@@ -13168,9 +13165,6 @@
 	</LocaleResource>
 	<LocaleResource Name="admin.system.warnings.incompatibleplugin">
 		<Value>'{0}' Plugin ist nicht kompatibel mit Ihrer Smartstore-Version. Löschen Sie es oder installieren Sie die richtige Version.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.System.Warnings.NoCustomerRolesDefined">
-		<Value>Es sind keine Kundengruppen festgelegt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.NoPermissionsDefined">
 		<Value>Es sind keine Zugriffsrechte festgelegt.</Value>
@@ -15596,6 +15590,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.NumericRange">
 		<Value>Numerischer Bereich</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Idle">
+		<Value>Bereit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Rebuilding">
+		<Value>Reindexierend</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Unavailable">
+		<Value>Nicht vorhanden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Search.IndexingStatus.Updating">
+		<Value>Aktualisierend</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Search.SearchMode.Contains">
 		<Value>Beinhaltet (Wildcard)</Value>
@@ -18194,7 +18200,7 @@
 		<Value>Menge</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.QuantityExceedsStock">
-		<Value>Die Bestellmenge übersteigt dem Lagerbestand. Es können maximal {0} bestellt werden.</Value>
+		<Value>Die Bestellmenge übersteigt den Lagerbestand. Es können maximal {0} bestellt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.QuantityShouldPositive">
 		<Value>Die Bestellmenge darf nicht negativ sein.</Value>

@@ -35,16 +35,65 @@
 					@T("Admin.Common.Export.PDF")
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = false })">
-						<i class="far fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ExportPdf")">
+						<i class="far fa-fw fa-file-pdf"></i>
+						<span class="order-process-title">@T("Admin.Common.ExportToPdf.Selected")</span>
 					</a>
-					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = true })">
-						<i class="far fa-fw fa-file-pdf"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
+					<a href="javascript:void(0)" class="dropdown-item process-orders all-allowed" data-url="@Url.Action("ExportPdf")" data-msg="@T("Admin.Common.AskToProceed")">
+						<i class="far fa-fw fa-file-pdf"></i>
+						<span class="order-process-title">@T("Admin.Common.ExportToPdf.All")</span>
 					</a>
 				</div>
 			</div>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
+
+			<div class="dropdown dropdown-menu-right">
+				<button class="btn btn-secondary dropdown-toggle no-chevron" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-fw fa-ellipsis-h"></i>
+				</button>
+				<div class="dropdown-menu dropdown-menu-right">
+					<div class="dropdown-header h6 text-uppercase">
+						@T("Admin.Orders.Fields.OrderStatus")
+					</div>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "complete" })">
+						<i class="fa fa-fw fa-check"></i>
+						<span class="order-process-title">@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "cancel" })">
+						<i class="fa fa-fw fa-times"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
+					</a>
+					<div class="dropdown-divider"></div>
+					<div class="dropdown-header h6 text-uppercase">
+						@T("Admin.Orders.Fields.PaymentStatus")
+					</div>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "markpaid" })" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")">
+						<i class="fa fa-fw"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.MarkAsPaid")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "capture" })" title="@T("Admin.Orders.Fields.Capture.Hint")">
+						<i class="fas fa-fw fa-euro-sign"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.Capture")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "refundoffline" })" title="@T("Admin.Orders.Fields.RefundOffline.Hint")">
+						<i class="fa fa-fw"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.RefundOffline")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "refund" })" title="@T("Admin.Orders.Fields.Refund.Hint")">
+						<i class="fas fa-fw fa-undo-alt"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.Refund")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "voidoffline" })" title="@T("Admin.Orders.Fields.VoidOffline.Hint")">
+						<i class="fa fa-fw"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.VoidOffline")</span>
+					</a>
+					<a href="javascript:void(0)" class="dropdown-item process-orders" data-url="@Url.Action("ProcessOrder", new { operation = "void" })" title="@T("Admin.Orders.Fields.Void.Hint")">
+						<i class="fa fa-fw fa-times"></i>
+						<span class="order-process-title">@T("Admin.Orders.Fields.Void")</span>
+					</a>
+				</div>
+			</div>
         </div>
     </div>
 
@@ -190,7 +239,8 @@
 			// Search button.
 			$('#btnSearch').click(function () {
 				var grid = $('#orders-grid').data('tGrid');
-				grid.currentPage = 1; // New search. Set page size to 1.
+				// New search. Set page size to 1.
+				grid.currentPage = 1;
 				grid.ajaxRequest();
 				// Clear selected checkboxes.
 				$('.checkboxGroups').attr('checked', false).change();
@@ -198,18 +248,41 @@
 				return false;
 			});
 
-			// Export products to PDF.
-			$('a.pdf-export-button').click(function (e) {
+			// Order processing commands (order and payment status, PDF export...).
+			$('a.process-orders').click(function (e) {
 				e.preventDefault();
 
-				if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
-					var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
-					form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
-					form += '</form>';
+				var link = $(this);
+				var allAllowed = link.hasClass('all-allowed');
+				var processSelectedMsg = @T("Admin.Orders.ProcessSelectedOrders").JsText;
+				var processAllMsg = @T("Admin.Common.AskToProceed").JsText;
 
-					$('body').append(form);
-					$('#PdfExportForm').submit();
+				if (!allAllowed && selectedIds.length === 0) {
+					alert2({
+						message: @T("Admin.Orders.NoOrdersSelected").JsText,
+						icon: { type: 'warning' }
+					});
+					return;
 				}
+
+				var msg = link.data('msg') || (selectedIds.length === 0 ? processAllMsg : processSelectedMsg.replace('{0}', selectedIds.length));
+
+				confirm2({
+					title: link.find('.order-process-title').text(),
+                    message: msg,
+                    icon: { type: 'question' },
+					callback: function (accepted) {
+						if (!accepted)
+							return;
+
+						var form = '<form class="order-processing-form" action="' + link.data('url') + '" method="post">';
+						form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+						form += '</form>';
+
+						$('body').append(form);
+						$('form.order-processing-form').last().submit();
+                    }
+                });
 
 				return false;
 			});

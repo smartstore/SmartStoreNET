@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Dashboard;
@@ -1050,21 +1052,152 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List", "Order");
         }
 
+        [HttpPost]
+        [Permission(Permissions.Order.Update)]
+        public ActionResult ProcessOrder(string operation, string selectedIds)
+        {
+            var ids = selectedIds.ToIntArray();
+            var orders = _orderService.GetOrdersByIds(ids);
+            if (!orders.Any() || operation.IsEmpty())
+            {
+                return RedirectToAction("List");
+            }
+
+            const int maxErrors = 3;
+            var success = 0;
+            var skipped = 0;
+            var errors = 0;
+            var errorMessages = new HashSet<string>();
+
+            foreach (var o in orders)
+            {
+                try
+                {
+                    switch (operation)
+                    {
+                        case "cancel":
+                            if (_orderProcessingService.CanCancelOrder(o))
+                            {
+                                _orderProcessingService.CancelOrder(o, true);
+                                ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "complete":
+                            if (_orderProcessingService.CanCompleteOrder(o))
+                            {
+                                _orderProcessingService.CompleteOrder(o);
+                                ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "markpaid":
+                            if (_orderProcessingService.CanMarkOrderAsPaid(o))
+                            {
+                                _orderProcessingService.MarkOrderAsPaid(o);
+                                ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "capture":
+                            if (_orderProcessingService.CanCapture(o))
+                            {
+                                var captureErrors = _orderProcessingService.Capture(o);
+                                errorMessages.AddRange(captureErrors);
+                                if (!captureErrors.Any())
+                                    ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "refundoffline":
+                            if (_orderProcessingService.CanRefundOffline(o))
+                            {
+                                _orderProcessingService.RefundOffline(o);
+                                ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "refund":
+                            if (_orderProcessingService.CanRefund(o))
+                            {
+                                var refundErrors = _orderProcessingService.Refund(o);
+                                errorMessages.AddRange(refundErrors);
+                                if (!refundErrors.Any())
+                                    ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "voidoffline":
+                            if (_orderProcessingService.CanVoidOffline(o))
+                            {
+                                _orderProcessingService.VoidOffline(o);
+                                ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                        case "void":
+                            if (_orderProcessingService.CanVoid(o))
+                            {
+                                var voidErrors = _orderProcessingService.Void(o);
+                                errorMessages.AddRange(voidErrors);
+                                if (!voidErrors.Any())
+                                    ++success;
+                            }
+                            else
+                            {
+                                ++skipped;
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorMessages.Add(ex.Message);
+                    if (++errors <= maxErrors)
+                    {
+                        Logger.Error(ex);
+                    }
+                }
+            }
+
+            var msg = new StringBuilder();
+            msg.Append(T("Admin.Orders.ProcessingResult", success, ids.Length, skipped, skipped == 0 ? " class='hide'" : ""));
+            errorMessages.Take(maxErrors).Each(x => msg.Append($"<div class='text-danger mt-2'>{x}</div>"));
+
+            NotifyInfo(msg.ToString());
+
+            return RedirectToAction("List");
+        }
+
         #endregion
 
         #region Export / Import
 
         [HttpPost]
         [Permission(Permissions.Order.Read)]
-        public ActionResult ExportPdf(bool all, string selectedIds = null)
+        public ActionResult ExportPdf(string selectedIds)
         {
-            if (!all && selectedIds.IsEmpty())
-            {
-                NotifyInfo(T("Admin.Common.ExportNoData"));
-
-                return RedirectToAction("List");
-            }
-
             return RedirectToAction("PrintMany", "Order", new { ids = selectedIds, pdf = true, area = "" });
         }
 

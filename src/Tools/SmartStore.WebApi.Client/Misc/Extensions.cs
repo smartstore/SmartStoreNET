@@ -44,8 +44,10 @@ namespace SmartStoreNetWebApiClient
 
 				combo.Items.Insert(0, str);
 
-				for (i = combo.Items.Count; i > 64; --i)
+				for (i = combo.Items.Count - 1; i > max; --i)
+				{
 					combo.Items.RemoveAt(i);
+				}
 
 				combo.Text = str;
 			}

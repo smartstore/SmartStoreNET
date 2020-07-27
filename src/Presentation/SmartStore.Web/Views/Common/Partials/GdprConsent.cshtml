@@ -3,7 +3,7 @@
 	Layout = "";
 }
 
-<div class="form-group row">
+<div class="form-group row gdpr-consent @(Model.SmallDisplay ? "small" : "")">
 	<div class="col form-control-plaintext">
 		<div class="form-check">
 			@Html.CheckBoxFor(model => model.GdprConsent, new { @class = "form-check-input" })

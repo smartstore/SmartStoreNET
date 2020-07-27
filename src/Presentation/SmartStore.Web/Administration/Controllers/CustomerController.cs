@@ -1381,68 +1381,37 @@ namespace SmartStore.Admin.Controllers
         public void SetCustomerReportData(List<DashboardChartReportModel> reports, DateTime dataPoint)
         {
             var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
-            PeriodState periodStatus;
-            // Today (includes all but yesterday)
+
+            // Today
             if (dataPoint >= userTime.Date)
             {
-                periodStatus = PeriodState.Today;
+                reports[0].DataSets[0].Quantity[dataPoint.Hour]++;
             }
-            // Yesterday (includes all but today)
+            // Yesterday
             else if (dataPoint >= userTime.AddDays(-1).Date)
             {
-                periodStatus = PeriodState.Yesterday;
-            }
-            // Last 7 days (older than today and yesterday)
-            else if (dataPoint >= userTime.AddDays(-6).Date)
-            {
-                periodStatus = PeriodState.Week;
-            }
-            // Last 28 days (older than last 7 days)
-            else if (dataPoint >= userTime.AddDays(-27).Date)
-            {
-                periodStatus = PeriodState.Month;
-            }
-            // This year (older than last 28 days)
-            else
-            {
-                periodStatus = PeriodState.Year;
+                var yesterday = reports[1].DataSets[0];
+                yesterday.Quantity[dataPoint.Hour]++;
             }
 
-            if (periodStatus == PeriodState.Today)
+            // Within last 7 days
+            if (dataPoint >= userTime.AddDays(-6).Date)
             {
-                reports[0].DataSets[0].Quantity[dataPoint.Hour]++;
-                // Ignore yesterday if today
-                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - 1]++;
-            }
-            else if (periodStatus == PeriodState.Yesterday)
-            {
-                // Ignore today if yesterday
-                reports[1].DataSets[0].Quantity[reports[1].DataSets[0].Quantity.Length - 1 - dataPoint.Hour]++;
-                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - 2]++;
-            }
-            else if (periodStatus == PeriodState.Week)
-            {
-                // Ignore today and yesterday
-                var weekIndex = (userTime - dataPoint).Days;
-                reports[2].DataSets[0].Quantity[reports[2].DataSets[0].Quantity.Length - weekIndex]++;
+                var week = reports[2].DataSets[0];
+                var weekIndex = (userTime.Date - dataPoint.Date).Days;
+                week.Quantity[week.Quantity.Length - weekIndex - 1]++;
             }
 
-            // Within last 28 days (older than last 7 days)
-            if (periodStatus == PeriodState.Month)
+            // Within last 28 days  
+            if (dataPoint >= userTime.AddDays(-27).Date)
             {
-                // Ignore last 7 days
-                var delta = (userTime - dataPoint).Days;
-                var monthIndex = delta / 7 - (delta % 7 == 0 ? delta / 7 > 0 ? 1 : 0 : 0);
-                reports[3].DataSets[0].Quantity[reports[3].DataSets[0].Amount.Length - monthIndex - 1]++;
-            }
-            else if (periodStatus != PeriodState.Year)
-            {
-                // Applies to last 7 days
-                reports[3].DataSets[0].Quantity[reports[3].DataSets[0].Quantity.Length - 1]++;
+                var month = reports[3].DataSets[0];
+                var monthIndex = (userTime.Date - dataPoint.Date).Days / 7;
+                month.Quantity[month.Quantity.Length - monthIndex - 1]++;
             }
 
-            // This year - need to check if still this year when period is not today or this year (0 || 4)
-            if (periodStatus == PeriodState.Today || periodStatus == PeriodState.Year || dataPoint.Year == userTime.Year)
+            // Within this year
+            if (dataPoint.Year == userTime.Year)
             {
                 reports[4].DataSets[0].Quantity[dataPoint.Month - 1]++;
             }
@@ -1455,8 +1424,9 @@ namespace SmartStore.Admin.Controllers
         public ActionResult RegisteredCustomersDashboardReport()
         {
             // Get customers of at least last 28 days (if year is younger)
-            var beginningOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
-            var startDate = (DateTime.UtcNow.Date - beginningOfYear).Days < 28 ? DateTime.UtcNow.AddDays(-27).Date : beginningOfYear;
+            var utcNow = DateTime.UtcNow;
+            var beginningOfYear = new DateTime(utcNow.Year, 1, 1);
+            var startDate = (utcNow.Date - beginningOfYear).Days < 28 ? utcNow.AddDays(-27).Date : beginningOfYear;
             var searchQuery = new CustomerSearchQuery
             {
                 RegistrationFromUtc = startDate,
@@ -1485,7 +1455,7 @@ namespace SmartStore.Admin.Controllers
                 SetCustomerReportData(model, _dateTimeHelper.ConvertToUserTime(dataPoint, DateTimeKind.Utc));
             }
 
-            var userTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, DateTimeKind.Utc);
+            var userTime = _dateTimeHelper.ConvertToUserTime(utcNow, DateTimeKind.Utc).Date;
             // Format and sum values, create labels for all dataPoints
             for (int i = 0; i < model.Count; i++)
             {
@@ -1506,55 +1476,59 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.Date.AddHours(j).ToString("t") + " - " + userTime.Date.AddHours(j).AddMinutes(59).ToString("t");
+                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - " 
+                            + userTime.AddHours(j).AddMinutes(59).ToString("t");
+                    }
+                    // Last 7 days
+                    else if (i == 2)
+                    {
+                        model[i].Labels[j] = userTime.AddDays(-6 + j).ToString("m");
+                    }
+                    // Last 28 days
+                    else if (i == 3)
+                    {
+                        var fromDay = -(7 * model[i].Labels.Length);
+                        var toDayOffset = j == model[i].Labels.Length - 1 ? 0 : 1;
+                        model[i].Labels[j] = userTime.AddDays(fromDay + 7 * j).ToString("m") + " - "
+                            + userTime.AddDays(fromDay + 7 * (j + 1) - toDayOffset).ToString("m");
                     }
                     // This year
                     else if (i == 4)
                     {
                         model[i].Labels[j] = new DateTime(userTime.Year, j + 1, 1).ToString("Y");
                     }
-                    // Last 7 days
-                    else if (i == 2)
-                    {
-                        model[i].Labels[j] = userTime.Date.AddDays(-6 + j).ToString("m");
-                    }
-                    // Last 28 days
-                    else
-                    {
-                        model[i].Labels[j] = userTime.Date.AddDays(
-                            -(7 * model[i].Labels.Length) + j * 7).ToString("m") + " - "
-                            + userTime.Date.AddDays(-(7 * model[i].Labels.Length) + (j + 1) * 7 - (j != model[i].Labels.Length - 1 ? 1 : 0)).ToString("m");
-                    }
                 }
             }
 
-            // Get registrations for corresponding period to calculate change in percentage 
+            // Get registrations for corresponding period to calculate change in percentage; TODO: only apply to similar time of day?
             var sumBefore = new decimal[]
             {
                 // Get registration count for day before
                 model[1].TotalAmount,
+
+                // Get registration count for day before yesterday
                 customerDates.Where( x =>
-                    x >= DateTime.UtcNow.Date.AddDays(-2) && x < DateTime.UtcNow.Date.AddDays(-1)
+                    x >= utcNow.Date.AddDays(-2) && x < utcNow.Date.AddDays(-1)
                 ).Count(),
 
                 // Get registration count for week before
                 customerDates.Where( x =>
-                    x >= DateTime.UtcNow.Date.AddDays(-14) && x < DateTime.UtcNow.Date.AddDays(-7)
+                    x >= utcNow.Date.AddDays(-14) && x < utcNow.Date.AddDays(-7)
                 ).Count(),
 
                 // Get registration count for month before
-                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddDays(-56), DateTime.UtcNow.Date.AddDays(-28)),
+                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddDays(-56), utcNow.Date.AddDays(-28)),
 
                 // Get registration count for year before
-                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddYears(-1), DateTime.UtcNow.AddYears(-1))
+                _customerReportService.GetCustomerRegistrations(beginningOfYear.AddYears(-1), utcNow.AddYears(-1))
             };
 
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta = model[i].TotalAmount <= 0 ? 0
-                    : sumBefore[i] <= 0 ? 100
-                    : (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100);
+                model[i].PercentageDelta =  model[i].TotalAmount != 0 && sumBefore[i] != 0
+                    ? (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100)
+                    : 0;
             }
 
             return PartialView(model);

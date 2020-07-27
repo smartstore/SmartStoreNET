@@ -42,13 +42,4 @@ namespace SmartStore.Admin.Models.Dashboard
         public decimal[] Amount { get; set; }
         public string[] AmountFormatted { get; set; }
     }
-
-    public enum PeriodState
-    {
-        Today,
-        Yesterday,
-        Week,
-        Month,
-        Year,
-    }
 }

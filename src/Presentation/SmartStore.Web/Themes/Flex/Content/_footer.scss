@@ -136,6 +136,15 @@
         color: darken($footer-inverse-color-muted, 10%);
         a { color: $ftmh; }
     }
+
+    .gdpr-consent .form-control-plaintext{
+        color: $footer-inverse-color;
+
+        a {
+            color: $footer-inverse-color-muted;
+            &:hover { color: $ftmh; }
+        }
+    }
 }
 
 .footer-social .btn-social {

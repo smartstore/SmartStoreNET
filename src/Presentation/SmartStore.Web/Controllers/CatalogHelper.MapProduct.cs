@@ -461,7 +461,7 @@ namespace SmartStore.Web.Controllers
 					FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, !_catalogSettings.HideProductDefaultPictures),
 					FullSizeImageWidth = file?.Dimensions.Width,
 					FullSizeImageHeight = file?.Dimensions.Height,
-					Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
+					Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
 					AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
                     File = file
 				};

@@ -125,7 +125,7 @@ namespace SmartStore.Web.Controllers
                 PictureId = file?.Id ?? 0,
                 Size = pictureSize,
                 ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !catalogSettings.HideProductDefaultPictures),
-                Title = T("Media.Product.ImageLinkTitleFormat", productName),
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? T("Media.Product.ImageLinkTitleFormat", productName),
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", productName),
                 File = file
             };

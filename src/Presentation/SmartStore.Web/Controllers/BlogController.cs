@@ -113,7 +113,7 @@ namespace SmartStore.Web.Controllers
                 FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
-                Title = blogPost.Title,
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? blogPost.Title,
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? blogPost.Title,
                 File = file
             };

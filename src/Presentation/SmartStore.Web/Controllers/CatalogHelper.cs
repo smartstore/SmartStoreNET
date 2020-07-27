@@ -212,7 +212,7 @@ namespace SmartStore.Web.Controllers
                         FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
                         FullSizeImageWidth = file?.Dimensions.Width,
                         FullSizeImageHeight = file?.Dimensions.Height,
-                        Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), name),
+                        Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? string.Format(T("Media.Category.ImageLinkTitleFormat"), name),
                         AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Category.ImageAlternateTextFormat"), name),
                         File = file
                     };
@@ -585,9 +585,9 @@ namespace SmartStore.Web.Controllers
 				FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
 				FullSizeImageWidth = file?.Width,
 				FullSizeImageHeight = file?.Height,
-				Title = model.Name,
-				AlternateText = model.AlternateText,
-                File = _mediaService.ConvertMediaFile(file)
+				AlternateText = file?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? model.AlternateText,
+				Title = file?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? model.Name,
+				File = _mediaService.ConvertMediaFile(file)
 			};
 
 			return result;
@@ -1503,7 +1503,7 @@ namespace SmartStore.Web.Controllers
 				PictureId = manufacturer.MediaFileId.GetValueOrDefault(),
 				Size = _mediaSettings.ManufacturerThumbPictureSize,
 				ImageUrl = _mediaService.GetUrl(file, _mediaSettings.ManufacturerThumbPictureSize, null, !_catalogSettings.HideManufacturerDefaultPictures),
-				Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
+				Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
 				AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName),
                 File = file
 			};

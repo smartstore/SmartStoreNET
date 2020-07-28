@@ -29,10 +29,21 @@
 				<div class="gal-list">
 					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
 						@for (int i = 0; i < Model.PictureModels.Count; i++)
-						{
-							var picture = Model.PictureModels[i];
-							var title = T("Product.ThumbTitle", picture.Title, (i + 1).ToString());
-							var alternateText = T("Product.ThumbAlternateText", picture.AlternateText, (i + 1).ToString());
+                        {
+                            var picture = Model.PictureModels[i];
+                            var linkTitle = T("Product.ThumbTitle", Model.Name, (i + 1).ToString());
+                            var picAlternateText = T("Product.ThumbAlternateText", Model.Name, (i + 1).ToString());
+                            var picTitle = linkTitle;
+
+                            if (picture.AlternateText != null && picture.AlternateText.Equals(Model.Name) == false)
+                            {
+								picAlternateText = picture.AlternateText;
+                            }
+
+							if (picture.Title != null && picture.Title.Equals(Model.Name) == false)
+                            {
+								picTitle = picture.Title;
+                            }
 
 							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
 								<a class="gal-item-viewport"
@@ -41,9 +52,9 @@
 								   data-width="@picture.FullSizeImageWidth"
 								   data-height="@picture.FullSizeImageHeight"
 								   data-medium-image="@picture.ImageUrl"
-								   title="@title"
+								   title="@linkTitle"
 								   data-picture-id="@picture.PictureId">
-									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@alternateText" />
+									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picAlternateText" title="@picTitle" />
 								</a>
 							</figure>
 						}

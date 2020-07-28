@@ -382,7 +382,7 @@ namespace SmartStore.Web.Controllers
                 Size = 512,
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
-                Title = newsItem.Title,
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? newsItem.Title,
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? newsItem.Title,
                 File = file
             };

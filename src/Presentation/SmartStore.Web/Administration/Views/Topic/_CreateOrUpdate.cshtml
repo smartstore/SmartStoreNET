@@ -134,7 +134,7 @@
                 @Html.SmartLabelFor(model => model.RenderAsWidget)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget, #pnlTopicAttrValues" })
+				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget, #pnlTopicAttrValues, #pnlWidgetWrapContent" })
                 @Html.ValidationMessageFor(model => model.RenderAsWidget)
             </td>
         </tr>

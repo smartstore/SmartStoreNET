@@ -149,6 +149,12 @@ namespace SmartStore.Admin.Controllers
             };
 
             PrepareStoresMappingModel(model, null, false);
+
+            //default values
+            model.Published = true;
+            model.AllowComments = true;
+            model.CreatedOn = DateTime.UtcNow;
+
             return View(model);
         }
 
@@ -162,7 +168,7 @@ namespace SmartStore.Admin.Controllers
 
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
-                newsItem.CreatedOnUtc = DateTime.UtcNow;
+                newsItem.CreatedOnUtc = model.CreatedOn;
                 _newsService.InsertNews(newsItem);
 
                 // Search engine name.
@@ -197,6 +203,7 @@ namespace SmartStore.Admin.Controllers
             var model = newsItem.ToModel();
             model.StartDate = newsItem.StartDateUtc;
             model.EndDate = newsItem.EndDateUtc;
+            model.CreatedOn = newsItem.CreatedOnUtc;
 
             PrepareStoresMappingModel(model, newsItem, false);
 
@@ -217,6 +224,7 @@ namespace SmartStore.Admin.Controllers
 
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
+                newsItem.CreatedOnUtc = model.CreatedOn;
                 _newsService.UpdateNews(newsItem);
 
                 // Search engine name.

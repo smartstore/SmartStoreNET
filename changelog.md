@@ -1,5 +1,17 @@
 # Release Notes
 
+## Smartstore 4.1.0
+### New Features
+* #2012 Added paging and sorting for bestsellers report.
+* #2014 Added paging and sorting for top customers report.
+* #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
+* #1239 Added configurability of the password strength.
+
+### Improvements
+* #1981 Added grouping for cart rules.
+* #1407 Added menu to set order and payment status for orders checked in backend grid.
+
+
 ## Smartstore 4.0.1
 ### New Features
 

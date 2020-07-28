@@ -14,8 +14,8 @@
 
 @Html.SmartStore().TabStrip().Name("customer-reports").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text("Admin.Customers.Reports.BestCustomers").Content(TabBestCustomers()).Selected(true);
-    x.Add().Text(T("Admin.Customers.Reports.RegisteredCustomers").Text).Content(TabRegisteredCustomers());
+    x.Add().Text(T("Admin.Customers.Reports.BestCustomers")).Content(TabBestCustomers()).Selected(true);
+    x.Add().Text(T("Admin.Customers.Reports.RegisteredCustomers")).Content(TabRegisteredCustomers());
 
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-reports", this.Html, this.Model));
 })

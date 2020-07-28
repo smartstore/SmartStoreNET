@@ -8,9 +8,9 @@
 @{
 	Layout = "_Layout";
 
-	Html.AddTitleParts(Model.MetaTitle.Value.NullEmpty() ?? Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription.Value);
-	Html.AddMetaKeywordParts(Model.MetaKeywords.Value);
+	Html.AddTitleParts(Html.Encode(Model.MetaTitle.Value.NullEmpty() ?? Model.Name));
+	Html.AddMetaDescriptionParts(Html.Encode(Model.MetaDescription.Value));
+	Html.AddMetaKeywordParts(Html.Encode(Model.MetaKeywords.Value));
 
 	var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 	if (Model.CanonicalUrlsEnabled)

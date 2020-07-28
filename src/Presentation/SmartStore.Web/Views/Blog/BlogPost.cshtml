@@ -3,9 +3,9 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Title);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Html.AddTitleParts(Html.Encode(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Title));
+    Html.AddMetaDescriptionParts(Html.Encode(Model.MetaDescription));
+    Html.AddMetaKeywordParts(Html.Encode(Model.MetaKeywords));
 }
 
 @section right {

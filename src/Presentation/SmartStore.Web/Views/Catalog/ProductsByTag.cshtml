@@ -10,8 +10,8 @@
 
 @{
 	//title
-	Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
-	Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+	Html.AddTitleParts(Html.Encode(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName)));
+	Html.AddMetaDescriptionParts(Html.Encode(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName)));
 
 	//canonical URL
 	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;

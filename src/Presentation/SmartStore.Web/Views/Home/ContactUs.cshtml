@@ -3,9 +3,9 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Html.AddTitleParts(Html.Encode(Model.MetaTitle.HasValue() ? Model.MetaTitle : T("PageTitle.ContactUs").Text));
+    Html.AddMetaDescriptionParts(Html.Encode(Model.MetaDescription));
+    Html.AddMetaKeywordParts(Html.Encode(Model.MetaKeywords));
 }
 
 <div class="page contact-page">

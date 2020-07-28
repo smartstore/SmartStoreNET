@@ -4,7 +4,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Model.Name);
+    Html.AddTitleParts(Html.Encode(Model.Name));
 }
 
 <div class="page forum-group-page">

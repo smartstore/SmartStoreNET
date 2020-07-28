@@ -5,7 +5,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Model.ProductName.Value);
+    Html.AddTitleParts(Html.Encode(Model.ProductName.Value));
     Html.AddTitleParts(T("PageTitle.ProductReviews").Text);
 }
 

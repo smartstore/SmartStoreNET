@@ -4,8 +4,8 @@
 @model ForumTopicPageModel
 @{
     Layout = "_Layout";
-    Html.AddTitleParts(Model.Subject);
-    Html.AddMetaDescriptionParts(Model.Subject);
+    Html.AddTitleParts(Html.Encode(Model.Subject));
+    Html.AddMetaDescriptionParts(Html.Encode(Model.Subject));
 }
 
 <script type="text/javascript">

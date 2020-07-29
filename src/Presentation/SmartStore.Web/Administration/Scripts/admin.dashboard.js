@@ -66,6 +66,42 @@ SmartStore.Admin.Charts = {
             tooltipEl.style.marginTop = tooltip.caretY - canvasHeight + 'px';
         };
 
+        const chartToggleListener = function (el, currentPeriod, setChartData) {
+            el.querySelectorAll(".btn-dashboard")
+                .forEach(e => {
+                    e.addEventListener("click", function (event) {
+                        // Get toggle elements period
+                        const period = event.target.querySelector('input').dataset.period;
+                        if (period != currentPeriod) {
+                            setChartData(period);
+                        }
+                    })
+                });
+        }
+
+        const setPercentageDelta = function (datasets, chevronEl, percentEl, sumEl) {
+            let delta = '';
+            if (datasets.PercentageDelta < 0) {
+                chevronEl.classList.add('negative');
+                chevronEl.classList.remove('d-none');
+                percentEl.classList.remove('text-success');
+                percentEl.classList.add('text-danger');
+                delta = '-' + Math.abs(datasets.PercentageDelta) + '%';
+            }
+            else if (datasets.PercentageDelta > 0) {
+                chevronEl.classList.remove('negative');
+                chevronEl.classList.remove('d-none');
+                percentEl.classList.add('text-success');
+                percentEl.classList.remove('text-danger');
+                delta = '+' + Math.abs(datasets.PercentageDelta) + '%';;
+            }
+            else {
+                chevronEl.classList.add('d-none');
+            }
+            percentEl.innerText = delta;
+            sumEl.innerText = datasets.TotalAmountFormatted;
+        }
+
         return {
             IncompleteOrdersCharts: function (dataSets, textFulfilled, textNotShipped, textNotPayed, textNewOrders, textOrders, textAmount) {
                 for (let i = 0; i < dataSets.length; i++) {
@@ -394,24 +430,13 @@ SmartStore.Admin.Charts = {
                     },
                 }
                 let chart = new Chart(chartContext, chartConfig);
-                setPercentageDelta(currentPeriod);
+                setPercentageDelta(dataSets[currentPeriod], chevronElement, percentageElement, sumElement);
+
                 const legendElement = document.getElementById('orders-chart-legend');
                 createLegend();
                 setYaxis();
                 chart.update();
-
-                // EventHandler to display selected period data   
-                // TODO: Use Javascript native eventlistener
-                $('input[type=radio][name=orders-toggle]').on('change', function () {
-                    setChartData($('input:radio[name=orders-toggle]:checked').data('period'));
-                });
-
-                //reportElement.querySelectorAll('input[type=radio][name=orders-toggle]')
-                //    .forEach(e =>
-                //        e.addEventListener('click', function (event) {
-                //            setChartData(reportElement.querySelector('input[type=radio][name=orders-toggle]:checked').dataset.period);
-                //        }, false)
-                //    );
+                chartToggleListener(reportElement, currentPeriod, setChartData);
 
                 function setChartData(period) {
                     chart.destroy();
@@ -420,7 +445,7 @@ SmartStore.Admin.Charts = {
                         chartConfig.data.datasets[i].data = dataSets[period].DataSets[i].Amount;
                     }
                     chart = new Chart(chartContext, chartConfig);
-                    setPercentageDelta(period);
+                    setPercentageDelta(dataSets[period], chevronElement, percentageElement, sumElement);
                     currentPeriod = period;
                     createLegend();
                     setYaxis();
@@ -440,30 +465,6 @@ SmartStore.Admin.Charts = {
                     }
                     const yAxisSize = Math.max(...sumArr);
                     chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
-                }
-
-                function setPercentageDelta(period) {
-                    let delta = '';
-                    const val = dataSets[period].PercentageDelta;
-                    if (val < 0) {
-                        chevronElement.classList.add('negative');
-                        chevronElement.classList.remove('d-none');
-                        percentageElement.classList.remove('text-success');
-                        percentageElement.classList.add('text-danger');
-                        delta = '-' + Math.abs(val) + '%';
-                    }
-                    else if (val > 0) {
-                        chevronElement.classList.remove('negative');
-                        chevronElement.classList.remove('d-none');
-                        percentageElement.classList.add('text-success');
-                        percentageElement.classList.remove('text-danger');
-                        delta = '+' + Math.abs(val) + '%';;
-                    }
-                    else {
-                        chevronElement.classList.add('d-none');
-                    }
-                    percentageElement.innerText = delta;
-                    sumElement.innerText = dataSets[period].TotalAmountFormatted;
                 }
 
                 // Custom chart legend
@@ -486,7 +487,7 @@ SmartStore.Admin.Charts = {
                 }
 
                 // Custom chart legend callback
-                function legendClickCallback(event) {
+                function legendClickCallback() {
                     const chartId = parseInt(this.parentElement.classList[0].split('-')[0], 10);
                     const chart = Chart.instances[chartId];
                     const index = (chart.data.datasets.length - 1) - Array.prototype.slice.call(this.parentElement.children).indexOf(this);
@@ -516,7 +517,6 @@ SmartStore.Admin.Charts = {
                 successGradient.addColorStop(0, reportStyle.getPropertyValue('--chart-color-success'));
                 successGradient.addColorStop(1, reportStyle.getPropertyValue('--chart-color-success-light'));
 
-                // Chart config
                 const chartConfig = {
                     type: 'line',
                     data: {
@@ -611,23 +611,10 @@ SmartStore.Admin.Charts = {
                     },
                 }
                 let chart = new Chart(chartContext, chartConfig);
-                setPercentageDelta(currentPeriod);
+                setPercentageDelta(dataSets[currentPeriod], chevronElement, percentageElement, sumElement);
                 setYaxis();
                 chart.update();
-
-                // EventHandler to display selected period data       
-                //reportElement.querySelectorAll('input[type=radio][name=customers-toggle]')
-                //    .forEach(e =>
-                //        e.addEventListener('change', function () {
-                //            setChartData(reportElement.querySelector('input[type=radio][name=customers-toggle]:checked').dataset.period);
-                //        }, true)
-                //    );
-
-                // EventHandler to display selected period data 
-                // TODO: Use Javascript native eventlistener
-                $('input[type=radio][name=customers-toggle]').on('change', function () {
-                    setChartData($('input:radio[name=customers-toggle]:checked').data('period'));
-                });
+                chartToggleListener(reportElement, currentPeriod, setChartData);
 
                 function setChartData(period) {
                     chart.destroy();
@@ -637,7 +624,7 @@ SmartStore.Admin.Charts = {
                     }
                     setYaxis();
                     chart = new Chart(chartContext, chartConfig);
-                    setPercentageDelta(period);
+                    setPercentageDelta(dataSets[period], chevronElement, percentageElement, sumElement);
                     currentPeriod = period;
                 }
 
@@ -645,30 +632,6 @@ SmartStore.Admin.Charts = {
                 function setYaxis() {
                     const yAxisSize = Math.max(...chart.config.data.datasets['0'].data)
                     chart.config.options.scales.yAxes[0].ticks.max = yAxisSize == 0 ? 1 : yAxisSize * 1.1;
-                }
-
-                function setPercentageDelta(period) {
-                    let delta = '';
-                    const val = dataSets[period].PercentageDelta;
-                    if (val < 0) {
-                        chevronElement.classList.add('negative');
-                        chevronElement.classList.remove('d-none');
-                        percentageElement.classList.remove('text-success');
-                        percentageElement.classList.add('text-danger');
-                        delta = '-' + Math.abs(val) + '%';
-                    }
-                    else if (val > 0) {
-                        chevronElement.classList.remove('negative');
-                        chevronElement.classList.remove('d-none');
-                        percentageElement.classList.add('text-success');
-                        percentageElement.classList.remove('text-danger');
-                        delta = '+' + Math.abs(val) + '%';
-                    }
-                    else {
-                        chevronElement.classList.add('d-none');
-                    }
-                    percentageElement.innerText = delta;
-                    sumElement.innerText = dataSets[period].TotalAmountFormatted;
                 }
             }
         }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using SmartStore.Core.Domain.Directory;
 using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -19,10 +20,12 @@ namespace SmartStore.Core.Domain.Catalog
         public string Sku { get; set; }
 
 		[DataMember]
+        [Index]
 		public string Gtin { get; set; }
 
 		[DataMember]
-		public string ManufacturerPartNumber { get; set; }
+        [Index]
+        public string ManufacturerPartNumber { get; set; }
 
 		[DataMember]
 		public decimal? Price { get; set; }
@@ -58,7 +61,8 @@ namespace SmartStore.Core.Domain.Catalog
         public virtual QuantityUnit QuantityUnit { get; set; }
 
 		[DataMember]
-		public bool IsActive { get; set; }
+        [Index]
+        public bool IsActive { get; set; }
 		//public bool IsDefaultCombination { get; set; }
 
         public int[] GetAssignedMediaIds()

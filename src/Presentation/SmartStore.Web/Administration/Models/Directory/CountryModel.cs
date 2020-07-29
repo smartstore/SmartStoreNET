@@ -58,7 +58,11 @@ namespace SmartStore.Admin.Models.Directory
 		[SmartResourceDisplayName("Admin.Configuration.Countries.Fields.AddressFormat")]
 		public string AddressFormat { get; set; }
 
-		public IList<CountryLocalizedModel> Locales { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.DefaultCurrency")]
+        public int? DefaultCurrencyId { get; set; }
+        public IList<SelectListItem> AllCurrencies { get; set; }
+
+        public IList<CountryLocalizedModel> Locales { get; set; }
 
         // Store mapping.
         [UIHint("Stores")]

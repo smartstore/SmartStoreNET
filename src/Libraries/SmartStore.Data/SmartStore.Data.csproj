@@ -486,6 +486,10 @@
     <Compile Include="Migrations\202007241131557_V401Resources.Designer.cs">
       <DependentUpon>202007241131557_V401Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202007281854354_NewPropertiesAndIndexes.cs" />
+    <Compile Include="Migrations\202007281854354_NewPropertiesAndIndexes.Designer.cs">
+      <DependentUpon>202007281854354_NewPropertiesAndIndexes.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -880,6 +884,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202007241131557_V401Resources.resx">
       <DependentUpon>202007241131557_V401Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007281854354_NewPropertiesAndIndexes.resx">
+      <DependentUpon>202007281854354_NewPropertiesAndIndexes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -87,6 +87,17 @@ namespace SmartStore.Core.Domain.Directory
 		public string AddressFormat { get; set; }
 
 		/// <summary>
+		/// Gets or sets the identfier of the default currency.
+		/// </summary>
+		[DataMember]
+		public int? DefaultCurrencyId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the default currency.
+		/// </summary>
+		public virtual Currency DefaultCurrency { get; set; }
+
+		/// <summary>
 		/// Gets or sets the state/provinces
 		/// </summary>
 		public virtual ICollection<StateProvince> StateProvinces

@@ -33,8 +33,11 @@ namespace SmartStore.Web.Framework
         private readonly ICacheManager _cacheManager;
 		private readonly Lazy<ITaxService> _taxService;
 		private readonly IUserAgent _userAgent;
+        private readonly IWebHelper _webHelper;
+        private readonly IGeoCountryLookup _geoCountryLookup;
+        private readonly ICountryService _countryService;
 
-		private TaxDisplayType? _cachedTaxDisplayType;
+        private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
         private Customer _cachedCustomer;
         private Currency _cachedCurrency;
@@ -53,7 +56,10 @@ namespace SmartStore.Web.Framework
             TaxSettings taxSettings,
             LocalizationSettings localizationSettings,
 			Lazy<ITaxService> taxService,
-			IUserAgent userAgent)
+			IUserAgent userAgent,
+            IWebHelper webHelper,
+            IGeoCountryLookup geoCountryLookup,
+            ICountryService countryService)
         {
 			_cacheManager = cacheManager;
             _httpContext = httpContext;
@@ -67,6 +73,9 @@ namespace SmartStore.Web.Framework
 			_taxService = taxService;
             _localizationSettings = localizationSettings;
 			_userAgent = userAgent;
+            _webHelper = webHelper;
+            _geoCountryLookup = geoCountryLookup;
+            _countryService = countryService;
         }
 
         /// <summary>
@@ -355,7 +364,9 @@ namespace SmartStore.Web.Framework
             get
             {
                 if (_cachedCurrency != null)
+                {
                     return _cachedCurrency;
+                }
 
                 Currency currency = null;
 
@@ -393,6 +404,21 @@ namespace SmartStore.Web.Framework
 					{
 						currency = storeCurrenciesMap[storeCurrenciesMap.Keys.First()];
 					}
+
+                    // Default currency of country to which the current IP address belongs.
+                    if (currency == null)
+                    {
+                        var ipAddress = _webHelper.GetCurrentIpAddress();
+                        var lookupCountry = _geoCountryLookup.LookupCountry(ipAddress);
+                        if (lookupCountry != null)
+                        {
+                            var country = _countryService.GetCountryByTwoLetterIsoCode(lookupCountry.IsoCode);
+                            if (country?.DefaultCurrency?.Published ?? false)
+                            {
+                                currency = country.DefaultCurrency;
+                            }
+                        }
+                    }
 
 					// find currency by domain ending
 					if (currency == null && _httpContext?.Request?.Url != null)

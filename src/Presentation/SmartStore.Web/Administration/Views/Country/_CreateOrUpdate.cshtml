@@ -127,6 +127,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultCurrencyId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => Model.DefaultCurrencyId, Model.AllCurrencies, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.DefaultCurrencyId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SelectedStoreIds)
             </td>
             <td class="adminData">

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Rules.Domain;
@@ -42,18 +43,23 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating whether the customer role is active
         /// </summary>
         [DataMember]
+        [Index]
         public bool Active { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the customer role is system
         /// </summary>
         [DataMember]
+        [Index]
+        [Index("IX_CustomerRole_SystemName_IsSystemRole", 2)]
         public bool IsSystemRole { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role system name
         /// </summary>
         [DataMember]
+        [Index]
+        [Index("IX_CustomerRole_SystemName_IsSystemRole", 1)]
         public string SystemName { get; set; }
 
         /// <summary>

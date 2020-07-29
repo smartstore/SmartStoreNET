@@ -468,7 +468,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             model.Projection.AvailableCurrencies = allCurrencies
-                .Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+                .Select(y => new SelectListItem { Text = y.GetLocalized(z => z.Name), Value = y.Id.ToString() })
                 .ToList();
 
             // Filtering.

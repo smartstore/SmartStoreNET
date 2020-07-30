@@ -19,19 +19,19 @@
 }
 
 <div class="offcanvas-cart-body offcanvas-scrollable">
-	@if (Model.TotalProducts == 0)
+    @if (Model.TotalProducts == 0)
     {
-		<div class="no-items">
-			<h4 class="no-item-title">
-				@T("ShoppingCart.Mini.EmptyCart.Title")
-			</h4>
-			<p class="no-item-icon">
-				<i class="fa fa-shopping-basket fa-4x"></i>
-			</p>
-			<p class="no-item-info text-muted">
-				@T("ShoppingCart.Mini.EmptyCart.Info", "fa fa-lg fa-cart-arrow-down")
-			</p>
-		</div>
+        <div class="no-items">
+            <h4 class="no-item-title">
+                @T("ShoppingCart.Mini.EmptyCart.Title")
+            </h4>
+            <p class="no-item-icon">
+                <i class="fa fa-shopping-basket fa-4x"></i>
+            </p>
+            <p class="no-item-info text-muted">
+                @T("ShoppingCart.Mini.EmptyCart.Info", "fa fa-lg fa-cart-arrow-down")
+            </p>
+        </div>
     }
 
     @if (Model.TotalProducts > 0)
@@ -41,83 +41,89 @@
 
         if (currentItem != null)
         {
-			<div class="alert alert-success alert-dismissible rounded-0 fade show" role="alert">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<span @Html.LanguageAttributes(currentItem.ProductName)>
-					@Html.Raw(T("ShoppingCart.Mini.AddedItemToCart", "<strong>" + currentItem.ProductName.Value.Truncate(50, "...") + "</strong>").Text)
-				</span>
-			</div>
+            <div class="alert alert-success alert-dismissible rounded-0 fade show" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span @Html.LanguageAttributes(currentItem.ProductName)>
+                    @Html.Raw(T("ShoppingCart.Mini.AddedItemToCart", "<strong>" + currentItem.ProductName.Value.Truncate(50, "...") + "</strong>").Text)
+                </span>
+            </div>
         }
 
-		<div class="offcanvas-cart-items">
-			@foreach (var item in Model.Items)
+        <div class="offcanvas-cart-items">
+            @foreach (var item in Model.Items)
             {
-				<div class="offcanvas-cart-item">
-					<div class="row sm-gutters">
-						@if (Model.ShowProductImages)
+                <div class="offcanvas-cart-item">
+                    <div class="row sm-gutters">
+                        @if (Model.ShowProductImages)
                         {
-							<div class="col col-alpha">
-								@if (item.Picture.ImageUrl.HasValue())
+                            <div class="col col-alpha">
+                                @if (item.Picture.ImageUrl.HasValue())
                                 {
-									<a class="img-center-container" href="@item.ProductUrl" title="@item.Picture.Title">
-										<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-									</a>
+                                    <a class="img-center-container" href="@item.ProductUrl" title="@item.Picture.Title">
+                                        <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                    </a>
                                 }
-							</div>
+                            </div>
                         }
 
-						<div class="col col-data">
-							<a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
-							<div class="short-desc text-muted" @Html.LanguageAttributes(item.ShortDesc)>
-								@Html.Raw(item.ShortDesc.Value.Truncate(descMaxLength, "..."))
-							</div>
+                        <div class="col col-data">
+                            <a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+                            <div class="short-desc text-muted" @Html.LanguageAttributes(item.ShortDesc)>
+                                @Html.Raw(item.ShortDesc.Value.Truncate(descMaxLength, "..."))
+                            </div>
 
-							@if (item.AttributeInfo.HasValue())
+                            @if (item.AttributeInfo.HasValue())
                             {
-								<div class="attributes">
-									@Html.Raw(item.AttributeInfo)
-								</div>
+                                <div class="attributes">
+                                    @Html.Raw(item.AttributeInfo)
+                                </div>
                             }
 
-							@if (item.BundleItems.Count > 0)
+                            @if (item.BundleItems.Count > 0)
                             {
-								<div class="mb-bundle-pictures mt-3">
-									@for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
-									{
-										var bundleItem = item.BundleItems[j];
+                                <div class="mb-bundle-pictures mt-3">
+                                    @for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
+                                    {
+                                        var bundleItem = item.BundleItems[j];
 
-										if (bundleItem.PictureUrl.HasValue())
-										{
-											<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
-												<img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" />
-											</a>
-										}
+                                        if (bundleItem.PictureUrl.HasValue())
+                                        {
+                                            <a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+                                                <img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" />
+                                            </a>
+                                        }
 
-										if (bundlelength != (j + 1))
-										{
-											<i class="fa fa-plus"></i>
+                                        if (bundlelength != (j + 1))
+                                        {
+                                            <i class="fa fa-plus"></i>
                                         }
                                     }
-								</div>
+                                </div>
                             }
-						</div>
-					</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row sm-gutters flex-wrap align-items-center mt-2">
+                        <div class="col col-alpha">
+                           @Html.EditorFor(x => item, "QtyInput", new
+                           {
+                               htmlAttributes = new
+                               {
+                                   data_update_url = Url.Action("UpdateCartItem", "ShoppingCart"),
+                                   data_type = "cart",
+                                   data_sci_id = item.Id,
+                               }
+                           })
+                        </div>
+                        <div class="col">
+                            <span class="price unit-price">
+                                @item.UnitPrice
+                            </span>
+                        </div>
 
-					<div class="row sm-gutters flex-wrap align-items-center mt-2">
-						<div class="col col-alpha">
-                            @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new {
-                               data_update_url = Url.Action("UpdateCartItem", "ShoppingCart"), data_type = "cart", data_sci_id = item.Id }
-                            })
-						</div>
-						<div class="col">
-							<span class="price unit-price">
-								@item.UnitPrice
-							</span>
-						</div>
-
-						<div class="ml-auto text-nowrap">
+                        <div class="ml-auto text-nowrap">
                             @if (Model.DisplayMoveToWishlistButton)
                             {
                                 <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title="@T("ShoppingCart.MoveToWishlist")"
@@ -130,22 +136,22 @@
                                     <i class="fal fa-heart"></i>
                                 </a>
                             }
-							<a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link" title="@T("Common.Remove")"
-							   href="#"
-							   rel="nofollow"
-							   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
-							   data-name="@item.ProductName"
-							   data-type="cart"
-							   data-action="remove">
-								<i class="fal fa-trash-alt"></i>
-							</a>
-						</div>
-					</div>
-				</div>
+                            <a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link" title="@T("Common.Remove")"
+                               href="#"
+                               rel="nofollow"
+                               data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
+                               data-name="@item.ProductName"
+                               data-type="cart"
+                               data-action="remove">
+                                <i class="fal fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             }
-		</div>
+        </div>
     }
-	@{ Html.RenderWidget("offcanvas_cart_items_after"); }
+    @{ Html.RenderWidget("offcanvas_cart_items_after"); }
 </div>
 
 @if (Model.TotalProducts == 0)
@@ -154,58 +160,47 @@
 }
 
 <div class="offcanvas-cart-footer">
-	<div class="offcanvas-cart-footer-row">
-		<div class="offcanvas-cart-footer-col mr-3">
-			<div>
-				<div class="sub-total-caption">
-					@T("ShoppingCart.Totals.SubTotal"):
-				</div>
-				<div class="sub-total price">
-					@Model.SubTotal
-				</div>
-			</div>
-		</div>
-		<div class="offcanvas-cart-footer-col row sm-gutters d-flex flex-wrap">
-			@if (Model.DisplayCheckoutButton)
-            {
-				<div class="col">
-					<a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
-						@T("ShoppingCart.Mini.ViewCart")
-					</a>
-				</div>
-				<div class="col">
-					<a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
-						<i class="fa fa-check"></i>
-						<span>@T("Checkout.Button")</span>
-					</a>
-				</div>
-            }
-            else
-            {
-				<div class="col">
-					<a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
-						<i class="fa fa-check"></i>
-						<span>@T("ShoppingCart.Mini.ViewCart")</span>
-					</a>
-				</div>
-            }
-		</div>
-	</div>
+    <div class="offcanvas-cart-footer-row">
+        <div class="offcanvas-cart-footer-col mr-3">
+            <div>
+                <div class="sub-total-caption">
+                    @T("ShoppingCart.Totals.SubTotal"):
+                </div>
+                <div class="sub-total price">
+                    @Model.SubTotal
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas-cart-footer-col row sm-gutters d-flex flex-wrap">
+            <div class="col">
+                <a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")" id="mini-cart-basket">
+                    <i class="fa fa-check d-none"></i>
+                    <span>@T("ShoppingCart.Mini.ViewCart")</span>
+                </a>
+            </div>
+            <div class="col @(Model.DisplayCheckoutButton ? "" : "d-none")" id="mini-cart-checkout">
+                <a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
+                    <i class="fa fa-check"></i>
+                    <span>@T("Checkout.Button")</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
-    @{ 
+    @{
         Html.RenderWidget("offcanvas_cart_footer_after");
 
         var summaryHtml = Html.Widget("offcanvas_cart_summary").ToHtmlString();
-	}
+    }
 
-	@if (summaryHtml.HasValue())
-	{
-		<div class="offcanvas-cart-external-checkout">
-			<div class="d-flex justify-content-center align-items-center flex-wrap">
-				@Html.Raw(summaryHtml)
-			</div>
-		</div>
-	}
+    @if (summaryHtml.HasValue())
+    {
+        <div class="offcanvas-cart-external-checkout">
+            <div class="d-flex justify-content-center align-items-center flex-wrap">
+                @Html.Raw(summaryHtml)
+            </div>
+        </div>
+    }
 
 </div>
 

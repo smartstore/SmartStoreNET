@@ -45,7 +45,7 @@
 		{
             context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
-        }
+		}
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
@@ -134,6 +134,53 @@
 				"Legt eine Farbe für das Farbflächen-Steuerelement fest.");
 
 			builder.AddOrUpdate("Common.Entity.CheckoutAttributeValue", "Checkout attribute option", "Checkout-Attribut-Option");
+
+			builder.AddOrUpdate("Checkout.MaxOrderSubtotalAmount",
+				"The maximum order value for the subtotal is {0}.",
+				"Der Höchstbestellwert für die Zwischensumme ist {0}.");
+
+			builder.AddOrUpdate("Checkout.MaxOrderTotalAmount",
+				"The maximum order value for the total is {0}.",
+				"Der Höchstbestellwert der Gesamtsumme ist {0}.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderAmount",
+				"Min order amount",
+				"Mindestbestellwert",
+				"Enter minimum order amount.",
+				"Legt den Mindestbestellwert fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.MaxOrderAmount",
+				"Max order amount",
+				"Höchstbestellwert",
+				"Enter maximum order amount.",
+				"Legt den Höchstbestellwert fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.ApplyToSubtotal",
+				"Order amount related to subtotal",
+				"Bestellwert bezogen auf Zwischensumme",
+				"Determines whether the min/max order amount refers to the order subtotal, otherwise it refers to the total amount.",
+				"Bestimmt, ob sich der Mindest-/Höchstbetrag auf die Auftragszwischensumme bezieht, andernfalls bezieht er sich auf den Gesamtbetrag.");
+
+			builder.Delete("Admin.Configuration.Settings.Order.MaxOrderSubtotalAmount");
+			builder.Delete("Admin.Configuration.Settings.Order.MaxOrderSubtotalAmount.Hint");
+			builder.Delete("Admin.Configuration.Settings.Order.MaxOrderTotalAmount");
+			builder.Delete("Admin.Configuration.Settings.Order.MaxOrderTotalAmount.Hint");
+			builder.Delete("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount");
+			builder.Delete("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint");
+			builder.Delete("Admin.Configuration.Settings.Order.MinOrderTotalAmount");
+			builder.Delete("Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint");
+
+			builder.AddOrUpdate("Admin.Customers.CustomerRoles.Fields.MinOrderAmount",
+				"Min order amount",
+				"Mindestbestellwert",
+				"Enter minimum order amount for user in this customer group.",
+				"Legt den Mindestbestellwert für Nutzer in der Kundengruppe fest.");
+
+			builder.AddOrUpdate("Admin.Customers.CustomerRoles.Fields.MaxOrderAmount",
+				"Max order amount",
+				"Höchstbestellwert",
+				"Enter maximum order amount for user in this customer group.",
+				"Legt den Höchstbestellwert für Nutzer in der Kundengruppe fest.");
 		}
 	}
 }

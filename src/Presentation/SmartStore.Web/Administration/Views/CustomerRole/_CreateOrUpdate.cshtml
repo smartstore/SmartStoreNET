@@ -10,7 +10,7 @@
     x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
     x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
     x.Add().Text(T("Admin.Customers").Text).Content(TabCustomers());
-    
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-role-edit", this.Html, this.Model));
 })
 
@@ -55,6 +55,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MinOrderAmount)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MinOrderAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.MinOrderAmount)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxOrderAmount)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxOrderAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.MaxOrderAmount)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxDisplayType)
             </td>
             <td class="adminData">
@@ -75,10 +93,10 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IsSystemRole)
             </td>
-            <td class="adminData">			
-			    <div class="form-control-plaintext">
-				    @T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
-			    </div>
+            <td class="adminData">
+                <div class="form-control-plaintext">
+                    @T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
+                </div>
 
                 @Html.HiddenFor(model => model.IsSystemRole)
                 @Html.ValidationMessageFor(model => model.IsSystemRole)

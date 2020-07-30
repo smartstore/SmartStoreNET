@@ -43,6 +43,14 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.SystemName")]
         public string SystemName { get; set; }
 
+        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MinOrderAmount")]
+        public decimal MinOrderAmount { get; set; }
+
+        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MaxOrderAmount")]
+        public decimal MaxOrderAmount { get; set; }
+
+        public string PrimaryStoreCurrencyCode { get; set; }
+
         [UIHint("RuleSets")]
         [AdditionalMetadata("multiple", true)]
         [AdditionalMetadata("scope", RuleScope.Customer)]

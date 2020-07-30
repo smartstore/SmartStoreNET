@@ -198,12 +198,18 @@ $(function () {
 			cache: false,
 			type: "POST",
 			url: el.data("update-url"),
-			data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val() },
+			data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val(), "isCartPage": true },
 			success: function (data) {
 				if (data.success == true) {
-					var type = el.data("type");
+					const type = el.data("type");
 					ShopBar.loadSummary(type, true);
-					el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
+                    el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
+                    $("#mini-cart-checkout").toggleClass("d-none", !data.showCheckoutButtons);
+                    $("#mini-cart-basket").toggleClass("btn-clear", !data.showCheckoutButtons)
+                        .toggleClass("btn-success", data.showCheckoutButtons)
+                        .toggleClass("btn-flat", data.showCheckoutButtons)
+                        .toggleClass("btn-flat-light", data.showCheckoutButtons)
+                        .find(".fa-check").toggleClass("d-none", data.showCheckoutButtons);
 				}
 				else {
 					$(data.message).each(function (index, value) {

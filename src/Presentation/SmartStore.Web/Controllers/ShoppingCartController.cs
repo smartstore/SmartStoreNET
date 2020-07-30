@@ -712,7 +712,7 @@ namespace SmartStore.Web.Controllers
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 
-			model.IsValidMinOrderSubtotal = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
+            model.IsValidOrderAmount = _orderProcessingService.ValidateOrderAmount(cart, _workContext.CurrentCustomer.GetRoleIds());
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
 			// Gift card and gift card boxes.
@@ -1072,10 +1072,11 @@ namespace SmartStore.Web.Controllers
                     //remove attributes which require shippable products
                     checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
                 }
-                bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && minOrderSubtotalAmountOk;
+                                
+                var orderAmountIsValid = _orderProcessingService.ValidateOrderAmount(cart, _workContext.CurrentCustomer.GetRoleIds());
+                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && orderAmountIsValid;
 
-				// Products. sort descending (recently added products)
+                // Products. sort descending (recently added products)
 				cart = cart.ToList(); // TBD: (mc) Why?
                 foreach (var sci in cart)
                 {
@@ -1694,7 +1695,7 @@ namespace SmartStore.Web.Controllers
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
-				showCheckoutButtons = model.IsValidMinOrderSubtotal;
+				showCheckoutButtons = model.IsValidOrderAmount;
 			}
             
             // Updated cart.
@@ -2093,15 +2094,34 @@ namespace SmartStore.Web.Controllers
                 model.DisplayWeight = _shoppingCartSettings.ShowWeight;
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
-				var minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
-				if (!minOrderSubtotalAmountOk)
-				{
-					var minOrderSubtotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderSubtotalAmount, currency);
-					model.MinOrderSubtotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderSubtotalAmount"), 
-                        _priceFormatter.FormatPrice(minOrderSubtotalAmount, true, false));
-				}
+                var customerRoleIds = customer.GetRoleIds();
+                var minOrderAmountValidation = _orderProcessingService.ValidateMinOrderAmount(cart, customerRoleIds);
+                if (!minOrderAmountValidation.isValid)
+                {
+                    var minOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        minOrderAmountValidation.minOrderAmount, 
+                        currency);
 
-				// Cart total
+                    var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
+                    model.OrderAmountWarning = string.Format(
+                        _localizationService.GetResource(resource), 
+                        _priceFormatter.FormatPrice(minOrderAmount, true, false));
+                }
+
+                var maxOrderAmountValidation = _orderProcessingService.ValidateMaxOrderAmount(cart, customerRoleIds);
+                if (minOrderAmountValidation.isValid && !maxOrderAmountValidation.isValid)
+                {
+                    var maxOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        maxOrderAmountValidation.maxOrderAmount,
+                        currency);
+
+                    var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";
+                    model.OrderAmountWarning = string.Format(
+                       _localizationService.GetResource(resource),
+                       _priceFormatter.FormatPrice(maxOrderAmount, true, false));
+                }
+
+                // Cart total
                 var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
                 if (cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.HasValue)
                 {
@@ -2295,7 +2315,7 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-					showCheckoutButtons = model.IsValidMinOrderSubtotal;
+					showCheckoutButtons = model.IsValidOrderAmount;
 				}
             }
 			
@@ -2508,7 +2528,7 @@ namespace SmartStore.Web.Controllers
                             totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = T("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
-                            showCheckoutButtons = model.IsValidMinOrderSubtotal;
+                            showCheckoutButtons = model.IsValidOrderAmount;
                         }
                     }
                     

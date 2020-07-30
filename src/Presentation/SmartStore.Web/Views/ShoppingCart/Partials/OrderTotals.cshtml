@@ -1,10 +1,10 @@
 ﻿@model OrderTotalsModel
 @using SmartStore.Web.Models.ShoppingCart;
 
-@if (Model.MinOrderSubtotalWarning.HasValue() && Model.IsEditable)
+@if (Model.OrderAmountWarning.HasValue() && Model.IsEditable)
 {
 	<div class="alert alert-warning">
-		@Model.MinOrderSubtotalWarning
+		@Model.OrderAmountWarning
 	</div>
 }
 

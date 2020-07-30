@@ -353,12 +353,33 @@ namespace SmartStore.Web.Controllers
         {
             var model = new CheckoutConfirmModel();
 
-            //min order amount validation
-            bool minOrderTotalAmountOk = _orderProcessingService.ValidateMinOrderTotalAmount(cart);
-            if (!minOrderTotalAmountOk)
+            // Min order amount validation
+            var customerRoleIds = _workContext.CurrentCustomer.GetRoleIds();
+            var minOrderAmountValidation = _orderProcessingService.ValidateMinOrderAmount(cart, customerRoleIds);
+            if (!minOrderAmountValidation.isValid)
             {
-                decimal minOrderTotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderTotalAmount, _workContext.WorkingCurrency);
-                model.MinOrderTotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderTotalAmount"), _priceFormatter.FormatPrice(minOrderTotalAmount, true, false));
+                var minOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
+                    minOrderAmountValidation.minOrderAmount,
+                    _workContext.WorkingCurrency);
+
+                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
+                model.OrderAmountWarning = string.Format(
+                    _localizationService.GetResource(resource),
+                    _priceFormatter.FormatPrice(minOrderAmount, true, false));
+            }
+                      
+            // Max order amount validation
+            var maxOrderAmountValidation = _orderProcessingService.ValidateMaxOrderAmount(cart, customerRoleIds);
+            if (minOrderAmountValidation.isValid && !maxOrderAmountValidation.isValid)
+            {
+                var maxOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
+                    maxOrderAmountValidation.maxOrderAmount,
+                    _workContext.WorkingCurrency);
+
+                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";                
+                model.OrderAmountWarning = string.Format(
+                    _localizationService.GetResource(resource),
+                    _priceFormatter.FormatPrice(maxOrderAmount, true, false));
             }
 
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
@@ -900,7 +921,7 @@ namespace SmartStore.Web.Controllers
 
 			if (placeOrderResult == null || !placeOrderResult.Success || model.Warnings.Any())
 			{
-				return View(model);
+                return RedirectToAction("Confirm");
 			}
 
 			try

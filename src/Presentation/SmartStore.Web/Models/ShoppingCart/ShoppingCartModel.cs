@@ -39,7 +39,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<CheckoutAttributeModel> CheckoutAttributes { get; set; }
 
         public IList<string> Warnings { get; set; }
-		public bool IsValidMinOrderSubtotal { get; set; }
+		public bool IsValidOrderAmount { get; set; }
         public bool TermsOfServiceEnabled { get; set; }
         public EstimateShippingModel EstimateShipping { get; set; }
         public DiscountBoxModel DiscountBox { get; set; }

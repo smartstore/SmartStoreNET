@@ -170,6 +170,7 @@ namespace SmartStore.Admin.Controllers
             PrepareModel(model, customerRole);
 
             model.PermissionTree = Services.Permissions.GetPermissionTree(customerRole, true);
+            model.PrimaryStoreCurrencyCode = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             return View(model);
         }

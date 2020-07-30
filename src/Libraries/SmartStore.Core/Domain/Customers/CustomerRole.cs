@@ -63,6 +63,18 @@ namespace SmartStore.Core.Domain.Customers
         public string SystemName { get; set; }
 
         /// <summary>
+        /// Gets or sets a minimum order amount
+        /// </summary>
+        [DataMember]
+        public decimal MinOrderAmount { get; set; }
+
+        /// <summary>
+        /// Gets or sets a maximum order amount
+        /// </summary>
+        [DataMember]
+        public decimal MaxOrderAmount { get; set; }
+
+        /// <summary>
         /// Gets or sets the permission role mappings.
         /// </summary>
         public virtual ICollection<PermissionRoleMapping> PermissionRoleMappings

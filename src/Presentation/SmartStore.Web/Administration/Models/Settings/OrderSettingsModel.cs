@@ -24,11 +24,14 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
         public bool IsReOrderAllowed { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount")]
-        public decimal MinOrderSubtotalAmount { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderAmount")]
+        public decimal MinOrderAmount { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderTotalAmount")]
-        public decimal MinOrderTotalAmount { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MaxOrderAmount")]
+        public decimal MaxOrderAmount { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ApplyToSubtotal")]
+        public bool ApplyToSubtotal { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed")]
         public bool AnonymousCheckoutAllowed { get; set; }

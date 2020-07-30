@@ -66,15 +66,11 @@ SmartStore.Admin.Charts = {
             tooltipEl.style.marginTop = tooltip.caretY - canvasHeight + 'px';
         };
 
-        const chartToggleListener = function (el, currentPeriod, setChartData) {
+        const chartToggleListener = function (el, setChartData) {
             el.querySelectorAll(".btn-dashboard")
-                .forEach(e => {
-                    e.addEventListener("click", function (event) {
-                        // Get toggle elements period
-                        const period = event.target.querySelector('input').dataset.period;
-                        if (period != currentPeriod) {
-                            setChartData(period);
-                        }
+                .forEach(function(value, index) {
+                    value.addEventListener("click", function (event) {
+                        setChartData(index);
                     })
                 });
         }
@@ -436,9 +432,10 @@ SmartStore.Admin.Charts = {
                 createLegend();
                 setYaxis();
                 chart.update();
-                chartToggleListener(reportElement, currentPeriod, setChartData);
+                chartToggleListener(reportElement, setChartData);
 
                 function setChartData(period) {
+                    if (currentPeriod == period) return;
                     chart.destroy();
                     chartConfig.data.labels = dataSets[period].Labels;
                     for (let i = 0; i < chartConfig.data.datasets.length; i++) {
@@ -614,7 +611,7 @@ SmartStore.Admin.Charts = {
                 setPercentageDelta(dataSets[currentPeriod], chevronElement, percentageElement, sumElement);
                 setYaxis();
                 chart.update();
-                chartToggleListener(reportElement, currentPeriod, setChartData);
+                chartToggleListener(reportElement, setChartData);
 
                 function setChartData(period) {
                     chart.destroy();

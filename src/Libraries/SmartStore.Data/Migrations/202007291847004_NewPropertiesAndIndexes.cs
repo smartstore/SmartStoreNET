@@ -8,6 +8,8 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Country", "DefaultCurrencyId", c => c.Int());
+            AddColumn("dbo.CheckoutAttributeValue", "MediaFileId", c => c.Int());
+            AddColumn("dbo.CheckoutAttributeValue", "Color", c => c.String(maxLength: 100));
             CreateIndex("dbo.CustomerRole", "Active");
             CreateIndex("dbo.CustomerRole", "IsSystemRole");
             CreateIndex("dbo.CustomerRole", new[] { "SystemName", "IsSystemRole" }, name: "IX_CustomerRole_SystemName_IsSystemRole");
@@ -18,12 +20,16 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.ProductVariantAttributeCombination", "Gtin");
             CreateIndex("dbo.ProductVariantAttributeCombination", "ManufacturerPartNumber");
             CreateIndex("dbo.ProductVariantAttributeCombination", "IsActive");
+            CreateIndex("dbo.CheckoutAttributeValue", "MediaFileId");
             AddForeignKey("dbo.Country", "DefaultCurrencyId", "dbo.Currency", "Id");
+            AddForeignKey("dbo.CheckoutAttributeValue", "MediaFileId", "dbo.MediaFile", "Id");
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.CheckoutAttributeValue", "MediaFileId", "dbo.MediaFile");
             DropForeignKey("dbo.Country", "DefaultCurrencyId", "dbo.Currency");
+            DropIndex("dbo.CheckoutAttributeValue", new[] { "MediaFileId" });
             DropIndex("dbo.ProductVariantAttributeCombination", new[] { "IsActive" });
             DropIndex("dbo.ProductVariantAttributeCombination", new[] { "ManufacturerPartNumber" });
             DropIndex("dbo.ProductVariantAttributeCombination", new[] { "Gtin" });
@@ -34,6 +40,8 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.CustomerRole", "IX_CustomerRole_SystemName_IsSystemRole");
             DropIndex("dbo.CustomerRole", new[] { "IsSystemRole" });
             DropIndex("dbo.CustomerRole", new[] { "Active" });
+            DropColumn("dbo.CheckoutAttributeValue", "Color");
+            DropColumn("dbo.CheckoutAttributeValue", "MediaFileId");
             DropColumn("dbo.Country", "DefaultCurrencyId");
         }
     }

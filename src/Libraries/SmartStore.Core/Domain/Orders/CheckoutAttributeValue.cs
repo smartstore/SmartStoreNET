@@ -1,5 +1,6 @@
-
+using System.ComponentModel.DataAnnotations;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Orders
 {
@@ -39,9 +40,24 @@ namespace SmartStore.Core.Domain.Orders
         public int DisplayOrder { get; set; }
 
         /// <summary>
+        /// Gets or sets the media file identifier.
+        /// </summary>
+        public int? MediaFileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color RGB value (used with "Boxes" attribute type).
+        /// </summary>
+        [StringLength(100)]
+        public string Color { get; set; }
+
+        /// <summary>
+        /// Gets or sets the media file.
+        /// </summary>
+        public virtual MediaFile MediaFile { get; set; }
+
+        /// <summary>
         /// Gets or sets the checkout attribute
         /// </summary>
         public virtual CheckoutAttribute CheckoutAttribute { get; set; }
     }
-
 }

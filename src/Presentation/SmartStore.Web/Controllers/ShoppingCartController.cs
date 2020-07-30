@@ -772,7 +772,7 @@ namespace SmartStore.Web.Controllers
 					TextPrompt = attribute.GetLocalized(x => x.TextPrompt),
 					IsRequired = attribute.IsRequired,
 					AttributeControlType = attribute.AttributeControlType
-				};
+                };
 
 				if (attribute.ShouldHaveValues())
 				{
@@ -783,8 +783,15 @@ namespace SmartStore.Web.Controllers
 						{
 							Id = caValue.Id,
 							Name = caValue.GetLocalized(x => x.Name),
-							IsPreSelected = caValue.IsPreSelected
+							IsPreSelected = caValue.IsPreSelected,
+                            Color = caValue.Color
 						};
+
+                        if (caValue.MediaFileId.HasValue && caValue.MediaFile != null)
+                        {
+                            pvaValueModel.ImageUrl = _mediaService.GetUrl(caValue.MediaFile, _mediaSettings.VariantValueThumbPictureSize, null, false);
+                        }
+
 						caModel.Values.Add(pvaValueModel);
 
 						// Display price if allowed.
@@ -792,10 +799,15 @@ namespace SmartStore.Web.Controllers
 						{
 							decimal priceAdjustmentBase = _taxService.GetCheckoutAttributePrice(caValue);
 							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
-							if (priceAdjustmentBase > decimal.Zero)
-								pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment);
-							else if (priceAdjustmentBase < decimal.Zero)
-								pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment);
+
+                            if (priceAdjustmentBase > decimal.Zero)
+                            {
+                                pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment);
+                            }
+                            else if (priceAdjustmentBase < decimal.Zero)
+                            {
+                                pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment);
+                            }
 						}
 					}
 				}

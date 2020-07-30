@@ -82,6 +82,20 @@ namespace SmartStore.Core.Domain.Orders
             }
         }
 
+        public bool IsListTypeAttribute()
+        {
+            switch (AttributeControlType)
+            {
+                case AttributeControlType.Checkboxes:
+                case AttributeControlType.Boxes:
+                case AttributeControlType.DropdownList:
+                case AttributeControlType.RadioList:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         /// <summary>
         /// Gets the checkout attribute values
         /// </summary>
@@ -91,5 +105,4 @@ namespace SmartStore.Core.Domain.Orders
             protected set { _checkoutAttributeValues = value; }
         }
     }
-
 }

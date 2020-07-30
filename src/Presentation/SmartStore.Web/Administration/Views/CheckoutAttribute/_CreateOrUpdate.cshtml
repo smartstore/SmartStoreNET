@@ -159,7 +159,14 @@
 					})
 					.Columns(columns =>
 					{
-						columns.Bound(x => x.Name);
+						columns.Bound(x => x.Name)
+							.ClientTemplate(
+                                "<# if(Color && Color.length > 0) {#>" +
+                                "<span class='color-container'><span class='color' style='background:<#= Color #>\'>&nbsp;</span></span>" +
+                                "<span><#= NameString #></span>" +
+                                "<# } else { #>" +
+                                "<span><#= NameString #></span>" +
+                                "<# } #>");
 						columns.Bound(x => x.PriceAdjustment)
 							.Format("{0:0.00}")
 							.RightAlign()
@@ -170,7 +177,6 @@
 							.Width(200);
 						columns.Bound(x => x.IsPreSelected)
 							.Width(140)
-							.Template(item => Html.SymbolForBool(item.IsPreSelected))
 							.ClientTemplate(Html.SymbolForBool("IsPreSelected"))
 							.Centered();
 						columns.Bound(x => x.DisplayOrder)
@@ -185,8 +191,8 @@
 						.Width(120);
 					})
 					.ToolBar(commands => commands.Template(CheckoutAttributeGridCommands))
-					.DataBinding(dataBinding =>
-						dataBinding.Ajax().Select("ValueList", "CheckoutAttribute", new { checkoutAttributeId = Model.Id })
+					.DataBinding(dataBinding =>	dataBinding.Ajax()
+                        .Select("ValueList", "CheckoutAttribute", new { checkoutAttributeId = Model.Id })
 						.Delete("ValueDelete", "CheckoutAttribute"))
 					.EnableCustomBinding(true))
 		</div>
@@ -195,7 +201,7 @@
 			$(document).ready(function () {
 
 				$("#btnAddNewValue").on("click", function (e) {
-					openPopup('@(Url.Action("ValueCreatePopup", "CheckoutAttribute", new { checkoutAttributeId = Model.Id, btnId = "btnRefresh", formId = "checkoutattribute-form" }))');
+					openPopup('@(Url.Action("ValueCreatePopup", "CheckoutAttribute", new { checkoutAttributeId = Model.Id, btnId = "btnRefresh", formId = "checkoutattribute-form" }))', true);
 					return false;
 				});
 
@@ -212,8 +218,7 @@
 					var id = grid.dataItem(tr).Id;
 					var href = '@Url.Content("~/Admin/CheckoutAttribute/ValueEditPopup/")' + id + '?btnId=btnRefresh&formId=checkoutattribute-form';
 
-					openPopup(href);
-
+					openPopup(href, true);
 					return false;
 				});
 			});

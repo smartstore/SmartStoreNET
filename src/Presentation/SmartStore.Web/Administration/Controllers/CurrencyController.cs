@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Controllers
         {
             var store = _services.StoreContext.CurrentStore;
             var model = currency.ToModel();
-
+            
             model.IsPrimaryStoreCurrency = store.PrimaryStoreCurrencyId == model.Id;
             model.IsPrimaryExchangeRateCurrency = store.PrimaryExchangeRateCurrencyId == model.Id;
 
@@ -186,7 +186,9 @@ namespace SmartStore.Admin.Controllers
                 {
                     var primaryExchangeCurrency = _services.StoreContext.CurrentStore.PrimaryExchangeRateCurrency;
                     if (primaryExchangeCurrency == null)
+                    {
                         throw new SmartException(T("Admin.System.Warnings.ExchangeCurrency.NotSet"));
+                    }
 
                     var rates = _currencyService.GetCurrencyLiveRates(primaryExchangeCurrency.CurrencyCode);
 
@@ -220,9 +222,9 @@ namespace SmartStore.Admin.Controllers
 
                     ViewBag.Rates = rates;
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    NotifyError(exception, false);
+                    NotifyError(ex, false);
                 }
             }
 
@@ -417,9 +419,9 @@ namespace SmartStore.Admin.Controllers
                     return RedirectToAction("List");
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                NotifyError(exc);
+                NotifyError(ex);
             }
 
             return RedirectToAction("Edit", new { id = currency.Id });

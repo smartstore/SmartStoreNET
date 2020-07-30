@@ -8,6 +8,7 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Search;
@@ -62,7 +63,7 @@ namespace SmartStore.Admin.Controllers
             model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
                 .Select(x => new SelectListItem
                 {
-                    Text = x.Name,
+                    Text = x.GetLocalized(y => y.Name),
                     Value = x.Id.ToString()
                 })
                 .ToList();

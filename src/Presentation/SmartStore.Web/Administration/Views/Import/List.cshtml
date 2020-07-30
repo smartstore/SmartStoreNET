@@ -155,7 +155,8 @@ else
 
 <script>
     window['onUploadCompleted'] = function (file, data) {
-		if (!_.isEmpty(data.tempFile)) {
+        if (!_.isEmpty(data.tempFile)) {
+			$('#import-profile-dialog').find('input[name=TempFileName]').val(data.tempFile);
 			$('#import-profile-dialog').find('.btn-primary').prop('disabled', false);
 		}
 		else if (!_.isEmpty(data.error)) {

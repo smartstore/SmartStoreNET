@@ -6,11 +6,13 @@
 * #2014 Added paging and sorting for top customers report.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
 * #1239 Added configurability of the password strength.
+* #1678 Determine initial working currency based on IP/country.
+* #1697 Added picture and color options to checkout attribute values.
 
 ### Improvements
 * #1981 Added grouping for cart rules.
 * #1407 Added menu to set order and payment status for orders checked in backend grid.
-* #1778: Back button closes offcanvas menu/cart.
+* #1778 Back button closes offcanvas menu/cart.
 
 
 ## Smartstore 4.0.1

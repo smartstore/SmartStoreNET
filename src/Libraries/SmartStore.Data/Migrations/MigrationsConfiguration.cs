@@ -114,6 +114,26 @@
 			builder.AddOrUpdate("Admin.Orders.ProcessingResult",
 				"<div>{0} of {1} orders were successfully processed.</div><div{3}>{2} orders cannot be changed as desired due to their current status and were skipped.</div>",
 				"<div>Es wurden {0} von {1} Aufträgen erfolgreich verarbeitet.</div><div{3}>{2} Aufträge können aufgrund ihres aktuellen Status nicht wie gewünscht geändert werden und wurden übersprungen.</div>");
+
+			builder.AddOrUpdate("Admin.Configuration.Countries.Fields.DefaultCurrency",
+				"Default currency",
+				"Standardwährung",
+				"Specifies the default currency. Preselects the default currency in the shop according to the country to which the current IP address belongs.",
+				"Legt die Standardwährung fest. Bewirkt im Shop eine Vorauswahl der Standardwährung anhand des Landes, zu dem die aktuelle IP-Adresse gehört.");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.MediaFile",
+				"Picture",
+				"Bild",
+				"Specifies an image to be displayed as the selection element for the attribute.",
+				"Legt ein Bild fest, welches als Auswahlelement für das Attribut angezeigt werden soll.");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.Color",
+				"RGB color",
+				"RGB-Farbe",
+				"Specifies a color for the color squares control.",
+				"Legt eine Farbe für das Farbflächen-Steuerelement fest.");
+
+			builder.AddOrUpdate("Common.Entity.CheckoutAttributeValue", "Checkout attribute option", "Checkout-Attribut-Option");
 		}
 	}
 }

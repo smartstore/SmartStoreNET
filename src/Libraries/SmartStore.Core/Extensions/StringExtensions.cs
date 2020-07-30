@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Web;
-using System.Text.RegularExpressions;
-using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using SmartStore.Core.Html;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
+using SmartStore.Core.Html;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore
@@ -1034,20 +1034,6 @@ namespace SmartStore
         {
 			return System.Web.Mvc.TagBuilder.CreateSanitizedId(value);
         }
-
-		public static string Sha(this string value, Encoding encoding) 
-        {
-			if (!string.IsNullOrWhiteSpace(value))
-            {
-				using (var sha1 = new SHA1CryptoServiceProvider()) 
-                {
-					byte[] data = encoding.GetBytes(value);
-					return sha1.ComputeHash(data).ToHexString();
-				}
-			}
-
-			return string.Empty;
-		}
 
         [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

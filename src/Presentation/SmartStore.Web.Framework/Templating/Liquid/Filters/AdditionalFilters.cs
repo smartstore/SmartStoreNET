@@ -175,11 +175,6 @@ namespace SmartStore.Templating.Liquid
 			return input?.Hash(Encoding.UTF8);
 		}
 
-		public static string Sha1(string input)
-		{
-			return input?.Sha(Encoding.UTF8);
-		}
-
 		public static string UrlDecode(string input)
 		{
 			return input?.UrlDecode();

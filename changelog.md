@@ -14,6 +14,10 @@
 * #1407 Added menu to set order and payment status for orders checked in backend grid.
 * #1778 Back button closes offcanvas menu/cart.
 
+### Bugfixes
+* **Media Manager**:
+	* The file date should be displayed in local time and not in UTC.
+
 
 ## Smartstore 4.0.1
 ### New Features

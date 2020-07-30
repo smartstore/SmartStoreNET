@@ -109,7 +109,7 @@ namespace SmartStore.Services.Customers
             }
 
             // TODO: really untracked?
-            var query = _rsCustomer.TableUntracked.Where(x => !x.Deleted);
+            var query = _rsCustomer.TableUntracked.Where(x => !x.Deleted && !x.IsSystemAccount);
 
             FilterExpressionGroup group = null;
 

@@ -56,6 +56,11 @@
             this.toggle();
         }
 
+        // Close offcanvas menu/cart on back button
+        $(window).on('popstate', function (event) {
+            self.hide();
+        });
+
 		// Set up events to properly handle (touch) gestures
         this._makeTouchy();
     }
@@ -221,6 +226,8 @@
             self.state = 'slid';
             self.el.trigger('shown.sm.offcanvas');
         });
+
+        history.pushState({ 'offcanvas': true }, "offcanvas", "");
     };
 
     OffCanvas.prototype.hide = function (fn) {
@@ -247,6 +254,10 @@
             self.state = null;
             self.el.trigger('hidden.sm.offcanvas');
         });
+
+        if (history.state && history.state.offcanvas) {
+            history.back();            
+        }
     };
 
     OffCanvas.prototype.toggle = function (fn) {

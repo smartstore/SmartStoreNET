@@ -8,6 +8,7 @@
 * #1239 Added configurability of the password strength.
 * #1678 Determine initial working currency based on IP/country.
 * #1697 Added picture and color options to checkout attribute values.
+* #1788 Added setting to restrict order amount in general and for customer roles in specific.
 
 ### Improvements
 * #1981 Added grouping for cart rules.

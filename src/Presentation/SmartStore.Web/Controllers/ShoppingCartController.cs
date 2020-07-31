@@ -2184,41 +2184,53 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired("removesubtotaldiscount", "removeordertotaldiscount", "removediscountcouponcode")]
+        [HttpPost]
         public ActionResult RemoveDiscountCoupon()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-			var model = new ShoppingCartModel();
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var model = new ShoppingCartModel();
 
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, null);
+            _genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 
             PrepareShoppingCartModel(model, cart);
-            return View(model);
+
+            var discountHtml = this.RenderPartialViewToString("_DiscountBox", model.DiscountBox);
+            var totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
+
+            // Updated cart.
+            return Json(new
+            {
+                success = true,
+                totalsHtml,
+                discountHtml,
+                showCheckoutButtons = model.IsValidOrderAmount
+            });
         }
 
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired(FormValueRequirement.StartsWith, "removegiftcard-")]
-        public ActionResult RemoveGiftCardCode(FormCollection form)
+        [HttpPost]
+        public ActionResult RemoveGiftCardCode(int giftCardId)
         {
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             var model = new ShoppingCartModel();
-            var prefix = "removegiftcard-";
-
-            var key = form.AllKeys.FirstOrDefault(x => x.StartsWith(prefix));
-            if (key.HasValue())
+          
+            var giftCard = _giftCardService.GetGiftCardById(giftCardId);
+            if (giftCard != null)
             {
-                var giftCardId = form[key].Substring(prefix.Length).ToInt();
-                var gc = _giftCardService.GetGiftCardById(giftCardId);
-                if (gc != null)
-                {
-                    _workContext.CurrentCustomer.RemoveGiftCardCouponCode(gc.GiftCardCouponCode);
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                }
+                _workContext.CurrentCustomer.RemoveGiftCardCouponCode(giftCard.GiftCardCouponCode);
+                _customerService.UpdateCustomer(_workContext.CurrentCustomer);
             }
-
+            
             PrepareShoppingCartModel(model, cart);
-            return View(model);
+
+            var totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
+
+            // Updated cart.
+            return Json(new
+            {
+                success = true,
+                totalsHtml,
+                showCheckoutButtons = model.IsValidOrderAmount
+            });
         }
 
         public ActionResult OffCanvasCart()

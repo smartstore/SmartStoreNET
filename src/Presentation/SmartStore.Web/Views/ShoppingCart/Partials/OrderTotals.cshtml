@@ -34,19 +34,18 @@
     {
 		<tr class="cart-summary-subtotaldiscount cart-summary-pos">
 			<td class="cart-summary-label">
-				<span class="text-nowrap">
-					@if (Model.AllowRemovingSubTotalDiscount)
-					{
-						<button type="submit"
-								class="tooltip-toggle remove-discount-button mr-1"
-								title="@T("Common.Remove")"
-								name="removesubtotaldiscount"
-								value="removesubtotaldiscount">
-							<i class="fa">×</i>
-						</button>
-					}
-					@T("ShoppingCart.Totals.SubTotalDiscount"):
-				</span>
+                @if (Model.AllowRemovingSubTotalDiscount)
+                {
+                    <a href="#"
+                        data-href='@Url.Action("RemoveDiscountCoupon", "ShoppingCart")'
+                        class="btn-remove remove-discount-button pretty-link mr-1 ajax-action-link"
+                        title="@T("Common.Remove")">
+                        <i class="fa">&times;</i>
+                    </a>
+                }
+                <span class="text-nowrap">
+                    @T("ShoppingCart.Totals.SubTotalDiscount"):
+                </span>
 			</td>
 			<td class="cart-summary-value">@Model.SubTotalDiscount</td>
 		</tr>
@@ -107,21 +106,20 @@
     @if (Model.OrderTotalDiscount.HasValue())
     {
 		<tr class="cart-summary-totaldiscount cart-summary-pos">
-			<td class="cart-summary-label">
-				<span class="text-nowrap">
-					@if (Model.AllowRemovingOrderTotalDiscount)
-					{
-						<button type="submit"
-								class="tooltip-toggle remove-discount-button mr-1"
-								title="@T("Common.Remove")"
-								name="removeordertotaldiscount"
-								value="removeordertotaldiscount">
-							<i class="fa">×</i>
-						</button>
-					}
-					@T("ShoppingCart.Totals.OrderTotalDiscount"):
-				</span>
-			</td>
+            <td class="cart-summary-label">
+                @if (Model.AllowRemovingOrderTotalDiscount)
+                {
+                    <a href="#"
+                       data-href='@Url.Action("RemoveDiscountCoupon", "ShoppingCart")'
+                       class="btn-remove remove-discount-button pretty-link mr-1 ajax-action-link"
+                       title="@T("Common.Remove")">
+                        <i class="fa">&times;</i>
+                    </a>
+                }
+                <span class="text-nowrap">
+                    @T("ShoppingCart.Totals.OrderTotalDiscount"):
+                </span>
+            </td>
 			<td class="cart-summary-value">@Model.OrderTotalDiscount</td>
 		</tr>
 	}
@@ -135,13 +133,12 @@
 						@if (Model.IsEditable)
 						{
 							<div class="col col-auto">
-								<button type="submit"
-										class="tooltip-toggle remove-gift-card-button"
-										title="@T("Common.Remove")"
-										name="removegiftcard-@gc.Id"
-										value="removegiftcard-@gc.Id">
-									<i class="fa">×</i>
-								</button>
+								<a href="#"
+								   data-href='@Url.Action("RemoveGiftCardCode", "ShoppingCart", new { giftCardId = gc.Id })'
+								   class="btn-remove remove-discount-button pretty-link ajax-action-link"
+								   title="@T("Common.Remove")">
+									<i class="fa">&times;</i>
+								</a>
 							</div>
 						}
 						<div class="col cart-summary-pos">

@@ -201,7 +201,7 @@ $(function () {
 			data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val(), "isCartPage": true },
 			success: function (data) {
 				if (data.success == true) {
-					const type = el.data("type");
+					var type = el.data("type");
 					ShopBar.loadSummary(type, true);
                     el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
                     $("#mini-cart-checkout").toggleClass("d-none", !data.showCheckoutButtons);

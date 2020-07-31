@@ -2648,7 +2648,8 @@ namespace SmartStore.Services.Orders
 
         public virtual (bool isValid, decimal minOrderAmount) ValidateMinOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
-            var customerRole = _customerService.GetAllCustomerRoles()
+            var query = _customerService.GetAllCustomerRoles().SourceQuery;
+            var customerRole = query
                 .Where(x => x.MinOrderAmount > decimal.Zero && customerRoleIds.Contains(x.Id))
                 .OrderByDescending(x => x.MinOrderAmount)
                 .FirstOrDefault();
@@ -2692,7 +2693,8 @@ namespace SmartStore.Services.Orders
 
         public virtual (bool isValid, decimal maxOrderAmount) ValidateMaxOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
-            var customerRole = _customerService.GetAllCustomerRoles()
+            var query = _customerService.GetAllCustomerRoles().SourceQuery;
+            var customerRole = query
                 .Where(x => x.MaxOrderAmount > decimal.Zero && customerRoleIds.Contains(x.Id))
                 .OrderBy(x => x.MaxOrderAmount)
                 .FirstOrDefault();

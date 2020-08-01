@@ -18,7 +18,7 @@
                 <div class="col">
                     <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 
-                    @if (Model.DisplayShortDesc && !item.ShortDesc.HasValue())
+                    @if (Model.DisplayShortDesc && item.ShortDesc.HasValue())
                     {
                         <div class="cart-item-desc fs-sm" @Html.LanguageAttributes(item.ShortDesc)>
                             @Html.Raw(item.ShortDesc.Value.Truncate(250, "..."))
@@ -63,13 +63,13 @@
                         }
                     </div>
 
-                    @if (!item.AttributeInfo.HasValue())
+                    @if (item.AttributeInfo.HasValue())
                     {
                         <div class="attributes text-muted fs-sm mb-2">
                             @Html.Raw(item.AttributeInfo)
                         </div>
                     }
-                    @if (!item.RecurringInfo.HasValue())
+                    @if (item.RecurringInfo.HasValue())
                     {
                         <div class="recurring-info">
                             @Html.Raw(item.RecurringInfo)
@@ -213,19 +213,19 @@
 								</div>
 							</div>
 
-                            @if (Model.DisplayShortDesc && !item.ShortDesc.HasValue())
+                            @if (Model.DisplayShortDesc && item.ShortDesc.HasValue())
                             {
                                 <div class="cart-item-desc mt-2" @Html.LanguageAttributes(item.ShortDesc)>
                                     @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
                                 </div>
                             }
-                            @if (Model.DisplayBasePrice && !item.BasePrice.HasValue())
+                            @if (Model.DisplayBasePrice && item.BasePrice.HasValue())
                             {
                                 <div class="cart-item-base-price text-muted mt-2 lrm">
                                     @item.BasePrice
                                 </div>
                             }
-                            @if (!item.AttributeInfo.HasValue())
+                            @if (item.AttributeInfo.HasValue())
                             {
                                 <div class="cart-item-attrs text-muted mt-2">
                                     @Html.Raw(item.AttributeInfo)
@@ -244,7 +244,7 @@
                     </div>
                 </div>
                 <div class="cart-col cart-col-price">
-                    @if (!item.BundleItem.PriceWithDiscount.HasValue())
+                    @if (item.BundleItem.PriceWithDiscount.HasValue())
                     {
                         @Html.Raw(item.BundleItem.PriceWithDiscount)
                     }

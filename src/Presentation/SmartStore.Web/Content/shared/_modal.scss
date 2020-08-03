@@ -224,6 +224,7 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 .close {
     // "Fix" font-size
     font-size: 1.5rem;
+	line-height: 16px;
 	font-weight: $font-weight-normal;
 	outline: 0 !important;
 }

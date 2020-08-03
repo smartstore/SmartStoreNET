@@ -186,7 +186,7 @@
 				"Manage form fields that are displayed during registration.<br>" +
 				"In order to ensure the address transfer from the registration form, " +
 				"it is necessary that the following fields are activated and filled in by the customer: " +
-				"<ul><li>First name</li><li>Last name</li><li>E-mail</li><li>and all fields that are selected as required in the the tab 'Addresses'</li></ul>",
+				"<ul><li>First name</li><li>Last name</li><li>E-mail</li><li>and all fields that are selected as required in the tab 'Addresses'</li></ul>",
 				"Verwalten Sie Formularfelder, die während der Registrierung angezeigt werden.<br>" +
 				"Um die Adressübergabe aus dem Registrierungsformular zu gewährleisten, ist es notwending, " +
 				"dass folgende Felder aktiviert und vom Kunden ausgefüllt sind:" +

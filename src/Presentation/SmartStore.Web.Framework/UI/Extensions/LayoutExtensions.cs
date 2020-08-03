@@ -51,7 +51,7 @@ namespace SmartStore.Web.Framework.UI
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaDescriptionParts(parts);
-            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaDescription());
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaDescription().AttributeEncode());
         }
 
         #endregion
@@ -74,7 +74,7 @@ namespace SmartStore.Web.Framework.UI
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             html.AppendMetaKeywordParts(parts);
-            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaKeywords());
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaKeywords().AttributeEncode());
         }
 
 		#endregion

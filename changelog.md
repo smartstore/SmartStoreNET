@@ -5,7 +5,7 @@
 * #2012 Added paging and sorting for bestsellers report.
 * #2014 Added paging and sorting for top customers report.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
-* #1239 Added configurability of the password strength.
+* #1239 Added configurability for password strength.
 * #1678 Determine initial working currency based on IP/country.
 * #1697 Added picture and color options to checkout attribute values.
 * #1788 Added setting to restrict order amount in general and for customer roles in specific.

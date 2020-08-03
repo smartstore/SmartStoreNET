@@ -172,6 +172,7 @@ namespace SmartStore.Web.Framework.UI
                     result = specificTitle;
                 }
             }
+
             return result;
         }
 

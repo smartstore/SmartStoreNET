@@ -182,6 +182,16 @@
 				"Enter maximum order amount for user in this customer group.",
 				"Legt den Höchstbestellwert für Nutzer in der Kundengruppe fest.");
 
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",				
+				"Manage form fields that are displayed during registration.<br>" +
+				"In order to ensure the address transfer from the registration form, " +
+				"it is necessary that the following fields are activated and filled in by the customer: " +
+				"<ul><li>First name</li><li>Last name</li><li>E-mail</li><li>and all fields that are selected as required in the the tab 'Addresses'</li></ul>",
+				"Verwalten Sie Formularfelder, die während der Registrierung angezeigt werden.<br>" +
+				"Um die Adressübergabe aus dem Registrierungsformular zu gewährleisten, ist es notwending, " +
+				"dass folgende Felder aktiviert und vom Kunden ausgefüllt sind:" +
+				"<ul><li>Vorname</li><li>Nachname</li><li>E-Mail</li><li>und alle Felder die im Tab \"Adressen\" als erforderlich ausgewählt sind</li></ul>");
+
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.UseDefaultsOnHomepageOnly",
 				"Use defaults on Homepage only",
 				"Standards nur auf der Startseite verwenden",

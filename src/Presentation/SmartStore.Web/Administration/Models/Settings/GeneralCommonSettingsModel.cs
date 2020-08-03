@@ -75,7 +75,10 @@ namespace SmartStore.Admin.Models.Settings
             [AllowHtml]
             public string DefaultMetaDescription { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseDefaultsOnHomepageOnly")]
+            public bool UseDefaultsOnHomepageOnly { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent")]
 			public string MetaRobotsContent { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ConvertNonWesternChars")]

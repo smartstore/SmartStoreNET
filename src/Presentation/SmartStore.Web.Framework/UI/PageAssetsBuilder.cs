@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Web;
-using System.Web.WebPages;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using System.Web.Routing;
+using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Utilities;
-using System.Web.Hosting;
-using System.Web.Routing;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
@@ -134,43 +132,45 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateTitle(bool addDefaultTitle)
         {
-            if (_titleParts == null)
-                return string.Empty;
-            
-            var result = string.Empty;
-            var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
+            var result = !_seoSettings.UseDefaultsOnHomepageOnly
+                ? _seoSettings.DefaultTitle
+                : _httpContext.Request.Path == "/"
+                    ? _seoSettings.DefaultTitle
+                    : "";
 
-            if (!String.IsNullOrEmpty(specificTitle))
+            if (_titleParts == null)
+                return result;
+            
+            var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
+            if (specificTitle.HasValue())
             {
                 if (addDefaultTitle)
                 {
-                    //store name + page title
+                    // Store name + page title
                     switch (_seoSettings.PageTitleSeoAdjustment)
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.DefaultTitle, specificTitle);
+                                result = result.HasValue() 
+                                    ? string.Join(_seoSettings.PageTitleSeparator, result, specificTitle) 
+                                    : specificTitle;
                             }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.DefaultTitle);
+                                result = result.HasValue() 
+                                    ? string.Join(_seoSettings.PageTitleSeparator, specificTitle, result)
+                                    : specificTitle;
                             }
                             break;
-
                     }
                 }
                 else
                 {
-                    //page title only
+                    // Page title only
                     result = specificTitle;
                 }
-            }
-            else
-            {
-                //store name only
-                result = _seoSettings.DefaultTitle;
             }
             return result;
         }
@@ -183,7 +183,11 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaDescription()
         {
-            var result = _seoSettings.DefaultMetaDescription;
+            var result = !_seoSettings.UseDefaultsOnHomepageOnly
+                ? _seoSettings.DefaultMetaDescription
+                : _httpContext.Request.Path == "/"
+                    ? _seoSettings.DefaultMetaDescription
+                    : "";
 
             if (_metaDescriptionParts == null)
                 return result;
@@ -205,7 +209,11 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaKeywords()
         {
-            var result = _seoSettings.DefaultMetaKeywords;
+            var result = !_seoSettings.UseDefaultsOnHomepageOnly
+                ? _seoSettings.DefaultMetaKeywords
+                : _httpContext.Request.Path == "/"
+                    ? _seoSettings.DefaultMetaKeywords
+                    : "";
 
             if (_metaKeywordParts == null)
                 return result;

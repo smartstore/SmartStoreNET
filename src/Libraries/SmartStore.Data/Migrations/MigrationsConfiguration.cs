@@ -181,6 +181,12 @@
 				"Höchstbestellwert",
 				"Enter maximum order amount for user in this customer group.",
 				"Legt den Höchstbestellwert für Nutzer in der Kundengruppe fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.UseDefaultsOnHomepageOnly",
+				"Use defaults on Homepage only",
+				"Standards nur auf der Startseite verwenden",
+				"Determines whether the default meta informations are used only on the home page, rather than as defaults for every page.",
+				"Legt fest, ob die Standard-Meta-Informationen nur auf der Startseite anstatt als Standardeinstellung für jede Seite verwendet werden.");
 		}
 	}
 }

@@ -84,8 +84,8 @@
 		padding-left: 0.5em;
 	}
 
-	> span:not(:empty) + i:not(.d-none),
-	> em:not(:empty) + i:not(.d-none) {
+	> span:not(:empty) + i,
+	> em:not(:empty) + i {
 		margin-left: 0.5em;
 	}
 }

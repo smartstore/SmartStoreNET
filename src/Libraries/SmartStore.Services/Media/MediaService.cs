@@ -21,8 +21,6 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
-        public Localizer T { get; set; } = NullLocalizer.Instance;
-
         private readonly IRepository<MediaFile> _fileRepo;
         private readonly IFolderService _folderService;
         private readonly IMediaSearcher _searcher;
@@ -70,6 +68,7 @@ namespace SmartStore.Services.Media
             _helper = helper;
         }
 
+        public Localizer T { get; set; } = NullLocalizer.Instance;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public IMediaStorageProvider StorageProvider

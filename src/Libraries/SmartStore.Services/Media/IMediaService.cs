@@ -152,6 +152,7 @@ namespace SmartStore.Services.Media
         bool FileExists(string path);
         MediaFileInfo GetFileByPath(string path, MediaLoadFlags flags = MediaLoadFlags.None);
         MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.None);
+        MediaFileInfo GetFileByName(int folderId, string fileName, MediaLoadFlags flags = MediaLoadFlags.None);
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         bool CheckUniqueFileName(string path, out string newPath);
         string CombinePaths(params string[] paths);

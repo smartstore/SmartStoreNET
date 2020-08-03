@@ -3,7 +3,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Html.Encode(Model.ProductName));
+    Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
     Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }

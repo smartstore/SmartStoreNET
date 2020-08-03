@@ -7,8 +7,8 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Html.Encode(Model.Name));
-    Html.AddMetaDescriptionParts(Html.Encode(Model.Name));
+    Html.AddTitleParts(Model.Name);
+    Html.AddMetaDescriptionParts(Model.Name);
 
     var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
         .Name("paginator")

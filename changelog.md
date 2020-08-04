@@ -16,8 +16,10 @@
 * #1778 Back button closes offcanvas menu/cart.
 
 ### Bugfixes
-* **Media Manager**:
+* **Media Manager**
 	* The file date should be displayed in local time and not in UTC.
+* **Page Builder**
+	* Reveal effect on story block conflicted with nested block reveal effects
 
 
 ## Smartstore 4.0.1

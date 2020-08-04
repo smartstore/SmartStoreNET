@@ -333,7 +333,6 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result.Hits.AsQueryable();
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
         private decimal? CalculatePrice(int key, bool lowestPrice)
 		{
 			string requiredProperties = "TierPrices, AppliedDiscounts, ProductBundleItems";

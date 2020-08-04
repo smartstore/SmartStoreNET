@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.WebApi.Models.OData;
@@ -54,8 +55,9 @@ namespace SmartStore.WebApi
 			m.EntitySet<Manufacturer>("Manufacturers");
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");
-            m.EntitySet<MediaFile>("Pictures");
-            m.EntitySet<MediaTag>("MediaTags");
+			m.EntitySet<MediaFile>("Pictures");
+			m.EntitySet<MediaFileInfo>("Media");
+			m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
             m.EntitySet<NewsLetterSubscription>("NewsLetterSubscriptions");
             m.EntitySet<OrderNote>("OrderNotes");
@@ -95,6 +97,8 @@ namespace SmartStore.WebApi
 			AddActionsToOrder(m.Entity<Order>());
 			AddActionsToOrderItem(m.Entity<OrderItem>());
 			AddActionsToProduct(m.Entity<Product>());
+			
+			Controllers.OData.MediaController.Init(configData);
 
 			// Swagger integration, see http://www.my-store.com/swagger/ui/index
 			var thisAssembly = typeof(WebApiConfigurationProvider).Assembly;
@@ -196,5 +200,5 @@ namespace SmartStore.WebApi
             manageAttributes.Parameter<bool>("Synchronize");
             manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
         }
-    }
+	}
 }

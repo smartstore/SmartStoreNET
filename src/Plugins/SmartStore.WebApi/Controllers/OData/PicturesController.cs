@@ -63,6 +63,9 @@ namespace SmartStore.WebApi.Controllers.OData
             countFiles.Parameter<bool?>("Deleted");
             countFiles.Parameter<string>("Term");
             countFiles.Parameter<bool?>("ExactMatch");
+            countFiles.CollectionParameter<string>("MediaTypes");
+            countFiles.CollectionParameter<string>("MimeTypes");
+            countFiles.CollectionParameter<string>("Extensions");
         }
 
         // TODO: readonly properties of MediaFileInfo cannot be serialized!
@@ -188,7 +191,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return (files ?? new List<MediaFileInfo>()).AsQueryable();
         }
 
-        /// POST /Media/CountFiles
+        /// POST /Media/CountFiles {"FolderId":7, "Term":"xyz", "Extensions":["jpg"], ...}
         [HttpPost, WebApiAuthenticate]
         public async Task<int> CountFiles(ODataActionParameters parameters)
         {
@@ -204,6 +207,9 @@ namespace SmartStore.WebApi.Controllers.OData
                     Deleted = parameters.GetValueSafe<bool?>("Deleted") ?? false,
                     Term = parameters.GetValueSafe<string>("Term"),
                     ExactMatch = parameters.GetValueSafe<bool?>("ExactMatch") ?? false,
+                    MediaTypes = parameters.GetValueSafe<ICollection<string>>("MediaTypes")?.ToArray(),
+                    MimeTypes = parameters.GetValueSafe<ICollection<string>>("MimeTypes")?.ToArray(),
+                    Extensions = parameters.GetValueSafe<ICollection<string>>("Extensions")?.ToArray()
                 };
 
                 count = await _mediaService.CountFilesAsync(query);

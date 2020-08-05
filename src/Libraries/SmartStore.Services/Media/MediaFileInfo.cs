@@ -35,7 +35,12 @@ namespace SmartStore.Services.Media
         public MediaFile File { get; }
 
         [JsonProperty("id")]
-        public int Id => File.Id;
+        public int Id
+        {
+            get { return File.Id; }
+            set { }
+        }
+        //public int Id => File.Id;
 
         [JsonProperty("folderId")]
         public int? FolderId => File.FolderId;

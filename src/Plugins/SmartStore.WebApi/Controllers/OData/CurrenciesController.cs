@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
@@ -26,6 +27,13 @@ namespace SmartStore.WebApi.Controllers.OData
         protected override void Delete(Currency entity)
 		{
 			Service.DeleteCurrency(entity);
+		}
+
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Currency.Read)]
+		public IQueryable<Currency> Get()
+		{
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]

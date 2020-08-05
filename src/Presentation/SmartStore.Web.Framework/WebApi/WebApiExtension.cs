@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dependencies;
-using System.Web.Http.OData.Routing;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.WebApi
@@ -144,34 +143,34 @@ namespace SmartStore.Web.Framework.WebApi
             return defaultValue;
         }
 
-        public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
-		{
-			if (odataPath.Segments.Count > segmentIndex)
-			{
-				string rawKey = (odataPath.Segments[segmentIndex] as KeyValuePathSegment).Value;
-				if (rawKey.HasValue())
-				{
-					if (rawKey.StartsWith("'"))
-						rawKey = rawKey.Substring(1, rawKey.Length - 2);
+  //      public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
+		//{
+		//	if (odataPath.Segments.Count > segmentIndex)
+		//	{
+		//		string rawKey = (odataPath.Segments[segmentIndex] as KeyValuePathSegment).Value;
+		//		if (rawKey.HasValue())
+		//		{
+		//			if (rawKey.StartsWith("'"))
+		//				rawKey = rawKey.Substring(1, rawKey.Length - 2);
 
-					if (int.TryParse(rawKey, out key))
-						return true;
-				}
-			}
-			key = 0;
-			return false;
-		}
+		//			if (int.TryParse(rawKey, out key))
+		//				return true;
+		//		}
+		//	}
+		//	key = 0;
+		//	return false;
+		//}
 
-		public static string GetNavigation(this ODataPath odataPath, int segmentIndex)
-		{
-			if (odataPath.Segments.Count > segmentIndex)
-			{
-				string navigationProperty = (odataPath.Segments[segmentIndex] as NavigationPathSegment).NavigationPropertyName;
+		//public static string GetNavigation(this ODataPath odataPath, int segmentIndex)
+		//{
+		//	if (odataPath.Segments.Count > segmentIndex)
+		//	{
+		//		string navigationProperty = (odataPath.Segments[segmentIndex] as NavigationPathSegment).NavigationPropertyName;
 
-				return navigationProperty;
-			}
-			return null;
-		}
+		//		return navigationProperty;
+		//	}
+		//	return null;
+		//}
 
 		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)
 		{

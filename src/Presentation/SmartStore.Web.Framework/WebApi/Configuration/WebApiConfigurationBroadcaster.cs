@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Routing.Conventions;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Routing.Conventions;
 
 namespace SmartStore.Web.Framework.WebApi.Configuration
 {

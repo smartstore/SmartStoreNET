@@ -2,10 +2,11 @@
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Extensions;
-using System.Web.Http.OData.Routing;
-using System.Web.Http.OData.Routing.Conventions;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Formatter;
+using Microsoft.AspNet.OData.Routing;
+using Microsoft.AspNet.OData.Routing.Conventions;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -26,7 +27,11 @@ namespace SmartStore.Web.Framework.WebApi
 				RoutingConventions = ODataRoutingConventions.CreateDefault()
 			};
 
+			config.EnableDependencyInjection();
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();
+
+			var odataFormatters = ODataMediaTypeFormatters.Create();
+			config.Formatters.InsertRange(0, odataFormatters);
 
 			config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -43,6 +48,8 @@ namespace SmartStore.Web.Framework.WebApi
 
 			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
+
+			config.Select().Expand().Filter().OrderBy().MaxTop(WebApiGlobal.DefaultMaxTop).Count();
 
 			//config.Services.Insert(typeof(ModelBinderProvider), 0,
 			//	new SimpleModelBinderProvider(typeof(Address), new AddressModelBinder()));
@@ -61,20 +68,20 @@ namespace SmartStore.Web.Framework.WebApi
 						new { version = "v1", controller = "Home", id = RouteParameter.Optional });
 				}
 			}
-			catch (Exception) { }
+			catch { }
 
 			try
 			{
-				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
-				{
-					config.Routes.MapODataServiceRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
-						configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
-				}
-			}
-			catch (Exception) { }
-        }
+                if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
+                {
+                    config.MapODataServiceRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
+                        configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
+                }
+            }
+			catch {	}
+		}
 
-        public int Order
+		public int Order
         {
             get { return 0; }
         }

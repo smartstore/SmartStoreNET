@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using System.Web.Http.OData;
+using Microsoft.AspNet.OData;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.OData
@@ -59,8 +59,8 @@ namespace SmartStore.Web.Framework.WebApi.OData
 
 		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
 		{
-			if (MissingClientPaging(actionExecutedContext))
-				return;
+			//if (MissingClientPaging(actionExecutedContext))
+			//	return;
 
 			base.OnActionExecuted(actionExecutedContext);
 		}

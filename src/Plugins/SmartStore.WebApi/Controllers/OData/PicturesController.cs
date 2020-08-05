@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.OData;
+using Microsoft.AspNet.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
@@ -26,7 +26,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
-            var entityConfig = configData.ModelBuilder.Entity<MediaFileInfo>();
+            var entityConfig = configData.ModelBuilder.EntityType<MediaFileInfo>();
 
             entityConfig.Collection
                 .Action("FileExists")

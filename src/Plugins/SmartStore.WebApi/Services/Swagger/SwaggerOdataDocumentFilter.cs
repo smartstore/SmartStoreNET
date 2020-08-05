@@ -3,8 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.OData;
-using System.Web.Http.OData.Routing;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Routing;
 using Swashbuckle.Swagger;
 
 namespace SmartStore.WebApi.Services.Swagger

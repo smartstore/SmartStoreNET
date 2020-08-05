@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using System.Web.Http.OData;
+using Microsoft.AspNet.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;

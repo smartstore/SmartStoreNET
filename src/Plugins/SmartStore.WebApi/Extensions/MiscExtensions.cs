@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using System.Web.Http.OData;
 using System.Web.Mvc;
+using Microsoft.AspNet.OData;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 

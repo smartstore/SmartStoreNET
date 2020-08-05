@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.OData;
+using Microsoft.AspNet.OData;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;

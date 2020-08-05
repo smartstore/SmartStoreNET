@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Web.Http.OData.Builder;
+using Microsoft.AspNet.OData.Builder;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -94,9 +94,9 @@ namespace SmartStore.WebApi
 			m.EntitySet<UrlRecord>("UrlRecords");
 			m.EntitySet<SyncMapping>("SyncMappings");
 
-			AddActionsToOrder(m.Entity<Order>());
-			AddActionsToOrderItem(m.Entity<OrderItem>());
-			AddActionsToProduct(m.Entity<Product>());
+			AddActionsToOrder(m.EntityType<Order>());
+			AddActionsToOrderItem(m.EntityType<OrderItem>());
+			AddActionsToProduct(m.EntityType<Product>());
 			
 			Controllers.OData.MediaController.Init(configData);
 

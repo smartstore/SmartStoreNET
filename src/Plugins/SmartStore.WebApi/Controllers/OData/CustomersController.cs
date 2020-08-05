@@ -53,6 +53,13 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IQueryable<Customer> Get()
+		{
+			return GetEntitySet();
+		}
+
+		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
         public SingleResult<Customer> GetCustomer(int key)
 		{

@@ -1,6 +1,13 @@
 /// <reference path="../../Content/bs4/scss/_variables.scss" />
 
+
+//
+// RFS
+// --------------------------------------------------
+
 $enable-rfs:    false;
+$rfs-spacers:   () !default;
+
 
 //
 // SmartStore CI colors

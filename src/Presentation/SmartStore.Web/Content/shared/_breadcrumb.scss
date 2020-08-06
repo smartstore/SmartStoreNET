@@ -2,23 +2,31 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+.breadcrumb-container,
 .breadcrumb {
-    padding: 0;
-    background: none;
     font-size: $font-size-sm;
-    margin-bottom: 1.5rem;
 }
+
+.breadcrumb-item {
+    display: inline-flex;
+    padding: 0 !important;
+}
+
+.breadcrumb-item:before {
+    display: none !important;
+}
+
 .breadcrumb-item:after {
-    content: '|';
-    padding: 0 0.5rem;
+    display: inline-block; // Suppress underlining of the separator in modern browsers
+    padding: 0 $breadcrumb-item-padding;
+    color: $breadcrumb-divider-color;
+    content: $breadcrumb-divider;
 }
+
 div.breadcrumb-item:after {
     display: none;
 }
-.breadcrumb > li + li::before {
-    display: none !important;
-}
+
 .breadcrumb-item > a {
     color: $body-color !important;
-    display: inline-block;
 }

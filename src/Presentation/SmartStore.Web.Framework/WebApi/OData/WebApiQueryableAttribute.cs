@@ -3,11 +3,15 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using Microsoft.AspNet.OData;
+using System.Web.OData;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.OData
 {
+	/// <summary>
+	/// The [EnableQuery] attribute enables clients to modify the query, by using query options such as $filter, $sort, and $page.
+	/// <see cref="https://docs.microsoft.com/de-de/aspnet/web-api/overview/odata-support-in-aspnet-web-api/supporting-odata-query-options"/>
+	/// </summary>
 	public class WebApiQueryableAttribute : EnableQueryAttribute
 	{
 		public bool PagingOptional { get; set; }
@@ -15,7 +19,9 @@ namespace SmartStore.Web.Framework.WebApi.OData
 		protected virtual bool MissingClientPaging(HttpActionExecutedContext actionExecutedContext)
 		{
 			if (PagingOptional)
+			{
 				return false;
+			}
 
 			try
 			{
@@ -49,9 +55,9 @@ namespace SmartStore.Web.Framework.WebApi.OData
 					return true;
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
 			}
 
 			return false;
@@ -59,8 +65,8 @@ namespace SmartStore.Web.Framework.WebApi.OData
 
 		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
 		{
-			//if (MissingClientPaging(actionExecutedContext))
-			//	return;
+			if (MissingClientPaging(actionExecutedContext))
+				return;
 
 			base.OnActionExecuted(actionExecutedContext);
 		}

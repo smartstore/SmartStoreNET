@@ -6,13 +6,13 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.OData;
+using System.Web.OData.Formatter;
 //using System.Web.Http.OData;
 //using System.Web.Http.OData.Extensions;
 //using System.Web.Http.OData.Formatter;
 //using System.Web.Http.OData.Routing;
 using Autofac;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Formatter;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -25,10 +25,13 @@ namespace SmartStore.Web.Framework.WebApi
     public abstract class WebApiEntityController<TEntity, TService> : ODataController
         where TEntity : BaseEntity, new()
     {
-        // TODO: overrides !!!???
+        // TODO: Implement custom routing convention(s):
         // public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
+
+        // TODO: Needs to be handled by the respective controller:
         // protected override int GetKey(TEntity entity)
         // protected override TEntity GetEntityByKey(int key)
+
         // public override HttpResponseMessage Post(TEntity entity)
         // protected override TEntity CreateEntity(TEntity entity)
         // public override HttpResponseMessage Put(int key, TEntity update)
@@ -37,18 +40,21 @@ namespace SmartStore.Web.Framework.WebApi
         // protected override TEntity PatchEntity(int key, Delta<TEntity> patch)
         // public override void Delete(int key)
 
+        // TODO:
+        // XML serialization issues.
+
         /// <summary>
-        /// Auto injected by Autofac
+        /// Auto injected by Autofac.
         /// </summary>
         public virtual IRepository<TEntity> Repository { get; set; }
 
         /// <summary>
-        /// Auto injected by Autofac
+        /// Auto injected by Autofac.
         /// </summary>
         public virtual TService Service { get; set; }
 
         /// <summary>
-        /// Auto injected by Autofac
+        /// Auto injected by Autofac.
         /// </summary>
         public virtual ICommonServices Services { get; set; }
 
@@ -106,9 +112,19 @@ namespace SmartStore.Web.Framework.WebApi
         protected internal virtual SingleResult<TEntity> GetSingleResult(int key)
         {
             if (!ModelState.IsValid)
+            {
                 throw this.ExceptionInvalidModelState();
+            }
 
-            return SingleResult.Create(GetEntitySet().Where(x => x.Id == key));
+            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
+
+            return GetSingleResult(entity);
+            //return SingleResult.Create(GetEntitySet().Where(x => x.Id == key));
+        }
+
+        protected internal virtual SingleResult<TEntity> GetSingleResult(TEntity entity)
+        {
+            return SingleResult.Create(new[] { entity }.AsQueryable());
         }
 
         protected internal virtual TEntity GetExpandedEntity<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
@@ -809,7 +825,7 @@ namespace SmartStore.Web.Framework.WebApi
 
     #endregion
 
-    #region Old Odata3 EntitySetController
+    #region Old OData3 EntitySetController
 
     //[CLSCompliant(false)]
     //[ODataNullValue]

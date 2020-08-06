@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net.Http.Formatting;
+﻿using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter;
-using Microsoft.AspNet.OData.Routing;
-using Microsoft.AspNet.OData.Routing.Conventions;
+using System.Web.OData.Builder;
+using System.Web.OData.Extensions;
+using System.Web.OData.Formatter;
+using System.Web.OData.Routing;
+using System.Web.OData.Routing.Conventions;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -15,8 +14,10 @@ using SmartStore.Web.Framework.WebApi.OData;
 namespace SmartStore.Web.Framework.WebApi
 {
     public class WebApiStartupTask : IApplicationStart
-    {      
-        public void Start()
+    {
+		public int Order => 0;
+
+		public void Start()
         {
 			var config = GlobalConfiguration.Configuration;
 
@@ -27,7 +28,6 @@ namespace SmartStore.Web.Framework.WebApi
 				RoutingConventions = ODataRoutingConventions.CreateDefault()
 			};
 
-			config.EnableDependencyInjection();
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();
 
 			var odataFormatters = ODataMediaTypeFormatters.Create();
@@ -48,8 +48,6 @@ namespace SmartStore.Web.Framework.WebApi
 
 			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
-
-			config.Select().Expand().Filter().OrderBy().MaxTop(WebApiGlobal.DefaultMaxTop).Count();
 
 			//config.Services.Insert(typeof(ModelBinderProvider), 0,
 			//	new SimpleModelBinderProvider(typeof(Address), new AddressModelBinder()));
@@ -80,10 +78,5 @@ namespace SmartStore.Web.Framework.WebApi
             }
 			catch {	}
 		}
-
-		public int Order
-        {
-            get { return 0; }
-        }
     }
 }

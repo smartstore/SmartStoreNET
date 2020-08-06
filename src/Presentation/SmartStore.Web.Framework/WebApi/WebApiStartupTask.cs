@@ -46,6 +46,9 @@ namespace SmartStore.Web.Framework.WebApi
             
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
+			// Allow OData actions and functions without the need for namespaces (OData V3 backward compatibility).
+			config.EnableUnqualifiedNameCall(true);
+
 			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
 

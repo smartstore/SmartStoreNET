@@ -2,6 +2,7 @@
 
 ## Smartstore 4.1.0
 ### New Features
+* Theming: responsive font-sizing and spacing
 * #2012 Added paging and sorting for bestsellers report.
 * #2014 Added paging and sorting for top customers report.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.

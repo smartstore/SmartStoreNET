@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Formatter;
@@ -238,6 +240,101 @@ namespace SmartStore.Web.Framework.WebApi
         protected internal virtual void Delete(TEntity entity)
         {
             Repository.Delete(entity);
+        }
+
+        protected internal virtual IHttpActionResult Insert(TEntity entity, Action insert)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            entity = FulfillPropertiesOn(entity);
+            insert();
+
+            return Created(entity);
+        }
+
+        protected internal virtual async Task<IHttpActionResult> UpdateAsync(TEntity entity, int key, Action update)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (key != entity.Id)
+            {
+                return BadRequest($"Missing or differing key {key}.");
+            }
+
+            entity = FulfillPropertiesOn(entity);
+
+            try
+            {
+                update();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await Repository.GetByIdAsync(key) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            // Returns HTTP 204 No Content by default.
+            // Consumers can choose response through "Prefer" header.
+            return Updated(entity);
+        }
+
+        protected internal virtual async Task<IHttpActionResult> PartiallyUpdateAsync(int key, Delta<TEntity> model, Action<TEntity> update)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var entity = await Repository.GetByIdAsync(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            model?.Patch(entity);
+            entity = FulfillPropertiesOn(entity);
+
+            try
+            {
+                update(entity);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await Repository.GetByIdAsync(key) == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Updated(entity);
+        }
+
+        protected internal virtual async Task<IHttpActionResult> DeleteAsync(int key, Action<TEntity> delete)
+        {
+            var entity = await Repository.GetByIdAsync(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            delete(entity);
+
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
         protected internal virtual object FulfillPropertyOn(TEntity entity, string propertyName, string queryValue)

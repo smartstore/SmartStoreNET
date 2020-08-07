@@ -19,11 +19,19 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         MediaFile MediaFile { get; set; }
     }
-    
+
+    public class GalleryMediaFile : IMediaFile
+    {
+        public int MediaFileId { get; set; }
+        public string Title { get; set; }
+        public int DisplayOrder { get; set; }
+        public MediaFile MediaFile { get; set; }
+    }
+
     /// <summary>
     /// Represents a product media file mapping
     /// </summary>
-	[DataContract]
+    [DataContract]
 	public partial class ProductMediaFile : BaseEntity, IMediaFile
     {
         /// <summary>

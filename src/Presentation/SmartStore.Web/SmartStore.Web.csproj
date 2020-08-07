@@ -503,6 +503,8 @@
     <Content Include="App_Data\EmailTemplates\en\System.Campaign.xml" />
     <Content Include="App_Data\EmailTemplates\en\System.ContactUs.xml" />
     <Content Include="App_Data\EmailTemplates\en\Wishlist.EmailAFriend.xml" />
+    <Content Include="App_Data\Geo\COPYRIGHT.txt" />
+    <Content Include="App_Data\Geo\LICENSE.txt" />
     <Content Include="App_Data\Localization\App\de\all.smres.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -1066,7 +1068,6 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\shared\_fa.scss" />
     <Content Include="App_Data\icons.json" />
-    <Content Include="App_Data\GeoLite2\GeoLite2-Country.mmdb" />
     <Content Include="Content\shared\_tree.scss" />
     <Content Include="Content\bs4\scss\bootstrap-head.scss" />
     <Content Include="Content\bs4\scss\bootstrap-main.scss" />
@@ -1075,6 +1076,7 @@
     <Content Include="Content\shared\_media.scss" />
     <Content Include="Content\vendors\rfs\_rfs.scss" />
     <Content Include="Content\shared\_spacing.scss" />
+    <Content Include="App_Data\Geo\dbip-country-lite.mmdb" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

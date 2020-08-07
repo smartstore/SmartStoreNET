@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -10,27 +13,51 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductCategoriesController : WebApiEntityController<ProductCategory, ICategoryService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-        protected override void Insert(ProductCategory entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<ProductCategory> Get()
 		{
-            Service.InsertProductCategory(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-        protected override void Update(ProductCategory entity)
-		{
-            Service.UpdateProductCategory(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-        protected override void Delete(ProductCategory entity)
-		{
-			Service.DeleteProductCategory(entity);
+			return GetEntitySet();
 		}
 
-        // Navigation properties.
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public SingleResult<ProductCategory> Get(int key)
+		{
+			return GetSingleResult(key);
+		}
 
-        [WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public IHttpActionResult Post(ProductCategory entity)
+		{
+			var result = Insert(entity, () => Service.InsertProductCategory(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public async Task<IHttpActionResult> Put(int key, ProductCategory entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateProductCategory(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<ProductCategory> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateProductCategory(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProductCategory(entity));
+			return result;
+		}
+
+		#region Navigation properties
+
+		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
         public SingleResult<Category> GetCategory(int key)
         {
@@ -43,5 +70,7 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             return GetRelatedEntity(key, x => x.Product);
         }
+
+        #endregion
     }
 }

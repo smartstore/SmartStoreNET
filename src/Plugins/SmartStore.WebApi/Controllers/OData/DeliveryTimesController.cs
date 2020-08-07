@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
@@ -10,29 +13,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class DeliveryTimesController : WebApiEntityController<DeliveryTime, IDeliveryTimeService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Create)]
-		protected override void Insert(DeliveryTime entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
+		public IQueryable<DeliveryTime> Get()
 		{
-			Service.InsertDeliveryTime(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Update)]
-        protected override void Update(DeliveryTime entity)
-		{
-			Service.UpdateDeliveryTime(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Delete)]
-        protected override void Delete(DeliveryTime entity)
-		{
-			Service.DeleteDeliveryTime(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
-        public SingleResult<DeliveryTime> GetDeliveryTime(int key)
+        public SingleResult<DeliveryTime> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Create)]
+		public IHttpActionResult Post(DeliveryTime entity)
+		{
+			var result = Insert(entity, () => Service.InsertDeliveryTime(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Update)]
+		public async Task<IHttpActionResult> Put(int key, DeliveryTime entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateDeliveryTime(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<DeliveryTime> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateDeliveryTime(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteDeliveryTime(entity));
+			return result;
 		}
 	}
 }

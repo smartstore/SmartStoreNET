@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
@@ -10,29 +13,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class MeasureDimensionsController : WebApiEntityController<MeasureDimension, IMeasureService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Create)]
-		protected override void Insert(MeasureDimension entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IQueryable<MeasureDimension> Get()
 		{
-			Service.InsertMeasureDimension(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
-        protected override void Update(MeasureDimension entity)
-		{
-			Service.UpdateMeasureDimension(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Delete)]
-        protected override void Delete(MeasureDimension entity)
-		{
-			Service.DeleteMeasureDimension(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
-        public SingleResult<MeasureDimension> GetMeasureDimension(int key)
+        public SingleResult<MeasureDimension> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Create)]
+		public IHttpActionResult Post(MeasureDimension entity)
+		{
+			var result = Insert(entity, () => Service.InsertMeasureDimension(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
+		public async Task<IHttpActionResult> Put(int key, MeasureDimension entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateMeasureDimension(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<MeasureDimension> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateMeasureDimension(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteMeasureDimension(entity));
+			return result;
 		}
 	}
 }

@@ -44,6 +44,7 @@ namespace SmartStore.Web.Framework.WebApi
 
         // TODO:
         // XML serialization issues.
+        // Don't use service models like MediaFileInfo. API must encapsulate and model independently.
 
         /// <summary>
         /// Auto injected by Autofac.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using System.Web.OData;
@@ -53,51 +54,85 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<Product> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
 				where !x.Deleted && !x.IsSystemProduct
 				select x;
 
 			return query;
 		}
 		
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Create)]
-        protected override void Insert(Product entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<Product> Get()
 		{
-			Service.InsertProduct(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
-        protected override void Update(Product entity)
-		{
-			Service.UpdateProduct(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Delete)]
-        protected override void Delete(Product entity)
-		{
-			Service.DeleteProduct(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetProduct(int key)
+        public SingleResult<Product> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-        // Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Create)]
+		public IHttpActionResult Post(Product entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				Service.InsertProduct(entity);
 
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
+		public async Task<IHttpActionResult> Put(int key, Product entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateProduct(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Product> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateProduct(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProduct(entity));
+			return result;
+		}
+
+		#region Navigation properties
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
         public HttpResponseMessage NavigationProductCategories(int key, int relatedKey)
 		{
 			ProductCategory productCategory = null;
@@ -312,7 +347,9 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedCollection(key, x => x.ProductBundleItems);
 		}
 
-		// Actions.
+		#endregion
+
+		#region Actions
 
 		[HttpPost, WebApiQueryable(PagingOptional = true)]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
@@ -515,5 +552,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 			return entity.ProductVariantAttributes.AsQueryable();
 		}
-	}
+
+        #endregion
+    }
 }

@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
@@ -10,29 +13,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class CustomerRoleMappingsController : WebApiEntityController<CustomerRoleMapping, ICustomerService>
     {
-        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
-        protected override void Insert(CustomerRoleMapping entity)
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
+        public IQueryable<CustomerRoleMapping> Get()
         {
-            Service.InsertCustomerRoleMapping(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
-        protected override void Update(CustomerRoleMapping entity)
-        {
-            Service.UpdateCustomerRoleMapping(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
-        protected override void Delete(CustomerRoleMapping entity)
-        {
-            Service.DeleteCustomerRoleMapping(entity);
+            return GetEntitySet();
         }
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
-        public SingleResult<CustomerRoleMapping> GetCustomerRoleMapping(int key)
+        public SingleResult<CustomerRoleMapping> Get(int key)
         {
             return GetSingleResult(key);
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
+        public IHttpActionResult Post(CustomerRoleMapping entity)
+        {
+            var result = Insert(entity, () => Service.InsertCustomerRoleMapping(entity));
+            return result;
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
+        public async Task<IHttpActionResult> Put(int key, CustomerRoleMapping entity)
+        {
+            var result = await UpdateAsync(entity, key, () => Service.UpdateCustomerRoleMapping(entity));
+            return result;
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
+        public async Task<IHttpActionResult> Patch(int key, Delta<CustomerRoleMapping> model)
+        {
+            var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateCustomerRoleMapping(entity));
+            return result;
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Customer.EditRole)]
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity => Service.DeleteCustomerRoleMapping(entity));
+            return result;
         }
 
         #region Navigation properties

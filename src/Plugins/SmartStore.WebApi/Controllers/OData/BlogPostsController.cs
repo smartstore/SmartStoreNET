@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Security;
@@ -31,42 +33,80 @@ namespace SmartStore.WebApi.Controllers.OData
 			return query;
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Create)]
-		protected override void Insert(BlogPost entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
+		public IQueryable<BlogPost> Get()
 		{
-			Service.InsertBlogPost(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug(entity, x => x.Title);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
-        protected override void Update(BlogPost entity)
-		{
-			Service.UpdateBlogPost(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug(entity, x => x.Title);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Delete)]
-        protected override void Delete(BlogPost entity)
-		{
-			Service.DeleteBlogPost(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public SingleResult<BlogPost> GetBlogPost(int key)
+        public SingleResult<BlogPost> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Create)]
+		public IHttpActionResult Post(BlogPost entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				Service.InsertBlogPost(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Title);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
+		public async Task<IHttpActionResult> Put(int key, BlogPost entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateBlogPost(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Title);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<BlogPost> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateBlogPost(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Title);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				Service.DeleteBlogPost(entity);
+			});
+
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
@@ -81,5 +121,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedCollection(key, x => x.BlogComments);
 		}
-	}
+
+        #endregion
+    }
 }

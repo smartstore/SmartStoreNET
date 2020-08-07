@@ -35,16 +35,6 @@ namespace SmartStore.WebApi
 
 			return sb.ToString();
 		}
-
-		public static T GetValueSafe<T>(this ODataActionParameters parameters, string key)
-		{
-			if (parameters != null && key.HasValue() && parameters.TryGetValue(key, out var value))
-			{
-				return value.Convert<T>();
-			}
-
-			return default(T);
-		}
 	}
 
 	internal static class MiscExtensions
@@ -54,9 +44,22 @@ namespace SmartStore.WebApi
 			if (value.HasValue() && value.Length > 1)
 			{
 				if ((value.StartsWith("\"") && value.EndsWith("\"")) || (value.StartsWith("'") && value.EndsWith("'")))
+				{
 					return value.Substring(1, value.Length - 2);
+				}
 			}
+
 			return value;
+		}
+
+		public static T GetValueSafe<T>(this ODataActionParameters parameters, string key)
+		{
+			if (parameters != null && key.HasValue() && parameters.TryGetValue(key, out var value))
+			{
+				return value.Convert<T>();
+			}
+
+			return default;
 		}
 	}
 }

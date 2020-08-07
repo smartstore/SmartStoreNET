@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
@@ -10,10 +13,11 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class OrderNotesController : WebApiEntityController<OrderNote, IOrderService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		protected override void Delete(OrderNote entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public IQueryable<OrderNote> Get()
 		{
-			Service.DeleteOrderNote(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
@@ -23,7 +27,48 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public IHttpActionResult Post(OrderNote entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				var order = Service.GetOrderById(entity.OrderId);
+				if (order == null || order.Deleted)
+				{
+					throw ExceptionEntityNotFound(entity.OrderId);
+				}
+
+				Service.AddOrderNote(order, entity.Note, entity.DisplayToCustomer);
+
+				if (entity.DisplayToCustomer && this.GetQueryStringValue("customernotification", true))
+				{
+					Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(entity, order.CustomerLanguageId);
+				}
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public IHttpActionResult Put(int key, OrderNote entity)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public IHttpActionResult Patch(int key, Delta<OrderNote> model)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteOrderNote(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
@@ -31,5 +76,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedEntity(key, x => x.Order);
 		}
-	}
+
+        #endregion
+    }
 }

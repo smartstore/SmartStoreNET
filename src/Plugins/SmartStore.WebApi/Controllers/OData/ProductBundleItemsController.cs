@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -10,32 +13,49 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductBundleItemsController : WebApiEntityController<ProductBundleItem, IProductService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
-		protected override void Insert(ProductBundleItem entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<ProductBundleItem> Get()
 		{
-			Service.InsertBundleItem(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
-        protected override void Update(ProductBundleItem entity)
-		{
-			Service.UpdateBundleItem(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
-        protected override void Delete(ProductBundleItem entity)
-		{
-			Service.DeleteBundleItem(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductBundleItem> GetProductBundleItem(int key)
+        public SingleResult<ProductBundleItem> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
+		public IHttpActionResult Post(ProductBundleItem entity)
+		{
+			var result = Insert(entity, () => Service.InsertBundleItem(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
+		public async Task<IHttpActionResult> Put(int key, ProductBundleItem entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateBundleItem(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<ProductBundleItem> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateBundleItem(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditBundle)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteBundleItem(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
@@ -50,5 +70,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedEntity(key, x => x.BundleProduct);
 		}
-	}
+
+        #endregion
+    }
 }

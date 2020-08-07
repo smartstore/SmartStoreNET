@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -10,27 +13,51 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductManufacturersController : WebApiEntityController<ProductManufacturer, IManufacturerService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-        protected override void Insert(ProductManufacturer entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<ProductManufacturer> Get()
 		{
-            Service.InsertProductManufacturer(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-        protected override void Update(ProductManufacturer entity)
-		{
-            Service.UpdateProductManufacturer(entity);
-        }
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-        protected override void Delete(ProductManufacturer entity)
-		{
-			Service.DeleteProductManufacturer(entity);
+			return GetEntitySet();
 		}
 
-        // Navigation properties.
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public SingleResult<ProductManufacturer> Get(int key)
+		{
+			return GetSingleResult(key);
+		}
 
-        [WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public IHttpActionResult Post(ProductManufacturer entity)
+		{
+			var result = Insert(entity, () => Service.InsertProductManufacturer(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public async Task<IHttpActionResult> Put(int key, ProductManufacturer entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateProductManufacturer(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<ProductManufacturer> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateProductManufacturer(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProductManufacturer(entity));
+			return result;
+		}
+
+		#region Navigation properties
+
+		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
         public SingleResult<Manufacturer> GetManufacturer(int key)
         {
@@ -43,5 +70,7 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             return GetRelatedEntity(key, x => x.Product);
         }
+
+        #endregion
     }
 }

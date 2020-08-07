@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -34,24 +36,6 @@ namespace SmartStore.WebApi.Controllers.OData
 			return query;
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Customer.Create)]
-		protected override void Insert(Customer entity)
-		{
-			Service.InsertCustomer(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
-        protected override void Update(Customer entity)
-		{
-			Service.UpdateCustomer(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
-        protected override void Delete(Customer entity)
-		{
-			Service.DeleteCustomer(entity);
-		}
-
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
 		public IQueryable<Customer> Get()
@@ -61,20 +45,73 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Customer> GetCustomer(int key)
+        public SingleResult<Customer> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-        #region Navigation properties
+		[WebApiAuthenticate(Permission = Permissions.Customer.Create)]
+		public IHttpActionResult Post(Customer entity)
+		{
+			var result = Insert(entity, () => Service.InsertCustomer(entity));
+			return result;
+		}
 
-        /// <summary>
-        /// Handle address assignments
-        /// </summary>
-        /// <param name="key">Customer id</param>
-        /// <param name="relatedKey">Address id</param>
-        /// <returns>Address</returns>
-        [WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Put(int key, Customer entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				if (entity != null && entity.IsSystemAccount)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.UpdateCustomer(entity);
+			});
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Customer> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				if (entity != null && entity.IsSystemAccount)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.UpdateCustomer(entity);
+			});
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				if (entity != null && entity.IsSystemAccount)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.DeleteCustomer(entity);
+			});
+
+			return result;
+		}
+
+		#region Navigation properties
+
+		/// <summary>
+		/// Handle address assignments
+		/// </summary>
+		/// <param name="key">Customer id</param>
+		/// <param name="relatedKey">Address id</param>
+		/// <returns>Address</returns>
+		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
         public HttpResponseMessage NavigationAddresses(int key, int relatedKey)
 		{
 			Address address = null;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Common;
@@ -41,29 +42,46 @@ namespace SmartStore.WebApi.Controllers.OData
 			return query;
 		}
 		
-        [WebApiAuthenticate(Permission = Permissions.Order.Create)]
-        protected override void Insert(Order entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public IQueryable<Order> Get()
 		{
-			Service.InsertOrder(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        protected override void Update(Order entity)
-		{
-			Service.UpdateOrder(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Order.Delete)]
-        protected override void Delete(Order entity)
-		{
-			Service.DeleteOrder(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<Order> GetOrder(int key)
+        public SingleResult<Order> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Create)]
+		public IHttpActionResult Post(Order entity)
+		{
+			var result = Insert(entity, () => Service.InsertOrder(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public async Task<IHttpActionResult> Put(int key, Order entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateOrder(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Order> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateOrder(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteOrder(entity));
+			return result;
 		}
 
 		#region Navigation properties

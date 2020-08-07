@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Security;
@@ -31,42 +33,80 @@ namespace SmartStore.WebApi.Controllers.OData
 			return query;
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Create)]
-		protected override void Insert(Category entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
+		public IQueryable<Category> Get()
 		{
-			Service.InsertCategory(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Category>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
-        protected override void Update(Category entity)
-		{
-			Service.UpdateCategory(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Category>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Delete)]
-        protected override void Delete(Category entity)
-		{
-			Service.DeleteCategory(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
-        public SingleResult<Category> GetCategory(int key)
+        public SingleResult<Category> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Create)]
+		public IHttpActionResult Post(Category entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				Service.InsertCategory(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
+		public async Task<IHttpActionResult> Put(int key, Category entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateCategory(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Category> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateCategory(entity);
+
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				Service.DeleteCategory(entity);
+			});
+
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
@@ -74,5 +114,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedCollection(key, x => x.AppliedDiscounts);
 		}
+
+		#endregion
 	}
 }

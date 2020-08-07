@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
@@ -28,55 +30,71 @@ namespace SmartStore.WebApi.Controllers.OData
 			_eventPublisher = eventPublisher;
 		}
 
-		private void PublishOrderUpdated(int addressId)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IQueryable<Address> Get()
 		{
-			this.ProcessEntity(() =>
-			{
-				if (addressId != 0)
-				{
-					var orders = _orderRepository.Value.TableUntracked
-						.Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
-						.ToList();
-
-					foreach (var order in orders)
-					{
-						_eventPublisher.Value.PublishOrderUpdated(order);
-					}
-				}
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Create)]
-		protected override void Insert(Address entity)
-		{
-			Service.InsertAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
-        protected override void Update(Address entity)
-		{
-			Service.UpdateAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
-        protected override void Delete(Address entity)
-		{
-			int entityId = (entity == null ? 0 : entity.Id);
-
-			Service.DeleteAddress(entity);
-			PublishOrderUpdated(entityId);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Address> GetAddress(int key)
+        public SingleResult<Address> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Customer.Create)]
+		public IHttpActionResult Post(Address entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				Service.InsertAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Put(int key, Address entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Address> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				var entityId = entity?.Id ?? 0;
+
+				Service.DeleteAddress(entity);
+				PublishOrderUpdated(entityId);
+			});
+
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
@@ -90,6 +108,28 @@ namespace SmartStore.WebApi.Controllers.OData
         public SingleResult<StateProvince> GetStateProvince(int key)
 		{
 			return GetRelatedEntity(key, x => x.StateProvince);
+		}
+
+		#endregion
+
+		private void PublishOrderUpdated(int addressId)
+		{
+			if (addressId == 0)
+			{
+				return;
+			}
+
+			this.ProcessEntity(() =>
+			{
+				var orders = _orderRepository.Value.TableUntracked
+					.Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
+					.ToList();
+
+				foreach (var order in orders)
+				{
+					_eventPublisher.Value.PublishOrderUpdated(order);
+				}
+			});
 		}
 	}
 }

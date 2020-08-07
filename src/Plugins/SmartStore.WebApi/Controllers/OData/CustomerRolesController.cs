@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
@@ -10,39 +13,73 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class CustomerRolesController : WebApiEntityController<CustomerRole, ICustomerService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Create)]
-		protected override void Insert(CustomerRole entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
+		public IQueryable<CustomerRole> Get()
 		{
-			Service.InsertCustomerRole(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Update)]
-        protected override void Update(CustomerRole entity)
-		{
-			if (entity != null && entity.IsSystemRole)
-			{
-				throw this.ExceptionForbidden();
-			}
-
-			Service.UpdateCustomerRole(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Role.Delete)]
-        protected override void Delete(CustomerRole entity)
-		{
-			if (entity != null && entity.IsSystemRole)
-			{
-				throw this.ExceptionForbidden();
-			}
-
-			Service.DeleteCustomerRole(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
-        public SingleResult<CustomerRole> GetCustomerRole(int key)
+        public SingleResult<CustomerRole> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Create)]
+		public IHttpActionResult Post(CustomerRole entity)
+		{
+			var result = Insert(entity, () => Service.InsertCustomerRole(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Update)]
+		public async Task<IHttpActionResult> Put(int key, CustomerRole entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				if (entity != null && entity.IsSystemRole)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.UpdateCustomerRole(entity);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<CustomerRole> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				if (entity != null && entity.IsSystemRole)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.UpdateCustomerRole(entity);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				if (entity != null && entity.IsSystemRole)
+				{
+					throw this.ExceptionForbidden();
+				}
+
+				Service.DeleteCustomerRole(entity);
+			});
+
+			return result;
 		}
 	}
 }

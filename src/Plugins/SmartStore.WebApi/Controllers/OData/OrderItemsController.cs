@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
@@ -16,38 +18,53 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<OrderItem> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
+				where !x.Order.Deleted
 				select x;
 
 			return query;
 		}
-		
-        [WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-        protected override void Insert(OrderItem entity)
-		{
-			throw this.ExceptionNotImplemented();
-		}
 
-        [WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-        protected override void Update(OrderItem entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public IQueryable<OrderItem> Get()
 		{
-			throw this.ExceptionNotImplemented();
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-        protected override void Delete(OrderItem entity)
-		{
-			Service.DeleteOrderItem(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<OrderItem> GetOrderItem(int key)
+        public SingleResult<OrderItem> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
+		public IHttpActionResult Post(OrderItem entity)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
+		public IHttpActionResult Put(int key, OrderItem entity)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
+		public IHttpActionResult Patch(int key, Delta<OrderItem> model)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteOrderItem(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
@@ -63,7 +80,11 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedEntity(key, x => x.Product);
 		}
 
-		[HttpPost]
+        #endregion
+
+        #region Actions
+
+        [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public OrderItemInfo Infos(int key)
 		{
@@ -82,5 +103,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 			return result;
 		}
+
+		#endregion
 	}
 }

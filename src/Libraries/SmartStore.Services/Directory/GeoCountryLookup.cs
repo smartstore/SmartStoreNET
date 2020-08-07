@@ -1,11 +1,7 @@
 using System;
 using System.Net;
-using MaxMind.Db;
 using MaxMind.GeoIP2;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Utilities;
-using SmDir = SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
 {

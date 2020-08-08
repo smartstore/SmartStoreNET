@@ -19,7 +19,7 @@ namespace Resources {
     // mit einem Tool wie ResGen oder Visual Studio automatisch generiert.
     // Bearbeiten Sie zum Hinzufügen oder Entfernen eines Members die RESX-Datei, und führen Sie dann ResGen
     // mit der /str-Option erneut aus, oder Sie erstellen das Visual Studio-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class MvcLocalization {

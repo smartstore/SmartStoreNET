@@ -135,11 +135,11 @@ Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
 
 
-GeoLite Free by MaxMind
+DB-IP Country Lite by Eris Networks S.A.S
 ---------------------------------------------
-Website:      http://www.maxmind.com
-Copyright:    Copyright (c) 2014 Maxmind
-License:      Creative Commons Attribution-ShareAlike 3.0 Unported License
+https://db-ip.com/
+Copyright:    Copyright (c) 2020 db-ip.com
+License:      Creative Commons Attribution 4.0 International License
 
 
 Linearicons by Perxis

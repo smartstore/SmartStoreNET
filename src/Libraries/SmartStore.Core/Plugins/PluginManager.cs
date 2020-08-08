@@ -231,7 +231,7 @@ namespace SmartStore.Core.Plugins
                 }
                 if (firstFailedAssembly != null)
                 {
-                    Logger.ErrorFormat("Assembly probing failed for '{0}': {1}", firstFailedAssembly.File.Name, firstFailedAssembly.ActivationException.Message);
+                    Logger.ErrorFormat("Assembly probing failed for '{0}': {1}", firstFailedAssembly.File?.Name.EmptyNull(), firstFailedAssembly.ActivationException.Message);
                     p.Incompatible = true;
                     incompatiblePlugins.Add(p.SystemName);
                 }

@@ -1,0 +1,9 @@
+/// <reference path="theme.scss" />
+
+@if ($enable-rfs) {
+    $rfs-spacers: map-merge((), $spacers);
+
+    // Prevent that BS generates all spacing classes,
+    // we gonna do it ourselves with the above variable '$rfs-spacers'
+    $spacers: ();
+}

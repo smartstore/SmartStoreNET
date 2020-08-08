@@ -157,28 +157,18 @@ $pswp__background-color:            #fff;
 	transform: translateY(-50%);
 	width: 60px;
 	height: 60px;
-    font-size: 60px;
+    font-size: 30px;
     padding: 0;
-    //color: #bbb;
-
-    &:hover, &:focus {
-        //color: #888;
-        //background: #f5f5f5;
-    }
-
-    &:active {
-        //background: #eaeaea;
-    }
 }
 
 .pswp__button--arrow--left {
 	left: 0;
-    &:before { content: "\f104"; /* angle-left */ }
+    &:before { content: "\f053"; /* angle-left */ }
 }
 
 .pswp__button--arrow--right {
 	right: 0;
-    &:before { content: "\f105"; /* angle-right */ }
+    &:before { content: "\f054"; /* angle-right */ }
 }
 
 

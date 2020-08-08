@@ -63,6 +63,8 @@ $footer-social-color:           #fff !default;
 
 $facet-control-size:			20px !default;
 
+$enable-rfs:                    true; // declared in _rfs.scss
+$rfs-spacers:                   () !default;
 $font-size-root-md:             16px !default;
 $font-size-root-sm:             16px !default;
 
@@ -122,7 +124,7 @@ $line-height-base:              1.5;
 $line-height-sm:                1.5;
 $line-height-lg:                (4 / 3);
 
-$lead-font-size:                1rem;
+$lead-font-size:                1.125rem;
 $lead-font-weight:              $font-weight-light;
 $small-font-size:               90%;
 
@@ -276,6 +278,14 @@ $embed-responsive-aspect-ratios: (
 $custom-control-indicator-checked-color:        #fff;
 $custom-control-indicator-checked-bg:           $blue;
 $custom-control-indicator-checked-disabled-bg:  rgba($blue, .5);
+
+
+// Breadcrumb
+
+$breadcrumb-padding-x:              0;
+$breadcrumb-padding-y:              0;
+$breadcrumb-bg:                     transparent;
+$breadcrumb-border-radius:          0;
 
 
 // Misc

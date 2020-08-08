@@ -1,6 +1,50 @@
 user_agent_parsers:
   #### SPECIAL CASES TOP ####
 
+  # ESRI Server products
+  - regex: '(GeoEvent Server) (\d+)(?:\.(\d+)(?:\.(\d+)|)|)'
+
+  # ESRI ArcGIS Desktop Products
+  - regex: '(ArcGIS Pro)(?: (\d+)\.(\d+)\.([^ ]+)|)'
+
+  - regex: 'ArcGIS Client Using WinInet'
+    family_replacement: 'ArcMap'
+
+  - regex: '(OperationsDashboard)-(?:Windows)-(\d+)\.(\d+)\.(\d+)'
+    family_replacement: 'Operations Dashboard for ArcGIS'
+
+  - regex: '(arcgisearth)/(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: 'ArcGIS Earth'
+
+  - regex: 'com.esri.(earth).phone/(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: 'ArcGIS Earth'
+
+  # ESRI ArcGIS Mobile Products
+  - regex: '(arcgis-explorer)/(\d+)\.(\d+)\.(\d+)'
+    family_replacement: 'Explorer for ArcGIS'
+
+  - regex: 'arcgis-(collector|aurora)/(\d+)\.(\d+)\.(\d+)'
+    family_replacement: 'Collector for ArcGIS'
+
+  - regex: '(arcgis-workforce)/(\d+)\.(\d+)\.(\d+)'
+    family_replacement: 'Workforce for ArcGIS'
+
+  - regex: '(Collector|Explorer|Workforce)-(?:Android|iOS)-(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: '$1 for ArcGIS'
+
+  - regex: '(Explorer|Collector)/(\d+) CFNetwork'
+    family_replacement: '$1 for ArcGIS'
+
+  # ESRI ArcGIS Runtimes
+  - regex: 'ArcGISRuntime-(Android|iOS|NET|Qt)/(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: 'ArcGIS Runtime SDK for $1'
+
+  - regex: 'ArcGIS\.?(iOS|Android|NET|Qt)(?:-|\.)(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: 'ArcGIS Runtime SDK for $1'
+  
+  - regex: 'ArcGIS\.Runtime\.(Qt)\.(\d+)\.(\d+)(?:\.(\d+)|)'
+    family_replacement: 'ArcGIS Runtime SDK for $1'
+
   # CFNetwork Podcast catcher Applications
   - regex: '^(Luminary)[Stage]+/(\d+) CFNetwork'
   - regex: '(ESPN)[%20| ]+Radio/(\d+)\.(\d+)\.(\d+) CFNetwork'
@@ -101,11 +145,23 @@ user_agent_parsers:
     family_replacement: 'Pinterestbot'
 
   # Bots
-  - regex: '(CSimpleSpider|Cityreview Robot|CrawlDaddy|CrawlFire|Finderbots|Index crawler|Job Roboter|KiwiStatus Spider|Lijit Crawler|QuerySeekerSpider|ScollSpider|Trends Crawler|USyd-NLP-Spider|SiteCat Webbot|BotName\/\$BotVersion|123metaspider-Bot|1470\.net crawler|50\.nu|8bo Crawler Bot|Aboundex|Accoona-[A-z]{1,30}-Agent|AdsBot-Google(?:-[a-z]{1,30}|)|altavista|AppEngine-Google|archive.{0,30}\.org_bot|archiver|Ask Jeeves|[Bb]ai[Dd]u[Ss]pider(?:-[A-Za-z]{1,30})(?:-[A-Za-z]{1,30}|)|bingbot|BingPreview|blitzbot|BlogBridge|Bloglovin|BoardReader Blog Indexer|BoardReader Favicon Fetcher|boitho.com-dc|BotSeer|BUbiNG|\b\w{0,30}favicon\w{0,30}\b|\bYeti(?:-[a-z]{1,30}|)|Catchpoint(?: bot|)|[Cc]harlotte|Checklinks|clumboot|Comodo HTTP\(S\) Crawler|Comodo-Webinspector-Crawler|ConveraCrawler|CRAWL-E|CrawlConvera|Daumoa(?:-feedfetcher|)|Feed Seeker Bot|Feedbin|findlinks|Flamingo_SearchEngine|FollowSite Bot|furlbot|Genieo|gigabot|GomezAgent|gonzo1|(?:[a-zA-Z]{1,30}-|)Googlebot(?:-[a-zA-Z]{1,30}|)|Google SketchUp|grub-client|gsa-crawler|heritrix|HiddenMarket|holmes|HooWWWer|htdig|ia_archiver|ICC-Crawler|Icarus6j|ichiro(?:/mobile|)|IconSurf|IlTrovatore(?:-Setaccio|)|InfuzApp|Innovazion Crawler|InternetArchive|IP2[a-z]{1,30}Bot|jbot\b|KaloogaBot|Kraken|Kurzor|larbin|LEIA|LesnikBot|Linguee Bot|LinkAider|LinkedInBot|Lite Bot|Llaut|lycos|Mail\.RU_Bot|masscan|masidani_bot|Mediapartners-Google|Microsoft .{0,30} Bot|mogimogi|mozDex|MJ12bot|msnbot(?:-media {0,2}|)|msrbot|Mtps Feed Aggregation System|netresearch|Netvibes|NewsGator[^/]{0,30}|^NING|Nutch[^/]{0,30}|Nymesis|ObjectsSearch|OgScrper|Orbiter|OOZBOT|PagePeeker|PagesInventory|PaxleFramework|Peeplo Screenshot Bot|PlantyNet_WebRobot|Pompos|Qwantify|Read%20Later|Reaper|RedCarpet|Retreiver|Riddler|Rival IQ|scooter|Scrapy|Scrubby|searchsight|seekbot|semanticdiscovery|SemrushBot|Simpy|SimplePie|SEOstats|SimpleRSS|SiteCon|Slackbot-LinkExpanding|Slack-ImgProxy|Slurp|snappy|Speedy Spider|Squrl Java|Stringer|TheUsefulbot|ThumbShotsBot|Thumbshots\.ru|Tiny Tiny RSS|Twitterbot|WhatsApp|URL2PNG|Vagabondo|VoilaBot|^vortex|Votay bot|^voyager|WASALive.Bot|Web-sniffer|WebThumb|WeSEE:[A-z]{1,30}|WhatWeb|WIRE|WordPress|Wotbox|www\.almaden\.ibm\.com|Xenu(?:.s|) Link Sleuth|Xerka [A-z]{1,30}Bot|yacy(?:bot|)|YahooSeeker|Yahoo! Slurp|Yandex\w{1,30}|YodaoBot(?:-[A-z]{1,30}|)|YottaaMonitor|Yowedo|^Zao|^Zao-Crawler|ZeBot_www\.ze\.bz|ZooShot|ZyBorg)(?:[ /]v?(\d+)(?:\.(\d+)(?:\.(\d+)|)|)|)'
+  - regex: '(CSimpleSpider|Cityreview Robot|CrawlDaddy|CrawlFire|Finderbots|Index crawler|Job Roboter|KiwiStatus Spider|Lijit Crawler|QuerySeekerSpider|ScollSpider|Trends Crawler|USyd-NLP-Spider|SiteCat Webbot|BotName\/\$BotVersion|123metaspider-Bot|1470\.net crawler|50\.nu|8bo Crawler Bot|Aboundex|Accoona-[A-z]{1,30}-Agent|AdsBot-Google(?:-[a-z]{1,30}|)|altavista|AppEngine-Google|archive.{0,30}\.org_bot|archiver|Ask Jeeves|[Bb]ai[Dd]u[Ss]pider(?:-[A-Za-z]{1,30})(?:-[A-Za-z]{1,30}|)|bingbot|BingPreview|blitzbot|BlogBridge|Bloglovin|BoardReader Blog Indexer|BoardReader Favicon Fetcher|boitho.com-dc|BotSeer|BUbiNG|\b\w{0,30}favicon\w{0,30}\b|\bYeti(?:-[a-z]{1,30}|)|Catchpoint(?: bot|)|[Cc]harlotte|Checklinks|clumboot|Comodo HTTP\(S\) Crawler|Comodo-Webinspector-Crawler|ConveraCrawler|CRAWL-E|CrawlConvera|Daumoa(?:-feedfetcher|)|Feed Seeker Bot|Feedbin|findlinks|Flamingo_SearchEngine|FollowSite Bot|furlbot|Genieo|gigabot|GomezAgent|gonzo1|(?:[a-zA-Z]{1,30}-|)Googlebot(?:-[a-zA-Z]{1,30}|)|Google SketchUp|grub-client|gsa-crawler|heritrix|HiddenMarket|holmes|HooWWWer|htdig|ia_archiver|ICC-Crawler|Icarus6j|ichiro(?:/mobile|)|IconSurf|IlTrovatore(?:-Setaccio|)|InfuzApp|Innovazion Crawler|InternetArchive|IP2[a-z]{1,30}Bot|jbot\b|KaloogaBot|Kraken|Kurzor|larbin|LEIA|LesnikBot|Linguee Bot|LinkAider|LinkedInBot|Lite Bot|Llaut|lycos|Mail\.RU_Bot|masscan|masidani_bot|Mediapartners-Google|Microsoft .{0,30} Bot|mogimogi|mozDex|MJ12bot|msnbot(?:-media {0,2}|)|msrbot|Mtps Feed Aggregation System|netresearch|Netvibes|NewsGator[^/]{0,30}|^NING|Nutch[^/]{0,30}|Nymesis|ObjectsSearch|OgScrper|Orbiter|OOZBOT|PagePeeker|PagesInventory|PaxleFramework|Peeplo Screenshot Bot|PlantyNet_WebRobot|Pompos|Qwantify|Read%20Later|Reaper|RedCarpet|Retreiver|Riddler|Rival IQ|scooter|Scrapy|Scrubby|searchsight|seekbot|semanticdiscovery|SemrushBot|Simpy|SimplePie|SEOstats|SimpleRSS|SiteCon|Slackbot-LinkExpanding|Slack-ImgProxy|Slurp|snappy|Speedy Spider|Squrl Java|Stringer|TheUsefulbot|ThumbShotsBot|Thumbshots\.ru|Tiny Tiny RSS|Twitterbot|WhatsApp|URL2PNG|Vagabondo|VoilaBot|^vortex|Votay bot|^voyager|WASALive.Bot|Web-sniffer|WebThumb|WeSEE:[A-z]{1,30}|WhatWeb|WIRE|WordPress|Wotbox|www\.almaden\.ibm\.com|Xenu(?:.s|) Link Sleuth|Xerka [A-z]{1,30}Bot|yacy(?:bot|)|YahooSeeker|Yahoo! Slurp|Yandex\w{1,30}|YodaoBot(?:-[A-z]{1,30}|)|YottaaMonitor|Yowedo|^Zao|^Zao-Crawler|ZeBot_www\.ze\.bz|ZooShot|ZyBorg|ArcGIS Hub Indexer)(?:[ /]v?(\d+)(?:\.(\d+)(?:\.(\d+)|)|)|)'
 
   # AWS S3 Clients
   # must come before "Bots General matcher" to catch "boto"/"boto3" before "bot"
   - regex: '\b(Boto3?|JetS3t|aws-(?:cli|sdk-(?:cpp|go|java|nodejs|ruby2?|dotnet-(?:\d{1,2}|core)))|s3fs)/(\d+)\.(\d+)(?:\.(\d+)|)'
+
+  # SAFE FME
+  - regex: '(FME)\/(\d+\.\d+)\.(\d+)\.(\d+)'
+
+  # QGIS
+  - regex: '(QGIS)\/(\d)\.?0?(\d{1,2})\.?0?(\d{1,2})'
+
+  # JOSM
+  - regex: '(JOSM)/(\d+)\.(\d+)'
+
+  # Tygron Platform
+  - regex: '(Tygron Platform) \((\d+)\.(\d+)\.(\d+(?:\.\d+| RC \d+\.\d+))'
 
   # Facebook
   # Must come before "Bots General matcher" to catch OrangeBotswana
@@ -155,6 +211,17 @@ user_agent_parsers:
   # Twitter
   - regex: '(Twitter for (?:iPhone|iPad)|TwitterAndroid)(?:\/(\d+)\.(\d+)|)'
     family_replacement: 'Twitter'
+
+  # aspiegel.com spider (owned by Huawei)
+  - regex: 'Mozilla.*Mobile.*AspiegelBot'
+    family_replacement: 'Spider'
+    brand_replacement: 'Spider'
+    model_replacement: 'Smartphone'
+
+  - regex: 'AspiegelBot'
+    family_replacement: 'Spider'
+    brand_replacement: 'Spider'
+    model_replacement: 'Desktop'
 
   # Basilisk
   - regex: '(Firefox)/(\d+)\.(\d+) Basilisk/(\d+)'
@@ -317,9 +384,7 @@ user_agent_parsers:
   # Edge Mobile
   - regex: 'Windows Phone .*(Edge)/(\d+)\.(\d+)'
     family_replacement: 'Edge Mobile'
-  - regex: '(EdgA)/(\d+)\.(\d+)\.(\d+)\.(\d+)'
-    family_replacement: 'Edge Mobile'
-  - regex: '(EdgiOS)/(\d+)\.(\d+)\.(\d+)\.(\d+)'
+  - regex: '(EdgiOS|EdgA)/(\d+)\.(\d+)\.(\d+)\.(\d+)'
     family_replacement: 'Edge Mobile'
 
   # Samsung Internet (based on Chrome, but lacking some features)
@@ -405,6 +470,9 @@ user_agent_parsers:
   # Rackspace Monitoring
   - regex: '(Rackspace Monitoring)/(\d+)\.(\d+)'
     family_replacement: 'RackspaceBot'
+
+  # PRTG Network Monitoring
+  - regex: '(PRTG Network Monitor)'
 
   # PyAMF
   - regex: '(PyAMF)/(\d+)\.(\d+)\.(\d+)'
@@ -611,7 +679,7 @@ user_agent_parsers:
   # Browser major_version.minor_version.beta_version (space instead of slash)
   - regex: '(iRider|Crazy Browser|SkipStone|iCab|Lunascape|Sleipnir|Maemo Browser) (\d+)\.(\d+)\.(\d+)'
   # Browser major_version.minor_version (space instead of slash)
-  - regex: '(iCab|Lunascape|Opera|Android|Jasmine|Polaris|Microsoft SkyDriveSync|The Bat!) (\d+)\.(\d+)(?:\.(\d+)|)'
+  - regex: '(iCab|Lunascape|Opera|Android|Jasmine|Polaris|Microsoft SkyDriveSync|The Bat!) (\d+)(?:\.(\d+)|)(?:\.(\d+)|)'
 
   # Kindle WebKit
   - regex: '(Kindle)/(\d+)\.(\d+)'
@@ -691,7 +759,7 @@ user_agent_parsers:
     family_replacement: 'TopBuzz'
 
   # @note: iOS / OSX Applications
-  - regex: '(iPod|iPhone|iPad).+GSA/(\d+)\.(\d+)\.(\d+) Mobile'
+  - regex: '(iPod|iPhone|iPad).+GSA/(\d+)\.(\d+)\.(\d+)(?:\.(\d+)|) Mobile'
     family_replacement: 'Google'
   - regex: '(iPod|iPhone|iPad).+Version/(\d+)\.(\d+)(?:\.(\d+)|).*[ +]Safari'
     family_replacement: 'Mobile Safari'
@@ -839,14 +907,13 @@ user_agent_parsers:
     family_replacement: 'Python Requests'
 
   # headless user-agents
-  - regex: '\b(Windows-Update-Agent|Microsoft-CryptoAPI|SophosUpdateManager|SophosAgent|Debian APT-HTTP|Ubuntu APT-HTTP|libcurl-agent|libwww-perl|urlgrabber|curl|PycURL|Wget|aria2|Axel|OpenBSD ftp|lftp|jupdate|insomnia|fetch libfetch|akka-http|got)(?:[ /](\d+)(?:\.(\d+)|)(?:\.(\d+)|)|)'
+  - regex: '\b(Windows-Update-Agent|WindowsPowerShell|Microsoft-CryptoAPI|SophosUpdateManager|SophosAgent|Debian APT-HTTP|Ubuntu APT-HTTP|libcurl-agent|libwww-perl|urlgrabber|curl|PycURL|Wget|wget2|aria2|Axel|OpenBSD ftp|lftp|jupdate|insomnia|fetch libfetch|akka-http|got)(?:[ /](\d+)(?:\.(\d+)|)(?:\.(\d+)|)|)'
 
   # Asynchronous HTTP Client/Server for asyncio and Python (https://aiohttp.readthedocs.io/)
   - regex: '(Python/3\.\d{1,3} aiohttp)/(\d+)\.(\d+)\.(\d+)'
-  # Asynchronous HTTP Client/Server for asyncio and Python (https://aiohttp.readthedocs.io/)
-  - regex: '(Python/3\.\d{1,3} aiohttp)/(\d+)\.(\d+)\.(\d+)'
+    family_replacement: 'Python aiohttp'
 
-  - regex: '(Java)[/ ]{0,1}\d+\.(\d+)\.(\d+)[_-]*([a-zA-Z0-9]+|)'
+  - regex: '(Java)[/ ]?\d+\.(\d+)\.(\d+)[_-]*([a-zA-Z0-9]+|)'
 
   # Cloud Storage Clients
   - regex: '^(Cyberduck)/(\d+)\.(\d+)\.(\d+)(?:\.\d+|)'
@@ -932,6 +999,10 @@ os_parsers:
   # generic HbbTV, hoping to catch manufacturer name (always after 2nd comma) and the first string that looks like a 2011-2019 year
   - regex: 'HbbTV/\d+\.\d+\.\d+ \(.*; ?([a-zA-Z]+) ?;.*(201[1-9]).*\)'
 
+  # aspiegel.com spider (owned by Huawei)
+  - regex: 'AspiegelBot'
+    os_replacement: 'Other'
+
   ##########
   # @note: Windows Phone needs to come before Windows NT 6.1 *and* before Android to catch cases such as:
   # Mozilla/5.0 (Mobile; Windows Phone 8.1; Android 4.0; ARM; Trident/7.0; Touch; rv:11.0; IEMobile/11.0; NOKIA; Lumia 920)...
@@ -945,6 +1016,12 @@ os_parsers:
   # Again a MS-special one: iPhone.*Outlook-iOS-Android/x.x is erroneously detected as Android
   - regex: '(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone)[ +]+(\d+)[_\.](\d+)(?:[_\.](\d+)|).*Outlook-iOS-Android'
     os_replacement: 'iOS'
+
+  # Special case for old ArcGIS Mobile products
+  - regex: 'ArcGIS\.?(iOS|Android)-\d+\.\d+(?:\.\d+|)(?:[^\/]+|)\/(\d+)(?:\.(\d+)(?:\.(\d+)|)|)'
+
+  # Special case for new ArcGIS Mobile products
+  - regex: 'ArcGISRuntime-(?:Android|iOS)\/\d+\.\d+(?:\.\d+|) \((Android|iOS) (\d+)(?:\.(\d+)(?:\.(\d+)|)|);'
 
   ##########
   # Android
@@ -1029,11 +1106,11 @@ os_parsers:
     os_replacement: 'Windows'
     os_v1_replacement: 'XP'
 
-  - regex: '(Windows NT 6\.1)'
+  - regex: '(Win(?:dows NT |32NT\/)6\.1)'
     os_replacement: 'Windows'
     os_v1_replacement: '7'
 
-  - regex: '(Windows NT 6\.0)'
+  - regex: '(Win(?:dows NT |32NT\/)6\.0)'
     os_replacement: 'Windows'
     os_v1_replacement: 'Vista'
 
@@ -1045,7 +1122,7 @@ os_parsers:
     os_replacement: 'Windows'
     os_v1_replacement: 'RT'
 
-  - regex: '(Windows NT 6\.2)'
+  - regex: '(Win(?:dows NT |32NT\/)6\.2)'
     os_replacement: 'Windows'
     os_v1_replacement: '8'
 
@@ -1054,12 +1131,12 @@ os_parsers:
     os_v1_replacement: 'RT 8'
     os_v2_replacement: '1'
 
-  - regex: '(Windows NT 6\.3)'
+  - regex: '(Win(?:dows NT |32NT\/)6\.3)'
     os_replacement: 'Windows'
     os_v1_replacement: '8'
     os_v2_replacement: '1'
 
-  - regex: '(Windows NT 6\.4)'
+  - regex: '(Win(?:dows NT |32NT\/)6\.4)'
     os_replacement: 'Windows'
     os_v1_replacement: '10'
 
@@ -1568,11 +1645,21 @@ device_parsers:
     device_replacement: 'Spider'
     brand_replacement: 'Spider'
 
+  # aspiegel.com spider (owned by Huawei)
+  - regex: 'Mozilla.*Mobile.*AspiegelBot'
+    device_replacement: 'Spider'
+    brand_replacement: 'Spider'
+    model_replacement: 'Smartphone'
+  - regex: 'Mozilla.*AspiegelBot'
+    device_replacement: 'Spider'
+    brand_replacement: 'Spider'
+    model_replacement: 'Desktop'
+
   #########
   # WebBrowser for SmartWatch
   # @ref: https://play.google.com/store/apps/details?id=se.vaggan.webbrowser&hl=en
   #########
-  - regex: '\bSmartWatch *\( *([^;]+) *; *([^;]+) *;'
+  - regex: '\bSmartWatch {0,2}\( {0,2}([^;]+) {0,2}; {0,2}([^;]+) {0,2};'
     device_replacement: '$1 $2'
     brand_replacement: '$1'
     model_replacement: '$2'
@@ -2584,7 +2671,7 @@ device_parsers:
     device_replacement: '$1$2'
     brand_replacement: 'Huawei'
     model_replacement: '$2'
-  - regex: '; *([^;/]+) Build[/ ]Huawei(MT1-U06|[A-Z]+\d+[^\);]+)[^\);]*\)'
+  - regex: '; *([^;/]+) Build[/ ]Huawei(MT1-U06|[A-Z]+\d+[^\);]+)\)'
     device_replacement: '$1'
     brand_replacement: 'Huawei'
     model_replacement: '$2'
@@ -2864,6 +2951,15 @@ device_parsers:
   - regex: '; *(M702pro)(?: Build|\) AppleWebKit)'
     device_replacement: '$1'
     brand_replacement: 'Iru'
+    model_replacement: '$1'
+
+  #########
+  # Itel Mobile
+  # @ref: https://www.itel-mobile.com/global/products/
+  #########
+  - regex: '; *itel ([^;/]*)(?: Build|\) AppleWebKit)'
+    device_replacement: 'Itel $1'
+    brand_replacement: 'Itel'
     model_replacement: '$1'
 
   #########
@@ -3463,6 +3559,10 @@ device_parsers:
     device_replacement: '$1$2$3'
     brand_replacement: 'Nokia'
     model_replacement: '$3'
+  - regex: '; *(TA\-\d{4})(?: Build|\) AppleWebKit)'
+    device_replacement: 'Nokia $1'
+    brand_replacement: 'Nokia'
+    model_replacement: '$1'
 
   #########
   # Nook
@@ -3519,12 +3619,19 @@ device_parsers:
   # Oppo
   # @ref: http://en.oppo.com/products/
   #########
-  - regex: '; *(Find ?(?:5|7a)|R8[012]\d{1,2}|T703\d{0,1}|U70\d{1,2}T?|X90\d{1,2})(?: Build|\) AppleWebKit)'
+  - regex: '; *(Find ?(?:5|7a)|R8[012]\d{1,2}|T703\d?|U70\d{1,2}T?|X90\d{1,2}|[AFR]\d{1,2}[a-z]{1,2})(?: Build|\) AppleWebKit)'
     device_replacement: 'Oppo $1'
     brand_replacement: 'Oppo'
     model_replacement: '$1'
   - regex: '; *OPPO ?([^;/]+?)(?: Build|\) AppleWebKit)'
     device_replacement: 'Oppo $1'
+    brand_replacement: 'Oppo'
+    model_replacement: '$1'
+  - regex: '; *(CPH\d{1,4}|RMX\d{1,4}|P[A-Z]{3}\d{2})(?: Build|\) AppleWebKit)'
+    device_replacement: 'Oppo $1'
+    brand_replacement: 'Oppo'
+  - regex: '; *(A1601)(?: Build|\) AppleWebKit)'
+    device_replacement: 'Oppo F1s'
     brand_replacement: 'Oppo'
     model_replacement: '$1'
 
@@ -5126,7 +5233,7 @@ device_parsers:
   # HbbTV (European and Australian standard)
   # written before the LG regexes, as LG is making HbbTV too
   ##########
-  - regex: '(HbbTV)/[0-9]+\.[0-9]+\.[0-9]+ \([^;]*; *(LG)E *; *([^;]*) *;[^;]*;[^;]*;\)'
+  - regex: '(HbbTV)/[0-9]+\.[0-9]+\.[0-9]+ \( ?;(LG)E ?;([^;]{0,30})'
     device_replacement: '$1'
     brand_replacement: '$2'
     model_replacement: '$3'
@@ -5141,7 +5248,7 @@ device_parsers:
   - regex: '(HbbTV)/1\.1\.1 \(;;;;;\) Maple_2011'
     device_replacement: '$1'
     brand_replacement: 'Samsung'
-  - regex: '(HbbTV)/[0-9]+\.[0-9]+\.[0-9]+ \([^;]*; *(?:CUS:([^;]*)|([^;]+)) *; *([^;]*) *;.*;'
+  - regex: '(HbbTV)/[0-9]+\.[0-9]+\.[0-9]+ \([^;]{0,30}; ?(?:CUS:([^;]*)|([^;]+)) ?; ?([^;]{0,30})'
     device_replacement: '$1'
     brand_replacement: '$2$3'
     model_replacement: '$4'
@@ -5467,3 +5574,14 @@ device_parsers:
     device_replacement: 'Generic Feature Phone'
     brand_replacement: 'Generic'
     model_replacement: 'Feature Phone'
+
+  #########
+  # Apple
+  # @ref: https://www.apple.com/mac/
+  # @note: lookup Mac OS, but exclude iPad, Apple TV, a HTC phone, Kindle, LG
+  # @note: put this at the end, since it is hard to implement contains foo, but not contain bar1, bar 2, bar 3 in go's re2
+  #########
+  - regex: 'Mac OS'
+    device_replacement: 'Mac'
+    brand_replacement: 'Apple'
+    model_replacement: 'Mac'

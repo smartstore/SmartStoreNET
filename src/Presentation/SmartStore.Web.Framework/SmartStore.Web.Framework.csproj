@@ -462,6 +462,8 @@
     <Compile Include="WebApi\Configuration\IWebApiConfigurationPublisher.cs" />
     <Compile Include="WebApi\Configuration\WebApiConfigurationBroadcaster.cs" />
     <Compile Include="WebApi\Configuration\WebApiConfigurationPublisher.cs" />
+    <Compile Include="WebApi\Extensions\ApiControllerExtensions.cs" />
+    <Compile Include="WebApi\Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="WebApi\OData\WebApiQueryableAttribute.cs" />
     <Compile Include="WebApi\Security\HmacAuthentication.cs" />
     <Compile Include="WebApi\Security\WebApiAuthenticateAttribute.cs" />
@@ -470,7 +472,6 @@
     <Compile Include="WebApi\WebApiContractResolver.cs" />
     <Compile Include="WebApi\WebApiCore.cs" />
     <Compile Include="WebApi\WebApiEntityController.cs" />
-    <Compile Include="WebApi\WebApiExtension.cs" />
     <Compile Include="WebApi\WebApiSettings.cs" />
     <Compile Include="WebApi\WebApiStartupTask.cs" />
     <Compile Include="WebStoreContext.cs" />

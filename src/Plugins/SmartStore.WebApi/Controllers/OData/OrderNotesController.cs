@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -52,13 +53,13 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
 		public IHttpActionResult Put(int key, OrderNote entity)
 		{
-			throw this.ExceptionNotImplemented();
+			throw new HttpResponseException(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
 		public IHttpActionResult Patch(int key, Delta<OrderNote> model)
 		{
-			throw this.ExceptionNotImplemented();
+			throw new HttpResponseException(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]

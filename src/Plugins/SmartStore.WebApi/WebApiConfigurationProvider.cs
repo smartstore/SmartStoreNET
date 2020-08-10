@@ -21,6 +21,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
+using SmartStore.WebApi.Services;
 using SmartStore.WebApi.Services.Swagger;
 using Swashbuckle.Application;
 
@@ -95,6 +96,9 @@ namespace SmartStore.WebApi
 			Controllers.OData.OrderItemsController.Init(configData);
 			Controllers.OData.ProductsController.Init(configData);
 			Controllers.OData.MediaController.Init(configData);
+
+			// Custom routing convention.
+			configData.RoutingConventions.Insert(0, new CustomRoutingConvention());
 
 			// Swagger integration, see http://www.my-store.com/swagger/ui/index
 			var thisAssembly = typeof(WebApiConfigurationProvider).Assembly;

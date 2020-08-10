@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 using System.Web.Mvc;
 using System.Web.OData;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.WebApi
 {
@@ -60,6 +62,18 @@ namespace SmartStore.WebApi
 			}
 
 			return default;
+		}
+
+		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)
+		{
+			try
+			{
+				foreach (var file in provider.FileData)
+				{
+					FileSystemHelper.DeleteFile(file.LocalFileName);
+				}
+			}
+			catch { }
 		}
 	}
 }

@@ -83,7 +83,7 @@ namespace SmartStore.Web.Framework.WebApi
         protected internal virtual TEntity GetEntityByKeyNotNull(int key)
         {
             if (!ModelState.IsValid)
-                throw this.ExceptionInvalidModelState();
+                throw this.InvalidModelStateException();
 
             var entity = this.Repository.GetById(key);
 
@@ -97,7 +97,7 @@ namespace SmartStore.Web.Framework.WebApi
         {
             if (!ModelState.IsValid)
             {
-                throw this.ExceptionInvalidModelState();
+                throw this.InvalidModelStateException();
             }
 
             var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
@@ -114,7 +114,7 @@ namespace SmartStore.Web.Framework.WebApi
         protected internal virtual TEntity GetExpandedEntity<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
         {
             if (!ModelState.IsValid)
-                throw this.ExceptionInvalidModelState();
+                throw this.InvalidModelStateException();
 
             var query = GetExpandedEntitySet<TProperty>(path);
 
@@ -129,7 +129,7 @@ namespace SmartStore.Web.Framework.WebApi
         protected internal virtual TEntity GetExpandedEntity(int key, string properties)
         {
             if (!ModelState.IsValid)
-                throw this.ExceptionInvalidModelState();
+                throw this.InvalidModelStateException();
 
             var query = GetExpandedEntitySet(properties);
 
@@ -188,7 +188,7 @@ namespace SmartStore.Web.Framework.WebApi
             Guard.NotEmpty(navigationProperty, nameof(navigationProperty));
 
             if (!ModelState.IsValid)
-                throw this.ExceptionInvalidModelState();
+                throw this.InvalidModelStateException();
 
 
             var ctx = (DbContext)Repository.Context;
@@ -367,7 +367,7 @@ namespace SmartStore.Web.Framework.WebApi
             }
             catch (Exception ex)
             {
-                throw this.ExceptionUnprocessableEntity(ex.Message);
+                throw Request.UnprocessableEntityException(ex.Message);
             }
 
             return entity;

@@ -64,7 +64,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemAccount)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.UpdateCustomer(entity);
@@ -79,7 +79,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemAccount)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.UpdateCustomer(entity);
@@ -94,7 +94,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemAccount)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.DeleteCustomer(entity);

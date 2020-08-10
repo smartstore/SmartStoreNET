@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Seo;
@@ -26,22 +27,22 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		public IHttpActionResult Post(UrlRecord entity)
 		{
-			throw this.ExceptionForbidden();
+			throw new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 
 		public IHttpActionResult Put(int key, UrlRecord entity)
 		{
-			throw this.ExceptionForbidden();
+			throw new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 
 		public IHttpActionResult Patch(int key, Delta<UrlRecord> model)
 		{
-			throw this.ExceptionForbidden();
+			throw new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 
 		public IHttpActionResult Delete(int key)
 		{
-			throw this.ExceptionForbidden();
+			throw new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 	}
 }

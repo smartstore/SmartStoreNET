@@ -280,6 +280,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Security\WebApiPermissionProvider.cs" />
+    <Compile Include="Services\CustomRoutingConvention.cs" />
     <Compile Include="Services\IWebApiPluginService.cs" />
     <Compile Include="Services\WebApiPdfHelper.cs" />
     <Compile Include="Services\Swagger\SwaggerOdataDocumentFilter.cs" />

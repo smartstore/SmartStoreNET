@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -93,7 +94,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		{
 			if (!Request.Content.IsMimeMultipartContent())
 			{
-				throw this.ExceptionUnsupportedMediaType();
+				throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
 			}
 
 			Product entity = null;
@@ -108,7 +109,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			catch (Exception ex)
 			{
 				provider.DeleteLocalFiles();
-				throw this.ExceptionInternalServerError(ex);
+				throw Request.InternalServerErrorException(ex);
 			}
 
 			// Find product entity.
@@ -131,7 +132,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			if (entity == null)
 			{
 				provider.DeleteLocalFiles();
-				throw this.ExceptionNotFound(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
+				throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
 			}
 
 			// Process images.
@@ -169,7 +170,7 @@ namespace SmartStore.WebApi.Controllers.Api
 
                             if (existingFile == null || existingFile.Id != image.Picture.Id)
                             {
-                                throw this.ExceptionInternalServerError(new Exception($"Failed to update existing product image: id {image.Picture.Id}, path '{path.NaIfEmpty()}'."));
+                                throw Request.InternalServerErrorException(new Exception($"Failed to update existing product image: id {image.Picture.Id}, path '{path.NaIfEmpty()}'."));
                             }
                         }
                         else
@@ -222,7 +223,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		{
 			if (!Request.Content.IsMimeMultipartContent())
 			{
-				throw this.ExceptionUnsupportedMediaType();
+				throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
 			}
 
 			ImportProfile profile = null;
@@ -237,7 +238,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			catch (Exception ex)
 			{
 				FileSystemHelper.ClearDirectory(tempDir, true);
-				throw this.ExceptionInternalServerError(ex);
+				throw Request.InternalServerErrorException(ex);
 			}
 
 			// Find import profile.
@@ -255,7 +256,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			if (profile == null)
 			{
 				FileSystemHelper.ClearDirectory(tempDir, true);
-				throw this.ExceptionNotFound(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
+				throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
 			}
 
             var startImport = false;

@@ -51,7 +51,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			{
 				try
 				{
-					var permissionService = dependencyScope.GetService<IPermissionService>();
+					var permissionService = (IPermissionService)dependencyScope.GetService(typeof(IPermissionService));
                     result = permissionService.Authorize(Permission, customer);
 				}
 				catch { }
@@ -64,8 +64,8 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			try
 			{
-				var localization = dependencyScope.GetService<ILocalizationService>();
-				var loggerFactory = dependencyScope.GetService<ILoggerFactory>();
+				var localization = (ILocalizationService)dependencyScope.GetService(typeof(ILocalizationService));
+				var loggerFactory = (ILoggerFactory)dependencyScope.GetService(typeof(ILoggerFactory));
 				var logger = loggerFactory.GetLogger(this.GetType());
 
 				var strResult = result.ToString();
@@ -88,7 +88,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			try
 			{
-				var customerService = dependencyScope.GetService<ICustomerService>();
+				var customerService = (ICustomerService)dependencyScope.GetService(typeof(ICustomerService));
 				customer = customerService.GetCustomerById(customerId);
 			}
 			catch (Exception ex)

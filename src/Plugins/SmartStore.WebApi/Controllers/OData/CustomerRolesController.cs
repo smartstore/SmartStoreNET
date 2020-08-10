@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -41,7 +42,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemRole)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.UpdateCustomerRole(entity);
@@ -57,7 +58,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemRole)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.UpdateCustomerRole(entity);
@@ -73,7 +74,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				if (entity != null && entity.IsSystemRole)
 				{
-					throw this.ExceptionForbidden();
+					throw new HttpResponseException(HttpStatusCode.Forbidden);
 				}
 
 				Service.DeleteCustomerRole(entity);

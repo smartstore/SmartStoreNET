@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -52,7 +53,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiAuthenticate]
 		public IHttpActionResult Delete(int key)
 		{
-			throw this.ExceptionForbidden();
+			throw new HttpResponseException(HttpStatusCode.Forbidden);
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 file = _mediaService.GetFileById(key);
                 if (file == null)
                 {
-                    throw this.ExceptionNotFound($"Cannot find file by ID {key}.");
+                    throw Request.NotFoundException($"Cannot find file by ID {key}.");
                 }
             });
 
@@ -141,7 +141,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 file = _mediaService.GetFileByPath(path);
                 if (file == null)
                 {
-                    throw this.ExceptionNotFound($"The file with the path '{path ?? string.Empty}' does not exist.");
+                    throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
                 }
             });
 

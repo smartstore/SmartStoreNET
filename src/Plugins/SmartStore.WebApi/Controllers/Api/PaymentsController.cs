@@ -24,7 +24,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		public IQueryable<ProviderMetadata> GetMethods()
 		{
 			if (!ModelState.IsValid)
-				throw this.ExceptionInvalidModelState();
+				throw this.InvalidModelStateException();
 
 			var query = _providerManager.Value
 				.GetAllProviders<IPaymentMethod>()

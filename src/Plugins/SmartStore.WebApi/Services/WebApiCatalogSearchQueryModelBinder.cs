@@ -4,12 +4,11 @@ using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
-using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.WebApi.Services
 {
-	public class WebApiCatalogSearchQueryModelBinder : IModelBinder
+    public class WebApiCatalogSearchQueryModelBinder : IModelBinder
 	{
 		private CatalogSearchQuery NormalizeQuery(CatalogSearchQuery query)
 		{
@@ -32,7 +31,7 @@ namespace SmartStore.WebApi.Services
 			}
 
 			var dependencyScope = actionContext.Request.GetDependencyScope();
-			var factory = dependencyScope.GetService<ICatalogSearchQueryFactory>();
+			var factory = (ICatalogSearchQueryFactory)dependencyScope.GetService(typeof(ICatalogSearchQueryFactory));
 
 			if (factory.Current != null)
 			{

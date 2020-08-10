@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
-using SmartStore.Net.WebApi;
-using SmartStoreNetWebApiClient.Properties;
+using SmartStore.WebApi.Client.Properties;
 
-namespace SmartStoreNetWebApiClient
+namespace SmartStore.WebApi.Client
 {
 	public partial class MainForm : Form
 	{

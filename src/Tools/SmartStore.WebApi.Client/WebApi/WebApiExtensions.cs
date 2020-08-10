@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace SmartStore.Net.WebApi
+namespace SmartStore.WebApi.Client
 {
-	public static class WebApiExtensions
+    public static class WebApiExtensions
 	{
 		private static readonly DateTime BeginOfEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -26,7 +26,9 @@ namespace SmartStore.Net.WebApi
 		public static string ToHexString(this byte[] bytes, int length = 0)
 		{
 			if (bytes == null || bytes.Length <= 0)
+			{
 				return "";
+			}
 
 			var sb = new StringBuilder();
 
@@ -37,6 +39,7 @@ namespace SmartStore.Net.WebApi
 				if (length > 0 && sb.Length >= length)
 					break;
 			}
+
 			return sb.ToString();
 		}
 
@@ -46,18 +49,20 @@ namespace SmartStore.Net.WebApi
 		public static List<Customer> TryParseCustomers(this WebApiConsumerResponse response)
 		{
 			if (response == null || string.IsNullOrWhiteSpace(response.Content))
+			{
 				return null;
+			}
 
-			//dynamic dynamicJson = JObject.Parse(response.Content);
+    //        dynamic dynamicJson = JObject.Parse(response.Content);
 
-			//foreach (dynamic customer in dynamicJson.value)
-			//{
-			//	string str = string.Format("{0} {1} {2}", customer.Id, customer.CustomerGuid, customer.Email);
-			//	Debug.WriteLine(str);
-			//}
+    //        foreach (dynamic customer in dynamicJson.value)
+    //        {
+    //            string str = string.Format("{0} {1} {2}", customer.Id, customer.CustomerGuid, customer.Email);
+				//str.Dump();
+    //        }
 
-			var json = JObject.Parse(response.Content);
-			string metadata = (string)json["odata.metadata"];
+            var json = JObject.Parse(response.Content);
+			string metadata = (string)json["@odata.context"];
 
 			if (!string.IsNullOrWhiteSpace(metadata) && metadata.EndsWith("#Customers"))
 			{
@@ -65,6 +70,7 @@ namespace SmartStore.Net.WebApi
 
 				return customers;
 			}
+
 			return null;
 		}
 	}

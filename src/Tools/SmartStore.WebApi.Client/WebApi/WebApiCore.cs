@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SmartStore.Net.WebApi
+namespace SmartStore.WebApi.Client
 {
 	public class WebApiRequestContext
 	{

@@ -7,9 +7,8 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
-using SmartStoreNetWebApiClient;
 
-namespace SmartStore.Net.WebApi
+namespace SmartStore.WebApi.Client
 {
 	public class ApiConsumer : HmacAuthentication
 	{

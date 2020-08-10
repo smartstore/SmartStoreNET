@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-namespace SmartStore.Net.WebApi
+namespace SmartStore.WebApi.Client
 {
 	public class HmacAuthentication
 	{

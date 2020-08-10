@@ -13,24 +13,6 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class MeasureWeightsController : WebApiEntityController<MeasureWeight, IMeasureService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Create)]
-		protected override void Insert(MeasureWeight entity)
-		{
-			Service.InsertMeasureWeight(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
-        protected override void Update(MeasureWeight entity)
-		{
-			Service.UpdateMeasureWeight(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Delete)]
-        protected override void Delete(MeasureWeight entity)
-		{
-			Service.DeleteMeasureWeight(entity);
-		}
-
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
 		public IQueryable<MeasureWeight> Get()

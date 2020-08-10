@@ -13,19 +13,6 @@ namespace SmartStore.WebApi.Controllers.OData
     [WebApiAuthenticate]
 	public class LocalizedPropertiesController : WebApiEntityController<LocalizedProperty, ILocalizedEntityService>
 	{
-		protected override void Insert(LocalizedProperty entity)
-		{
-			Service.InsertLocalizedProperty(entity);
-		}
-		protected override void Update(LocalizedProperty entity)
-		{
-			Service.UpdateLocalizedProperty(entity);
-		}
-		protected override void Delete(LocalizedProperty entity)
-		{
-			Service.DeleteLocalizedProperty(entity);
-		}
-
 		[WebApiQueryable]
 		public IQueryable<LocalizedProperty> Get()
 		{

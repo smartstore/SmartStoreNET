@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
@@ -11,20 +14,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ReturnRequestsController : WebApiEntityController<ReturnRequest, IOrderService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Delete)]
-		protected override void Delete(ReturnRequest entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
+		public IQueryable<ReturnRequest> Get()
 		{
-			Service.DeleteReturnRequest(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
-        public SingleResult<ReturnRequest> GetReturnRequest(int key)
+        public SingleResult<ReturnRequest> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Customer.Create)]
+		public IHttpActionResult Post(ReturnRequest entity)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public IHttpActionResult Put(int key, ReturnRequest entity)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public IHttpActionResult Patch(int key, Delta<ReturnRequest> model)
+		{
+			throw this.ExceptionNotImplemented();
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteReturnRequest(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
@@ -32,5 +61,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedEntity(key, x => x.Customer);
 		}
+
+		#endregion
 	}
 }

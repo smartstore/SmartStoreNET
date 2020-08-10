@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
@@ -11,32 +14,49 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductVariantAttributeCombinationsController : WebApiEntityController<ProductVariantAttributeCombination, IProductAttributeService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        protected override void Insert(ProductVariantAttributeCombination entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<ProductVariantAttributeCombination> Get()
 		{
-			Service.InsertProductVariantAttributeCombination(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        protected override void Update(ProductVariantAttributeCombination entity)
-		{
-			Service.UpdateProductVariantAttributeCombination(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        protected override void Delete(ProductVariantAttributeCombination entity)
-		{
-			Service.DeleteProductVariantAttributeCombination(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductVariantAttributeCombination> GetProductVariantAttributeCombination(int key)
+        public SingleResult<ProductVariantAttributeCombination> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+		public IHttpActionResult Post(ProductVariantAttributeCombination entity)
+		{
+			var result = Insert(entity, () => Service.InsertProductVariantAttributeCombination(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+		public async Task<IHttpActionResult> Put(int key, ProductVariantAttributeCombination entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateProductVariantAttributeCombination(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<ProductVariantAttributeCombination> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateProductVariantAttributeCombination(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProductVariantAttributeCombination(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
@@ -44,5 +64,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			return GetRelatedEntity(key, x => x.DeliveryTime);
 		}
+
+		#endregion
 	}
 }

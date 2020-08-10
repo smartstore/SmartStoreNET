@@ -27,25 +27,6 @@ namespace SmartStore.Web.Framework.WebApi
     public abstract class WebApiEntityController<TEntity, TService> : ODataController
         where TEntity : BaseEntity, new()
     {
-        // TODO: Implement custom routing convention(s):
-        // public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
-
-        // TODO: Needs to be handled by the respective controller:
-        // protected override int GetKey(TEntity entity)
-        // protected override TEntity GetEntityByKey(int key)
-
-        // public override HttpResponseMessage Post(TEntity entity)
-        // protected override TEntity CreateEntity(TEntity entity)
-        // public override HttpResponseMessage Put(int key, TEntity update)
-        // protected override TEntity UpdateEntity(int key, TEntity update)
-        // public override HttpResponseMessage Patch(int key, Delta<TEntity> patch)
-        // protected override TEntity PatchEntity(int key, Delta<TEntity> patch)
-        // public override void Delete(int key)
-
-        // TODO:
-        // XML serialization issues.
-        // Don't use service models like MediaFileInfo. API must encapsulate and model independently.
-
         /// <summary>
         /// Auto injected by Autofac.
         /// </summary>
@@ -226,21 +207,6 @@ namespace SmartStore.Web.Framework.WebApi
 
             var query = GetEntitySet().Where(x => x.Id.Equals(key)).Select(navigationProperty);
             return SingleResult.Create(query);
-        }
-
-        protected internal virtual void Insert(TEntity entity)
-        {
-            Repository.Insert(entity);
-        }
-
-        protected internal virtual void Update(TEntity entity)
-        {
-            Repository.Update(entity);
-        }
-
-        protected internal virtual void Delete(TEntity entity)
-        {
-            Repository.Delete(entity);
         }
 
         protected internal virtual IHttpActionResult Insert(TEntity entity, Action insert)

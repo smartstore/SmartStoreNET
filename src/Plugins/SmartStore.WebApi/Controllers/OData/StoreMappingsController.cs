@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.WebApi;
@@ -10,25 +13,40 @@ namespace SmartStore.WebApi.Controllers.OData
     [WebApiAuthenticate]
 	public class StoreMappingsController : WebApiEntityController<StoreMapping, IStoreMappingService>
 	{
-        protected override void Insert(StoreMapping entity)
+		[WebApiQueryable]
+		public IQueryable<StoreMapping> Get()
 		{
-			Service.InsertStoreMapping(entity);
-		}
-
-        protected override void Update(StoreMapping entity)
-		{
-			Service.UpdateStoreMapping(entity);
-		}
-
-        protected override void Delete(StoreMapping entity)
-		{
-			Service.DeleteStoreMapping(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
-        public SingleResult<StoreMapping> GetStoreMapping(int key)
+        public SingleResult<StoreMapping> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		public IHttpActionResult Post(StoreMapping entity)
+		{
+			var result = Insert(entity, () => Service.InsertStoreMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Put(int key, StoreMapping entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateStoreMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Patch(int key, Delta<StoreMapping> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateStoreMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteStoreMapping(entity));
+			return result;
 		}
 	}
 }

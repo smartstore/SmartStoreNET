@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Web.OData.Builder;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -22,8 +21,6 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using SmartStore.WebApi.Models.OData;
-using SmartStore.WebApi.Services;
 using SmartStore.WebApi.Services.Swagger;
 using Swashbuckle.Application;
 
@@ -94,10 +91,10 @@ namespace SmartStore.WebApi
 			m.EntitySet<UrlRecord>("UrlRecords");
 			m.EntitySet<SyncMapping>("SyncMappings");
 
-			AddActionsToOrder(m.EntityType<Order>());
-			AddActionsToOrderItem(m.EntityType<OrderItem>());
-			AddActionsToProduct(m.EntityType<Product>());
-			
+			// Register OData actions and functions.
+			Controllers.OData.OrdersController.Init(configData);
+			Controllers.OData.OrderItemsController.Init(configData);
+			Controllers.OData.ProductsController.Init(configData);
 			Controllers.OData.MediaController.Init(configData);
 
 			// Swagger integration, see http://www.my-store.com/swagger/ui/index
@@ -144,61 +141,5 @@ namespace SmartStore.WebApi
 				ex.Dump();
 			}
 		}
-
-        private void AddActionsToOrder(EntityTypeConfiguration<Order> config)
-        {
-            config.Action("Infos").Returns<OrderInfo>();
-
-            config.Action("Pdf");
-
-            config.Action("PaymentPending")
-                .ReturnsFromEntitySet<Order>("Orders");
-
-            config.Action("PaymentPaid")
-                .ReturnsFromEntitySet<Order>("Orders")
-                .Parameter<string>("PaymentMethodName");
-
-            config.Action("PaymentRefund")
-                .ReturnsFromEntitySet<Order>("Orders")
-                .Parameter<bool>("Online");
-
-            config.Action("Cancel")
-                .ReturnsFromEntitySet<Order>("Orders");
-
-            var addShipment = config.Action("AddShipment")
-                .ReturnsFromEntitySet<Order>("Orders");
-
-            var completeOrder = config.Action("CompleteOrder")
-                .ReturnsFromEntitySet<Order>("Orders");
-
-            addShipment.Parameter<string>("TrackingNumber");
-            addShipment.Parameter<bool?>("SetAsShipped");
-        }
-
-        private void AddActionsToOrderItem(EntityTypeConfiguration<OrderItem> config)
-        {
-            config.Action("Infos").Returns<OrderItemInfo>();
-        }
-
-        private void AddActionsToProduct(EntityTypeConfiguration<Product> config)
-        {
-            config.Collection.Action("Search")
-                .ReturnsCollectionFromEntitySet<Product>("Products");
-
-            config.Action("FinalPrice")
-                .Returns<decimal>();
-
-            config.Action("LowestPrice")
-                .Returns<decimal>();
-
-            config.Action("CreateAttributeCombinations")
-                .ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>("ProductVariantAttributeCombinations");
-
-            var manageAttributes = config.Action("ManageAttributes")
-                .ReturnsCollectionFromEntitySet<ProductVariantAttribute>("ProductVariantAttributes");
-
-            manageAttributes.Parameter<bool>("Synchronize");
-            manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
-        }
 	}
 }

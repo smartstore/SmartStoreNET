@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -10,29 +13,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class TierPricesController : WebApiEntityController<TierPrice, IProductService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
-        protected override void Insert(TierPrice entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IQueryable<TierPrice> Get()
 		{
-			Service.InsertTierPrice(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
-        protected override void Update(TierPrice entity)
-		{
-			Service.UpdateTierPrice(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
-        protected override void Delete(TierPrice entity)
-		{
-			Service.DeleteTierPrice(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<TierPrice> GetTierPrice(int key)
+        public SingleResult<TierPrice> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
+		public IHttpActionResult Post(TierPrice entity)
+		{
+			var result = Insert(entity, () => Service.InsertTierPrice(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
+		public async Task<IHttpActionResult> Put(int key, TierPrice entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateTierPrice(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<TierPrice> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateTierPrice(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteTierPrice(entity));
+			return result;
 		}
 	}
 }

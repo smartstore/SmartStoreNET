@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 using SmartStore.WebApi.Models.OData;
@@ -80,11 +81,18 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedEntity(key, x => x.Product);
 		}
 
-        #endregion
+		#endregion
 
-        #region Actions
+		#region Actions
 
-        [HttpPost]
+		public static void Init(WebApiConfigurationBroadcaster configData)
+		{
+			var entityConfig = configData.ModelBuilder.EntityType<OrderItem>();
+
+			entityConfig.Action("Infos").Returns<OrderItemInfo>();
+		}
+
+		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public OrderItemInfo Infos(int key)
 		{

@@ -17,6 +17,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 using SmartStore.WebApi.Services;
@@ -350,6 +351,33 @@ namespace SmartStore.WebApi.Controllers.OData
 		#endregion
 
 		#region Actions
+
+		public static void Init(WebApiConfigurationBroadcaster configData)
+		{
+			var entityConfig = configData.ModelBuilder.EntityType<Product>();
+
+			entityConfig.Collection
+				.Action("Search")
+				.ReturnsCollectionFromEntitySet<Product>("Products");
+
+			entityConfig
+				.Action("FinalPrice")
+				.Returns<decimal>();
+
+			entityConfig
+				.Action("LowestPrice")
+				.Returns<decimal>();
+
+			entityConfig
+				.Action("CreateAttributeCombinations")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>("ProductVariantAttributeCombinations");
+
+			var manageAttributes = entityConfig
+				.Action("ManageAttributes")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttribute>("ProductVariantAttributes");
+			manageAttributes.Parameter<bool>("Synchronize");
+			manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
+		}
 
 		[HttpPost, WebApiQueryable(PagingOptional = true)]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]

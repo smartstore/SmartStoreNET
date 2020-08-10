@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 using SmartStore.WebApi.Models.OData;
@@ -132,6 +133,45 @@ namespace SmartStore.WebApi.Controllers.OData
 		#endregion
 
 		#region Actions
+
+		public static void Init(WebApiConfigurationBroadcaster configData)
+		{
+			var entityConfig = configData.ModelBuilder.EntityType<Order>();
+
+			entityConfig
+				.Action("Infos")
+				.Returns<OrderInfo>();
+
+			entityConfig.Action("Pdf");
+
+			entityConfig
+				.Action("PaymentPending")
+				.ReturnsFromEntitySet<Order>("Orders");
+
+			entityConfig
+				.Action("PaymentPaid")
+				.ReturnsFromEntitySet<Order>("Orders")
+				.Parameter<string>("PaymentMethodName");
+
+			entityConfig
+				.Action("PaymentRefund")
+				.ReturnsFromEntitySet<Order>("Orders")
+				.Parameter<bool>("Online");
+
+			entityConfig
+				.Action("Cancel")
+				.ReturnsFromEntitySet<Order>("Orders");
+
+			var addShipment = entityConfig
+				.Action("AddShipment")
+				.ReturnsFromEntitySet<Order>("Orders");
+			addShipment.Parameter<string>("TrackingNumber");
+			addShipment.Parameter<bool?>("SetAsShipped");
+
+			entityConfig
+				.Action("CompleteOrder")
+				.ReturnsFromEntitySet<Order>("Orders");
+		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]

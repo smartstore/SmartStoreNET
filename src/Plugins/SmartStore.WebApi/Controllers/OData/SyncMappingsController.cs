@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Services.DataExchange;
 using SmartStore.Web.Framework.WebApi;
@@ -10,25 +13,40 @@ namespace SmartStore.WebApi.Controllers.OData
     [WebApiAuthenticate]
 	public class SyncMappingsController : WebApiEntityController<SyncMapping, ISyncMappingService>
 	{
-		protected override void Insert(SyncMapping entity)
+		[WebApiQueryable]
+		public IQueryable<SyncMapping> Get()
 		{
-			Service.InsertSyncMapping(entity);
-		}
-
-		protected override void Update(SyncMapping entity)
-		{
-			Service.UpdateSyncMapping(entity);
-		}
-
-		protected override void Delete(SyncMapping entity)
-		{
-			Service.DeleteSyncMapping(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
-		public SingleResult<SyncMapping> GetSyncMapping(int key)
+		public SingleResult<SyncMapping> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		public IHttpActionResult Post(SyncMapping entity)
+		{
+			var result = Insert(entity, () => Service.InsertSyncMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Put(int key, SyncMapping entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateSyncMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Patch(int key, Delta<SyncMapping> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateSyncMapping(entity));
+			return result;
+		}
+
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteSyncMapping(entity));
+			return result;
 		}
 	}
 }

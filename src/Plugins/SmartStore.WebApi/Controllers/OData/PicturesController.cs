@@ -24,6 +24,28 @@ namespace SmartStore.WebApi.Controllers.OData
             _mediaService = mediaService;
         }
 
+        // TODO: readonly properties of MediaFileInfo cannot be serialized!
+
+        // GET /Media(123)
+        [WebApiAuthenticate]
+        public MediaFileInfo Get(int key)
+        {
+            MediaFileInfo file = null;
+
+            this.ProcessEntity(() =>
+            {
+                file = _mediaService.GetFileById(key);
+                if (file == null)
+                {
+                    throw this.ExceptionNotFound($"Cannot find file by ID {key}.");
+                }
+            });
+
+            return file;
+        }
+
+        #region Actions
+
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
             var entityConfig = configData.ModelBuilder.EntityType<MediaFileInfo>();
@@ -67,28 +89,6 @@ namespace SmartStore.WebApi.Controllers.OData
             countFiles.CollectionParameter<string>("MimeTypes");
             countFiles.CollectionParameter<string>("Extensions");
         }
-
-        // TODO: readonly properties of MediaFileInfo cannot be serialized!
-
-        // GET /Media(123)
-        [WebApiAuthenticate]
-        public MediaFileInfo Get(int key)
-        {
-            MediaFileInfo file = null;
-
-            this.ProcessEntity(() =>
-            {
-                file = _mediaService.GetFileById(key);
-                if (file == null)
-                {
-                    throw this.ExceptionNotFound($"Cannot find file by ID {key}.");
-                }
-            });
-
-            return file;
-        }
-
-        #region Actions
 
         /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
         [HttpPost, WebApiAuthenticate]
@@ -236,31 +236,11 @@ namespace SmartStore.WebApi.Controllers.OData
             return query;
         }
 
-        //[WebApiAuthenticate(Permission = Permissions.Media.Upload)]
-        protected override void Insert(MediaFile entity)
-		{
-			throw this.ExceptionNotImplemented();
-		}
-
-        //[WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        protected override void Update(MediaFile entity)
-		{
-			throw this.ExceptionNotImplemented();
-		}
-
-        //[WebApiAuthenticate(Permission = Permissions.Media.Delete)]
-        protected override void Delete(MediaFile entity)
-		{
-            throw this.ExceptionNotImplemented();
-        }
-
 		[WebApiQueryable]
         public SingleResult<MediaFile> GetPicture(int key)
 		{
 			return GetSingleResult(key);
 		}
-
-		// Navigation properties.
 
 		[WebApiQueryable]
         public IQueryable<ProductMediaFile> GetProductPictures(int key)

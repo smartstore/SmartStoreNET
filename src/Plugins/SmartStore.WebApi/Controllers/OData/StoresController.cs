@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Security;
 using SmartStore.Services.Stores;
@@ -10,29 +13,46 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class StoresController : WebApiEntityController<Store, IStoreService>
     {
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Store.Create)]
-        protected override void Insert(Store entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Store.Read)]
+		public IQueryable<Store> Get()
 		{
-			Service.InsertStore(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Store.Update)]
-        protected override void Update(Store entity)
-		{
-			Service.UpdateStore(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Store.Delete)]
-        protected override void Delete(Store entity)
-		{
-			Service.DeleteStore(entity);
+			return GetEntitySet();
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Store.Read)]
-        public SingleResult<Store> GetStore(int key)
+        public SingleResult<Store> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Store.Create)]
+		public IHttpActionResult Post(Store entity)
+		{
+			var result = Insert(entity, () => Service.InsertStore(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Store.Update)]
+		public async Task<IHttpActionResult> Put(int key, Store entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateStore(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Store.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Store> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateStore(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Store.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteStore(entity));
+			return result;
 		}
 	}
 }

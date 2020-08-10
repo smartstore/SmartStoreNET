@@ -52,7 +52,6 @@ namespace SmartStore.WebApi
 			m.EntitySet<Manufacturer>("Manufacturers");
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");
-			m.EntitySet<MediaFile>("Pictures");
 			m.EntitySet<MediaFileInfo>("Media");
 			m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");

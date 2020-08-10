@@ -20,6 +20,7 @@ using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
+using SmartStore.WebApi.Models.OData;
 using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
@@ -466,7 +467,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
         public IQueryable<ProductVariantAttribute> ManageAttributes(int key, ODataActionParameters parameters)
 		{
-			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes);
+			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes.Select(y => y.ProductAttribute));
 			var result = new List<ProductVariantAttributeValue>();
 
 			this.ProcessEntity(() =>
@@ -476,7 +477,7 @@ namespace SmartStore.WebApi.Controllers.OData
                     .Where(x => x.Name.HasValue())
                     .ToList();
 
-                var attributeNames = new HashSet<string>(data.Select(x => x.Name), StringComparer.InvariantCultureIgnoreCase);
+                var attributeNames = new HashSet<string>(data.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
                 var pagedAttributes = _productAttributeService.Value.GetAllProductAttributes(0, 1);
                 var attributesData = pagedAttributes.SourceQuery
                     .Where(x => attributeNames.Contains(x.Name))
@@ -484,8 +485,9 @@ namespace SmartStore.WebApi.Controllers.OData
                     .ToList();
                 var allAttributesDic = attributesData.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
-                foreach (var srcAttr in data)
+				foreach (var srcAttr in data)
 				{
+					// Product attribute.
                     var attributeId = 0;
                     if (allAttributesDic.TryGetValue(srcAttr.Name, out var attributeData))
                     {
@@ -498,9 +500,11 @@ namespace SmartStore.WebApi.Controllers.OData
                         attributeId = attribute.Id;
                     }
 
-                    var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
+					// Product attribute mapping.
+                    var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute?.Name.IsCaseInsensitiveEqual(srcAttr.Name) ?? false);
 					if (productAttribute == null)
 					{
+						// No mapping to attribute yet.
 						productAttribute = new ProductVariantAttribute
 						{
 							ProductId = entity.Id,
@@ -515,6 +519,7 @@ namespace SmartStore.WebApi.Controllers.OData
 					}
 					else if (synchronize)
 					{
+						// Has already an attribute mapping.
 						if (srcAttr.Values.Count <= 0 && productAttribute.ShouldHaveValues())
 						{
 							_productAttributeService.Value.DeleteProductVariantAttribute(productAttribute);
@@ -528,6 +533,7 @@ namespace SmartStore.WebApi.Controllers.OData
 						}
 					}
 
+					// Values.
 					var maxDisplayOrder = productAttribute.ProductVariantAttributeValues
                         .OrderByDescending(x => x.DisplayOrder)
                         .Select(x => x.DisplayOrder)

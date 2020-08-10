@@ -240,7 +240,7 @@
     <Compile Include="Controllers\OData\ProductManufacturersController.cs" />
     <Compile Include="Controllers\OData\ProductCategoriesController.cs" />
     <Compile Include="Controllers\OData\ProductPicturesController.cs" />
-    <Compile Include="Controllers\OData\PicturesController.cs" />
+    <Compile Include="Controllers\OData\MediaController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsSetsController.cs" />
     <Compile Include="Controllers\OData\ProductBundleItemsController.cs" />
@@ -286,7 +286,7 @@
     <Compile Include="Services\Swagger\SwaggerDefaultValueFilter.cs" />
     <Compile Include="Services\Swagger\SwaggerSchemaFilter.cs" />
     <Compile Include="Services\WebApiCatalogSearchQueryModelBinder.cs" />
-    <Compile Include="Services\WebApiCore.cs" />
+    <Compile Include="Models\OData\ManageAttributeType.cs" />
     <Compile Include="Services\WebApiPluginService.cs" />
     <Compile Include="WebApiConfigurationProvider.cs" />
     <Compile Include="WebApiPlugin.cs" />

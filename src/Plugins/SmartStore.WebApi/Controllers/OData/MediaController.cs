@@ -5,8 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -15,6 +13,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    // TODO: readonly properties of MediaFileInfo cannot be serialized!
     public class MediaController : ODataController
     {
         private readonly IMediaService _mediaService;
@@ -23,8 +22,6 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             _mediaService = mediaService;
         }
-
-        // TODO: readonly properties of MediaFileInfo cannot be serialized!
 
         // GET /Media(123)
         [WebApiAuthenticate]
@@ -222,30 +219,28 @@ namespace SmartStore.WebApi.Controllers.OData
     }
 
 
-    // TODO: do not support direct MediaFile entity editing through API.
-    // Add MediaController for IMediaService methods instead.
-    public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
-	{
-        protected override IQueryable<MediaFile> GetEntitySet()
-        {
-            var query =
-                from x in Repository.Table
-                where !x.Deleted && !x.Hidden
-                select x;
+ //   public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
+	//{
+ //       protected override IQueryable<MediaFile> GetEntitySet()
+ //       {
+ //           var query =
+ //               from x in Repository.Table
+ //               where !x.Deleted && !x.Hidden
+ //               select x;
 
-            return query;
-        }
+ //           return query;
+ //       }
 
-		[WebApiQueryable]
-        public SingleResult<MediaFile> GetPicture(int key)
-		{
-			return GetSingleResult(key);
-		}
+	//	[WebApiQueryable]
+ //       public SingleResult<MediaFile> GetPicture(int key)
+	//	{
+	//		return GetSingleResult(key);
+	//	}
 
-		[WebApiQueryable]
-        public IQueryable<ProductMediaFile> GetProductPictures(int key)
-		{
-			return GetRelatedCollection(key, x => x.ProductMediaFiles);
-		}
-	}
+	//	[WebApiQueryable]
+ //       public IQueryable<ProductMediaFile> GetProductPictures(int key)
+	//	{
+	//		return GetRelatedCollection(key, x => x.ProductMediaFiles);
+	//	}
+	//}
 }

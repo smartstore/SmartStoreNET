@@ -197,14 +197,14 @@ namespace SmartStore.Data.Setup
 
 		private void RunSeeders<T>(IEnumerable<SeederEntry> seederEntries, T ctx) where T : DbContext
 		{
+			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
+
 			foreach (var seederEntry in seederEntries)
 			{
 				var seeder = (IDataSeeder<T>)seederEntry.DataSeeder;
 
 				try
 				{
-					var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-
 					// Pre seed event
 					eventPublisher.Publish(new SeedingDbMigrationEvent { MigrationName = seederEntry.MigrationName, DbContext = ctx });
 

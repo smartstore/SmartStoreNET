@@ -3,7 +3,6 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.OData.Builder;
 using System.Web.OData.Extensions;
-using System.Web.OData.Formatter;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Newtonsoft.Json;
@@ -30,8 +29,9 @@ namespace SmartStore.Web.Framework.WebApi
 
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();
 
-			var odataFormatters = ODataMediaTypeFormatters.Create();
-			config.Formatters.InsertRange(0, odataFormatters);
+			// Causes error messages during XML serialization:
+			//var oDataFormatters = ODataMediaTypeFormatters.Create();
+			//config.Formatters.InsertRange(0, oDataFormatters);
 
 			config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

@@ -900,7 +900,6 @@
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\ua-parser.regexes.yaml" />
     <Content Include="Config\Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Utilities;
@@ -118,8 +119,10 @@ namespace SmartStore.Services.Common
 
 		static UAParserUserAgent()
 		{
-			//s_uap = uap.Parser.GetDefault();
-			s_uap = uap.Parser.FromYamlFile(CommonHelper.MapPath("~/App_Data/ua-parser.regexes.yaml"));
+			var path = CommonHelper.MapPath("~/App_Data/UAParser.regexes.yaml");
+			s_uap = File.Exists(path) 
+				? uap.Parser.FromYaml(path)
+				: uap.Parser.GetDefault();
 		}
 
 		public UAParserUserAgent(HttpContextBase httpContext)

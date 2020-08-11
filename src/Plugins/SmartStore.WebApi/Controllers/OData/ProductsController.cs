@@ -132,124 +132,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
-		#region Navigation properties
-
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-        public HttpResponseMessage NavigationProductCategories(int key, int relatedKey)
-		{
-			ProductCategory productCategory = null;
-			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
-
-			if (Request.Method == HttpMethod.Delete)
-			{
-				if (relatedKey == 0)
-				{
-					productCategories.Each(x => _categoryService.Value.DeleteProductCategory(x));
-				}
-				else if ((productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey)) != null)
-				{
-					_categoryService.Value.DeleteProductCategory(productCategory);
-				}
-
-				return Request.CreateResponse(HttpStatusCode.NoContent);
-			}
-
-			productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (productCategory == null)
-				{
-					productCategory = ReadContent<ProductCategory>() ?? new ProductCategory();
-					productCategory.ProductId = key;
-					productCategory.CategoryId = relatedKey;
-
-					_categoryService.Value.InsertProductCategory(productCategory);
-
-					return Request.CreateResponse(HttpStatusCode.Created, productCategory);
-				}
-			}
-
-			return Request.CreateResponseForEntity(productCategory, relatedKey);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-        public HttpResponseMessage NavigationProductManufacturers(int key, int relatedKey)
-		{
-			ProductManufacturer productManufacturer = null;
-			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
-
-			if (Request.Method == HttpMethod.Delete)
-			{
-				if (relatedKey == 0)
-				{
-					productManufacturers.Each(x => _manufacturerService.Value.DeleteProductManufacturer(x));
-				}
-				else if ((productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey)) != null)
-				{
-					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
-				}
-
-				return Request.CreateResponse(HttpStatusCode.NoContent);
-			}
-
-			productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (productManufacturer == null)
-				{
-					productManufacturer = ReadContent<ProductManufacturer>() ?? new ProductManufacturer();
-					productManufacturer.ProductId = key;
-					productManufacturer.ManufacturerId = relatedKey;
-
-					_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
-
-					return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
-				}
-			}
-
-			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-        public HttpResponseMessage NavigationProductPictures(int key, int relatedKey)
-        {
-            ProductMediaFile productPicture = null;
-            var productPictures = Service.GetProductPicturesByProductId(key);
-
-            if (Request.Method == HttpMethod.Delete)
-            {
-                if (relatedKey == 0)
-                {
-                    productPictures.Each(x => Service.DeleteProductPicture(x));
-                }
-                else if ((productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey)) != null)
-                {
-                    Service.DeleteProductPicture(productPicture);
-                }
-
-                return Request.CreateResponse(HttpStatusCode.NoContent);
-            }
-
-            productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
-
-            if (Request.Method == HttpMethod.Post)
-            {
-                if (productPicture == null)
-                {
-                    productPicture = ReadContent<ProductMediaFile>() ?? new ProductMediaFile();
-                    productPicture.ProductId = key;
-                    productPicture.MediaFileId = relatedKey;
-
-                    Service.InsertProductPicture(productPicture);
-
-                    return Request.CreateResponse(HttpStatusCode.Created, productPicture);
-                }
-            }
-
-            return Request.CreateResponseForEntity(productPicture, relatedKey);
-        }
+        #region Navigation properties
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
@@ -279,26 +162,180 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetRelatedEntity(key, x => x.SampleDownload);
 		}
 
-		[WebApiQueryable]
+        
+		[WebApiQueryable(PagingOptional = true)]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductCategory> GetProductCategories(int key)
+        public HttpResponseMessage GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
-			return GetRelatedCollection(key, x => x.ProductCategories);
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+
+			if (relatedKey != 0)
+            {
+                var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+                return Request.CreateResponseForEntity(productCategory, relatedKey);
+            }
+
+			return Request.CreateResponseForEntity(productCategories, key);
 		}
 
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductManufacturer> GetProductManufacturers(int key)
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public HttpResponseMessage PostProductCategories(int key, int relatedKey /*categoryId*/)
 		{
-			return GetRelatedCollection(key, x => x.ProductManufacturers);
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+			var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+			if (productCategory == null)
+			{
+				productCategory = ReadContent<ProductCategory>() ?? new ProductCategory();
+				productCategory.ProductId = key;
+				productCategory.CategoryId = relatedKey;
+
+				_categoryService.Value.InsertProductCategory(productCategory);
+
+				return Request.CreateResponse(HttpStatusCode.Created, productCategory);
+			}
+
+			return Request.CreateResponse(HttpStatusCode.OK, productCategory);
 		}
 
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductMediaFile> GetProductPictures(int key)
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public HttpResponseMessage DeleteProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
-			return GetRelatedCollection(key, x => x.ProductPictures);
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+
+			if (relatedKey == 0)
+			{
+				productCategories.Each(x => _categoryService.Value.DeleteProductCategory(x));
+			}
+			else
+			{
+				var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+				if (productCategory != null)
+				{
+					_categoryService.Value.DeleteProductCategory(productCategory);
+				}
+			}
+
+			return Request.CreateResponse(HttpStatusCode.NoContent);
 		}
+
+		
+		[WebApiQueryable(PagingOptional = true)]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public HttpResponseMessage GetProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+
+			if (relatedKey != 0)
+			{
+				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+				return Request.CreateResponseForEntity(productManufacturer, relatedKey);
+			}
+
+			return Request.CreateResponseForEntity(productManufacturers, key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public HttpResponseMessage PostProductManufacturers(int key, int relatedKey /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+			var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+			if (productManufacturer == null)
+			{
+				productManufacturer = ReadContent<ProductManufacturer>() ?? new ProductManufacturer();
+				productManufacturer.ProductId = key;
+				productManufacturer.ManufacturerId = relatedKey;
+
+				_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
+
+				return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
+			}
+
+			return Request.CreateResponse(HttpStatusCode.OK, productManufacturer);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public HttpResponseMessage DeleteProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+
+			if (relatedKey == 0)
+			{
+				productManufacturers.Each(x => _manufacturerService.Value.DeleteProductManufacturer(x));
+			}
+			else
+			{
+				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+				if (productManufacturer != null)
+				{
+					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
+				}
+			}
+
+			return Request.CreateResponse(HttpStatusCode.NoContent);
+		}
+
+		
+		[WebApiQueryable(PagingOptional = true)]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public HttpResponseMessage GetProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+
+			if (relatedKey != 0)
+			{
+				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+
+				return Request.CreateResponseForEntity(productPicture, relatedKey);
+			}
+
+			return Request.CreateResponseForEntity(productPictures, key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
+		public HttpResponseMessage PostProductPictures(int key, int relatedKey /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+			var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+
+			if (productPicture == null)
+			{
+				productPicture = ReadContent<ProductMediaFile>() ?? new ProductMediaFile();
+				productPicture.ProductId = key;
+				productPicture.MediaFileId = relatedKey;
+
+				Service.InsertProductPicture(productPicture);
+
+				return Request.CreateResponse(HttpStatusCode.Created, productPicture);
+			}
+
+			return Request.CreateResponse(HttpStatusCode.OK, productPicture);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
+		public HttpResponseMessage DeleteProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+
+			if (relatedKey == 0)
+			{
+				productPictures.Each(x => Service.DeleteProductPicture(x));
+			}
+			else
+			{
+				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+				if (productPicture != null)
+				{
+					Service.DeleteProductPicture(productPicture);
+				}
+			}
+
+			return Request.CreateResponse(HttpStatusCode.NoContent);
+		}
+
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]

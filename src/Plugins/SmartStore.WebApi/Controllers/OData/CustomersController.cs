@@ -105,51 +105,73 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		#region Navigation properties
 
-		/// <summary>
-		/// Handle address assignments
-		/// </summary>
-		/// <param name="key">Customer id</param>
-		/// <param name="relatedKey">Address id</param>
-		/// <returns>Address</returns>
-		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
-        public HttpResponseMessage NavigationAddresses(int key, int relatedKey)
+		[WebApiQueryable(PagingOptional = true)]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public HttpResponseMessage GetAddresses(int key, int relatedKey = 0 /*addressId*/)
 		{
-			Address address = null;
+			var addresses = GetRelatedCollection(key, x => x.Addresses);
+
+			if (relatedKey != 0)
+			{
+				var address = addresses.FirstOrDefault(x => x.Id == relatedKey);
+
+				return Request.CreateResponseForEntity(address, relatedKey);
+			}
+
+			return Request.CreateResponseForEntity(addresses, key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
+		public HttpResponseMessage PostAddresses(int key, int relatedKey /*addressId*/)
+		{
+			var entity = GetExpandedEntity(key, x => x.Addresses);
+			var address = entity.Addresses.FirstOrDefault(x => x.Id == relatedKey);
+
+			if (address == null)
+			{
+				// No assignment yet.
+				address = _addressService.Value.GetAddressById(relatedKey);
+				if (address == null)
+				{
+					throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(relatedKey));
+				}
+
+				entity.Addresses.Add(address);
+				Service.UpdateCustomer(entity);
+
+				return Request.CreateResponse(HttpStatusCode.Created, address);
+			}
+
+			return Request.CreateResponse(HttpStatusCode.OK, address);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
+		public HttpResponseMessage DeleteAddresses(int key, int relatedKey = 0 /*addressId*/)
+		{
 			var entity = GetExpandedEntity(key, x => x.Addresses);
 
-			if (Request.Method == HttpMethod.Delete)
+			if (relatedKey == 0)
 			{
-				if (relatedKey == 0)
-				{
-					entity.BillingAddress = null;
-					entity.ShippingAddress = null;
-					entity.Addresses.Clear();
-					Service.UpdateCustomer(entity);
-				}
-				else if ((address = _addressService.Value.GetAddressById(relatedKey)) != null)
+				// Remove assignments of all addresses.
+				entity.BillingAddress = null;
+				entity.ShippingAddress = null;
+				entity.Addresses.Clear();
+				Service.UpdateCustomer(entity);
+			}
+			else
+			{
+				// Remove assignment of certain address.
+				var address = _addressService.Value.GetAddressById(relatedKey);
+				if (address != null)
 				{
 					entity.RemoveAddress(address);
 					Service.UpdateCustomer(entity);
 				}
-
-				return Request.CreateResponse(HttpStatusCode.NoContent);
 			}
 
-			address = _addressService.Value.GetAddressById(relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (address != null && entity.Addresses.FindAddress(address) == null)
-				{
-					entity.Addresses.Add(address);
-					Service.UpdateCustomer(entity);
-
-					return Request.CreateResponse(HttpStatusCode.Created, address);
-				}
-			}
-
-			return Request.CreateResponseForEntity(address, relatedKey);
+			return Request.CreateResponse(HttpStatusCode.NoContent);
 		}
+
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
@@ -187,13 +209,6 @@ namespace SmartStore.WebApi.Controllers.OData
         public IQueryable<ReturnRequest> GetReturnRequests(int key)
 		{
 			return GetRelatedCollection(key, x => x.ReturnRequests);
-		}
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public IQueryable<Address> GetAddresses(int key)
-		{
-			return GetRelatedCollection(key, x => x.Addresses);
 		}
 
         [WebApiQueryable]

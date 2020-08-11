@@ -104,7 +104,7 @@ namespace SmartStore.Linq
             var entityParam = Expression.Parameter(type, "x"); // {x}
             path = String.Concat("x.", path.Trim('.'));
 
-            var expression = System.Linq.Dynamic.DynamicExpression.ParseLambda(
+            var expression = System.Linq.Dynamic.Core.DynamicExpressionParser.ParseLambda(
                 new ParameterExpression[] { entityParam },
                 typeof(object),
                 path.Trim('.'));

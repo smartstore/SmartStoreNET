@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SmartStore.Core.Data;

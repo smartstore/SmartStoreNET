@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -14,17 +15,24 @@ namespace SmartStore.WebApi.Controllers.OData
     public class NewsLetterSubscriptionsController : WebApiEntityController<NewsLetterSubscription, INewsLetterSubscriptionService>
     {
         [WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public IQueryable<NewsLetterSubscription> Get()
+		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]
+		public IQueryable<NewsLetterSubscription> Get()
         {
             return GetEntitySet();
         }
 
         [WebApiQueryable]
-        public SingleResult<NewsLetterSubscription> Get(int key)
+		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]
+		public SingleResult<NewsLetterSubscription> Get(int key)
         {
             return GetSingleResult(key);
         }
+
+		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
 
 		// There is no insert permission because a subscription is always created by customer.
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Update)]

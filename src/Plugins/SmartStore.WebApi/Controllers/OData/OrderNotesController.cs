@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -23,9 +24,15 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<OrderNote> GetOrderNote(int key)
+        public SingleResult<OrderNote> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
@@ -36,7 +43,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				var order = Service.GetOrderById(entity.OrderId);
 				if (order == null || order.Deleted)
 				{
-					throw ExceptionEntityNotFound(entity.OrderId);
+					throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(entity.OrderId));
 				}
 
 				Service.AddOrderNote(order, entity.Note, entity.DisplayToCustomer);

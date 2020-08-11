@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Seo;
@@ -23,6 +24,11 @@ namespace SmartStore.WebApi.Controllers.OData
 		public SingleResult<UrlRecord> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
 		}
 
 		public IHttpActionResult Post(UrlRecord entity)

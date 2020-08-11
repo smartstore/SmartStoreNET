@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -26,6 +27,12 @@ namespace SmartStore.WebApi.Controllers.OData
         public SingleResult<CustomerRole> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Create)]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -34,7 +35,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
 		public IQueryable<Manufacturer> Get()
 		{
 			return GetEntitySet();
@@ -45,6 +46,12 @@ namespace SmartStore.WebApi.Controllers.OData
         public SingleResult<Manufacturer> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Create)]

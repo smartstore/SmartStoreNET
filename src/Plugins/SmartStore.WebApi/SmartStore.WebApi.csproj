@@ -340,9 +340,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="changelog.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

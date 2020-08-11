@@ -57,6 +57,12 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetSingleResult(key);
 		}
 
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
 		[WebApiAuthenticate(Permission = Permissions.Order.Create)]
 		public IHttpActionResult Post(Order entity)
 		{

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -14,7 +15,7 @@ namespace SmartStore.WebApi.Controllers.OData
     public class MeasureWeightsController : WebApiEntityController<MeasureWeight, IMeasureService>
 	{
 		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
 		public IQueryable<MeasureWeight> Get()
 		{
 			return GetEntitySet();
@@ -25,6 +26,12 @@ namespace SmartStore.WebApi.Controllers.OData
         public SingleResult<MeasureWeight> Get(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
+		public HttpResponseMessage GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Create)]

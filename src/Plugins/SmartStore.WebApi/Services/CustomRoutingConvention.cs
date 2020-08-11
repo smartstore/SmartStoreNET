@@ -11,30 +11,42 @@ namespace SmartStore.WebApi.Services
     /// <summary>
     /// Used to serve URL paths that are ignored by OData by default.
     /// <see cref="https://docs.microsoft.com/en-us/aspnet/web-api/overview/odata-support-in-aspnet-web-api/odata-routing-conventions"/>
+    /// <see cref="https://docs.microsoft.com/en-us/odata/webapi/custom-routing-convention"/>
     /// </summary>
     public class CustomRoutingConvention : EntitySetRoutingConvention
     {
+        private static readonly string[] _navigationPaths = new string[]
+        {
+            "~/entityset/key/navigation/key",
+            "~/entityset/key/navigation"
+        };
+
+        private static readonly string[] _propertyPaths = new string[]
+        {
+            "~/entityset/key/property",
+            "~/entityset/key/cast/property",
+            "~/singleton/property",
+            "~/singleton/cast/property"
+        };
+
         public override string SelectAction(ODataPath odataPath, HttpControllerContext context, ILookup<string, HttpActionDescriptor> actionMap)
         {
-            var method = context.Request.Method;
-            var path = odataPath.PathTemplate;
+            var path = odataPath?.PathTemplate;
+            var method = context?.Request?.Method;
 
-            if (path.IsCaseInsensitiveEqual("~/entityset/key/navigation/key") ||
-                path.IsCaseInsensitiveEqual("~/entityset/key/navigation"))
+            if (path == null || method == null)
             {
-                // We ignore standard OData path cause they differ:
+                return null;
+            }
+
+            if (_navigationPaths.Contains(path))
+            {
+                // Standard OData path differ:
                 // ~/entityset/key/$links/navigation (OData 3 "link"), ~/entityset/key/navigation/$ref (OData 4 "reference").
 
                 if (method == HttpMethod.Get || method == HttpMethod.Post || method == HttpMethod.Delete)
                 {
                     // Add keys to route data, so they will bind to action parameters.
-                    var navigationProperty = GetNavigationName(odataPath, 2);
-
-                    if (navigationProperty.IsEmpty())
-                    {
-                        throw context.Request.BadRequestException(WebApiGlobal.Error.NoNavigationFromPath);
-                    }
-
                     if (GetNormalizedKey(odataPath, 1, out var key) && key != 0)
                     {
                         context.RouteData.Values[ODataRouteConstants.Key] = key;
@@ -42,6 +54,12 @@ namespace SmartStore.WebApi.Services
                     else
                     {
                         throw context.Request.BadRequestException(WebApiGlobal.Error.NoKeyFromPath);
+                    }
+
+                    var navPropertyName = (odataPath.Segments[2] as NavigationPathSegment)?.NavigationPropertyName;
+                    if (navPropertyName.IsEmpty())
+                    {
+                        throw context.Request.BadRequestException(WebApiGlobal.Error.NoNavigationFromPath);
                     }
 
                     // Allow relatedKey = 0 to remove all assignments.
@@ -55,37 +73,40 @@ namespace SmartStore.WebApi.Services
                         throw context.Request.BadRequestException(WebApiGlobal.Error.NoRelatedKeyFromPath);
                     }
 
-                    var methodName = Inflector.Capitalize(method.ToString()) + navigationProperty;
+                    var methodName = Inflector.Capitalize(method.ToString()) + navPropertyName;
                     if (actionMap.Contains(methodName))
                     {
                         return methodName;
                     }
-
-                    //$"process custom path {methodName} {actionMap.Contains(methodName)}".Dump();
                 }
             }
-            else if (path.IsCaseInsensitiveEqual("~/entityset/key/property"))
+            else if (_propertyPaths.Contains(path))
             {
                 if (method == HttpMethod.Get)
                 {
-                    if (GetNormalizedKey(odataPath, 1, out var key) && key != 0)
+                    if (path.StartsWith("~/entityset/key"))
                     {
-                        context.RouteData.Values[ODataRouteConstants.Key] = key;
+                        if (GetNormalizedKey(odataPath, 1, out var key) && key != 0)
+                        {
+                            context.RouteData.Values[ODataRouteConstants.Key] = key;
+                        }
+                        else
+                        {
+                            throw context.Request.BadRequestException(WebApiGlobal.Error.NoKeyFromPath);
+                        }
+                    }
+
+                    var propertyName = (odataPath.Segments.Last() as PropertyAccessPathSegment)?.PropertyName;
+                    if (propertyName.HasValue())
+                    {
+                        context.RouteData.Values["propertyName"] = propertyName;
                     }
                     else
-                    {
-                        throw context.Request.BadRequestException(WebApiGlobal.Error.NoKeyFromPath);
-                    }
-
-                    var propertyName = GetPropertyName(odataPath, 2);
-
-                    if (propertyName.IsEmpty())
                     {
                         throw context.Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(string.Empty));
                     }
 
-                    //GetProperty
-                    var methodName = Inflector.Capitalize(method.ToString()) + propertyName;
+                    var methodName = Inflector.Capitalize(method.ToString()) + "Property";
                     if (actionMap.Contains(methodName))
                     {
                         return methodName;
@@ -120,28 +141,6 @@ namespace SmartStore.WebApi.Services
 
             key = 0;
             return false;
-        }
-
-        private static string GetNavigationName(ODataPath odataPath, int segmentIndex)
-        {
-            if (odataPath.Segments.Count > segmentIndex)
-            {
-                var navigationProperty = (odataPath.Segments[segmentIndex] as NavigationPathSegment).NavigationPropertyName;
-                return navigationProperty;
-            }
-
-            return null;
-        }
-
-        private static string GetPropertyName(ODataPath odataPath, int segmentIndex)
-        {
-            if (odataPath.Segments.Count > segmentIndex)
-            {
-                var propertyName = (odataPath.Segments[segmentIndex] as PropertyAccessPathSegment).PropertyName;
-                return propertyName;
-            }
-
-            return null;
         }
 
         #endregion

@@ -75,7 +75,7 @@
     <Value>Use SQL Server account</Value>
   </LocaleResource>
   <LocaleResource Name="SqlCompact">
-    <Value>Use built-in data storage (SQL Server Compact)</Value>
+    <Value>SQL Server Compact (not suitable in production mode)</Value>
   </LocaleResource>
   <LocaleResource Name="SqlServerName">
     <Value>SQL Server name</Value>

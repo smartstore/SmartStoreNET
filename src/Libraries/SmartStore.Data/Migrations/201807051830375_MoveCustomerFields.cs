@@ -1,7 +1,8 @@
 namespace SmartStore.Data.Migrations
 {
     using System;
-	using System.Data.Entity.Migrations;
+    using System.Collections.Generic;
+    using System.Data.Entity.Migrations;
     using System.Linq;
     using SmartStore.Core.Domain.Common;
     using SmartStore.Core.Domain.Customers;
@@ -54,35 +55,35 @@ namespace SmartStore.Data.Migrations
 
             var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
             var numUpdatedCustomers = DataMigrator.MoveCustomerFields(context, UpdateCustomer, candidates);
-		}
+        }
 
-        private static void UpdateCustomer(Customer customer, GenericAttribute attr)
+        private static void UpdateCustomer(IDictionary<string, object> columns, string key, string value)
         {
-            switch (attr.Key)
+            switch (key)
             {
                 case "Title":
-                    customer.Title = attr.Value?.Truncate(100);
+                    columns[key] = value?.Truncate(50);
                     break;
                 case "FirstName":
-                    customer.FirstName = attr.Value?.Truncate(225);
+                    columns[key] = value?.Truncate(199);
                     break;
                 case "LastName":
-                    customer.LastName = attr.Value?.Truncate(225);
+                    columns[key] = value?.Truncate(199);
                     break;
                 case "Company":
-                    customer.Company = attr.Value?.Truncate(255);
+                    columns[key] = value?.Truncate(255);
                     break;
                 case "CustomerNumber":
-                    customer.CustomerNumber = attr.Value?.Truncate(100);
+                    columns[key] = value?.Truncate(100);
                     break;
                 case "DateOfBirth":
-                    customer.BirthDate = attr.Value?.Convert<DateTime?>();
+                    columns["BirthDate"] = value?.Convert<DateTime?>();
                     break;
             }
 
             // Update FullName
-            var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
-            customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
+            var parts = new string[] { (string)columns.Get("Title"), (string)columns.Get("FirstName"), (string)columns.Get("LastName") };
+            columns["FullName"] = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

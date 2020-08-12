@@ -65,7 +65,7 @@
 {
     // TODO: find a better way!!!
     var mediaService = EngineContext.Current.Resolve<IMediaService>();
-    var files = Model.UploadedFiles;
+    var files = Model.UploadedFiles ?? new List<IMediaFile>();
 
     <!-- Placeholder to paste preview container into -->
     <div id="@Model.PreviewContainerId" class="d-flex flex-wrap preview-container mt-3">
@@ -73,14 +73,12 @@
         {
             var previewUrl = mediaService.GetUrl(file.MediaFileId, 250);
             var isMainPic = file.MediaFileId == Model.MainFileId;
-            var entityMediaId = 0;
+            var entityMediaId = file.MediaFileId;
 
-            if (Model.EntityType.Equals("Product"))
-            {
-                var entityMediaFile = file as ProductMediaFile;
-                entityMediaId = entityMediaFile.Id;
-            }
-
+            //if (Model.EntityType.Equals("Product"))
+            //{
+            //entityMediaId = file.MediaFileId;
+        
             <div class="fu-file-preview dz-image-preview dz-success dz-complete shadow-sm"
                  data-display-order="@file.DisplayOrder"
                  data-media-id="@file.MediaFileId"

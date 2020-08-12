@@ -19,7 +19,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			_providerManager = providerManager;
 		}
 
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Read)]
 		public IQueryable<ProviderMetadata> GetMethods()
 		{

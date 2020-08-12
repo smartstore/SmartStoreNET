@@ -171,7 +171,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
         /// POST /Media/GetFilesByIds {"Ids":[1,2,3]}
         [HttpPost, WebApiAuthenticate]
-        [WebApiQueryable(PagingOptional = true)]
+        [WebApiQueryable]
         public IQueryable<MediaFileInfo> GetFilesByIds(ODataActionParameters parameters)
         {
             IList<MediaFileInfo> files = null;

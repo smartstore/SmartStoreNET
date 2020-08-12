@@ -111,7 +111,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		#region Navigation properties
 
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
 		public HttpResponseMessage GetAddresses(int key, int relatedKey = 0 /*addressId*/)
 		{

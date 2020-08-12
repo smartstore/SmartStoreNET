@@ -169,7 +169,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
         
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
         public HttpResponseMessage GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
@@ -227,7 +227,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
         public HttpResponseMessage GetProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
 		{
@@ -285,7 +285,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
         public HttpResponseMessage GetProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
 		{
@@ -423,7 +423,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
 		}
 
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
         public IQueryable<Product> Search([ModelBinder(typeof(WebApiCatalogSearchQueryModelBinder))] CatalogSearchQuery query)
 		{
@@ -492,7 +492,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return CalculatePrice(key, true);
 		}
 
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
         public IQueryable<ProductVariantAttributeCombination> CreateAttributeCombinations(int key)
 		{
@@ -506,7 +506,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return entity.ProductVariantAttributeCombinations.AsQueryable();
 		}
 
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
         public IQueryable<ProductVariantAttribute> ManageAttributes(int key, ODataActionParameters parameters)
 		{

@@ -89,7 +89,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		#endregion
 
 		[HttpPost, WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
 		public async Task<IQueryable<UploadImage>> ProductImages()
 		{
 			if (!Request.Content.IsMimeMultipartContent())
@@ -218,7 +218,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		}
 
 		[HttpPost, WebApiAuthenticate(Permission = Permissions.Configuration.Import.Execute)]
-		[WebApiQueryable(PagingOptional = true)]
+		[WebApiQueryable]
 		public async Task<IQueryable<UploadImportFile>> ImportFiles()
 		{
 			if (!Request.Content.IsMimeMultipartContent())

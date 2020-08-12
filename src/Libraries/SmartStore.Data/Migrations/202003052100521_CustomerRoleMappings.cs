@@ -42,10 +42,10 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.CustomerRole_Id)
                 .Index(t => t.RuleSetEntity_Id);
 
-            if (HostingEnvironment.IsHosted)
+            if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
             {
                 // Copy customer role mappings.
-                Sql("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]");
+                Sql("IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Customer_CustomerRole_Mapping')) BEGIN Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping] END");
             }
         }
 

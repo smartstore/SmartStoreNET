@@ -121,22 +121,22 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-        private LogLevel EventTypeToLogLevel(TraceEventType eventType)
-        {
-            switch (eventType)
-            {
-                case TraceEventType.Verbose:
-                    return LogLevel.Debug;
-                case TraceEventType.Error:
-                    return LogLevel.Error;
-                case TraceEventType.Critical:
-                    return LogLevel.Fatal;
-                case TraceEventType.Warning:
-                    return LogLevel.Warning;
-                default:
-                    return LogLevel.Information;
-            }
-        }
+        //private LogLevel EventTypeToLogLevel(TraceEventType eventType)
+        //{
+        //    switch (eventType)
+        //    {
+        //        case TraceEventType.Verbose:
+        //            return LogLevel.Debug;
+        //        case TraceEventType.Error:
+        //            return LogLevel.Error;
+        //        case TraceEventType.Critical:
+        //            return LogLevel.Fatal;
+        //        case TraceEventType.Warning:
+        //            return LogLevel.Warning;
+        //        default:
+        //            return LogLevel.Information;
+        //    }
+        //}
 
         public void Flush()
 		{

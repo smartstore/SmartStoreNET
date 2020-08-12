@@ -217,7 +217,9 @@ namespace SmartStore.Web.Controllers
                         File = file
                     };
 
-                    return model;
+					_services.DisplayControl.Announce(file?.File);	
+
+					return model;
                 })
                 .ToList();
         }
@@ -589,6 +591,8 @@ namespace SmartStore.Web.Controllers
 				Title = file?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? model.Name,
 				File = _mediaService.ConvertMediaFile(file)
 			};
+
+			_services.DisplayControl.Announce(file);
 
 			return result;
 		}
@@ -1508,7 +1512,9 @@ namespace SmartStore.Web.Controllers
                 File = file
 			};
 
-            return model;
+			_services.DisplayControl.Announce(file?.File);
+
+			return model;
         }
 
         public ManufacturerNavigationModel PrepareManufacturerNavigationModel(int manufacturerItemsToDisplay)

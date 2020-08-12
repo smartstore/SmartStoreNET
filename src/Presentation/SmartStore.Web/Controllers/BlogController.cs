@@ -117,6 +117,8 @@ namespace SmartStore.Web.Controllers
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? blogPost.Title,
                 File = file
             };
+            
+            _services.DisplayControl.Announce(file?.File);
 
             return pictureModel;
         }

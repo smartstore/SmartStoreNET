@@ -1,9 +1,8 @@
-﻿@using SmartStore.Web.Framework.Modelling;
-@model MediaTemplateModel
-@if (Model.RenderViewer)
+﻿@model MediaTemplateModel
+
+@using SmartStore.Web.Framework.Modelling;
+
+@if (!Model.RenderViewer)
 {
-}
-else
-{
-    @Html.Partial("MediaTemplates/_Thumbnail")
+    @Html.Partial("MediaTemplates/_Thumbnail", Model)
 }

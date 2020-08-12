@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Utilities;
@@ -36,6 +37,7 @@ namespace SmartStore.Core.Caching
 			[typeof(NewsItem)]							= (x, c) => new[] { "n" + x.Id },
 			[typeof(NewsComment)]						= (x, c) => new[] { "n" + ((NewsComment)x).NewsItemId },
 			[typeof(Topic)]								= (x, c) => new[] { "t" + x.Id },
+			[typeof(MediaFile)]							= (x, c) => new[] { "mf" + x.Id },
 			[typeof(SpecificationAttributeOption)]		= (x, c) => ((SpecificationAttributeOption)x).ProductSpecificationAttributes.Select(y => "p" + y.ProductId),
 			[typeof(ProductTag)]						= (x, c) => ((ProductTag)x).Products.Select(y => "p" + y.Id),
 			[typeof(Product)]							= HandleProduct,
@@ -152,6 +154,9 @@ namespace SmartStore.Core.Caching
 					break;
 				case nameof(Topic):
 					prefix = "t";
+					break;
+				case nameof(MediaFile):
+					prefix = "mf";
 					break;
 				case nameof(SpecificationAttribute):
 					targetEntity = dbContext.Set<SpecificationAttribute>().Find(lp.EntityId);

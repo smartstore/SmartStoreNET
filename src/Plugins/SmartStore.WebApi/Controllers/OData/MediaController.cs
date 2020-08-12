@@ -1,81 +1,139 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Query;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
+using SmartStore.WebApi.Models.OData;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-    // TODO: readonly properties of MediaFileInfo cannot be serialized!
-    public class MediaController : ODataController
+    /// <summary>
+    /// Is intended to make methods of the IMediaService accessible. Direct access to the MediaFile entity is not intended.
+    /// </summary>
+    public class MediaController : WebApiEntityController<MediaFile, IMediaService>
     {
-        private readonly IMediaService _mediaService;
-
-        public MediaController(IMediaService mediaService)
-        {
-            _mediaService = mediaService;
-        }
-
         // GET /Media(123)
+        [WebApiQueryable]
         [WebApiAuthenticate]
-        public MediaFileInfo Get(int key)
+        public SingleResult<MediaItemInfo> Get(int key)
         {
-            MediaFileInfo file = null;
-
-            this.ProcessEntity(() =>
+            var file = Service.GetFileById(key);
+            if (file == null)
             {
-                file = _mediaService.GetFileById(key);
-                if (file == null)
-                {
-                    throw Request.NotFoundException($"Cannot find file by ID {key}.");
-                }
-            });
+                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+            }
 
-            return file;
+            return SingleResult.Create(new[] { Convert(file) }.AsQueryable());
         }
 
-        #region Actions
+        // GET /Media
+        [WebApiQueryable]
+        [WebApiAuthenticate]
+        public IQueryable<MediaItemInfo> Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
+        {
+            throw new HttpResponseException(HttpStatusCode.NotImplemented);
+
+            // TODO or not TODO :)
+            //var maxTop = WebApiCachingControllingData.Data().MaxTop;
+            //var top = Math.Min(this.GetQueryStringValue("$top", maxTop), maxTop);
+
+            //var query = queryOptions.ApplyTo(GetEntitySet(), new ODataQuerySettings { PageSize = top }) as IQueryable<MediaFile>;
+            //var files = query.ToList();
+            //var result = files.Select(x => Convert(Service.ConvertMediaFile(x)));
+
+            //return result.AsQueryable();
+        }
+
+        // GET /Media(123)/ThumbUrl
+        [WebApiAuthenticate]
+        public HttpResponseMessage GetProperty(int key, string propertyName)
+        {
+            var file = Service.GetFileById(key);
+            if (file == null)
+            {
+                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+            }
+
+            var item = Convert(file);
+
+            var prop = FastProperty.GetProperty(item.GetType(), propertyName);
+            if (prop == null)
+            {
+                throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
+            }
+
+            var propertyValue = prop.GetValue(item);
+
+            return Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
+        }
+
+        public IHttpActionResult Post(MediaFile entity)
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+
+        public IHttpActionResult Put(int key, MediaFile entity)
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+
+        public IHttpActionResult Patch(int key, Delta<MediaFile> model)
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+
+        public IHttpActionResult Delete(int key)
+        {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+
+        #region Actions and functions
 
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
-            var entityConfig = configData.ModelBuilder.EntityType<MediaFileInfo>();
+            var entityConfig = configData.ModelBuilder.EntityType<MediaItemInfo>();
 
             entityConfig.Collection
-                .Action("FileExists")
-                .ReturnsFromEntitySet<MediaFileInfo>("Media")
+                .Function("FileExists")
+                .Returns<bool>()
                 .Parameter<string>("Path");
 
             entityConfig.Collection
                 .Action("CheckUniqueFileName")
-                .ReturnsFromEntitySet<MediaFileInfo>("Media")
+                .ReturnsFromEntitySet<MediaItemInfo>("Media")
                 .Parameter<string>("Path");
 
             entityConfig.Collection
                 .Action("GetFileByPath")
-                .ReturnsFromEntitySet<MediaFileInfo>("Media")
+                .ReturnsFromEntitySet<MediaItemInfo>("Media")
                 .Parameter<string>("Path");
 
             //var getFileByName = entityConfig.Collection
             //    .Action("GetFileByName")
-            //    .ReturnsFromEntitySet<MediaFileInfo>("Media");
+            //    .ReturnsFromEntitySet<MediaItemInfo>("Media");
             //getFileByName.Parameter<string>("FileName");
             //getFileByName.Parameter<int>("FolderId");
 
             entityConfig.Collection
                 .Action("GetFilesByIds")
-                .ReturnsFromEntitySet<MediaFileInfo>("Media")
+                .ReturnsFromEntitySet<MediaItemInfo>("Media")
                 .CollectionParameter<int>("Ids");
 
             var countFiles = entityConfig.Collection
                 .Action("CountFiles")
-                .ReturnsFromEntitySet<MediaFileInfo>("Media");
+                .ReturnsFromEntitySet<MediaItemInfo>("Media");
             countFiles.Parameter<int?>("FolderId");
             countFiles.Parameter<bool?>("DeepSearch");
             countFiles.Parameter<bool?>("Hidden");
@@ -87,19 +145,11 @@ namespace SmartStore.WebApi.Controllers.OData
             countFiles.CollectionParameter<string>("Extensions");
         }
 
-        /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
-        [HttpPost, WebApiAuthenticate]
-        public bool FileExists(ODataActionParameters parameters)
+        /// GET /Media/FileExists(Path='content/my-file.jpg')
+        [HttpGet, WebApiAuthenticate]
+        public bool FileExists([FromODataUri] string path)
         {
-            var fileExists = false;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-
-                fileExists = _mediaService.FileExists(path);
-            });
-
+            var fileExists = Service.FileExists(path);
             return fileExists;
         }
 
@@ -113,7 +163,7 @@ namespace SmartStore.WebApi.Controllers.OData
             {
                 var path = parameters.GetValueSafe<string>("Path");
 
-                if (!_mediaService.CheckUniqueFileName(path, out newPath))
+                if (!Service.CheckUniqueFileName(path, out newPath))
                 {
                     // Just to make sure the result is unmistakable ;-)
                     newPath = null;
@@ -138,7 +188,7 @@ namespace SmartStore.WebApi.Controllers.OData
             {
                 var path = parameters.GetValueSafe<string>("Path");
 
-                file = _mediaService.GetFileByPath(path);
+                file = Service.GetFileByPath(path);
                 if (file == null)
                 {
                     throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
@@ -181,7 +231,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 var ids = parameters.GetValueSafe<ICollection<int>>("Ids");
                 if (ids?.Any() ?? false)
                 {
-                    files = _mediaService.GetFilesByIds(ids.ToArray());
+                    files = Service.GetFilesByIds(ids.ToArray());
                 }
             });
 
@@ -209,38 +259,48 @@ namespace SmartStore.WebApi.Controllers.OData
                     Extensions = parameters.GetValueSafe<ICollection<string>>("Extensions")?.ToArray()
                 };
 
-                count = await _mediaService.CountFilesAsync(query);
+                count = await Service.CountFilesAsync(query);
             });
 
             return count;
         }
 
         #endregion
+
+        #region Utilities
+
+        private MediaItemInfo Convert(MediaFileInfo file)
+        {
+            var item = MiniMapper.Map<MediaFileInfo, MediaItemInfo>(file);
+            return item;
+        }
+
+        #endregion
     }
 
 
- //   public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
-	//{
- //       protected override IQueryable<MediaFile> GetEntitySet()
- //       {
- //           var query =
- //               from x in Repository.Table
- //               where !x.Deleted && !x.Hidden
- //               select x;
+    //   public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
+    //{
+    //       protected override IQueryable<MediaFile> GetEntitySet()
+    //       {
+    //           var query =
+    //               from x in Repository.Table
+    //               where !x.Deleted && !x.Hidden
+    //               select x;
 
- //           return query;
- //       }
+    //           return query;
+    //       }
 
-	//	[WebApiQueryable]
- //       public SingleResult<MediaFile> GetPicture(int key)
-	//	{
-	//		return GetSingleResult(key);
-	//	}
+    //	[WebApiQueryable]
+    //       public SingleResult<MediaFile> GetPicture(int key)
+    //	{
+    //		return GetSingleResult(key);
+    //	}
 
-	//	[WebApiQueryable]
- //       public IQueryable<ProductMediaFile> GetProductPictures(int key)
-	//	{
-	//		return GetRelatedCollection(key, x => x.ProductMediaFiles);
-	//	}
-	//}
+    //	[WebApiQueryable]
+    //       public IQueryable<ProductMediaFile> GetProductPictures(int key)
+    //	{
+    //		return GetRelatedCollection(key, x => x.ProductMediaFiles);
+    //	}
+    //}
 }

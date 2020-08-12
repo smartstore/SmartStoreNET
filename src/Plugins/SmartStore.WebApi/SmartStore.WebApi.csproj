@@ -273,6 +273,7 @@
     <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
     <Compile Include="Models\Api\UploadImportFile.cs" />
+    <Compile Include="Models\OData\Media\MediaItemInfo.cs" />
     <Compile Include="Models\OData\OrderInfo.cs" />
     <Compile Include="Models\OData\OrderItemInfo.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />

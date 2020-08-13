@@ -64,6 +64,9 @@ namespace SmartStore.Web.Framework.WebApi
 		/// <summary>
 		/// Gets a query string value from API request URL.
 		/// </summary>
+		/// <remarks>
+		/// Query string values are not part of the EDM and therefore do not appear in any auto generated documentation etc.
+		/// </remarks>
 		/// <typeparam name="T">Value type.</typeparam>
 		/// <param name="apiController">API controller.</param>
 		/// <param name="name">Name of the query string value.</param>

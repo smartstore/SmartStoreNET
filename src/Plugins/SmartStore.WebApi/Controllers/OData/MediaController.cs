@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using System.Web.OData.Query;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
-using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
@@ -22,6 +19,10 @@ namespace SmartStore.WebApi.Controllers.OData
     /// <summary>
     /// Is intended to make methods of the IMediaService accessible. Direct access to the MediaFile entity is not intended.
     /// </summary>
+    /// <remarks>
+    /// Functions like GET /Media/FileExists(Path='content/my-file.jpg') would never work (404).
+    /// That's why some endpoints are implemented as Actions (POST).
+    /// </remarks>
     public class MediaController : WebApiEntityController<MediaFile, IMediaService>
     {
         // GET /Media(123)
@@ -106,16 +107,6 @@ namespace SmartStore.WebApi.Controllers.OData
             var entityConfig = configData.ModelBuilder.EntityType<MediaItemInfo>();
 
             entityConfig.Collection
-                .Function("FileExists")
-                .Returns<bool>()
-                .Parameter<string>("Path");
-
-            entityConfig.Collection
-                .Action("CheckUniqueFileName")
-                .ReturnsFromEntitySet<MediaItemInfo>("Media")
-                .Parameter<string>("Path");
-
-            entityConfig.Collection
                 .Action("GetFileByPath")
                 .ReturnsFromEntitySet<MediaItemInfo>("Media")
                 .Parameter<string>("Path");
@@ -127,75 +118,40 @@ namespace SmartStore.WebApi.Controllers.OData
             //getFileByName.Parameter<int>("FolderId");
 
             entityConfig.Collection
-                .Action("GetFilesByIds")
+                .Function("GetFilesByIds")
                 .ReturnsFromEntitySet<MediaItemInfo>("Media")
                 .CollectionParameter<int>("Ids");
 
-            var countFiles = entityConfig.Collection
+            entityConfig.Collection
+                .Action("FileExists")
+                .Returns<bool>()
+                .Parameter<string>("Path");
+
+            entityConfig.Collection
+                .Action("CheckUniqueFileName")
+                .Returns<CheckUniqueFileName>()
+                .Parameter<string>("Path");
+
+            entityConfig.Collection
                 .Action("CountFiles")
-                .ReturnsFromEntitySet<MediaItemInfo>("Media");
-            countFiles.Parameter<int?>("FolderId");
-            countFiles.Parameter<bool?>("DeepSearch");
-            countFiles.Parameter<bool?>("Hidden");
-            countFiles.Parameter<bool?>("Deleted");
-            countFiles.Parameter<string>("Term");
-            countFiles.Parameter<bool?>("ExactMatch");
-            countFiles.CollectionParameter<string>("MediaTypes");
-            countFiles.CollectionParameter<string>("MimeTypes");
-            countFiles.CollectionParameter<string>("Extensions");
-        }
-
-        /// GET /Media/FileExists(Path='content/my-file.jpg')
-        [HttpGet, WebApiAuthenticate]
-        public bool FileExists([FromODataUri] string path)
-        {
-            var fileExists = Service.FileExists(path);
-            return fileExists;
-        }
-
-        /// POST /Media/CheckUniqueFileName {"Path":"content/my-file.jpg"}
-        [HttpPost, WebApiAuthenticate]
-        public HttpResponseMessage CheckUniqueFileName(ODataActionParameters parameters)
-        {
-            string newPath = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-
-                if (!Service.CheckUniqueFileName(path, out newPath))
-                {
-                    // Just to make sure the result is unmistakable ;-)
-                    newPath = null;
-                }
-            });
-
-            if (newPath == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.NoContent);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, newPath);
+                .Returns<int>()
+                .Parameter<MediaSearchQuery>("Query");
         }
 
         /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
-        [HttpPost, WebApiAuthenticate]
-        public MediaFileInfo GetFileByPath(ODataActionParameters parameters)
+        [HttpPost]
+        [WebApiAuthenticate]
+        public MediaItemInfo GetFileByPath(ODataActionParameters parameters)
         {
-            MediaFileInfo file = null;
+            var path = parameters.GetValueSafe<string>("Path");
+            var file = Service.GetFileByPath(path);
 
-            this.ProcessEntity(() =>
+            if (file == null)
             {
-                var path = parameters.GetValueSafe<string>("Path");
+                throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
+            }
 
-                file = Service.GetFileByPath(path);
-                if (file == null)
-                {
-                    throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
-                }
-            });
-
-            return file;
+            return Convert(file);
         }
 
         // POST /Media/GetFileByName {"FolderId":2, "FileName":"my-file.jpg"}
@@ -219,49 +175,52 @@ namespace SmartStore.WebApi.Controllers.OData
         //    return file;
         //}
 
-        /// POST /Media/GetFilesByIds {"Ids":[1,2,3]}
-        [HttpPost, WebApiAuthenticate]
-        [WebApiQueryable]
-        public IQueryable<MediaFileInfo> GetFilesByIds(ODataActionParameters parameters)
+        /// GET /Media/GetFilesByIds(Ids=[1,2,3])
+        [HttpGet, WebApiQueryable]
+        [WebApiAuthenticate]
+        public IQueryable<MediaItemInfo> GetFilesByIds([FromODataUri] int[] ids)
         {
-            IList<MediaFileInfo> files = null;
-
-            this.ProcessEntity(() =>
+            if (ids?.Any() ?? false)
             {
-                var ids = parameters.GetValueSafe<ICollection<int>>("Ids");
-                if (ids?.Any() ?? false)
-                {
-                    files = Service.GetFilesByIds(ids.ToArray());
-                }
-            });
+                var files = Service.GetFilesByIds(ids.ToArray());
 
-            return (files ?? new List<MediaFileInfo>()).AsQueryable();
+                return files.Select(x => Convert(x)).AsQueryable();
+            }
+
+            return new List<MediaItemInfo>().AsQueryable();
         }
 
-        /// POST /Media/CountFiles {"FolderId":7, "Term":"xyz", "Extensions":["jpg"], ...}
-        [HttpPost, WebApiAuthenticate]
+        /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public bool FileExists(ODataActionParameters parameters)
+        {
+            var path = parameters.GetValueSafe<string>("Path");
+            var fileExists = Service.FileExists(path);
+            return fileExists;
+        }
+
+        /// POST /Media/CheckUniqueFileName {"Path":"content/my-file.jpg"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public CheckUniqueFileName CheckUniqueFileName(ODataActionParameters parameters)
+        {
+            var result = new CheckUniqueFileName();
+            var path = parameters.GetValueSafe<string>("Path");
+
+            result.Result = Service.CheckUniqueFileName(path, out string newPath);
+            result.NewPath = newPath;            
+
+            return result;
+        }
+
+        /// POST /Media/CountFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
+        [HttpPost]
+        [WebApiAuthenticate]
         public async Task<int> CountFiles(ODataActionParameters parameters)
         {
-            var count = 0;
-
-            await this.ProcessEntityAsync(async () =>
-            {
-                var query = new MediaSearchQuery
-                {
-                    FolderId = parameters.GetValueSafe<int?>("FolderId"),
-                    DeepSearch = parameters.GetValueSafe<bool?>("DeepSearch") ?? false,
-                    Hidden = parameters.GetValueSafe<bool?>("Hidden") ?? false,
-                    Deleted = parameters.GetValueSafe<bool?>("Deleted") ?? false,
-                    Term = parameters.GetValueSafe<string>("Term"),
-                    ExactMatch = parameters.GetValueSafe<bool?>("ExactMatch") ?? false,
-                    MediaTypes = parameters.GetValueSafe<ICollection<string>>("MediaTypes")?.ToArray(),
-                    MimeTypes = parameters.GetValueSafe<ICollection<string>>("MimeTypes")?.ToArray(),
-                    Extensions = parameters.GetValueSafe<ICollection<string>>("Extensions")?.ToArray()
-                };
-
-                count = await Service.CountFilesAsync(query);
-            });
-
+            var query = parameters.GetValueSafe<MediaSearchQuery>("Query");
+            var count = await Service.CountFilesAsync(query ?? new MediaSearchQuery());
             return count;
         }
 

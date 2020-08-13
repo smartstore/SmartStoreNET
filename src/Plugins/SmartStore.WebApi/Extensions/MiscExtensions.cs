@@ -54,14 +54,14 @@ namespace SmartStore.WebApi
 			return value;
 		}
 
-		public static T GetValueSafe<T>(this ODataActionParameters parameters, string key)
+		public static T GetValueSafe<T>(this ODataActionParameters parameters, string key, T defaultValue = default)
 		{
 			if (parameters != null && key.HasValue() && parameters.TryGetValue(key, out var value))
 			{
-				return value.Convert<T>();
+				return value.Convert(defaultValue);
 			}
 
-			return default;
+			return defaultValue;
 		}
 
 		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)

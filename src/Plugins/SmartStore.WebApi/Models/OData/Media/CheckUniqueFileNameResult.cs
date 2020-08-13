@@ -3,7 +3,7 @@
 namespace SmartStore.WebApi.Models.OData
 {
     [DataContract]
-    public partial class CheckUniqueFileName
+    public partial class CheckUniqueFileNameResult
     {
         [DataMember]
         public bool Result { get; set; }

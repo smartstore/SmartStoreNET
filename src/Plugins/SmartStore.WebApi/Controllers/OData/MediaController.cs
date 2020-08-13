@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -129,13 +130,28 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("CheckUniqueFileName")
-                .Returns<CheckUniqueFileName>()
+                .Returns<CheckUniqueFileNameResult>()
                 .Parameter<string>("Path");
 
             entityConfig.Collection
                 .Action("CountFiles")
                 .Returns<int>()
                 .Parameter<MediaSearchQuery>("Query");
+
+            entityConfig.Collection
+                .Action("CountFilesGrouped")
+                .Returns<CountFilesGroupedResult>()
+                .Parameter<MediaFilesFilter>("Filter");
+
+            // Crap:
+            //var cfgr = configData.ModelBuilder.ComplexType<CountFilesGroupedResult>();
+            //cfgr.Property(x => x.Total);
+            //cfgr.Property(x => x.Trash);
+            //cfgr.Property(x => x.Unassigned);
+            //cfgr.Property(x => x.Transient);
+            //cfgr.Property(x => x.Orphan);
+            //cfgr.ComplexProperty(x => x.Filter);
+            //cfgr.HasDynamicProperties(x => x.Folders);
         }
 
         /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
@@ -203,9 +219,9 @@ namespace SmartStore.WebApi.Controllers.OData
         /// POST /Media/CheckUniqueFileName {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
-        public CheckUniqueFileName CheckUniqueFileName(ODataActionParameters parameters)
+        public CheckUniqueFileNameResult CheckUniqueFileName(ODataActionParameters parameters)
         {
-            var result = new CheckUniqueFileName();
+            var result = new CheckUniqueFileNameResult();
             var path = parameters.GetValueSafe<string>("Path");
 
             result.Result = Service.CheckUniqueFileName(path, out string newPath);
@@ -224,13 +240,42 @@ namespace SmartStore.WebApi.Controllers.OData
             return count;
         }
 
+        /// POST /Media/CountFilesGrouped {"Filter":{"Term":"my image","Extensions":["jpg"], ...}}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public CountFilesGroupedResult CountFilesGrouped(ODataActionParameters parameters)
+        {
+            var query = parameters.GetValueSafe<MediaFilesFilter>("Filter");
+            var res = Service.CountFilesGrouped(query ?? new MediaFilesFilter());
+
+            var result = new CountFilesGroupedResult
+            {
+                Total = res.Total,
+                Trash = res.Trash,
+                Unassigned = res.Unassigned,
+                Transient = res.Unassigned,
+                Orphan = res.Orphan,
+                Filter = res.Filter
+            };
+
+            result.Folders = res.Folders
+                .Select(x => new CountFilesGroupedResult.FolderCount
+                {
+                    FolderId = x.Key,
+                    Count = x.Value
+                })
+                .ToList();
+
+            return result;
+        }
+
         #endregion
 
         #region Utilities
 
         private MediaItemInfo Convert(MediaFileInfo file)
         {
-            var item = MiniMapper.Map<MediaFileInfo, MediaItemInfo>(file);
+            var item = MiniMapper.Map<MediaFileInfo, MediaItemInfo>(file, CultureInfo.InvariantCulture);
             return item;
         }
 

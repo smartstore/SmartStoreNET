@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using MaxMind.Db;
 using MaxMind.GeoIP2;
 using SmartStore.Core;
 using SmartStore.Core.Caching;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using System.Runtime.CompilerServices;

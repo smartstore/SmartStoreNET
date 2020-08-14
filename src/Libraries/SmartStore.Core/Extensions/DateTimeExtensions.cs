@@ -201,6 +201,14 @@ namespace SmartStore
 			provider = provider ?? CultureInfo.CurrentCulture;
 			return value.ToString(format, provider).ReplaceNativeDigits(provider);
 		}
+
+        /// <summary>
+        /// Converts a DateTime to ISO 8601 string
+        /// </summary>
+        public static string ToIso8601String(this DateTime value)
+        {
+            return value.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        }
     }
 
 }

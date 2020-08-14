@@ -6,6 +6,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
+using Autofac.Core.Registration;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 
@@ -31,7 +32,7 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(IComponentRegistryBuilder componentRegistry, IComponentRegistration registration)
 		{
 			bool hasCtorLogger = false;
 			bool hasPropertyLogger = false;

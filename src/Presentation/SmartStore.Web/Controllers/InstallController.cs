@@ -189,8 +189,8 @@ namespace SmartStore.Web.Controllers
                 //ConfirmPassword = "admin",
                 InstallSampleData = false,
                 DatabaseConnectionString = "",
-                DataProvider = "sqlce", // "sqlserver",
-                SqlAuthenticationType = "sqlauthentication",
+                DataProvider = "sqlserver", // "sqlce"
+				SqlAuthenticationType = "sqlauthentication",
                 SqlConnectionInfo = "sqlconnectioninfo_values",
                 SqlServerCreateDatabase = false,
                 UseCustomCollation = false,

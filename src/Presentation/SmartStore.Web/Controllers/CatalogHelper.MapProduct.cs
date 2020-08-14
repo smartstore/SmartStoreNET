@@ -465,6 +465,8 @@ namespace SmartStore.Web.Controllers
 					AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
                     File = file
 				};
+
+				_services.DisplayControl.Announce(file?.File);
 			}
 
 			// Manufacturers

@@ -137,10 +137,10 @@
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Database")</label>
 										<div class="col-md-9">
-											<select name="DataProvider" id="DataProvider" class="form-control remember">
-												<option value="sqlce">@ILS.GetResource("SqlCompact")</option>
-												<option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
-											</select>
+                                            <select name="DataProvider" id="DataProvider" class="form-control remember">
+                                                <option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
+                                                <option value="sqlce">@ILS.GetResource("SqlCompact")</option>
+                                            </select>
 											@Html.ValidationMessageFor(x => x.DataProvider)
 										</div>
 									</div>

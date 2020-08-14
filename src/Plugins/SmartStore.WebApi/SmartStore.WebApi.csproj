@@ -275,7 +275,8 @@
     <Compile Include="Models\Api\UploadImportFile.cs" />
     <Compile Include="Models\OData\Media\CheckUniqueFileNameResult.cs" />
     <Compile Include="Models\OData\Media\CountFilesGroupedResult.cs" />
-    <Compile Include="Models\OData\Media\MediaItemInfo.cs" />
+    <Compile Include="Models\OData\Media\FileItemInfo.cs" />
+    <Compile Include="Models\OData\Media\FolderItemInfo.cs" />
     <Compile Include="Models\OData\OrderInfo.cs" />
     <Compile Include="Models\OData\OrderItemInfo.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />

@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Media;
 
-namespace SmartStore.WebApi.Models.OData
+namespace SmartStore.WebApi.Models.OData.Media
 {
     /// <summary>
-    /// Information about a media file returned by the API.
+    /// File information returned by the API.
     /// </summary>
     [DataContract]
-    public partial class MediaItemInfo
+    public partial class FileItemInfo
     {
         [DataMember]
         public int Id { get; set; }

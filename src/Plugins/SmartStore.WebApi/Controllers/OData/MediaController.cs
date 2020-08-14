@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -8,12 +9,13 @@ using System.Web.Http;
 using System.Web.OData;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Security;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
-using SmartStore.WebApi.Models.OData;
+using SmartStore.WebApi.Models.OData.Media;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
@@ -26,12 +28,14 @@ namespace SmartStore.WebApi.Controllers.OData
     /// </remarks>
     public class MediaController : WebApiEntityController<MediaFile, IMediaService>
     {
+        public static MediaLoadFlags _defaultLoadFlags = MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags | MediaLoadFlags.WithTracks | MediaLoadFlags.WithFolder;
+
         // GET /Media(123)
         [WebApiQueryable]
         [WebApiAuthenticate]
-        public SingleResult<MediaItemInfo> Get(int key)
+        public SingleResult<FileItemInfo> Get(int key)
         {
-            var file = Service.GetFileById(key);
+            var file = Service.GetFileById(key, _defaultLoadFlags);
             if (file == null)
             {
                 throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
@@ -43,7 +47,7 @@ namespace SmartStore.WebApi.Controllers.OData
         // GET /Media
         [WebApiQueryable]
         [WebApiAuthenticate]
-        public IQueryable<MediaItemInfo> Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
+        public IQueryable<FileItemInfo> Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
         {
             throw new HttpResponseException(HttpStatusCode.NotImplemented);
 
@@ -62,23 +66,35 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public HttpResponseMessage GetProperty(int key, string propertyName)
         {
-            var file = Service.GetFileById(key);
-            if (file == null)
+            Type propertyType = null;
+            object propertyValue = null;
+
+            this.ProcessEntity(() =>
             {
-                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                var file = Service.GetFileById(key);
+                if (file == null)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                }
+
+                var item = Convert(file);
+
+                var prop = FastProperty.GetProperty(item.GetType(), propertyName);
+                if (prop == null)
+                {
+                    throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
+                }
+
+                propertyType = prop.Property.PropertyType;
+                propertyValue = prop.GetValue(item);
+            });
+
+            if (propertyType == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
-            var item = Convert(file);
-
-            var prop = FastProperty.GetProperty(item.GetType(), propertyName);
-            if (prop == null)
-            {
-                throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
-            }
-
-            var propertyValue = prop.GetValue(item);
-
-            return Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
+            return Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
         }
 
         public IHttpActionResult Post(MediaFile entity)
@@ -96,31 +112,50 @@ namespace SmartStore.WebApi.Controllers.OData
             throw new HttpResponseException(HttpStatusCode.Forbidden);
         }
 
+        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
         public IHttpActionResult Delete(int key)
         {
-            throw new HttpResponseException(HttpStatusCode.Forbidden);
+            this.ProcessEntity(() =>
+            {
+                var file = Service.GetFileById(key);
+                if (file == null)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                }
+
+                // Get options from query string. 
+                // FromODataUri (404) and FromBody ("Can't bind multiple parameters") are not possible here.
+                var permanent = this.GetQueryStringValue("permanent", false);
+                var force = this.GetQueryStringValue("force", false);
+
+                Service.DeleteFile(file.File, permanent, force);
+            });
+
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
         #region Actions and functions
 
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
-            var entityConfig = configData.ModelBuilder.EntityType<MediaItemInfo>();
+            var entityConfig = configData.ModelBuilder.EntityType<FileItemInfo>();
+
+            #region Files
 
             entityConfig.Collection
                 .Action("GetFileByPath")
-                .ReturnsFromEntitySet<MediaItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("Media")
                 .Parameter<string>("Path");
 
             //var getFileByName = entityConfig.Collection
             //    .Action("GetFileByName")
-            //    .ReturnsFromEntitySet<MediaItemInfo>("Media");
+            //    .ReturnsFromEntitySet<FileItemInfo>("Media");
             //getFileByName.Parameter<string>("FileName");
             //getFileByName.Parameter<int>("FolderId");
 
             entityConfig.Collection
                 .Function("GetFilesByIds")
-                .ReturnsFromEntitySet<MediaItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("Media")
                 .CollectionParameter<int>("Ids");
 
             entityConfig.Collection
@@ -143,7 +178,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 .Returns<CountFilesGroupedResult>()
                 .Parameter<MediaFilesFilter>("Filter");
 
-            // Crap:
+            // Doesn't work:
             //var cfgr = configData.ModelBuilder.ComplexType<CountFilesGroupedResult>();
             //cfgr.Property(x => x.Total);
             //cfgr.Property(x => x.Trash);
@@ -152,22 +187,61 @@ namespace SmartStore.WebApi.Controllers.OData
             //cfgr.Property(x => x.Orphan);
             //cfgr.ComplexProperty(x => x.Filter);
             //cfgr.HasDynamicProperties(x => x.Folders);
+
+            var moveFile = entityConfig
+                .Action("MoveFile")
+                .ReturnsFromEntitySet<FileItemInfo>("Media");
+
+            moveFile.Parameter<string>("DestinationFileName");
+            var dph1 = moveFile.Parameter<DuplicateFileHandling>("DuplicateFileHandling");
+            dph1.OptionalParameter = true;
+
+            var copyFile = entityConfig
+                .Action("CopyFile")
+                .ReturnsFromEntitySet<FileItemInfo>("Media");
+
+            copyFile.Parameter<string>("DestinationFileName");
+            var dph2 = copyFile.Parameter<DuplicateFileHandling>("DuplicateFileHandling");
+            dph2.OptionalParameter = true;
+
+            #endregion
+
+            #region Folders
+
+            entityConfig.Collection
+                .Action("FolderExists")
+                .Returns<bool>()
+                .Parameter<string>("Path");
+
+            entityConfig.Collection
+                .Action("CreateFolder")
+                .Returns<FolderItemInfo>()
+                .Parameter<string>("Path");
+
+            #endregion
         }
 
         /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
-        public MediaItemInfo GetFileByPath(ODataActionParameters parameters)
+        public FileItemInfo GetFileByPath(ODataActionParameters parameters)
         {
-            var path = parameters.GetValueSafe<string>("Path");
-            var file = Service.GetFileByPath(path);
+            FileItemInfo file = null;
 
-            if (file == null)
+            this.ProcessEntity(() =>
             {
-                throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
-            }
+                var path = parameters.GetValueSafe<string>("Path");
+                var mediaFile = Service.GetFileByPath(path, _defaultLoadFlags);
 
-            return Convert(file);
+                if (mediaFile == null)
+                {
+                    throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
+                }
+
+                file = Convert(mediaFile);
+            });
+
+            return file;
         }
 
         // POST /Media/GetFileByName {"FolderId":2, "FileName":"my-file.jpg"}
@@ -194,16 +268,21 @@ namespace SmartStore.WebApi.Controllers.OData
         /// GET /Media/GetFilesByIds(Ids=[1,2,3])
         [HttpGet, WebApiQueryable]
         [WebApiAuthenticate]
-        public IQueryable<MediaItemInfo> GetFilesByIds([FromODataUri] int[] ids)
+        public IQueryable<FileItemInfo> GetFilesByIds([FromODataUri] int[] ids)
         {
-            if (ids?.Any() ?? false)
+            IQueryable<FileItemInfo> files = null;
+
+            this.ProcessEntity(() =>
             {
-                var files = Service.GetFilesByIds(ids.ToArray());
+                if (ids?.Any() ?? false)
+                {
+                    var mediaFiles = Service.GetFilesByIds(ids.ToArray(), _defaultLoadFlags);
+                    
+                    files = mediaFiles.Select(x => Convert(x)).AsQueryable();
+                }
+            });
 
-                return files.Select(x => Convert(x)).AsQueryable();
-            }
-
-            return new List<MediaItemInfo>().AsQueryable();
+            return files ??  new List<FileItemInfo>().AsQueryable();
         }
 
         /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
@@ -211,8 +290,14 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public bool FileExists(ODataActionParameters parameters)
         {
-            var path = parameters.GetValueSafe<string>("Path");
-            var fileExists = Service.FileExists(path);
+            var fileExists = false;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+                fileExists = Service.FileExists(path);
+            });
+
             return fileExists;
         }
 
@@ -222,10 +307,14 @@ namespace SmartStore.WebApi.Controllers.OData
         public CheckUniqueFileNameResult CheckUniqueFileName(ODataActionParameters parameters)
         {
             var result = new CheckUniqueFileNameResult();
-            var path = parameters.GetValueSafe<string>("Path");
 
-            result.Result = Service.CheckUniqueFileName(path, out string newPath);
-            result.NewPath = newPath;            
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+
+                result.Result = Service.CheckUniqueFileName(path, out string newPath);
+                result.NewPath = newPath;
+            });
 
             return result;
         }
@@ -235,8 +324,14 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public async Task<int> CountFiles(ODataActionParameters parameters)
         {
-            var query = parameters.GetValueSafe<MediaSearchQuery>("Query");
-            var count = await Service.CountFilesAsync(query ?? new MediaSearchQuery());
+            var count = 0;
+
+            await this.ProcessEntityAsync(async () =>
+            {
+                var query = parameters.GetValueSafe<MediaSearchQuery>("Query");
+                count = await Service.CountFilesAsync(query ?? new MediaSearchQuery());
+            });
+
             return count;
         }
 
@@ -245,37 +340,134 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public CountFilesGroupedResult CountFilesGrouped(ODataActionParameters parameters)
         {
-            var query = parameters.GetValueSafe<MediaFilesFilter>("Filter");
-            var res = Service.CountFilesGrouped(query ?? new MediaFilesFilter());
+            CountFilesGroupedResult result = null;
 
-            var result = new CountFilesGroupedResult
+            this.ProcessEntity(() =>
             {
-                Total = res.Total,
-                Trash = res.Trash,
-                Unassigned = res.Unassigned,
-                Transient = res.Unassigned,
-                Orphan = res.Orphan,
-                Filter = res.Filter
-            };
+                var query = parameters.GetValueSafe<MediaFilesFilter>("Filter");
+                var res = Service.CountFilesGrouped(query ?? new MediaFilesFilter());
 
-            result.Folders = res.Folders
-                .Select(x => new CountFilesGroupedResult.FolderCount
+                result = new CountFilesGroupedResult
                 {
-                    FolderId = x.Key,
-                    Count = x.Value
-                })
-                .ToList();
+                    Total = res.Total,
+                    Trash = res.Trash,
+                    Unassigned = res.Unassigned,
+                    Transient = res.Unassigned,
+                    Orphan = res.Orphan,
+                    Filter = res.Filter
+                };
+
+                result.Folders = res.Folders
+                    .Select(x => new CountFilesGroupedResult.FolderCount
+                    {
+                        FolderId = x.Key,
+                        Count = x.Value
+                    })
+                    .ToList();
+            });
 
             return result;
         }
+
+        /// POST /Media(123)/MoveFile {"DestinationFileName":"content/updated-file-name.jpg"}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
+        public FileItemInfo MoveFile(int key, ODataActionParameters parameters)
+        {
+            FileItemInfo movedFile = null;
+
+            this.ProcessEntity(() =>
+            {
+                var file = Service.GetFileById(key);
+                if (file == null)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                }
+
+                var destinationFileName = parameters.GetValueSafe<string>("DestinationFileName");
+                var duplicateFileHandling = parameters.GetValueSafe("DuplicateFileHandling", DuplicateFileHandling.ThrowError);
+
+                var result = Service.MoveFile(file.File, destinationFileName, duplicateFileHandling);
+                movedFile = Convert(result); 
+            });
+
+            return movedFile;
+        }
+
+        /// POST /Media(123)/CopyFile {"DestinationFileName":"content/new-file.jpg"}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
+        public FileItemInfo CopyFile(int key, ODataActionParameters parameters)
+        {
+            FileItemInfo fileCopy = null;
+
+            this.ProcessEntity(() =>
+            {
+                var file = Service.GetFileById(key);
+                if (file == null)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                }
+
+                var destinationFileName = parameters.GetValueSafe<string>("DestinationFileName");
+                var duplicateFileHandling = parameters.GetValueSafe("DuplicateFileHandling", DuplicateFileHandling.ThrowError);
+
+                var result = Service.CopyFile(file, destinationFileName, duplicateFileHandling);
+                fileCopy = Convert(result.DestinationFile);
+            });
+
+            return fileCopy;
+        }
+
+
+        /// POST /Media/FolderExists {"Path":"my-folder"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public bool FolderExists(ODataActionParameters parameters)
+        {
+            var folderExists = false;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+                folderExists = Service.FolderExists(path);
+            });
+
+            return folderExists;
+        }
+
+        /// POST /Media/CreateFolder {"Path":"content/my-folder"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public HttpResponseMessage CreateFolder(ODataActionParameters parameters)
+        {
+            FolderItemInfo newFolder = null;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+
+                var result = Service.CreateFolder(path);
+                newFolder = Convert(result);
+            });
+
+            return Request.CreateResponse(HttpStatusCode.Created, newFolder);
+        }
+
 
         #endregion
 
         #region Utilities
 
-        private MediaItemInfo Convert(MediaFileInfo file)
+        private FileItemInfo Convert(MediaFileInfo file)
         {
-            var item = MiniMapper.Map<MediaFileInfo, MediaItemInfo>(file, CultureInfo.InvariantCulture);
+            var item = MiniMapper.Map<MediaFileInfo, FileItemInfo>(file, CultureInfo.InvariantCulture);
+            return item;
+        }
+
+        private FolderItemInfo Convert(MediaFolderInfo folder)
+        {
+            var item = MiniMapper.Map<MediaFolderInfo, FolderItemInfo>(folder, CultureInfo.InvariantCulture);
             return item;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace SmartStore.WebApi.Models.OData
+namespace SmartStore.WebApi.Models.OData.Media
 {
     [DataContract]
     public partial class CheckUniqueFileNameResult

@@ -21,6 +21,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.WebApi.Models.OData;
+using SmartStore.WebApi.Models.OData.Media;
 using SmartStore.WebApi.Services;
 using SmartStore.WebApi.Services.Swagger;
 using Swashbuckle.Application;
@@ -53,7 +54,8 @@ namespace SmartStore.WebApi
 			m.EntitySet<Manufacturer>("Manufacturers");
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");
-			m.EntitySet<MediaItemInfo>("Media");
+			m.EntitySet<FileItemInfo>("Media");
+			m.EntitySet<MediaFolder>("MediaFolders");
 			m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
             m.EntitySet<NewsLetterSubscription>("NewsLetterSubscriptions");

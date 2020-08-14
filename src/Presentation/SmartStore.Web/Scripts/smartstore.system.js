@@ -129,7 +129,21 @@
             window.webkitCancelAnimationFrame  ||
             window.mozCancelAnimationFrame  ||
             window.msCancelAnimationFrame ||
-            window.oCancelAnimationFrame 
+			window.oCancelAnimationFrame,
+
+		requestIdleCallback: window.requestIdleCallback || function (cb) {
+			var start = Date.now();
+			return setTimeout(function () {
+				cb({
+					didTimeout: false,
+					timeRemaining: function () {
+						return Math.max(0, 50 - (Date.now() - start));
+					},
+				});
+			}, 1);
+		},
+
+		cancelIdleCallback: window.cancelIdleCallback || function (id) { clearTimeout(id); }
 	});
 	
 	// provide main app namespace

@@ -57,10 +57,9 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
-		[WebApiAuthenticate]
-		public IHttpActionResult Delete(int key)
+		public IHttpActionResult Delete()
 		{
-			throw new HttpResponseException(HttpStatusCode.Forbidden);
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 	}
 }

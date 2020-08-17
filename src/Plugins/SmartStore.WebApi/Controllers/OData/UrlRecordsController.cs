@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.OData;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
@@ -31,24 +30,24 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
-		public IHttpActionResult Post(UrlRecord entity)
+		public IHttpActionResult Post()
 		{
-			throw new HttpResponseException(HttpStatusCode.Forbidden);
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 
-		public IHttpActionResult Put(int key, UrlRecord entity)
+		public IHttpActionResult Put()
 		{
-			throw new HttpResponseException(HttpStatusCode.Forbidden);
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 
-		public IHttpActionResult Patch(int key, Delta<UrlRecord> model)
+		public IHttpActionResult Patch()
 		{
-			throw new HttpResponseException(HttpStatusCode.Forbidden);
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 
-		public IHttpActionResult Delete(int key)
+		public IHttpActionResult Delete()
 		{
-			throw new HttpResponseException(HttpStatusCode.Forbidden);
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 	}
 }

@@ -97,41 +97,27 @@ namespace SmartStore.WebApi.Controllers.OData
             return Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
         }
 
-        public IHttpActionResult Post(MediaFile entity)
+        public IHttpActionResult Post()
         {
-            throw new HttpResponseException(HttpStatusCode.Forbidden);
+            return StatusCode(HttpStatusCode.Forbidden);
         }
 
-        public IHttpActionResult Put(int key, MediaFile entity)
+        public IHttpActionResult Put()
         {
-            throw new HttpResponseException(HttpStatusCode.Forbidden);
+            return StatusCode(HttpStatusCode.Forbidden);
         }
 
-        public IHttpActionResult Patch(int key, Delta<MediaFile> model)
+        public IHttpActionResult Patch()
         {
-            throw new HttpResponseException(HttpStatusCode.Forbidden);
+            return StatusCode(HttpStatusCode.Forbidden);
         }
 
-        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
-        public IHttpActionResult Delete(int key)
+        public IHttpActionResult Delete()
         {
-            this.ProcessEntity(() =>
-            {
-                var file = Service.GetFileById(key);
-                if (file == null)
-                {
-                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
-                }
+            // We do not allow direct entity deletion.
+            // There is an action method "DeleteFile" instead to trigger the corresponding service method.
 
-                // Get options from query string. 
-                // FromODataUri (404) and FromBody ("Can't bind multiple parameters") are not possible here.
-                var permanent = this.GetQueryStringValue("permanent", false);
-                var force = this.GetQueryStringValue("force", false);
-
-                Service.DeleteFile(file.File, permanent, force);
-            });
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return StatusCode(HttpStatusCode.Forbidden);
         }
 
         #region Actions and functions
@@ -147,11 +133,11 @@ namespace SmartStore.WebApi.Controllers.OData
                 .ReturnsFromEntitySet<FileItemInfo>("Media")
                 .Parameter<string>("Path");
 
-            //var getFileByName = entityConfig.Collection
+            //entityConfig.Collection
             //    .Action("GetFileByName")
-            //    .ReturnsFromEntitySet<FileItemInfo>("Media");
-            //getFileByName.Parameter<string>("FileName");
-            //getFileByName.Parameter<int>("FolderId");
+            //    .ReturnsFromEntitySet<FileItemInfo>("Media")
+            //    .AddParameter<string>("FileName")
+            //    .AddParameter<int>("FolderId");
 
             entityConfig.Collection
                 .Function("GetFilesByIds")
@@ -188,21 +174,22 @@ namespace SmartStore.WebApi.Controllers.OData
             //cfgr.ComplexProperty(x => x.Filter);
             //cfgr.HasDynamicProperties(x => x.Folders);
 
-            var moveFile = entityConfig
+            entityConfig
                 .Action("MoveFile")
-                .ReturnsFromEntitySet<FileItemInfo>("Media");
+                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .AddParameter<string>("DestinationFileName")
+                .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
-            moveFile.Parameter<string>("DestinationFileName");
-            var dph1 = moveFile.Parameter<DuplicateFileHandling>("DuplicateFileHandling");
-            dph1.OptionalParameter = true;
-
-            var copyFile = entityConfig
+            entityConfig
                 .Action("CopyFile")
-                .ReturnsFromEntitySet<FileItemInfo>("Media");
+                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .AddParameter<string>("DestinationFileName")
+                .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
-            copyFile.Parameter<string>("DestinationFileName");
-            var dph2 = copyFile.Parameter<DuplicateFileHandling>("DuplicateFileHandling");
-            dph2.OptionalParameter = true;
+            entityConfig
+                .Action("DeleteFile")
+                .AddParameter<bool>("Permanent")
+                .AddParameter<bool>("Force", true);
 
             #endregion
 
@@ -217,6 +204,24 @@ namespace SmartStore.WebApi.Controllers.OData
                 .Action("CreateFolder")
                 .Returns<FolderItemInfo>()
                 .Parameter<string>("Path");
+
+            entityConfig.Collection
+                .Action("MoveFolder")
+                .Returns<FolderItemInfo>()
+                .AddParameter<string>("Path")
+                .AddParameter<string>("DestinationPath");
+
+            entityConfig.Collection
+                .Action("CopyFolder")
+                .Returns<FolderItemInfo>()
+                .AddParameter<string>("Path")
+                .AddParameter<string>("DestinationPath")
+                .AddParameter<DuplicateEntryHandling>("DuplicateEntryHandling", true);
+
+            entityConfig.Collection
+                .Action("DeleteFolder")
+                .AddParameter<string>("Path")
+                .AddParameter<FileHandling>("FileHandling", true);
 
             #endregion
         }
@@ -419,6 +424,28 @@ namespace SmartStore.WebApi.Controllers.OData
             return fileCopy;
         }
 
+        /// POST /Media(123)/DeleteFile {"Permanent":false}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
+        public IHttpActionResult DeleteFile(int key, ODataActionParameters parameters)
+        {
+            this.ProcessEntity(() =>
+            {
+                var file = Service.GetFileById(key);
+                if (file == null)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                }
+
+                var permanent = parameters.GetValueSafe<bool>("Permanent");
+                var force = parameters.GetValueSafe("Force", false);
+
+                Service.DeleteFile(file.File, permanent, force);
+            });
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
 
         /// POST /Media/FolderExists {"Path":"my-folder"}
         [HttpPost]
@@ -454,6 +481,60 @@ namespace SmartStore.WebApi.Controllers.OData
             return Request.CreateResponse(HttpStatusCode.Created, newFolder);
         }
 
+        /// POST /Media/MoveFolder {"Path":"content/my-folder", "DestinationPath":"content/my-renamed-folder"}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
+        public FolderItemInfo MoveFolder(ODataActionParameters parameters)
+        {
+            FolderItemInfo movedFolder = null;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+                var destinationPath = parameters.GetValueSafe<string>("DestinationPath");
+
+                var result = Service.MoveFolder(path, destinationPath);
+                movedFolder = Convert(result);
+            });
+
+            return movedFolder;
+        }
+
+        /// POST /Media/CopyFolder {"Path":"content/my-folder", "DestinationPath":"content/my-new-folder"}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
+        public FolderItemInfo CopyFolder(ODataActionParameters parameters)
+        {
+            FolderItemInfo copiedFolder = null;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+                var destinationPath = parameters.GetValueSafe<string>("DestinationPath");
+                var duplicateEntryHandling = parameters.GetValueSafe("DuplicateEntryHandling", DuplicateEntryHandling.Skip);
+
+                var result = Service.CopyFolder(path, destinationPath, duplicateEntryHandling);
+                copiedFolder = Convert(result.Folder);
+            });
+
+            return copiedFolder;
+        }
+
+        /// POST /Media/DeleteFolder {"Path":"content/my-folder"}
+        [HttpPost]
+        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
+        public IHttpActionResult DeleteFolder(ODataActionParameters parameters)
+        {
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+                var fileHandling = parameters.GetValueSafe("FileHandling", FileHandling.SoftDelete);
+
+                Service.DeleteFolder(path, fileHandling);
+            });
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
 
         #endregion
 

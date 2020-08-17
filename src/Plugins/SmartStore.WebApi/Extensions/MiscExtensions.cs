@@ -2,6 +2,7 @@
 using System.Text;
 using System.Web.Mvc;
 using System.Web.OData;
+using System.Web.OData.Builder;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
@@ -74,6 +75,20 @@ namespace SmartStore.WebApi
 				}
 			}
 			catch { }
+		}
+
+		/// <summary>
+		/// Helper to improve readability.
+		/// </summary>
+		public static ActionConfiguration AddParameter<TParameter>(
+			this ActionConfiguration config,
+			string name,
+			bool optional = false)
+		{
+			var parameter = config.Parameter<TParameter>(name);
+			parameter.OptionalParameter = optional;
+
+			return config;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 		/// <summary>
 		/// Further entity processing typically used by OData actions. 
-		/// It is mainly used where a 422 status code is more suitable than a 500.
+		/// Is mainly used to capture errors of the service project and in that case generate a 422 status code instead of a 500.
 		/// </summary>
 		/// <param name="process">Action for entity processing.</param>
 		public static void ProcessEntity(this ApiController apiController, Action process)
@@ -33,10 +33,12 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			catch (HttpResponseException hrEx)
 			{
+				// Do not catch exceptions thrown within process action.
 				throw hrEx;
 			}
 			catch (Exception ex)
 			{
+				// Capture exception because a 422 is more suitable.
 				throw apiController.Request.UnprocessableEntityException(ex.Message);
 			}
 		}

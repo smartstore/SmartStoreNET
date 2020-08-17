@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
@@ -44,8 +44,15 @@ namespace SmartStore.WebApi.Controllers.OData
 				{
 					throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(entity.OrderId));
 				}
+				if (entity.Note.IsEmpty())
+				{
+					throw Request.BadRequestException("Missing or empty order note text.");
+				}
 
-				Service.AddOrderNote(order, entity.Note, entity.DisplayToCustomer);
+				entity.CreatedOnUtc = DateTime.UtcNow;
+
+				order.OrderNotes.Add(entity);
+				Service.UpdateOrder(order);
 
 				if (entity.DisplayToCustomer && this.GetQueryStringValue("customernotification", true))
 				{

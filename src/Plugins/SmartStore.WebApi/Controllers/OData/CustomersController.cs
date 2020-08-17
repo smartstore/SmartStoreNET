@@ -144,7 +144,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				entity.Addresses.Add(address);
 				Service.UpdateCustomer(entity);
 
-				return Response(HttpStatusCode.Created, address);
+				return Created(address);
 			}
 
 			return Ok(address);

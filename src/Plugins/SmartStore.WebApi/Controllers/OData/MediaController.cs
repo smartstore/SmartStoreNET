@@ -479,7 +479,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 newFolder = Convert(result);
             });
 
-            return Response(HttpStatusCode.Created, newFolder);
+            return Created(newFolder);
         }
 
         /// POST /Media/MoveFolder {"Path":"content/my-folder", "DestinationPath":"content/my-renamed-folder"}

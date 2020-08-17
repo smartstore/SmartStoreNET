@@ -71,7 +71,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> Get(int key)
+		public SingleResult<Product> Get(int key)
 		{
 			return GetSingleResult(key);
 		}
@@ -170,7 +170,7 @@ namespace SmartStore.WebApi.Controllers.OData
         
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IHttpActionResult GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
+		public IHttpActionResult GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
 			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
 
@@ -198,7 +198,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				_categoryService.Value.InsertProductCategory(productCategory);
 
-				return Response(HttpStatusCode.Created, productCategory);
+				return Created(productCategory);
 			}
 
 			return Ok(productCategory);
@@ -256,7 +256,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
 
-				return Response(HttpStatusCode.Created, productManufacturer);
+				return Created(productManufacturer);
 			}
 
 			return Ok(productManufacturer);
@@ -314,7 +314,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				Service.InsertProductPicture(productPicture);
 
-				return Response(HttpStatusCode.Created, productPicture);
+				return Created(productPicture);
 			}
 
 			return Ok(productPicture);

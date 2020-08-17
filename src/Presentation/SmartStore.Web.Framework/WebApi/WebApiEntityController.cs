@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Autofac;
@@ -219,12 +218,6 @@ namespace SmartStore.Web.Framework.WebApi
             var propertyValue = prop.GetValue(entity);
 
             var response = Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
-            return ResponseMessage(response);
-        }
-
-        protected internal virtual IHttpActionResult Response<T>(HttpStatusCode status, T value)
-        {
-            var response = Request.CreateResponse(status, value);
             return ResponseMessage(response);
         }
 

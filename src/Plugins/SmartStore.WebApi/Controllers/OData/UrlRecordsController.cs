@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Services.Seo;
@@ -25,7 +24,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetSingleResult(key);
 		}
 
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}

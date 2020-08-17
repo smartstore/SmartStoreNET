@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
@@ -43,27 +41,27 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-		public IHttpActionResult Post(OrderItem entity)
+		public IHttpActionResult Post()
 		{
-			throw new HttpResponseException(HttpStatusCode.NotImplemented);
+			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-		public IHttpActionResult Put(int key, OrderItem entity)
+		public IHttpActionResult Put()
 		{
-			throw new HttpResponseException(HttpStatusCode.NotImplemented);
+			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]
-		public IHttpActionResult Patch(int key, Delta<OrderItem> model)
+		public IHttpActionResult Patch()
 		{
-			throw new HttpResponseException(HttpStatusCode.NotImplemented);
+			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.EditItem)]

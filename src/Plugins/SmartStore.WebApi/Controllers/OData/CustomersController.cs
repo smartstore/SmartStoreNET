@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -51,7 +50,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}
@@ -113,7 +112,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-		public HttpResponseMessage GetAddresses(int key, int relatedKey = 0 /*addressId*/)
+		public IHttpActionResult GetAddresses(int key, int relatedKey = 0 /*addressId*/)
 		{
 			var addresses = GetRelatedCollection(key, x => x.Addresses);
 
@@ -121,14 +120,14 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var address = addresses.FirstOrDefault(x => x.Id == relatedKey);
 
-				return Request.CreateResponseForEntity(address, relatedKey);
+				return Response(address);
 			}
 
-			return Request.CreateResponseForEntity(addresses, key);
+			return Response(addresses);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
-		public HttpResponseMessage PostAddresses(int key, int relatedKey /*addressId*/)
+		public IHttpActionResult PostAddresses(int key, int relatedKey /*addressId*/)
 		{
 			var entity = GetExpandedEntity(key, x => x.Addresses);
 			var address = entity.Addresses.FirstOrDefault(x => x.Id == relatedKey);
@@ -145,14 +144,14 @@ namespace SmartStore.WebApi.Controllers.OData
 				entity.Addresses.Add(address);
 				Service.UpdateCustomer(entity);
 
-				return Request.CreateResponse(HttpStatusCode.Created, address);
+				return Response(HttpStatusCode.Created, address);
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK, address);
+			return Ok(address);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]
-		public HttpResponseMessage DeleteAddresses(int key, int relatedKey = 0 /*addressId*/)
+		public IHttpActionResult DeleteAddresses(int key, int relatedKey = 0 /*addressId*/)
 		{
 			var entity = GetExpandedEntity(key, x => x.Addresses);
 
@@ -175,7 +174,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.NoContent);
+			return StatusCode(HttpStatusCode.NoContent);
 		}
 
 

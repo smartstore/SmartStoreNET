@@ -18,22 +18,12 @@ namespace SmartStore.Web.Framework.WebApi
 			return (expr.Body as MethodCallExpression).Method.GetGenericMethodDefinition();
 		}
 
-		/// <remarks>https://gist.github.com/raghuramn/5084608</remarks>
+		/// <see cref="https://gist.github.com/raghuramn/5084608"/>
 		public static HttpResponseMessage CreateResponse(this HttpRequestMessage request, HttpStatusCode status, Type type, object value)
 		{
 			return _createResponse.MakeGenericMethod(type).Invoke(null, new[] { request, status, value }) as HttpResponseMessage;
 		}
 		
-		public static HttpResponseMessage CreateResponseForEntity(this HttpRequestMessage request, object entity, int key)
-		{
-			if (entity == null)
-			{
-				return request.CreateResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
-			}
-
-			return request.CreateResponse(HttpStatusCode.OK, entity.GetType(), entity);
-		}
-
 		public static HttpResponseException BadRequestException(this HttpRequestMessage request, string message)
 		{
 			return new HttpResponseException(request.CreateErrorResponse(HttpStatusCode.BadRequest, message));
@@ -53,6 +43,5 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return new HttpResponseException(request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex));
 		}
-
 	}
 }

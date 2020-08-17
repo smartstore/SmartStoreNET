@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -30,7 +29,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}
@@ -58,15 +57,15 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public IHttpActionResult Put(int key, OrderNote entity)
+		public IHttpActionResult Put()
 		{
-			throw new HttpResponseException(HttpStatusCode.NotImplemented);
+			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public IHttpActionResult Patch(int key, Delta<OrderNote> model)
+		public IHttpActionResult Patch()
 		{
-			throw new HttpResponseException(HttpStatusCode.NotImplemented);
+			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]

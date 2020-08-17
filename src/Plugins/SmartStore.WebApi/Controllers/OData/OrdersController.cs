@@ -58,7 +58,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}
@@ -198,20 +198,21 @@ namespace SmartStore.WebApi.Controllers.OData
 
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public HttpResponseMessage Pdf(int key)
+        public IHttpActionResult Pdf(int key)
         {
-            byte[] pdfData = new byte[0];
-            var result = GetSingleResult(key);
-            var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product");
+			HttpResponseMessage response = null;
 
             this.ProcessEntity(() =>
             {
-                pdfData = _apiPdfHelper.Value.OrderToPdf(order);
-            });
+				var result = GetSingleResult(key);
+				var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product");
+				var pdfData = _apiPdfHelper.Value.OrderToPdf(order);
 
-            var fileName = Services.Localization.GetResource("Order.PdfInvoiceFileName").FormatInvariant(order.Id);
-            var response = _apiPdfHelper.Value.CreateResponse(Request, pdfData, fileName);
-            return response;
+				var fileName = Services.Localization.GetResource("Order.PdfInvoiceFileName").FormatInvariant(order.Id);
+				response = _apiPdfHelper.Value.CreateResponse(Request, pdfData, fileName);
+			});
+
+            return ResponseMessage(response);
         }
 
         [HttpPost]

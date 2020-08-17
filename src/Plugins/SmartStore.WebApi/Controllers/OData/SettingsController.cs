@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -29,7 +28,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Setting.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}

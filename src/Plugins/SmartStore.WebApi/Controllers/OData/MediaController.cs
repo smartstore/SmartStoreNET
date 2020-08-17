@@ -33,23 +33,23 @@ namespace SmartStore.WebApi.Controllers.OData
         // GET /Media(123)
         [WebApiQueryable]
         [WebApiAuthenticate]
-        public SingleResult<FileItemInfo> Get(int key)
+        public IHttpActionResult Get(int key)
         {
             var file = Service.GetFileById(key, _defaultLoadFlags);
             if (file == null)
             {
-                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                return NotFound();
             }
 
-            return SingleResult.Create(new[] { Convert(file) }.AsQueryable());
+            return Ok(Convert(file));
         }
 
         // GET /Media
         [WebApiQueryable]
         [WebApiAuthenticate]
-        public IQueryable<FileItemInfo> Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
+        public IHttpActionResult Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
         {
-            throw new HttpResponseException(HttpStatusCode.NotImplemented);
+            return StatusCode(HttpStatusCode.NotImplemented);
 
             // TODO or not TODO :)
             //var maxTop = WebApiCachingControllingData.Data().MaxTop;
@@ -64,7 +64,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
         // GET /Media(123)/ThumbUrl
         [WebApiAuthenticate]
-        public HttpResponseMessage GetProperty(int key, string propertyName)
+        public IHttpActionResult GetProperty(int key, string propertyName)
         {
             Type propertyType = null;
             object propertyValue = null;
@@ -91,10 +91,11 @@ namespace SmartStore.WebApi.Controllers.OData
 
             if (propertyType == null)
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent);
+                return StatusCode(HttpStatusCode.NoContent);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
+            var response = Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
+            return ResponseMessage(response);
         }
 
         public IHttpActionResult Post()
@@ -466,7 +467,7 @@ namespace SmartStore.WebApi.Controllers.OData
         /// POST /Media/CreateFolder {"Path":"content/my-folder"}
         [HttpPost]
         [WebApiAuthenticate]
-        public HttpResponseMessage CreateFolder(ODataActionParameters parameters)
+        public IHttpActionResult CreateFolder(ODataActionParameters parameters)
         {
             FolderItemInfo newFolder = null;
 
@@ -478,13 +479,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 newFolder = Convert(result);
             });
 
-            return Request.CreateResponse(HttpStatusCode.Created, newFolder);
+            return Response(HttpStatusCode.Created, newFolder);
         }
 
         /// POST /Media/MoveFolder {"Path":"content/my-folder", "DestinationPath":"content/my-renamed-folder"}
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public FolderItemInfo MoveFolder(ODataActionParameters parameters)
+        public IHttpActionResult MoveFolder(ODataActionParameters parameters)
         {
             FolderItemInfo movedFolder = null;
 
@@ -497,13 +498,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 movedFolder = Convert(result);
             });
 
-            return movedFolder;
+            return Ok(movedFolder);
         }
 
         /// POST /Media/CopyFolder {"Path":"content/my-folder", "DestinationPath":"content/my-new-folder"}
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public FolderItemInfo CopyFolder(ODataActionParameters parameters)
+        public IHttpActionResult CopyFolder(ODataActionParameters parameters)
         {
             FolderItemInfo copiedFolder = null;
 
@@ -517,7 +518,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 copiedFolder = Convert(result.Folder);
             });
 
-            return copiedFolder;
+            return Ok(copiedFolder);
         }
 
         /// POST /Media/DeleteFolder {"Path":"content/my-folder"}

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
@@ -78,7 +77,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public HttpResponseMessage GetProperty(int key, string propertyName)
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
 			return GetPropertyValue(key, propertyName);
 		}
@@ -171,7 +170,7 @@ namespace SmartStore.WebApi.Controllers.OData
         
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public HttpResponseMessage GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
+        public IHttpActionResult GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
 			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
 
@@ -179,14 +178,14 @@ namespace SmartStore.WebApi.Controllers.OData
             {
                 var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
 
-                return Request.CreateResponseForEntity(productCategory, relatedKey);
+                return Response(productCategory);
             }
 
-			return Request.CreateResponseForEntity(productCategories, key);
+            return Response(productCategories);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-		public HttpResponseMessage PostProductCategories(int key, int relatedKey /*categoryId*/)
+		public IHttpActionResult PostProductCategories(int key, int relatedKey /*categoryId*/)
 		{
 			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
 			var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
@@ -199,14 +198,14 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				_categoryService.Value.InsertProductCategory(productCategory);
 
-				return Request.CreateResponse(HttpStatusCode.Created, productCategory);
+				return Response(HttpStatusCode.Created, productCategory);
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK, productCategory);
+			return Ok(productCategory);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-		public HttpResponseMessage DeleteProductCategories(int key, int relatedKey = 0 /*categoryId*/)
+		public IHttpActionResult DeleteProductCategories(int key, int relatedKey = 0 /*categoryId*/)
 		{
 			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
 
@@ -223,13 +222,13 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.NoContent);
+			return StatusCode(HttpStatusCode.NoContent);
 		}
 
 		
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public HttpResponseMessage GetProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+        public IHttpActionResult GetProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
 		{
 			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
 
@@ -237,14 +236,14 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
 
-				return Request.CreateResponseForEntity(productManufacturer, relatedKey);
+				return Response(productManufacturer);
 			}
 
-			return Request.CreateResponseForEntity(productManufacturers, key);
+			return Response(productManufacturers);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-		public HttpResponseMessage PostProductManufacturers(int key, int relatedKey /*manufacturerId*/)
+		public IHttpActionResult PostProductManufacturers(int key, int relatedKey /*manufacturerId*/)
 		{
 			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
 			var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
@@ -257,14 +256,14 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
 
-				return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
+				return Response(HttpStatusCode.Created, productManufacturer);
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK, productManufacturer);
+			return Ok(productManufacturer);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-		public HttpResponseMessage DeleteProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+		public IHttpActionResult DeleteProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
 		{
 			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
 
@@ -281,13 +280,13 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.NoContent);
+			return StatusCode(HttpStatusCode.NoContent);
 		}
 
 		
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public HttpResponseMessage GetProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+        public IHttpActionResult GetProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
 		{
 			var productPictures = Service.GetProductPicturesByProductId(key);
 
@@ -295,14 +294,14 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
 
-				return Request.CreateResponseForEntity(productPicture, relatedKey);
+				return Response(productPicture);
 			}
 
-			return Request.CreateResponseForEntity(productPictures, key);
+			return Response(productPictures);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-		public HttpResponseMessage PostProductPictures(int key, int relatedKey /*mediaFileId*/)
+		public IHttpActionResult PostProductPictures(int key, int relatedKey /*mediaFileId*/)
 		{
 			var productPictures = Service.GetProductPicturesByProductId(key);
 			var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
@@ -315,14 +314,14 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				Service.InsertProductPicture(productPicture);
 
-				return Request.CreateResponse(HttpStatusCode.Created, productPicture);
+				return Response(HttpStatusCode.Created, productPicture);
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK, productPicture);
+			return Ok(productPicture);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-		public HttpResponseMessage DeleteProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+		public IHttpActionResult DeleteProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
 		{
 			var productPictures = Service.GetProductPicturesByProductId(key);
 
@@ -339,7 +338,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			}
 
-			return Request.CreateResponse(HttpStatusCode.NoContent);
+			return StatusCode(HttpStatusCode.NoContent);
 		}
 
 

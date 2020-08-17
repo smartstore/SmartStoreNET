@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Results;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Autofac;
@@ -201,23 +202,40 @@ namespace SmartStore.Web.Framework.WebApi
             return SingleResult.Create(query);
         }
 
-        protected internal virtual HttpResponseMessage GetPropertyValue(int key, string propertyName)
+        protected internal virtual IHttpActionResult GetPropertyValue(int key, string propertyName)
         {
             var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
             if (entity == null)
             {
-                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+                return NotFound();
             }
 
             var prop = FastProperty.GetProperty(entity.GetType(), propertyName);
             if (prop == null)
             {
-                throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
+                return BadRequest(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
             }
 
             var propertyValue = prop.GetValue(entity);
 
-            return Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
+            var response = Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
+            return ResponseMessage(response);
+        }
+
+        protected internal virtual IHttpActionResult Response<T>(HttpStatusCode status, T value)
+        {
+            var response = Request.CreateResponse(status, value);
+            return ResponseMessage(response);
+        }
+
+        protected internal virtual IHttpActionResult Response<T>(T entity)
+        {
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(entity);
         }
 
         protected internal virtual IHttpActionResult Insert(TEntity entity, Action insert)

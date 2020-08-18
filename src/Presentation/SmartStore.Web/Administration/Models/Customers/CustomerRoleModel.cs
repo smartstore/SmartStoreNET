@@ -44,10 +44,10 @@ namespace SmartStore.Admin.Models.Customers
         public string SystemName { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MinOrderAmount")]
-        public decimal MinOrderAmount { get; set; }
+        public decimal? OrderTotalMinimum { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MaxOrderAmount")]
-        public decimal MaxOrderAmount { get; set; }
+        public decimal? OrderTotalMaximum { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
 

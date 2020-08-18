@@ -2095,7 +2095,7 @@ namespace SmartStore.Web.Controllers
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
                 var customerRoleIds = customer.GetRoleIds();
-                var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveMinimumOrderTotal(cart, customerRoleIds);
+                var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(cart, customerRoleIds);
                 if (!isAboveMinimumOrderTotal)
                 {
                     orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(

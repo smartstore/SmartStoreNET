@@ -355,7 +355,7 @@ namespace SmartStore.Web.Controllers
 
             // Minimum order totals validation
             var customerRoleIds = _workContext.CurrentCustomer.GetRoleIds();
-            var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveMinimumOrderTotal(cart, customerRoleIds);
+            var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(cart, customerRoleIds);
             if (!isAboveMinimumOrderTotal)
             {
                 orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(

@@ -288,7 +288,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order amount is not reached</returns>
-        (bool valid, decimal orderTotalMinimum) IsAboveMinimumOrderTotal(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
+        (bool valid, decimal orderTotalMinimum) IsAboveOrderTotalMinimum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
         /// Valdiate maximum order amount.

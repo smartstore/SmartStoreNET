@@ -27,17 +27,22 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets a minimum order total amount
         /// </summary>
-        public decimal MinOrderAmount { get; set; }
+        public decimal? OrderTotalMinimum { get; set; }
 
         /// <summary>
         /// Gets or sets a maximum order total amount
         /// </summary>
-        public decimal MaxOrderAmount { get; set; }
+        public decimal? OrderTotalMaximum { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether min/max order amount is relating to order amount subtotal
+        /// Gets or sets a value indicating whether min/max order total is relating to order amount subtotal
         /// </summary>
         public bool ApplyToSubtotal { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating how further customer group restriction are applied
+        /// </summary>
+        public bool OrderValueRestrictionType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether anonymous checkout allowed

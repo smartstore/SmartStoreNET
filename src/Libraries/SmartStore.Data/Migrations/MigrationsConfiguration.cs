@@ -144,21 +144,21 @@
 				"Der Höchstbestellwert der Gesamtsumme ist {0}.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderAmount",
-				"Min order amount",
+				"Minimum order total",
 				"Mindestbestellwert",
-				"Enter minimum order amount.",
+				"Sets the minimum order total.",
 				"Legt den Mindestbestellwert fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Order.MaxOrderAmount",
-				"Max order amount",
+				"Maximum order total",
 				"Höchstbestellwert",
-				"Enter maximum order amount.",
+				"Sets the maximum order total.",
 				"Legt den Höchstbestellwert fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Order.ApplyToSubtotal",
-				"Order amount related to subtotal",
+				"Order value related to subtotal",
 				"Bestellwert bezogen auf Zwischensumme",
-				"Determines whether the min/max order amount refers to the order subtotal, otherwise it refers to the total amount.",
+				"Determines whether the min/max order value refers to the order subtotal, otherwise it refers to the total amount.",
 				"Bestimmt, ob sich der Mindest-/Höchstbetrag auf die Auftragszwischensumme bezieht, andernfalls bezieht er sich auf den Gesamtbetrag.");
 
 			builder.Delete("Admin.Configuration.Settings.Order.MaxOrderSubtotalAmount");
@@ -171,15 +171,15 @@
 			builder.Delete("Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint");
 
 			builder.AddOrUpdate("Admin.Customers.CustomerRoles.Fields.MinOrderAmount",
-				"Min order amount",
+				"Minimum order total",
 				"Mindestbestellwert",
-				"Enter minimum order amount for user in this customer group.",
+				"Enter minimum order total for user in this customer group.",
 				"Legt den Mindestbestellwert für Nutzer in der Kundengruppe fest.");
 
 			builder.AddOrUpdate("Admin.Customers.CustomerRoles.Fields.MaxOrderAmount",
-				"Max order amount",
+				"Maximum order total",
 				"Höchstbestellwert",
-				"Enter maximum order amount for user in this customer group.",
+				"Enter maximum order total for user in this customer group.",
 				"Legt den Höchstbestellwert für Nutzer in der Kundengruppe fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",				
@@ -197,6 +197,16 @@
 				"Standards nur auf der Startseite verwenden",
 				"Determines whether the default meta informations are used only on the home page, rather than as defaults for every page.",
 				"Legt fest, ob die Standard-Meta-Informationen nur auf der Startseite anstatt als Standardeinstellung für jede Seite verwendet werden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.OrderValueRestrictionType",
+				"Order value restriction type",
+				"Bestellwertbeschränkungsart",
+				"",
+				"");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.OrderTotal.Error",
+				"The maximum order value must be higher than the minimum order value",
+				"Der Maximale Bestellwert muss über dem Mindestbestellwert liegen.");
 		}
 	}
 }

@@ -204,12 +204,7 @@ $(function () {
 					var type = el.data("type");
 					ShopBar.loadSummary(type, true);
                     el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
-                    $("#mini-cart-checkout").toggleClass("d-none", !data.showCheckoutButtons);
-                    $("#mini-cart-basket").toggleClass("btn-clear", !data.showCheckoutButtons)
-                        .toggleClass("btn-success", data.showCheckoutButtons)
-                        .toggleClass("btn-flat", data.showCheckoutButtons)
-                        .toggleClass("btn-flat-light", data.showCheckoutButtons)
-                        .find(".fa-check").toggleClass("d-none", data.showCheckoutButtons);
+                    $("#mini-cart-basket-check").toggleClass("d-none", data.displayCheckoutButtons);
 				}
 				else {
 					$(data.message).each(function (index, value) {

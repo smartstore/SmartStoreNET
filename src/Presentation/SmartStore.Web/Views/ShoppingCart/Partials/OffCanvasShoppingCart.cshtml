@@ -172,13 +172,18 @@
             </div>
         </div>
         <div class="offcanvas-cart-footer-col row sm-gutters d-flex flex-wrap">
-            <div class="col">
-                <a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")" id="mini-cart-basket">
-                    <i class="fa fa-check d-none"></i>
+            <div class="col@(Model.DisplayCheckoutButton ? " d-none" : "")" id="mini-cart-basket-check">
+                <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+                    <i class="fa fa-check"></i>
                     <span>@T("ShoppingCart.Mini.ViewCart")</span>
                 </a>
             </div>
-            <div class="col @(Model.DisplayCheckoutButton ? "" : "d-none")" id="mini-cart-checkout">
+            <div class="col" id="mini-cart-basket">
+                <a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+                    <span>@T("ShoppingCart.Mini.ViewCart")</span>
+                </a>
+            </div>
+            <div class="col" id="mini-cart-checkout">
                 <a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
                     <i class="fa fa-check"></i>
                     <span>@T("Checkout.Button")</span>

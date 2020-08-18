@@ -712,7 +712,7 @@ namespace SmartStore.Web.Controllers
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 
-            model.IsValidOrderAmount = _orderProcessingService.ValidateOrderAmount(cart, _workContext.CurrentCustomer.GetRoleIds());
+            model.IsInOrderTotalsRange = _orderProcessingService.IsInOrderTotalsRange(cart, _workContext.CurrentCustomer.GetRoleIds());
 			model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
 			// Gift card and gift card boxes.
@@ -1073,8 +1073,8 @@ namespace SmartStore.Web.Controllers
                     checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
                 }
                                 
-                var orderAmountIsValid = _orderProcessingService.ValidateOrderAmount(cart, _workContext.CurrentCustomer.GetRoleIds());
-                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && orderAmountIsValid;
+                var isInOrderTotalsRange = _orderProcessingService.IsInOrderTotalsRange(cart, _workContext.CurrentCustomer.GetRoleIds());
+                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && isInOrderTotalsRange;
 
                 // Products. sort descending (recently added products)
 				cart = cart.ToList(); // TBD: (mc) Why?
@@ -1658,7 +1658,7 @@ namespace SmartStore.Web.Controllers
 
 			if (!_permissionService.Authorize(isWishlistItem ? Permissions.Cart.AccessWishlist : Permissions.Cart.AccessShoppingCart))
 			{
-				return Json(new { success = false, showCheckoutButtons = true });
+				return Json(new { success = false, displayCheckoutButtons = true });
 			}
 
             // Get shopping cart item.
@@ -1667,7 +1667,7 @@ namespace SmartStore.Web.Controllers
 
             if (item == null)
             {
-				return Json(new { success = false, showCheckoutButtons = true, message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Failed") });
+				return Json(new { success = false, displayCheckoutButtons = true, message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Failed") });
             }
             
             // Remove the cart item.
@@ -1679,7 +1679,7 @@ namespace SmartStore.Web.Controllers
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
             var cartItemCount = 0;
-			var showCheckoutButtons = true;
+			var displayCheckoutButtons = true;
 
 			if (cartType == ShoppingCartType.Wishlist)
             {
@@ -1695,7 +1695,7 @@ namespace SmartStore.Web.Controllers
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
-				showCheckoutButtons = model.IsValidOrderAmount;
+				displayCheckoutButtons = model.IsInOrderTotalsRange;
 			}
             
             // Updated cart.
@@ -1706,7 +1706,7 @@ namespace SmartStore.Web.Controllers
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = cartHtml,
                 totalsHtml = totalsHtml,
-				showCheckoutButtons = showCheckoutButtons
+				displayCheckoutButtons = displayCheckoutButtons
 			});
         }
        
@@ -2095,30 +2095,30 @@ namespace SmartStore.Web.Controllers
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
                 var customerRoleIds = customer.GetRoleIds();
-                var minOrderAmountValidation = _orderProcessingService.ValidateMinOrderAmount(cart, customerRoleIds);
-                if (!minOrderAmountValidation.isValid)
+                var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveMinimumOrderTotal(cart, customerRoleIds);
+                if (!isAboveMinimumOrderTotal)
                 {
-                    var minOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        minOrderAmountValidation.minOrderAmount, 
+                    orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        orderTotalMinimum, 
                         currency);
 
                     var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
                     model.OrderAmountWarning = string.Format(
                         _localizationService.GetResource(resource), 
-                        _priceFormatter.FormatPrice(minOrderAmount, true, false));
+                        _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
                 }
 
-                var maxOrderAmountValidation = _orderProcessingService.ValidateMaxOrderAmount(cart, customerRoleIds);
-                if (minOrderAmountValidation.isValid && !maxOrderAmountValidation.isValid)
+                var (isBelowOrderTotalMaximum, orderTotalMaximum) = _orderProcessingService.IsBelowOrderTotalMaximum(cart, customerRoleIds);
+                if (isAboveMinimumOrderTotal && !isBelowOrderTotalMaximum)
                 {
-                    var maxOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        maxOrderAmountValidation.maxOrderAmount,
+                    orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        orderTotalMaximum,
                         currency);
 
                     var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";
                     model.OrderAmountWarning = string.Format(
                        _localizationService.GetResource(resource),
-                       _priceFormatter.FormatPrice(maxOrderAmount, true, false));
+                       _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
                 }
 
                 // Cart total
@@ -2203,7 +2203,7 @@ namespace SmartStore.Web.Controllers
                 success = true,
                 totalsHtml,
                 discountHtml,
-                showCheckoutButtons = model.IsValidOrderAmount
+                displayCheckoutButtons = model.IsInOrderTotalsRange
             });
         }
 
@@ -2229,7 +2229,7 @@ namespace SmartStore.Web.Controllers
             {
                 success = true,
                 totalsHtml,
-                showCheckoutButtons = model.IsValidOrderAmount
+                displayCheckoutButtons = model.IsInOrderTotalsRange
             });
         }
 
@@ -2309,7 +2309,7 @@ namespace SmartStore.Web.Controllers
 
             var cartHtml = string.Empty;
             var totalsHtml = string.Empty;
-			var showCheckoutButtons = true;
+			var displayCheckoutButtons = true;
 
             if (isCartPage)
             {
@@ -2327,7 +2327,7 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-					showCheckoutButtons = model.IsValidOrderAmount;
+					displayCheckoutButtons = model.IsInOrderTotalsRange;
 				}
             }
 			
@@ -2338,7 +2338,7 @@ namespace SmartStore.Web.Controllers
                 message = warnings,
                 cartHtml,
                 totalsHtml,
-				showCheckoutButtons
+				displayCheckoutButtons
             });
         }
 
@@ -2484,7 +2484,7 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            var showCheckoutButtons = true;
+            var displayCheckoutButtons = true;
             var customer = _workContext.CurrentCustomer;
             var storeId = _storeContext.CurrentStore.Id;
             var cart = customer.GetCartItems(cartType, storeId);
@@ -2540,7 +2540,7 @@ namespace SmartStore.Web.Controllers
                             totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = T("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
-                            showCheckoutButtons = model.IsValidOrderAmount;
+                            displayCheckoutButtons = model.IsInOrderTotalsRange;
                         }
                     }
                     
@@ -2552,7 +2552,7 @@ namespace SmartStore.Web.Controllers
                         cartHtml,
                         totalsHtml,
                         cartItemCount,
-                        showCheckoutButtons
+                        displayCheckoutButtons
                     });
 				}
 			}

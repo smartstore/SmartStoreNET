@@ -288,7 +288,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order amount is not reached</returns>
-        (bool isValid, decimal minOrderAmount) ValidateMinOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
+        (bool valid, decimal orderTotalMinimum) IsAboveMinimumOrderTotal(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
         /// Valdiate maximum order amount.
@@ -297,7 +297,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart, customer role ids</param>
         /// <returns>true - OK; false - maximum order amount is exceeded</returns>
-        (bool isValid, decimal maxOrderAmount) ValidateMaxOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
+        (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
         /// Valdiate minimum and maximum order amount.
@@ -306,7 +306,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="cart">Shopping cart, customer role ids</param>
         /// <returns>true - OK; false - minimum amount is not reached or maximum amount is exceeded</returns>
-        bool ValidateOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
+        bool IsInOrderTotalsRange(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
         /// Adds a shipment to an order.

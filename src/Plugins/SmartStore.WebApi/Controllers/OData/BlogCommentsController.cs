@@ -113,9 +113,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public SingleResult<BlogPost> GetBlogPost(int key)
+        public IHttpActionResult GetBlogPost(int key)
 		{
-			return GetRelatedEntity(key, x => x.BlogPost);
+			return Ok(GetRelatedEntity(key, x => x.BlogPost));
 		}
 
 		#endregion

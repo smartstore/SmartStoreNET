@@ -85,9 +85,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<Order> GetOrder(int key)
+        public IHttpActionResult GetOrder(int key)
 		{
-			return GetRelatedEntity(key, x => x.Order);
+			return Ok(GetRelatedEntity(key, x => x.Order));
 		}
 
         #endregion

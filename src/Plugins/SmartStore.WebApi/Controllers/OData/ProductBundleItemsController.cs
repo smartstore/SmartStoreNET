@@ -64,16 +64,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetProduct(int key)
+        public IHttpActionResult GetProduct(int key)
 		{
-			return GetRelatedEntity(key, x => x.Product);
+			return Ok(GetRelatedEntity(key, x => x.Product));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetBundleProduct(int key)
+        public IHttpActionResult GetBundleProduct(int key)
 		{
-			return GetRelatedEntity(key, x => x.BundleProduct);
+			return Ok(GetRelatedEntity(key, x => x.BundleProduct));
 		}
 
         #endregion

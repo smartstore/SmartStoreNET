@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Security;
 using SmartStore.Services.Discounts;
@@ -66,23 +64,23 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
-        public IQueryable<Category> GetAppliedToCategories(int key)
+        public IHttpActionResult GetAppliedToCategories(int key)
 		{
-			return GetRelatedCollection(key, x => x.AppliedToCategories);
+			return Ok(GetRelatedCollection(key, x => x.AppliedToCategories));
 		}
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
-        public IQueryable<Manufacturer> GetAppliedToManufacturers(int key)
+        public IHttpActionResult GetAppliedToManufacturers(int key)
         {
-            return GetRelatedCollection(key, x => x.AppliedToManufacturers);
+            return Ok(GetRelatedCollection(key, x => x.AppliedToManufacturers));
         }
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<Product> GetAppliedToProducts(int key)
+        public IHttpActionResult GetAppliedToProducts(int key)
         {
-            return GetRelatedCollection(key, x => x.AppliedToProducts);
+            return Ok(GetRelatedCollection(key, x => x.AppliedToProducts));
         }
 
         #endregion

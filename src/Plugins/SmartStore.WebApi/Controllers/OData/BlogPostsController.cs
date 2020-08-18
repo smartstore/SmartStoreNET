@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Blogs;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Security;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Seo;
@@ -26,7 +25,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<BlogPost> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
 				orderby x.CreatedOnUtc descending
 				select x;
 
@@ -116,16 +115,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public SingleResult<Language> GetLanguage(int key)
+        public IHttpActionResult GetLanguage(int key)
 		{
-			return GetRelatedEntity(key, x => x.Language);
+			return Ok(GetRelatedEntity(key, x => x.Language));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public IQueryable<BlogComment> GetBlogComments(int key)
+        public IHttpActionResult GetBlogComments(int key)
 		{
-			return GetRelatedCollection(key, x => x.BlogComments);
+			return Ok(GetRelatedCollection(key, x => x.BlogComments));
 		}
 
         #endregion

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Seo;
@@ -26,7 +25,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<Category> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
 				where !x.Deleted
 				select x;
 
@@ -116,9 +115,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
-        public IQueryable<Discount> GetAppliedDiscounts(int key)
+        public IHttpActionResult GetAppliedDiscounts(int key)
 		{
-			return GetRelatedCollection(key, x => x.AppliedDiscounts);
+			return Ok(GetRelatedCollection(key, x => x.AppliedDiscounts));
 		}
 
 		#endregion

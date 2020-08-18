@@ -4,11 +4,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.WebApi;
@@ -95,45 +92,44 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Customer> GetCustomer(int key)
+        public IHttpActionResult GetCustomer(int key)
 		{
-			return GetRelatedEntity(key, x => x.Customer);
+			return Ok(GetRelatedEntity(key, x => x.Customer));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<Address> GetBillingAddress(int key)
+        public IHttpActionResult GetBillingAddress(int key)
 		{
-			return GetRelatedEntity(key, x => x.BillingAddress);
+			return Ok(GetRelatedEntity(key, x => x.BillingAddress));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<Address> GetShippingAddress(int key)
+        public IHttpActionResult GetShippingAddress(int key)
 		{
-			return GetRelatedEntity(key, x => x.ShippingAddress);
+			return Ok(GetRelatedEntity(key, x => x.ShippingAddress));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public IQueryable<OrderNote> GetOrderNotes(int key)
+        public IHttpActionResult GetOrderNotes(int key)
 		{
-			//var entity = GetEntityByKeyNotNull(key);	// if ProxyCreationEnabled = true
-			return GetRelatedCollection(key, x => x.OrderNotes);
+			return Ok(GetRelatedCollection(key, x => x.OrderNotes));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public IQueryable<Shipment> GetShipments(int key)
+        public IHttpActionResult GetShipments(int key)
 		{
-			return GetRelatedCollection(key, x => x.Shipments);
+			return Ok(GetRelatedCollection(key, x => x.Shipments));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public IQueryable<OrderItem> GetOrderItems(int key)
+        public IHttpActionResult GetOrderItems(int key)
 		{
-			return GetRelatedCollection(key, x => x.OrderItems);
+			return Ok(GetRelatedCollection(key, x => x.OrderItems));
 		}
 
 		#endregion
@@ -181,7 +177,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public OrderInfo Infos(int key)
+        public IHttpActionResult Infos(int key)
 		{
 			var result = new OrderInfo();
 			var entity = GetEntityByKeyNotNull(key);
@@ -193,7 +189,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				result.CanAddItemsToShipment = entity.CanAddItemsToShipment();
 			});
 
-			return result;
+			return Ok(result);
 		}
 
         [HttpPost]
@@ -217,10 +213,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        public SingleResult<Order> PaymentPending(int key)
+        public IHttpActionResult PaymentPending(int key)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, null);
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -228,15 +223,14 @@ namespace SmartStore.WebApi.Controllers.OData
 				Service.UpdateOrder(order);
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        public SingleResult<Order> PaymentPaid(int key, ODataActionParameters parameters)
+        public IHttpActionResult PaymentPaid(int key, ODataActionParameters parameters)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, null);
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -251,15 +245,14 @@ namespace SmartStore.WebApi.Controllers.OData
 				_orderProcessingService.Value.MarkOrderAsPaid(order);
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        public SingleResult<Order> PaymentRefund(int key, ODataActionParameters parameters)
+        public IHttpActionResult PaymentRefund(int key, ODataActionParameters parameters)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, null);
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -277,30 +270,28 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        public SingleResult<Order> Cancel(int key)
+        public IHttpActionResult Cancel(int key)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product");
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
 				_orderProcessingService.Value.CancelOrder(order, true);
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.EditShipment)]
-        public SingleResult<Order> AddShipment(int key, ODataActionParameters parameters)
+        public IHttpActionResult AddShipment(int key, ODataActionParameters parameters)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product, Shipments, Shipments.ShipmentItems");
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -320,22 +311,21 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
-        public SingleResult<Order> CompleteOrder(int key)
+        public IHttpActionResult CompleteOrder(int key)
 		{
-			var result = GetSingleResult(key);
-			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product, Shipments, Shipments.ShipmentItems");
+			var order = GetEntityByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
 				_orderProcessingService.Value.CompleteOrder(order);
 			});
 
-			return result;
+			return Ok(order);
 		}
 
 		#endregion

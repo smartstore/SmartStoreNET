@@ -7,9 +7,6 @@ using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -141,30 +138,30 @@ namespace SmartStore.WebApi.Controllers.OData
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
-        public SingleResult<DeliveryTime> GetDeliveryTime(int key)
+        public IHttpActionResult GetDeliveryTime(int key)
 		{
-			return GetRelatedEntity(key, x => x.DeliveryTime);
+			return Ok(GetRelatedEntity(key, x => x.DeliveryTime));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
-        public SingleResult<QuantityUnit> GetQuantityUnit(int key)
+        public IHttpActionResult GetQuantityUnit(int key)
 		{
-			return GetRelatedEntity(key, x => x.QuantityUnit);
+			return Ok(GetRelatedEntity(key, x => x.QuantityUnit));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Country> GetCountryOfOrigin(int key)
+        public IHttpActionResult GetCountryOfOrigin(int key)
 		{
-			return GetRelatedEntity(key, x => x.CountryOfOrigin);
+			return Ok(GetRelatedEntity(key, x => x.CountryOfOrigin));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Read)]
-        public SingleResult<Download> GetSampleDownload(int key)
+        public IHttpActionResult GetSampleDownload(int key)
 		{
-			return GetRelatedEntity(key, x => x.SampleDownload);
+			return Ok(GetRelatedEntity(key, x => x.SampleDownload));
 		}
 
         
@@ -344,51 +341,51 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductSpecificationAttribute> GetProductSpecificationAttributes(int key)
+        public IHttpActionResult GetProductSpecificationAttributes(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductSpecificationAttributes);
+			return Ok(GetRelatedCollection(key, x => x.ProductSpecificationAttributes));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductTag> GetProductTags(int key)
+        public IHttpActionResult GetProductTags(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductTags);
+			return Ok(GetRelatedCollection(key, x => x.ProductTags));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<TierPrice> GetTierPrices(int key)
+        public IHttpActionResult GetTierPrices(int key)
 		{
-			return GetRelatedCollection(key, x => x.TierPrices);
+			return Ok(GetRelatedCollection(key, x => x.TierPrices));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<Discount> GetAppliedDiscounts(int key)
+        public IHttpActionResult GetAppliedDiscounts(int key)
 		{
-			return GetRelatedCollection(key, x => x.AppliedDiscounts);
+			return Ok(GetRelatedCollection(key, x => x.AppliedDiscounts));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductVariantAttribute> GetProductVariantAttributes(int key)
+        public IHttpActionResult GetProductVariantAttributes(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductVariantAttributes);
+			return Ok(GetRelatedCollection(key, x => x.ProductVariantAttributes));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
+        public IHttpActionResult GetProductVariantAttributeCombinations(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations);
+			return Ok(GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductBundleItem> GetProductBundleItems(int key)
+        public IHttpActionResult GetProductBundleItems(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductBundleItems);
+			return Ok(GetRelatedCollection(key, x => x.ProductBundleItems));
 		}
 
 		#endregion
@@ -424,7 +421,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<Product> Search([ModelBinder(typeof(WebApiCatalogSearchQueryModelBinder))] CatalogSearchQuery query)
+        public IHttpActionResult Search([ModelBinder(typeof(WebApiCatalogSearchQueryModelBinder))] CatalogSearchQuery query)
 		{
 			CatalogSearchResult result = null;
 
@@ -438,7 +435,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				result = _catalogSearchService.Value.Search(query);
 			});
 
-			return result.Hits.AsQueryable();
+			return Ok(result.Hits.AsQueryable());
 		}
 
         private decimal? CalculatePrice(int key, bool lowestPrice)

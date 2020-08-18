@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
@@ -65,9 +64,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Attribute.Read)]
-        public IQueryable<SpecificationAttributeOption> GetSpecificationAttributeOptions(int key)
+        public IHttpActionResult GetSpecificationAttributeOptions(int key)
 		{
-			return GetRelatedCollection(key, x => x.SpecificationAttributeOptions);
+			return Ok(GetRelatedCollection(key, x => x.SpecificationAttributeOptions));
 		}
 
 		#endregion

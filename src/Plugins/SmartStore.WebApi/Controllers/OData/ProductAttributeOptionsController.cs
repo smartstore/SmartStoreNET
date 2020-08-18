@@ -64,9 +64,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Variant.Read)]
-        public SingleResult<ProductAttributeOptionsSet> GetProductAttributeOptionsSet(int key)
+        public IHttpActionResult GetProductAttributeOptionsSet(int key)
 		{
-			return GetRelatedEntity(key, x => x.ProductAttributeOptionsSet);
+			return Ok(GetRelatedEntity(key, x => x.ProductAttributeOptionsSet));
 		}
 
         #endregion

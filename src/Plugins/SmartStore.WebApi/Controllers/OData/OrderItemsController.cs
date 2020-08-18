@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
@@ -75,16 +74,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public SingleResult<Order> GetOrder(int key)
+        public IHttpActionResult GetOrder(int key)
 		{
-			return GetRelatedEntity(key, x => x.Order);
+			return Ok(GetRelatedEntity(key, x => x.Order));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetProduct(int key)
+        public IHttpActionResult GetProduct(int key)
 		{
-			return GetRelatedEntity(key, x => x.Product);
+			return Ok(GetRelatedEntity(key, x => x.Product));
 		}
 
 		#endregion
@@ -100,7 +99,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public OrderItemInfo Infos(int key)
+        public IHttpActionResult Infos(int key)
 		{
 			var result = new OrderItemInfo();
 			var entity = GetEntityByKeyNotNull(key);
@@ -115,7 +114,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				result.NotDeliveredItemsCount = entity.GetNotDeliveredItemsCount();
 			});
 
-			return result;
+			return Ok(result);
 		}
 
 		#endregion

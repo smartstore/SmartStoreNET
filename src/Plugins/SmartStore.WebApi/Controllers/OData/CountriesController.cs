@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Directory;
@@ -65,9 +64,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
-        public IQueryable<StateProvince> GetStateProvinces(int key)
+        public IHttpActionResult GetStateProvinces(int key)
 		{
-			return GetRelatedCollection(key, x => x.StateProvinces);
+			return Ok(GetRelatedCollection(key, x => x.StateProvinces));
 		}
 
 		#endregion

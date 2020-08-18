@@ -4,9 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -180,47 +178,37 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Address> GetBillingAddress(int key)
+        public IHttpActionResult GetBillingAddress(int key)
 		{
-			return GetRelatedEntity(key, x => x.BillingAddress);
+			return Ok(GetRelatedEntity(key, x => x.BillingAddress));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Address> GetShippingAddress(int key)
+        public IHttpActionResult GetShippingAddress(int key)
 		{
-			return GetRelatedEntity(key, x => x.ShippingAddress);
+			return Ok(GetRelatedEntity(key, x => x.ShippingAddress));
 		}
-
-		//public Language GetLanguage(int key)
-		//{
-		//	return GetExpandedProperty<Language>(key, x => x.Language);
-		//}
-
-		//public Currency GetCurrency(int key)
-		//{
-		//	return GetExpandedProperty<Currency>(key, x => x.Currency);
-		//}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
-        public IQueryable<Order> GetOrders(int key)
+        public IHttpActionResult GetOrders(int key)
 		{
-			return GetRelatedCollection(key, x => x.Orders);
+			return Ok(GetRelatedCollection(key, x => x.Orders));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
-        public IQueryable<ReturnRequest> GetReturnRequests(int key)
+        public IHttpActionResult GetReturnRequests(int key)
 		{
-			return GetRelatedCollection(key, x => x.ReturnRequests);
+			return Ok(GetRelatedCollection(key, x => x.ReturnRequests));
 		}
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Role.Read)]
-        public IQueryable<CustomerRoleMapping> GetCustomerRoleMappings(int key)
+        public IHttpActionResult GetCustomerRoleMappings(int key)
         {
-            return GetRelatedCollection(key, x => x.CustomerRoleMappings);
+            return Ok(GetRelatedCollection(key, x => x.CustomerRoleMappings));
         }
 
         #endregion

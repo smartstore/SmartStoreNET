@@ -56,9 +56,9 @@ namespace SmartStore.WebApi.Controllers.OData
 		#region Navigation properties
 
 		[WebApiQueryable]
-		public SingleResult<Language> GetLanguage(int key)
+		public IHttpActionResult GetLanguage(int key)
 		{
-			return GetRelatedEntity(key, x => x.Language);
+			return Ok(GetRelatedEntity(key, x => x.Language));
 		}
 
 		#endregion

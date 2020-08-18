@@ -2,7 +2,6 @@
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Web.Framework.WebApi;
@@ -65,9 +64,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
-        public SingleResult<DeliveryTime> GetDeliveryTime(int key)
+        public IHttpActionResult GetDeliveryTime(int key)
 		{
-			return GetRelatedEntity(key, x => x.DeliveryTime);
+			return Ok(GetRelatedEntity(key, x => x.DeliveryTime));
+		}
+
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
+		public IHttpActionResult GetQuantityUnit(int key)
+		{
+			return Ok(GetRelatedEntity(key, x => x.QuantityUnit));
 		}
 
 		#endregion

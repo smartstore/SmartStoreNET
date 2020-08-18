@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
@@ -62,9 +61,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Customer> GetCustomer(int key)
+        public IHttpActionResult GetCustomer(int key)
 		{
-			return GetRelatedEntity(key, x => x.Customer);
+			return Ok(GetRelatedEntity(key, x => x.Customer));
 		}
 
 		#endregion

@@ -59,5 +59,17 @@ namespace SmartStore.WebApi.Controllers.OData
 			var result = await DeleteAsync(key, entity => Service.DeleteShipmentItem(entity));
 			return result;
 		}
+
+		#region Navigation properties
+
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
+		public IHttpActionResult GetShipment(int key)
+		{
+			return Ok(GetRelatedEntity(key, x => x.Shipment));
+		}
+
+		#endregion
+
 	}
 }

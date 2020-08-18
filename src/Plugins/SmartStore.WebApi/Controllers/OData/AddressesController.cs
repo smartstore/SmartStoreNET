@@ -5,7 +5,6 @@ using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Core.Security;
@@ -103,17 +102,17 @@ namespace SmartStore.WebApi.Controllers.OData
 		#region Navigation properties
 
 		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Country> GetCountry(int key)
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult GetCountry(int key)
 		{
-			return GetRelatedEntity(key, x => x.Country);
+			return Ok(GetRelatedEntity(key, x => x.Country));
 		}
 
 		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<StateProvince> GetStateProvince(int key)
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult GetStateProvince(int key)
 		{
-			return GetRelatedEntity(key, x => x.StateProvince);
+			return Ok(GetRelatedEntity(key, x => x.StateProvince));
 		}
 
 		#endregion

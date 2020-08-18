@@ -64,9 +64,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
-        public SingleResult<Country> GetCountry(int key)
+        public IHttpActionResult GetCountry(int key)
 		{
-			return GetRelatedEntity(key, x => x.Country);
+			return Ok(GetRelatedEntity(key, x => x.Country));
 		}
 
 		#endregion

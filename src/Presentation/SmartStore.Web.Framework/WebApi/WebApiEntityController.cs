@@ -68,7 +68,7 @@ namespace SmartStore.Web.Framework.WebApi
                 throw this.InvalidModelStateException();
             }
 
-            var entity = Repository.GetById(key);
+            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
             if (entity == null)
             {
                 throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
@@ -180,11 +180,12 @@ namespace SmartStore.Web.Framework.WebApi
             Guard.NotEmpty(navigationProperty, nameof(navigationProperty));
 
             if (!ModelState.IsValid)
+            {
                 throw this.InvalidModelStateException();
-
+            }
 
             var ctx = (DbContext)Repository.Context;
-            var product = this.Repository.GetById(key);
+            var product = Repository.GetById(key);
             var entry = ctx.Entry(product);
             var query = entry.Collection(navigationProperty).Query();
 

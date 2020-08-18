@@ -2,7 +2,6 @@
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Web.Framework.WebApi;
@@ -65,16 +64,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<MediaFile> GetPicture(int key)
+        public IHttpActionResult GetPicture(int key)
         {
-            return GetRelatedEntity(key, x => x.MediaFile);
+            return Ok(GetRelatedEntity(key, x => x.MediaFile));
         }
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetProduct(int key)
+        public IHttpActionResult GetProduct(int key)
         {
-            return GetRelatedEntity(key, x => x.Product);
+            return Ok(GetRelatedEntity(key, x => x.Product));
         }
 
         #endregion

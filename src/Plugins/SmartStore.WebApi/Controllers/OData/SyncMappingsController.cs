@@ -21,7 +21,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		public IHttpActionResult GetProperty(int key, string propertyName)

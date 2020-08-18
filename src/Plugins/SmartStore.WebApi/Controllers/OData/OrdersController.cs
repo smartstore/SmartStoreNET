@@ -17,7 +17,7 @@ using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-    public class OrdersController : WebApiEntityController<Order, IOrderService>
+	public class OrdersController : WebApiEntityController<Order, IOrderService>
 	{
 		private readonly Lazy<IOrderProcessingService> _orderProcessingService;
         private readonly Lazy<WebApiPdfHelper> _apiPdfHelper;
@@ -51,7 +51,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
@@ -180,7 +180,7 @@ namespace SmartStore.WebApi.Controllers.OData
         public IHttpActionResult Infos(int key)
 		{
 			var result = new OrderInfo();
-			var entity = GetEntityByKeyNotNull(key);
+			var entity = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -200,8 +200,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             this.ProcessEntity(() =>
             {
-				var result = GetSingleResult(key);
-				var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product");
+				var order = GetByKeyNotNull(key);
 				var pdfData = _apiPdfHelper.Value.OrderToPdf(order);
 
 				var fileName = Services.Localization.GetResource("Order.PdfInvoiceFileName").FormatInvariant(order.Id);
@@ -215,7 +214,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentPending(int key)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -230,7 +229,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentPaid(int key, ODataActionParameters parameters)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -252,7 +251,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentRefund(int key, ODataActionParameters parameters)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -277,7 +276,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult Cancel(int key)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -291,7 +290,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.EditShipment)]
         public IHttpActionResult AddShipment(int key, ODataActionParameters parameters)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
@@ -318,7 +317,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult CompleteOrder(int key)
 		{
-			var order = GetEntityByKeyNotNull(key);
+			var order = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{

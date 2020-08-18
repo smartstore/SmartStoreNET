@@ -48,7 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
         public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]

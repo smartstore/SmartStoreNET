@@ -70,7 +70,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
 		public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
@@ -476,35 +476,37 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public decimal? FinalPrice(int key)
+        public IHttpActionResult FinalPrice(int key)
 		{
-			return CalculatePrice(key, false);
+			var price = CalculatePrice(key, false);
+			return Ok(price);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public decimal? LowestPrice(int key)
+        public IHttpActionResult LowestPrice(int key)
 		{
-			return CalculatePrice(key, true);
+			var price = CalculatePrice(key, true);
+			return Ok(price);
 		}
 
 		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        public IQueryable<ProductVariantAttributeCombination> CreateAttributeCombinations(int key)
+        public IHttpActionResult CreateAttributeCombinations(int key)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var entity = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
 				_productAttributeService.Value.CreateAllProductVariantAttributeCombinations(entity);
 			});
 
-			return entity.ProductVariantAttributeCombinations.AsQueryable();
+			return Ok(entity.ProductVariantAttributeCombinations.AsQueryable());
 		}
 
 		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        public IQueryable<ProductVariantAttribute> ManageAttributes(int key, ODataActionParameters parameters)
+        public IHttpActionResult ManageAttributes(int key, ODataActionParameters parameters)
 		{
 			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes.Select(y => y.ProductAttribute));
 			var result = new List<ProductVariantAttributeValue>();
@@ -623,7 +625,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			});
 
-			return entity.ProductVariantAttributes.AsQueryable();
+			return Ok(entity.ProductVariantAttributes.AsQueryable());
 		}
 
         #endregion

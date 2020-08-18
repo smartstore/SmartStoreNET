@@ -36,7 +36,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
@@ -102,7 +102,7 @@ namespace SmartStore.WebApi.Controllers.OData
         public IHttpActionResult Infos(int key)
 		{
 			var result = new OrderItemInfo();
-			var entity = GetEntityByKeyNotNull(key);
+			var entity = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{

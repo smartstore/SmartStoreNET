@@ -230,7 +230,7 @@ namespace SmartStore.WebApi.Controllers.OData
         /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
-        public FileItemInfo GetFileByPath(ODataActionParameters parameters)
+        public IHttpActionResult GetFileByPath(ODataActionParameters parameters)
         {
             FileItemInfo file = null;
 
@@ -247,7 +247,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 file = Convert(mediaFile);
             });
 
-            return file;
+            return Ok(file);
         }
 
         // POST /Media/GetFileByName {"FolderId":2, "FileName":"my-file.jpg"}
@@ -274,7 +274,7 @@ namespace SmartStore.WebApi.Controllers.OData
         /// GET /Media/GetFilesByIds(Ids=[1,2,3])
         [HttpGet, WebApiQueryable]
         [WebApiAuthenticate]
-        public IQueryable<FileItemInfo> GetFilesByIds([FromODataUri] int[] ids)
+        public IHttpActionResult GetFilesByIds([FromODataUri] int[] ids)
         {
             IQueryable<FileItemInfo> files = null;
 
@@ -288,13 +288,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 }
             });
 
-            return files ??  new List<FileItemInfo>().AsQueryable();
+            return Ok(files ??  new List<FileItemInfo>().AsQueryable());
         }
 
         /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
-        public bool FileExists(ODataActionParameters parameters)
+        public IHttpActionResult FileExists(ODataActionParameters parameters)
         {
             var fileExists = false;
 
@@ -304,13 +304,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 fileExists = Service.FileExists(path);
             });
 
-            return fileExists;
+            return Ok(fileExists);
         }
 
         /// POST /Media/CheckUniqueFileName {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
-        public CheckUniqueFileNameResult CheckUniqueFileName(ODataActionParameters parameters)
+        public IHttpActionResult CheckUniqueFileName(ODataActionParameters parameters)
         {
             var result = new CheckUniqueFileNameResult();
 
@@ -322,13 +322,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 result.NewPath = newPath;
             });
 
-            return result;
+            return Ok(result);
         }
 
         /// POST /Media/CountFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
         [HttpPost]
         [WebApiAuthenticate]
-        public async Task<int> CountFiles(ODataActionParameters parameters)
+        public async Task<IHttpActionResult> CountFiles(ODataActionParameters parameters)
         {
             var count = 0;
 
@@ -338,13 +338,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 count = await Service.CountFilesAsync(query ?? new MediaSearchQuery());
             });
 
-            return count;
+            return Ok(count);
         }
 
         /// POST /Media/CountFilesGrouped {"Filter":{"Term":"my image","Extensions":["jpg"], ...}}
         [HttpPost]
         [WebApiAuthenticate]
-        public CountFilesGroupedResult CountFilesGrouped(ODataActionParameters parameters)
+        public IHttpActionResult CountFilesGrouped(ODataActionParameters parameters)
         {
             CountFilesGroupedResult result = null;
 
@@ -372,13 +372,13 @@ namespace SmartStore.WebApi.Controllers.OData
                     .ToList();
             });
 
-            return result;
+            return Ok(result);
         }
 
         /// POST /Media(123)/MoveFile {"DestinationFileName":"content/updated-file-name.jpg"}
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public FileItemInfo MoveFile(int key, ODataActionParameters parameters)
+        public IHttpActionResult MoveFile(int key, ODataActionParameters parameters)
         {
             FileItemInfo movedFile = null;
 
@@ -397,13 +397,13 @@ namespace SmartStore.WebApi.Controllers.OData
                 movedFile = Convert(result); 
             });
 
-            return movedFile;
+            return Ok(movedFile);
         }
 
         /// POST /Media(123)/CopyFile {"DestinationFileName":"content/new-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public FileItemInfo CopyFile(int key, ODataActionParameters parameters)
+        public IHttpActionResult CopyFile(int key, ODataActionParameters parameters)
         {
             FileItemInfo fileCopy = null;
 
@@ -422,7 +422,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 fileCopy = Convert(result.DestinationFile);
             });
 
-            return fileCopy;
+            return Ok(fileCopy);
         }
 
         /// POST /Media(123)/DeleteFile {"Permanent":false}
@@ -451,7 +451,7 @@ namespace SmartStore.WebApi.Controllers.OData
         /// POST /Media/FolderExists {"Path":"my-folder"}
         [HttpPost]
         [WebApiAuthenticate]
-        public bool FolderExists(ODataActionParameters parameters)
+        public IHttpActionResult FolderExists(ODataActionParameters parameters)
         {
             var folderExists = false;
 
@@ -461,7 +461,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 folderExists = Service.FolderExists(path);
             });
 
-            return folderExists;
+            return Ok(folderExists);
         }
 
         /// POST /Media/CreateFolder {"Path":"content/my-folder"}

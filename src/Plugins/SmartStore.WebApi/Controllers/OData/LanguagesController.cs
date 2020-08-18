@@ -23,7 +23,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Configuration.Language.Read)]
         public IHttpActionResult Get(int key)
 		{
-			return Ok(key);
+			return Ok(GetByKey(key));
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Language.Read)]

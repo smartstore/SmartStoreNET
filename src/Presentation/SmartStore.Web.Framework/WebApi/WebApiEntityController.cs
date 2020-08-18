@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
@@ -61,37 +60,30 @@ namespace SmartStore.Web.Framework.WebApi
             return query;
         }
 
-        protected internal virtual TEntity GetEntityByKeyNotNull(int key)
+        protected internal virtual TEntity GetByKey(int key)
+        {
+            if (key == 0)
+            {
+                return null;
+            }
+
+            return GetEntitySet().FirstOrDefault(x => x.Id == key);
+        }
+
+        protected internal virtual TEntity GetByKeyNotNull(int key)
         {
             if (!ModelState.IsValid)
             {
                 throw this.InvalidModelStateException();
             }
 
-            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
+            var entity = GetByKey(key);
             if (entity == null)
             {
                 throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
             }
 
             return entity;
-        }
-
-        protected internal virtual SingleResult<TEntity> GetSingleResult(int key)
-        {
-            if (!ModelState.IsValid)
-            {
-                throw this.InvalidModelStateException();
-            }
-
-            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
-
-            return GetSingleResult(entity);
-        }
-
-        protected internal virtual SingleResult<TEntity> GetSingleResult(TEntity entity)
-        {
-            return SingleResult.Create(new[] { entity }.AsQueryable());
         }
 
         protected internal virtual TEntity GetExpandedEntity<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
@@ -130,24 +122,6 @@ namespace SmartStore.Web.Framework.WebApi
             return entity;
         }
 
-        protected internal virtual TEntity GetExpandedEntity(int key, SingleResult<TEntity> result, string path)
-        {
-            var query = result.Queryable;
-
-            foreach (var property in path.SplitSafe(","))
-            {
-                query = query.Expand(property.Trim());
-            }
-
-            var entity = query.FirstOrDefault(x => x.Id == key);
-            if (entity == null)
-            {
-                throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
-            }
-
-            return entity;
-        }
-
         protected internal virtual TProperty GetExpandedProperty<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
         {
             var entity = GetExpandedEntity<TProperty>(key, path);
@@ -170,41 +144,24 @@ namespace SmartStore.Web.Framework.WebApi
             Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
             var query = GetEntitySet().Where(x => x.Id.Equals(key));
+
             return query.SelectMany(navigationProperty);
         }
 
-        protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
-            int key,
-            string navigationProperty)
-        {
-            Guard.NotEmpty(navigationProperty, nameof(navigationProperty));
-
-            if (!ModelState.IsValid)
-            {
-                throw this.InvalidModelStateException();
-            }
-
-            var ctx = (DbContext)Repository.Context;
-            var product = Repository.GetById(key);
-            var entry = ctx.Entry(product);
-            var query = entry.Collection(navigationProperty).Query();
-
-            return query.Cast<TCollection>();
-        }
-
-        protected internal virtual SingleResult<TElement> GetRelatedEntity<TElement>(
+        protected internal virtual TElement GetRelatedEntity<TElement>(
             int key,
             Expression<Func<TEntity, TElement>> navigationProperty)
         {
             Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
             var query = GetEntitySet().Where(x => x.Id.Equals(key)).Select(navigationProperty);
-            return SingleResult.Create(query);
+
+            return query.FirstOrDefault();
         }
 
         protected internal virtual IHttpActionResult GetPropertyValue(int key, string propertyName)
         {
-            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
+            var entity = GetByKey(key);
             if (entity == null)
             {
                 return NotFound();
@@ -222,26 +179,14 @@ namespace SmartStore.Web.Framework.WebApi
             return ResponseMessage(response);
         }
 
-        protected internal new IHttpActionResult Ok<T>(T content)
+        protected internal virtual new IHttpActionResult Ok<T>(T content)
         {
-            if (content == null)
+            if (content == null && !typeof(T).IsNullable(out _))
             {
                 return NotFound();
             }
 
             return base.Ok(content);
-        }
-
-        protected internal virtual IHttpActionResult Ok(int key)
-        {
-            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(entity);
         }
 
         protected internal virtual IHttpActionResult Insert(TEntity entity, Action insert)

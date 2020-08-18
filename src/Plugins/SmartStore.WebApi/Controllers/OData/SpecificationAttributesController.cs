@@ -15,16 +15,16 @@ namespace SmartStore.WebApi.Controllers.OData
 	{
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Attribute.Read)]
-		public IQueryable<SpecificationAttribute> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Attribute.Read)]
-        public SingleResult<SpecificationAttribute> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Attribute.Read)]

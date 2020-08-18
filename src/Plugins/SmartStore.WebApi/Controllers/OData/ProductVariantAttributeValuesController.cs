@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
@@ -16,16 +14,16 @@ namespace SmartStore.WebApi.Controllers.OData
 	{
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public IQueryable<ProductVariantAttributeValue> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductVariantAttributeValue> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]

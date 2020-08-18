@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SmartStore.Core.Domain.Customers;
@@ -16,16 +15,16 @@ namespace SmartStore.WebApi.Controllers.OData
 	{
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
-		public IQueryable<ReturnRequest> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
-        public SingleResult<ReturnRequest> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]

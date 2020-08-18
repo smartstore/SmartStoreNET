@@ -26,7 +26,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<Manufacturer> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
 				where !x.Deleted
 				select x;
 
@@ -35,16 +35,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
-		public IQueryable<Manufacturer> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]
-        public SingleResult<Manufacturer> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Manufacturer.Read)]

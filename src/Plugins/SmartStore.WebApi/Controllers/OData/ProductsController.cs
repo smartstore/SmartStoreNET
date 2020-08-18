@@ -64,16 +64,16 @@ namespace SmartStore.WebApi.Controllers.OData
 		
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public IQueryable<Product> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public SingleResult<Product> Get(int key)
+		public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
@@ -178,10 +178,10 @@ namespace SmartStore.WebApi.Controllers.OData
             {
                 var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
 
-                return Response(productCategory);
+                return Ok(productCategory);
             }
 
-            return Response(productCategories);
+            return Ok(productCategories);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
@@ -236,10 +236,10 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
 
-				return Response(productManufacturer);
+				return Ok(productManufacturer);
 			}
 
-			return Response(productManufacturers);
+			return Ok(productManufacturers);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
@@ -294,10 +294,10 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
 
-				return Response(productPicture);
+				return Ok(productPicture);
 			}
 
-			return Response(productPictures);
+			return Ok(productPictures);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]

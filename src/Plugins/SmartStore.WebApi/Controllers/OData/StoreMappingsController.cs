@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Stores;
@@ -14,15 +13,15 @@ namespace SmartStore.WebApi.Controllers.OData
 	public class StoreMappingsController : WebApiEntityController<StoreMapping, IStoreMappingService>
 	{
 		[WebApiQueryable]
-		public IQueryable<StoreMapping> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
-        public SingleResult<StoreMapping> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		public IHttpActionResult GetProperty(int key, string propertyName)

@@ -74,7 +74,7 @@ namespace SmartStore.WebApi.Client
 				SecretKey = txtSecretKey.Text,
 				Url = txtUrl.Text + (radioOdata.Checked ? "odata/" : "api/") + txtVersion.Text + cboPath.Text,
 				HttpMethod = cboMethod.Text,
-				HttpAcceptType = (radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType)
+				HttpAcceptType = radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType
 			};
 
 			if (cboQuery.Text.HasValue())

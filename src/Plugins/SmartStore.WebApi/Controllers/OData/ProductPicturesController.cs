@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
@@ -13,20 +11,20 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-	public class ProductPicturesController : WebApiEntityController<ProductMediaFile, IProductService>
+    public class ProductPicturesController : WebApiEntityController<ProductMediaFile, IProductService>
 	{
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public IQueryable<ProductMediaFile> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-		public SingleResult<ProductMediaFile> Get(int key)
+		public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]

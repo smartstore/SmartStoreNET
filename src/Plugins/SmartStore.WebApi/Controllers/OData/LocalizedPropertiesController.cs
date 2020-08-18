@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Localization;
@@ -14,15 +13,15 @@ namespace SmartStore.WebApi.Controllers.OData
 	public class LocalizedPropertiesController : WebApiEntityController<LocalizedProperty, ILocalizedEntityService>
 	{
 		[WebApiQueryable]
-		public IQueryable<LocalizedProperty> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
-		public SingleResult<LocalizedProperty> Get(int key)
+		public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		public IHttpActionResult GetProperty(int key, string propertyName)

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Messages;
@@ -15,16 +14,16 @@ namespace SmartStore.WebApi.Controllers.OData
     {
         [WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]
-		public IQueryable<NewsLetterSubscription> Get()
+		public IHttpActionResult Get()
         {
-            return GetEntitySet();
+            return Ok(GetEntitySet());
         }
 
         [WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]
-		public SingleResult<NewsLetterSubscription> Get(int key)
+		public IHttpActionResult Get(int key)
         {
-            return GetSingleResult(key);
+            return Ok(key);
         }
 
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Read)]

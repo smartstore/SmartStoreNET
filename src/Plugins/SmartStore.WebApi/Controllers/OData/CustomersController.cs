@@ -37,16 +37,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-		public IQueryable<Customer> Get()
+		public IHttpActionResult Get()
 		{
-			return GetEntitySet();
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Customer> Get(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(key);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
@@ -120,10 +120,10 @@ namespace SmartStore.WebApi.Controllers.OData
 			{
 				var address = addresses.FirstOrDefault(x => x.Id == relatedKey);
 
-				return Response(address);
+				return Ok(address);
 			}
 
-			return Response(addresses);
+			return Ok(addresses);
 		}
 
 		[WebApiAuthenticate(Permission = Permissions.Customer.EditAddress)]

@@ -221,8 +221,20 @@ namespace SmartStore.Web.Framework.WebApi
             return ResponseMessage(response);
         }
 
-        protected internal virtual IHttpActionResult Response<T>(T entity)
+        protected internal new IHttpActionResult Ok<T>(T content)
         {
+            if (content == null)
+            {
+                return NotFound();
+            }
+
+            return base.Ok(content);
+        }
+
+        protected internal virtual IHttpActionResult Ok(int key)
+        {
+            var entity = GetEntitySet().FirstOrDefault(x => x.Id == key);
+
             if (entity == null)
             {
                 return NotFound();

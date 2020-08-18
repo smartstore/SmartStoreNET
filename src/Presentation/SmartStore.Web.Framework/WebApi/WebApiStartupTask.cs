@@ -28,18 +28,24 @@ namespace SmartStore.Web.Framework.WebApi
 			};
 
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();
+			//config.MapHttpAttributeRoutes();
 
-			// Causes error messages during XML serialization:
+			// Causes errors during XML serialization:
 			//var oDataFormatters = ODataMediaTypeFormatters.Create();
 			//config.Formatters.InsertRange(0, oDataFormatters);
 
-			config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
-            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
-            config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
-			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));
+			var json = config.Formatters.JsonFormatter;
+			json.SerializerSettings.Formatting = Formatting.Indented;
+			json.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+			json.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
+			json.AddQueryStringMapping("$format", "json", "application/json");
 
-			config.AddODataQueryFilter(new WebApiQueryableAttribute());
+			var xml = config.Formatters.XmlFormatter;
+			xml.UseXmlSerializer = true;
+			xml.Indent = true;
+			xml.AddQueryStringMapping("$format", "xml", "application/xml");
+
+            config.AddODataQueryFilter(new WebApiQueryableAttribute());
 
 			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
 			config.EnableCors(corsAttribute);

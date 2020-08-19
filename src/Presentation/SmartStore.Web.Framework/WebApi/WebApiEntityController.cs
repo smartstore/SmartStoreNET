@@ -122,21 +122,6 @@ namespace SmartStore.Web.Framework.WebApi
             return entity;
         }
 
-        protected internal virtual TProperty GetExpandedProperty<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
-        {
-            var entity = GetExpandedEntity<TProperty>(key, path);
-
-            var expression = path.CompileFast(PropertyCachingStrategy.EagerCached);
-            var property = expression.Invoke(entity);
-
-            if (property == null)
-            {
-                throw Request.NotFoundException(WebApiGlobal.Error.PropertyNotExpanded.FormatInvariant(path.ToString()));
-            }
-
-            return property;
-        }
-
         protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
             int key,
             Expression<Func<TEntity, IEnumerable<TCollection>>> navigationProperty)

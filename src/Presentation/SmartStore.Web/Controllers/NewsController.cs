@@ -387,6 +387,8 @@ namespace SmartStore.Web.Controllers
                 File = file
             };
 
+            _services.DisplayControl.Announce(file?.File);
+
             return pictureModel;
         }
 

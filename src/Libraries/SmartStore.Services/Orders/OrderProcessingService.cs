@@ -523,34 +523,34 @@ namespace SmartStore.Services.Orders
                     }
                 }
 
-                // Min amount validation
+                // Order total minimum validation
                 var customerRoleIds = customer.GetRoleIds();
-                var minOrderAmountValidation = ValidateMinOrderAmount(cart, customerRoleIds);
-                if (!minOrderAmountValidation.isValid)
+                var (isAboveOrderTotalMinimum, orderTotalMinimum) = IsAboveOrderTotalMinimum(cart, customerRoleIds);
+                if (!isAboveOrderTotalMinimum)
                 {
-                    var minOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        minOrderAmountValidation.minOrderAmount, 
+                    orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        orderTotalMinimum, 
                         _workContext.WorkingCurrency);
 
                     var msg = _orderSettings.ApplyToSubtotal 
-                        ? T("Checkout.MinOrderSubtotalAmount", _priceFormatter.FormatPrice(minOrderAmount, true, false)) 
-                        : T("Checkout.MinOrderTotalAmount", _priceFormatter.FormatPrice(minOrderAmount, true, false));
+                        ? T("Checkout.MinOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMinimum, true, false)) 
+                        : T("Checkout.MinOrderTotalAmount", _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
 
                     warnings.Add(msg);
                     return warnings;
                 }
 
-                // Max amount validation
-                var maxOrderAmountValidation = ValidateMaxOrderAmount(cart, customerRoleIds);
-                if (minOrderAmountValidation.isValid && !maxOrderAmountValidation.isValid)
+                // Order total maximum validation
+                var (isBelowOrderTotalMaximum, orderTotalMaximum) = IsBelowOrderTotalMaximum(cart, customerRoleIds);
+                if (isAboveOrderTotalMinimum && !isBelowOrderTotalMaximum)
                 {
-                    var maxOrderAmount = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        maxOrderAmountValidation.maxOrderAmount, 
+                    orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                        orderTotalMaximum, 
                         _workContext.WorkingCurrency);
 
                     var msg = _orderSettings.ApplyToSubtotal
-                        ? T("Checkout.MaxOrderSubtotalAmount", _priceFormatter.FormatPrice(maxOrderAmount, true, false))
-                        : T("Checkout.MaxOrderTotalAmount", _priceFormatter.FormatPrice(maxOrderAmount, true, false));
+                        ? T("Checkout.MaxOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMaximum, true, false))
+                        : T("Checkout.MaxOrderTotalAmount", _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
 
                     warnings.Add(msg);
                     return warnings;
@@ -2646,100 +2646,100 @@ namespace SmartStore.Services.Orders
             return numberOfDaysReturnRequestAvailableValid;
         }
 
-        public virtual (bool isValid, decimal minOrderAmount) ValidateMinOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
+        public virtual (bool valid, decimal orderTotalMinimum) IsAboveOrderTotalMinimum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
             var query = _customerService.GetAllCustomerRoles().SourceQuery;
             var customerRole = query
-                .Where(x => x.MinOrderAmount > decimal.Zero && customerRoleIds.Contains(x.Id))
-                .OrderByDescending(x => x.MinOrderAmount)
+                .Where(x => x.OrderTotalMinimum > decimal.Zero && customerRoleIds.Contains(x.Id))
+                .OrderByDescending(x => x.OrderTotalMinimum)
                 .FirstOrDefault();
 
-            var minOrderAmount = customerRole == null
-                ? _orderSettings.MinOrderAmount : customerRole.MinOrderAmount;
+            var minimumOrderTotal = customerRole == null
+                ? _orderSettings.OrderTotalMinimum : customerRole.OrderTotalMinimum;
 
-            return ValidateMinOrderAmount(cart, minOrderAmount);
+            return IsAboveOrderTotalMinimum(cart, minimumOrderTotal ?? decimal.Zero);
         }
 
         /// <summary>
-        /// Valdiate minimum order amount.
+        /// Valdiate order total minimum.
         /// </summary>
-        /// <param name="cart">Shopping cart, minimum order amount</param>
-        /// <returns>true - OK; false - minimum order amount is not reached</returns>
-        private (bool isValid, decimal minOrderAmount) ValidateMinOrderAmount(IList<OrganizedShoppingCartItem> cart, decimal minOrderAmount)
+        /// <param name="cart">Shopping cart, minimum order total</param>
+        /// <returns>true - OK; false - minimum order total is not reached</returns>
+        private (bool valid, decimal orderTotalMinimum) IsAboveOrderTotalMinimum(IList<OrganizedShoppingCartItem> cart, decimal minimumOrderTotal)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
 
-            if (cart.Count > 0 && minOrderAmount > decimal.Zero)
+            if (cart.Count > 0 && minimumOrderTotal > decimal.Zero)
             {
                 if (_orderSettings.ApplyToSubtotal)
                 {
                     _orderTotalCalculationService.GetShoppingCartSubTotal(
                         cart, out _, out _, out var cartSubtotal, out _);
 
-                    if (cartSubtotal < minOrderAmount)
-                        return (false, minOrderAmount);
+                    if (cartSubtotal < minimumOrderTotal)
+                        return (false, minimumOrderTotal);
                 }
                 else
                 {
                     decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                    if (cartTotal.HasValue && cartTotal.Value < minOrderAmount)
-                        return (false, minOrderAmount);
+                    if (cartTotal.HasValue && cartTotal.Value < minimumOrderTotal)
+                        return (false, minimumOrderTotal);
                 }
             }
 
-            return (true, minOrderAmount);
+            return (true, minimumOrderTotal);
         }
 
-        public virtual (bool isValid, decimal maxOrderAmount) ValidateMaxOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
+        public virtual (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
             var query = _customerService.GetAllCustomerRoles().SourceQuery;
             var customerRole = query
-                .Where(x => x.MaxOrderAmount > decimal.Zero && customerRoleIds.Contains(x.Id))
-                .OrderBy(x => x.MaxOrderAmount)
+                .Where(x => x.OrderTotalMaximum > decimal.Zero && customerRoleIds.Contains(x.Id))
+                .OrderBy(x => x.OrderTotalMaximum)
                 .FirstOrDefault();
 
-            var maxOrderAmount = customerRole == null
-                ? _orderSettings.MaxOrderAmount : customerRole.MaxOrderAmount;
+            var maximumOrderTotal = customerRole == null
+                ? _orderSettings.OrderTotalMaximum : customerRole.OrderTotalMaximum;
 
-            return ValidateMaxOrderAmount(cart, maxOrderAmount);
+            return IsBelowOrderTotalMaximum(cart, maximumOrderTotal ?? decimal.Zero);
         }
 
         /// <summary>
-        /// Valdiate maximum order amount.
+        /// Valdiate order total maximum.
         /// </summary>
-        /// <param name="cart">Shopping cart, maximum order amount</param>
-        /// <returns>true - OK; false - maximum order amount is exceeded</returns>
-        private (bool isValid, decimal maxOrderAmount) ValidateMaxOrderAmount(IList<OrganizedShoppingCartItem> cart, decimal maxOrderAmount)
+        /// <param name="cart">Shopping cart, maximum order total</param>
+        /// <returns>true - OK; false - maximum order total is exceeded</returns>
+        private (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, decimal maximumOrderTotal)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");
 
-            if (cart.Count > 0 && maxOrderAmount > decimal.Zero)
+            if (cart.Count > 0 && maximumOrderTotal > decimal.Zero)
             {
                 if (_orderSettings.ApplyToSubtotal)
                 {
                     _orderTotalCalculationService.GetShoppingCartSubTotal(
                         cart, out _, out _, out var cartSubtotal, out _);
 
-                    if (cartSubtotal > maxOrderAmount)
-                        return (false, maxOrderAmount);
+                    if (cartSubtotal > maximumOrderTotal)
+                        return (false, maximumOrderTotal);
                 }
                 else
                 {
                     decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                    if (cartTotal.HasValue && cartTotal.Value > maxOrderAmount)
-                        return (false, maxOrderAmount);
+                    if (cartTotal.HasValue && cartTotal.Value > maximumOrderTotal)
+                        return (false, maximumOrderTotal);
                 }
             }
 
-            return (true, maxOrderAmount);
+            return (true, maximumOrderTotal);
         }
 
-        public virtual bool ValidateOrderAmount(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
+        public virtual bool IsInOrderTotalsRange(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
-            return ValidateMinOrderAmount(cart, customerRoleIds).isValid
-                && ValidateMaxOrderAmount(cart, customerRoleIds).isValid;
+            return IsAboveOrderTotalMinimum(cart, customerRoleIds).valid
+                && IsBelowOrderTotalMaximum(cart, customerRoleIds).valid;
         }
 
         public virtual Shipment AddShipment(

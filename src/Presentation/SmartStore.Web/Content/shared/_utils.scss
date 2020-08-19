@@ -404,7 +404,7 @@ table th {
 // ------------------------------------------------------
 
 @include media-breakpoint-down(sm) {
-	.profiler-results {
+	.mp-results {
 		display: none !important;
 	}
 }

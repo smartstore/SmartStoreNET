@@ -451,9 +451,11 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
+							console.log(response.response);
 							$.each(response.response, function (i, value) {
+								console.log("adasdsa");
 								var file = assignableFiles.find(x => x.media.id === value.MediaFileId);
-
+								console.log(file);
 								if (!file) {
 									// Try get renamed file.
 									var name = value.Name;
@@ -519,6 +521,7 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
+							console.log(response);
 							// Set EntityMediaId & current DisplayOrder.
 							$.each(response.response, function (index, value) {
 								var preview = $(".dz-image-preview[data-media-id='" + value.MediaFileId + "']");

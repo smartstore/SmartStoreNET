@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Catalog
@@ -17,13 +18,14 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets the media file
         /// </summary>
+        [JsonIgnore]
         MediaFile MediaFile { get; set; }
     }
-    
+
     /// <summary>
     /// Represents a product media file mapping
     /// </summary>
-	[DataContract]
+    [DataContract]
 	public partial class ProductMediaFile : BaseEntity, IMediaFile
     {
         /// <summary>

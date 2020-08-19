@@ -48,20 +48,20 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.MinOrderAmount)
+            @Html.SmartLabelFor(model => model.OrderTotalMinimum)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.MinOrderAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-            @Html.ValidationMessageFor(model => model.MinOrderAmount)
+            @Html.SettingEditorFor(model => model.OrderTotalMinimum, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+            @Html.ValidationMessageFor(model => model.OrderTotalMinimum)
         </td>
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.MaxOrderAmount)
+            @Html.SmartLabelFor(model => model.OrderTotalMaximum)
         </td>
         <td class="adminData">
-            @Html.SettingEditorFor(model => model.MaxOrderAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-            @Html.ValidationMessageFor(model => model.MaxOrderAmount)
+            @Html.SettingEditorFor(model => model.OrderTotalMaximum, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+            @Html.ValidationMessageFor(model => model.OrderTotalMaximum)
         </td>
     </tr>
     <tr>
@@ -71,6 +71,15 @@
         <td class="adminData">
             @Html.SettingEditorFor(model => model.ApplyToSubtotal)
             @Html.ValidationMessageFor(model => model.ApplyToSubtotal)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.OrderValueRestrictionType)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.OrderValueRestrictionType)
+            @Html.ValidationMessageFor(model => model.OrderValueRestrictionType)
         </td>
     </tr>
     <tr>

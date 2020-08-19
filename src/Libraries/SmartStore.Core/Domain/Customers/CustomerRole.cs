@@ -66,13 +66,13 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a minimum order amount
         /// </summary>
         [DataMember]
-        public decimal MinOrderAmount { get; set; }
+        public decimal? OrderTotalMinimum { get; set; }
 
         /// <summary>
         /// Gets or sets a maximum order amount
         /// </summary>
         [DataMember]
-        public decimal MaxOrderAmount { get; set; }
+        public decimal? OrderTotalMaximum { get; set; }
 
         /// <summary>
         /// Gets or sets the permission role mappings.

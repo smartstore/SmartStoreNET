@@ -21,8 +21,8 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 			//rootContainer.ChildLifetimeScopeBeginning += OnScopeBeginning;
 
-			this._rootContainer = rootContainer;
-			this._state = new ContextState<ILifetimeScope>("CustomLifetimeScopeProvider.WorkScope");
+			_rootContainer = rootContainer;
+			_state = new ContextState<ILifetimeScope>("CustomLifetimeScopeProvider.WorkScope");
 		}
 
 		public ILifetimeScope ApplicationContainer

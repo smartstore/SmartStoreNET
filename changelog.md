@@ -20,7 +20,9 @@
 * **Media Manager**
 	* The file date should be displayed in local time and not in UTC.
 * **Page Builder**
-	* Reveal effect on story block conflicted with nested block reveal effects
+	* Reveal effect on story block conflicted with nested block reveal effects.
+* Message template attachments were not attached to the email.
+* EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
 
 
 ## Smartstore 4.0.1

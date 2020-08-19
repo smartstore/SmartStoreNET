@@ -26,7 +26,7 @@ namespace SmartStore.DevTools
 			var app = (HttpApplication)sender;
 			if (!MiniProfilerStarted(app) && ShouldProfile(app))
 			{
-				MiniProfiler.Start();
+				MiniProfiler.StartNew();
 				if (app.Context != null && app.Context.Items != null)
 				{
 					app.Context.Items[MP_KEY] = true;
@@ -39,7 +39,7 @@ namespace SmartStore.DevTools
 			var app = (HttpApplication)sender;
 			if (MiniProfilerStarted(app))
 			{
-				MiniProfiler.Stop();
+				MiniProfiler.Current?.Stop();
 			}
 		}
 

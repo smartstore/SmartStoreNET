@@ -21,13 +21,13 @@ $ocm-selected-color:                    $warning;
 
     .catmenu-path-item.expanded,
     .catmenu-item.parent {
-        padding-right: $list-group-item-padding-x * 1.5;
+        padding-right: $list-group-item-padding-x * 1.2;
 
         &:after {
-            @include fontawesome("\f105", 1.2rem);   
+            @include fontawesome("\f054", 0.75rem);   
             display: block;
             position: absolute;
-            right: 1rem;
+            right: 0.625rem;
             top: 50%;
             transform: translateY(-50%); 
         }

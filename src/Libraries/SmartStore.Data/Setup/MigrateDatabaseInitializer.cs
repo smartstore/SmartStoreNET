@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Data.Caching;
 using SmartStore.Data.Migrations;
@@ -19,7 +20,7 @@ namespace SmartStore.Data.Setup
 		where TContext : DbContext, new()
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
-		#region Ctor
+		private static readonly SyncedCollection<Type> _initializedContextTypes = new List<Type>().AsSynchronized();
 
 		public MigrateDatabaseInitializer()
 		{
@@ -29,10 +30,6 @@ namespace SmartStore.Data.Setup
 		{
 			this.ConnectionString = connectionString;
 		}
-
-		#endregion
-
-		#region Properties
 
 		public IEnumerable<IDataSeeder<TContext>> DataSeeders
 		{
@@ -52,8 +49,6 @@ namespace SmartStore.Data.Setup
 			private set;
 		}
 
-		#endregion
-
 		#region Interface members
 
 		/// <summary>
@@ -62,6 +57,11 @@ namespace SmartStore.Data.Setup
 		/// <param name="context">The context.</param>
 		public virtual void InitializeDatabase(TContext context)
 		{
+			if (_initializedContextTypes.Contains(context.GetType()))
+            {
+				return;
+            }
+			
 			if (!context.Database.Exists())
 			{
 				throw Error.InvalidOperation("Database migration failed because the target database does not exist. Ensure the database was initialized and seeded with the 'InstallDatabaseInitializer'.");
@@ -81,10 +81,10 @@ namespace SmartStore.Data.Setup
 				}
 				else
 				{
-					// DB is up-to-date and no migration ran.
-					EfMappingViewCacheFactory.SetContext(context);
+                    // DB is up-to-date and no migration ran.
+                    EfMappingViewCacheFactory.SetContext(context);
 
-					if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext ctx)
+                    if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext ctx)
 					{
 						// Call the main Seed method anyway (on every startup),
 						// we could have locale resources or settings to add/update.
@@ -94,6 +94,8 @@ namespace SmartStore.Data.Setup
 
 				// not needed anymore
 				this.DataSeeders = null;
+
+				_initializedContextTypes.Add(context.GetType());
 			}
 		}
 

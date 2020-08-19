@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
+using Autofac.Core;
 using Autofac.Integration.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -72,41 +73,22 @@ namespace SmartStore.Core.Infrastructure
 
 		protected virtual ContainerManager RegisterDependencies()
 		{
-			var builder = new ContainerBuilder();
-			var container = builder.Build();
 			var typeFinder = CreateTypeFinder();
 
-			_containerManager = new ContainerManager(container);
-
 			// core dependencies
-			builder = new ContainerBuilder();
+			var builder = new ContainerBuilder();
 			builder.RegisterInstance(this).As<IEngine>();
 			builder.RegisterInstance(typeFinder).As<ITypeFinder>();
 
 			// Autofac
-			var lifetimeScopeAccessor = new DefaultLifetimeScopeAccessor(container);
-			var lifetimeScopeProvider = new DefaultLifetimeScopeProvider(lifetimeScopeAccessor);
-			builder.RegisterInstance(lifetimeScopeAccessor).As<ILifetimeScopeAccessor>();
-			builder.RegisterInstance(lifetimeScopeProvider).As<ILifetimeScopeProvider>();
-
-			var dependencyResolver = new AutofacDependencyResolver(container, lifetimeScopeProvider);
-			builder.RegisterInstance(dependencyResolver);
-			DependencyResolver.SetResolver(dependencyResolver);
+			builder.Register(x => new DefaultLifetimeScopeAccessor(x.Resolve<ILifetimeScope>())).As<ILifetimeScopeAccessor>().SingleInstance();
+			builder.Register(x => new DefaultLifetimeScopeProvider(x.Resolve<ILifetimeScopeAccessor>())).As<ILifetimeScopeProvider>().SingleInstance();
+			builder.Register(x => new AutofacDependencyResolver(x.Resolve<ILifetimeScope>(), x.Resolve<ILifetimeScopeProvider>())).As<IDependencyResolver>().SingleInstance();
 
 			// Logging dependencies should be available very early
 			builder.RegisterModule(new LoggingModule());
 
-#pragma warning disable 612, 618
-			builder.Update(container);
-#pragma warning restore 612, 618
-
-			// Propagate logger
-			var logger = container.Resolve<ILoggerFactory>().GetLogger("SmartStore.Bootstrapper");
-			this.Logger = logger;
-			((AppDomainTypeFinder)typeFinder).Logger = logger;
-
 			// Register dependencies provided by other assemblies
-			builder = new ContainerBuilder();
 			var registrarTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
 			var registrarInstances = new List<IDependencyRegistrar>();
 			foreach (var type in registrarTypes)
@@ -119,13 +101,19 @@ namespace SmartStore.Core.Infrastructure
 			foreach (var registrar in registrarInstances)
 			{
 				var type = registrar.GetType();
-				logger.DebugFormat("Executing dependency registrar '{0}'", type.FullName);
+				Debug.WriteLine("Executing dependency registrar '{0}'.".FormatInvariant(type.FullName));
 				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(type.Assembly));
 			}
 
-#pragma warning disable 612, 618
-			builder.Update(container);
-#pragma warning restore 612, 618
+			var container = builder.Build();
+			_containerManager = new ContainerManager(container);
+
+			// MVC dependency resolver
+			DependencyResolver.SetResolver(container.Resolve<IDependencyResolver>());
+
+			// Logger
+			this.Logger = container.Resolve<ILoggerFactory>().GetLogger("SmartStore.Bootstrapper");
+			((AppDomainTypeFinder)typeFinder).Logger = this.Logger;
 
 			return _containerManager;
 		}

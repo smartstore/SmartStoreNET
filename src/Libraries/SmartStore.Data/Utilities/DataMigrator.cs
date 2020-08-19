@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -32,6 +35,7 @@ using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data.Utilities
@@ -349,88 +353,150 @@ namespace SmartStore.Data.Utilities
 
         #region MoveCustomerFields (V3.2)
 
+        class CustomerStub
+        {
+            public int Id { get; set; }
+            public IEnumerable<AttributeStub> Attributes { get; set; }
+        }
+
+        class AttributeStub
+        {
+            public int Id { get; set; }
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
+
         /// <summary>
         /// Moves several customer fields saved as generic attributes to customer entity (Title, FirstName, LastName, BirthDate, Company, CustomerNumber)
         /// </summary>
         /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
         /// <returns>The total count of fixed and updated customer entities</returns>
-        public static int MoveCustomerFields(IDbContext context, Action<Customer, GenericAttribute> updater, params string[] candidates)
+        public static int MoveCustomerFields(
+            IDbContext context, 
+            Action<IDictionary<string, object>, string, string> updater, 
+            params string[] candidates)
         {
             Guard.NotNull(updater, nameof(updater));
-            
+
             if (!(context is SmartObjectContext ctx))
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
             if (candidates.Length == 0)
                 return 0;
 
-            // We delete attrs only if the WHOLE migration succeeded
-            var attrIdsToDelete = new List<int>(1000);
-            var gaTable = context.Set<GenericAttribute>();
+            const int pageSize = 1000;
+            var gaTable = context.Set<GenericAttribute>().AsNoTracking();
             //var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
 
-            var query = gaTable
-                .AsNoTracking()
-                .Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
+            var query = (
+                from a in gaTable
+                where a.KeyGroup == "Customer" && candidates.Contains(a.Key)
+                group a by a.EntityId into grps
+                where grps.Any()
+                select new CustomerStub
+                {
+                    Id = grps.Key,
+                    Attributes = grps.Select(a2 => new AttributeStub { Id = a2.Id, Key = a2.Key, Value = a2.Value })
+                })
                 .OrderBy(x => x.Id);
 
+            int numAffectedRows = 0;
             int numUpdated = 0;
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+                for (var pageIndex = 0; pageIndex < 9999999; pageIndex++)
                 {
-                    var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
+                    var data = query
+                        .Skip(pageIndex * pageSize)
+                        .Take(pageSize)
+                        .ToList();
 
-                    var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
-                    var customers = context.Set<Customer>()
-                        .Where(x => customerIds.Contains(x.Id))
-                        .ToDictionary(x => x.Id);
-
-                    // Move attrs one by one to customer
-                    foreach (var attr in attrs)
+                    foreach (var chunk in data.Slice(100))
                     {
-                        var customer = customers.Get(attr.EntityId);
-                        if (customer == null)
-                            continue;
-
-                        updater(customer, attr);
-
-                        attrIdsToDelete.Add(attr.Id);
+                        numAffectedRows += GenerateAndExecuteSql(chunk);
                     }
 
-                    // Save batch
-                    numUpdated += scope.Commit();
+                    numUpdated += data.Count;
 
-                    // Breathe
-                    context.DetachAll();
-
-                    if (!attrs.HasNextPage)
+                    if (data.Count == 0)
                         break;
-                }
-
-                // Everything worked out, now delete all orpahned attributes
-                if (attrIdsToDelete.Count > 0)
-                {
-                    try
-                    {
-                        // Don't rollback migration when this fails
-                        var stubs = attrIdsToDelete.Select(x => new GenericAttribute { Id = x }).ToList();
-                        foreach (var chunk in stubs.Slice(500))
-                        {
-                            chunk.Each(x => gaTable.Attach(x));
-                            gaTable.RemoveRange(chunk);
-                            scope.Commit();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var msg = ex.Message;
-                    }
                 }
             }
 
             return numUpdated;
+
+            int GenerateAndExecuteSql(IEnumerable<CustomerStub> customers) 
+            {
+                var sb = PooledStringBuilder.Rent();
+
+                foreach (var c in customers)
+                {
+                    var attrs = c.Attributes.ToArray();
+                    
+                    if (attrs.Length == 0)
+                        continue;
+
+                    var columns = new Dictionary<string, object>();
+
+                    /// Generate UPDATE Customer statement
+                    foreach (var attr in attrs)
+                    {
+                        updater(columns, attr.Key, attr.Value);
+                    }
+
+                    if (columns.Count == 0)
+                        continue;
+
+                    sb.Append("UPDATE [Customer] SET");
+
+                    int i = 0;
+                    foreach (var kvp in columns)
+                    {
+                        sb.Append(" ");
+                        if (i > 0) sb.Append(", ");
+
+                        sb.Append($"[{kvp.Key}] = ");
+
+                        if (kvp.Value is int n)
+                        {
+                            sb.Append($"{n.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        else if (kvp.Value is DateTime d)
+                        {
+                            sb.Append($"'{d.ToIso8601String()}'");
+                        }
+                        else if (kvp.Value == null)
+                        {
+                            sb.Append("NULL");
+                        }
+                        else
+                        {
+                            sb.Append($"N'{kvp.Value}'");
+                        }
+
+                        i++;
+                    }
+
+                    sb.Append(" WHERE Id = {0}".FormatInvariant(c.Id));
+                    sb.Append("\n");
+
+                    // Generate all GenericAttribute DELETE statements
+                    for (i = 0; i < attrs.Length; i++)
+                    {
+                        var a = attrs[i];
+                        sb.AppendLine($"DELETE FROM [GenericAttribute] WHERE [Id] = {a.Id}");
+                    }
+                }
+
+                var sql = sb.ToStringAndReturn();
+                if (sql.HasValue())
+                {
+                    return ctx.Execute(sql);
+                }
+
+                return 0;
+            }
         }
 
         public static int DeleteGuestCustomerGenericAttributes(IDbContext context, TimeSpan olderThan)

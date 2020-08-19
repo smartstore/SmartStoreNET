@@ -49,7 +49,7 @@
 					var coupon = $(".cart-action-coupon");
 
                     if (response.success) {
-                        $("#start-checkout-buttons").toggleClass("d-none", !response.showCheckoutButtons);
+                        $("#start-checkout-buttons").toggleClass("d-none", !response.displayCheckoutButtons);
 
 						// Replace HTML.
 						cartBody.html(response.cartHtml);

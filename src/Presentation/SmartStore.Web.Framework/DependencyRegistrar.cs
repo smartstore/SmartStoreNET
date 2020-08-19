@@ -7,6 +7,7 @@ using System.Web.Hosting;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
+using Autofac.Core.Registration;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using SmartStore.ComponentModel;
@@ -278,7 +279,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(IComponentRegistryBuilder componentRegistry, IComponentRegistration registration)
 		{
 			// Look for first settable property of type "ICommonServices" and inject
 			var servicesProperty = FindCommonServicesProperty(registration.Activator.LimitType);
@@ -448,7 +449,7 @@ namespace SmartStore.Web.Framework
 			.InstancePerRequest();
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(IComponentRegistryBuilder componentRegistry, IComponentRegistration registration)
 		{
 			var querySettingsProperty = FindQuerySettingsProperty(registration.Activator.LimitType);
 
@@ -503,7 +504,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<LocalizedEntityHelper>().InstancePerRequest();
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(IComponentRegistryBuilder componentRegistry, IComponentRegistration registration)
 		{
 			var userProperty = FindUserProperty(registration.Activator.LimitType);
 			
@@ -752,7 +753,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>();
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		protected override void AttachToComponentRegistration(IComponentRegistryBuilder componentRegistry, IComponentRegistration registration)
 		{
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
@@ -1330,7 +1331,8 @@ namespace SmartStore.Web.Framework
 
 						if (!workValues.Values.TryGetValue(w, out T value))
 						{
-							value = (T)workValues.ComponentContext.ResolveComponent(valueRegistration, p);
+							var request = new ResolveRequest(providedService, valueRegistration, p);
+							value = (T)workValues.ComponentContext.ResolveComponent(request);
 							workValues.Values[w] = value;
 						}
 
@@ -1341,7 +1343,7 @@ namespace SmartStore.Web.Framework
 					});
 				})
 				.As(providedService)
-				.Targeting(valueRegistration)
+				.Targeting(valueRegistration, false)
 				.SingleInstance();
 
 			return rb.CreateRegistration();

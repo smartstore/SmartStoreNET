@@ -63,7 +63,7 @@
     <Value>Verbindungszeichenfolge angeben (Connection string)</Value>
   </LocaleResource>
   <LocaleResource Name="Recommended">
-    <Value>(Empfohlen)</Value>
+    <Value>(empfohlen)</Value>
   </LocaleResource>
   <LocaleResource Name="RestartInstallation">
     <Value>Installation neu starten</Value>
@@ -78,7 +78,7 @@
     <Value>SQL Server Authentifizierung</Value>
   </LocaleResource>
   <LocaleResource Name="SqlCompact">
-    <Value>Integrierte Datenbank verwenden (SQL Server Compact)</Value>
+    <Value>SQL Server Compact (ungeeignet im Produktivmodus)</Value>
   </LocaleResource>
   <LocaleResource Name="SqlServerName">
     <Value>SQL Server Name</Value>

@@ -112,7 +112,7 @@
             <div class="fu-thumb fu-filename rounded" data-current-filename="@(currentFile?.Name)">
                 @Html.MediaThumbnail(currentFile, 250)
             </div>
-            @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : 0 })
+            @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : (int?)null })
         }
 
         <div class="fu-controls">

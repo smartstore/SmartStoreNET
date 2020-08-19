@@ -35,7 +35,6 @@ namespace SmartStore.Web.Framework.WebApi
 			//config.Formatters.InsertRange(0, oDataFormatters);
 
 			var json = config.Formatters.JsonFormatter;
-			json.SerializerSettings.Formatting = Formatting.Indented;
 			json.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 			json.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
 			json.AddQueryStringMapping("$format", "json", "application/json");
@@ -45,7 +44,7 @@ namespace SmartStore.Web.Framework.WebApi
 			xml.Indent = true;
 			xml.AddQueryStringMapping("$format", "xml", "application/xml");
 
-            config.AddODataQueryFilter(new WebApiQueryableAttribute());
+			config.AddODataQueryFilter(new WebApiQueryableAttribute());
 
 			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
 			config.EnableCors(corsAttribute);

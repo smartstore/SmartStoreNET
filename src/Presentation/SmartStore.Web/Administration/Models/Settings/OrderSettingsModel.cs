@@ -24,17 +24,17 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
         public bool IsReOrderAllowed { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderAmount")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MinOrderTotal")]
         public decimal? OrderTotalMinimum { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MaxOrderAmount")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MaxOrderTotal")]
         public decimal? OrderTotalMaximum { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ApplyToSubtotal")]
         public bool ApplyToSubtotal { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderValueRestrictionType")]
-        public bool OrderValueRestrictionType { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderTotalRestrictionType")]
+        public bool OrderTotalRestrictionType { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed")]
         public bool AnonymousCheckoutAllowed { get; set; }
@@ -105,8 +105,8 @@ namespace SmartStore.Admin.Models.Settings
             RuleFor(x => x.OrderListPageSize)
                 .GreaterThan(0);
 
-            //RuleFor(x => x.OrderTotalMaximum).LessThan(x => x.OrderTotalMaximum)
-            //    .WithMessage(T("Admin.Configuration.Settings.Order.OrderTotal.Error"));
+            RuleFor(x => x.OrderTotalMaximum)
+                .GreaterThan(x => x.OrderTotalMinimum ?? 0);
         }
     }
 }

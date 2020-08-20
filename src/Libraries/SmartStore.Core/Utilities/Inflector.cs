@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 
 namespace SmartStore.Utilities
 {
-
     ///<summary>
     /// Implementation of the Inflector in Ruby that transforms words from singular to plural, 
     /// class names to table names, modularized class names to ones without, and class names to foreign keys
@@ -303,7 +302,7 @@ namespace SmartStore.Utilities
         {
             return underscoredWord.Replace('_', '-');
         }
+
         #endregion
     }
-
 }

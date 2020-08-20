@@ -497,16 +497,13 @@
     <Compile Include="Rules\RuleExpressionGroup.cs" />
     <Compile Include="Rules\RuleStorage.cs" />
     <Compile Include="Rules\RuleValueSelectList.cs" />
-    <Compile Include="Rules\_Old\FilterExpressionBuilder.cs" />
     <Compile Include="Rules\Filters\FilterExpressionVisitor.cs" />
     <Compile Include="Rules\Filters\QueryableExtensions.cs" />
     <Compile Include="Rules\Operators\ListOperators.cs" />
     <Compile Include="Rules\Operators\StringOperators.cs" />
-    <Compile Include="Rules\_Old\MemberAccessTokenizer.cs" />
     <Compile Include="Rules\IRuleConstraint.cs" />
     <Compile Include="Rules\Operators\CommonOperators.cs" />
     <Compile Include="Rules\Operators\NumericOperators.cs" />
-    <Compile Include="Rules\_Old\RuleAttribute.cs" />
     <Compile Include="Rules\RuleExpression.cs" />
     <Compile Include="Rules\RuleDescriptor.cs" />
     <Compile Include="Rules\Exceptions\InvalidRuleOperatorException.cs" />
@@ -795,12 +792,7 @@
   <ItemGroup>
     <None Include="Packaging\Readme.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Rules\Constraints\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

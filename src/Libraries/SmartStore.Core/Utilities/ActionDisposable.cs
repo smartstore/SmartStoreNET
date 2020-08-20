@@ -2,7 +2,6 @@
 
 namespace SmartStore.Utilities
 {
-
     /// <summary>
     /// Allows action to be executed when it is disposed
     /// </summary>
@@ -23,8 +22,5 @@ namespace SmartStore.Utilities
         {
             _action();
         }
-
     }
-
-
 }

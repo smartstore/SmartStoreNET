@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Localization;
 using SmartStore.Rules;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -43,10 +44,10 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.SystemName")]
         public string SystemName { get; set; }
 
-        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MinOrderAmount")]
+        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MinOrderTotal")]
         public decimal? OrderTotalMinimum { get; set; }
 
-        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MaxOrderAmount")]
+        [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.MaxOrderTotal")]
         public decimal? OrderTotalMaximum { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
@@ -67,9 +68,11 @@ namespace SmartStore.Admin.Models.Customers
 
     public partial class CustomerRoleValidator : AbstractValidator<CustomerRoleModel>
     {
-        public CustomerRoleValidator()
+        public CustomerRoleValidator(Localizer T)
         {
             RuleFor(x => x.Name).NotNull();
+
+            RuleFor(x => x.OrderTotalMaximum).GreaterThan(x => x.OrderTotalMinimum ?? 0);
         }
     }
 }

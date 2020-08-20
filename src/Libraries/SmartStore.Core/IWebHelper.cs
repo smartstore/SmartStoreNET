@@ -2,9 +2,6 @@ using System.Web;
 
 namespace SmartStore.Core
 {
-    /// <summary>
-    /// Represents a common helper
-    /// </summary>
     public partial interface IWebHelper
     {
         /// <summary>

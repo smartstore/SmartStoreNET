@@ -6,7 +6,6 @@ namespace SmartStore
 {
     public static class RegularExpressions
     {
-
         internal static readonly string ValidRealPattern = "^([-]|[.]|[-.]|[0-9])[0-9]*[.]*[0-9]+$";
         internal static readonly string ValidIntegerPattern = "^([-]|[0-9])[0-9]*$";
 
@@ -35,5 +34,4 @@ namespace SmartStore
 		public static readonly Regex IsIban = new Regex(@"[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}", RegexOptions.Singleline | RegexOptions.Compiled);
 		public static readonly Regex IsBic = new Regex(@"([a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?)", RegexOptions.Singleline | RegexOptions.Compiled);
     }
-
 }

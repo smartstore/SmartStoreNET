@@ -60,9 +60,6 @@ namespace SmartStore.Utilities
                 var result = sb.ToString();
                 return result;
             }
-
         }
-
     }
-
 }

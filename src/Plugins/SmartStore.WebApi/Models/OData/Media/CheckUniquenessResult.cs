@@ -3,7 +3,7 @@
 namespace SmartStore.WebApi.Models.OData.Media
 {
     [DataContract]
-    public partial class CheckUniqueFileNameResult
+    public partial class CheckUniquenessResult
     {
         [DataMember]
         public bool Result { get; set; }

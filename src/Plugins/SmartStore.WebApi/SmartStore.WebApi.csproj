@@ -286,10 +286,13 @@
     <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
     <Compile Include="Models\Api\UploadImportFile.cs" />
-    <Compile Include="Models\OData\Media\CheckUniqueFileNameResult.cs" />
-    <Compile Include="Models\OData\Media\CountFilesGroupedResult.cs" />
+    <Compile Include="Models\OData\Media\CheckUniquenessResult.cs" />
+    <Compile Include="Models\OData\Media\MediaCountResult.cs" />
     <Compile Include="Models\OData\Media\FileItemInfo.cs" />
     <Compile Include="Models\OData\Media\FolderItemInfo.cs" />
+    <Compile Include="Models\OData\Media\MediaFileOperationResult.cs" />
+    <Compile Include="Models\OData\Media\MediaFolderDeleteResult.cs" />
+    <Compile Include="Models\OData\Media\MediaFolderOperationResult.cs" />
     <Compile Include="Models\OData\OrderInfo.cs" />
     <Compile Include="Models\OData\OrderItemInfo.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />

@@ -30,6 +30,36 @@ namespace SmartStore.WebApi.Controllers.OData
     {
         public static MediaLoadFlags _defaultLoadFlags = MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags | MediaLoadFlags.WithTracks | MediaLoadFlags.WithFolder;
 
+        // GET /Media
+        [WebApiQueryable]
+        [WebApiAuthenticate]
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
+        /*public IHttpActionResult Get(ODataQueryOptions<MediaFile> queryOptions)
+        {
+            IQueryable<MediaFile> query = null;
+
+            var hasClientPaging = Request?.RequestUri?.Query?.Contains("$top=") ?? false;
+            if (!hasClientPaging)
+            {
+                var maxTop = WebApiCachingControllingData.Data().MaxTop;
+                var top = Math.Min(this.GetQueryStringValue("$top", maxTop), maxTop);
+
+                query = queryOptions.ApplyTo(GetEntitySet(), new ODataQuerySettings { PageSize = top }) as IQueryable<MediaFile>;
+            }
+            else
+            {
+                query = queryOptions.ApplyTo(GetEntitySet()) as IQueryable<MediaFile>;
+            }
+
+            var files = query.ToList();
+            var result = files.Select(x => Convert(Service.ConvertMediaFile(x)));
+
+            return Ok(result);
+        }*/
+
         // GET /Media(123)
         [WebApiQueryable]
         [WebApiAuthenticate]
@@ -42,24 +72,6 @@ namespace SmartStore.WebApi.Controllers.OData
             }
 
             return Ok(Convert(file));
-        }
-
-        // GET /Media
-        [WebApiQueryable]
-        [WebApiAuthenticate]
-        public IHttpActionResult Get(/*ODataQueryOptions<MediaFile> queryOptions*/)
-        {
-            return StatusCode(HttpStatusCode.NotImplemented);
-
-            // TODO or not TODO :)
-            //var maxTop = WebApiCachingControllingData.Data().MaxTop;
-            //var top = Math.Min(this.GetQueryStringValue("$top", maxTop), maxTop);
-
-            //var query = queryOptions.ApplyTo(GetEntitySet(), new ODataQuerySettings { PageSize = top }) as IQueryable<MediaFile>;
-            //var files = query.ToList();
-            //var result = files.Select(x => Convert(Service.ConvertMediaFile(x)));
-
-            //return result.AsQueryable();
         }
 
         // GET /Media(123)/ThumbUrl
@@ -152,7 +164,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("CheckUniqueFileName")
-                .Returns<CheckUniqueFileNameResult>()
+                .Returns<CheckUniquenessResult>()
                 .Parameter<string>("Path");
 
             entityConfig.Collection
@@ -162,7 +174,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("CountFilesGrouped")
-                .Returns<CountFilesGroupedResult>()
+                .Returns<MediaCountResult>()
                 .Parameter<MediaFilesFilter>("Filter");
 
             // Doesn't work:
@@ -184,6 +196,7 @@ namespace SmartStore.WebApi.Controllers.OData
             entityConfig
                 .Action("CopyFile")
                 .ReturnsFromEntitySet<FileItemInfo>("Media")
+                //.Returns<MediaFileOperationResult>()
                 .AddParameter<string>("DestinationFileName")
                 .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
@@ -215,12 +228,14 @@ namespace SmartStore.WebApi.Controllers.OData
             entityConfig.Collection
                 .Action("CopyFolder")
                 .Returns<FolderItemInfo>()
+                //.Returns<MediaFolderOperationResult>()
                 .AddParameter<string>("Path")
                 .AddParameter<string>("DestinationPath")
                 .AddParameter<DuplicateEntryHandling>("DuplicateEntryHandling", true);
 
             entityConfig.Collection
                 .Action("DeleteFolder")
+                .Returns<MediaFolderDeleteResult>()
                 .AddParameter<string>("Path")
                 .AddParameter<FileHandling>("FileHandling", true);
 
@@ -312,7 +327,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public IHttpActionResult CheckUniqueFileName(ODataActionParameters parameters)
         {
-            var result = new CheckUniqueFileNameResult();
+            var result = new CheckUniquenessResult();
 
             this.ProcessEntity(() =>
             {
@@ -346,25 +361,24 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public IHttpActionResult CountFilesGrouped(ODataActionParameters parameters)
         {
-            CountFilesGroupedResult result = null;
+            MediaCountResult result = null;
 
             this.ProcessEntity(() =>
             {
                 var query = parameters.GetValueSafe<MediaFilesFilter>("Filter");
                 var res = Service.CountFilesGrouped(query ?? new MediaFilesFilter());
 
-                result = new CountFilesGroupedResult
+                result = new MediaCountResult
                 {
                     Total = res.Total,
                     Trash = res.Trash,
                     Unassigned = res.Unassigned,
-                    Transient = res.Unassigned,
-                    Orphan = res.Orphan,
-                    Filter = res.Filter
+                    Transient = res.Transient,
+                    Orphan = res.Orphan
                 };
 
                 result.Folders = res.Folders
-                    .Select(x => new CountFilesGroupedResult.FolderCount
+                    .Select(x => new MediaCountResult.FolderCount
                     {
                         FolderId = x.Key,
                         Count = x.Value
@@ -405,7 +419,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult CopyFile(int key, ODataActionParameters parameters)
         {
-            FileItemInfo fileCopy = null;
+            MediaFileOperationResult opResult = null;
 
             this.ProcessEntity(() =>
             {
@@ -419,10 +433,16 @@ namespace SmartStore.WebApi.Controllers.OData
                 var duplicateFileHandling = parameters.GetValueSafe("DuplicateFileHandling", DuplicateFileHandling.ThrowError);
 
                 var result = Service.CopyFile(file, destinationFileName, duplicateFileHandling);
-                fileCopy = Convert(result.DestinationFile);
+
+                opResult = new MediaFileOperationResult
+                {
+                    DestinationFile = Convert(result.DestinationFile),
+                    IsDuplicate = result.IsDuplicate,
+                    UniquePath = result.UniquePath
+                };
             });
 
-            return Ok(fileCopy);
+            return Ok(opResult);
         }
 
         /// POST /Media(123)/DeleteFile {"Permanent":false}
@@ -506,7 +526,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult CopyFolder(ODataActionParameters parameters)
         {
-            FolderItemInfo copiedFolder = null;
+            MediaFolderOperationResult opResult = null;
 
             this.ProcessEntity(() =>
             {
@@ -515,10 +535,23 @@ namespace SmartStore.WebApi.Controllers.OData
                 var duplicateEntryHandling = parameters.GetValueSafe("DuplicateEntryHandling", DuplicateEntryHandling.Skip);
 
                 var result = Service.CopyFolder(path, destinationPath, duplicateEntryHandling);
-                copiedFolder = Convert(result.Folder);
+
+                opResult = new MediaFolderOperationResult
+                {
+                    Folder = Convert(result.Folder)
+                };
+
+                opResult.DuplicateFiles = result.DuplicateFiles
+                    .Select(x => new MediaFolderOperationResult.DuplicateFileInfo
+                    {
+                        SourceFile = Convert(x.SourceFile),
+                        DestinationFile = Convert(x.DestinationFile),
+                        UniquePath = x.UniquePath
+                    })
+                    .ToList();
             });
 
-            return Ok(copiedFolder);
+            return Ok(opResult);
         }
 
         /// POST /Media/DeleteFolder {"Path":"content/my-folder"}
@@ -526,15 +559,23 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
         public IHttpActionResult DeleteFolder(ODataActionParameters parameters)
         {
+            MediaFolderDeleteResult opResult = null;
+
             this.ProcessEntity(() =>
             {
                 var path = parameters.GetValueSafe<string>("Path");
                 var fileHandling = parameters.GetValueSafe("FileHandling", FileHandling.SoftDelete);
 
-                Service.DeleteFolder(path, fileHandling);
+                var result = Service.DeleteFolder(path, fileHandling);
+
+                opResult = new MediaFolderDeleteResult
+                {
+                    DeletedFileNames = result.DeletedFileNames,
+                    DeletedFolderIds = result.DeletedFolderIds
+                };
             });
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(opResult);
         }
 
         #endregion

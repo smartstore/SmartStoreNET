@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using SmartStore.Services.Media;
 
 namespace SmartStore.WebApi.Models.OData.Media
 {
     [DataContract]
-    public partial class CountFilesGroupedResult
+    public partial class MediaCountResult
     {
-        [DataMember]
-        public MediaFilesFilter Filter { get; set; }
-
         [DataMember]
         public int Total { get; set; }
 

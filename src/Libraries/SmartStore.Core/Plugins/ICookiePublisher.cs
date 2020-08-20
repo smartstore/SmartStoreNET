@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SmartStore.Core.Domain.Localization;
+using System;
+using System.Runtime.Serialization;
 using System.Web.Routing;
 
 namespace SmartStore.Core.Plugins
@@ -17,21 +19,30 @@ namespace SmartStore.Core.Plugins
 	/// <summary>
 	/// Plugin cookie infos.
 	/// </summary>
-	public class CookieInfo
+	public class CookieInfo : BaseEntity, ILocalizedEntity
 	{
 		/// <summary>
 		/// Name of the plugin.
 		/// </summary>
+		[DataMember]
 		public string Name { get; set; }
 
 		/// <summary>
 		/// Description of the cookie (e.g. purpose of using the cookie).
 		/// </summary>
+		[DataMember]
 		public string Description { get; set; }
+
+		/// <summary>
+		/// SelectedStoreIds
+		/// </summary>
+		[DataMember]
+		public int[] SelectedStoreIds { get; set; }
 
 		/// <summary>
 		/// Type of the cookie.
 		/// </summary>
+		[DataMember]
 		public CookieType CookieType { get; set; }
 	}
 

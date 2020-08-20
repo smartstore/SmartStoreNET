@@ -657,6 +657,15 @@
     <Content Include="Views\Order\OrdersDashboardReport.cshtml" />
     <Content Include="Views\Customer\RegisteredCustomersDashboardReport.cshtml" />
     <Content Include="Views\Media\FileConflictResolutionDialog.cshtml" />
+    <Content Include="Views\Setting\_CreateOrUpdateCookieInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Setting\CookieInfoCreatePopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Setting\CookieInfoEditPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -258,7 +259,8 @@ namespace SmartStore.Admin.Models.Settings
 			public PrivacySettingsModel()
 			{
 				EnableCookieConsent = true;
-			}
+                CookieInfos = new List<CookieInfo>();
+            }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent")]
 			public bool EnableCookieConsent { get; set; }
@@ -274,10 +276,12 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired")]
 			public bool FullNameOnProductRequestRequired { get; set; }
-		}
-		
-		#endregion
-	}
+
+            public List<CookieInfo> CookieInfos { get; set; }
+        }
+
+        #endregion
+    }
 
 	public class CustomerUserSettingsLocalizedModel : ILocalizedModelLocal
     {
@@ -287,6 +291,57 @@ namespace SmartStore.Admin.Models.Settings
         public string Salutations { get; set; }
 	}
 
+    public partial class CookieInfoModel : ILocalizedModel<CookieInfoLocalizedModel>
+    {
+        public CookieInfoModel ()
+        {
+            Locales = new List<CookieInfoLocalizedModel>();
+        }
+
+        [Required]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description")]
+        public string Description { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType")]
+        public CookieType CookieType { get; set; }
+
+        /// <summary>
+        /// Used for display in grid
+        /// </summary>
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType")]
+        public string CookieTypeName { get; set; }
+
+        /// <summary>
+        /// Used to mark which cookie info can be deleted from setting.
+        /// </summary>
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.IsPluginInfo")]
+        public bool IsPluginInfo { get; set; }
+
+        [UIHint("Stores")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public int[] SelectedStoreIds { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+        public bool LimitedToStores { get; set; }
+
+        public IList<CookieInfoLocalizedModel> Locales { get; set; }
+    }
+
+    public class CookieInfoLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name")]
+        public string Name { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description")]
+        public string Description { get; set; }
+    }
 
     public partial class CustomerUserSettingsValidator : AbstractValidator<CustomerUserSettingsModel>
     {

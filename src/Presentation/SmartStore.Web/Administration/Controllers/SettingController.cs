@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.ComponentModel;
@@ -41,6 +42,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Search.Extensions;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -82,8 +84,9 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
         private readonly Lazy<IForumSearchQueryAliasMapper> _forumSearchQueryAliasMapper;
         private readonly Lazy<IMenuService> _menuService;
-
-        private StoreDependingSettingHelper _storeDependingSettings;
+		private readonly ICookieManager _cookieManager;
+		
+		private StoreDependingSettingHelper _storeDependingSettings;
 
 		#endregion
 
@@ -111,7 +114,8 @@ namespace SmartStore.Admin.Controllers
 			Lazy<IMediaTracker> mediaTracker,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
             Lazy<IForumSearchQueryAliasMapper> forumSearchQueryAliasMapper,
-            Lazy<IMenuService> menuService)
+            Lazy<IMenuService> menuService,
+			ICookieManager cookieManager)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -135,7 +139,8 @@ namespace SmartStore.Admin.Controllers
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
             _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
             _menuService = menuService;
-        }
+			_cookieManager = cookieManager;
+		}
 
 		#endregion
 
@@ -998,7 +1003,212 @@ namespace SmartStore.Admin.Controllers
         }
 
 
-        [Permission(Permissions.Configuration.Setting.Read)]
+		#region CookieInfos
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult CookieInfoList(GridCommand command)
+		{
+			var data = _cookieManager.GetAllCookieInfos();
+			var systemCookies = string.Join(",", data.Select(x => x.Name).ToArray());
+			var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
+
+			if (privacySettings.CookieInfos.HasValue())
+			{
+				data.AddRange(JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos)
+					.OrderBy(x => x.CookieType)
+					.ThenBy(x => x.Name));
+			}
+
+			var model = new GridModel<CookieInfoModel>
+			{
+				Data = data
+					.Select(x => {
+						return new CookieInfoModel
+						{
+							CookieType = x.CookieType,
+							Name = x.Name,
+							Description = x.Description,
+							IsPluginInfo = systemCookies.Contains(x.Name),
+							CookieTypeName = x.CookieType.ToString()
+						};
+					})
+					.ToList(),
+				Total = data.Count
+			};
+
+			return new JsonResult
+			{
+				Data = model
+			};
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult CookieInfoDelete(string name, GridCommand command)
+		{
+			// First deserialize setting.
+			var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
+
+			var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
+			ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(name));
+
+			// Now serialize again.
+			privacySettings.CookieInfos = JsonConvert.SerializeObject(ciList, Formatting.None);
+
+			// Save setting.
+			Services.Settings.SaveSetting(privacySettings, x => x.CookieInfos, 0, true);
+
+			return CookieInfoList(command);
+		}
+
+		public ActionResult CookieInfoCreatePopup()
+		{
+			var model = new CookieInfoModel();
+
+			AddLocales(_languageService, model.Locales);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		public ActionResult CookieInfoCreatePopup(string btnId, string formId, CookieInfoModel model)
+		{
+			if (!ModelState.IsValid)
+				return View(model);
+
+			// Deserialize
+			var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
+			var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
+
+			if (ciList == null)
+				ciList = new List<CookieInfo>();
+
+			var cookieInfo = ciList
+				.Select(x => x)
+				.Where(x => x.Name.IsCaseInsensitiveEqual(model.Name))
+				.FirstOrDefault();
+
+			if (cookieInfo != null)
+			{
+				// Remove item if it's already there.
+				ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(cookieInfo.Name));
+			}
+
+			cookieInfo = new CookieInfo
+			{
+				// TODO: Use MiniMapper
+				CookieType = model.CookieType,
+				Name = model.Name,
+				Description = model.Description,
+				SelectedStoreIds = model.SelectedStoreIds
+			};
+
+			ciList.Add(cookieInfo);
+
+			// Serialize
+			privacySettings.CookieInfos = JsonConvert.SerializeObject(ciList, Formatting.None);
+
+			// Now save again.
+			Services.Settings.SaveSetting(privacySettings, x => x.CookieInfos, 0, true);
+
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(cookieInfo, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(cookieInfo, x => x.Description, localized.Description, localized.LanguageId);
+			}
+
+			ViewBag.RefreshPage = true;
+			ViewBag.btnId = btnId;
+			ViewBag.formId = formId;
+
+			return View(model);
+		}
+
+		[AdminAuthorize]
+		public ActionResult CookieInfoEditPopup(string name)
+		{
+			var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
+			var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
+			var cookieInfo = ciList
+				.Select(x => x)
+				.Where(x => x.Name.IsCaseInsensitiveEqual(name))
+				.FirstOrDefault();
+
+			if (cookieInfo == null)
+			{
+				NotifyError(T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.CookieInfoNotFound"));
+				return View(new CookieInfoModel());
+			}
+
+			var model = new CookieInfoModel
+			{
+				CookieType = cookieInfo.CookieType,
+				Name = cookieInfo.Name,
+				Description = cookieInfo.Description,
+				SelectedStoreIds = cookieInfo.SelectedStoreIds
+			};
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.Name = cookieInfo.GetLocalized(x => x.Name, languageId, false, false);
+				locale.Description = cookieInfo.GetLocalized(x => x.Description, languageId, false, false);
+			});
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		public ActionResult CookieInfoEditPopup(string btnId, string formId, CookieInfoModel model)
+		{
+			var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
+			var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
+			var cookieInfo = ciList
+				.Select(x => x)
+				.Where(x => x.Name.IsCaseInsensitiveEqual(model.Name))
+				.FirstOrDefault();
+
+			if (cookieInfo == null)
+			{
+				NotifyError(T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.CookieInfoNotFound"));
+				ViewBag.RefreshPage = true;
+				ViewBag.btnId = btnId;
+				ViewBag.formId = formId;
+				return View(new CookieInfoModel());
+			}
+			
+			if (ModelState.IsValid)
+			{
+				cookieInfo.Name = model.Name;
+				cookieInfo.Description = model.Description;
+				cookieInfo.CookieType = model.CookieType;
+				cookieInfo.SelectedStoreIds = model.SelectedStoreIds;
+
+				ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(cookieInfo.Name));
+				ciList.Add(cookieInfo);
+
+				privacySettings.CookieInfos = JsonConvert.SerializeObject(ciList, Formatting.None);
+
+				Services.Settings.SaveSetting(privacySettings, x => x.CookieInfos, 0, true);
+
+				foreach (var localized in model.Locales)
+				{
+					_localizedEntityService.SaveLocalizedValue(cookieInfo, x => x.Name, localized.Name, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedValue(cookieInfo, x => x.Description, localized.Description, localized.LanguageId);
+				}
+
+				ViewBag.RefreshPage = true;
+				ViewBag.btnId = btnId;
+				ViewBag.formId = formId;
+			}
+
+			return View(model);
+		}
+
+		#endregion
+
+
+		[Permission(Permissions.Configuration.Setting.Read)]
         public ActionResult GeneralCommon()
         {
             // Set page timeout to 5 minutes.

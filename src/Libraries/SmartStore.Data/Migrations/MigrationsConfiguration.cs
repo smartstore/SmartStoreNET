@@ -203,6 +203,64 @@
 				"Standards nur auf der Startseite verwenden",
 				"Determines whether the default meta informations are used only on the home page, rather than as defaults for every page.",
 				"Legt fest, ob die Standard-Meta-Informationen nur auf der Startseite anstatt als Standardeinstellung für jede Seite verwendet werden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AddCookieInfo.Title",
+				"Add new cookie information",
+				"Neue Cookie-Informationen zufügen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.EditCookieInfo.Title",
+				"Add new cookie information",
+				"Neue Cookie-Informationen zufügen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name",
+				"Name",
+				"Name",
+				"Specifies the display name of the cookie information.",
+				"Bestimmt den Anzeigenamen der Cookie-Information.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description",
+				"Description",
+				"Beschreibung",
+				"Specifies the description of the cookie information.",
+				"Bestimmt die Beschreibung der Cookie-Information.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType",
+				"Cookie type",
+				"Art des Cookies",
+				"Specifies the usage type of the cookie (Required, Analytics, ThirdParty).",
+				"Bestimmt die Verwendungsart des Cookies (Required, Analytics, ThirdParty).");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.IsPluginInfo",
+				"System cookie",
+				"System-Cookie");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.CookieInfoNotFound",
+				"Cookie information wasn't found.",
+				"Cookie-Information wurde nicht gefunden.");
+			
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction",
+				@"<h5>Cookie Information</h5>
+				<p>
+					If you have included third-party scripts in your shop that use cookies and are not integrated into Smartstore via a plugin,
+					you can provide your own information about these cookies for the Cookie Manager in the following table.
+				</p>
+				<p>
+					The added information is displayed in the Cookie Manager of the front end, corresponding to the type.
+					Cookie information provided to the Cookie Manager by active plug-ins is displayed in this table,
+					but cannot be edited. The texts of this information can be edited using the language resources
+					<b>Admin > Configuration > Regional Settings > Languages</b>.
+				</p>",
+				@"<h5>Cookie-Informationen</h5>
+				<p>
+					Wenn Sie Scripte von Drittanbietern in Ihren Shop eingebunden haben, die Cookies nutzen und die nicht über ein Plugin in Smartstore integriert sind,
+					können Sie in folgender Tabelle eigene Informationen über diese Cookies für den Cookie-Manager bereitstellen.
+				</p>
+				<p>
+					Die zugefügten Informtionen werden, dem Typ entsprechend, im Cookie-Manager des Frontends angezeigt.
+					Cookie-Informationen, die dem Cookie-Manager von aktiven Plugins zur Verfügung gestellt werden, werden in dieser Tabelle angezeigt,
+					können aber nicht bearbeitet werden. Die Texte dieser Informationen können über die Sprachresourcen bearbeitet werden
+					<b>Admin > Konfiguration > Regionale Einstellungen > Sprachen</b>.
+				</p>");
 		}
 	}
 }

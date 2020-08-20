@@ -1,10 +1,9 @@
 ﻿using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Core.Domain.Customers
 {
-    public class PrivacySettings : BaseEntity, ISettings, ILocalizedEntity
+	public class PrivacySettings : BaseEntity, ISettings, ILocalizedEntity
 	{
 		public PrivacySettings()
 		{
@@ -38,5 +37,10 @@ namespace SmartStore.Core.Domain.Customers
 		/// Gets or sets a value indicating whether the full name field is required on product requests
 		/// </summary>
 		public bool FullNameOnProductRequestRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets cookie infos (JSON serialized)
+		/// </summary>
+		public string CookieInfos { get; set; }
 	}
 }

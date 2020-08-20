@@ -73,7 +73,8 @@ namespace SmartStore.Services.Pdf
 				PageHeight = settings.PageHeight,
 				PageWidth = settings.PageWidth,
 				Size = (PageSize)(int)settings.Size,
-				PdfToolPath = FileSystemHelper.TempDir("wkhtmltopdf")
+				PdfToolPath = FileSystemHelper.TempDir("wkhtmltopdf"),
+				TempFilesPath = FileSystemHelper.TempDirTenant()
 			};
 
 			if (settings.Margins != null)

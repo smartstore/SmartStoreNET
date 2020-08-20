@@ -110,7 +110,7 @@
         {
             // Single file uploads have preview images.
             <div class="fu-thumb fu-filename rounded" data-current-filename="@(currentFile?.Name)">
-                @Html.MediaThumbnail(currentFile, 250)
+                @Html.MediaThumbnail(currentFile, 256)
             </div>
             @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : defaultValue })
         }

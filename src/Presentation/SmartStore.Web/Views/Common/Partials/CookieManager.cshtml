@@ -39,36 +39,36 @@
 		@Html.HiddenFor(x => x.AcceptAll)
 
 		<div id="cookie-manager" class="container mt-3">
-			<div class="row mb-2">
+			<div class="cm-header row mb-2">
 				<div class="col">
-					<h4>
+					<h4 class="cm-title">
 						@T("CookieManager.Dialog.Heading")
 					</h4>
-					<p>
+					<p class="cm-intro">
 						@T("CookieManager.Dialog.Intro", Url.Action("Info", "Customer"), Url.Topic("PrivacyInfo"))
 					</p>
 				</div>
 			</div>
 
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
+			<div class="cm-consent row no-gutters mb-3">
+				<div class="cm-consent-switch col col-auto mr-3">
 					<label class="switch">
 						@Html.CheckBoxFor(x => x.RequiredConsent, new { disabled = "disabled" })
 						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
 					</label>
 				</div>
-				<div class="col">
-					<h5>
+				<div class="cm-consent-details col">
+					<h5 class="cm-consent-title">
 						@T("CookieManager.Dialog.Required.Heading")
 					</h5>
-					<p class="mb-1">
+					<p class="cm-consent-intro mb-1">
 						@T("CookieManager.Dialog.Required.Intro")
 					</p>
-					<div>
+					<div class="cm-collapser">
 						@if (requiredCookieInfos.Count > 0)
 						{
 							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-required" aria-expanded="false" aria-controls="collapse-required">@T("CookieManager.Dialog.Show")</a>
-                        }
+						}
 					</div>
 					@if (requiredCookieInfos.Count > 0)
 					{
@@ -87,21 +87,21 @@
 				</div>
 			</div>
 
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
+			<div class="cm-consent row no-gutters mb-3">
+				<div class="cm-consent-switch col col-auto mr-3">
 					<label class="switch">
 						@Html.EditorFor(x => x.AnalyticsConsent)
 						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
 					</label>
 				</div>
-				<div class="col">
-					<h5>
+				<div class="cm-consent-details col">
+					<h5 class="cm-consent-title">
 						@T("CookieManager.Dialog.Analytics.Heading")
 					</h5>
-					<p class="mb-1">
+					<p class="cm-consent-intro mb-1">
 						@T("CookieManager.Dialog.Analytics.Intro")
 					</p>
-					<div>
+					<div class="cm-collapser">
 						@if (analyticsCookieInfos.Count > 0)
 						{
 							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-analytics" aria-expanded="false" aria-controls="collapse-analytics">@T("CookieManager.Dialog.Show")</a>
@@ -124,21 +124,21 @@
 				</div>
 			</div>
 
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
+			<div class="cm-consent row no-gutters mb-3">
+				<div class="cm-consent-switch col col-auto mr-3">
 					<label class="switch">
 						@Html.EditorFor(x => x.ThirdPartyConsent)
 						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
 					</label>
 				</div>
-				<div class="col">
-					<h5>
+				<div class="cm-consent-details col">
+					<h5 class="cm-consent-title">
 						@T("CookieManager.Dialog.ThirdParty.Heading")
 					</h5>
-					<p class="mb-1">
+					<p class="cm-consent-intro mb-1">
 						@T("CookieManager.Dialog.ThirdParty.Intro")
 					</p>
-					<div id="">
+					<div class="cm-collapser">
 						@if (thirdPartyCookieInfos.Count > 0)
 						{
 							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-third-party" aria-expanded="false" aria-controls="collapse-third-party">@T("CookieManager.Dialog.Show")</a>
@@ -166,7 +166,7 @@
 
 @helper Footer()
 {
-	<div class="container">
+	<div class="cm-footer container">
 		<div class="row sm-gutters">
 			<div class="col-6">
 				<button type="submit" id="accept-selected" name="accept-selected" class="btn btn-block btn-secondary submit-consent">
@@ -187,7 +187,6 @@
         $('#cookie-manager-window').modal('show');
 
         $(".submit-consent").on("click", function () {
-
             var acceptAll = $(this).attr("id") == "accept-all";
             var elem = $("#@Html.IdFor(x => x.AcceptAll)");
 			elem.val(acceptAll ? "True" : "False");

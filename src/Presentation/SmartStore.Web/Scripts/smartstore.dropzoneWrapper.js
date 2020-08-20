@@ -494,7 +494,10 @@
 							sortMediaFiles();
 						}
 					});
-				}
+				} else {
+					const hidden = document.getElementById("media-file-ids");				
+					$("#media-file-ids").val(hidden.value + assignableFileIds);
+                }
 			}
 
 			// Calls server function after sorting, to save current sort order.
@@ -518,7 +521,6 @@
 							entityId: $el.data('entity-id')
 						},
 						success: function (response) {
-							console.log(response);
 							// Set EntityMediaId & current DisplayOrder.
 							$.each(response.response, function (index, value) {
 								var preview = $(".dz-image-preview[data-media-id='" + value.MediaFileId + "']");

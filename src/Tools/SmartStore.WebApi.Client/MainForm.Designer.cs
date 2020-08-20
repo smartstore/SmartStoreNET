@@ -1,4 +1,4 @@
-﻿namespace SmartStoreNetWebApiClient
+﻿namespace SmartStore.WebApi.Client
 {
 	partial class MainForm
 	{
@@ -407,21 +407,21 @@
             // 
             // txtVersion
             // 
-            this.txtVersion.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStoreNetWebApiClient.Properties.Settings.Default, "ApiVersion", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtVersion.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStore.WebApi.Client.Properties.Settings.Default, "ApiVersion", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.txtVersion.Location = new System.Drawing.Point(370, 36);
             this.txtVersion.Name = "txtVersion";
             this.txtVersion.Size = new System.Drawing.Size(89, 21);
             this.txtVersion.TabIndex = 4;
-            this.txtVersion.Text = global::SmartStoreNetWebApiClient.Properties.Settings.Default.ApiVersion;
+            this.txtVersion.Text = global::SmartStore.WebApi.Client.Properties.Settings.Default.ApiVersion;
             // 
             // txtUrl
             // 
-            this.txtUrl.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStoreNetWebApiClient.Properties.Settings.Default, "ApiUrl", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtUrl.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStore.WebApi.Client.Properties.Settings.Default, "ApiUrl", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.txtUrl.Location = new System.Drawing.Point(84, 62);
             this.txtUrl.Name = "txtUrl";
             this.txtUrl.Size = new System.Drawing.Size(225, 21);
             this.txtUrl.TabIndex = 2;
-            this.txtUrl.Text = global::SmartStoreNetWebApiClient.Properties.Settings.Default.ApiUrl;
+            this.txtUrl.Text = global::SmartStore.WebApi.Client.Properties.Settings.Default.ApiUrl;
             // 
             // btnFileOpen
             // 

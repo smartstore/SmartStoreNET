@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Security;
 using SmartStore.Services.Payments;
@@ -10,30 +13,51 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class PaymentMethodsController : WebApiEntityController<PaymentMethod, IPaymentService>
 	{
-        // Update permission sufficient here.
-        [WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
-		protected override void Insert(PaymentMethod entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Read)]
+		public IHttpActionResult Get()
 		{
-			Service.InsertPaymentMethod(entity);
+			return Ok(GetEntitySet());
 		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
-        protected override void Update(PaymentMethod entity)
-		{
-			Service.UpdatePaymentMethod(entity);
-		}
-
-        [WebApiAuthenticate]
-        protected override void Delete(PaymentMethod entity)
-		{
-            throw this.ExceptionForbidden();
-        }
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Read)]
-        public SingleResult<PaymentMethod> GetPaymentMethod(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(GetByKey(key));
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
+		// Update permission sufficient here.
+		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
+		public IHttpActionResult Post(PaymentMethod entity)
+		{
+			var result = Insert(entity, () => Service.InsertPaymentMethod(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
+		public async Task<IHttpActionResult> Put(int key, PaymentMethod entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdatePaymentMethod(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<PaymentMethod> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdatePaymentMethod(entity));
+			return result;
+		}
+
+		public IHttpActionResult Delete()
+		{
+			return StatusCode(HttpStatusCode.Forbidden);
 		}
 	}
 }

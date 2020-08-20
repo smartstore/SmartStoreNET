@@ -2,6 +2,9 @@
 
 namespace SmartStore.WebApi.Models.OData
 {
+	/// <summary>
+	/// Extra information about an order item returned by the API.
+	/// </summary>
 	[DataContract]
 	public partial class OrderItemInfo
 	{

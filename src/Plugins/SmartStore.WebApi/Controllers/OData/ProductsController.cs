@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using System.Web.Http.OData;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
+using SmartStore.WebApi.Models.OData;
 using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
@@ -53,270 +52,376 @@ namespace SmartStore.WebApi.Controllers.OData
 		protected override IQueryable<Product> GetEntitySet()
 		{
 			var query =
-				from x in this.Repository.Table
+				from x in Repository.Table
 				where !x.Deleted && !x.IsSystemProduct
 				select x;
 
 			return query;
 		}
 		
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Create)]
-        protected override void Insert(Product entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IHttpActionResult Get()
 		{
-			Service.InsertProduct(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
-        protected override void Update(Product entity)
-		{
-			Service.UpdateProduct(entity);
-
-			this.ProcessEntity(() =>
-			{
-				_urlRecordService.Value.SaveSlug<Product>(entity, x => x.Name);
-			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Delete)]
-        protected override void Delete(Product entity)
-		{
-			Service.DeleteProduct(entity);
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Product> GetProduct(int key)
+		public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(GetByKey(key));
 		}
 
-        // Navigation properties.
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
-        public HttpResponseMessage NavigationProductCategories(int key, int relatedKey)
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
 		{
-			ProductCategory productCategory = null;
-			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
-
-			if (Request.Method == HttpMethod.Delete)
-			{
-				if (relatedKey == 0)
-				{
-					productCategories.Each(x => _categoryService.Value.DeleteProductCategory(x));
-				}
-				else if ((productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey)) != null)
-				{
-					_categoryService.Value.DeleteProductCategory(productCategory);
-				}
-
-				return Request.CreateResponse(HttpStatusCode.NoContent);
-			}
-
-			productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (productCategory == null)
-				{
-					productCategory = ReadContent<ProductCategory>() ?? new ProductCategory();
-					productCategory.ProductId = key;
-					productCategory.CategoryId = relatedKey;
-
-					_categoryService.Value.InsertProductCategory(productCategory);
-
-					return Request.CreateResponse(HttpStatusCode.Created, productCategory);
-				}
-			}
-
-			return Request.CreateResponseForEntity(productCategory, relatedKey);
+			return GetPropertyValue(key, propertyName);
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
-        public HttpResponseMessage NavigationProductManufacturers(int key, int relatedKey)
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Create)]
+		public IHttpActionResult Post(Product entity)
 		{
-			ProductManufacturer productManufacturer = null;
-			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
-
-			if (Request.Method == HttpMethod.Delete)
+			var result = Insert(entity, () =>
 			{
-				if (relatedKey == 0)
+				Service.InsertProduct(entity);
+
+				this.ProcessEntity(() =>
 				{
-					productManufacturers.Each(x => _manufacturerService.Value.DeleteProductManufacturer(x));
-				}
-				else if ((productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey)) != null)
-				{
-					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
-				}
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
 
-				return Request.CreateResponse(HttpStatusCode.NoContent);
-			}
-
-			productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
-
-			if (Request.Method == HttpMethod.Post)
-			{
-				if (productManufacturer == null)
-				{
-					productManufacturer = ReadContent<ProductManufacturer>() ?? new ProductManufacturer();
-					productManufacturer.ProductId = key;
-					productManufacturer.ManufacturerId = relatedKey;
-
-					_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
-
-					return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
-				}
-			}
-
-			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
+			return result;
 		}
 
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
-        public HttpResponseMessage NavigationProductPictures(int key, int relatedKey)
-        {
-            ProductMediaFile productPicture = null;
-            var productPictures = Service.GetProductPicturesByProductId(key);
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
+		public async Task<IHttpActionResult> Put(int key, Product entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateProduct(entity);
 
-            if (Request.Method == HttpMethod.Delete)
-            {
-                if (relatedKey == 0)
-                {
-                    productPictures.Each(x => Service.DeleteProductPicture(x));
-                }
-                else if ((productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey)) != null)
-                {
-                    Service.DeleteProductPicture(productPicture);
-                }
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
 
-                return Request.CreateResponse(HttpStatusCode.NoContent);
-            }
+			return result;
+		}
 
-            productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Product> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateProduct(entity);
 
-            if (Request.Method == HttpMethod.Post)
-            {
-                if (productPicture == null)
-                {
-                    productPicture = ReadContent<ProductMediaFile>() ?? new ProductMediaFile();
-                    productPicture.ProductId = key;
-                    productPicture.MediaFileId = relatedKey;
+				this.ProcessEntity(() =>
+				{
+					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
+				});
+			});
 
-                    Service.InsertProductPicture(productPicture);
+			return result;
+		}
 
-                    return Request.CreateResponse(HttpStatusCode.Created, productPicture);
-                }
-            }
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProduct(entity));
+			return result;
+		}
 
-            return Request.CreateResponseForEntity(productPicture, relatedKey);
-        }
+        #region Navigation properties
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
-        public SingleResult<DeliveryTime> GetDeliveryTime(int key)
+        public IHttpActionResult GetDeliveryTime(int key)
 		{
-			return GetRelatedEntity(key, x => x.DeliveryTime);
+			return Ok(GetRelatedEntity(key, x => x.DeliveryTime));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
-        public SingleResult<QuantityUnit> GetQuantityUnit(int key)
+        public IHttpActionResult GetQuantityUnit(int key)
 		{
-			return GetRelatedEntity(key, x => x.QuantityUnit);
+			return Ok(GetRelatedEntity(key, x => x.QuantityUnit));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<Country> GetCountryOfOrigin(int key)
+        public IHttpActionResult GetCountryOfOrigin(int key)
 		{
-			return GetRelatedEntity(key, x => x.CountryOfOrigin);
+			return Ok(GetRelatedEntity(key, x => x.CountryOfOrigin));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Read)]
-        public SingleResult<Download> GetSampleDownload(int key)
+        public IHttpActionResult GetSampleDownload(int key)
 		{
-			return GetRelatedEntity(key, x => x.SampleDownload);
+			return Ok(GetRelatedEntity(key, x => x.SampleDownload));
+		}
+
+        
+		[WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IHttpActionResult GetProductCategories(int key, int relatedKey = 0 /*categoryId*/)
+		{
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+
+			if (relatedKey != 0)
+            {
+                var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+                return Ok(productCategory);
+            }
+
+            return Ok(productCategories);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public IHttpActionResult PostProductCategories(int key, int relatedKey /*categoryId*/)
+		{
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+			var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+			if (productCategory == null)
+			{
+				productCategory = ReadContent<ProductCategory>() ?? new ProductCategory();
+				productCategory.ProductId = key;
+				productCategory.CategoryId = relatedKey;
+
+				_categoryService.Value.InsertProductCategory(productCategory);
+
+				return Created(productCategory);
+			}
+
+			return Ok(productCategory);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditCategory)]
+		public IHttpActionResult DeleteProductCategories(int key, int relatedKey = 0 /*categoryId*/)
+		{
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+
+			if (relatedKey == 0)
+			{
+				productCategories.Each(x => _categoryService.Value.DeleteProductCategory(x));
+			}
+			else
+			{
+				var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+				if (productCategory != null)
+				{
+					_categoryService.Value.DeleteProductCategory(productCategory);
+				}
+			}
+
+			return StatusCode(HttpStatusCode.NoContent);
+		}
+
+		
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public IHttpActionResult GetProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+
+			if (relatedKey != 0)
+			{
+				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+				return Ok(productManufacturer);
+			}
+
+			return Ok(productManufacturers);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public IHttpActionResult PostProductManufacturers(int key, int relatedKey /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+			var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+			if (productManufacturer == null)
+			{
+				productManufacturer = ReadContent<ProductManufacturer>() ?? new ProductManufacturer();
+				productManufacturer.ProductId = key;
+				productManufacturer.ManufacturerId = relatedKey;
+
+				_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
+
+				return Created(productManufacturer);
+			}
+
+			return Ok(productManufacturer);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditManufacturer)]
+		public IHttpActionResult DeleteProductManufacturers(int key, int relatedKey = 0 /*manufacturerId*/)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+
+			if (relatedKey == 0)
+			{
+				productManufacturers.Each(x => _manufacturerService.Value.DeleteProductManufacturer(x));
+			}
+			else
+			{
+				var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+				if (productManufacturer != null)
+				{
+					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
+				}
+			}
+
+			return StatusCode(HttpStatusCode.NoContent);
+		}
+
+		
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public IHttpActionResult GetProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+
+			if (relatedKey != 0)
+			{
+				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+
+				return Ok(productPicture);
+			}
+
+			return Ok(productPictures);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
+		public IHttpActionResult PostProductPictures(int key, int relatedKey /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+			var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+
+			if (productPicture == null)
+			{
+				productPicture = ReadContent<ProductMediaFile>() ?? new ProductMediaFile();
+				productPicture.ProductId = key;
+				productPicture.MediaFileId = relatedKey;
+
+				Service.InsertProductPicture(productPicture);
+
+				return Created(productPicture);
+			}
+
+			return Ok(productPicture);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
+		public IHttpActionResult DeleteProductPictures(int key, int relatedKey = 0 /*mediaFileId*/)
+		{
+			var productPictures = Service.GetProductPicturesByProductId(key);
+
+			if (relatedKey == 0)
+			{
+				productPictures.Each(x => Service.DeleteProductPicture(x));
+			}
+			else
+			{
+				var productPicture = productPictures.FirstOrDefault(x => x.MediaFileId == relatedKey);
+				if (productPicture != null)
+				{
+					Service.DeleteProductPicture(productPicture);
+				}
+			}
+
+			return StatusCode(HttpStatusCode.NoContent);
+		}
+
+
+		[WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public IHttpActionResult GetProductSpecificationAttributes(int key)
+		{
+			return Ok(GetRelatedCollection(key, x => x.ProductSpecificationAttributes));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductCategory> GetProductCategories(int key)
+        public IHttpActionResult GetProductTags(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductCategories);
+			return Ok(GetRelatedCollection(key, x => x.ProductTags));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductManufacturer> GetProductManufacturers(int key)
+        public IHttpActionResult GetTierPrices(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductManufacturers);
+			return Ok(GetRelatedCollection(key, x => x.TierPrices));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductMediaFile> GetProductPictures(int key)
+        public IHttpActionResult GetAppliedDiscounts(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductPictures);
+			return Ok(GetRelatedCollection(key, x => x.AppliedDiscounts));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductSpecificationAttribute> GetProductSpecificationAttributes(int key)
+        public IHttpActionResult GetProductVariantAttributes(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductSpecificationAttributes);
+			return Ok(GetRelatedCollection(key, x => x.ProductVariantAttributes));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductTag> GetProductTags(int key)
+        public IHttpActionResult GetProductVariantAttributeCombinations(int key)
 		{
-			return GetRelatedCollection(key, x => x.ProductTags);
+			return Ok(GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations));
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<TierPrice> GetTierPrices(int key)
+        public IHttpActionResult GetProductBundleItems(int key)
 		{
-			return GetRelatedCollection(key, x => x.TierPrices);
+			return Ok(GetRelatedCollection(key, x => x.ProductBundleItems));
 		}
 
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<Discount> GetAppliedDiscounts(int key)
+		#endregion
+
+		#region Actions
+
+		public static void Init(WebApiConfigurationBroadcaster configData)
 		{
-			return GetRelatedCollection(key, x => x.AppliedDiscounts);
+			var entityConfig = configData.ModelBuilder.EntityType<Product>();
+
+			entityConfig.Collection
+				.Action("Search")
+				.ReturnsCollectionFromEntitySet<Product>("Products");
+
+			entityConfig
+				.Action("FinalPrice")
+				.Returns<decimal>();
+
+			entityConfig
+				.Action("LowestPrice")
+				.Returns<decimal>();
+
+			entityConfig
+				.Action("CreateAttributeCombinations")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttributeCombination>("ProductVariantAttributeCombinations");
+
+			var manageAttributes = entityConfig
+				.Action("ManageAttributes")
+				.ReturnsCollectionFromEntitySet<ProductVariantAttribute>("ProductVariantAttributes");
+			manageAttributes.Parameter<bool>("Synchronize");
+			manageAttributes.CollectionParameter<ManageAttributeType>("Attributes");
 		}
 
-		[WebApiQueryable]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductVariantAttribute> GetProductVariantAttributes(int key)
-		{
-			return GetRelatedCollection(key, x => x.ProductVariantAttributes);
-		}
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
-		{
-			return GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations);
-		}
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductBundleItem> GetProductBundleItems(int key)
-		{
-			return GetRelatedCollection(key, x => x.ProductBundleItems);
-		}
-
-		// Actions.
-
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<Product> Search([ModelBinder(typeof(WebApiCatalogSearchQueryModelBinder))] CatalogSearchQuery query)
+        public IHttpActionResult Search([ModelBinder(typeof(WebApiCatalogSearchQueryModelBinder))] CatalogSearchQuery query)
 		{
 			CatalogSearchResult result = null;
 
@@ -330,7 +435,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				result = _catalogSearchService.Value.Search(query);
 			});
 
-			return result.Hits.AsQueryable();
+			return Ok(result.Hits.AsQueryable());
 		}
 
         private decimal? CalculatePrice(int key, bool lowestPrice)
@@ -371,37 +476,39 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public decimal? FinalPrice(int key)
+        public IHttpActionResult FinalPrice(int key)
 		{
-			return CalculatePrice(key, false);
+			var price = CalculatePrice(key, false);
+			return Ok(price);
 		}
 
 		[HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public decimal? LowestPrice(int key)
+        public IHttpActionResult LowestPrice(int key)
 		{
-			return CalculatePrice(key, true);
+			var price = CalculatePrice(key, true);
+			return Ok(price);
 		}
 
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        public IQueryable<ProductVariantAttributeCombination> CreateAttributeCombinations(int key)
+        public IHttpActionResult CreateAttributeCombinations(int key)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var entity = GetByKeyNotNull(key);
 
 			this.ProcessEntity(() =>
 			{
 				_productAttributeService.Value.CreateAllProductVariantAttributeCombinations(entity);
 			});
 
-			return entity.ProductVariantAttributeCombinations.AsQueryable();
+			return Ok(entity.ProductVariantAttributeCombinations.AsQueryable());
 		}
 
-		[HttpPost, WebApiQueryable(PagingOptional = true)]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        public IQueryable<ProductVariantAttribute> ManageAttributes(int key, ODataActionParameters parameters)
+        public IHttpActionResult ManageAttributes(int key, ODataActionParameters parameters)
 		{
-			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes);
+			var entity = GetExpandedEntity(key, x => x.ProductVariantAttributes.Select(y => y.ProductAttribute));
 			var result = new List<ProductVariantAttributeValue>();
 
 			this.ProcessEntity(() =>
@@ -411,7 +518,7 @@ namespace SmartStore.WebApi.Controllers.OData
                     .Where(x => x.Name.HasValue())
                     .ToList();
 
-                var attributeNames = new HashSet<string>(data.Select(x => x.Name), StringComparer.InvariantCultureIgnoreCase);
+                var attributeNames = new HashSet<string>(data.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
                 var pagedAttributes = _productAttributeService.Value.GetAllProductAttributes(0, 1);
                 var attributesData = pagedAttributes.SourceQuery
                     .Where(x => attributeNames.Contains(x.Name))
@@ -419,8 +526,9 @@ namespace SmartStore.WebApi.Controllers.OData
                     .ToList();
                 var allAttributesDic = attributesData.ToDictionarySafe(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
-                foreach (var srcAttr in data)
+				foreach (var srcAttr in data)
 				{
+					// Product attribute.
                     var attributeId = 0;
                     if (allAttributesDic.TryGetValue(srcAttr.Name, out var attributeData))
                     {
@@ -433,9 +541,11 @@ namespace SmartStore.WebApi.Controllers.OData
                         attributeId = attribute.Id;
                     }
 
-                    var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute.Name.IsCaseInsensitiveEqual(srcAttr.Name));
+					// Product attribute mapping.
+                    var productAttribute = entity.ProductVariantAttributes.FirstOrDefault(x => x.ProductAttribute?.Name.IsCaseInsensitiveEqual(srcAttr.Name) ?? false);
 					if (productAttribute == null)
 					{
+						// No mapping to attribute yet.
 						productAttribute = new ProductVariantAttribute
 						{
 							ProductId = entity.Id,
@@ -450,6 +560,7 @@ namespace SmartStore.WebApi.Controllers.OData
 					}
 					else if (synchronize)
 					{
+						// Has already an attribute mapping.
 						if (srcAttr.Values.Count <= 0 && productAttribute.ShouldHaveValues())
 						{
 							_productAttributeService.Value.DeleteProductVariantAttribute(productAttribute);
@@ -463,6 +574,7 @@ namespace SmartStore.WebApi.Controllers.OData
 						}
 					}
 
+					// Values.
 					var maxDisplayOrder = productAttribute.ProductVariantAttributeValues
                         .OrderByDescending(x => x.DisplayOrder)
                         .Select(x => x.DisplayOrder)
@@ -513,7 +625,9 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 			});
 
-			return entity.ProductVariantAttributes.AsQueryable();
+			return Ok(entity.ProductVariantAttributes.AsQueryable());
 		}
-	}
+
+        #endregion
+    }
 }

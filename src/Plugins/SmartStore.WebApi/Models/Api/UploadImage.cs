@@ -5,6 +5,9 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.WebApi.Models.Api
 {
+	/// <summary>
+	/// Information about an uploaded image returned by the API.
+	/// </summary>
 	[DataContract]
 	public partial class UploadImage : UploadFileBase
 	{

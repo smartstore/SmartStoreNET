@@ -111,13 +111,17 @@
       <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Microsoft.OData.Core, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Core.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Edm.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Spatial.6.15.0\lib\portable-net45+win+wpa81\Microsoft.Spatial.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -150,10 +154,6 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Routing" />
-    <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
       <Private>False</Private>
@@ -180,10 +180,6 @@
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Web.Http.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.OData.5.7.0\lib\net45\System.Web.Http.OData.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>False</Private>
@@ -191,6 +187,10 @@
     <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.10.0\lib\net45\System.Web.OData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
@@ -253,7 +253,7 @@
     <Compile Include="Controllers\OData\ProductManufacturersController.cs" />
     <Compile Include="Controllers\OData\ProductCategoriesController.cs" />
     <Compile Include="Controllers\OData\ProductPicturesController.cs" />
-    <Compile Include="Controllers\OData\PicturesController.cs" />
+    <Compile Include="Controllers\OData\MediaController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsSetsController.cs" />
     <Compile Include="Controllers\OData\ProductBundleItemsController.cs" />
@@ -286,6 +286,10 @@
     <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
     <Compile Include="Models\Api\UploadImportFile.cs" />
+    <Compile Include="Models\OData\Media\CheckUniqueFileNameResult.cs" />
+    <Compile Include="Models\OData\Media\CountFilesGroupedResult.cs" />
+    <Compile Include="Models\OData\Media\FileItemInfo.cs" />
+    <Compile Include="Models\OData\Media\FolderItemInfo.cs" />
     <Compile Include="Models\OData\OrderInfo.cs" />
     <Compile Include="Models\OData\OrderItemInfo.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />
@@ -293,13 +297,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Security\WebApiPermissionProvider.cs" />
+    <Compile Include="Services\CustomRoutingConvention.cs" />
     <Compile Include="Services\IWebApiPluginService.cs" />
     <Compile Include="Services\WebApiPdfHelper.cs" />
     <Compile Include="Services\Swagger\SwaggerOdataDocumentFilter.cs" />
     <Compile Include="Services\Swagger\SwaggerDefaultValueFilter.cs" />
     <Compile Include="Services\Swagger\SwaggerSchemaFilter.cs" />
     <Compile Include="Services\WebApiCatalogSearchQueryModelBinder.cs" />
-    <Compile Include="Services\WebApiCore.cs" />
+    <Compile Include="Models\OData\ManageAttributeType.cs" />
     <Compile Include="Services\WebApiPluginService.cs" />
     <Compile Include="WebApiConfigurationProvider.cs" />
     <Compile Include="WebApiPlugin.cs" />
@@ -352,9 +357,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="changelog.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -7,14 +7,13 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
-using SmartStoreNetWebApiClient;
 
-namespace SmartStore.Net.WebApi
+namespace SmartStore.WebApi.Client
 {
 	public class ApiConsumer : HmacAuthentication
 	{
-		public static string XmlAcceptType { get { return "application/atom+xml,application/atomsvc+xml,application/xml"; } }
-		public static string JsonAcceptType { get { return "application/json, text/javascript, */*"; } }
+		public static string XmlAcceptType => "application/atom+xml,application/xml";
+		public static string JsonAcceptType => "application/json";
 
 		private void SetTimeout(HttpWebRequest webRequest)
 		{

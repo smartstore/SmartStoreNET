@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using System.Web.Http.OData;
+using System.Web.OData;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.OData
 {
-	public class WebApiQueryableAttribute : EnableQueryAttribute
+    /// <summary>
+    /// The [EnableQuery] attribute enables clients to modify the query, by using query options such as $filter, $sort, and $page.
+    /// <see cref="https://docs.microsoft.com/de-de/aspnet/web-api/overview/odata-support-in-aspnet-web-api/supporting-odata-query-options"/>
+    /// </summary>
+    public class WebApiQueryableAttribute : EnableQueryAttribute
 	{
-		public bool PagingOptional { get; set; }
-
-		protected virtual bool MissingClientPaging(HttpActionExecutedContext actionExecutedContext)
+		protected virtual void SetDefaultQueryOptions(HttpActionExecutedContext actionExecutedContext)
 		{
-			if (PagingOptional)
-				return false;
-
 			try
 			{
-				var content = actionExecutedContext.Response.Content as ObjectContent;
-
 				if (MaxTop == 0)
 				{
 					var controllingData = WebApiCachingControllingData.Data();
@@ -29,38 +25,29 @@ namespace SmartStore.Web.Framework.WebApi.OData
 					MaxExpansionDepth = controllingData.MaxExpansionDepth;
 				}
 
-				if (content != null)
+				var content = actionExecutedContext?.Response?.Content as ObjectContent;
+				if (content?.Value is HttpError || content?.Value is SingleResult)
 				{
-					if (content.Value is HttpError)
-						return false;
-
-					if (content.Value is SingleResult)
-						return false;	// 'true' would result in a 500 'internal server error'
+					// Paging not required.
+					return;
 				}
 
-				var query = actionExecutedContext.Request.RequestUri.Query;
-				var missingClientPaging = query.IsEmpty() || !query.Contains("$top=");
-
-				if (missingClientPaging)
+				var hasClientPaging = actionExecutedContext?.Request?.RequestUri?.Query?.Contains("$top=") ?? false;
+				if (!hasClientPaging)
 				{
-					actionExecutedContext.Response = actionExecutedContext.Request.CreateErrorResponse(HttpStatusCode.BadRequest,
-						$"Missing client paging. Please specify odata $top query option. Maximum value is {MaxTop}.");
-
-					return true;
+					// If paging is required and there is no $top sent by client then force the page size specified by merchant.
+					PageSize = MaxTop;
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
 			}
-
-			return false;
 		}
 
 		public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
 		{
-			if (MissingClientPaging(actionExecutedContext))
-				return;
+			SetDefaultQueryOptions(actionExecutedContext);
 
 			base.OnActionExecuted(actionExecutedContext);
 		}

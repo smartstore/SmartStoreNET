@@ -1,4 +1,4 @@
-﻿namespace SmartStore.Net.WebApi
+﻿namespace SmartStore.WebApi.Client
 {
     public class WebApiConsumerResponse
 	{

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Core.Security;
@@ -28,68 +29,112 @@ namespace SmartStore.WebApi.Controllers.OData
 			_eventPublisher = eventPublisher;
 		}
 
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult Get()
+		{
+			return Ok(GetEntitySet());
+		}
+
+		[WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+        public IHttpActionResult Get(int key)
+		{
+			return Ok(GetByKey(key));
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Create)]
+		public IHttpActionResult Post(Address entity)
+		{
+			var result = Insert(entity, () =>
+			{
+				Service.InsertAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Put(int key, Address entity)
+		{
+			var result = await UpdateAsync(entity, key, () =>
+			{
+				Service.UpdateAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Address> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity =>
+			{
+				Service.UpdateAddress(entity);
+				PublishOrderUpdated(entity.Id);
+			});
+
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity =>
+			{
+				var entityId = entity?.Id ?? 0;
+
+				Service.DeleteAddress(entity);
+				PublishOrderUpdated(entityId);
+			});
+
+			return result;
+		}
+
+		#region Navigation properties
+
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult GetCountry(int key)
+		{
+			return Ok(GetRelatedEntity(key, x => x.Country));
+		}
+
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+		public IHttpActionResult GetStateProvince(int key)
+		{
+			return Ok(GetRelatedEntity(key, x => x.StateProvince));
+		}
+
+		#endregion
+
 		private void PublishOrderUpdated(int addressId)
 		{
+			if (addressId == 0)
+			{
+				return;
+			}
+
 			this.ProcessEntity(() =>
 			{
-				if (addressId != 0)
-				{
-					var orders = _orderRepository.Value.TableUntracked
-						.Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
-						.ToList();
+				var orders = _orderRepository.Value.TableUntracked
+					.Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
+					.ToList();
 
-					foreach (var order in orders)
-					{
-						_eventPublisher.Value.PublishOrderUpdated(order);
-					}
+				foreach (var order in orders)
+				{
+					_eventPublisher.Value.PublishOrderUpdated(order);
 				}
 			});
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Create)]
-		protected override void Insert(Address entity)
-		{
-			Service.InsertAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
-        protected override void Update(Address entity)
-		{
-			Service.UpdateAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
-        protected override void Delete(Address entity)
-		{
-			int entityId = (entity == null ? 0 : entity.Id);
-
-			Service.DeleteAddress(entity);
-			PublishOrderUpdated(entityId);
-		}
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Address> GetAddress(int key)
-		{
-			return GetSingleResult(key);
-		}
-
-		// Navigation properties.
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Country> GetCountry(int key)
-		{
-			return GetRelatedEntity(key, x => x.Country);
-		}
-
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<StateProvince> GetStateProvince(int key)
-		{
-			return GetRelatedEntity(key, x => x.StateProvince);
 		}
 	}
 }

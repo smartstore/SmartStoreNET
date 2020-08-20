@@ -175,10 +175,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(bool liveRates = false)
         {
             var language = _services.WorkContext.WorkingLanguage;
-            var allCurrencies = _currencyService.GetAllCurrencies(true)
-                .ToDictionarySafe(x => x.CurrencyCode.EmptyNull().ToUpper(), x => x);
+            var allCurrencies = _currencyService.GetAllCurrencies(true);
+            var allCurrenciesByIsoCode = allCurrencies.ToDictionarySafe(x => x.CurrencyCode.EmptyNull().ToUpper(), x => x);
 
-            var models = allCurrencies.Select(x => CreateCurrencyListModel(x.Value)).ToList();
+            var models = allCurrencies.Select(x => CreateCurrencyListModel(x)).ToList();
 
             if (liveRates)
             {
@@ -193,7 +193,7 @@ namespace SmartStore.Admin.Controllers
                     var rates = _currencyService.GetCurrencyLiveRates(primaryExchangeCurrency.CurrencyCode);
 
                     // get localized name of currencies
-                    var currencyNames = allCurrencies.ToDictionarySafe(
+                    var currencyNames = allCurrenciesByIsoCode.ToDictionarySafe(
                         x => x.Key,
                         x => x.Value.GetLocalized(y => y.Name, language, true, false).Value
                     );
@@ -214,7 +214,7 @@ namespace SmartStore.Admin.Controllers
                     // provide rate with currency name and whether it is available in store
                     rates.Each(x =>
                     {
-                        x.IsStoreCurrency = allCurrencies.ContainsKey(x.CurrencyCode);
+                        x.IsStoreCurrency = allCurrenciesByIsoCode.ContainsKey(x.CurrencyCode);
 
                         if (x.Name.IsEmpty() && currencyNames.ContainsKey(x.CurrencyCode))
                             x.Name = currencyNames[x.CurrencyCode];

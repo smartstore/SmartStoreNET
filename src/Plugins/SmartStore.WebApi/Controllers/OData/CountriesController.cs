@@ -1,5 +1,6 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
@@ -11,38 +12,63 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class CountriesController : WebApiEntityController<Country, ICountryService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Create)]
-		protected override void Insert(Country entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
+		public IHttpActionResult Get()
 		{
-			Service.InsertCountry(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Update)]
-        protected override void Update(Country entity)
-		{
-			Service.UpdateCountry(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Delete)]
-        protected override void Delete(Country entity)
-		{
-			Service.DeleteCountry(entity);
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
-        public SingleResult<Country> GetCountry(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(GetByKey(key));
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Create)]
+		public IHttpActionResult Post(Country entity)
+		{
+			var result = Insert(entity, () => Service.InsertCountry(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Update)]
+		public async Task<IHttpActionResult> Put(int key, Country entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateCountry(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Country> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateCountry(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Configuration.Country.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteCountry(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.Country.Read)]
-        public IQueryable<StateProvince> GetStateProvinces(int key)
+        public IHttpActionResult GetStateProvinces(int key)
 		{
-			return GetRelatedCollection(key, x => x.StateProvinces);
+			return Ok(GetRelatedCollection(key, x => x.StateProvinces));
 		}
+
+		#endregion
 	}
 }

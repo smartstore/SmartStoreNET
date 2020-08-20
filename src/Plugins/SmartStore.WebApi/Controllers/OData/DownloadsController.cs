@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Services.Media;
@@ -10,29 +12,52 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class DownloadsController : WebApiEntityController<Download, IDownloadService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Media.Download.Create)]
-		protected override void Insert(Download entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Read)]
+		public IHttpActionResult Get()
 		{
-			Service.InsertDownload(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Media.Download.Update)]
-        protected override void Update(Download entity)
-		{
-			Service.UpdateDownload(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Media.Download.Delete)]
-        protected override void Delete(Download entity)
-		{
-			Service.DeleteDownload(entity);
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Read)]
-        public SingleResult<Download> GetDownload(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(GetByKey(key));
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Create)]
+		public IHttpActionResult Post(Download entity)
+		{
+			var result = Insert(entity, () => Service.InsertDownload(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Update)]
+		public async Task<IHttpActionResult> Put(int key, Download entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateDownload(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Update)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<Download> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateDownload(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Media.Download.Delete)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteDownload(entity));
+			return result;
 		}
 	}
 }

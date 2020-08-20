@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
@@ -10,38 +12,63 @@ namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductSpecificationAttributesController : WebApiEntityController<ProductSpecificationAttribute, ISpecificationAttributeService>
 	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
-		protected override void Insert(ProductSpecificationAttribute entity)
+		[WebApiQueryable]
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IHttpActionResult Get()
 		{
-			Service.InsertProductSpecificationAttribute(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
-        protected override void Update(ProductSpecificationAttribute entity)
-		{
-			Service.UpdateProductSpecificationAttribute(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
-        protected override void Delete(ProductSpecificationAttribute entity)
-		{
-			Service.DeleteProductSpecificationAttribute(entity);
+			return Ok(GetEntitySet());
 		}
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductSpecificationAttribute> GetProductSpecificationAttribute(int key)
+        public IHttpActionResult Get(int key)
 		{
-			return GetSingleResult(key);
+			return Ok(GetByKey(key));
 		}
 
-		// Navigation properties.
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+		public IHttpActionResult GetProperty(int key, string propertyName)
+		{
+			return GetPropertyValue(key, propertyName);
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
+		public IHttpActionResult Post(ProductSpecificationAttribute entity)
+		{
+			var result = Insert(entity, () => Service.InsertProductSpecificationAttribute(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
+		public async Task<IHttpActionResult> Put(int key, ProductSpecificationAttribute entity)
+		{
+			var result = await UpdateAsync(entity, key, () => Service.UpdateProductSpecificationAttribute(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
+		public async Task<IHttpActionResult> Patch(int key, Delta<ProductSpecificationAttribute> model)
+		{
+			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateProductSpecificationAttribute(entity));
+			return result;
+		}
+
+		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
+		public async Task<IHttpActionResult> Delete(int key)
+		{
+			var result = await DeleteAsync(key, entity => Service.DeleteProductSpecificationAttribute(entity));
+			return result;
+		}
+
+		#region Navigation properties
 
 		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<SpecificationAttributeOption> GetSpecificationAttributeOption(int key)
+        public IHttpActionResult GetSpecificationAttributeOption(int key)
 		{
-            return GetRelatedEntity(key, x => x.SpecificationAttributeOption);
+            return Ok(GetRelatedEntity(key, x => x.SpecificationAttributeOption));
         }
+
+		#endregion
 	}
 }

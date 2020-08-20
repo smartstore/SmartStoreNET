@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SmartStoreNetWebApiClient
+namespace SmartStore.WebApi.Client
 {
 	public static class Extensions
 	{

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 
-namespace SmartStore.WebApi.Services
+namespace SmartStore.WebApi.Models.OData
 {
+	/// <summary>
+	/// Data send by the consumer to manage product attributes.
+	/// </summary>
 	[Serializable]
 	internal class ManageAttributeType
 	{

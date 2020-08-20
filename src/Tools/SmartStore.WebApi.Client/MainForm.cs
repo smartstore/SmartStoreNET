@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
-using SmartStore.Net.WebApi;
-using SmartStoreNetWebApiClient.Properties;
+using SmartStore.WebApi.Client.Properties;
 
-namespace SmartStoreNetWebApiClient
+namespace SmartStore.WebApi.Client
 {
 	public partial class MainForm : Form
 	{
@@ -75,7 +74,7 @@ namespace SmartStoreNetWebApiClient
 				SecretKey = txtSecretKey.Text,
 				Url = txtUrl.Text + (radioOdata.Checked ? "odata/" : "api/") + txtVersion.Text + cboPath.Text,
 				HttpMethod = cboMethod.Text,
-				HttpAcceptType = (radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType)
+				HttpAcceptType = radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType
 			};
 
 			if (cboQuery.Text.HasValue())

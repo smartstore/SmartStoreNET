@@ -107,17 +107,27 @@ namespace SmartStore.Web.Controllers
             // No attribute combination image, then load product picture.
             if (file == null)
             {
-                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.Id, 1)
+                var mediaFile = _productService.GetProductPicturesByProductId(product.Id, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault());
+                    .FirstOrDefault();
+
+                if (mediaFile != null)
+                {
+                    file = _mediaService.ConvertMediaFile(mediaFile);
+                }
             }
 
             if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
             {
                 // Let's check whether this product has some parent "grouped" product.
-                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                var mediaFile = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault());
+                    .FirstOrDefault();
+
+                if (mediaFile != null)
+                {
+                    file = _mediaService.ConvertMediaFile(mediaFile);
+                }
             }
 
             return new PictureModel

@@ -10,6 +10,11 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore
 {
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public sealed class ObjectSignatureAttribute : Attribute
+    {
+    }
+
     /// <summary>
     /// Provides a standard base class for facilitating sophisticated comparison of objects.
     /// </summary>
@@ -168,7 +173,6 @@ namespace SmartStore
 
     }
 
-
     /// <summary>
     /// Generic version of <see cref="ComparableObject" />.
     /// </summary>
@@ -198,5 +202,4 @@ namespace SmartStore
             return base.Equals(other);
         }
     }
-
 }

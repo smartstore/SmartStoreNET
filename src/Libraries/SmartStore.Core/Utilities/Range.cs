@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace SmartStore.Utilities
 {
-
     /// <summary>
     /// Helper class with shortcut methods for managing enumerables.
     /// Useful for inlining object generation in tests
@@ -135,5 +134,4 @@ namespace SmartStore.Utilities
             return array;
         }
     }
-
 }

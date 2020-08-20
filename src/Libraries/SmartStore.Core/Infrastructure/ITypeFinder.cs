@@ -57,6 +57,5 @@ namespace SmartStore.Core.Infrastructure
 		{
 			return finder.FindClassesOfType(typeof(T), assemblies, onlyConcreteClasses);
 		}
-
 	}
 }

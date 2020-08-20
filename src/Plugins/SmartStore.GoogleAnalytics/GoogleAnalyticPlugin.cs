@@ -77,7 +77,7 @@ ga('ecommerce:send');";
 		public IList<string> GetWidgetZones()
 		{
 			var zones = new List<string> { "head_html_tag" };
-			if (!string.IsNullOrWhiteSpace(_googleAnalyticsSettings.WidgetZone))
+			if (_googleAnalyticsSettings.WidgetZone.HasValue())
 			{
 				zones = new List<string>
 				{

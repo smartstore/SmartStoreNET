@@ -20,7 +20,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using SmartStore.WebApi.Models.OData;
 using SmartStore.WebApi.Models.OData.Media;
 using SmartStore.WebApi.Services;
 using SmartStore.WebApi.Services.Swagger;
@@ -55,6 +54,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");
 			m.EntitySet<FileItemInfo>("Media");
+			m.EntitySet<MediaFile>("MediaFiles");
 			m.EntitySet<MediaFolder>("MediaFolders");
 			m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");

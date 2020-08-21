@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Query;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
@@ -66,10 +67,6 @@ namespace SmartStore.WebApi.Controllers.OData
         public IHttpActionResult Get(int key)
         {
             var file = Service.GetFileById(key, _defaultLoadFlags);
-            if (file == null)
-            {
-                return NotFound();
-            }
 
             return Ok(Convert(file));
         }
@@ -243,7 +240,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult GetFileByPath(ODataActionParameters parameters)
         {
@@ -252,14 +249,8 @@ namespace SmartStore.WebApi.Controllers.OData
             this.ProcessEntity(() =>
             {
                 var path = parameters.GetValueSafe<string>("Path");
-                var mediaFile = Service.GetFileByPath(path, _defaultLoadFlags);
-
-                if (mediaFile == null)
-                {
-                    throw Request.NotFoundException($"The file with the path '{path ?? string.Empty}' does not exist.");
-                }
-
-                file = Convert(mediaFile);
+                var result = Service.GetFileByPath(path, _defaultLoadFlags);
+                file = Convert(result);
             });
 
             return Ok(file);
@@ -390,7 +381,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media(123)/MoveFile {"DestinationFileName":"content/updated-file-name.jpg"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult MoveFile(int key, ODataActionParameters parameters)
         {
@@ -415,7 +406,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media(123)/CopyFile {"DestinationFileName":"content/new-file.jpg"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult CopyFile(int key, ODataActionParameters parameters)
         {
@@ -485,7 +476,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media/CreateFolder {"Path":"content/my-folder"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult CreateFolder(ODataActionParameters parameters)
         {
@@ -503,7 +494,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media/MoveFolder {"Path":"content/my-folder", "DestinationPath":"content/my-renamed-folder"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult MoveFolder(ODataActionParameters parameters)
         {
@@ -522,7 +513,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         /// POST /Media/CopyFolder {"Path":"content/my-folder", "DestinationPath":"content/my-new-folder"}
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult CopyFolder(ODataActionParameters parameters)
         {
@@ -584,14 +575,24 @@ namespace SmartStore.WebApi.Controllers.OData
 
         private FileItemInfo Convert(MediaFileInfo file)
         {
-            var item = MiniMapper.Map<MediaFileInfo, FileItemInfo>(file, CultureInfo.InvariantCulture);
-            return item;
+            if (file != null)
+            {
+                var item = MiniMapper.Map<MediaFileInfo, FileItemInfo>(file, CultureInfo.InvariantCulture);
+                return item;
+            }
+
+            return null;
         }
 
         private FolderItemInfo Convert(MediaFolderInfo folder)
         {
-            var item = MiniMapper.Map<MediaFolderInfo, FolderItemInfo>(folder, CultureInfo.InvariantCulture);
-            return item;
+            if (folder != null)
+            {
+                var item = MiniMapper.Map<MediaFolderInfo, FolderItemInfo>(folder, CultureInfo.InvariantCulture);
+                return item;
+            }
+
+            return null;
         }
 
         #endregion

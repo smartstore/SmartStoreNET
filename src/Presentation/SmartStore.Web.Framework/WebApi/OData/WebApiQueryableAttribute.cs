@@ -7,11 +7,14 @@ using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.OData
 {
-    /// <summary>
-    /// The [EnableQuery] attribute enables clients to modify the query, by using query options such as $filter, $sort, and $page.
-    /// <see cref="https://docs.microsoft.com/de-de/aspnet/web-api/overview/odata-support-in-aspnet-web-api/supporting-odata-query-options"/>
-    /// </summary>
-    public class WebApiQueryableAttribute : EnableQueryAttribute
+	/// <summary>
+	/// The [EnableQuery] attribute enables clients to modify the query, by using query options such as $expand, $filter, $sort, and $page.
+	/// <see cref="https://docs.microsoft.com/de-de/aspnet/web-api/overview/odata-support-in-aspnet-web-api/supporting-odata-query-options"/>
+	/// </summary>
+	/// <remarks>
+	/// [AutoExpand] is ignored when [EnableQuery] is missing. Always required if navigation properties are to be expanded.
+	/// </remarks>
+	public class WebApiQueryableAttribute : EnableQueryAttribute
 	{
 		protected virtual void SetDefaultQueryOptions(HttpActionExecutedContext actionExecutedContext)
 		{

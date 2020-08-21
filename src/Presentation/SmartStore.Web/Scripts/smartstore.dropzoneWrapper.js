@@ -495,8 +495,10 @@
 						}
 					});
 				} else {
-					const hidden = document.getElementById("media-file-ids");				
-					$("#media-file-ids").val(hidden.value + assignableFileIds);
+					const hidden = document.getElementById("media-file-ids");
+					if (hidden) {
+						hidden.value = (hidden.value + assignableFileIds);
+                    }
                 }
 			}
 

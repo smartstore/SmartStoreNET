@@ -210,7 +210,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return ResponseMessage(response);
         }
 
-        [HttpPost]
+        [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentPending(int key)
 		{
@@ -225,7 +225,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Ok(order);
 		}
 
-		[HttpPost]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentPaid(int key, ODataActionParameters parameters)
 		{
@@ -247,7 +247,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Ok(order);
 		}
 
-		[HttpPost]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult PaymentRefund(int key, ODataActionParameters parameters)
 		{
@@ -272,7 +272,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Ok(order);
 		}
 
-		[HttpPost]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult Cancel(int key)
 		{
@@ -286,7 +286,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Ok(order);
 		}
 
-		[HttpPost]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.EditShipment)]
         public IHttpActionResult AddShipment(int key, ODataActionParameters parameters)
 		{
@@ -313,7 +313,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Ok(order);
 		}
 
-		[HttpPost]
+		[HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Update)]
         public IHttpActionResult CompleteOrder(int key)
 		{

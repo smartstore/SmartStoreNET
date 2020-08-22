@@ -29,10 +29,10 @@ namespace SmartStore.Core.IO
 			{ new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }, DecodeGif },
 			{ new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }, DecodeGif },
 			{ new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }, DecodePng },
-            //{ new byte[] { 0xff, 0xd8 }, DecodeJfif },
-			//{ new byte[] { 0xff, 0xd8, 0xff, 0xe0 }, DecodeJpeg },
-			//{ new byte[] { 0xff }, DecodeJpeg2 },
-		};
+            { new byte[] { 0xff, 0xd8 }, DecodeJpeg },
+            //{ new byte[] { 0xff, 0xd8, 0xff, 0xe0 }, DecodeJpeg },
+            //{ new byte[] { 0xff }, DecodeJpeg2 }
+        };
 
 		private static int _maxMagicBytesLength = 0;
 
@@ -104,18 +104,18 @@ namespace SmartStore.Core.IO
 
 			try
 			{
-				if (mime == "image/jpeg")
+				//if (mime == "image/jpeg")
+				//{
+				//	// Reading JPEG header does not work reliably
+				//	gdip = true;
+				//	return GetDimensionsByGdip(input);
+				//}
+				if (mime == "image/svg+xml")
 				{
-					// Reading JPEG header does not work reliably
-					gdip = true;
-					return GetDimensionsByGdip(input);
+					return GetDimensionsFromSvg(input);
 				}
-                else if (mime == "image/svg+xml")
-                {
-                    return GetDimensionsFromSvg(input);
-                }
 
-                using (var reader = new BinaryReader(input, Encoding.Unicode, true))
+				using (var reader = new BinaryReader(input, Encoding.Unicode, true))
 				{
 					return GetDimensions(reader);
 				}
@@ -168,7 +168,15 @@ namespace SmartStore.Core.IO
 				{
 					if (StartsWith(magicBytes, kvPair.Key))
 					{
-						return kvPair.Value(binaryReader);
+						var size = kvPair.Value(binaryReader);
+						if (size.IsEmpty)
+                        {
+							break;
+                        }
+						else
+                        {
+							return size;
+                        }
 					}
 				}
 			}
@@ -184,43 +192,43 @@ namespace SmartStore.Core.IO
 			}
 		}
 
-        private static Size GetDimensionsFromSvg(Stream input)
-        {
-            using (var reader = XmlReader.Create(input))
-            {
-                while (reader.Read())
-                {
-                    if (reader.IsStartElement())
-                    {
-                        if (reader.Name == "svg")
-                        {
-                            var width = reader["width"];
-                            var height = reader["height"];
+		private static Size GetDimensionsFromSvg(Stream input)
+		{
+			using (var reader = XmlReader.Create(input))
+			{
+				while (reader.Read())
+				{
+					if (reader.IsStartElement())
+					{
+						if (reader.Name == "svg")
+						{
+							var width = reader["width"];
+							var height = reader["height"];
 
-                            var size = new Size(width.ToInt(), height.ToInt());
-                            if (size.Width == 0 || size.Height == 0)
-                            {
-                                var viewBox = reader["viewBox"];
-                                if (viewBox.HasValue())
-                                {
-                                    var arrViewBox = viewBox.Trim().Split(' ');
-                                    if (arrViewBox.Length == 4)
-                                    {
-                                        size = new Size(arrViewBox[2].ToInt(), arrViewBox[3].ToInt());
-                                    }
-                                }
-                            }
+							var size = new Size(width.ToInt(), height.ToInt());
+							if (size.Width == 0 || size.Height == 0)
+							{
+								var viewBox = reader["viewBox"];
+								if (viewBox.HasValue())
+								{
+									var arrViewBox = viewBox.Trim().Split(' ');
+									if (arrViewBox.Length == 4)
+									{
+										size = new Size(arrViewBox[2].ToInt(), arrViewBox[3].ToInt());
+									}
+								}
+							}
 
-                            return size;
-                        }
-                    }
-                }
-            }
+							return size;
+						}
+					}
+				}
+			}
 
-            return Size.Empty;
-        }
+			return Size.Empty;
+		}
 
-        private static bool StartsWith(byte[] thisBytes, byte[] thatBytes)
+		private static bool StartsWith(byte[] thisBytes, byte[] thatBytes)
 		{
 			for (int i = 0; i < thatBytes.Length; i += 1)
 			{
@@ -288,130 +296,147 @@ namespace SmartStore.Core.IO
 			return new Size(width, height);
 		}
 
-		#region Experiments
-
 		private static Size DecodeJpeg(BinaryReader reader)
 		{
-			// For JPEGs, we need to read the first 12 bytes of each chunk.
-			// We'll read those 12 bytes at buf+2...buf+14, i.e. overwriting the existing buf.
-
-			var buf = (new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 }).Concat(reader.ReadBytes(20)).ToArray();
-
-			using (var f = new MemoryStream(buf))
+			string state = "started";
+			while (true)
 			{
-				if (buf[6] == (byte)'J' && buf[7] == (byte)'F' && buf[8] == (byte)'I' && buf[9] == (byte)'F')
+				byte[] c;
+				if (state == "started")
 				{
-					var len = buf.Length;
-					long pos = 2;
-					while (buf[2] == 0xFF)
+					c = reader.ReadBytes(1);
+					state = (c[0] == 0xFF) ? "sof" : "started";
+				}
+				else if (state == "sof")
+				{
+					c = reader.ReadBytes(1);
+					if (c[0] >= 0xe0 && c[0] <= 0xef)
 					{
-						if (buf[3] == 0xC0 || buf[3] == 0xC1 || buf[3] == 0xC2 || buf[3] == 0xC3 || buf[3] == 0xC9 || buf[3] == 0xCA || buf[3] == 0xCB) break;
-						pos += 2 + (buf[4] << 8) + buf[5];
-						if (pos + 12 > len) break;
-						//fseek(f, pos, SEEK_SET);
-						f.Seek(pos, SeekOrigin.Begin);
-						//fread(buf + 2, 1, 12, f);
-						f.Read(buf, 0, 12);
+						state = "skipframe";
+					}
+					else if ((c[0] >= 0xC0 && c[0] <= 0xC3) || (c[0] >= 0xC5 && c[0] <= 0xC7) || (c[0] >= 0xC9 && c[0] <= 0xCB) || (c[0] >= 0xCD && c[0] <= 0xCF))
+					{
+						state = "readsize";
+					}
+					else if (c[0] == 0xFF)
+					{
+						state = "sof";
+					}
+					else
+					{
+						state = "skipframe";
 					}
 				}
-			}
-
-			// JPEG: (first two bytes of buf are first two bytes of the jpeg file; rest of buf is the DCT frame
-			if (buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF)
-			{
-				var height = (buf[7] << 8) + buf[8];
-				var width = (buf[9] << 8) + buf[10];
-
-				return new Size(width, height);
-			}
-
-			throw new UnknownImageFormatException();
-		}
-
-		private static Size DecodeJpeg2(BinaryReader reader)
-		{
-			bool found = false;
-			bool eof = false;
-
-			while (!found || eof)
-			{
-				// read 0xFF and the type
-				//reader.ReadByte();
-				byte type = reader.ReadByte();
-
-				// get length
-				int len = 0;
-				switch (type)
+				else if (state == "skipframe")
 				{
-					// start and end of the image
-					case 0xD8:
-					case 0xD9:
-						len = 0;
-						break;
-
-					// restart interval
-					case 0xDD:
-						len = 2;
-						break;
-
-					// the next two bytes is the length
-					default:
-						int lenHi = reader.ReadByte();
-						int lenLo = reader.ReadByte();
-						len = (lenHi << 8 | lenLo) - 2;
-						break;
+					c = reader.ReadBytes(2);
+					int skip = ReadInt(c) - 2;
+					reader.ReadBytes(skip);
+					state = "started";
 				}
-
-				// EOF?
-				if (type == 0xD9)
-					eof = true;
-
-				// process the data
-				if (len > 0)
+				else if (state == "readsize")
 				{
-					// read the data
-					byte[] data = reader.ReadBytes(len);
-
-					// this is what we are looking for
-					if (type == 0xC0)
-					{
-						int width = data[1] << 8 | data[2];
-						int height = data[3] << 8 | data[4];
-						return new Size(width, height);
-					}
-				}
-			}
-
-			throw new UnknownImageFormatException();
-		}
-
-		private static Size DecodeJfif(BinaryReader reader)
-		{
-			while (reader.ReadByte() == 0xff)
-			{
-				byte marker = reader.ReadByte();
-				short chunkLength = ReadLittleEndianInt16(reader);
-				if (marker == 0xc0)
-				{
-					reader.ReadByte();
-					int height = ReadLittleEndianInt16(reader);
-					int width = ReadLittleEndianInt16(reader);
+					c = reader.ReadBytes(7);
+					var width = ReadInt(new[] { c[5], c[6] });
+					var height = ReadInt(new[] { c[3], c[4] });
 					return new Size(width, height);
 				}
-
-				if (chunkLength < 0)
-				{
-					ushort uchunkLength = (ushort)chunkLength;
-					reader.ReadBytes(uchunkLength - 2);
-				}
-				else
-				{
-					reader.ReadBytes(chunkLength - 2);
-				}
 			}
 
 			throw new UnknownImageFormatException();
 		}
+
+		private static int ReadInt(byte[] chars)
+		{
+			return (chars[0] << 8) + chars[1];
+		}
+
+		#region Experiments
+
+		//private static Size DecodeJpeg2(BinaryReader reader)
+		//{
+		//	bool found = false;
+		//	bool eof = false;
+
+		//	while (!found || eof)
+		//	{
+		//		// read 0xFF and the type
+		//		//reader.ReadByte();
+		//		byte type = reader.ReadByte();
+
+		//		// get length
+		//		int len = 0;
+		//		switch (type)
+		//		{
+		//			// start and end of the image
+		//			case 0xD8:
+		//			case 0xD9:
+		//				len = 0;
+		//				break;
+
+		//			// restart interval
+		//			case 0xDD:
+		//				len = 2;
+		//				break;
+
+		//			// the next two bytes is the length
+		//			default:
+		//				int lenHi = reader.ReadByte();
+		//				int lenLo = reader.ReadByte();
+		//				len = (lenHi << 8 | lenLo) - 2;
+		//				break;
+		//		}
+
+		//		// EOF?
+		//		if (type == 0xD9)
+		//			eof = true;
+
+		//		// process the data
+		//		if (len > 0)
+		//		{
+		//			// read the data
+		//			byte[] data = reader.ReadBytes(len);
+
+		//			// this is what we are looking for
+		//			if (type == 0xC0)
+		//			{
+		//				int width = data[1] << 8 | data[2];
+		//				int height = data[3] << 8 | data[4];
+		//				return new Size(width, height);
+		//			}
+		//		}
+		//	}
+
+		//	throw new UnknownImageFormatException();
+		//}
+
+		//private static Size DecodeJfif(BinaryReader reader)
+		//{
+		//	while (reader.ReadByte() == 0xff)
+		//	{
+		//		byte marker = reader.ReadByte();
+		//		short chunkLength = ReadLittleEndianInt16(reader);
+		//		if (marker == 0xc0)
+		//		{
+		//			reader.ReadByte();
+		//			int height = ReadLittleEndianInt16(reader);
+		//			int width = ReadLittleEndianInt16(reader);
+		//			return new Size(width, height);
+		//		}
+
+		//		if (chunkLength < 0)
+		//		{
+		//			ushort uchunkLength = (ushort)chunkLength;
+		//			reader.ReadBytes(uchunkLength - 2);
+		//		}
+		//		else
+		//		{
+		//			reader.ReadBytes(chunkLength - 2);
+		//		}
+		//	}
+
+		//	throw new UnknownImageFormatException();
+		//}
 
 		#endregion
 	}

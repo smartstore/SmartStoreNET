@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Formatting;
+﻿using System;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.OData.Builder;
@@ -50,6 +51,12 @@ namespace SmartStore.Web.Framework.WebApi
 			config.EnableCors(corsAttribute);
             
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+
+			// OData V4 uses DateTimeOffset to represent DateTime. But converting between DateTimeOffset and DateTime will lose the time zone information.
+			// Without UTC time zone configuration, OData would convert date values to the server's standard local time.
+			// This would overwrite the UTC values in the database with local time values.
+			// See https://docs.microsoft.com/en-us/odata/webapi/datetime-support
+			config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
 			// Allow OData actions and functions without the need for namespaces (OData V3 backward compatibility).
 			// A namespace URL world be for example: /Products(123)/ProductService.FinalPrice

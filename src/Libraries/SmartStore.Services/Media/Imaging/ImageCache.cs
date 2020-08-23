@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Logging;
@@ -31,14 +32,25 @@ namespace SmartStore.Services.Media
 
 		public ILogger Logger { get; set; } = NullLogger.Instance;
 
+		public void Put(CachedImage cachedImage, IImage image)
+		{
+			var path = BuildPath(cachedImage.Path);
+			using var stream = _fileSystem.GetFile(path).OpenWrite();
+
+			if (PreparePut(cachedImage, stream))
+			{
+				image.Save(stream);
+				PostPut(cachedImage, path);
+			}
+		}
+
 		public void Put(CachedImage cachedImage, Stream stream)
 		{
 			if (PreparePut(cachedImage, stream))
 			{
 				var path = BuildPath(cachedImage.Path);
 				_fileSystem.SaveStream(path, stream);
-				cachedImage.Exists = true;
-				cachedImage.File = _fileSystem.GetFile(path);
+				PostPut(cachedImage, path);
 			}
 		}
 
@@ -48,9 +60,15 @@ namespace SmartStore.Services.Media
 			{
 				var path = BuildPath(cachedImage.Path);
 				await _fileSystem.SaveStreamAsync(path, stream);
-				cachedImage.Exists = true;
-				cachedImage.File = _fileSystem.GetFile(path);
+				PostPut(cachedImage, path);
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void PostPut(CachedImage cachedImage, string path)
+        {
+			cachedImage.Exists = true;
+			cachedImage.File = _fileSystem.GetFile(path);
 		}
 
 		private bool PreparePut(CachedImage cachedImage, Stream stream)
@@ -60,11 +78,6 @@ namespace SmartStore.Services.Media
 			if (stream == null)
 			{
 				return false;
-			}
-
-			if (cachedImage.Exists)
-			{
-				_fileSystem.DeleteFile(BuildPath(cachedImage.Path));
 			}
 
 			// create folder if needed

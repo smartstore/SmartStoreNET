@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SmartStore.Services.Media
 {
@@ -13,6 +14,12 @@ namespace SmartStore.Services.Media
         /// <param name="extension">The file extension to check.</param>
         /// <returns>A value indicating whether processing is possible</returns>
         bool IsSupportedImage(string extension);
+
+        IImageFormat GetImageFormat(string extension);
+
+        IImage LoadImage(string path);
+
+        IImage LoadImage(Stream stream);
 
         /// <summary>
         /// Processes an image

@@ -71,30 +71,28 @@ namespace SmartStore.Services.Media
 	/// </summary>
 	public class ImageProcessingEvent
 	{
-		public ImageProcessingEvent(ProcessImageQuery query, ImageFactory processor)
+		public ImageProcessingEvent(ProcessImageQuery query, IImage image)
 		{
 			Query = query;
-			Processor = processor;
+			Image = image;
 		}
 
 		public ProcessImageQuery Query { get; private set; }
-		public ImageFactory Processor { get; private set; }
+		public IImage Image { get; private set; }
 	}
 
 	/// <summary>
-	/// Published after processing finishes and the result is saved to a stream (ProcessImageResult.Result)
+	/// Published after processing finishes.
 	/// </summary>
 	public class ImageProcessedEvent
 	{
-		public ImageProcessedEvent(ProcessImageQuery query, ImageFactory processor, ProcessImageResult result)
+		public ImageProcessedEvent(ProcessImageQuery query, ProcessImageResult result)
 		{
 			Query = query;
-			Processor = processor;
 			Result = result;
 		}
 
 		public ProcessImageQuery Query { get; private set; }
-		public ImageFactory Processor { get; private set; }
 		public ProcessImageResult Result { get; private set; }
 	}
 }

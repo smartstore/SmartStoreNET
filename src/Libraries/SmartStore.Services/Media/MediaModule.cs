@@ -36,7 +36,7 @@ namespace SmartStore.Services.Media
 
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
-            builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
+            builder.RegisterType<IPImageProcessor>().As<IImageProcessor>().InstancePerRequest();
             builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
             // Register factory for currently active media storage provider

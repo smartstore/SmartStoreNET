@@ -631,7 +631,7 @@ namespace SmartStore.Core.IO
 
             public Stream OpenWrite()
             {
-                return new FileStream(_localPath, FileMode.Open, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+                return new FileStream(_localPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
             }
 
             public Stream CreateFile()

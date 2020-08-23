@@ -13,14 +13,21 @@ namespace SmartStore.Services.Media
 		/// <summary>
 		/// Adds an image to the cache.
 		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImage"/> object, which is returned by the <c>Get()</c> method.</param>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImage"/> object which is returned by the <c>Get()</c> method.</param>
+		/// <param name="image">The image object.</param>
+		void Put(CachedImage cachedImage, IImage image);
+
+		/// <summary>
+		/// Adds an image to the cache.
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImage"/> object which is returned by the <c>Get()</c> method.</param>
 		/// <param name="stream">The file input stream.</param>
 		void Put(CachedImage cachedImage, Stream stream);
 
 		/// <summary>
 		/// Asynchronously adds an image to the cache.
 		/// </summary>
-		/// <param name="cachedImage">An instance of the <see cref="CachedImage"/> object, which is returned by the <c>Get()</c> method.</param>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImage"/> object which is returned by the <c>Get()</c> method.</param>
 		/// <param name="stream">The file input stream.</param>
 		Task PutAsync(CachedImage cachedImage, Stream stream);
 

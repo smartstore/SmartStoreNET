@@ -11,7 +11,7 @@ namespace SmartStore.Services.Customers
 		/// Gets CookieInfos of all plugins which are publishing cookies to be display in CookieManager dialog.
 		/// </summary>
 		/// <returns>List of CookieInfos.</returns>
-		List<CookieInfo> GetAllCookieInfos();
+		List<CookieInfo> GetAllCookieInfos(bool addSettingCookies = false);
 		
 		/// <summary>
 		/// Gets a value which specifies whether it is allowed to set a cookie of a certain type.

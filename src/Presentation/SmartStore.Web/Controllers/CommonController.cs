@@ -835,7 +835,7 @@ namespace SmartStore.Web.Controllers
         private void PrepareCookieManagerModel(CookieManagerModel model)
         {
             // Get cookie infos from plugins.
-            model.CookiesInfos = _cookieManager.GetAllCookieInfos();
+            model.CookiesInfos = _cookieManager.GetAllCookieInfos(true);
 
             var cookie = _cookieManager.GetCookieData(this.ControllerContext);
             

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace SmartStore.Services.Customers
 		private readonly ICommonServices _services;
 		private readonly ITypeFinder _typeFinder;
 		private readonly HttpContextBase _httpContext;
+		private readonly PrivacySettings _privacySettings;
 
 		public const string ConsentCookieName = "CookieConsent";
 
@@ -35,11 +38,13 @@ namespace SmartStore.Services.Customers
 		public CookieManager(
 			ICommonServices services,
 			ITypeFinder typeFinder,
-			HttpContextBase httpContext)
+			HttpContextBase httpContext,
+			PrivacySettings privacySettings)
 		{
 			_services = services;
 			_typeFinder = typeFinder;
 			_httpContext = httpContext;
+			_privacySettings = privacySettings;
 		}
 
 		public LocalizerEx T { get; set; } = NullLocalizer.InstanceEx;
@@ -63,7 +68,7 @@ namespace SmartStore.Services.Customers
 			return cookiePublishers;
 		}
 
-		public virtual List<CookieInfo> GetAllCookieInfos()
+		public virtual List<CookieInfo> GetAllCookieInfos(bool addSettingCookies = false)
 		{
 			var cookieInfos = new List<CookieInfo>();
 			var plugins = GetAllCookiePublishers();
@@ -72,6 +77,22 @@ namespace SmartStore.Services.Customers
 			{
 				var typedInstance = plugin as ICookiePublisher;
 				cookieInfos.Add(typedInstance.GetCookieInfo());
+			}
+
+			// Add user defined cookies from privacy settings.
+			if (addSettingCookies)
+			{
+				var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(_privacySettings.CookieInfos);
+
+				if (ciList != null && ciList.Count > 0)
+				{
+					foreach (var ci in ciList)
+					{
+						ci.Name = ci.GetLocalized(x => x.Name);
+						ci.Description = ci.GetLocalized(x => x.Description);
+						cookieInfos.Add(ci);
+					}
+				}
 			}
 
 			return cookieInfos;

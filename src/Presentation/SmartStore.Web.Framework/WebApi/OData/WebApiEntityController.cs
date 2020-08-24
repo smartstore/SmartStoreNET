@@ -17,7 +17,7 @@ using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.Web.Framework.WebApi
+namespace SmartStore.Web.Framework.WebApi.OData
 {
     /// <summary>
     /// Base class for API OData controller.

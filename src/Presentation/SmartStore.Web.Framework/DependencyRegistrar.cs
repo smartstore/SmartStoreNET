@@ -33,7 +33,6 @@ using SmartStore.Core.Security;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
 using SmartStore.Data.Caching;
-using SmartStore.Data.Setup;
 using SmartStore.Rules;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
@@ -95,8 +94,8 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
+using SmartStore.Web.Framework.WebApi.OData;
 using Module = Autofac.Module;
 
 namespace SmartStore.Web.Framework

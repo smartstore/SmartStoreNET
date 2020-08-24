@@ -7,7 +7,12 @@ namespace SmartStore.WebApi.Models.OData.Media
     public partial class MediaFolderOperationResult
     {
         [DataMember]
-        public FolderItemInfo Folder { get; set; }
+        public int FolderId { get; set; }
+
+        // TODO: add properties later. Complex Type with navigation property requires OData ASP.NET Web API V6.
+        // See https://docs.microsoft.com/en-us/odata/webapi/complextypewithnavigationproperty
+        //[DataMember]
+        //public FolderItemInfo Folder { get; set; }
 
         [DataMember]
         public ICollection<DuplicateFileInfo> DuplicateFiles { get; set; }
@@ -16,10 +21,16 @@ namespace SmartStore.WebApi.Models.OData.Media
         public class DuplicateFileInfo
         {
             [DataMember]
-            public FileItemInfo SourceFile { get; set; }
+            public int SourceFileId { get; set; }
 
             [DataMember]
-            public FileItemInfo DestinationFile { get; set; }
+            public int DestinationFileId { get; set; }
+
+            //[DataMember]
+            //public FileItemInfo SourceFile { get; set; }
+
+            //[DataMember]
+            //public FileItemInfo DestinationFile { get; set; }
 
             [DataMember]
             public string UniquePath { get; set; }

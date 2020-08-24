@@ -124,8 +124,9 @@ namespace SmartStore.WebApi.Controllers.OData
 
         public IHttpActionResult Delete()
         {
-            // We do not allow direct entity deletion.
-            // There is an action method "DeleteFile" instead to trigger the corresponding service method.
+            // Insufficient endpoint. Parameters required but ODataActionParameters not possible here.
+            // Query string parameters less good because not part of the EDM.
+            // So use action method "DeleteFile" instead to trigger the corresponding service method.
 
             return StatusCode(HttpStatusCode.Forbidden);
         }
@@ -192,8 +193,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig
                 .Action("CopyFile")
-                .ReturnsFromEntitySet<FileItemInfo>("Media")
-                //.Returns<MediaFileOperationResult>()
+                .Returns<MediaFileOperationResult>()
                 .AddParameter<string>("DestinationFileName")
                 .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
@@ -224,8 +224,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("CopyFolder")
-                .Returns<FolderItemInfo>()
-                //.Returns<MediaFolderOperationResult>()
+                .Returns<MediaFolderOperationResult>()
                 .AddParameter<string>("Path")
                 .AddParameter<string>("DestinationPath")
                 .AddParameter<DuplicateEntryHandling>("DuplicateEntryHandling", true);
@@ -427,7 +426,8 @@ namespace SmartStore.WebApi.Controllers.OData
 
                 opResult = new MediaFileOperationResult
                 {
-                    DestinationFile = Convert(result.DestinationFile),
+                    DestinationFileId = result.DestinationFile.Id,
+                    //DestinationFile = Convert(result.DestinationFile),
                     IsDuplicate = result.IsDuplicate,
                     UniquePath = result.UniquePath
                 };
@@ -529,14 +529,17 @@ namespace SmartStore.WebApi.Controllers.OData
 
                 opResult = new MediaFolderOperationResult
                 {
-                    Folder = Convert(result.Folder)
+                    FolderId = result.Folder.Id,
+                    //Folder = Convert(result.Folder)
                 };
 
                 opResult.DuplicateFiles = result.DuplicateFiles
                     .Select(x => new MediaFolderOperationResult.DuplicateFileInfo
                     {
-                        SourceFile = Convert(x.SourceFile),
-                        DestinationFile = Convert(x.DestinationFile),
+                        SourceFileId = x.SourceFile.Id,
+                        DestinationFileId = x.DestinationFile.Id,
+                        //SourceFile = Convert(x.SourceFile),
+                        //DestinationFile = Convert(x.DestinationFile),
                         UniquePath = x.UniquePath
                     })
                     .ToList();

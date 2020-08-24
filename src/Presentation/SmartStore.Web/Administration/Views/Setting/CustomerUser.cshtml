@@ -788,8 +788,18 @@
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.PrivacySettings.EnableCookieConsent,
-                    Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent))
+                    Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent, new { data_toggler_for = "#pnlModalCookieConsent" }))
                 @Html.ValidationMessageFor(model => model.PrivacySettings.EnableCookieConsent)
+            </td>
+        </tr>
+        <tr id="pnlModalCookieConsent">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.ModalCookieConsent)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.ModalCookieConsent,
+                    Html.CheckBoxFor(model => model.PrivacySettings.ModalCookieConsent))
+                @Html.ValidationMessageFor(model => model.PrivacySettings.ModalCookieConsent)
             </td>
         </tr>
         <tr>

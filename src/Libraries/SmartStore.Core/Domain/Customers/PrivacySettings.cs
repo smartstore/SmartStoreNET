@@ -8,6 +8,7 @@ namespace SmartStore.Core.Domain.Customers
 		public PrivacySettings()
 		{
 			EnableCookieConsent = true;
+			ModalCookieConsent = true;
 			StoreLastIpAddress = false;
 			DisplayGdprConsentOnForms = true;
 			FullNameOnContactUsRequired = false;
@@ -17,6 +18,11 @@ namespace SmartStore.Core.Domain.Customers
 		/// Specifies whether cookie hint and consent will be displayed to customers in the frontent 
 		/// </summary>
 		public bool EnableCookieConsent { get; set; }
+
+		/// <summary>
+		/// Specifies whether the cookie dialog will be display in a modal dialog
+		/// </summary>
+		public bool ModalCookieConsent { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to store last IP address for each customer

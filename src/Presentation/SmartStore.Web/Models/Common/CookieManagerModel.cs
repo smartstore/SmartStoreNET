@@ -14,6 +14,7 @@ namespace SmartStore.Web.Models.Common
         }
 
         public List<CookieInfo> CookiesInfos { get; set; }
+        public bool ModalCookieConsent { get; set; }
 
         public bool AcceptAll { get; set; }
 

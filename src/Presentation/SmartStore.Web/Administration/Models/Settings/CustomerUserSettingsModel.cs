@@ -259,13 +259,17 @@ namespace SmartStore.Admin.Models.Settings
 			public PrivacySettingsModel()
 			{
 				EnableCookieConsent = true;
+                ModalCookieConsent = true;
                 CookieInfos = new List<CookieInfo>();
             }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent")]
 			public bool EnableCookieConsent { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.ModalCookieConsent")]
+            public bool ModalCookieConsent { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress")]
 			public bool StoreLastIpAddress { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms")]

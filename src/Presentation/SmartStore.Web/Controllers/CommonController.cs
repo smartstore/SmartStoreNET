@@ -841,6 +841,8 @@ namespace SmartStore.Web.Controllers
             
             model.AnalyticsConsent = cookie != null ? cookie.AllowAnalytics : false;
             model.ThirdPartyConsent = cookie != null ? cookie.AllowThirdParty : false;
+
+            model.ModalCookieConsent = _privacySettings.ModalCookieConsent;
         }
 
         [HttpPost]

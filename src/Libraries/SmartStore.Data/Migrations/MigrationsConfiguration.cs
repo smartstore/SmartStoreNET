@@ -237,7 +237,11 @@
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.CookieInfoNotFound",
 				"Cookie information wasn't found.",
 				"Cookie-Information wurde nicht gefunden.");
-			
+
+			builder.AddOrUpdate("CookieManager.Dialog.Hide",
+				"Hide",
+				"Ausblenden");
+
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction",
 				@"<h5>Cookie Information</h5>
 				<p>

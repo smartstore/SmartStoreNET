@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using System.Web.OData.Query;
+using Microsoft.OData.Core.UriParser.Semantic;
+using SmartStore.Collections;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
@@ -30,6 +33,13 @@ namespace SmartStore.WebApi.Controllers.OData
     public class MediaController : WebApiEntityController<MediaFile, IMediaService>
     {
         public static MediaLoadFlags _defaultLoadFlags = MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags | MediaLoadFlags.WithTracks | MediaLoadFlags.WithFolder;
+
+        private readonly Lazy<IFolderService> _folderService;
+
+        public MediaController(Lazy<IFolderService> folderService)
+        {
+            _folderService = folderService;
+        }
 
         // GET /Media
         [WebApiQueryable]
@@ -156,6 +166,11 @@ namespace SmartStore.WebApi.Controllers.OData
                 .CollectionParameter<int>("Ids");
 
             entityConfig.Collection
+                .Action("SearchFiles")
+                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .Parameter<MediaSearchQuery>("Query");
+
+            entityConfig.Collection
                 .Action("FileExists")
                 .Returns<bool>()
                 .Parameter<string>("Path");
@@ -235,6 +250,11 @@ namespace SmartStore.WebApi.Controllers.OData
                 .AddParameter<string>("Path")
                 .AddParameter<FileHandling>("FileHandling", true);
 
+            entityConfig.Collection
+                .Action("CheckUniqueFolderName")
+                .Returns<CheckUniquenessResult>()
+                .Parameter<string>("Path");
+
             #endregion
         }
 
@@ -294,6 +314,26 @@ namespace SmartStore.WebApi.Controllers.OData
             });
 
             return Ok(files ??  new List<FileItemInfo>().AsQueryable());
+        }
+
+        /// POST /Media/SearchFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
+        [HttpPost, WebApiQueryable]
+        [WebApiAuthenticate]
+        public async Task<IHttpActionResult> SearchFiles(ODataActionParameters parameters)
+        {
+            MediaSearchResult result = null;
+
+            await this.ProcessEntityAsync(async () =>
+            {
+                var maxTop = WebApiCachingControllingData.Data().MaxTop;
+                var query = parameters.GetValueSafe<MediaSearchQuery>("Query") ?? new MediaSearchQuery { PageSize = maxTop };
+
+                query.PageSize = Math.Min(query.PageSize, maxTop);
+
+                result = await Service.SearchFilesAsync(query, _defaultLoadFlags);
+            });
+
+            return Ok(result.Select(x => Convert(x)).AsQueryable());
         }
 
         /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
@@ -475,6 +515,24 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(folderExists);
         }
 
+        /// POST /Media/CheckUniqueFolderName {"Path":"content/my-folder"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public IHttpActionResult CheckUniqueFolderName(ODataActionParameters parameters)
+        {
+            var result = new CheckUniquenessResult();
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+
+                result.Result = _folderService.Value.CheckUniqueFolderName(path, out string newPath);
+                result.NewPath = newPath;
+            });
+
+            return Ok(result);
+        }
+
         /// POST /Media/CreateFolder {"Path":"content/my-folder"}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
@@ -598,32 +656,41 @@ namespace SmartStore.WebApi.Controllers.OData
             return null;
         }
 
+        private FolderNodeInfo Convert(TreeNode<MediaFolderNode> folderNode)
+        {
+            if (folderNode != null)
+            {
+                var result = ConvertNode(folderNode);
+                return result;
+            }
+
+            return null;
+
+            FolderNodeInfo ConvertNode(TreeNode<MediaFolderNode> node)
+            {
+                var val = node.Value;
+
+                var item = new FolderNodeInfo
+                {
+                    Id = val.Id,
+                    ParentId = val.ParentId,
+                    AlbumName = val.AlbumName,
+                    Name = val.Name,
+                    IsAlbum = val.IsAlbum,
+                    Path = val.Path,
+                    Slug = val.Slug,
+                    Children = new List<FolderNodeInfo>(),
+                };
+
+                foreach (var child in node.Children)
+                {
+                    item.Children.Add(ConvertNode(child));
+                }
+
+                return item;
+            }
+        }
+
         #endregion
     }
-
-
-    //   public class PicturesController : WebApiEntityController<MediaFile, IMediaService>
-    //{
-    //       protected override IQueryable<MediaFile> GetEntitySet()
-    //       {
-    //           var query =
-    //               from x in Repository.Table
-    //               where !x.Deleted && !x.Hidden
-    //               select x;
-
-    //           return query;
-    //       }
-
-    //	[WebApiQueryable]
-    //       public SingleResult<MediaFile> GetPicture(int key)
-    //	{
-    //		return GetSingleResult(key);
-    //	}
-
-    //	[WebApiQueryable]
-    //       public IQueryable<ProductMediaFile> GetProductPictures(int key)
-    //	{
-    //		return GetRelatedCollection(key, x => x.ProductMediaFiles);
-    //	}
-    //}
 }

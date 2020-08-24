@@ -73,6 +73,9 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.txtMoreData = new System.Windows.Forms.TextBox();
             this.lblMoreData = new System.Windows.Forms.Label();
+            this.btnDeleteHeaders = new System.Windows.Forms.Button();
+            this.cboHeaders = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -215,7 +218,7 @@
             this.btnDeletePath.Location = new System.Drawing.Point(1124, 9);
             this.btnDeletePath.Name = "btnDeletePath";
             this.btnDeletePath.Size = new System.Drawing.Size(20, 22);
-            this.btnDeletePath.TabIndex = 7;
+            this.btnDeletePath.TabIndex = 8;
             this.btnDeletePath.Text = "x";
             this.btnDeletePath.UseVisualStyleBackColor = true;
             this.btnDeletePath.Click += new System.EventHandler(this.btnDeletePath_Click);
@@ -275,7 +278,7 @@
             this.btnDeleteQuery.Location = new System.Drawing.Point(1124, 35);
             this.btnDeleteQuery.Name = "btnDeleteQuery";
             this.btnDeleteQuery.Size = new System.Drawing.Size(20, 22);
-            this.btnDeleteQuery.TabIndex = 8;
+            this.btnDeleteQuery.TabIndex = 9;
             this.btnDeleteQuery.Text = "x";
             this.btnDeleteQuery.UseVisualStyleBackColor = true;
             this.btnDeleteQuery.Click += new System.EventHandler(this.btnDeleteQuery_Click);
@@ -502,11 +505,43 @@
             this.lblMoreData.TabIndex = 43;
             this.lblMoreData.Text = "More data";
             // 
+            // btnDeleteHeaders
+            // 
+            this.btnDeleteHeaders.AutoSize = true;
+            this.btnDeleteHeaders.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeleteHeaders.Location = new System.Drawing.Point(1124, 61);
+            this.btnDeleteHeaders.Name = "btnDeleteHeaders";
+            this.btnDeleteHeaders.Size = new System.Drawing.Size(20, 22);
+            this.btnDeleteHeaders.TabIndex = 9;
+            this.btnDeleteHeaders.Text = "x";
+            this.btnDeleteHeaders.UseVisualStyleBackColor = true;
+            this.btnDeleteHeaders.Click += new System.EventHandler(this.btnDeleteHeaders_Click);
+            // 
+            // cboHeaders
+            // 
+            this.cboHeaders.FormattingEnabled = true;
+            this.cboHeaders.Location = new System.Drawing.Point(551, 61);
+            this.cboHeaders.Name = "cboHeaders";
+            this.cboHeaders.Size = new System.Drawing.Size(571, 21);
+            this.cboHeaders.TabIndex = 7;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(500, 64);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 46;
+            this.label10.Text = "Headers";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1154, 811);
+            this.Controls.Add(this.btnDeleteHeaders);
+            this.Controls.Add(this.cboHeaders);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.txtMoreData);
             this.Controls.Add(this.lblMoreData);
             this.Controls.Add(this.txtPictureId);
@@ -610,6 +645,9 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.TextBox txtMoreData;
         private System.Windows.Forms.Label lblMoreData;
+        private System.Windows.Forms.Button btnDeleteHeaders;
+        private System.Windows.Forms.ComboBox cboHeaders;
+        private System.Windows.Forms.Label label10;
     }
 }
 

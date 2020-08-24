@@ -19,6 +19,11 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.WebApi
 {
+    /// <summary>
+    /// Base class for API OData controller.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity of the endpoint.</typeparam>
+    /// <typeparam name="TService">The service interface belonging to the entity.</typeparam>
     public abstract class WebApiEntityController<TEntity, TService> : ODataController
         where TEntity : BaseEntity, new()
     {
@@ -187,6 +192,16 @@ namespace SmartStore.Web.Framework.WebApi
             return Created(entity);
         }
 
+        /// <summary>
+        /// Fully updates an entity.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="key">Key (ID) of the entity.</param>
+        /// <param name="update">Update action.</param>
+        /// <returns>
+        /// Depends on consumers request "Prefer" header. HTTP 200 OK including updated entity by default.
+        /// <see cref="https://docs.microsoft.com/en-us/rest/api/storageservices/setting-the-prefer-header-to-manage-response-echo-on-insert-operations"/>
+        /// </returns>
         protected internal virtual async Task<IHttpActionResult> UpdateAsync(TEntity entity, int key, Action update)
         {
             if (!ModelState.IsValid)
@@ -216,11 +231,26 @@ namespace SmartStore.Web.Framework.WebApi
                 }
             }
 
-            // Returns HTTP 204 No Content by default.
-            // Consumers can choose response through "Prefer" header.
-            return Updated(entity);
+            if (Request?.Headers?.Contains("Prefer") ?? false)
+            {
+                return Updated(entity);
+            }
+
+            // OData V3 backward compatibility.
+            // Avoid HTTP 204 No Content by default.
+            return Ok(entity);
         }
 
+        /// <summary>
+        /// Partially updates an entity.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="key">Key (ID) of the entity.</param>
+        /// <param name="update">Update action.</param>
+        /// <returns>
+        /// Depends on consumers request "Prefer" header. HTTP 200 OK including updated entity by default.
+        /// <see cref="https://docs.microsoft.com/en-us/rest/api/storageservices/setting-the-prefer-header-to-manage-response-echo-on-insert-operations"/>
+        /// </returns>
         protected internal virtual async Task<IHttpActionResult> PartiallyUpdateAsync(int key, Delta<TEntity> model, Action<TEntity> update)
         {
             if (!ModelState.IsValid)
@@ -253,9 +283,22 @@ namespace SmartStore.Web.Framework.WebApi
                 }
             }
 
-            return Updated(entity);
+            if (Request?.Headers?.Contains("Prefer") ?? false)
+            {
+                return Updated(entity);
+            }
+
+            // OData V3 backward compatibility.
+            // Avoid HTTP 204 No Content by default.
+            return Ok(entity);
         }
 
+        /// <summary>
+        /// Deletes an entity.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="delete">Delete action.</param>
+        /// <returns>HTTP 204 No Content.</returns>
         protected internal virtual async Task<IHttpActionResult> DeleteAsync(int key, Action<TEntity> delete)
         {
             var entity = await Repository.GetByIdAsync(key);

@@ -118,5 +118,17 @@ namespace SmartStore.WebApi.Client.Properties {
                 this["ApiVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ApiHeaders {
+            get {
+                return ((string)(this["ApiHeaders"]));
+            }
+            set {
+                this["ApiHeaders"] = value;
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace SmartStore.WebApi.Client
 {
@@ -173,19 +174,23 @@ namespace SmartStore.WebApi.Client
 			requestContent = new StringBuilder();
 
 			if (context == null || !context.IsValid)
+			{
 				return null;
+			}
 
-			// client system time must not be too far away from api server time! check response header.
+			// Client system time must not be too far away from api server time! check response header.
 			// ISO-8601 utc timestamp with milliseconds (e.g. 2013-09-23T09:24:43.5395441Z)
 			string timestamp = DateTime.UtcNow.ToString("o");
 
 			byte[] data = null;
 			string contentMd5Hash = "";
+			var bodySupported = BodySupported(context.HttpMethod);
 
 			var request = (HttpWebRequest)WebRequest.Create(context.Url);
 			SetTimeout(request);
 
-			request.UserAgent = Program.ConsumerName;		// optional
+			// Optional.
+			request.UserAgent = Program.ConsumerName;
 			request.Method = context.HttpMethod;
 
 			request.Headers.Add(HttpRequestHeader.Pragma, "no-cache");
@@ -197,6 +202,20 @@ namespace SmartStore.WebApi.Client
 			request.Headers.Add(WebApiGlobal.HeaderName.PublicKey, context.PublicKey);
 			request.Headers.Add(WebApiGlobal.HeaderName.Date, timestamp);
 
+			// Additional headers.
+			if (context.AdditionalHeaders.HasValue())
+			{
+				var jsonHeaders = JObject.Parse(context.AdditionalHeaders);
+				foreach (var item in jsonHeaders)
+				{
+					var value = item.Value?.ToString();
+					if (item.Key.HasValue() && value.HasValue())
+					{
+						request.Headers.Add(item.Key, value);
+					}
+				}
+			}
+
 			if (multipartData != null && multipartData.Count > 0)
 			{
 				var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
@@ -207,7 +226,7 @@ namespace SmartStore.WebApi.Client
 				request.ContentLength = data.Length;
 				request.ContentType = "multipart/form-data; boundary=" + formDataBoundary;
 			}
-			else if (!string.IsNullOrWhiteSpace(content) && BodySupported(request.Method))
+			else if (!string.IsNullOrWhiteSpace(content) && bodySupported)
 			{
 				requestContent.Append(content);
 				data = Encoding.UTF8.GetBytes(content);
@@ -216,7 +235,7 @@ namespace SmartStore.WebApi.Client
 				request.ContentLength = data.Length;
 				request.ContentType = "application/json; charset=utf-8";
 			}
-			else if (BodySupported(request.Method))
+			else if (bodySupported)
 			{
 				request.ContentLength = 0;
 			}

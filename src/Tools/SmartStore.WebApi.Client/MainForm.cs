@@ -30,9 +30,17 @@ namespace SmartStore.WebApi.Client
 				cboPath.Items.FromString(s.ApiPaths);
 				cboQuery.Items.FromString(s.ApiQuery);
 				cboContent.Items.FromString(s.ApiContent);
+				cboHeaders.Items.FromString(s.ApiHeaders);
 
 				if (cboPath.Items.Count <= 0)
+				{
 					cboPath.Items.Add("/Customers");
+				}
+
+				if (cboHeaders.Items.Count <= 0)
+				{
+					cboHeaders.Items.Add("{\"Prefer\":\"return=representation\"}");
+				}
 
 				cboMethod_changeCommitted(null, null);
 				radioApi_CheckedChanged(null, null);
@@ -55,6 +63,7 @@ namespace SmartStore.WebApi.Client
 				Settings.Default[radioOdata.Checked ? "ApiPaths" : "ApiPaths2"] = cboPath.Items.IntoString();
 				s.ApiQuery = cboQuery.Items.IntoString();
 				s.ApiContent = cboContent.Items.IntoString();
+				s.ApiHeaders = cboHeaders.Items.IntoString();
 
 				s.Save();
 			};
@@ -74,11 +83,14 @@ namespace SmartStore.WebApi.Client
 				SecretKey = txtSecretKey.Text,
 				Url = txtUrl.Text + (radioOdata.Checked ? "odata/" : "api/") + txtVersion.Text + cboPath.Text,
 				HttpMethod = cboMethod.Text,
-				HttpAcceptType = radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType
+				HttpAcceptType = radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType,
+				AdditionalHeaders = cboHeaders.Text
 			};
 
 			if (cboQuery.Text.HasValue())
+			{
 				context.Url = string.Format("{0}?{1}", context.Url, cboQuery.Text);
+			}
 
 			if (!context.IsValid)
 			{
@@ -180,6 +192,7 @@ namespace SmartStore.WebApi.Client
 			cboPath.InsertRolled(cboPath.Text, 64);
 			cboQuery.InsertRolled(cboQuery.Text, 64);
 			cboContent.InsertRolled(cboContent.Text, 64);
+			cboHeaders.InsertRolled(cboHeaders.Text, 64);
 		}
 		
 		private void SavePathItems(bool odata)
@@ -233,7 +246,12 @@ namespace SmartStore.WebApi.Client
 		{
 			cboContent.RemoveCurrent();
 		}
-		
+
+		private void btnDeleteHeaders_Click(object sender, EventArgs e)
+		{
+			cboHeaders.RemoveCurrent();
+		}
+
 		private void clear_Click(object sender, EventArgs e)
 		{
 			txtRequest.Clear();
@@ -282,5 +300,5 @@ namespace SmartStore.WebApi.Client
 				txtFile.Text = string.Join(";", openFileDialog1.FileNames);
 			}
 		}
-	}
+    }
 }

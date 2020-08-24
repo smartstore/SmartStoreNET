@@ -10,6 +10,7 @@ namespace SmartStore.WebApi.Client
 		public string Url { get; set; }
 		public string HttpMethod { get; set; }
 		public string HttpAcceptType { get; set; }
+		public string AdditionalHeaders { get; set; }
 
 		public bool IsValid
 		{

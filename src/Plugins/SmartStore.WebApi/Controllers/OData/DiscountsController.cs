@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Discount.Create)]
 		public IHttpActionResult Post(Discount entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Discount.Update)]
 		public async Task<IHttpActionResult> Put(int key, Discount entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Discount.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<Discount> model)
 		{

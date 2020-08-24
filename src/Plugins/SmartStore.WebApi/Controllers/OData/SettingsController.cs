@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Setting.Create)]
 		public IHttpActionResult Post(Setting entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Setting.Update)]
 		public async Task<IHttpActionResult> Put(int key, Setting entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Setting.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<Setting> model)
 		{

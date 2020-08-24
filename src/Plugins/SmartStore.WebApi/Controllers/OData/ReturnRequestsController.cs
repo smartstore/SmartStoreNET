@@ -32,18 +32,21 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Create)]
 		public IHttpActionResult Post()
 		{
 			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
 		public IHttpActionResult Put()
 		{
 			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Update)]
 		public IHttpActionResult Patch()
 		{

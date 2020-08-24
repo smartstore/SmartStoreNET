@@ -34,6 +34,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		// Update permission sufficient here.
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
 		public IHttpActionResult Post(PaymentMethod entity)
 		{
@@ -41,6 +42,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
 		public async Task<IHttpActionResult> Put(int key, PaymentMethod entity)
 		{
@@ -48,6 +50,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<PaymentMethod> model)
 		{

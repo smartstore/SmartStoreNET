@@ -33,6 +33,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
 		public IHttpActionResult Post(OrderNote entity)
 		{
@@ -62,12 +63,14 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
 		public IHttpActionResult Put()
 		{
 			return StatusCode(HttpStatusCode.NotImplemented);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
 		public IHttpActionResult Patch()
 		{

@@ -33,6 +33,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 
 		// There is no insert permission because a subscription is always created by customer.
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Update)]
 		public IHttpActionResult Post(NewsLetterSubscription entity)
 		{
@@ -46,6 +47,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Update)]
 		public async Task<IHttpActionResult> Put(int key, NewsLetterSubscription entity)
 		{
@@ -59,6 +61,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Promotion.Newsletter.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<NewsLetterSubscription> model)
 		{

@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
 		public IHttpActionResult Post(TierPrice entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
 		public async Task<IHttpActionResult> Put(int key, TierPrice entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditTierPrice)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<TierPrice> model)
 		{

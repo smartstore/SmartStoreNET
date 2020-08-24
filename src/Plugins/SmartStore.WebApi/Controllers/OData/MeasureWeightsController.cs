@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Create)]
 		public IHttpActionResult Post(MeasureWeight entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
 		public async Task<IHttpActionResult> Put(int key, MeasureWeight entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<MeasureWeight> model)
 		{

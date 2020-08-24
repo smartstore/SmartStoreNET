@@ -28,16 +28,19 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		public IHttpActionResult Post()
 		{
 			return StatusCode(HttpStatusCode.Forbidden);
 		}
 
+		[WebApiQueryable]
 		public IHttpActionResult Put()
 		{
 			return StatusCode(HttpStatusCode.Forbidden);
 		}
 
+		[WebApiQueryable]
 		public IHttpActionResult Patch()
 		{
 			return StatusCode(HttpStatusCode.Forbidden);

@@ -33,6 +33,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Create)]
 		public IHttpActionResult Post(CustomerRole entity)
 		{
@@ -40,6 +41,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Update)]
 		public async Task<IHttpActionResult> Put(int key, CustomerRole entity)
 		{
@@ -56,6 +58,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Customer.Role.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<CustomerRole> model)
 		{

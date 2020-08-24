@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Tax.Create)]
 		public IHttpActionResult Post(TaxCategory entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Tax.Update)]
 		public async Task<IHttpActionResult> Put(int key, TaxCategory entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Configuration.Tax.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<TaxCategory> model)
 		{

@@ -29,18 +29,21 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		public IHttpActionResult Post(SyncMapping entity)
 		{
 			var result = Insert(entity, () => Service.InsertSyncMapping(entity));
 			return result;
 		}
 
+		[WebApiQueryable]
 		public async Task<IHttpActionResult> Put(int key, SyncMapping entity)
 		{
 			var result = await UpdateAsync(entity, key, () => Service.UpdateSyncMapping(entity));
 			return result;
 		}
 
+		[WebApiQueryable]
 		public async Task<IHttpActionResult> Patch(int key, Delta<SyncMapping> model)
 		{
 			var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateSyncMapping(entity));

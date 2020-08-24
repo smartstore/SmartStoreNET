@@ -57,6 +57,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Create)]
 		public IHttpActionResult Post(BlogComment entity)
 		{
@@ -69,6 +70,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
 		public async Task<IHttpActionResult> Put(int key, BlogComment entity)
 		{
@@ -83,6 +85,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<BlogComment> model)
 		{

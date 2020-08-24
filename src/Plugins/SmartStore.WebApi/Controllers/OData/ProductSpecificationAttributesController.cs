@@ -32,6 +32,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return GetPropertyValue(key, propertyName);
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
 		public IHttpActionResult Post(ProductSpecificationAttribute entity)
 		{
@@ -39,6 +40,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
 		public async Task<IHttpActionResult> Put(int key, ProductSpecificationAttribute entity)
 		{
@@ -46,6 +48,7 @@ namespace SmartStore.WebApi.Controllers.OData
 			return result;
 		}
 
+		[WebApiQueryable]
 		[WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditAttribute)]
 		public async Task<IHttpActionResult> Patch(int key, Delta<ProductSpecificationAttribute> model)
 		{

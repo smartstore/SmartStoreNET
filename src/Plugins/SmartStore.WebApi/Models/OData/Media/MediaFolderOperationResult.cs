@@ -12,13 +12,13 @@ namespace SmartStore.WebApi.Models.OData.Media
         // TODO: add properties later. Complex Type with navigation property requires OData ASP.NET Web API V6.
         // See https://docs.microsoft.com/en-us/odata/webapi/complextypewithnavigationproperty
         //[DataMember]
-        //public FolderItemInfo Folder { get; set; }
+        //public FolderNodeInfo Folder { get; set; }
 
         [DataMember]
         public ICollection<DuplicateFileInfo> DuplicateFiles { get; set; }
 
         [DataContract]
-        public class DuplicateFileInfo
+        public partial class DuplicateFileInfo
         {
             [DataMember]
             public int SourceFileId { get; set; }

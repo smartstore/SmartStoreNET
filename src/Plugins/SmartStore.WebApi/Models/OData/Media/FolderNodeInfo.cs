@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Web.OData.Builder;
 
 namespace SmartStore.WebApi.Models.OData.Media
 {
@@ -51,18 +50,18 @@ namespace SmartStore.WebApi.Models.OData.Media
 
         [DataMember]
         public ICollection<FolderChildNodeInfo> Children { get; set; }
-    }
 
-    [DataContract]
-    public partial class FolderChildNodeInfo
-    {
-        [DataMember]
-        public int Id { get; set; }
+        [DataContract]
+        public partial class FolderChildNodeInfo
+        {
+            [DataMember]
+            public int Id { get; set; }
 
-        [DataMember]
-        public string Name { get; set; }
+            [DataMember]
+            public string Name { get; set; }
 
-        [DataMember]
-        public string Path { get; set; }
+            [DataMember]
+            public string Path { get; set; }
+        }
     }
 }

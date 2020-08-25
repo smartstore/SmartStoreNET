@@ -15,10 +15,7 @@ using SmartStore.WebApi.Models.OData.Media;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-    /// <remarks>
-    /// Entity is MediaAlbum and not MediaFolder. Otherwise strange, unexpected serialization.
-    /// </remarks>
-    public class MediaFoldersController : WebApiEntityController<MediaAlbum, IFolderService>
+    public class MediaFoldersController : WebApiEntityController<MediaFolder, IFolderService>
     {
         private readonly IMediaService _mediaService;
 
@@ -40,47 +37,22 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate]
         public IHttpActionResult Get(int key)
         {
-            //var node = Service.GetNodeById(key);
+            FolderNodeInfo result = null;
 
-            //return Ok(Convert(node));
-            return null;
+            this.ProcessEntity(() =>
+            {
+                var node = Service.GetNodeById(key);
+                result = Convert(node, false)?.FirstOrDefault();
+            });
+
+            return Ok(result);
         }
 
-        // GET /MediaFolders(123)/Path
         [WebApiAuthenticate]
-        public IHttpActionResult GetProperty(int key, string propertyName)
+        public IHttpActionResult GetProperty()
         {
-            //Type propertyType = null;
-            //object propertyValue = null;
-
-            //this.ProcessEntity(() =>
-            //{
-            //    var file = Service.GetFileById(key);
-            //    if (file == null)
-            //    {
-            //        throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
-            //    }
-
-            //    var item = Convert(file);
-
-            //    var prop = FastProperty.GetProperty(item.GetType(), propertyName);
-            //    if (prop == null)
-            //    {
-            //        throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
-            //    }
-
-            //    propertyType = prop.Property.PropertyType;
-            //    propertyValue = prop.GetValue(item);
-            //});
-
-            //if (propertyType == null)
-            //{
-            //    return StatusCode(HttpStatusCode.NoContent);
-            //}
-
-            //var response = Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
-            //return ResponseMessage(response);
-            return null;
+            // Because of the return object, the method makes little sense here.
+            return StatusCode(HttpStatusCode.NotImplemented);
         }
 
         public IHttpActionResult Post()
@@ -113,7 +85,7 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             var entityConfig = configData.ModelBuilder.EntityType<FolderNodeInfo>();
 
-            configData.ModelBuilder.ComplexType<FolderChildNodeInfo>();
+            configData.ModelBuilder.ComplexType<FolderNodeInfo.FolderChildNodeInfo>();
 
             entityConfig.Collection
                 .Action("FolderExists")
@@ -152,11 +124,6 @@ namespace SmartStore.WebApi.Controllers.OData
             entityConfig.Collection
                 .Function("GetRootNode")
                 .ReturnsCollectionFromEntitySet<FolderNodeInfo>("MediaFolders");
-
-            entityConfig.Collection
-                .Function("GetNodeById")
-                .ReturnsCollectionFromEntitySet<FolderNodeInfo>("MediaFolders")
-                .Parameter<int>("Id");
 
             entityConfig.Collection
                 .Action("GetNodeByPath")
@@ -214,22 +181,6 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result);
         }
 
-        /// GET /MediaFolders/GetNodeById(Id=123)
-        [HttpGet]
-        [WebApiAuthenticate]
-        public IHttpActionResult GetNodeById(int id)
-        {
-            List<FolderNodeInfo> result = null;
-
-            this.ProcessEntity(() =>
-            {
-                var node = Service.GetNodeById(id);
-                result = Convert(node);
-            });
-
-            return Ok(result);
-        }
-
         /// POST /MediaFolders/GetNodeByPath {"Path":"content/my-folder"}
         [HttpPost]
         [WebApiAuthenticate]
@@ -260,7 +211,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 var path = parameters.GetValueSafe<string>("Path");
                 
                 var result = _mediaService.CreateFolder(path);
-                newFolder = Convert(result.Node, false).FirstOrDefault();
+                newFolder = Convert(result.Node, false)?.FirstOrDefault();
             });
 
             return Created(newFolder);
@@ -279,7 +230,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 var destinationPath = parameters.GetValueSafe<string>("DestinationPath");
 
                 var result = _mediaService.MoveFolder(path, destinationPath);
-                movedFolder = Convert(result.Node, false).FirstOrDefault();
+                movedFolder = Convert(result.Node, false)?.FirstOrDefault();
             });
 
             return Ok(movedFolder);
@@ -375,14 +326,14 @@ namespace SmartStore.WebApi.Controllers.OData
                     Path = val.Path,
                     Slug = val.Slug,
                     HasChildren = node.HasChildren,
-                    Children = new List<FolderChildNodeInfo>()
+                    Children = new List<FolderNodeInfo.FolderChildNodeInfo>()
                 };
 
                 if (node.HasChildren)
                 {
                     foreach (var child in node.Children)
                     {
-                        parent.Children.Add(new FolderChildNodeInfo
+                        parent.Children.Add(new FolderNodeInfo.FolderChildNodeInfo
                         {
                             Id = child.Value.Id,
                             Name = child.Value.Name,

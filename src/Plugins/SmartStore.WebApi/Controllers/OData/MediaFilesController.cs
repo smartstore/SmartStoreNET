@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -68,40 +67,11 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(Convert(file));
         }
 
-        // GET /MediaFiles(123)/ThumbUrl
         [WebApiAuthenticate]
-        public IHttpActionResult GetProperty(int key, string propertyName)
+        public IHttpActionResult GetProperty()
         {
-            Type propertyType = null;
-            object propertyValue = null;
-
-            this.ProcessEntity(() =>
-            {
-                var file = Service.GetFileById(key);
-                if (file == null)
-                {
-                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
-                }
-
-                var item = Convert(file);
-
-                var prop = FastProperty.GetProperty(item.GetType(), propertyName);
-                if (prop == null)
-                {
-                    throw Request.BadRequestException(WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName.EmptyNull()));
-                }
-
-                propertyType = prop.Property.PropertyType;
-                propertyValue = prop.GetValue(item);
-            });
-
-            if (propertyType == null)
-            {
-                return StatusCode(HttpStatusCode.NoContent);
-            }
-
-            var response = Request.CreateResponse(HttpStatusCode.OK, propertyType, propertyValue);
-            return ResponseMessage(response);
+            // Because of the return object, the method makes little sense here.
+            return StatusCode(HttpStatusCode.NotImplemented);
         }
 
         public IHttpActionResult Post()

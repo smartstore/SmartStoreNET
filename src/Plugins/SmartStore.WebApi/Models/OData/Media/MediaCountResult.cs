@@ -25,7 +25,7 @@ namespace SmartStore.WebApi.Models.OData.Media
         public ICollection<FolderCount> Folders { get; set; }
 
         [DataContract]
-        public class FolderCount
+        public partial class FolderCount
         {
             [DataMember]
             public int FolderId { get; set; }

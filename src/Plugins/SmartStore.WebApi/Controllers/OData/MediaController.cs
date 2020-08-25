@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using Microsoft.OData.Core.UriParser.Semantic;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
@@ -190,16 +188,6 @@ namespace SmartStore.WebApi.Controllers.OData
                 .Returns<MediaCountResult>()
                 .Parameter<MediaFilesFilter>("Filter");
 
-            // Doesn't work:
-            //var cfgr = configData.ModelBuilder.ComplexType<CountFilesGroupedResult>();
-            //cfgr.Property(x => x.Total);
-            //cfgr.Property(x => x.Trash);
-            //cfgr.Property(x => x.Unassigned);
-            //cfgr.Property(x => x.Transient);
-            //cfgr.Property(x => x.Orphan);
-            //cfgr.ComplexProperty(x => x.Filter);
-            //cfgr.HasDynamicProperties(x => x.Folders);
-
             entityConfig
                 .Action("MoveFile")
                 .ReturnsFromEntitySet<FileItemInfo>("Media")
@@ -253,6 +241,20 @@ namespace SmartStore.WebApi.Controllers.OData
             entityConfig.Collection
                 .Action("CheckUniqueFolderName")
                 .Returns<CheckUniquenessResult>()
+                .Parameter<string>("Path");
+
+            entityConfig.Collection
+                .Function("GetRootNode")
+                .ReturnsCollection<FolderNodeInfo>();
+
+            entityConfig.Collection
+                .Function("GetNodeById")
+                .ReturnsCollection<FolderNodeInfo>()
+                .Parameter<int>("Id");
+
+            entityConfig.Collection
+                .Action("GetNodeByPath")
+                .ReturnsCollection<FolderNodeInfo>()
                 .Parameter<string>("Path");
 
             #endregion
@@ -533,6 +535,56 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result);
         }
 
+        /// GET /Media/GetRootNode
+        [HttpGet]
+        [WebApiAuthenticate]
+        public IHttpActionResult GetRootNode()
+        {
+            List<FolderNodeInfo> result = null;
+
+            this.ProcessEntity(() =>
+            {
+                var root = _folderService.Value.GetRootNode();
+                result = Convert(root);
+            });
+
+            return Ok(result);
+        }
+
+        /// GET /Media/GetNodeById(Id=123)
+        [HttpGet]
+        [WebApiAuthenticate]
+        public IHttpActionResult GetNodeById(int id)
+        {
+            List<FolderNodeInfo> result = null;
+
+            this.ProcessEntity(() =>
+            {
+                var node = _folderService.Value.GetNodeById(id);
+                result = Convert(node);
+            });
+
+            return Ok(result);
+        }
+
+        /// POST /Media/GetNodeByPath {"Path":"content/my-folder"}
+        [HttpPost]
+        [WebApiAuthenticate]
+        public IHttpActionResult GetNodeByPath(ODataActionParameters parameters)
+        {
+            List<FolderNodeInfo> result = null;
+
+            this.ProcessEntity(() =>
+            {
+                var path = parameters.GetValueSafe<string>("Path");
+
+                var node = _folderService.Value.GetNodeByPath(path);
+                result = Convert(node);
+            });
+
+            return Ok(result);
+        }
+
         /// POST /Media/CreateFolder {"Path":"content/my-folder"}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
@@ -656,21 +708,23 @@ namespace SmartStore.WebApi.Controllers.OData
             return null;
         }
 
-        private FolderNodeInfo Convert(TreeNode<MediaFolderNode> folderNode)
+        private List<FolderNodeInfo> Convert(TreeNode<MediaFolderNode> folderNode)
         {
-            if (folderNode != null)
+            if (folderNode == null)
             {
-                var result = ConvertNode(folderNode);
-                return result;
+                return null;
             }
 
-            return null;
+            var result = new List<FolderNodeInfo>();
 
-            FolderNodeInfo ConvertNode(TreeNode<MediaFolderNode> node)
+            ConvertNode(folderNode);
+            return result;
+
+            void ConvertNode(TreeNode<MediaFolderNode> node)
             {
                 var val = node.Value;
 
-                var item = new FolderNodeInfo
+                var parent = new FolderNodeInfo
                 {
                     Id = val.Id,
                     ParentId = val.ParentId,
@@ -679,15 +733,22 @@ namespace SmartStore.WebApi.Controllers.OData
                     IsAlbum = val.IsAlbum,
                     Path = val.Path,
                     Slug = val.Slug,
-                    Children = new List<FolderNodeInfo>(),
+                    HasChildren = node.HasChildren,
+                    Children = new List<FolderNodeInfo.FolderChildNodeInfo>()
                 };
+                result.Add(parent);
 
                 foreach (var child in node.Children)
                 {
-                    item.Children.Add(ConvertNode(child));
-                }
+                    parent.Children.Add(new FolderNodeInfo.FolderChildNodeInfo
+                    {
+                        Id = child.Value.Id,
+                        Name = child.Value.Name,
+                        Path = child.Value.Path
+                    });
 
-                return item;
+                    ConvertNode(child);
+                }
             }
         }
 

@@ -7,7 +7,7 @@ namespace SmartStore.WebApi.Models.OData.Media
     /// Information about a folder node returned by the API.
     /// </summary>
     [DataContract]
-    public class FolderNodeInfo
+    public partial class FolderNodeInfo
     {
         [DataMember]
         public int Id { get; set; }
@@ -30,6 +30,7 @@ namespace SmartStore.WebApi.Models.OData.Media
         /// <summary>
         /// Whether the folder is a root album node.
         /// </summary>
+        [DataMember]
         public bool IsAlbum { get; set; }
 
         [DataMember]
@@ -39,6 +40,27 @@ namespace SmartStore.WebApi.Models.OData.Media
         public string Slug { get; set; }
 
         [DataMember]
-        public ICollection<FolderNodeInfo> Children { get; set; }
+        public bool HasChildren { get; set; }
+
+        // Not supported yet: "The complex type 'FolderNodeInfo' has a reference to itself through the property 'Children'. A recursive loop of complex types is not allowed."
+        // See https://github.com/OData/WebApi/issues/1248
+        //[DataMember]
+        //public ICollection<FolderNodeInfo> Children { get; set; }
+
+        [DataMember]
+        public ICollection<FolderChildNodeInfo> Children { get; set; }
+
+        [DataContract]
+        public partial class FolderChildNodeInfo
+        {
+            [DataMember]
+            public int Id { get; set; }
+
+            [DataMember]
+            public string Name { get; set; }
+
+            [DataMember]
+            public string Path { get; set; }
+        }
     }
 }

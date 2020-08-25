@@ -611,6 +611,10 @@ namespace SmartStore.Core.IO
 
                     return _dimensions.Value;
                 }
+				internal set
+                {
+					_dimensions = value;
+                }
             }
 
             public bool Exists
@@ -631,7 +635,13 @@ namespace SmartStore.Core.IO
 
             public Stream OpenWrite()
             {
-                return new FileStream(_localPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+				var fi = GetFileInfo();
+				if (!fi.Directory.Exists)
+                {
+					System.IO.Directory.CreateDirectory(fi.Directory.FullName);
+                }
+
+				return new FileStream(_localPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
             }
 
             public Stream CreateFile()

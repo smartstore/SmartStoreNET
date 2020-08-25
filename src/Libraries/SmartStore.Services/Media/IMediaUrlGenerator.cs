@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {

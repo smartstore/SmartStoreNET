@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Web;
-using ImageProcessor;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {
@@ -15,16 +15,16 @@ namespace SmartStore.Services.Media
 	/// <remarks>
 	/// A subscriber should NOT resize the image. But if you do - and you shouldn't :-) - , don't forget to set <see cref="ResultSize"/>.
 	/// </remarks>
-	public class ImageUploadValidatedEvent
+	public class ImageUploadedEvent
 	{
-		public ImageUploadValidatedEvent(ProcessImageQuery query, Size size)
+		public ImageUploadedEvent(ProcessImageQuery query, Size size)
 		{
 			Query = query;
 			Size = size;
 		}
 
 		/// <summary>
-		/// Contains the source (as byte[]), max size, format and default image quality instructions.
+		/// Contains the source (as byte[], STream or path string), max size, format and default image quality instructions.
 		/// </summary>
 		public ProcessImageQuery Query { get; private set; }
 
@@ -37,12 +37,7 @@ namespace SmartStore.Services.Media
 		/// The processing result. If null, the original data
 		/// from <c>Query.Source</c> will be put to storage.
 		/// </summary>
-		public Stream ResultStream { get; set; }
-
-		/// <summary>
-		/// Size of the result image.
-		/// </summary>
-		public Size ResultSize { get; set; }
+		public IImage ResultImage { get; set; }
 	}
 
 	/// <summary>

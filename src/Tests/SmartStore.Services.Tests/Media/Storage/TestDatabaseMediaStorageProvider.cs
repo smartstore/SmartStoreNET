@@ -29,13 +29,13 @@ namespace SmartStore.Services.Tests.Media.Storage
 			return Task.FromResult(Load(media));
 		}
 
-		public void Save(MediaFile media, Stream stream)
+		public void Save(MediaFile media, MediaStorageItem item)
 		{
 		}
 
-		public Task SaveAsync(MediaFile media, Stream stream)
+		public Task SaveAsync(MediaFile media, MediaStorageItem item)
 		{
-			return Task.FromResult(0);
+			return Task.CompletedTask;
 		}
 
 		public void Remove(params MediaFile[] medias)

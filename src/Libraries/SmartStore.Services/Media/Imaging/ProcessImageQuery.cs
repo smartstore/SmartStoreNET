@@ -8,7 +8,7 @@ using SmartStore.Collections;
 using System.Drawing;
 using ImageProcessor.Imaging.Formats;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
 	public class ProcessImageQuery : QueryString
 	{
@@ -189,9 +189,9 @@ namespace SmartStore.Services.Media
 				return false;
 			}
 
-			if (base.Count == 1 && Quality == 100)
+			if (base.Count == 1 && Quality >= 90)
 			{
-				// If "q" is the only flag and its value is 100, we don't need to process
+				// If "q" is the only flag and its value is >= 90, we don't need to process
 				return false;
 			}
 
@@ -231,5 +231,53 @@ namespace SmartStore.Services.Media
 
 			return null;
 		}
+
+		#region Static Helpers
+
+		public static ResizeMode ConvertScaleMode(string mode)
+		{
+			switch (mode.EmptyNull().ToLower())
+			{
+				case "boxpad":
+					return ResizeMode.BoxPad;
+				case "crop":
+					return ResizeMode.Crop;
+				case "min":
+					return ResizeMode.Min;
+				case "pad":
+					return ResizeMode.Pad;
+				case "stretch":
+					return ResizeMode.Stretch;
+				default:
+					return ResizeMode.Max;
+			}
+		}
+
+		public static AnchorPosition ConvertAnchorPosition(string anchor)
+		{
+			switch (anchor.EmptyNull().ToLower())
+			{
+				case "top":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.Top;
+				case "bottom":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.Bottom;
+				case "left":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.Left;
+				case "right":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.Right;
+				case "top-left":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.TopLeft;
+				case "top-right":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.TopRight;
+				case "bottom-left":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.BottomLeft;
+				case "bottom-right":
+					return SmartStore.Services.Media.Imaging.AnchorPosition.BottomRight;
+				default:
+					return SmartStore.Services.Media.Imaging.AnchorPosition.Center;
+			}
+		}
+
+		#endregion
 	}
 }

@@ -46,7 +46,6 @@ namespace SmartStore.Web.Framework.Modelling
 			Transmitter = new FileStreamTransmitter(file.OpenRead);
 			ContentType = contentType.NullEmpty() ?? MimeTypes.MapNameToMimeType(file.Name);
 			FileLength = file.Size;
-			Dimensions = file.Dimensions;
 			LastModifiedUtc = file.LastUpdated;
 		}
 
@@ -126,8 +125,6 @@ namespace SmartStore.Web.Framework.Modelling
 		public string ContentType { get; private set; }
 
 		public long? FileLength { get; set; }
-
-		public Size? Dimensions { get; set; }
 
 		public DateTime LastModifiedUtc { get; set; }
 

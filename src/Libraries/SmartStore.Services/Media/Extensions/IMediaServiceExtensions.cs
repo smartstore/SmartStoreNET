@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// Provides enumeration for the available bit depths.

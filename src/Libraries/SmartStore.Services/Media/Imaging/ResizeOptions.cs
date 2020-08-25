@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Linq;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// Enumerated resize modes to apply to resized images.

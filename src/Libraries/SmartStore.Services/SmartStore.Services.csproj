@@ -89,8 +89,11 @@
     <Reference Include="EPPlus, Version=4.5.3.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EPPlus.4.5.3.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
-    <Reference Include="ImageProcessor, Version=2.7.0.100, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageProcessor.2.7.0.100\lib\net452\ImageProcessor.dll</HintPath>
+    <Reference Include="ImageProcessor, Version=2.8.0.152, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageProcessor.2.8.0\lib\net452\ImageProcessor.dll</HintPath>
+    </Reference>
+    <Reference Include="ImageProcessor.Plugins.WebP, Version=1.3.0.152, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ImageProcessor.Plugins.WebP.1.3.0\lib\net452\ImageProcessor.Plugins.WebP.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
       <HintPath>..\..\packages\LumenWorksCsvReader.4.0.0\lib\net461\LumenWorks.Framework.IO.dll</HintPath>
@@ -357,10 +360,13 @@
     <Compile Include="Media\Imaging\IImageFormat.cs" />
     <Compile Include="Media\Imaging\IImageInfo.cs" />
     <Compile Include="Media\Imaging\IImageTransformer.cs" />
+    <Compile Include="Media\Imaging\ImageProcessorBase.cs" />
+    <Compile Include="Media\Imaging\ImageWrapper.cs" />
     <Compile Include="Media\Imaging\Impl\IPImage.cs" />
     <Compile Include="Media\Imaging\Impl\IPImageFormat.cs" />
     <Compile Include="Media\Imaging\Impl\IPImageTransformer.cs" />
     <Compile Include="Media\Imaging\ResizeOptions.cs" />
+    <Compile Include="Media\Imaging\UnsupportedImageFormat.cs" />
     <Compile Include="Media\MediaExceptionFactory.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
     <Compile Include="Media\MediaPathData.cs" />
@@ -379,6 +385,7 @@
     <Compile Include="Media\Extensions\IMediaTrackerExtensions.cs" />
     <Compile Include="Media\Extensions\MediaFileExtensions.cs" />
     <Compile Include="Media\Storage\MediaMover.cs" />
+    <Compile Include="Media\Storage\MediaStorageItem.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Media\MediaService.Folder.cs" />
     <Compile Include="Media\MediaServiceFileSystemAdapter.cs" />

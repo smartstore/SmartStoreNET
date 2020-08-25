@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Services.Media
@@ -109,10 +110,9 @@ namespace SmartStore.Services.Media
                             }
                         }
 
-                        if (context.ResultStream != null && context.ResultStream.Length > 0)
+                        if (context.ResultImage != null)
                         {
-                            await ImageCache.PutAsync(cachedImage, context.ResultStream);
-                            context.ResultStream.Position = 0;
+                            ImageCache.Put(cachedImage, context.ResultImage);
                             context.ResultFile = cachedImage.File;
                         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
 	public class ImageCache : IImageCache
     {
@@ -20,8 +20,6 @@ namespace SmartStore.Services.Media
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IMediaFileSystem fileSystem, 
-			IImageProcessor imageProcessor,
-			IFolderService folderService,
 			MediaHelper mediaHelper)
         {
             _mediaSettings = mediaSettings;
@@ -40,6 +38,7 @@ namespace SmartStore.Services.Media
 			if (PreparePut(cachedImage, stream))
 			{
 				image.Save(stream);
+				image.Dispose();
 				PostPut(cachedImage, path);
 			}
 		}

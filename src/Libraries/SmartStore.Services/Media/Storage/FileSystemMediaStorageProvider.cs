@@ -8,6 +8,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media.Storage
 {
@@ -106,7 +107,7 @@ namespace SmartStore.Services.Media.Storage
 			return (await _fileSystem.ReadAllBytesAsync(filePath)) ?? new byte[0];
 		}
 
-		public void Save(MediaFile mediaFile, Stream stream)
+		public void Save(MediaFile mediaFile, MediaStorageItem item)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
@@ -114,19 +115,20 @@ namespace SmartStore.Services.Media.Storage
 
 			var filePath = GetPath(mediaFile);
 
-			if (stream != null)
+			if (item != null)
 			{
 				// Create folder if it does not exist yet
 				var dir = Path.GetDirectoryName(filePath);
 				if (!_fileSystem.FolderExists(dir))
-                {
+				{
 					_fileSystem.CreateFolder(dir);
 				}
 
-				using (stream)
-				{
-					_fileSystem.SaveStream(filePath, stream);
-				}	
+				using (item)
+                {
+					using var outStream = _fileSystem.GetFile(filePath).OpenWrite();
+					item.SaveTo(outStream, mediaFile);
+				}
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
@@ -135,7 +137,7 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public async Task SaveAsync(MediaFile mediaFile, Stream stream)
+		public async Task SaveAsync(MediaFile mediaFile, MediaStorageItem item)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
@@ -143,7 +145,7 @@ namespace SmartStore.Services.Media.Storage
 
 			var filePath = GetPath(mediaFile);
 
-			if (stream != null)
+			if (item != null)
 			{
 				// Create folder if it does not exist yet
 				var dir = Path.GetDirectoryName(filePath);
@@ -152,9 +154,10 @@ namespace SmartStore.Services.Media.Storage
 					_fileSystem.CreateFolder(dir);
 				}
 
-				using (stream)
-				{
-					await _fileSystem.SaveStreamAsync(filePath, stream);
+				using (item)
+                {
+					using var outStream = _fileSystem.GetFile(filePath).OpenWrite();
+					await item.SaveToAsync(outStream, mediaFile);
 				}
 			}
 			else if (_fileSystem.FileExists(filePath))

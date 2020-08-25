@@ -1,32 +1,31 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.SessionState;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Security;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Seo;
-using SmartStore.Web.Framework.Localization;
-using System.Web.Routing;
-using SmartStore.Core.Security;
-using System.Collections.Generic;
-using SmartStore.Core.IO;
-using SmartStore.Core;
-using System.Globalization;
 
 namespace SmartStore.Web.Controllers
 {
-	[SessionState(SessionStateBehavior.Disabled)]
+    [SessionState(SessionStateBehavior.Disabled)]
 	[OverrideAuthentication]
 	[OverrideAuthorization]
 	[OverrideResultFilters]
@@ -225,22 +224,20 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			var responseFile = handlerContext.ResultFile ?? handlerContext.SourceFile;
-			if (responseFile == null || !responseFile.Exists)
-			{
-				return NotFound(pathData.MimeType);
-			}
+			try
+            {
+				var responseFile = handlerContext.ResultFile ?? handlerContext.SourceFile;
+				if (responseFile == null || !responseFile.Exists)
+				{
+					return NotFound(pathData.MimeType);
+				}
 
-			if (handlerContext.ResultStream != null)
-			{
-				// A result stream instance is given when the file has just been processed by a media handler during this request.
-				// In this case there is no need to open the stream from storage again.
-				return new CachedFileResult(MimeTypes.MapNameToMimeType(responseFile.Name), responseFile.LastUpdated, () => handlerContext.ResultStream, handlerContext.ResultStream.Length);
-			}
-			else
-			{
 				return new CachedFileResult(responseFile, pathData.MimeType);
 			}
+			finally
+            {
+				Debug.WriteLine("ImageProcessor TOTAL: {0} ms.".FormatCurrent(EngineContext.Current.Resolve<IImageProcessor>().TotalProcessingTimeMs));
+            }
 		}
 
 		private ActionResult NotFound(string mime)

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
@@ -17,8 +14,8 @@ using System.Runtime.CompilerServices;
 using SmartStore.Core.Domain.Messages;
 using System.Diagnostics;
 using System.Globalization;
-using NReco.PdfGenerator;
 using SmartStore.Core;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media.Migration
 {
@@ -512,7 +509,7 @@ namespace SmartStore.Services.Media.Migration
                             }
                             else
                             {
-                                _mediaStorageProvider.Save(newFile.MediaFile, newFile.UploadedFile.OpenRead());
+                                _mediaStorageProvider.Save(newFile.MediaFile, MediaStorageItem.FromFile(newFile.UploadedFile));
                             }
                         }
 

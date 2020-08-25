@@ -2,6 +2,7 @@
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Web.Framework
 {

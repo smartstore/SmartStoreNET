@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media

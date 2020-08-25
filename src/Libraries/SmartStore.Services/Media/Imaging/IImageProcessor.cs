@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// A service interface responsible for resizing/processing images.
@@ -17,9 +17,9 @@ namespace SmartStore.Services.Media
 
         IImageFormat GetImageFormat(string extension);
 
-        IImage LoadImage(string path);
+        IProcessableImage LoadImage(string path);
 
-        IImage LoadImage(Stream stream);
+        IProcessableImage LoadImage(Stream stream);
 
         /// <summary>
         /// Processes an image

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ImageProcessor;
 using ImageProcessor.Imaging;
 
-namespace SmartStore.Services.Media.Impl
+namespace SmartStore.Services.Media.Imaging.Impl
 {
     internal class IPImageTransformer : IImageTransformer
     {

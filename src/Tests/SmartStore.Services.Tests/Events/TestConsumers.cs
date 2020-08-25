@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Orders;
@@ -9,7 +6,7 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export.Events;
-using SmartStore.Services.Media;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Tests.Events
 {

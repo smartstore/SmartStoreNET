@@ -48,15 +48,15 @@ namespace SmartStore.Services.Media.Storage
 		/// Saves media item data
 		/// </summary>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="stream">File stream</param>
-		void Save(MediaFile mediaFile, Stream stream);
+		/// <param name="item">The source item</param>
+		void Save(MediaFile mediaFile, MediaStorageItem item);
 
 		/// <summary>
 		/// Asynchronously saves media item data
 		/// </summary>
 		/// <param name="mediaFile">Media file item</param>
-		/// <param name="stream">File stream</param>
-		Task SaveAsync(MediaFile mediaFile, Stream stream);
+		/// <param name="item">The source item</param>
+		Task SaveAsync(MediaFile mediaFile, MediaStorageItem item);
 
 		/// <summary>
 		/// Remove media storage item(s)

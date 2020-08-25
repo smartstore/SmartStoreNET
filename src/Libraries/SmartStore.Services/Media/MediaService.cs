@@ -15,6 +15,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
@@ -354,7 +355,8 @@ namespace SmartStore.Services.Media
             var pathData = CreatePathData(path);
 
             var file = _fileRepo.Table.FirstOrDefault(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
-            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
+            var isNewFile = file == null;
+            var storageItem = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -364,8 +366,22 @@ namespace SmartStore.Services.Media
                     scope.Commit();
                 }
 
-                _storageProvider.Save(file, stream);
-                scope.Commit();
+                try
+                {
+                    _storageProvider.Save(file, storageItem);
+                    scope.Commit();
+                }
+                catch (Exception ex)
+                {
+                    if (isNewFile)
+                    {
+                        // New file's metadata should be removed on storage save failure immediately
+                        DeleteFile(file, true, true);
+                        scope.Commit();
+                    }
+
+                    Logger.Error(ex);
+                }
             }
 
             return ConvertMediaFile(file, pathData.Folder);
@@ -377,7 +393,7 @@ namespace SmartStore.Services.Media
 
             var file = await _fileRepo.Table.FirstOrDefaultAsync(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
             var isNewFile = file == null;
-            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
+            var storageItem = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -389,7 +405,7 @@ namespace SmartStore.Services.Media
 
                 try
                 {
-                    await _storageProvider.SaveAsync(file, stream);
+                    await _storageProvider.SaveAsync(file, storageItem);
                     await scope.CommitAsync();
                 }
                 catch (Exception ex)
@@ -397,12 +413,7 @@ namespace SmartStore.Services.Media
                     if (isNewFile) 
                     {
                         // New file's metadata should be removed on storage save failure immediately
-                        if (file.MediaStorage != null)
-                        {
-                            file.MediaStorage.Data = null;
-                            file.MediaStorage = null;
-                        }
-                        _fileRepo.Delete(file);
+                        DeleteFile(file, true, true);
                         await scope.CommitAsync();
                     }
                     
@@ -475,7 +486,7 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        protected Stream ProcessFile(
+        protected MediaStorageItem ProcessFile(
             ref MediaFile file, 
             MediaPathData pathData, 
             Stream inStream, 
@@ -537,38 +548,39 @@ namespace SmartStore.Services.Media
             }
 
             // Process image
-            if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outStream, out var size))
+            if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outImage))
             {
-                inStream = outStream;
-                file.Size = (int)outStream.Length;
-                file.Width = size.Width;
-                file.Height = size.Height;
-                file.PixelSize = size.Width * size.Height;
+                //file.Size = (int)outStream.Length;
+                file.Width = outImage.Size.Width;
+                file.Height = outImage.Size.Height;
+                file.PixelSize = outImage.Size.Width * outImage.Size.Height;
+
+                return MediaStorageItem.FromImage(outImage);
             }
             else
             {
                 file.RefreshMetadata(inStream);
-            }
 
-            return inStream;
+                return MediaStorageItem.FromStream(inStream);
+            }
         }
 
-        protected bool ProcessImage(MediaFile file, Stream inStream, out Stream outStream, out Size size)
+        protected bool ProcessImage(MediaFile file, Stream inStream, out IImage outImage)
         {
-            outStream = null;
-            size = Size.Empty;
+            outImage = null;
 
             var originalSize = Size.Empty;
+            var format = _imageProcessor.GetImageFormat(file.Extension) ?? new UnsupportedImageFormat(file.MimeType, file.Extension);
+
             try
             {
                 originalSize = ImageHeader.GetDimensions(inStream, file.MimeType);
             }
             catch { }
 
-            if (!_imageProcessor.IsSupportedImage(file.Extension))
+            if (format is UnsupportedImageFormat)
             {
-                outStream = inStream;
-                size = originalSize;
+                outImage = new ImageWrapper(inStream, originalSize, format);
                 return true;
             }    
 
@@ -585,20 +597,9 @@ namespace SmartStore.Services.Media
             if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
             {
                 // Give subscribers the chance to (pre)-process
-                var evt = new ImageUploadValidatedEvent(query, originalSize);
+                var evt = new ImageUploadedEvent(query, originalSize);
                 _eventPublisher.Publish(evt);
-
-                if (evt.ResultStream != null)
-                {
-                    outStream = evt.ResultStream;
-                    // Maybe subscriber forgot to set this, so check
-                    size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
-                }
-                else
-                {
-                    outStream = inStream;
-                    size = originalSize;
-                }
+                outImage = evt.ResultImage ?? new ImageWrapper(inStream, originalSize, format);
 
                 return true;
             }
@@ -607,8 +608,7 @@ namespace SmartStore.Services.Media
 
             using (var result = _imageProcessor.ProcessImage(query, false))
             {
-                size = new Size(result.Width, result.Height);
-                outStream = result.OutputStream;
+                outImage = result.Image;
                 return true;
             }
         }
@@ -730,7 +730,7 @@ namespace SmartStore.Services.Media
 
         private void InternalCopyFileData(MediaFile file, MediaFile copy)
         {
-            _storageProvider.Save(copy, _storageProvider.OpenRead(file));
+            _storageProvider.Save(copy, MediaStorageItem.FromStream(_storageProvider.OpenRead(file)));
             _imageCache.Delete(copy);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))

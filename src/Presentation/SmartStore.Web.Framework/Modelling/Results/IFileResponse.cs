@@ -7,7 +7,7 @@ namespace SmartStore.Web.Framework.Modelling
 	{
 		string ContentType { get; }
 		long? FileLength { get; }
-		Size? Dimensions { get; }
+		//Func<Size?> LazyDimensions { get; }
 		DateTime LastModifiedUtc { get; }
 		TimeSpan MaxAge { get; }
 		string ETag { get; }

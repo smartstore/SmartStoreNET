@@ -32,6 +32,7 @@ using SmartStore.Services.DataExchange.Export.Events;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 

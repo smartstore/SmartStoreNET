@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using SmartStore.Core.IO;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// Contains information about a cached image
@@ -14,6 +15,7 @@ namespace SmartStore.Services.Media
     {
 		private bool? _exists;
 		private string _mimeType;
+		private Size? _size;
 
 		public CachedImage(IFile file)
 		{
@@ -67,6 +69,15 @@ namespace SmartStore.Services.Media
 		public string MimeType
 		{
 			get => _mimeType ?? (_mimeType = MimeTypes.MapNameToMimeType(FileName));
+		}
+
+		/// <summary>
+		/// The image width and height.
+		/// </summary>
+		public Size Size
+		{
+			get => _size ?? (_size = File.Dimensions).Value;
+			internal set => _size = value;
 		}
 
 		/// <summary>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
 	public sealed class ProcessImageException : Exception
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
 	public class ProcessImageResult : DisposableObject
 	{

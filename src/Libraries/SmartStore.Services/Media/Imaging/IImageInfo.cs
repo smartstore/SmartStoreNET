@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// Encapsulates properties that describe basic image information including dimensions, pixel type information

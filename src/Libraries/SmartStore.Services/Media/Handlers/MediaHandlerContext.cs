@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
@@ -43,7 +44,7 @@ namespace SmartStore.Services.Media
 		public bool Executed { get; set; }
 		public Exception Exception { get; set; }
 		public IFile ResultFile { get; set; }
-		public Stream ResultStream { get; set; }
+		public IImage ResultImage { get; set; }
 
 		private IFile GetSourceFile()
         {

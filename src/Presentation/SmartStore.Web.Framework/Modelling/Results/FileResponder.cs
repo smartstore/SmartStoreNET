@@ -62,11 +62,11 @@ namespace SmartStore.Web.Framework.Modelling
 			response.StatusCode = (int)HttpStatusCode.OK;
 			response.AddHeader("Content-Length", (FileResponse.FileLength ?? 0).ToString(CultureInfo.InvariantCulture));
 
-			if (FileResponse.Dimensions != null)
-			{
-				response.AddHeader("X-Width", FileResponse.Dimensions.Value.Width.ToString(CultureInfo.InvariantCulture));
-				response.AddHeader("X-Height", FileResponse.Dimensions.Value.Height.ToString(CultureInfo.InvariantCulture));
-			}
+			//if (FileResponse.Dimensions != null)
+			//{
+			//	response.AddHeader("X-Width", FileResponse.Dimensions.Value.Width.ToString(CultureInfo.InvariantCulture));
+			//	response.AddHeader("X-Height", FileResponse.Dimensions.Value.Height.ToString(CultureInfo.InvariantCulture));
+			//}
 
 			response.End();
 

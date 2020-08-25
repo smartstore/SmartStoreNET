@@ -4,6 +4,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Media.Imaging;
+using SmartStore.Services.Media.Imaging.Impl;
 using SmartStore.Services.Media.Migration;
 using SmartStore.Services.Media.Storage;
 

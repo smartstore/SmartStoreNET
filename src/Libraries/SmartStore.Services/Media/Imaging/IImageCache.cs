@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Media;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
     /// Image cache interface

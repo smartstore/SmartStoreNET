@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Services.Media.Impl
+namespace SmartStore.Services.Media.Imaging.Impl
 {
     internal class IPImageFormat : IImageFormat
     {
@@ -22,7 +22,7 @@ namespace SmartStore.Services.Media.Impl
             get => _format;
         }
 
-        public string Name => _format.MimeType;
+        public string Name => _format.DefaultExtension;
 
         public string DefaultExtension => _format.DefaultExtension == "jpeg" ? "jpg" : _format.DefaultExtension;
 

@@ -138,88 +138,93 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Save(MediaFile mediaFile, Stream stream)
+		public void Save(MediaFile mediaFile, MediaStorageItem item)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (stream == null)
+			if (item == null)
             {
 				mediaFile.ApplyBlob(null);
             }
 			else
             {
-				SaveInternal(mediaFile, stream);
+				SaveInternal(mediaFile, item);
             }
 
 			_mediaFileRepo.Update(mediaFile);
 		}
 
-		private void SaveInternal(MediaFile mediaFile, Stream stream)
+		private void SaveInternal(MediaFile mediaFile, MediaStorageItem item)
 		{
-			using (stream)
+			using (item)
 			{
 				if (_isSqlServer)
 				{
-					SaveFast(mediaFile, stream);
+					SaveFast(mediaFile, item);
 				}
 				else
 				{
-					var buffer = stream.ToByteArray();
+					var buffer = item.SourceStream.ToByteArray();
 					mediaFile.ApplyBlob(buffer);
+					mediaFile.Size = buffer.Length;
 				}
 			}
 
 			_mediaFileRepo.Update(mediaFile);
 		}
 
-		public async Task SaveAsync(MediaFile mediaFile, Stream stream)
+		public async Task SaveAsync(MediaFile mediaFile, MediaStorageItem item)
 		{
 			Guard.NotNull(mediaFile, nameof(mediaFile));
 
-			if (stream == null)
+			if (item == null)
 			{
 				mediaFile.ApplyBlob(null);
 			}
 			else
 			{
-				await SaveInternalAsync(mediaFile, stream);
+				await SaveInternalAsync(mediaFile, item);
 			}
 
 			_mediaFileRepo.Update(mediaFile);
 		}
 
-		private async Task SaveInternalAsync(MediaFile mediaFile, Stream stream)
+		private async Task SaveInternalAsync(MediaFile mediaFile, MediaStorageItem item)
 		{
-			using (stream)
+			using (item)
 			{
 				if (_isSqlServer)
 				{
-					SaveFast(mediaFile, stream);
+					SaveFast(mediaFile, item);
 				}
 				else
 				{
-					var buffer = await stream.ToByteArrayAsync();
+					var buffer = await item.SourceStream.ToByteArrayAsync();
 					mediaFile.ApplyBlob(buffer);
+					mediaFile.Size = buffer.Length;
 				}
 			}
 
 			_mediaFileRepo.Update(mediaFile);
 		}
 
-		private int SaveFast(MediaFile mediaFile, Stream stream)
+		private int SaveFast(MediaFile mediaFile, MediaStorageItem item)
 		{
+			var sourceStream = item.SourceStream;
+			mediaFile.Size = (int)sourceStream.Length;
+
 			if (mediaFile.MediaStorageId == null)
             {
 				// Insert new blob
 				var sql = "INSERT INTO [MediaStorage] (Data) Values(@p0)";
-				mediaFile.MediaStorageId = ((DbContext)_dbContext).InsertInto(sql, stream);
+				mediaFile.MediaStorageId = ((DbContext)_dbContext).InsertInto(sql, sourceStream);
 				return mediaFile.MediaStorageId.Value;
 			}
 			else
             {
 				// Update existing blob
 				var sql = "UPDATE [MediaStorage] SET [Data] = @p0 WHERE Id = @p1";
-				_dbContext.ExecuteSqlCommand(sql, false, null, stream, mediaFile.MediaStorageId.Value);
+				_dbContext.ExecuteSqlCommand(sql, false, null, sourceStream, mediaFile.MediaStorageId.Value);
 				return mediaFile.MediaStorageId.Value;
             }
 		}
@@ -277,7 +282,7 @@ namespace SmartStore.Services.Media.Storage
 			if (stream != null && stream.Length > 0)
 			{
 				// Requires AutoDetectChanges set to true or remove explicit entity detaching
-				Save(mediaFile, stream);
+				Save(mediaFile, MediaStorageItem.FromStream(stream));
 			}
 		}
 
@@ -290,7 +295,7 @@ namespace SmartStore.Services.Media.Storage
 			if (stream != null && stream.Length > 0)
 			{
 				// Requires AutoDetectChanges set to true or remove explicit entity detaching
-				await SaveAsync(mediaFile, stream);
+				await SaveAsync(mediaFile, MediaStorageItem.FromStream(stream));
 			}
 		}
 

@@ -6,8 +6,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
+    /// <summary>
+    /// Represents a processable image.
+    /// </summary>
+    public interface IProcessableImage : IImage
+    {
+        /// <summary>
+        /// Transforms the image.
+        /// </summary>
+        /// <param name="transformer"></param>
+        IImage Transform(Action<IImageTransformer> transformer);
+    }
+    
+    /// <summary>
+    /// Represents an image.
+    /// </summary>
     public interface IImage : IImageInfo, IDisposable
     {
         /// <summary>
@@ -24,12 +39,6 @@ namespace SmartStore.Services.Media
         /// Gets or sets the format of the image.
         /// </summary>
         new IImageFormat Format { get; set; }
-
-        /// <summary>
-        /// Transforms the image.
-        /// </summary>
-        /// <param name="transformer"></param>
-        IImage Transform(Action<IImageTransformer> transformer);
 
         /// <summary>
         /// Saves the current image to the specified output stream.

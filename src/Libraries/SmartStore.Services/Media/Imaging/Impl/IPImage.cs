@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ImageProcessor;
 
-namespace SmartStore.Services.Media.Impl
+namespace SmartStore.Services.Media.Imaging.Impl
 {
-    internal class IPImage : DisposableObject, IImage
+    public class IPImage : DisposableObject, IProcessableImage
     {        
         private readonly ImageFactory _image;
         
@@ -43,6 +43,11 @@ namespace SmartStore.Services.Media.Impl
         }
 
         #endregion
+
+        public ImageFactory ImageFactory 
+        {
+            get => _image; 
+        }
 
         /// <inheritdoc/>
         public Size SourceSize { get; }

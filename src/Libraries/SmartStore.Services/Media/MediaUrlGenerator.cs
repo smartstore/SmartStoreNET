@@ -4,6 +4,7 @@ using System.Web.Hosting;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {

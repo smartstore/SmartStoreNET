@@ -21,7 +21,7 @@ namespace SmartStore.Services.Media
 
         protected override bool IsProcessable(MediaHandlerContext context)
         {
-            return context.ImageQuery.NeedsProcessing(true) && _imageProcessor.IsSupportedImage(context.PathData.Extension);
+            return context.ImageQuery.NeedsProcessing(true) && _imageProcessor.Factory.IsSupportedImage(context.PathData.Extension);
         }
 
         protected override Task ProcessImageAsync(MediaHandlerContext context, CachedImage cachedImage, Stream inputStream)

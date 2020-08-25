@@ -4,23 +4,15 @@ using System.IO;
 namespace SmartStore.Services.Media.Imaging
 {
     /// <summary>
-    /// A service interface responsible for resizing/processing images.
+    /// A service interface responsible for processing images.
     /// </summary>
     public interface IImageProcessor
     {
         /// <summary>
-        /// Determines whether the given file name is processable by the image resizer
+        /// The image factory adapter used to load and process images.
         /// </summary>
-        /// <param name="extension">The file extension to check.</param>
-        /// <returns>A value indicating whether processing is possible</returns>
-        bool IsSupportedImage(string extension);
-
-        IImageFormat GetImageFormat(string extension);
-
-        IProcessableImage LoadImage(string path);
-
-        IProcessableImage LoadImage(Stream stream);
-
+        IImageFactory Factory { get; }
+        
         /// <summary>
         /// Processes an image
         /// </summary>

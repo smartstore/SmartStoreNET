@@ -9,28 +9,23 @@ using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media.Imaging
 {
-    public abstract class ImageProcessorBase : IImageProcessor
+    public class DefaultImageProcessor : IImageProcessor
     {
 		private static long _totalProcessingTime;
 
 		private readonly IEventPublisher _eventPublisher;
 
-		public ImageProcessorBase(IEventPublisher eventPublisher)
+		public DefaultImageProcessor(IImageFactory imageFactory, IEventPublisher eventPublisher)
 		{
+			Factory = imageFactory;
 			_eventPublisher = eventPublisher;
 		}
 
 		public ILogger Logger { get; set; } = NullLogger.Instance;
 
-		public abstract bool IsSupportedImage(string extension);
+		public IImageFactory Factory { get; }
 
-		public abstract IImageFormat GetImageFormat(string extension);
-
-		public abstract IProcessableImage LoadImage(string path);
-
-		public abstract IProcessableImage LoadImage(Stream stream);
-
-		public virtual ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true)
+		public ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true)
 		{
 			Guard.NotNull(query, nameof(query));
 
@@ -50,25 +45,25 @@ namespace SmartStore.Services.Media.Imaging
 				if (source is byte[] b)
 				{
 					using var memStream = new MemoryStream(b);
-					image = LoadImage(memStream);
+					image = Factory.LoadImage(memStream);
 					len = b.LongLength;
 				}
 				else if (source is Stream s)
 				{
-					image = LoadImage(s);
+					image = Factory.LoadImage(s);
 					len = s.Length;
 				}
 				else if (source is string str)
 				{
 					str = NormalizePath(str);
-					image = LoadImage(str);
+					image = Factory.LoadImage(str);
 					len = (new FileInfo(str)).Length;
 				}
 				else if (source is IFile file)
 				{
 					using (var fs = file.OpenRead())
 					{
-						image = LoadImage(fs);
+						image = Factory.LoadImage(fs);
 						len = file.Size;
 					}
 				}
@@ -94,36 +89,6 @@ namespace SmartStore.Services.Media.Imaging
 				ProcessImageCore(query, image, out var fxApplied);
 
 				result.HasAppliedVisualEffects = fxApplied;
-
-				// TODO: convert this shit, but how?!!!
-				//if (inBuffer != null)
-				//{
-				//	// Check whether it is more beneficial to return the source instead of the result.
-				//	// Prefer result only if its size is smaller than the source size.
-				//	// Result size may be larger if a high-compressed image has been uploaded.
-				//	// During image processing the source compression algorithm gets lost and the image may be larger in size
-				//	// after encoding with default encoders.
-				//	var compare =
-				//		// only when image was not altered visually...
-				//		!fxApplied
-				//		// ...size has not changed
-				//		&& image.Size == image.SourceSize
-				//		// ...and format has not changed
-				//		&& image.Format.Name == result.SourceFormat.Name;
-
-				//	if (compare && len <= outStream.Length)
-				//	{
-				//		// Source is smaller. Throw away result and get back to source.
-				//		outStream.Dispose();
-				//		result.OutputStream = new MemoryStream(inBuffer, 0, inBuffer.Length, true, true);
-				//	}
-				//}
-
-				//// Set output stream
-				//if (result.OutputStream == null)
-				//{
-				//	result.OutputStream = outStream;
-				//}
 
 				// Post-process event
 				_eventPublisher.Publish(new ImageProcessedEvent(query, result));
@@ -183,33 +148,32 @@ namespace SmartStore.Services.Media.Imaging
 					transformer.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
 					fxAppliedInternal = true;
 				}
+
+				// Format
+				if (query.Format != null)
+				{
+					var format = query.Format as IImageFormat;
+
+					if (format == null && query.Format is string)
+					{
+						var requestedFormat = ((string)query.Format).ToLowerInvariant();
+						format = Factory.GetImageFormat(requestedFormat);
+					}
+
+					if (format != null)
+					{
+						transformer.Format(format);
+					}
+				}
+
+				// QUality
+				if (query.Quality.HasValue)
+				{
+					transformer.Quality(query.Quality.Value);
+				}
 			});
 
-
-			// Format
-			if (query.Format != null)
-			{
-				var format = query.Format as IImageFormat;
-
-				if (format == null && query.Format is string)
-				{
-					var requestedFormat = ((string)query.Format).ToLowerInvariant();
-					format = GetImageFormat(requestedFormat);
-				}
-
-				if (format != null)
-				{
-					image.Format = format;
-				}
-			}
-
-			//// Set Quality (TODO)
-			//if (query.Quality.HasValue)
-			//{
-			//	processor.Quality(query.Quality.Value);
-			//}
-
-			fxApplied = fxAppliedInternal;
+            fxApplied = fxAppliedInternal;
 		}
 
 		protected virtual string NormalizePath(string path)

@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Media;
@@ -230,6 +231,11 @@ namespace SmartStore.Web.Controllers
 				if (responseFile == null || !responseFile.Exists)
 				{
 					return NotFound(pathData.MimeType);
+				}
+
+				if (string.Equals(responseFile.Extension, "." + pathData.Extension, StringComparison.CurrentCultureIgnoreCase))
+                {
+					pathData.MimeType = MimeTypes.MapNameToMimeType(responseFile.Extension);
 				}
 
 				return new CachedFileResult(responseFile, pathData.MimeType);

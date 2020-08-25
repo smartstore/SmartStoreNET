@@ -550,7 +550,6 @@ namespace SmartStore.Services.Media
             // Process image
             if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outImage))
             {
-                //file.Size = (int)outStream.Length;
                 file.Width = outImage.Size.Width;
                 file.Height = outImage.Size.Height;
                 file.PixelSize = outImage.Size.Width * outImage.Size.Height;
@@ -570,7 +569,7 @@ namespace SmartStore.Services.Media
             outImage = null;
 
             var originalSize = Size.Empty;
-            var format = _imageProcessor.GetImageFormat(file.Extension) ?? new UnsupportedImageFormat(file.MimeType, file.Extension);
+            var format = _imageProcessor.Factory.GetImageFormat(file.Extension) ?? new UnsupportedImageFormat(file.MimeType, file.Extension);
 
             try
             {

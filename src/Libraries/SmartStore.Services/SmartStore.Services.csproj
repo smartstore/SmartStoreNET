@@ -357,12 +357,14 @@
     <Compile Include="Media\Events.cs" />
     <Compile Include="Media\Imaging\BitDepth.cs" />
     <Compile Include="Media\Imaging\IImage.cs" />
+    <Compile Include="Media\Imaging\IImageFactory.cs" />
     <Compile Include="Media\Imaging\IImageFormat.cs" />
     <Compile Include="Media\Imaging\IImageInfo.cs" />
     <Compile Include="Media\Imaging\IImageTransformer.cs" />
-    <Compile Include="Media\Imaging\ImageProcessorBase.cs" />
+    <Compile Include="Media\Imaging\DefaultImageProcessor.cs" />
     <Compile Include="Media\Imaging\ImageWrapper.cs" />
     <Compile Include="Media\Imaging\Impl\IPImage.cs" />
+    <Compile Include="Media\Imaging\Impl\IPImageFactory.cs" />
     <Compile Include="Media\Imaging\Impl\IPImageFormat.cs" />
     <Compile Include="Media\Imaging\Impl\IPImageTransformer.cs" />
     <Compile Include="Media\Imaging\ResizeOptions.cs" />
@@ -545,7 +547,6 @@
     <Compile Include="Media\Imaging\IImageCache.cs" />
     <Compile Include="Media\Imaging\IImageProcessor.cs" />
     <Compile Include="Media\Imaging\ImageCache.cs" />
-    <Compile Include="Media\Imaging\Impl\IPImageProcessor.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
     <Compile Include="News\NewsService.cs" />
     <Compile Include="News\INewsService.cs" />

@@ -31,16 +31,6 @@ namespace SmartStore.Services.Media.Imaging
         Size SourceSize { get; }
 
         /// <summary>
-        /// Gets or sets the color depth in number of bits per pixel (1, 4, 8, 16, 24, 32)
-        /// </summary>
-        new BitDepth BitDepth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the format of the image.
-        /// </summary>
-        new IImageFormat Format { get; set; }
-
-        /// <summary>
         /// Saves the current image to the specified output stream.
         /// </summary>
         /// <param name="stream">The stream to save the image to.</param>

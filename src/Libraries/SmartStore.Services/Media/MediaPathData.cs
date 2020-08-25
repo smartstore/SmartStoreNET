@@ -81,7 +81,7 @@ namespace SmartStore.Services.Media
 			}
 			set
 			{
-				_ext = value;
+				_ext = value?.TrimStart('.');
 			}
 		}
 

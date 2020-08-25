@@ -9,6 +9,7 @@ namespace SmartStore.WebApi.Models.OData.Media
     /// </summary>
     /// <remarks>
     /// Should not be inherited from MediaFile because then navigation properties cannot be expanded using $expand (e.g. $expand=File($expand=Tracks)).
+    /// Should not use [Contained] because throws "The Path property in ODataMessageWriterSettings.ODataUri must be set when writing contained elements".
     /// </remarks>
     [DataContract]
     public partial class FileItemInfo

@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
-using SmartStore.Collections;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
@@ -21,25 +20,15 @@ using SmartStore.WebApi.Models.OData.Media;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
-    /// <summary>
-    /// Is intended to make methods of the IMediaService accessible. Direct access to the MediaFile entity is not intended.
-    /// </summary>
     /// <remarks>
-    /// Functions like GET /Media/FileExists(Path='content/my-file.jpg') would never work (404).
-    /// That's why some endpoints are implemented as Actions (POST).
+    /// Some endpoints are accessible via POST where you would expect GET.
+    /// That's because a function like GET /MediaFiles/FileExists(Path='content/my-file.jpg') would never work (HTTP status 404).
     /// </remarks>
-    public class MediaController : WebApiEntityController<MediaFile, IMediaService>
+    public class MediaFilesController : WebApiEntityController<MediaFile, IMediaService>
     {
         public static MediaLoadFlags _defaultLoadFlags = MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags | MediaLoadFlags.WithTracks | MediaLoadFlags.WithFolder;
 
-        private readonly Lazy<IFolderService> _folderService;
-
-        public MediaController(Lazy<IFolderService> folderService)
-        {
-            _folderService = folderService;
-        }
-
-        // GET /Media
+        // GET /MediaFiles
         [WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult Get()
@@ -69,7 +58,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result);
         }*/
 
-        // GET /Media(123)
+        // GET /MediaFiles(123)
         [WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult Get(int key)
@@ -79,7 +68,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(Convert(file));
         }
 
-        // GET /Media(123)/ThumbUrl
+        // GET /MediaFiles(123)/ThumbUrl
         [WebApiAuthenticate]
         public IHttpActionResult GetProperty(int key, string propertyName)
         {
@@ -145,27 +134,25 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             var entityConfig = configData.ModelBuilder.EntityType<FileItemInfo>();
 
-            #region Files
-
             entityConfig.Collection
                 .Action("GetFileByPath")
-                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
                 .Parameter<string>("Path");
 
             //entityConfig.Collection
             //    .Action("GetFileByName")
-            //    .ReturnsFromEntitySet<FileItemInfo>("Media")
+            //    .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
             //    .AddParameter<string>("FileName")
             //    .AddParameter<int>("FolderId");
 
             entityConfig.Collection
                 .Function("GetFilesByIds")
-                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
                 .CollectionParameter<int>("Ids");
 
             entityConfig.Collection
                 .Action("SearchFiles")
-                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
                 .Parameter<MediaSearchQuery>("Query");
 
             entityConfig.Collection
@@ -190,7 +177,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig
                 .Action("MoveFile")
-                .ReturnsFromEntitySet<FileItemInfo>("Media")
+                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
                 .AddParameter<string>("DestinationFileName")
                 .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
@@ -204,63 +191,9 @@ namespace SmartStore.WebApi.Controllers.OData
                 .Action("DeleteFile")
                 .AddParameter<bool>("Permanent")
                 .AddParameter<bool>("Force", true);
-
-            #endregion
-
-            #region Folders
-
-            entityConfig.Collection
-                .Action("FolderExists")
-                .Returns<bool>()
-                .Parameter<string>("Path");
-
-            entityConfig.Collection
-                .Action("CreateFolder")
-                .Returns<FolderItemInfo>()
-                .Parameter<string>("Path");
-
-            entityConfig.Collection
-                .Action("MoveFolder")
-                .Returns<FolderItemInfo>()
-                .AddParameter<string>("Path")
-                .AddParameter<string>("DestinationPath");
-
-            entityConfig.Collection
-                .Action("CopyFolder")
-                .Returns<MediaFolderOperationResult>()
-                .AddParameter<string>("Path")
-                .AddParameter<string>("DestinationPath")
-                .AddParameter<DuplicateEntryHandling>("DuplicateEntryHandling", true);
-
-            entityConfig.Collection
-                .Action("DeleteFolder")
-                .Returns<MediaFolderDeleteResult>()
-                .AddParameter<string>("Path")
-                .AddParameter<FileHandling>("FileHandling", true);
-
-            entityConfig.Collection
-                .Action("CheckUniqueFolderName")
-                .Returns<CheckUniquenessResult>()
-                .Parameter<string>("Path");
-
-            entityConfig.Collection
-                .Function("GetRootNode")
-                .ReturnsCollection<FolderNodeInfo>();
-
-            entityConfig.Collection
-                .Function("GetNodeById")
-                .ReturnsCollection<FolderNodeInfo>()
-                .Parameter<int>("Id");
-
-            entityConfig.Collection
-                .Action("GetNodeByPath")
-                .ReturnsCollection<FolderNodeInfo>()
-                .Parameter<string>("Path");
-
-            #endregion
         }
 
-        /// POST /Media/GetFileByPath {"Path":"content/my-file.jpg"}
+        /// POST /MediaFiles/GetFileByPath {"Path":"content/my-file.jpg"}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult GetFileByPath(ODataActionParameters parameters)
@@ -298,7 +231,7 @@ namespace SmartStore.WebApi.Controllers.OData
         //    return file;
         //}
 
-        /// GET /Media/GetFilesByIds(Ids=[1,2,3])
+        /// GET /MediaFiles/GetFilesByIds(Ids=[1,2,3])
         [HttpGet, WebApiQueryable]
         [WebApiAuthenticate]
         public IHttpActionResult GetFilesByIds([FromODataUri] int[] ids)
@@ -318,7 +251,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(files ??  new List<FileItemInfo>().AsQueryable());
         }
 
-        /// POST /Media/SearchFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
+        /// POST /MediaFiles/SearchFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate]
         public async Task<IHttpActionResult> SearchFiles(ODataActionParameters parameters)
@@ -338,7 +271,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result.Select(x => Convert(x)).AsQueryable());
         }
 
-        /// POST /Media/FileExists {"Path":"content/my-file.jpg"}
+        /// POST /MediaFiles/FileExists {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
         public IHttpActionResult FileExists(ODataActionParameters parameters)
@@ -354,7 +287,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(fileExists);
         }
 
-        /// POST /Media/CheckUniqueFileName {"Path":"content/my-file.jpg"}
+        /// POST /MediaFiles/CheckUniqueFileName {"Path":"content/my-file.jpg"}
         [HttpPost]
         [WebApiAuthenticate]
         public IHttpActionResult CheckUniqueFileName(ODataActionParameters parameters)
@@ -372,7 +305,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result);
         }
 
-        /// POST /Media/CountFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
+        /// POST /MediaFiles/CountFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}
         [HttpPost]
         [WebApiAuthenticate]
         public async Task<IHttpActionResult> CountFiles(ODataActionParameters parameters)
@@ -388,7 +321,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(count);
         }
 
-        /// POST /Media/CountFilesGrouped {"Filter":{"Term":"my image","Extensions":["jpg"], ...}}
+        /// POST /MediaFiles/CountFilesGrouped {"Filter":{"Term":"my image","Extensions":["jpg"], ...}}
         [HttpPost]
         [WebApiAuthenticate]
         public IHttpActionResult CountFilesGrouped(ODataActionParameters parameters)
@@ -421,7 +354,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(result);
         }
 
-        /// POST /Media(123)/MoveFile {"DestinationFileName":"content/updated-file-name.jpg"}
+        /// POST /MediaFiles(123)/MoveFile {"DestinationFileName":"content/updated-file-name.jpg"}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult MoveFile(int key, ODataActionParameters parameters)
@@ -446,7 +379,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(movedFile);
         }
 
-        /// POST /Media(123)/CopyFile {"DestinationFileName":"content/new-file.jpg"}
+        /// POST /MediaFiles(123)/CopyFile {"DestinationFileName":"content/new-file.jpg"}
         [HttpPost, WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Media.Update)]
         public IHttpActionResult CopyFile(int key, ODataActionParameters parameters)
@@ -478,7 +411,7 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(opResult);
         }
 
-        /// POST /Media(123)/DeleteFile {"Permanent":false}
+        /// POST /MediaFiles(123)/DeleteFile {"Permanent":false}
         [HttpPost]
         [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
         public IHttpActionResult DeleteFile(int key, ODataActionParameters parameters)
@@ -500,188 +433,6 @@ namespace SmartStore.WebApi.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-
-        /// POST /Media/FolderExists {"Path":"my-folder"}
-        [HttpPost]
-        [WebApiAuthenticate]
-        public IHttpActionResult FolderExists(ODataActionParameters parameters)
-        {
-            var folderExists = false;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-                folderExists = Service.FolderExists(path);
-            });
-
-            return Ok(folderExists);
-        }
-
-        /// POST /Media/CheckUniqueFolderName {"Path":"content/my-folder"}
-        [HttpPost]
-        [WebApiAuthenticate]
-        public IHttpActionResult CheckUniqueFolderName(ODataActionParameters parameters)
-        {
-            var result = new CheckUniquenessResult();
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-
-                result.Result = _folderService.Value.CheckUniqueFolderName(path, out string newPath);
-                result.NewPath = newPath;
-            });
-
-            return Ok(result);
-        }
-
-        /// GET /Media/GetRootNode
-        [HttpGet]
-        [WebApiAuthenticate]
-        public IHttpActionResult GetRootNode()
-        {
-            List<FolderNodeInfo> result = null;
-
-            this.ProcessEntity(() =>
-            {
-                var root = _folderService.Value.GetRootNode();
-                result = Convert(root);
-            });
-
-            return Ok(result);
-        }
-
-        /// GET /Media/GetNodeById(Id=123)
-        [HttpGet]
-        [WebApiAuthenticate]
-        public IHttpActionResult GetNodeById(int id)
-        {
-            List<FolderNodeInfo> result = null;
-
-            this.ProcessEntity(() =>
-            {
-                var node = _folderService.Value.GetNodeById(id);
-                result = Convert(node);
-            });
-
-            return Ok(result);
-        }
-
-        /// POST /Media/GetNodeByPath {"Path":"content/my-folder"}
-        [HttpPost]
-        [WebApiAuthenticate]
-        public IHttpActionResult GetNodeByPath(ODataActionParameters parameters)
-        {
-            List<FolderNodeInfo> result = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-
-                var node = _folderService.Value.GetNodeByPath(path);
-                result = Convert(node);
-            });
-
-            return Ok(result);
-        }
-
-        /// POST /Media/CreateFolder {"Path":"content/my-folder"}
-        [HttpPost, WebApiQueryable]
-        [WebApiAuthenticate]
-        public IHttpActionResult CreateFolder(ODataActionParameters parameters)
-        {
-            FolderItemInfo newFolder = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-
-                var result = Service.CreateFolder(path);
-                newFolder = Convert(result);
-            });
-
-            return Created(newFolder);
-        }
-
-        /// POST /Media/MoveFolder {"Path":"content/my-folder", "DestinationPath":"content/my-renamed-folder"}
-        [HttpPost, WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public IHttpActionResult MoveFolder(ODataActionParameters parameters)
-        {
-            FolderItemInfo movedFolder = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-                var destinationPath = parameters.GetValueSafe<string>("DestinationPath");
-
-                var result = Service.MoveFolder(path, destinationPath);
-                movedFolder = Convert(result);
-            });
-
-            return Ok(movedFolder);
-        }
-
-        /// POST /Media/CopyFolder {"Path":"content/my-folder", "DestinationPath":"content/my-new-folder"}
-        [HttpPost, WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Media.Update)]
-        public IHttpActionResult CopyFolder(ODataActionParameters parameters)
-        {
-            MediaFolderOperationResult opResult = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-                var destinationPath = parameters.GetValueSafe<string>("DestinationPath");
-                var duplicateEntryHandling = parameters.GetValueSafe("DuplicateEntryHandling", DuplicateEntryHandling.Skip);
-
-                var result = Service.CopyFolder(path, destinationPath, duplicateEntryHandling);
-
-                opResult = new MediaFolderOperationResult
-                {
-                    FolderId = result.Folder.Id,
-                    //Folder = Convert(result.Folder)
-                };
-
-                opResult.DuplicateFiles = result.DuplicateFiles
-                    .Select(x => new MediaFolderOperationResult.DuplicateFileInfo
-                    {
-                        SourceFileId = x.SourceFile.Id,
-                        DestinationFileId = x.DestinationFile.Id,
-                        //SourceFile = Convert(x.SourceFile),
-                        //DestinationFile = Convert(x.DestinationFile),
-                        UniquePath = x.UniquePath
-                    })
-                    .ToList();
-            });
-
-            return Ok(opResult);
-        }
-
-        /// POST /Media/DeleteFolder {"Path":"content/my-folder"}
-        [HttpPost]
-        [WebApiAuthenticate(Permission = Permissions.Media.Delete)]
-        public IHttpActionResult DeleteFolder(ODataActionParameters parameters)
-        {
-            MediaFolderDeleteResult opResult = null;
-
-            this.ProcessEntity(() =>
-            {
-                var path = parameters.GetValueSafe<string>("Path");
-                var fileHandling = parameters.GetValueSafe("FileHandling", FileHandling.SoftDelete);
-
-                var result = Service.DeleteFolder(path, fileHandling);
-
-                opResult = new MediaFolderDeleteResult
-                {
-                    DeletedFileNames = result.DeletedFileNames,
-                    DeletedFolderIds = result.DeletedFolderIds
-                };
-            });
-
-            return Ok(opResult);
-        }
-
         #endregion
 
         #region Utilities
@@ -695,61 +446,6 @@ namespace SmartStore.WebApi.Controllers.OData
             }
 
             return null;
-        }
-
-        private FolderItemInfo Convert(MediaFolderInfo folder)
-        {
-            if (folder != null)
-            {
-                var item = MiniMapper.Map<MediaFolderInfo, FolderItemInfo>(folder, CultureInfo.InvariantCulture);
-                return item;
-            }
-
-            return null;
-        }
-
-        private List<FolderNodeInfo> Convert(TreeNode<MediaFolderNode> folderNode)
-        {
-            if (folderNode == null)
-            {
-                return null;
-            }
-
-            var result = new List<FolderNodeInfo>();
-
-            ConvertNode(folderNode);
-            return result;
-
-            void ConvertNode(TreeNode<MediaFolderNode> node)
-            {
-                var val = node.Value;
-
-                var parent = new FolderNodeInfo
-                {
-                    Id = val.Id,
-                    ParentId = val.ParentId,
-                    AlbumName = val.AlbumName,
-                    Name = val.Name,
-                    IsAlbum = val.IsAlbum,
-                    Path = val.Path,
-                    Slug = val.Slug,
-                    HasChildren = node.HasChildren,
-                    Children = new List<FolderNodeInfo.FolderChildNodeInfo>()
-                };
-                result.Add(parent);
-
-                foreach (var child in node.Children)
-                {
-                    parent.Children.Add(new FolderNodeInfo.FolderChildNodeInfo
-                    {
-                        Id = child.Value.Id,
-                        Name = child.Value.Name,
-                        Path = child.Value.Path
-                    });
-
-                    ConvertNode(child);
-                }
-            }
         }
 
         #endregion

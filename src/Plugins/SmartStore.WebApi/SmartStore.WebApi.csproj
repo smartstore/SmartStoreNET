@@ -246,6 +246,7 @@
     <Compile Include="Controllers\OData\LocalizedPropertiesController.cs" />
     <Compile Include="Controllers\OData\LanguagesController.cs" />
     <Compile Include="Controllers\OData\ManufacturersController.cs" />
+    <Compile Include="Controllers\OData\MediaFoldersController.cs" />
     <Compile Include="Controllers\OData\NewsLetterSubscriptionsController.cs" />
     <Compile Include="Controllers\OData\OrderNotesController.cs" />
     <Compile Include="Controllers\OData\OrderItemsController.cs" />
@@ -253,7 +254,7 @@
     <Compile Include="Controllers\OData\ProductManufacturersController.cs" />
     <Compile Include="Controllers\OData\ProductCategoriesController.cs" />
     <Compile Include="Controllers\OData\ProductPicturesController.cs" />
-    <Compile Include="Controllers\OData\MediaController.cs" />
+    <Compile Include="Controllers\OData\MediaFilesController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsController.cs" />
     <Compile Include="Controllers\OData\ProductAttributeOptionsSetsController.cs" />
     <Compile Include="Controllers\OData\ProductBundleItemsController.cs" />
@@ -290,7 +291,6 @@
     <Compile Include="Models\OData\Media\FolderNodeInfo.cs" />
     <Compile Include="Models\OData\Media\MediaCountResult.cs" />
     <Compile Include="Models\OData\Media\FileItemInfo.cs" />
-    <Compile Include="Models\OData\Media\FolderItemInfo.cs" />
     <Compile Include="Models\OData\Media\MediaFileOperationResult.cs" />
     <Compile Include="Models\OData\Media\MediaFolderDeleteResult.cs" />
     <Compile Include="Models\OData\Media\MediaFolderOperationResult.cs" />

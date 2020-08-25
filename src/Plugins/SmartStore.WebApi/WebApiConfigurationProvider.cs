@@ -53,11 +53,12 @@ namespace SmartStore.WebApi
 			m.EntitySet<Manufacturer>("Manufacturers");
 			m.EntitySet<MeasureDimension>("MeasureDimensions");
 			m.EntitySet<MeasureWeight>("MeasureWeights");
-			m.EntitySet<FileItemInfo>("Media");
-			m.EntitySet<MediaFile>("MediaFiles");
-			m.EntitySet<MediaFolder>("MediaFolders");
+			
+			m.EntitySet<FileItemInfo>("MediaFiles");
+			m.EntitySet<FolderNodeInfo>("MediaFolders");
 			m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
+
             m.EntitySet<NewsLetterSubscription>("NewsLetterSubscriptions");
             m.EntitySet<OrderNote>("OrderNotes");
 			m.EntitySet<Order>("Orders");
@@ -97,7 +98,8 @@ namespace SmartStore.WebApi
 			Controllers.OData.OrdersController.Init(configData);
 			Controllers.OData.OrderItemsController.Init(configData);
 			Controllers.OData.ProductsController.Init(configData);
-			Controllers.OData.MediaController.Init(configData);
+			Controllers.OData.MediaFilesController.Init(configData);
+			Controllers.OData.MediaFoldersController.Init(configData);
 
 			// Custom routing convention.
 			configData.RoutingConventions.Insert(0, new CustomRoutingConvention());

@@ -467,13 +467,13 @@
 
 		// Handle ajax notifications
 		$(document)
-			.ajaxSuccess(function (ev, xhr) {
+			.ajaxSuccess(function (e, xhr) {
 				var msg = xhr.getResponseHeader('X-Message');
 				if (msg) {
 					displayNotification(decode(msg), xhr.getResponseHeader('X-Message-Type'));
 				}
 			})
-			.ajaxError(function (ev, xhr) {
+			.ajaxError(function (e, xhr) {
 				var msg = xhr.getResponseHeader('X-Message');
 				if (msg) {
 					displayNotification(decode(msg), xhr.getResponseHeader('X-Message-Type'));

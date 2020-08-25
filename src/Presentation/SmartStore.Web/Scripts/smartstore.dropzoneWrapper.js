@@ -250,6 +250,15 @@
 			el.on("successmultiple", function (files, response, progress) {
 				logEvent("successmultiple", files, response, progress);
 
+				// Handle notifications
+				var xhr = progress.currentTarget;
+				if (xhr && xhr.getResponseHeader) {
+					var msg = xhr.getResponseHeader('X-Message');
+					if (msg) {
+						showNotification(msg, xhr.getResponseHeader('X-Message-Type'));
+					}
+                }
+
 				if (opts.maxFiles === 1)
 					return;
 
@@ -1092,6 +1101,10 @@
 			console.log.apply(console, arguments);
 		}
 	}
+
+	var showNotification = _.throttle(function (msg, type) {
+		displayNotification(decodeURIComponent(escape(msg)), type);
+	}, 750, { leading: true, trailing: true });
 
 })(jQuery);
 

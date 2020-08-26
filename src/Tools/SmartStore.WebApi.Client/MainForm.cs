@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using SmartStore.WebApi.Client.Models;
 using SmartStore.WebApi.Client.Properties;
 
 namespace SmartStore.WebApi.Client
@@ -31,6 +35,7 @@ namespace SmartStore.WebApi.Client
 				cboQuery.Items.FromString(s.ApiQuery);
 				cboContent.Items.FromString(s.ApiContent);
 				cboHeaders.Items.FromString(s.ApiHeaders);
+				cboFileUpload.Items.FromString(s.FileUpload);
 
 				if (cboPath.Items.Count <= 0)
 				{
@@ -40,6 +45,19 @@ namespace SmartStore.WebApi.Client
 				if (cboHeaders.Items.Count <= 0)
 				{
 					cboHeaders.Items.Add("{\"Prefer\":\"return=representation\"}");
+				}
+
+				if (cboFileUpload.Items.Count <= 0)
+				{
+					var model = new FileUploadModel
+					{
+						Files = new List<FileUploadModel.FileModel>
+						{
+							new FileUploadModel.FileModel { Path = @"C:\my-upload-picture.jpg" }
+						}
+					};
+					var serializedModel = JsonConvert.SerializeObject(model);
+					cboFileUpload.Items.Add(serializedModel);
 				}
 
 				cboMethod_changeCommitted(null, null);
@@ -64,6 +82,7 @@ namespace SmartStore.WebApi.Client
 				s.ApiQuery = cboQuery.Items.IntoString();
 				s.ApiContent = cboContent.Items.IntoString();
 				s.ApiHeaders = cboHeaders.Items.IntoString();
+				s.FileUpload = cboFileUpload.Items.IntoString();
 
 				s.Save();
 			};
@@ -72,10 +91,14 @@ namespace SmartStore.WebApi.Client
 		private void CallTheApi()
 		{
 			if (txtUrl.Text.HasValue() && !txtUrl.Text.EndsWith("/"))
-				txtUrl.Text = txtUrl.Text + "/";
+			{
+				txtUrl.Text += "/";
+			}
 
 			if (cboPath.Text.HasValue() && !cboPath.Text.StartsWith("/"))
+			{
 				cboPath.Text = "/" + cboPath.Text;
+			}
 
 			var context = new WebApiRequestContext
 			{
@@ -108,56 +131,19 @@ namespace SmartStore.WebApi.Client
 			lblRequest.Text = "Request: " + context.HttpMethod + " " + context.Url;
 			lblRequest.Refresh();
 
-			if (radioApi.Checked && txtFile.Text.HasValue())
+			// Create multipart form data.
+			if (cboFileUpload.Text.HasValue())
 			{
-				if (string.Compare(context.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) != 0)
+				try
 				{
-					"Please select POST method for image upload.".Box(MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-					return;
+					var fileUploadModel = JsonConvert.DeserializeObject(cboFileUpload.Text, typeof(FileUploadModel)) as FileUploadModel;
+					multiPartData = apiConsumer.CreateMultipartData(fileUploadModel);
 				}
-
-				var id1 = txtIdentfier1.Text.ToInt();
-				var id2 = txtIdentfier2.Text;
-				var pictureId = txtPictureId.Text.ToInt();
-                var moreData = txtMoreData.Text.EmptyNull().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-                var keyForId1 = "Id";
-				var keyForId2 = "";
-
-				multiPartData = new Dictionary<string, object>();
-
-				if (cboPath.Text.StartsWith("/Uploads/ProductImages"))
+				catch
 				{
-					// only one identifier required: product id, sku or gtin
-					keyForId2 = "Sku";
+					cboFileUpload.RemoveCurrent();
+					cboFileUpload.Text = string.Empty;
 				}
-				else if (cboPath.Text.StartsWith("/Uploads/ImportFiles"))
-				{
-					// only one identifier required: import profile id or profile name
-					keyForId2 = "Name";
-				}
-
-                if (id1 != 0)
-                {
-                    multiPartData.Add(keyForId1, id1);
-                }
-
-                if (id2.HasValue())
-                {
-                    multiPartData.Add(keyForId2, id2);
-                }
-
-                // To delete existing import files... deleteExisting:true
-                // To start import... startImport:true
-                foreach (var str in moreData)
-                {
-                    var data = str.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (data.Length == 2)
-                    {
-                        multiPartData.Add(data[0], data[1]);
-                    }
-                }
-
-				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text, pictureId);
 			}
 
 			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);
@@ -166,7 +152,6 @@ namespace SmartStore.WebApi.Client
 			var result = apiConsumer.ProcessResponse(webRequest, response, folderBrowserDialog1);
 
 			lblResponse.Text = "Response: " + response.Status;
-
 			sb.Append(response.Headers);
 
 			if (result && response.Content.HasValue())
@@ -174,13 +159,10 @@ namespace SmartStore.WebApi.Client
                 if (radioJson.Checked && radioOdata.Checked)
                 {
                     var customers = response.TryParseCustomers();
-
                     if (customers != null)
                     {
                         sb.AppendLine("Parsed {0} customer(s):".FormatInvariant(customers.Count));
-
                         customers.ForEach(x => sb.AppendLine(x.ToString()));
-
                         sb.Append("\r\n");
                     }
                 }
@@ -193,6 +175,7 @@ namespace SmartStore.WebApi.Client
 			cboQuery.InsertRolled(cboQuery.Text, 64);
 			cboContent.InsertRolled(cboContent.Text, 64);
 			cboHeaders.InsertRolled(cboHeaders.Text, 64);
+			cboFileUpload.InsertRolled(cboFileUpload.Text, 64);
 		}
 		
 		private void SavePathItems(bool odata)
@@ -252,6 +235,11 @@ namespace SmartStore.WebApi.Client
 			cboHeaders.RemoveCurrent();
 		}
 
+		private void btnDeleteFileUpload_Click(object sender, EventArgs e)
+		{
+			cboFileUpload.RemoveCurrent();
+		}
+
 		private void clear_Click(object sender, EventArgs e)
 		{
 			txtRequest.Clear();
@@ -277,27 +265,57 @@ namespace SmartStore.WebApi.Client
 
 		private void radioApi_CheckedChanged(object sender, EventArgs e)
 		{
-			var show = radioApi.Checked;
-
-			lblFile.Visible = show;
-			txtFile.Visible = show;
-			btnFileOpen.Visible = show;
-			lblIdentifier1.Visible = show;
-			txtIdentfier1.Visible = show;
-			lblIdentfier2.Visible = show;
-			txtIdentfier2.Visible = show;
-            lblPictureId.Visible = show;
-            txtPictureId.Visible = show;
-            lblMoreData.Visible = show;
-            txtMoreData.Visible = show;
+			//var show = radioApi.Checked;
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)
 		{
 			var result = openFileDialog1.ShowDialog();
-			if (result == DialogResult.OK)
+			if (result == DialogResult.OK && openFileDialog1.FileNames.Any())
 			{
-				txtFile.Text = string.Join(";", openFileDialog1.FileNames);
+				FileUploadModel model = null;
+
+				// Deserialize current model.
+				if (cboFileUpload.Text.HasValue())
+				{
+					try
+					{
+						model = JsonConvert.DeserializeObject(cboFileUpload.Text, typeof(FileUploadModel)) as FileUploadModel;
+					}
+					catch
+					{
+						cboFileUpload.RemoveCurrent();
+						cboFileUpload.Text = string.Empty;
+					}
+				}
+
+				if (model == null)
+				{
+					model = new FileUploadModel();
+				}
+
+				// Remove files that no longer exist.
+				for (var i = model.Files.Count - 1; i >= 0; --i)
+				{
+					if (!File.Exists(model.Files[i].Path))
+					{
+						model.Files.RemoveAt(i);
+					}
+				}
+
+				// Add new selected files.
+				foreach (var fileName in openFileDialog1.FileNames)
+				{
+					if (!model.Files.Any(x => x.Path != null && x.Path == fileName))
+					{
+						model.Files.Add(new FileUploadModel.FileModel
+						{
+							Path = fileName
+						});
+					}
+				}
+
+				cboFileUpload.Text = JsonConvert.SerializeObject(model);
 			}
 		}
     }

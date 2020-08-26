@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,10 +7,11 @@ using System.Text;
 using System.Web;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using SmartStore.WebApi.Client.Models;
 
 namespace SmartStore.WebApi.Client
 {
-	public class ApiConsumer : HmacAuthentication
+    public class ApiConsumer : HmacAuthentication
 	{
 		public static string XmlAcceptType => "application/atom+xml,application/xml";
 		public static string JsonAcceptType => "application/json";
@@ -90,7 +90,9 @@ namespace SmartStore.WebApi.Client
 		private void GetResponse(HttpWebResponse webResponse, WebApiConsumerResponse response, FolderBrowserDialog folderBrowserDialog)
 		{
 			if (webResponse == null)
+			{
 				return;
+			}
 
 			response.Status = string.Format("{0} {1}", (int)webResponse.StatusCode, webResponse.StatusDescription);
 			response.Headers = webResponse.Headers.ToString();
@@ -132,42 +134,108 @@ namespace SmartStore.WebApi.Client
 		public static bool BodySupported(string method)
 		{
 			if (!string.IsNullOrWhiteSpace(method) && string.Compare(method, "GET", true) != 0 && string.Compare(method, "DELETE", true) != 0)
+			{
 				return true;
+			}
 
 			return false;
 		}
 
-		public void AddApiFileParameter(Dictionary<string, object> multipartData, string filePath, int pictureId)
+		public Dictionary<string, object> CreateMultipartData(FileUploadModel model)
 		{
-			var count = 0;
-			var paths = (filePath.Contains(";") ? filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string> { filePath });
-
-			foreach (var path in paths)
+			if (!(model?.Files?.Any() ?? false))
 			{
-				using (var fstream = new FileStream(path, FileMode.Open, FileAccess.Read))
+				return null;
+			}
+
+			var result = new Dictionary<string, object>();
+			var isValid = false;
+			var count = 0;
+
+			// Identify entity by its identifier.
+			if (model.Id != 0)
+			{
+				result.Add("Id", model.Id);
+			}
+
+			// Custom properties like SKU etc.
+			foreach (var kvp in model.CustomProperties)
+			{
+				if (kvp.Key.HasValue() && kvp.Value != null)
 				{
-					byte[] data = new byte[fstream.Length];
-					fstream.Read(data, 0, data.Length);
-
-					var name = Path.GetFileName(path);
-					var id = string.Format("my-file-{0}", ++count);
-					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
-
-					if (pictureId != 0)
-					{
-						apiFile.Parameters.Add("PictureId", pictureId.ToString());
-					}
-
-					// test pass through of custom parameters
-					apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
-					apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
-
-					multipartData.Add(id, apiFile);
-
-					fstream.Close();
+					result.Add(kvp.Key, kvp.Value);
 				}
 			}
+
+			// File data.
+			foreach (var file in model.Files)
+			{
+				if (File.Exists(file.Path))
+				{
+					using (var fstream = new FileStream(file.Path, FileMode.Open, FileAccess.Read))
+					{
+						byte[] data = new byte[fstream.Length];
+						fstream.Read(data, 0, data.Length);
+
+						var name = Path.GetFileName(file.Path);
+						var id = string.Format("my-file-{0}", ++count);
+						var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
+
+						if (file.Id != 0)
+						{
+							apiFile.Parameters.Add("PictureId", file.Id.ToString());
+						}
+
+						// Test pass through of custom parameters but the API ignores them anyway.
+						//apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
+						//apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
+
+						result.Add(id, apiFile);
+						isValid = true;
+						fstream.Close();
+					}
+				}
+			}
+
+			if (!isValid)
+			{
+				return null;
+			}
+
+			return result;
 		}
+
+		//public void AddApiFileParameter(Dictionary<string, object> multipartData, string filePath, int pictureId)
+		//{
+		//	var count = 0;
+		//	var paths = filePath.Contains(";") ? filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string> { filePath };
+
+		//	foreach (var path in paths)
+		//	{
+		//		using (var fstream = new FileStream(path, FileMode.Open, FileAccess.Read))
+		//		{
+		//			byte[] data = new byte[fstream.Length];
+		//			fstream.Read(data, 0, data.Length);
+
+		//			var name = Path.GetFileName(path);
+		//			var id = string.Format("my-file-{0}", ++count);
+		//			var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
+
+		//			if (pictureId != 0)
+		//			{
+		//				apiFile.Parameters.Add("PictureId", pictureId.ToString());
+		//			}
+
+		//			// Test pass through of custom parameters
+		//			apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
+		//			apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
+
+		//			multipartData.Add(id, apiFile);
+
+		//			fstream.Close();
+		//		}
+		//	}
+		//}
 
 		public HttpWebRequest StartRequest(WebApiRequestContext context, string content, Dictionary<string, object> multipartData, out StringBuilder requestContent)
 		{
@@ -278,16 +346,16 @@ namespace SmartStore.WebApi.Client
 				webResponse = webRequest.GetResponse() as HttpWebResponse;
 				GetResponse(webResponse, response, folderBrowserDialog);
 			}
-			catch (WebException wexc)
+			catch (WebException wex)
 			{
 				result = false;
-				webResponse = wexc.Response as HttpWebResponse;
+				webResponse = wex.Response as HttpWebResponse;
 				GetResponse(webResponse, response, folderBrowserDialog);
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
 				result = false;
-				response.Content = string.Format("{0}\r\n{1}", exc.Message, exc.StackTrace);
+				response.Content = string.Format("{0}\r\n{1}", ex.Message, ex.StackTrace);
 			}
 			finally
 			{
@@ -299,31 +367,5 @@ namespace SmartStore.WebApi.Client
 			}
 			return result;
 		}		
-	}
-
-
-	public class ApiFileParameter
-	{
-		public ApiFileParameter(byte[] data)
-			: this(data, null)
-		{
-		}
-		public ApiFileParameter(byte[] data, string filename)
-			: this(data, filename, null)
-		{
-		}
-		public ApiFileParameter(byte[] data, string filename, string contenttype)
-		{
-			Data = data;
-			FileName = filename;
-			ContentType = contenttype;
-			Parameters = new NameValueCollection();
-		}
-
-		public byte[] Data { get; set; }
-		public string FileName { get; set; }
-		public string ContentType { get; set; }
-
-		public NameValueCollection Parameters { get; set; }
 	}
 }

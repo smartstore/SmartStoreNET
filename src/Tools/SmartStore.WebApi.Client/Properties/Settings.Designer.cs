@@ -130,5 +130,17 @@ namespace SmartStore.WebApi.Client.Properties {
                 this["ApiHeaders"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FileUpload {
+            get {
+                return ((string)(this["FileUpload"]));
+            }
+            set {
+                this["FileUpload"] = value;
+            }
+        }
     }
 }

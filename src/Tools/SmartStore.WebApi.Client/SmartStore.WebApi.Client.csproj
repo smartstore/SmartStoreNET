@@ -77,6 +77,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ApiFileParameter.cs" />
+    <Compile Include="Models\FileUploadModel.cs" />
     <Compile Include="WebApi\HmacAuthentication.cs" />
     <Compile Include="WebApi\WebApiConsumerResponse.cs" />
     <Compile Include="WebApi\WebApiCore.cs" />

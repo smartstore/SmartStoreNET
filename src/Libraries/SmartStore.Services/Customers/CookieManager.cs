@@ -80,7 +80,7 @@ namespace SmartStore.Services.Customers
 			}
 
 			// Add user defined cookies from privacy settings.
-			if (addSettingCookies)
+			if (addSettingCookies && _privacySettings.CookieInfos.HasValue())
 			{
 				var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(_privacySettings.CookieInfos);
 

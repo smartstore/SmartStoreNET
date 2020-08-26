@@ -293,7 +293,7 @@
 		},
 
         // Element must be decorated with visibilty:hidden
-        masonaryGrid: function (itemSelector, callback) {
+        masonryGrid: function (itemSelector, callback) {
             
             return this.each(function () {
 
@@ -307,7 +307,7 @@
                     return false;
                 }
                 
-                self.addClass("masonary-grid");    
+                self.addClass("masonry-grid");    
 
                 // first call so aos can be initialized correctly
                 resizeAllGridItems();

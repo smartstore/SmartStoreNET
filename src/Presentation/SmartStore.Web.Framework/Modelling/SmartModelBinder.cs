@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security;
 using System.Web.Mvc;
 using SmartStore.Core.Html;
 using SmartStore.Web.Framework.Security;
@@ -82,6 +83,13 @@ namespace SmartStore.Web.Framework.Modelling
 					// Is Complex type
 					var modelName = key.Substring(0, key.Length - subPropertyName.Length - 1);
 					var valueType = GetValueType(keys, modelName, bindingContext.ValueProvider);
+					if (!valueType.HasAttribute<CustomModelPartAttribute>(false))
+                    {
+						throw new SecurityException("For security reasons complex types in '{0}' must be decorated with the '{1}' attribute.".FormatInvariant(
+							typeof(CustomPropertiesDictionary).AssemblyQualifiedNameWithoutVersion(), 
+							typeof(CustomModelPartAttribute).AssemblyQualifiedNameWithoutVersion()));
+                    }
+
 					valueBinder = this.Binders.GetBinder(valueType);
 					var complexBindingContext = new ModelBindingContext
 					{

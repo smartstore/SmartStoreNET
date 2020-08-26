@@ -6,7 +6,12 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Modelling
 {
-    [Serializable]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+	public sealed class CustomModelPartAttribute : Attribute
+    {
+    }
+	
+	[Serializable]
 	public sealed class CustomPropertiesDictionary : Dictionary<string, object>
 	{
 	}
@@ -41,9 +46,8 @@ namespace SmartStore.Web.Framework.Modelling
 			Guard.NotEmpty(key, nameof(key));
 
 			IDictionary<string, object> dict;
-			object value;
 
-			if (TryGetCustomThreadProperties(false, out dict) && dict.TryGetValue(key, out value))
+			if (TryGetCustomThreadProperties(false, out dict) && dict.TryGetValue(key, out var value))
 			{
 				return (TProperty)value;
 			}

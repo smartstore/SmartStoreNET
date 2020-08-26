@@ -19,6 +19,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		public string SearchIsTouched { get; set; }
 	}
 
+	[CustomModelPart]
 	public class GoogleProductModel : ModelBase
 	{
 		public int TotalCount { get; set; }

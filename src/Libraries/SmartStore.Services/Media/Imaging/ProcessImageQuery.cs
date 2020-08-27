@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Collections.Specialized;
-using System.Text;
 using SmartStore.Collections;
 using System.Drawing;
 using ImageProcessor.Imaging.Formats;

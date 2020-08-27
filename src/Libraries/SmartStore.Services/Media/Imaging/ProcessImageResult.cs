@@ -11,11 +11,6 @@ namespace SmartStore.Services.Media.Imaging
 		public IImage Image { get; set; }
 		internal bool DisposeImage { get; set; }
 
-		//public string FileExtension { get; set; }
-		//public string MimeType { get; set; }
-		//public int Width { get; set; }
-		//public int Height { get; set; }
-
 		/// <summary>
 		/// Is <c>true</c> if any effect has been applied that changed the image visually (like background color, contrast, sharpness etc.).
 		/// Resize and compression quality does NOT count as FX.

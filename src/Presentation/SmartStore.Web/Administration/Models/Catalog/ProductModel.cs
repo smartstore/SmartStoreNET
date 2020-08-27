@@ -23,7 +23,6 @@ namespace SmartStore.Admin.Models.Catalog
         public ProductModel()
         {
             Locales = new List<ProductLocalizedModel>();
-            ProductPictureModels = new List<ProductPictureModel>();
             CopyProductModel = new CopyProductModel();
             AvailableProductTemplates = new List<SelectListItem>();
 			AvailableTaxCategories = new List<SelectListItem>();
@@ -387,7 +386,6 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasPreviewPicture")]
         public bool HasPreviewPicture { get; set; }
         public ProductPictureModel AddPictureModel { get; set; }
-        public IList<ProductPictureModel> ProductPictureModels { get; set; }
 
 		public IList<ProductMediaFile> ProductMediaFiles { get; set; }
 

@@ -757,33 +757,6 @@ namespace SmartStore.Admin.Controllers
 
 			var productPictures = _productService.GetProductPicturesByProductId(model.Id);
 
-			// OBSOLETE
-			model.ProductPictureModels = productPictures
-				.Select(x =>
-				{
-					var pictureModel = new ProductModel.ProductPictureModel
-					{
-						Id = x.Id,
-						ProductId = x.ProductId,
-						PictureId = x.MediaFileId,
-						DisplayOrder = x.DisplayOrder,
-						ProductMediaFile = x
-					};
-
-					try
-					{
-						pictureModel.PictureUrl = _mediaService.GetUrl(x.MediaFileId, 0);
-					}
-					catch (Exception ex)
-					{
-						// The user must always have the possibility to delete faulty images.
-						Logger.Error(ex);
-					}
-
-					return pictureModel;
-				})
-				.ToList();
-
 			model.ProductMediaFiles = productPictures
 				.Select(x =>
 				{
@@ -795,17 +768,6 @@ namespace SmartStore.Admin.Controllers
 						DisplayOrder = x.DisplayOrder,
 						MediaFile = x.MediaFile
 					};
-
-					// TODO
-					//try
-					//{
-					//	media.PictureUrl = _mediaService.GetUrl(x.MediaFileId, 0);
-					//}
-					//catch (Exception ex)
-					//{
-					//	// The user must always have the possibility to delete faulty images.
-					//	Logger.Error(ex);
-					//}
 
 					return media;
 				})

@@ -15,6 +15,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
 using SmartStore.Core.Data;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Web.Framework
 {
@@ -194,6 +195,22 @@ namespace SmartStore.Web.Framework
 				context.Response.Cache.SetNoStore();
 				context.Response.Cache.SetLastModifiedFromFileDependencies();
 			}
+
+			if (SameSite.BrowserDetection.AllowsSameSiteNone(context.Request.UserAgent))
+			{
+				// Set SameSite attribute for antiforgery token.
+				var privacySettings = EngineContext.Current.Resolve<PrivacySettings>();
+				var antiForgeryCookie = context.Request.Cookies["__requestverificationtoken"];
+
+				if (antiForgeryCookie != null)
+				{
+					antiForgeryCookie.HttpOnly = true;
+					antiForgeryCookie.Secure = context.Request.IsHttps();
+					antiForgeryCookie.SameSite = context.Request.IsHttps() ? (SameSiteMode)privacySettings.SameSiteMode : SameSiteMode.Lax;
+
+					context.Response.Cookies.Set(antiForgeryCookie);
+				}
+			}
 		}
 
 		public virtual void PostResolveRequestCache(HttpContextBase context)
@@ -223,8 +240,7 @@ namespace SmartStore.Web.Framework
 		{
 			if (application != null)
 			{
-				var userAgent = application.Context.Request.UserAgent;
-				if (SameSite.BrowserDetection.DisallowsSameSiteNone(userAgent))
+				if (SameSite.BrowserDetection.DisallowsSameSiteNone(application.Context.Request.UserAgent))
 				{
 					application.Response.AddOnSendingHeaders(context =>
 					{

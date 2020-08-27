@@ -147,8 +147,6 @@ namespace SmartStore
         /// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
         /// Works with Cloud's load balancers.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsHttps(this HttpRequest request)
         {
@@ -159,8 +157,6 @@ namespace SmartStore
 		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
 		/// Works with Cloud's load balancers.
 		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
 		public static bool IsHttps(this HttpRequestBase request)
 		{
 			if (request.IsSecureConnection)
@@ -178,6 +174,29 @@ namespace SmartStore
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Gets a value which indicates whether the current request requests a static resource, like .txt, .pdf, .js, .css etc.
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsStaticResourceRequested(this HttpContext context)
+		{
+			return IsStaticResourceRequested(new HttpContextWrapper(context));
+		}
+
+		/// <summary>
+		/// Gets a value which indicates whether the current request requests a static resource, like .txt, .pdf, .js, .css etc.
+		/// </summary>
+		public static bool IsStaticResourceRequested(this HttpContextBase context)
+        {
+			if (context?.Request == null)
+				return false;
+			
+			return context.GetItem<bool>(
+				"IsStaticResourceRequested", 
+				() => WebHelper.IsStaticResourceRequested(context.Request), 
+				true);
 		}
 
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]

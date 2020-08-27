@@ -81,31 +81,144 @@ namespace SmartStore.Web.Framework
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
-			if (application.Context.Items[_contextKey] == null)
-			{
-				application.Context.Items[_contextKey] = _contextKey;
+            if (application.Context.Items[_contextKey] == null)
+            {
+                application.Context.Items[_contextKey] = _contextKey;
 
 				application.BeginRequest += (s, e) => FilterSameSiteNoneForIncompatibleUserAgents(application);
 
-				if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
-				{
-					// Handle plugin static file in DevMode
-					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
-					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
-				}	
-
-				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
-
-				// Publish event to give plugins the chance to register custom event handlers for the request lifecycle.
-				foreach (var action in _actions)
-				{
-					action(application);
+                if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
+                {
+                    // Handle plugin static file in DevMode
+                    application.PostAuthorizeRequest += (s, e) => RewritePluginStaticFilePaths((HttpApplication)s);
+                    application.PreSendRequestHeaders += (s, e) => HandlePluginStaticFileCaching((HttpApplication)s);
 				}
 
-				// Set app to fully initialized state on very first request
-				EngineContext.Current.IsFullyInitialized = true;
+				application.PreSendRequestHeaders += (s, e) => HandleSameSiteForAntiForgeryCookie((HttpApplication)s);
+				application.PostResolveRequestCache += (s, e) => TryResolveRoutablePath((HttpApplication)s);
+
+                // Publish event to give plugins the chance to register custom event handlers for the request lifecycle.
+                foreach (var action in _actions)
+                {
+                    action(application);
+                }
+
+                // Set app to fully initialized state on very first request
+                EngineContext.Current.IsFullyInitialized = true;
+            }
+        }
+
+		#region Handlers
+
+		private static void RewritePluginStaticFilePaths(HttpApplication app)
+		{
+			var context = app.Context;
+			var request = context?.Request;
+			if (request == null)
+				return;
+
+			if (IsExtensionPath(request) && context.IsStaticResourceRequested())
+			{
+				// We're in debug mode and in dev environment
+				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugVirtualFile;
+				if (file != null)
+				{
+					context.Items["DebugFile"] = file;
+					context.Response.TransmitFile(file.PhysicalPath);
+					context.Response.Flush(); // TBD: optional?
+					context.Response.SuppressContent = true; // TBD: optional?
+					context.ApplicationInstance.CompleteRequest();
+				}
 			}
 		}
+
+		private static void HandlePluginStaticFileCaching(HttpApplication app)
+		{
+			var context = app.Context;
+			if (context?.Response == null)
+				return;
+
+			var file = context.Items?["DebugFile"] as DebugVirtualFile;
+			if (file != null)
+			{
+				context.Response.AddFileDependency(file.PhysicalPath);
+				context.Response.ContentType = MimeTypes.MapNameToMimeType(Path.GetFileName(file.PhysicalPath));
+				context.Response.Cache.SetNoStore();
+				context.Response.Cache.SetLastModifiedFromFileDependencies();
+			}
+		}
+
+		private static void HandleSameSiteForAntiForgeryCookie(HttpApplication app)
+		{
+			var context = app.Context;
+			if (context?.Request == null || context?.Response == null)
+				return;
+
+			if (context.IsStaticResourceRequested())
+				return;
+
+			if (SameSiteBrowserDetector.AllowsSameSiteNone(context.Request.UserAgent))
+			{
+				// Set SameSite attribute for antiforgery token.
+				var privacySettings = EngineContext.Current.Resolve<PrivacySettings>();
+				var antiForgeryCookie = context.Request.Cookies["__requestverificationtoken"];
+
+				if (antiForgeryCookie != null)
+				{
+					antiForgeryCookie.HttpOnly = true;
+					antiForgeryCookie.Secure = context.Request.IsHttps();
+					antiForgeryCookie.SameSite = antiForgeryCookie.Secure ? (SameSiteMode)privacySettings.SameSiteMode : SameSiteMode.Lax;
+
+					context.Response.Cookies.Set(antiForgeryCookie);
+				}
+			}
+		}
+
+		private static void TryResolveRoutablePath(HttpApplication app)
+		{
+			var context = app.Context;
+			var request = context?.Request;
+			if (request == null)
+				return;
+
+			if (_routes.Count > 0)
+			{
+				var path = request.AppRelativeCurrentExecutionFilePath.TrimStart('~').TrimEnd('/');
+				var method = request.HttpMethod.EmptyNull();
+
+				foreach (var route in _routes)
+				{
+					if (route.PathPattern.IsMatch(path) && route.HttpMethodPattern.IsMatch(method))
+					{
+						var module = new UrlRoutingModule();
+						module.PostResolveRequestCache(new HttpContextWrapper(context));
+						return;
+					}
+				}
+			}
+		}
+
+		private static void FilterSameSiteNoneForIncompatibleUserAgents(HttpApplication app)
+		{
+			var context = app?.Context;
+			if (context == null || context.IsStaticResourceRequested() || SameSiteBrowserDetector.AllowsSameSiteNone(context.Request?.UserAgent))
+				return;
+			
+			app.Response.AddOnSendingHeaders(ctx =>
+			{
+				var cookies = ctx.Response.Cookies;
+				for (var i = 0; i < cookies.Count; i++)
+				{
+					var cookie = cookies[i];
+					if (cookie.SameSite == SameSiteMode.None)
+					{
+						cookie.SameSite = (SameSiteMode)(-1); // Unspecified
+					}
+				}
+			});
+		}
+
+		#endregion
 
 		/// <summary>
 		///  Registers an action that is called on application init. Call this to register HTTP request lifecycle callbacks / event handlers.
@@ -162,104 +275,7 @@ namespace SmartStore.Web.Framework
 			return false;
 		}
 
-		public virtual void PostAuthorizeRequest(HttpContextBase context)
-		{
-			var request = context?.Request;
-			if (request == null)
-				return;
-
-			if (IsExtensionPath(request) && WebHelper.IsStaticResourceRequested(request))
-			{
-				// We're in debug mode and in dev environment
-				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugVirtualFile;
-				if (file != null)
-				{
-                    context.Items["DebugFile"] = file;
-                    context.Response.TransmitFile(file.PhysicalPath);
-                    context.Response.Flush(); // TBD: optional?
-                    context.Response.SuppressContent = true; // TBD: optional?
-                    context.ApplicationInstance.CompleteRequest();
-                }
-			}
-		}
-
-		public virtual void PreSendRequestHeaders(HttpContextBase context)
-		{
-			if (context?.Response == null)
-				return;
-
-			var file = context.Items?["DebugFile"] as DebugVirtualFile;
-			if (file != null)
-			{
-				context.Response.AddFileDependency(file.PhysicalPath);
-				context.Response.ContentType = MimeTypes.MapNameToMimeType(Path.GetFileName(file.PhysicalPath));
-				context.Response.Cache.SetNoStore();
-				context.Response.Cache.SetLastModifiedFromFileDependencies();
-			}
-
-			if (SameSiteBrowserDetector.AllowsSameSiteNone(context.Request.UserAgent))
-			{
-				// Set SameSite attribute for antiforgery token.
-				var privacySettings = EngineContext.Current.Resolve<PrivacySettings>();
-				var antiForgeryCookie = context.Request.Cookies["__requestverificationtoken"];
-
-				if (antiForgeryCookie != null)
-				{
-					antiForgeryCookie.HttpOnly = true;
-					antiForgeryCookie.Secure = context.Request.IsHttps();
-					antiForgeryCookie.SameSite = context.Request.IsHttps() ? (SameSiteMode)privacySettings.SameSiteMode : SameSiteMode.Lax;
-
-					context.Response.Cookies.Set(antiForgeryCookie);
-				}
-			}
-		}
-
-		public virtual void PostResolveRequestCache(HttpContextBase context)
-		{
-			var request = context?.Request;
-			if (request == null)
-				return;
-
-			if (_routes.Count > 0)
-			{
-				var path = request.AppRelativeCurrentExecutionFilePath.TrimStart('~').TrimEnd('/');
-				var method = request.HttpMethod.EmptyNull();
-
-				foreach (var route in _routes)
-				{
-					if (route.PathPattern.IsMatch(path) && route.HttpMethodPattern.IsMatch(method))
-					{
-						var module = new UrlRoutingModule();
-						module.PostResolveRequestCache(context);
-						return;
-					}
-				}
-			}	
-		}
-
-		public virtual void FilterSameSiteNoneForIncompatibleUserAgents(HttpApplication application)
-		{
-			if (application != null)
-			{
-				if (SameSiteBrowserDetector.DisallowsSameSiteNone(application.Context.Request.UserAgent))
-				{
-					application.Response.AddOnSendingHeaders(context =>
-					{
-						var cookies = context.Response.Cookies;
-						for (var i = 0; i < cookies.Count; i++)
-						{
-							var cookie = cookies[i];
-							if (cookie.SameSite == SameSiteMode.None)
-							{
-								cookie.SameSite = (SameSiteMode)(-1); // Unspecified
-							}
-						}
-					});
-				}
-			}
-		}
-
-		private bool IsExtensionPath(HttpRequestBase request)
+		private static bool IsExtensionPath(HttpRequest request)
 		{
 			var path = request.AppRelativeCurrentExecutionFilePath.ToLower();
 			var result = path.StartsWith("~/plugins/") || path.StartsWith("~/themes/");

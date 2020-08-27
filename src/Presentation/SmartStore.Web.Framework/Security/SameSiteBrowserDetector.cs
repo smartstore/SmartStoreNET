@@ -1,6 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Runtime.CompilerServices;
+
 namespace SmartStore.Web.Framework.Security
 {
     public static class SameSiteBrowserDetector
@@ -55,6 +57,7 @@ namespace SmartStore.Web.Framework.Security
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AllowsSameSiteNone(string userAgent)
         {
             return !DisallowsSameSiteNone(userAgent);

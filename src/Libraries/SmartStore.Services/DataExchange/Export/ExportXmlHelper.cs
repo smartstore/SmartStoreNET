@@ -344,8 +344,11 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.WriteStartElement(node);
 			}
 
+			var seoName = (string)picture.Name;
+			seoName = Path.GetFileNameWithoutExtension(seoName.EmptyNull());
+
 			_writer.Write("Id", entity.Id.ToString());
-			_writer.Write("SeoFilename", (string)picture.Name);
+			_writer.Write("SeoFilename", seoName);
 			_writer.Write("MimeType", (string)picture.MimeType);
 			_writer.Write("ThumbImageUrl", (string)picture._ThumbImageUrl);
 			_writer.Write("ImageUrl", (string)picture._ImageUrl);

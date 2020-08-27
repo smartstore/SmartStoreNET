@@ -44,20 +44,14 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public IDisposable BeginContextAwareScope()
 		{
-			if (HttpContext.Current != null)
-            {
-				return ActionDisposable.Empty;
-			}
-			else
-            {
-				Action disposer = null;
-				if (_state.GetState() == null)
-                {
-					disposer = this.EndLifetimeScope;
-				}
-
-				return new ContextAwareScope(disposer);
-			}
+			// Stack-like behaviour for Non-HttpContext thread:
+			// Only the first call returns a disposer, all nested calls to this method are void.
+			return HttpContext.Current != null
+				? (IDisposable)ActionDisposable.Empty
+				: new ContextAwareScope(
+					_state.GetState() == null
+						? this.EndLifetimeScope
+						: (Action)null);
 		}
 
 		public void EndLifetimeScope()

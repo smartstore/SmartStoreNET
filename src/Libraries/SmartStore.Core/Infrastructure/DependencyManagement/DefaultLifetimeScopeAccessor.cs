@@ -1,16 +1,27 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Web;
 using Autofac;
-using Autofac.Core.Lifetime;
-using SmartStore.Core.Data;
-using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
-	public class DefaultLifetimeScopeAccessor : ILifetimeScopeAccessor
+    public class DefaultLifetimeScopeAccessor : ILifetimeScopeAccessor
 	{
+		class ContextAwareScope : IDisposable
+		{
+			private readonly Action _disposer;
+
+			public ContextAwareScope(Action disposer)
+			{
+				_disposer = disposer;
+			}
+
+			public void Dispose()
+			{
+				_disposer?.Invoke();
+			}
+		}
+
 		private ContextState<ILifetimeScope> _state;
 		private readonly ILifetimeScope _rootContainer;
 		internal static readonly object ScopeTag = "AutofacWebRequest";
@@ -32,11 +43,20 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public IDisposable BeginContextAwareScope()
 		{
-			var disposer = HttpContext.Current != null
-				? ActionDisposable.Empty
-				: new ActionDisposable(() => this.EndLifetimeScope());
+			if (HttpContext.Current != null)
+			{
+				return ActionDisposable.Empty;
+			}
+			else
+			{
+				Action disposer = null;
+				if (_state.GetState() == null)
+				{
+					disposer = this.EndLifetimeScope;
+				}
 
-			return disposer;
+				return new ContextAwareScope(disposer);
+			}
 		}
 
 		public void EndLifetimeScope()

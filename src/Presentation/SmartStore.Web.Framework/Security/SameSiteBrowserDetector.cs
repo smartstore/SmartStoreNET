@@ -1,9 +1,9 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace SameSite
+namespace SmartStore.Web.Framework.Security
 {
-    public static class BrowserDetection
+    public static class SameSiteBrowserDetector
     {
         // Same as https://devblogs.microsoft.com/aspnet/upcoming-samesite-cookie-changes-in-asp-net-and-asp-net-core/
         public static bool DisallowsSameSiteNone(string userAgent)

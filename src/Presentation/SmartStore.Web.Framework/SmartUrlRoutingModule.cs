@@ -16,6 +16,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Data;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Framework
 {
@@ -196,7 +197,7 @@ namespace SmartStore.Web.Framework
 				context.Response.Cache.SetLastModifiedFromFileDependencies();
 			}
 
-			if (SameSite.BrowserDetection.AllowsSameSiteNone(context.Request.UserAgent))
+			if (SameSiteBrowserDetector.AllowsSameSiteNone(context.Request.UserAgent))
 			{
 				// Set SameSite attribute for antiforgery token.
 				var privacySettings = EngineContext.Current.Resolve<PrivacySettings>();
@@ -240,7 +241,7 @@ namespace SmartStore.Web.Framework
 		{
 			if (application != null)
 			{
-				if (SameSite.BrowserDetection.DisallowsSameSiteNone(application.Context.Request.UserAgent))
+				if (SameSiteBrowserDetector.DisallowsSameSiteNone(application.Context.Request.UserAgent))
 				{
 					application.Response.AddOnSendingHeaders(context =>
 					{

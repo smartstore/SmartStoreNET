@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Web.Routing;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Configuration;
@@ -60,14 +61,20 @@ ga('ecommerce:send');";
 		private readonly ISettingService _settingService;
 		private readonly GoogleAnalyticsSettings _googleAnalyticsSettings;
 		private readonly ILocalizationService _localizationService;
+		private readonly IWidgetService _widgetService;
+		private readonly WidgetSettings _widgetSettings;
 
 		public GoogleAnalyticPlugin(ISettingService settingService,
 			GoogleAnalyticsSettings googleAnalyticsSettings,
-			ILocalizationService localizationService)
+			ILocalizationService localizationService,
+			IWidgetService widgetService,
+			WidgetSettings widgetSettings)
 		{
 			_settingService = settingService;
 			_googleAnalyticsSettings = googleAnalyticsSettings;
 			_localizationService = localizationService;
+			_widgetService = widgetService;
+			_widgetSettings = widgetSettings;
 		}
 
 		/// <summary>
@@ -125,6 +132,10 @@ ga('ecommerce:send');";
 		/// <returns>CookieInfo containing plugin name, cookie purpose description & cookie type</returns>
 		public CookieInfo GetCookieInfo()
 		{
+			var widget = _widgetService.LoadWidgetBySystemName("SmartStore.GoogleAnalytics");
+			if (!widget.IsWidgetActive(_widgetSettings))
+				return null;
+
 			var cookieInfo = new CookieInfo
 			{
 				Name = _localizationService.GetResource("Plugins.FriendlyName.SmartStore.GoogleAnalytics"),

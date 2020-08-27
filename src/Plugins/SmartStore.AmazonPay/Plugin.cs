@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.AmazonPay.Controllers;
 using SmartStore.AmazonPay.Services;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -24,17 +26,23 @@ namespace SmartStore.AmazonPay
 		private readonly ICommonServices _services;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly IScheduleTaskService _scheduleTaskService;
+		private readonly IWidgetService _widgetService;
+		private readonly WidgetSettings _widgetSettings;
 
 		public AmazonPayPlugin(
 			IAmazonPayService apiService,
 			ICommonServices services,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			IScheduleTaskService scheduleTaskService)
+			IScheduleTaskService scheduleTaskService,
+			IWidgetService widgetService,
+			WidgetSettings widgetSettings)
 		{
 			_apiService = apiService;
 			_services = services;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_scheduleTaskService = scheduleTaskService;
+			_widgetService = widgetService;
+			_widgetSettings = widgetSettings;
 
 			Logger = NullLogger.Instance;
 		}
@@ -52,6 +60,10 @@ namespace SmartStore.AmazonPay
 		/// <returns>CookieInfo containing plugin name, cookie purpose description & cookie type</returns>
 		public CookieInfo GetCookieInfo()
 		{
+			var widget = _widgetService.LoadWidgetBySystemName("Widgets.AmazonPay");
+			if (!widget.IsWidgetActive(_widgetSettings))
+				return null;
+			
 			var cookieInfo = new CookieInfo
 			{
 				Name = _services.Localization.GetResource("Plugins.FriendlyName.Widgets.AmazonPay"),

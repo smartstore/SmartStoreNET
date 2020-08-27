@@ -503,51 +503,7 @@
 							sortMediaFiles();
 						}
 					});
-				} else {
-
-					const hidden = document.getElementById("media-file-ids");
-					if (hidden && clearAssignableFiles) {
-						hidden.value = (hidden.value + assignableFileIds);
-
-						const items = previewContainer.find('.dz-image-preview');
-						const hiddenValues = hidden.value.split(',').map(Number);
-
-						$.each(items, function (index, item) {
-							if (index < items.length - assignableFiles.length) return;
-
-							const fileName = $(item).find(".fu-file-info-name").text();
-							var file = assignableFiles.find(x => x.media.id === hiddenValues[index]);
-							if (!file) {							
-								file = assignableFiles.find(x => x.name.toLowerCase() === fileName.toLowerCase());
-							}
-
-							if (file) {
-								// Set properties for newly added file preview.
-								var elPreview = file.previewElement ? $(file.previewElement) : $(previewTemplate.html());
-
-								elPreview
-									.attr("data-media-id", hiddenValues[index])
-									.attr("data-media-name", fileName)
-									.removeClass("d-none dz-processing");
-
-								elPreview.find(".fu-file-info-name").html(fileName);
-
-								elPreview
-									.find('img')
-									.attr('src', file.dataURL || file.media.thumbUrl);
-
-								previewContainer.append(elPreview);
-								dzResetProgressBar(elPreview.find(".progress-bar"));
-							}
-							else {
-								console.log("Error while adding preview element.", fileName.toLowerCase());
-							}
-						});
-
-						assignableFileIds = "";
-						assignableFiles.length = 0;
-                    }
-                }
+				}
 			}
 
 			// Calls server function after sorting, to save current sort order.
@@ -586,19 +542,6 @@
 							});
 						}
 					});
-				}
-				else {
-					const hidden = document.getElementById("media-file-ids");
-					if (hidden) {
-						const items = previewContainer.find('.dz-image-preview');
-
-						let newOrder = [];
-						$.each(items, function (i, val) {
-							newOrder.push($(val).data('entity-media-id'));
-						});
-
-						hidden.value = newOrder;
-					}
 				}
 			}
 
@@ -645,11 +588,11 @@
 
 			// Deletes a media file assignment of an entity (multifile upload).
 			fuContainer.on("click", ".delete-entity-picture", function (e) {
-				var previewThumb = $(this).closest('.dz-image-preview');
-				var entityMediaFileId = previewThumb.data("entity-media-id");
-				var mediaFileId = previewThumb.data("media-id");
 
 				if ($el.data('remove-url')) {
+					var previewThumb = $(this).closest('.dz-image-preview');
+					var entityMediaFileId = previewThumb.data("entity-id");
+					var mediaFileId = previewThumb.data("media-id");
 
 					$.ajax({
 						async: false,
@@ -662,31 +605,12 @@
 
 							// File must be removed from dropzone if it was added in current queue.
 							var file = el.files.find(file => file.media.id === mediaFileId);
-							if (file)
+							if (file) {
 								el.removeFile(file);
+                            }
 						}
 					});
-				} else {
-					const hidden = document.getElementById("media-file-ids");
-					if (hidden) {
-						previewThumb.remove();
-
-						// File must be removed from dropzone if it was added in current queue.
-						const file = el.files.find(file => file.media.id === mediaFileId);						
-						if (file)
-							el.removeFile(file);
-
-						const items = previewContainer.find('.dz-image-preview');
-
-						let newOrder = [];
-						$.each(items, function (i, val) {
-							newOrder.push($(val).data('entity-media-id'));
-						});
-
-						hidden.value = newOrder;
-					}
-                }
-				return false;
+				}
 			});
 
 			// Remove uploaded file (singlefile upload).

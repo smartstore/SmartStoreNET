@@ -29,6 +29,7 @@ namespace SmartStore.Web.Framework
         private readonly ICurrencyService _currencyService;
 		private readonly IGenericAttributeService _attrService;
         private readonly TaxSettings _taxSettings;
+        private readonly PrivacySettings _privacySettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICacheManager _cacheManager;
 		private readonly Lazy<ITaxService> _taxService;
@@ -54,6 +55,7 @@ namespace SmartStore.Web.Framework
             ICurrencyService currencyService,
 			IGenericAttributeService attrService,
             TaxSettings taxSettings,
+            PrivacySettings privacySettings,
             LocalizationSettings localizationSettings,
 			Lazy<ITaxService> taxService,
 			IUserAgent userAgent,
@@ -70,7 +72,8 @@ namespace SmartStore.Web.Framework
 			_attrService = attrService;
             _currencyService = currencyService;
             _taxSettings = taxSettings;
-			_taxService = taxService;
+            _privacySettings = privacySettings;
+            _taxService = taxService;
             _localizationSettings = localizationSettings;
 			_userAgent = userAgent;
             _webHelper = webHelper;
@@ -196,11 +199,12 @@ namespace SmartStore.Web.Framework
 			// Set visitor cookie
 			if ( _httpContext?.Response != null)
 			{
-				visitorCookie = new HttpCookie(VisitorCookieName) 
+                visitorCookie = new HttpCookie(VisitorCookieName)
                 {
                     HttpOnly = true,
-                    Secure = _httpContext.Request.IsHttps()
-                };
+                    Secure = _httpContext.Request.IsHttps(),
+                    SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
+            };
 
 				visitorCookie.Value = customer.CustomerGuid.ToString();
 				if (customer.CustomerGuid == Guid.Empty)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog
@@ -17,15 +18,18 @@ namespace SmartStore.Services.Catalog
         private readonly HttpContextBase _httpContext;
         private readonly IProductService _productService;
 		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly PrivacySettings _privacySettings;
 
-		public CompareProductsService(
-			HttpContextBase httpContext,
+        public CompareProductsService(
+            HttpContextBase httpContext,
 			IProductService productService,
-			ICatalogSearchService catalogSearchService)
+			ICatalogSearchService catalogSearchService,
+            PrivacySettings privacySettings)
         {
             _httpContext = httpContext;
             _productService = productService;
 			_catalogSearchService = catalogSearchService;
+            _privacySettings = privacySettings;
         }
 
         #region Utilities
@@ -68,6 +72,7 @@ namespace SmartStore.Services.Catalog
                 compareCookie.Expires = DateTime.Now.AddYears(-1);
                 compareCookie.HttpOnly = true;
                 compareCookie.Secure = _httpContext.Request.IsHttps();
+                compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
                 _httpContext.Response.Cookies.Set(compareCookie);
             }
@@ -127,6 +132,7 @@ namespace SmartStore.Services.Catalog
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
             compareCookie.HttpOnly = true;
             compareCookie.Secure = _httpContext.Request.IsHttps();
+            compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(compareCookie);
         }
@@ -163,6 +169,7 @@ namespace SmartStore.Services.Catalog
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
             compareCookie.HttpOnly = true;
             compareCookie.Secure = _httpContext.Request.IsHttps();
+            compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(compareCookie);
         }

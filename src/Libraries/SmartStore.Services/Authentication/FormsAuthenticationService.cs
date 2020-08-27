@@ -12,15 +12,21 @@ namespace SmartStore.Services.Authentication
         private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
         private readonly CustomerSettings _customerSettings;
+        private readonly PrivacySettings _privacySettings;
         private readonly TimeSpan _expirationTimeSpan;
 
         private Customer _cachedCustomer;
 
-        public FormsAuthenticationService(HttpContextBase httpContext, ICustomerService customerService, CustomerSettings customerSettings)
+        public FormsAuthenticationService(
+            HttpContextBase httpContext, 
+            ICustomerService customerService, 
+            CustomerSettings customerSettings,
+            PrivacySettings privacySettings)
         {
             _httpContext = httpContext;
             _customerService = customerService;
             _customerSettings = customerSettings;
+            _privacySettings = privacySettings;
             _expirationTimeSpan = FormsAuthentication.Timeout;
         }
 
@@ -45,8 +51,9 @@ namespace SmartStore.Services.Authentication
 			{
 				HttpOnly = true,
 				Secure = FormsAuthentication.RequireSSL,
-				Path = FormsAuthentication.FormsCookiePath
-			};
+				Path = FormsAuthentication.FormsCookiePath,
+                SameSite = FormsAuthentication.RequireSSL ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
+            };
 
 			if (ticket.IsPersistent)
             {
@@ -101,7 +108,7 @@ namespace SmartStore.Services.Authentication
 
             var usernameOrEmail = ticket.UserData;
 
-            if (string.IsNullOrWhiteSpace(usernameOrEmail))
+            if (!usernameOrEmail.HasValue())
                 return null;
 
             Customer customer = null;

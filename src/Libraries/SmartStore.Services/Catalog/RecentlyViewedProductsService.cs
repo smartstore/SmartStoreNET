@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Catalog
@@ -19,11 +20,12 @@ namespace SmartStore.Services.Catalog
         private readonly IProductService _productService;
 		private readonly IAclService _aclService;
 		private readonly CatalogSettings _catalogSettings;
+        private readonly PrivacySettings _privacySettings;
 
         #endregion
 
         #region Ctor
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -35,13 +37,15 @@ namespace SmartStore.Services.Catalog
             HttpContextBase httpContext,
 			IProductService productService,
 			IAclService aclService,
-			CatalogSettings catalogSettings)
+			CatalogSettings catalogSettings,
+            PrivacySettings privacySettings)
         {
             _services = services;
             _httpContext = httpContext;
             _productService = productService;
 			_aclService = aclService;
             _catalogSettings = catalogSettings;
+            _privacySettings = privacySettings;
         }
 
         #endregion
@@ -133,6 +137,7 @@ namespace SmartStore.Services.Catalog
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
             recentlyViewedCookie.HttpOnly = true;
             recentlyViewedCookie.Secure = _services.WebHelper.IsCurrentConnectionSecured();
+            recentlyViewedCookie.SameSite = _services.WebHelper.IsCurrentConnectionSecured() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);
         }

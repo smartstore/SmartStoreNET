@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Localization;
+using System.Web;
 
 namespace SmartStore.Core.Domain.Customers
 {
@@ -23,6 +24,11 @@ namespace SmartStore.Core.Domain.Customers
 		/// Specifies whether the cookie dialog will be display in a modal dialog
 		/// </summary>
 		public bool ModalCookieConsent { get; set; }
+
+		/// <summary>
+		/// Defines the global SameSiteMode for cookies.
+		/// </summary>
+		public SameSiteType SameSiteMode { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to store last IP address for each customer

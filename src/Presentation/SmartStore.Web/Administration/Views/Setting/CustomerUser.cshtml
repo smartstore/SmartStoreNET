@@ -804,6 +804,25 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.SameSiteMode)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListForEnum(model => model.PrivacySettings.SameSiteMode)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.SameSiteMode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+            </td>
+            <td class="adminData wide">
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @T("Admin.Configuration.Settings.CustomerUser.Privacy.SameSiteMode.AdminInstruction")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
             </td>
             <td class="adminData">

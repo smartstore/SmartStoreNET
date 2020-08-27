@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Orders;
 using SmartStore.Utilities;
 
@@ -193,11 +195,13 @@ namespace SmartStore
 				return;
 			}
 
+			var settings = EngineContext.Current.Resolve<PrivacySettings>();
 			var cookie = context.Request.Cookies.Get("sm.UserThemeChoice") ?? new HttpCookie("sm.UserThemeChoice");
 			cookie.Value = value;
 			cookie.Expires = DateTime.UtcNow.AddYears(1);
 			cookie.HttpOnly = true;
 			cookie.Secure = context.Request.IsHttps();
+			cookie.SameSite = context.Request.IsHttps() ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax;
 
 			context.Request.Cookies.Set(cookie);
 		}
@@ -209,7 +213,12 @@ namespace SmartStore
 			
 			if (cookie == null && createIfMissing && httpRequest != null)
 			{
-				cookie = new HttpCookie("sm.PreviewModeOverrides") { HttpOnly = true };
+				var settings = EngineContext.Current.Resolve<PrivacySettings>();
+				cookie = new HttpCookie("sm.PreviewModeOverrides") { 
+					HttpOnly = true,
+					Secure = context.Request.IsHttps(),
+					SameSite = context.Request.IsHttps() ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax
+				};
 				httpRequest.Cookies.Set(cookie);
 			}
 

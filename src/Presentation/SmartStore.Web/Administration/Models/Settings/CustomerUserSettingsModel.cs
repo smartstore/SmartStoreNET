@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -261,6 +262,7 @@ namespace SmartStore.Admin.Models.Settings
 				EnableCookieConsent = true;
                 ModalCookieConsent = true;
                 CookieInfos = new List<CookieInfo>();
+                SameSiteMode = SameSiteType.Lax;
             }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent")]
@@ -268,6 +270,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.ModalCookieConsent")]
             public bool ModalCookieConsent { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.SameSiteMode")]
+            public SameSiteType SameSiteMode { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress")]
 			public bool StoreLastIpAddress { get; set; }

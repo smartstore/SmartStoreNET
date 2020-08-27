@@ -137,7 +137,8 @@ namespace SmartStore.Services.Customers
 				// Store JSON serialized object which contains current allowed types (Analytics & ThirdParty) in cookie.
 				Value = JsonConvert.SerializeObject(cookieData),
 				Expires = DateTime.UtcNow + expiry,
-				Secure = _services.WebHelper.IsCurrentConnectionSecured()
+				Secure = _services.WebHelper.IsCurrentConnectionSecured(),
+				SameSite = _services.WebHelper.IsCurrentConnectionSecured() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
 			};
 
 			response.Cookies.Set(consentCookie);

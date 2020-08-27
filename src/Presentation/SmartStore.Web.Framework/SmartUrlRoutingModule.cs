@@ -83,6 +83,8 @@ namespace SmartStore.Web.Framework
 			{
 				application.Context.Items[_contextKey] = _contextKey;
 
+				application.BeginRequest += (s, e) => FilterSameSiteNoneForIncompatibleUserAgents(application);
+
 				if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
 				{
 					// Handle plugin static file in DevMode
@@ -215,6 +217,29 @@ namespace SmartStore.Web.Framework
 					}
 				}
 			}	
+		}
+
+		public virtual void FilterSameSiteNoneForIncompatibleUserAgents(HttpApplication application)
+		{
+			if (application != null)
+			{
+				var userAgent = application.Context.Request.UserAgent;
+				if (SameSite.BrowserDetection.DisallowsSameSiteNone(userAgent))
+				{
+					application.Response.AddOnSendingHeaders(context =>
+					{
+						var cookies = context.Response.Cookies;
+						for (var i = 0; i < cookies.Count; i++)
+						{
+							var cookie = cookies[i];
+							if (cookie.SameSite == SameSiteMode.None)
+							{
+								cookie.SameSite = (SameSiteMode)(-1); // Unspecified
+							}
+						}
+					});
+				}
+			}
 		}
 
 		private bool IsExtensionPath(HttpRequestBase request)

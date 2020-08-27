@@ -112,6 +112,13 @@ namespace SmartStore.Services.Media
         IMediaStorageProvider StorageProvider { get; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether image post-processing is enabled.
+        /// It is recommended to turn this off during long-running processes - like product imports -
+        /// as post-processing can heavily decrease processing time.
+        /// </summary>
+        public bool ImagePostProcessingEnabled { get; set; }
+
+        /// <summary>
         /// Determines the number of files that match the filter criteria in <paramref name="query"/>.
         /// </summary>
         /// <param name="query">The query that defines the criteria.</param>

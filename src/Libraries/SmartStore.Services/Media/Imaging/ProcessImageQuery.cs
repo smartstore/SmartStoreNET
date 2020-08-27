@@ -96,7 +96,7 @@ namespace SmartStore.Services.Media.Imaging
 		/// can reduce the resulting file size drastically, but also
 		/// can slow down processing time.
 		/// </summary>
-		public bool ExecutePostProcessor { get; set; }
+		public bool ExecutePostProcessor { get; set; } = true;
 
 		public int? MaxWidth
 		{

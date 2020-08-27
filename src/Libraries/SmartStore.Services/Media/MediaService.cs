@@ -77,6 +77,8 @@ namespace SmartStore.Services.Media
             get => _storageProvider;
         }
 
+        public bool ImagePostProcessingEnabled { get; set; }
+
         #region Query
 
         public int CountFiles(MediaSearchQuery query)
@@ -590,6 +592,7 @@ namespace SmartStore.Services.Media
                 Quality = _mediaSettings.DefaultImageQuality,
                 Format = file.Extension,
                 DisposeSource = true,
+                ExecutePostProcessor = ImagePostProcessingEnabled,
                 IsValidationMode = true
             };
 

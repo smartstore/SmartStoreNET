@@ -1884,6 +1884,7 @@
     <Content Include="Views\Shared\MediaTemplates\Bin.cshtml" />
     <Content Include="Views\Shared\MediaTemplates\_Thumbnail.cshtml" />
     <Content Include="Themes\Flex\Content\_variables-reset.scss" />
+    <Content Include="Themes\Flex\Content\_cookie-manager.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

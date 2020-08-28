@@ -307,9 +307,12 @@ namespace SmartStore.Services.Customers
 
 		private IQueryable<Customer> IncludeShoppingCart(IQueryable<Customer> query)
 		{
-			return query
-				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
-                .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
+			return query;
+			
+			/// The generated SQL is way too heavy (!). Discard later (??)
+			//return query
+			//	.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
+			//  .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
 		}
 
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)

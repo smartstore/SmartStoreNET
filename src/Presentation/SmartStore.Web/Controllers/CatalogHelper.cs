@@ -1451,12 +1451,18 @@ namespace SmartStore.Web.Controllers
 				cachedModels = new Dictionary<int, ManufacturerOverviewModel>();
 			}
 
-            var fileIds = manufacturers
-                .Select(x => x.Manufacturer.MediaFileId ?? 0)
-                .Where(x => x != 0)
-                .Distinct()
-                .ToArray();
-            var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
+			IDictionary<int, MediaFileInfo> mediaFileLookup = null;
+			if (withPicture)
+            {
+				mediaFileLookup = manufacturers
+					.Select(x => x.Manufacturer.MediaFile)
+					.Where(x => x != null)
+					.Distinct()
+					.Select(x => _mediaService.ConvertMediaFile(x))
+					.ToDictionarySafe(x => x.Id);
+			}
+
+            //var files = _mediaService.GetFilesByIds(fileIds).ToDictionarySafe(x => x.Id);
 
 			foreach (var pm in manufacturers)
 			{
@@ -1474,7 +1480,7 @@ namespace SmartStore.Web.Controllers
 
                     if (withPicture)
                     {
-                        item.Picture = PrepareManufacturerPictureModel(manufacturer, item.Name, files);
+                        item.Picture = PrepareManufacturerPictureModel(manufacturer, item.Name, mediaFileLookup);
                     }
 
                     cachedModels.Add(item.Id, item);

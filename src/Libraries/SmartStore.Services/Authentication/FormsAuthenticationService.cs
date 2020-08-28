@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Security;
 using SmartStore.Core;
@@ -111,22 +113,33 @@ namespace SmartStore.Services.Authentication
             if (!usernameOrEmail.HasValue())
                 return null;
 
-            Customer customer = null;
+            List<Func<string, Customer>> customerResolvers = new List<Func<string, Customer>>(2);
 
             if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
             {
-                customer = _customerService.GetCustomerByEmail(usernameOrEmail);
+                customerResolvers.Add(_customerService.GetCustomerByEmail);
             }
             else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
             {
-                customer = _customerService.GetCustomerByUsername(usernameOrEmail);
+                customerResolvers.Add(_customerService.GetCustomerByUsername);
             }
             else
             {
-                customer = _customerService.GetCustomerByEmail(usernameOrEmail) ?? _customerService.GetCustomerByUsername(usernameOrEmail);
+                customerResolvers.Add(_customerService.GetCustomerByUsername);
+                var mayBeEmail = usernameOrEmail.IndexOf('@') > -1;
+                if (mayBeEmail)
+                {
+                    customerResolvers.Insert(0, _customerService.GetCustomerByEmail);
+                }
+                else
+                {
+                    customerResolvers.Add(_customerService.GetCustomerByEmail);
+                }
             }
 
-            return customer;
+            return customerResolvers
+                .Select(x => x.Invoke(usernameOrEmail))
+                .FirstOrDefault();
         }
     }
 }

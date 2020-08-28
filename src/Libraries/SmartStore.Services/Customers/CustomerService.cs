@@ -300,22 +300,23 @@ namespace SmartStore.Services.Customers
                 return null;
             
             // var customer = _customerRepository.GetById(customerId);
-			var customer = IncludeShoppingCart(_customerRepository.Table).SingleOrDefault(x => x.Id == customerId);
+			var customer = IncludeRoles(_customerRepository.Table).SingleOrDefault(x => x.Id == customerId);
 
 			return customer;
         }
 
-		private IQueryable<Customer> IncludeShoppingCart(IQueryable<Customer> query)
+		private IQueryable<Customer> IncludeRoles(IQueryable<Customer> query)
 		{
-			return query;
-			
-			/// The generated SQL is way too heavy (!). Discard later (??)
-			//return query
-			//	.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
-			//  .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
-		}
+            return query
+              .Expand(x => x.CustomerRoleMappings.Select(y => y.CustomerRole));
 
-        public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
+            /// The generated SQL is way too heavy (!). Discard later (??)
+            //return query
+            //	.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem))
+            //  .Expand(x => x.ShoppingCartItems.Select(y => y.Product.AppliedDiscounts.Select(z => z.RuleSets)));
+        }
+
+		public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
         {
             if (customerIds == null || customerIds.Length == 0)
                 return new List<Customer>();
@@ -340,7 +341,7 @@ namespace SmartStore.Services.Customers
             if (customerGuid == Guid.Empty)
                 return null;
 
-            var query = from c in IncludeShoppingCart(_customerRepository.Table)
+            var query = from c in IncludeRoles(_customerRepository.Table)
 						where c.CustomerGuid == customerGuid
                         orderby c.Id
                         select c;
@@ -354,7 +355,7 @@ namespace SmartStore.Services.Customers
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            var query = from c in IncludeShoppingCart(_customerRepository.Table)
+            var query = from c in IncludeRoles(_customerRepository.Table)
 						orderby c.Id
                         where c.Email == email
                         select c;
@@ -382,7 +383,7 @@ namespace SmartStore.Services.Customers
             if (string.IsNullOrWhiteSpace(username))
                 return null;
 
-            var query = from c in IncludeShoppingCart(_customerRepository.Table)
+            var query = from c in IncludeRoles(_customerRepository.Table)
 						orderby c.Id
                         where c.Username == username
                         select c;

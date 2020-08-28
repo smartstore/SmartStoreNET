@@ -24,12 +24,12 @@ namespace SmartStore.Services.Localization
 	public partial class LocalizationService : ILocalizationService
     {
 		/// <summary>
-		/// 0 = segment (first 3 chars of key), 1 = language id
+		/// 0 = language id
 		/// </summary>
-		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}-lang-{1}";
-		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}*";
+		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}";
+		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:*";
 
-        private readonly IRepository<LocaleStringResource> _lsrRepo;
+		private readonly IRepository<LocaleStringResource> _lsrRepo;
         private readonly IWorkContext _workContext;
         private readonly ILogger _logger;
         private readonly ILanguageService _languageService;
@@ -59,7 +59,7 @@ namespace SmartStore.Services.Localization
 			Guard.NotNull(resource, nameof(resource));
 
             // cache
-			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.LanguageId);
 			
             // db
             _lsrRepo.Delete(resource);
@@ -75,7 +75,7 @@ namespace SmartStore.Services.Localization
 					var sqlDelete = "Delete From LocaleStringResource Where ResourceName Like '{0}%'".FormatWith(key.EndsWith(".") || !keyIsRootKey ? key : key + ".");
 					result = _dbContext.ExecuteSqlCommand(sqlDelete);
 
-					ClearCacheSegment(key);
+					ClearCacheSegment(null);
 				}
 				catch (Exception exc) 
                 {
@@ -146,7 +146,7 @@ namespace SmartStore.Services.Localization
             _lsrRepo.Insert(resource);
 
 			// cache
-			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.LanguageId);
         }
 
         public virtual void UpdateLocaleStringResource(LocaleStringResource resource)
@@ -154,27 +154,20 @@ namespace SmartStore.Services.Localization
 			Guard.NotNull(resource, nameof(resource));
 
             // cache
-            object origKey = null;
-			if (_dbContext.TryGetModifiedProperty(resource, "ResourceName", out origKey))
-			{
-				ClearCacheSegment((string)origKey, resource.LanguageId);
-			}
-			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.LanguageId);
 
 			_lsrRepo.Update(resource);
         }
 
-		protected virtual IDictionary<string, string> GetCacheSegment(string forKey, int languageId)
+		protected virtual IDictionary<string, string> GetCacheSegment(int languageId)
 		{
-			Guard.NotEmpty(forKey, nameof(forKey));
-
-			var segmentKey = GetSegmentKeyPart(forKey);
-			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
+			var cacheKey = BuildCacheSegmentKey(languageId);
 
 			return _cacheManager.Get(cacheKey, () => 
 			{
 				var resources = _lsrRepo.TableUntracked
-					.Where(x => x.ResourceName.StartsWith(segmentKey) && x.LanguageId == languageId)
+					.Where(x => x.LanguageId == languageId)
+					.Select(x => new { x.ResourceName, x.ResourceValue })
 					//.OrderBy(x => x.ResourceName)
 					.ToList();
 
@@ -192,19 +185,16 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Clears the cached resource segment from the cache
 		/// </summary>
-		/// <param name="forKey">The resource key for which a segment key should be created</param>
 		/// <param name="languageId">Language Id. If <c>null</c>, segments for all cached languages will be invalidated</param>
-		protected virtual void ClearCacheSegment(string forKey, int? languageId = null)
+		protected virtual void ClearCacheSegment(int? languageId = null)
 		{
-			var segmentKey = GetSegmentKeyPart(forKey);
-
 			if (languageId.HasValue && languageId.Value > 0)
 			{
-				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+				_cacheManager.Remove(BuildCacheSegmentKey(languageId.Value));
 			}
 			else
 			{
-				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_SEGMENT_PATTERN.FormatInvariant(segmentKey));
+				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_SEGMENT_PATTERN);
 			}
 		}
 
@@ -229,7 +219,7 @@ namespace SmartStore.Services.Localization
 
             resourceKey = resourceKey.EmptyNull().Trim().ToLowerInvariant();
 
-			var cachedSegment = GetCacheSegment(resourceKey, languageId);
+			var cachedSegment = GetCacheSegment(languageId);
 
             if (!cachedSegment.TryGetValue(resourceKey, out result))
             {
@@ -571,9 +561,6 @@ namespace SmartStore.Services.Localization
 				{
 					var segmentKeys = new HashSet<string>();
 
-					toAdd.Each(x => segmentKeys.Add(GetSegmentKeyPart(x.ResourceName)));
-					toUpdate.Each(x => segmentKeys.Add(GetSegmentKeyPart(x.ResourceName)));
-
 					_lsrRepo.InsertRange(toAdd);
 					toAdd.Clear();
 
@@ -583,10 +570,7 @@ namespace SmartStore.Services.Localization
 					int num = _lsrRepo.Context.SaveChanges();
 
 					// clear cache
-					foreach (var segmentKey in segmentKeys)
-					{
-						ClearCacheSegment(segmentKey, language.Id);
-					}
+					ClearCacheSegment(language.Id);
 
 					return num;
 				}
@@ -695,16 +679,10 @@ namespace SmartStore.Services.Localization
             }
         }
 
-		private string BuildCacheSegmentKey(string segment, int languageId)
+		private string BuildCacheSegmentKey(int languageId)
 		{
-			return String.Format(LOCALESTRINGRESOURCES_SEGMENT_KEY, segment, languageId);
+			return String.Format(LOCALESTRINGRESOURCES_SEGMENT_KEY, languageId);
 		}
-
-		private string GetSegmentKeyPart(string forKey)
-		{
-			return forKey.Substring(0, Math.Min(forKey.Length, 3)).ToLowerInvariant();
-		}
-
 
         private class LocaleStringResourceParent : LocaleStringResource
         {

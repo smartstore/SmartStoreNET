@@ -2353,31 +2353,28 @@ namespace SmartStore.Web.Controllers
 			int wishlistItemsCount = 0;
 			int compareItemsCount = 0;
 
-			decimal subtotal = 0;
-			string subtotalFormatted = string.Empty;
-
 			if (cartEnabled || wishlistEnabled)
 			{
 				var customer = Services.WorkContext.CurrentCustomer;
+                var cartItems = customer.ShoppingCartItems.Where(x => x.StoreId == Services.StoreContext.CurrentStore.Id && x.ParentItemId == null);
 
-				if (cartEnabled)
+                if (cartEnabled)
 				{
-					var cartItems = Services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, Services.StoreContext.CurrentStore.Id);
-					cartItemsCount = cartItems.GetTotalProducts();
-					//cartItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.ShoppingCart, Services.StoreContext.CurrentStore.Id);
+                    var shoppingCartItems = cartItems.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart);
+                    cartItemsCount = shoppingCartItems.Sum(x => (int?)x.Quantity) ?? 0;
 
-					subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
-					if (subtotal != 0)
-					{
-						subtotalFormatted = _priceFormatter.FormatPrice(subtotal, true, false);
-					}
-				}
+                    //subtotal = _shoppingCartService.GetCurrentCartSubTotal(cartItems);
+                    //if (subtotal != 0)
+                    //{
+                    //	subtotalFormatted = _priceFormatter.FormatPrice(subtotal, true, false);
+                    //}
+                }
 
 				if (wishlistEnabled)
 				{
-					//wishlistItemsCount = customer.CountProductsInCart(ShoppingCartType.Wishlist, Services.StoreContext.CurrentStore.Id);
-					wishlistItemsCount = _shoppingCartService.CountItems(customer, ShoppingCartType.Wishlist, Services.StoreContext.CurrentStore.Id);
-				}
+                    var wishlistItems = cartItems.Where(x => x.ShoppingCartType == ShoppingCartType.Wishlist);
+                    wishlistItemsCount = wishlistItems.Sum(x => (int?)x.Quantity) ?? 0;
+                }
 			}
 
 			if (compareEnabled)
@@ -2387,8 +2384,8 @@ namespace SmartStore.Web.Controllers
 
 			return Json(new
 			{
-				CartItemsCount = cartItemsCount,
-				CartSubTotal = subtotalFormatted,
+                //CartSubTotal = subtotalFormatted,
+                CartItemsCount = cartItemsCount,
 				WishlistItemsCount = wishlistItemsCount,
 				CompareItemsCount = compareItemsCount
 			});

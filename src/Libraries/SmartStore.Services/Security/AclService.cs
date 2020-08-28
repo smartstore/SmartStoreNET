@@ -22,7 +22,7 @@ namespace SmartStore.Services.Security
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly Work<IWorkContext> _workContext;
         private readonly ICacheManager _cacheManager;
-		private readonly ICustomerService _customerService;
+		private readonly Work<ICustomerService> _customerService;
 
 		private bool? _hasActiveAcl;
 
@@ -30,7 +30,7 @@ namespace SmartStore.Services.Security
 			ICacheManager cacheManager, 
 			Work<IWorkContext> workContext, 
 			IRepository<AclRecord> aclRecordRepository,
-			ICustomerService customerService)
+			Work<ICustomerService> customerService)
         {
             _cacheManager = cacheManager;
             _workContext = workContext;
@@ -94,7 +94,7 @@ namespace SmartStore.Services.Security
 		public virtual void SaveAclMappings<T>(T entity, params int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
 		{
 			var existingAclRecords = GetAclRecords(entity);
-			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			var allCustomerRoles = _customerService.Value.GetAllCustomerRoles(true);
             entity.SubjectToAcl = selectedCustomerRoleIds.Length == 1 && selectedCustomerRoleIds[0] == 0
                 ? false
                 : selectedCustomerRoleIds.Any();

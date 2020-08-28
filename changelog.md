@@ -12,6 +12,7 @@
 * #1788 Added setting to restrict order amount in general and for customer roles in specific.
 
 ### Improvements
+* (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies
 * #1981 Added grouping for cart rules.
 * #1407 Added menu to set order and payment status for orders checked in backend grid.
 * #1778 Back button closes offcanvas menu/cart.

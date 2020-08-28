@@ -57,7 +57,10 @@ namespace SmartStore.Services.Customers
 			{
 				lock (_lock)
 				{
-					_cookiePublisherTypes = _typeFinder.FindClassesOfType<ICookiePublisher>(ignoreInactivePlugins: true).ToList();
+					if (_cookiePublisherTypes == null)
+					{
+						_cookiePublisherTypes = _typeFinder.FindClassesOfType<ICookiePublisher>(ignoreInactivePlugins: true).ToList();
+					}	
 				}
 			}
 

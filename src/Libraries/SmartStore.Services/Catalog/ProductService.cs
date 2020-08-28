@@ -927,23 +927,24 @@ namespace SmartStore.Services.Catalog
                 return new Multimap<int, TierPrice>();
             }
 
-			var query =
-				from x in _tierPriceRepository.TableUntracked
-				where productIds.Contains(x.ProductId)
-				select x;
+			var query = _tierPriceRepository.TableUntracked
+				.Include(x => x.CustomerRole)
+				.Where(x => productIds.Contains(x.ProductId));
 
 			if (storeId != 0)
 				query = query.Where(x => x.StoreId == 0 || x.StoreId == storeId);
 
-			query = query.OrderBy(x => x.ProductId).ThenBy(x => x.Quantity);
-
-			var list = query.ToList();
+			var list = query
+				.ToList()
+				// Sorting locally is most likely faster
+				.OrderBy(x => x.ProductId)
+				.ThenBy(x => x.Quantity)
+				.AsEnumerable();
 
 			if (customer != null)
 				list = list.FilterForCustomer(customer).ToList();
 
-			var map = list
-				.ToMultimap(x => x.ProductId, x => x);
+			var map = list.ToMultimap(x => x.ProductId, x => x);
 
 			return map;
 		}

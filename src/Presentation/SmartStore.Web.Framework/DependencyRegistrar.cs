@@ -438,7 +438,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerRequest();
 
-			builder.Register<DbQuerySettings>(c => 
+			builder.Register(c => 
 			{
 				var storeService = c.Resolve<IStoreService>();
 				var aclService = c.Resolve<IAclService>();

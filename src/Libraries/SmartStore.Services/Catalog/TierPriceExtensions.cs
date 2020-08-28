@@ -33,8 +33,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Filtered tier prices</returns>
         public static IEnumerable<TierPrice> FilterForCustomer(this IEnumerable<TierPrice> source, Customer customer)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            Guard.NotNull(source, nameof(source));
 
             foreach (var tierPrice in source)
             {
@@ -57,12 +56,10 @@ namespace SmartStore.Services.Catalog
 
                     if (!roleIsFound)
                         continue;
-
                 }
 
                 yield return tierPrice;
             }
-
         }
 
         /// <summary>

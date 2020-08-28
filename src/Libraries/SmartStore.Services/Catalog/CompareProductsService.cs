@@ -72,7 +72,7 @@ namespace SmartStore.Services.Catalog
                 compareCookie.Expires = DateTime.Now.AddYears(-1);
                 compareCookie.HttpOnly = true;
                 compareCookie.Secure = _httpContext.Request.IsHttps();
-                compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
+                compareCookie.SameSite = compareCookie.Secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
                 _httpContext.Response.Cookies.Set(compareCookie);
             }
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Catalog
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
             compareCookie.HttpOnly = true;
             compareCookie.Secure = _httpContext.Request.IsHttps();
-            compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
+            compareCookie.SameSite = compareCookie.Secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(compareCookie);
         }
@@ -169,7 +169,7 @@ namespace SmartStore.Services.Catalog
             compareCookie.Expires = DateTime.Now.AddDays(10.0);
             compareCookie.HttpOnly = true;
             compareCookie.Secure = _httpContext.Request.IsHttps();
-            compareCookie.SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
+            compareCookie.SameSite = compareCookie.Secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(compareCookie);
         }

@@ -137,7 +137,7 @@ namespace SmartStore.Services.Catalog
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
             recentlyViewedCookie.HttpOnly = true;
             recentlyViewedCookie.Secure = _services.WebHelper.IsCurrentConnectionSecured();
-            recentlyViewedCookie.SameSite = _services.WebHelper.IsCurrentConnectionSecured() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
+            recentlyViewedCookie.SameSite = recentlyViewedCookie.Secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);
         }

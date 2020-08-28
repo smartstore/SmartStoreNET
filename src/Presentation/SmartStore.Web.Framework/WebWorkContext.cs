@@ -199,12 +199,13 @@ namespace SmartStore.Web.Framework
 			// Set visitor cookie
 			if ( _httpContext?.Response != null)
 			{
+                var secure = _httpContext.Request.IsHttps();
                 visitorCookie = new HttpCookie(VisitorCookieName)
                 {
                     HttpOnly = true,
-                    Secure = _httpContext.Request.IsHttps(),
-                    SameSite = _httpContext.Request.IsHttps() ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
-            };
+                    Secure = secure,
+                    SameSite = secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
+                };
 
 				visitorCookie.Value = customer.CustomerGuid.ToString();
 				if (customer.CustomerGuid == Guid.Empty)

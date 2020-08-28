@@ -52,8 +52,8 @@ namespace SmartStore.Services.Authentication
 			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
 			{
 				HttpOnly = true,
+                Path = FormsAuthentication.FormsCookiePath,
 				Secure = FormsAuthentication.RequireSSL,
-				Path = FormsAuthentication.FormsCookiePath,
                 SameSite = FormsAuthentication.RequireSSL ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax
             };
 

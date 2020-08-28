@@ -201,7 +201,7 @@ namespace SmartStore
 			cookie.Expires = DateTime.UtcNow.AddYears(1);
 			cookie.HttpOnly = true;
 			cookie.Secure = context.Request.IsHttps();
-			cookie.SameSite = context.Request.IsHttps() ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax;
+			cookie.SameSite = cookie.Secure ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax;
 
 			context.Request.Cookies.Set(cookie);
 		}
@@ -214,10 +214,11 @@ namespace SmartStore
 			if (cookie == null && createIfMissing && httpRequest != null)
 			{
 				var settings = EngineContext.Current.Resolve<PrivacySettings>();
+				var secure = context.Request.IsHttps();
 				cookie = new HttpCookie("sm.PreviewModeOverrides") { 
 					HttpOnly = true,
-					Secure = context.Request.IsHttps(),
-					SameSite = context.Request.IsHttps() ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax
+					Secure = secure,
+					SameSite = secure ? (SameSiteMode)settings.SameSiteMode : SameSiteMode.Lax
 				};
 				httpRequest.Cookies.Set(cookie);
 			}

@@ -206,11 +206,11 @@
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AddCookieInfo.Title",
 				"Add new cookie information",
-				"Neue Cookie-Informationen zufügen");
+				"Neue Cookie-Informationen hinzufügen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.EditCookieInfo.Title",
-				"Add new cookie information",
-				"Neue Cookie-Informationen zufügen");
+				"Edit new cookie information",
+				"Cookie-Informationen bearbeiten");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name",
 				"Name",
@@ -240,24 +240,24 @@
                         The SameSite setting for cookies specifies the level of security for cookies when they are requested by other sites (e.g. in a cross-site request or in an iframe).
                         The recommended setting is <b>Lax</b>, as cookies are sent with most secure actions.
                         <br />
-                        If the store should also run in an iframe, it is necessary to select the setting <b>None</b>. Additionally SSL must be set up in the store.
+                        If the store should also be embedded in an iframe, it is necessary to select the setting <b>None</b>. Additionally SSL must be set up in the store.
                     </p>
                     <ul>
                         <li><b>Unspecified:</b> No SameSite header is transmitted to requests.</li>
-                        <li><b>None:</b> No mode specified. This setting must be used if the store should also run in an iframe (SSL must be set up).</li>
+                        <li><b>None:</b> No mode specified. This setting must be used if the store should also be embedded in an iframe (SSL must be set up).</li>
                         <li><b>Lax:</b> Recommended setting. Cookies are sent at the highest level for requests on the same website and for cross-site requests.</li>
                         <li><b>Strict:</b> Cookies are only sent to requests from the same website.</li>
                     </ul>",
 				@"<h5>SameSite Modus</h5>
                     <p>
-                        Die SameSite-Einstellung für Cookies bestimmt, das Sicherheitslevel für Cookies, wenn diese von anderen Seiten (z.B. in einem Cross-Site-Request oder in einem Iframe) aufgerufen werden.
+                        Die SameSite-Einstellung für Cookies bestimmt, das Sicherheitslevel für Cookies, wenn diese von anderen Seiten (z.B. in einem Cross-Site-Request oder in einem IFrame) aufgerufen werden.
                         Die empfohlene Einstellung ist <b>Lax</b>, da hier Cookies bei den meisten gesicherten Aktionen mitgesendet werden.
                         <br />
-                        Soll der Shop auch in einem Iframe laufen, ist es notwendig die Einstellung <b>None</b> zu wählen. Zusätzlich muss SSL im Shop eingerichtet sein.
+                        Soll der Shop auch in ein IFrame eingebettet werden, ist es notwendig die Einstellung <b>None</b> zu wählen. Zusätzlich muss SSL im Shop eingerichtet sein.
                     </p>
                     <ul>
                         <li><b>Unspecified:</b> Es wird kein SameSite-Header an Requests übermittelt.</li>
-                        <li><b>None:</b> Kein Modus angegeben. Diese Einstellung muss verwendet werden, wenn der Shop auch in einem Iframe laufen soll (SSL muss eingerichtet sein).</li>
+                        <li><b>None:</b> Kein Modus angegeben. Diese Einstellung muss verwendet werden, wenn der Shop auch in ein IFrame eingebettet werden soll (SSL muss eingerichtet sein).</li>
                         <li><b>Lax:</b> Empfohlene Einstellung. Cookies werden bei Anfragen auf derselben Website und bei Cross-Site-Requests auf höchster Ebene gesendet.</li>
                         <li><b>Strict:</b> Cookies werden nur an Anfragen derselben Website gesendet.</li>
                     </ul>");
@@ -266,8 +266,14 @@
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.ModalCookieConsent",
 				"Modal Cookie Manager",
 				"Cookie-Manager modal anzeigen",
-				"Specifies whether the Cookie Manager is displayed in a modal dialog in the frontend.",
-				"Bestimmt, ob der Cookie-Manager im Frontend in einem modalen Dialog angezeigt wird.");
+				"Specifies whether the Cookie Manager is displayed in a modal dialog in the frontend. The modal mode requires a customer interaction with the dialog before the customer can navigate in the store.",
+				"Bestimmt, ob der Cookie-Manager im Frontend in einem modalen Dialog angezeigt wird. Der modale Modus macht eine Kundeninteraktion mit dem Dialog erfoderlich, bevor der Kunde im Shop navigieren kann.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent",
+				"Enable Cookie Manager",
+				"Cookie-Manager aktivieren",
+				"Specifies whether the Cookie Manager will be displayed in the frontend.",
+				"Legt fest, ob ein Dialog für die Zustimmung zur Nutzung von Cookies im Frontend angezeigt wird.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.IsPluginInfo",
 				"System cookie",
@@ -277,13 +283,16 @@
 				"Cookie information wasn't found.",
 				"Cookie-Information wurde nicht gefunden.");
 
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title",
+				"Register your own cookie information",
+				"Eigene Cookie-Informationen registrieren");
+
 			builder.AddOrUpdate("CookieManager.Dialog.Hide",
 				"Hide",
 				"Ausblenden");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction",
-				@"<h5>Cookie Information</h5>
-				<p>
+				@"<p>
 					If you have included third-party scripts in your shop that use cookies and are not integrated into Smartstore via a plugin,
 					you can provide your own information about these cookies for the Cookie Manager in the following table.
 				</p>
@@ -293,8 +302,7 @@
 					but cannot be edited. The texts of this information can be edited using the language resources
 					<b>Admin > Configuration > Regional Settings > Languages</b>.
 				</p>",
-				@"<h5>Cookie-Informationen</h5>
-				<p>
+				@"<p>
 					Wenn Sie Scripte von Drittanbietern in Ihren Shop eingebunden haben, die Cookies nutzen und die nicht über ein Plugin in Smartstore integriert sind,
 					können Sie in folgender Tabelle eigene Informationen über diese Cookies für den Cookie-Manager bereitstellen.
 				</p>

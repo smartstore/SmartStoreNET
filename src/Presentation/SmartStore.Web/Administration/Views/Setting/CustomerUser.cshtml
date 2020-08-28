@@ -525,32 +525,32 @@
 
     <div id="pnlAddressSettingsSalutations">
         @(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-customer-localized",
-                                                            @<table class="adminContent pnlSalutations">
-                                                                <tr>
-                                                                    <td class="adminTitle">
-                                                                        @Html.SmartLabelFor(model => model.Locales[item].Salutations)
-                                                                    </td>
-                                                                    <td class="adminData">
-                                                                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-                                                                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            @<table class="adminContent pnlSalutations">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Salutations)
+                    </td>
+                    <td class="adminData">
+                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                                                                        @Html.TextBoxFor(model => Model.Locales[item].Salutations)
-                                                                        @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-,
-                                                                                                            @<table class="adminContent pnlSalutations">
-                                                                                                                <tr>
-                                                                                                                    <td class="adminTitle">
-                                                                                                                        @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
-                                                                                                                    </td>
-                                                                                                                    <td class="adminData">
-                                                                                                                        @Html.TextBoxFor(model => model.AddressSettings.Salutations)
-                                                                                                                        @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                            </table>
+                        @Html.TextBoxFor(model => Model.Locales[item].Salutations)
+                        @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
+                    </td>
+                </tr>
+            </table>
+            ,
+            @<table class="adminContent pnlSalutations">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
+                    </td>
+                    <td class="adminData">
+                        @Html.TextBoxFor(model => model.AddressSettings.Salutations)
+                        @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
+                    </td>
+                </tr>
+            </table>
         ))
     </div>
 
@@ -784,6 +784,51 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.StoreLastIpAddress)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.StoreLastIpAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+            </td>
+        </tr>
+        <tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						Cookies
+					</div>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PrivacySettings.EnableCookieConsent)
             </td>
             <td class="adminData">
@@ -822,47 +867,18 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.PrivacySettings.StoreLastIpAddress)
-                @Html.ValidationMessageFor(model => model.PrivacySettings.StoreLastIpAddress)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-                @Html.ValidationMessageFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-            </td>
-        </tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title")
+					</div>
+                    <div class="text-muted">
+                        @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction")
+                    </div>
+				</div>
+			</td>
+		</tr>
     </table>
-
-    <div class="alert alert-info alert-dismissible mt-4">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction")
-    </div>
 
     <form id="cookie-infos-form">
         <div>
@@ -915,7 +931,7 @@
 <script>
     $(function () {
         $("#add-cookie-info-button").on("click", function (e) {
-            openPopup('@(Url.Action("CookieInfoCreatePopup", "Setting", new { btnId = "btnRefreshCookieInfos", formId = "faq-form" }))', true);
+            openPopup('@(Url.Action("CookieInfoCreatePopup", "Setting", new { btnId = "btnRefreshCookieInfos", formId = "faq-form" }))', false);
             return false;
         });
 
@@ -926,7 +942,7 @@
 			var name = grid.dataItem(tr).Name;
 			var href = '@Url.Action("CookieInfoEditPopup", "Setting")?name=' + name + '&btnId=btnRefreshCookieInfos&formId=cookie-infos-form';
 
-			openPopup(href, true, true);
+			openPopup(href, false);
 
 			return false;
 		});

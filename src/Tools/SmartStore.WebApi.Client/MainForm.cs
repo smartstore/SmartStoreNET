@@ -53,7 +53,7 @@ namespace SmartStore.WebApi.Client
 					{
 						Files = new List<FileUploadModel.FileModel>
 						{
-							new FileUploadModel.FileModel { Path = @"C:\my-upload-picture.jpg" }
+							new FileUploadModel.FileModel { LocalPath = @"C:\my-upload-picture.jpg" }
 						}
 					};
 					var serializedModel = JsonConvert.SerializeObject(model);
@@ -211,8 +211,15 @@ namespace SmartStore.WebApi.Client
 		
 		private void cboMethod_changeCommitted(object sender, EventArgs e)
 		{
-			bool enable = ApiConsumer.BodySupported(cboMethod.Text);
-			cboContent.Enabled = enable;
+			var isBodySupported = ApiConsumer.BodySupported(cboMethod.Text);
+			var isMultipartSupported = ApiConsumer.MultipartSupported(cboMethod.Text);
+
+			cboContent.Enabled = isBodySupported;
+			btnDeleteContent.Enabled = isBodySupported;
+
+			cboFileUpload.Enabled = isMultipartSupported;
+			btnDeleteFileUpload.Enabled = isMultipartSupported;
+			btnFileOpen.Enabled = isMultipartSupported;
 		}
 		
 		private void btnDeletePath_Click(object sender, EventArgs e)
@@ -297,7 +304,7 @@ namespace SmartStore.WebApi.Client
 				// Remove files that no longer exist.
 				for (var i = model.Files.Count - 1; i >= 0; --i)
 				{
-					if (!File.Exists(model.Files[i].Path))
+					if (!File.Exists(model.Files[i].LocalPath))
 					{
 						model.Files.RemoveAt(i);
 					}
@@ -306,11 +313,11 @@ namespace SmartStore.WebApi.Client
 				// Add new selected files.
 				foreach (var fileName in openFileDialog1.FileNames)
 				{
-					if (!model.Files.Any(x => x.Path != null && x.Path == fileName))
+					if (!model.Files.Any(x => x.LocalPath != null && x.LocalPath == fileName))
 					{
 						model.Files.Add(new FileUploadModel.FileModel
 						{
-							Path = fileName
+							LocalPath = fileName
 						});
 					}
 				}

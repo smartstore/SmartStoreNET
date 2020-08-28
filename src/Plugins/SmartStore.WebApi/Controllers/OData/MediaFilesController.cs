@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -10,6 +12,7 @@ using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Services.Media;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -161,6 +164,10 @@ namespace SmartStore.WebApi.Controllers.OData
                 .Action("DeleteFile")
                 .AddParameter<bool>("Permanent")
                 .AddParameter<bool>("Force", true);
+
+            entityConfig.Collection
+                .Action("SaveFile")
+                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles");
         }
 
         /// POST /MediaFiles/GetFileByPath {"Path":"content/my-file.jpg"}
@@ -401,6 +408,72 @@ namespace SmartStore.WebApi.Controllers.OData
             });
 
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// POST /MediaFiles/SaveFile <multipart data of a single file>
+        [HttpPost, WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Media.Upload)]
+        public async Task<IHttpActionResult> SaveFile()
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                return StatusCode(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var provider = new MultipartFormDataStreamProvider(FileSystemHelper.TempDirTenant());
+
+            try
+            {
+                await Request.Content.ReadAsMultipartAsync(provider);
+            }
+            catch (Exception ex)
+            {
+                provider.DeleteLocalFiles();
+                return InternalServerError(ex);
+            }
+
+            var fileData = provider.FileData?.FirstOrDefault();
+            if (fileData == null)
+            {
+                return BadRequest("Missing multipart file data.");
+            }
+
+            if (provider.FileData?.Count > 1)
+            {
+                provider.DeleteLocalFiles();
+                return BadRequest("Send one file per request, not multiple.");
+            }
+
+            FileItemInfo savedFile = null;
+
+            await this.ProcessEntityAsync(async () =>
+            {
+                var cd = fileData.Headers?.ContentDisposition;
+                if (!(cd?.Parameters?.Any() ?? false))
+                {
+                    throw Request.BadRequestException("Missing file parameters in content-disposition header.");
+                }
+
+                var path = cd.Parameters.FirstOrDefault(x => x.Name == "Path")?.Value.ToUnquoted();
+                var isTransient = cd.Parameters.FirstOrDefault(x => x.Name == "IsTransient")?.Value?.ToUnquoted()?.ToBool(true) ?? true;
+
+                var rawDuplicateFileHandling = cd.Parameters.FirstOrDefault(x => x.Name == "DuplicateFileHandling")?.Value?.ToUnquoted();
+                Enum.TryParse<DuplicateFileHandling>(rawDuplicateFileHandling.EmptyNull(), out var duplicateFileHandling);
+
+                using (var stream = File.OpenRead(fileData.LocalFileName))
+                {
+                    var result = await Service.SaveFileAsync(path, stream, isTransient, duplicateFileHandling);
+                    savedFile = Convert(result);
+                }
+            });
+
+            provider.DeleteLocalFiles();
+            return Ok(savedFile);
         }
 
         #endregion

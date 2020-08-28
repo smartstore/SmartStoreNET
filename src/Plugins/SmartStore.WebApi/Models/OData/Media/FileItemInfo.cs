@@ -29,6 +29,7 @@ namespace SmartStore.WebApi.Models.OData.Media
         [DataMember]
         public string ThumbUrl { get; set; }
 
+        /// <remarks>AutoExpand only works with <see cref="WebApiQueryableAttribute" />.</remarks>
         [DataMember]
         [AutoExpand]
         public MediaFile File { get; set; }

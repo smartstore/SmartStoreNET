@@ -42,9 +42,32 @@ namespace SmartStore.WebApi.Client.Models
             public int Id { get; set; }
 
             /// <summary>
-            /// Absolute path.
+            /// Absolute local path of file to be uploaded.
+            /// </summary>
+            public string LocalPath { get; set; }
+
+            /// <summary>
+            /// Media service path in shop.
             /// </summary>
             public string Path { get; set; }
+
+            /// <summary>
+            /// Whether the file in shop is marked as transient.
+            /// </summary>
+            public bool IsTransient { get; set; } = true;
+
+            /// <summary>
+            /// Duplicate file handling.
+            /// </summary>
+            public DuplicateFileHandling DuplicateFileHandling { get; set; } = DuplicateFileHandling.ThrowError;
         }
+    }
+
+
+    public enum DuplicateFileHandling
+    {
+        ThrowError,
+        Overwrite,
+        Rename
     }
 }

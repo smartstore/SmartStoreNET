@@ -19,7 +19,8 @@ namespace SmartStore.WebApi.Client
 		private void SetTimeout(HttpWebRequest webRequest)
 		{
 #if DEBUG
-			webRequest.Timeout = 1000 * 60 * 5;	// just for debugging
+			// Just for debugging.
+			webRequest.Timeout = 1000 * 60 * 5;
 #endif
 		}
 
@@ -141,6 +142,12 @@ namespace SmartStore.WebApi.Client
 			return false;
 		}
 
+		public static bool MultipartSupported(string method)
+		{
+			// At the moment all API methods with multipart support are POST methods.
+			return string.Compare(method, "POST", true) == 0;
+		}
+
 		public Dictionary<string, object> CreateMultipartData(FileUploadModel model)
 		{
 			if (!(model?.Files?.Any() ?? false))
@@ -170,20 +177,33 @@ namespace SmartStore.WebApi.Client
 			// File data.
 			foreach (var file in model.Files)
 			{
-				if (File.Exists(file.Path))
+				if (File.Exists(file.LocalPath))
 				{
-					using (var fstream = new FileStream(file.Path, FileMode.Open, FileAccess.Read))
+					using (var fstream = new FileStream(file.LocalPath, FileMode.Open, FileAccess.Read))
 					{
 						byte[] data = new byte[fstream.Length];
 						fstream.Read(data, 0, data.Length);
 
-						var name = Path.GetFileName(file.Path);
+						var name = Path.GetFileName(file.LocalPath);
 						var id = string.Format("my-file-{0}", ++count);
 						var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
 
+						// Add file parameters. Omit default values (let the server apply them).
 						if (file.Id != 0)
 						{
 							apiFile.Parameters.Add("PictureId", file.Id.ToString());
+						}
+						if (file.Path.HasValue())
+						{
+							apiFile.Parameters.Add("Path", file.Path);
+						}
+						if (!file.IsTransient)
+						{
+							apiFile.Parameters.Add("IsTransient", file.IsTransient.ToString());
+						}
+						if (file.DuplicateFileHandling != DuplicateFileHandling.ThrowError)
+						{
+							apiFile.Parameters.Add("DuplicateFileHandling", ((int)file.DuplicateFileHandling).ToString());
 						}
 
 						// Test pass through of custom parameters but the API ignores them anyway.
@@ -246,13 +266,12 @@ namespace SmartStore.WebApi.Client
 				return null;
 			}
 
-			// Client system time must not be too far away from api server time! check response header.
-			// ISO-8601 utc timestamp with milliseconds (e.g. 2013-09-23T09:24:43.5395441Z)
+			// Client system time must not be too far away from APPI server time! Check response header.
+			// ISO-8601 utc timestamp with milliseconds (e.g. 2013-09-23T09:24:43.5395441Z).
 			string timestamp = DateTime.UtcNow.ToString("o");
 
 			byte[] data = null;
-			string contentMd5Hash = "";
-			var bodySupported = BodySupported(context.HttpMethod);
+			var contentMd5Hash = string.Empty;
 
 			var request = (HttpWebRequest)WebRequest.Create(context.Url);
 			SetTimeout(request);
@@ -284,39 +303,42 @@ namespace SmartStore.WebApi.Client
 				}
 			}
 
-			if (multipartData != null && multipartData.Count > 0)
+			if (BodySupported(context.HttpMethod))
 			{
-				var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
+				if (MultipartSupported(context.HttpMethod) && (multipartData?.Any() ?? false))
+				{
+					var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
 
-				data = GetMultipartFormData(multipartData, formDataBoundary, requestContent);
-				contentMd5Hash = CreateContentMd5Hash(data);
+					data = GetMultipartFormData(multipartData, formDataBoundary, requestContent);
+					contentMd5Hash = CreateContentMd5Hash(data);
 
-				request.ContentLength = data.Length;
-				request.ContentType = "multipart/form-data; boundary=" + formDataBoundary;
-			}
-			else if (!string.IsNullOrWhiteSpace(content) && bodySupported)
-			{
-				requestContent.Append(content);
-				data = Encoding.UTF8.GetBytes(content);
-				contentMd5Hash = CreateContentMd5Hash(data);
-				
-				request.ContentLength = data.Length;
-				request.ContentType = "application/json; charset=utf-8";
-			}
-			else if (bodySupported)
-			{
-				request.ContentLength = 0;
+					request.ContentLength = data.Length;
+					request.ContentType = "multipart/form-data; boundary=" + formDataBoundary;
+				}
+				else if (!string.IsNullOrWhiteSpace(content))
+				{
+					requestContent.Append(content);
+					data = Encoding.UTF8.GetBytes(content);
+					contentMd5Hash = CreateContentMd5Hash(data);
+
+					request.ContentLength = data.Length;
+					request.ContentType = "application/json; charset=utf-8";
+				}
+				else
+				{
+					request.ContentLength = 0;
+				}
 			}
 
 			if (!string.IsNullOrEmpty(contentMd5Hash))
 			{
-				// optional... provider returns HmacResult.ContentMd5NotMatching if there's no match
+				// Optional. Provider returns HmacResult.ContentMd5NotMatching if there's no match.
 				request.Headers.Add(HttpRequestHeader.ContentMd5, contentMd5Hash);
 			}
 
-			string messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp, true);
+			var messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp, true);
 			//Debug.WriteLine(messageRepresentation);
-			string signature = CreateSignature(context.SecretKey, messageRepresentation);
+			var signature = CreateSignature(context.SecretKey, messageRepresentation);
 
 			request.Headers.Add(HttpRequestHeader.Authorization, CreateAuthorizationHeader(signature));
 
@@ -336,9 +358,11 @@ namespace SmartStore.WebApi.Client
 		public bool ProcessResponse(HttpWebRequest webRequest, WebApiConsumerResponse response, FolderBrowserDialog folderBrowserDialog)
 		{
 			if (webRequest == null)
+			{
 				return false;
+			}
 
-			bool result = true;
+			var result = true;
 			HttpWebResponse webResponse = null;
 
 			try

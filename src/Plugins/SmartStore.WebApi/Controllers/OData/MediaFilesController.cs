@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -124,6 +124,11 @@ namespace SmartStore.WebApi.Controllers.OData
                 .CollectionParameter<int>("Ids");
 
             entityConfig.Collection
+                .Function("Download")
+                .Returns<StreamContent>()
+                .Parameter<int>("Id");
+
+            entityConfig.Collection
                 .Action("SearchFiles")
                 .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
                 .Parameter<MediaSearchQuery>("Query");
@@ -226,6 +231,30 @@ namespace SmartStore.WebApi.Controllers.OData
             });
 
             return Ok(files ??  new List<FileItemInfo>().AsQueryable());
+        }
+
+        /// GET /MediaFiles/Download(Id=123)
+        [HttpGet]
+        [WebApiAuthenticate]
+        public IHttpActionResult Download(int id)
+        {
+            var file = Service.GetFileById(id);
+            if (file == null)
+            {
+                return NotFound();
+            }
+
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StreamContent(file.OpenRead());
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(file.MimeType);
+
+            if (file.Name.HasValue() &&
+                ContentDispositionHeaderValue.TryParse($"inline; filename=\"{PathHelper.SanitizeFileName(file.Name)}\"", out var contentDisposition))
+            {
+                response.Content.Headers.ContentDisposition = contentDisposition;
+            }
+
+            return ResponseMessage(response);
         }
 
         /// POST /MediaFiles/SearchFiles {"Query":{"FolderId":7,"Extensions":["jpg"], ...}}

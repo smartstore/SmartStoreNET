@@ -88,7 +88,7 @@ namespace SmartStore.WebApi.Client
 			}
 		}
 
-		private void GetResponse(HttpWebResponse webResponse, WebApiConsumerResponse response, FolderBrowserDialog folderBrowserDialog)
+		private void GetResponse(HttpWebResponse webResponse, WebApiConsumerResponse response, FolderBrowserDialog dialog)
 		{
 			if (webResponse == null)
 			{
@@ -100,36 +100,43 @@ namespace SmartStore.WebApi.Client
             response.ContentType = webResponse.ContentType;
             response.ContentLength = webResponse.ContentLength;
 
-            if (string.Compare(response.ContentType, "application/pdf", StringComparison.OrdinalIgnoreCase) == 0)
-            {
-                folderBrowserDialog.Description = "Please select a folder to save the PDF file.";
-                var dialogResult = folderBrowserDialog.ShowDialog();
-                if (dialogResult == DialogResult.OK)
-                {
-                    string fileName = null;
-                    if (webResponse.Headers["Content-Disposition"] != null)
-                    {
-                        fileName = webResponse.Headers["Content-Disposition"].Replace("inline; filename=", "").Replace("\"", "");
-                    }
-                    if (fileName.IsEmpty())
-                    {
-                        fileName = "web-api-response.pdf";
-                    }
+			var ct = response.ContentType;
 
-                    using (var stream = File.Create(Path.Combine(folderBrowserDialog.SelectedPath, fileName)))
-                    {
-                        webResponse.GetResponseStream().CopyTo(stream);
-                    }
-                }
-            }
-            else
-            {
-                using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-                {
-                    // TODO: file uploads should use async and await keywords
-                    response.Content = reader.ReadToEnd();
-                }
-            }
+			if (ct.HasValue() && (ct.StartsWith("image/") || ct.StartsWith("video/") || ct == "application/pdf"))
+			{
+				dialog.Description = "Please select a folder to save the file return by Web API.";
+
+				var dialogResult = dialog.ShowDialog();
+				if (dialogResult == DialogResult.OK)
+				{
+					string fileName = null;
+					if (webResponse.Headers["Content-Disposition"] != null)
+					{
+						fileName = webResponse.Headers["Content-Disposition"].Replace("inline; filename=", "").Replace("\"", "");
+					}
+					if (fileName.IsEmpty())
+					{
+						fileName = "web-api-response";
+					}
+
+					var path = Path.Combine(dialog.SelectedPath, fileName);
+
+					using (var stream = File.Create(path))
+					{
+						webResponse.GetResponseStream().CopyTo(stream);
+					}
+
+					System.Diagnostics.Process.Start(path);
+				}
+			}
+			else
+			{
+				using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+				{
+					// TODO: file uploads should use async and await keywords
+					response.Content = reader.ReadToEnd();
+				}
+			}
 		}
 		
 		public static bool BodySupported(string method)

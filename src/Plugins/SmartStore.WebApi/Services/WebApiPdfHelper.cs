@@ -36,7 +36,6 @@ namespace SmartStore.WebApi.Services
 
         private ControllerContext CreateControllerContext()
         {
-            var writer = new StringWriter();
             var context = new HttpContextWrapper(HttpContext.Current);
             var fakeController = new FakeController();
 

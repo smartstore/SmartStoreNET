@@ -143,6 +143,8 @@ namespace SmartStore.WebApi.Client
 				{
 					cboFileUpload.RemoveCurrent();
 					cboFileUpload.Text = string.Empty;
+					"File upload data is invalid.".Box(MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					return;
 				}
 			}
 

@@ -425,7 +425,8 @@ namespace SmartStore.WebApi.Controllers.OData
                 return BadRequest(ModelState);
             }
 
-            var provider = new MultipartFormDataStreamProvider(FileSystemHelper.TempDirTenant());
+            FileItemInfo savedFile = null;
+            var provider = new MultipartMemoryStreamProvider();
 
             try
             {
@@ -433,46 +434,42 @@ namespace SmartStore.WebApi.Controllers.OData
             }
             catch (Exception ex)
             {
-                provider.DeleteLocalFiles();
                 return InternalServerError(ex);
             }
 
-            var fileData = provider.FileData?.FirstOrDefault();
-            if (fileData == null)
+            var contentCount = provider.Contents?.Count ?? 0;
+            if (contentCount == 0)
             {
                 return BadRequest("Missing multipart file data.");
             }
-
-            if (provider.FileData?.Count > 1)
+            if (contentCount > 1)
             {
-                provider.DeleteLocalFiles();
                 return BadRequest("Send one file per request, not multiple.");
             }
 
-            FileItemInfo savedFile = null;
+            var content = provider.Contents.First();
+            var cd = content.Headers?.ContentDisposition;
+
+            if (!(cd?.Parameters?.Any() ?? false))
+            {
+                return BadRequest("Missing file parameters in content-disposition header.");
+            }
 
             await this.ProcessEntityAsync(async () =>
             {
-                var cd = fileData.Headers?.ContentDisposition;
-                if (!(cd?.Parameters?.Any() ?? false))
-                {
-                    throw Request.BadRequestException("Missing file parameters in content-disposition header.");
-                }
-
                 var path = cd.Parameters.FirstOrDefault(x => x.Name == "Path")?.Value.ToUnquoted();
                 var isTransient = cd.Parameters.FirstOrDefault(x => x.Name == "IsTransient")?.Value?.ToUnquoted()?.ToBool(true) ?? true;
 
                 var rawDuplicateFileHandling = cd.Parameters.FirstOrDefault(x => x.Name == "DuplicateFileHandling")?.Value?.ToUnquoted();
                 Enum.TryParse<DuplicateFileHandling>(rawDuplicateFileHandling.EmptyNull(), out var duplicateFileHandling);
 
-                using (var stream = File.OpenRead(fileData.LocalFileName))
+                using (var stream = await content.ReadAsStreamAsync())
                 {
                     var result = await Service.SaveFileAsync(path, stream, isTransient, duplicateFileHandling);
                     savedFile = Convert(result);
                 }
             });
 
-            provider.DeleteLocalFiles();
             return Ok(savedFile);
         }
 

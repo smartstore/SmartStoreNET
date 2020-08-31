@@ -67,40 +67,20 @@ namespace SmartStore.WebApi.Controllers.Api
 			_mediaSettings = mediaSettings;
 		}
 
-		#region Utilities
-
-		private StringContent CloneHeaderContent(string path, MultipartFileData origin)
-		{
-			var content = new StringContent(path);
-
-			ContentDispositionHeaderValue disposition;
-			ContentDispositionHeaderValue.TryParse(origin.Headers.ContentDisposition.ToString(), out disposition);
-
-			content.Headers.ContentDisposition = disposition;
-
-			content.Headers.ContentDisposition.Name = origin.Headers.ContentDisposition.Name.ToUnquoted();
-			content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
-
-			content.Headers.ContentType.MediaType = MimeTypes.MapNameToMimeType(path);
-
-			return content;
-		}
-
-		#endregion
-
 		[HttpPost, WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditPicture)]
 		[WebApiQueryable]
-		public async Task<IQueryable<UploadImage>> ProductImages()
+		public async Task<IHttpActionResult> ProductImages()
 		{
 			if (!Request.Content.IsMimeMultipartContent())
 			{
-				throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+				return StatusCode(HttpStatusCode.UnsupportedMediaType);
 			}
 
 			Product entity = null;
 			string identifier = null;
-			string tempDir = FileSystemHelper.TempDirTenant();
-			var provider = new MultipartFormDataStreamProvider(tempDir);
+			var identifiers = new[] { "Id", "Sku", "Gtin", "Mpn" };
+			var result = new List<UploadImage>();
+			var provider = new MultipartMemoryStreamProvider();
 
 			try
 			{
@@ -108,122 +88,135 @@ namespace SmartStore.WebApi.Controllers.Api
 			}
 			catch (Exception ex)
 			{
-				provider.DeleteLocalFiles();
-				throw Request.InternalServerErrorException(ex);
+				return InternalServerError(ex);
 			}
 
 			// Find product entity.
-			if (provider.FormData.AllKeys.Contains("Id"))
+			foreach (var content in provider.Contents)
 			{
-				identifier = provider.FormData.GetValues("Id").FirstOrDefault();
-				entity = _productService.Value.GetProductById(identifier.ToInt());
-			}
-			else if (provider.FormData.AllKeys.Contains("Sku"))
-			{
-				identifier = provider.FormData.GetValues("Sku").FirstOrDefault();
-				entity = _productService.Value.GetProductBySku(identifier);
-			}
-			else if (provider.FormData.AllKeys.Contains("Gtin"))
-			{
-				identifier = provider.FormData.GetValues("Gtin").FirstOrDefault();
-				entity = _productService.Value.GetProductByGtin(identifier);
+				if (!IsFileContent(content))
+				{
+					var p = content.Headers?.ContentDisposition?.Parameters;
+					var hv = p.FirstOrDefault(x => identifiers.Contains(x.Value.ToUnquoted()));
+
+					if (hv != null)
+					{
+						identifier = await content.ReadAsStringAsync();
+						switch (hv.Value.ToUnquoted())
+						{
+							case "Id":
+								entity = _productService.Value.GetProductById(identifier.ToInt());
+								break;
+							case "Sku":
+								entity = _productService.Value.GetProductBySku(identifier);
+								break;
+							case "Gtin":
+								entity = _productService.Value.GetProductByGtin(identifier);
+								break;
+							case "Mpn":
+								entity = _productService.Value.GetProductByManufacturerPartNumber(identifier);
+								break;
+						}
+					}
+				}
+				if (entity != null)
+				{
+					break;
+				}
 			}
 
 			if (entity == null)
 			{
-				provider.DeleteLocalFiles();
 				throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(identifier.NaIfEmpty()));
 			}
 
-			// Process images.
-			var equalPictureId = 0;
-			var displayOrder = 0;
-			var result = new List<UploadImage>();
-			var storeUrl = _storeService.Value.GetHost(_storeContext.Value.CurrentStore);
-			var pictures = entity.ProductPictures.Select(x => x.MediaFile);
-
-            if (entity.ProductPictures.Any())
-            {
-                displayOrder = entity.ProductPictures.Max(x => x.DisplayOrder);
-            }
-
-			foreach (var file in provider.FileData)
+			// Process files.
+			await this.ProcessEntityAsync(async () =>
 			{
-				var image = new UploadImage(file.Headers);
+				var storeUrl = _storeService.Value.GetHost(_storeContext.Value.CurrentStore);
+				var displayOrder = entity.ProductPictures.Any()
+					? entity.ProductPictures.Max(x => x.DisplayOrder)
+					: 0;
 
-                if (image.FileName.IsEmpty())
-                {
-                    image.FileName = Path.GetRandomFileName();
-                }
+				var files = entity.ProductPictures.Select(x => x.MediaFile);
 
-                using (var stream = File.OpenRead(file.LocalFileName))
-                {
-                    if ((stream?.Length ?? 0) > 0)
-                    {
-                        if (image.PictureId != 0 && (image.Picture = pictures.FirstOrDefault(x => x.Id == image.PictureId)) != null)
-                        {
-                            image.Exists = true;
+				foreach (var content in provider.Contents)
+				{
+					if (IsFileContent(content))
+					{
+						var image = new UploadImage(content.Headers);
 
-                            var fileInfo = _mediaService.Value.ConvertMediaFile(image.Picture);
-                            var path = fileInfo.Path;
-                            var existingFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Overwrite);
+						if (image.FileName.IsEmpty())
+						{
+							image.FileName = Path.GetRandomFileName();
+						}
 
-                            if (existingFile == null || existingFile.Id != image.Picture.Id)
-                            {
-                                throw Request.InternalServerErrorException(new Exception($"Failed to update existing product image: id {image.Picture.Id}, path '{path.NaIfEmpty()}'."));
-                            }
-                        }
-                        else
-                        {
-                            if (!_mediaService.Value.FindEqualFile(stream, pictures, true, out equalPictureId))
-                            {
-                                var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
-                                var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
+						using (var stream = await content.ReadAsStreamAsync())
+						{
+							if (image.PictureId != 0 && (image.Picture = files.FirstOrDefault(x => x.Id == image.PictureId)) != null)
+							{
+								image.Exists = true;
 
-                                if ((newFile?.Id ?? 0) != 0)
-                                {
-                                    _productService.Value.InsertProductPicture(new ProductMediaFile
-                                    {
-                                        MediaFileId = newFile.Id,
-                                        ProductId = entity.Id,
-                                        DisplayOrder = ++displayOrder
-                                    });
+								var fileInfo = _mediaService.Value.ConvertMediaFile(image.Picture);
+								var path = fileInfo.Path;
+								var existingFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Overwrite);
 
-                                    image.Inserted = true;
-                                    image.Picture = newFile.File;
-                                }
-                            }
-                            else
-                            {
-                                image.Exists = true;
-                                image.Picture = pictures.FirstOrDefault(x => x.Id == equalPictureId);
-                            }
-                        }
+								if (existingFile == null || existingFile.Id != image.Picture.Id)
+								{
+									throw Request.InternalServerErrorException(new Exception($"Failed to update existing product image: id {image.Picture.Id}, path '{path.NaIfEmpty()}'."));
+								}
+							}
+							else
+							{
+								if (!_mediaService.Value.FindEqualFile(stream, files, true, out var equalPictureId))
+								{
+									var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
+									var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
 
-                        if (image.Picture != null)
-                        {
-                            image.PictureId = image.Picture.Id;
-                            image.ImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductDetailsPictureSize, storeUrl, false);
-                            image.ThumbImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductThumbPictureSize, storeUrl, false);
-                            image.FullSizeImageUrl = _mediaService.Value.GetUrl(image.Picture, 0, storeUrl, false);
-                        }
-                    }
-                }
+									if ((newFile?.Id ?? 0) != 0)
+									{
+										_productService.Value.InsertProductPicture(new ProductMediaFile
+										{
+											MediaFileId = newFile.Id,
+											ProductId = entity.Id,
+											DisplayOrder = ++displayOrder
+										});
 
-                result.Add(image);
-			}
+										image.Inserted = true;
+										image.Picture = newFile.File;
+									}
+								}
+								else
+								{
+									image.Exists = true;
+									image.Picture = files.FirstOrDefault(x => x.Id == equalPictureId);
+								}
+							}
 
-			provider.DeleteLocalFiles();
-			return result.AsQueryable();
+							if (image.Picture != null)
+							{
+								image.PictureId = image.Picture.Id;
+								image.ImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductDetailsPictureSize, storeUrl, false);
+								image.ThumbImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductThumbPictureSize, storeUrl, false);
+								image.FullSizeImageUrl = _mediaService.Value.GetUrl(image.Picture, 0, storeUrl, false);
+							}
+						}
+
+						result.Add(image);
+					}
+				}
+			});
+
+			return Ok(result.AsQueryable());
 		}
 
 		[HttpPost, WebApiAuthenticate(Permission = Permissions.Configuration.Import.Execute)]
 		[WebApiQueryable]
-		public async Task<IQueryable<UploadImportFile>> ImportFiles()
+		public async Task<IHttpActionResult> ImportFiles()
 		{
 			if (!Request.Content.IsMimeMultipartContent())
 			{
-				throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+				return StatusCode(HttpStatusCode.UnsupportedMediaType);
 			}
 
 			ImportProfile profile = null;
@@ -238,7 +231,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			catch (Exception ex)
 			{
 				FileSystemHelper.ClearDirectory(tempDir, true);
-				throw Request.InternalServerErrorException(ex);
+				return InternalServerError(ex);
 			}
 
 			// Find import profile.
@@ -351,7 +344,36 @@ namespace SmartStore.WebApi.Controllers.Api
                 }
             }
 
-			return result.AsQueryable();
+			return Ok(result.AsQueryable());
 		}
+
+		#region Utilities
+
+		private bool IsFileContent(HttpContent hc)
+		{
+			var mediaType = hc.Headers?.ContentType?.MediaType;
+			var fileName = hc.Headers?.ContentDisposition?.FileName;
+
+			return mediaType.HasValue() || fileName.HasValue();
+		}
+
+		private StringContent CloneHeaderContent(string path, MultipartFileData origin)
+		{
+			var content = new StringContent(path);
+
+			ContentDispositionHeaderValue disposition;
+			ContentDispositionHeaderValue.TryParse(origin.Headers.ContentDisposition.ToString(), out disposition);
+
+			content.Headers.ContentDisposition = disposition;
+
+			content.Headers.ContentDisposition.Name = origin.Headers.ContentDisposition.Name.ToUnquoted();
+			content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
+
+			content.Headers.ContentType.MediaType = MimeTypes.MapNameToMimeType(path);
+
+			return content;
+		}
+
+		#endregion
 	}
 }

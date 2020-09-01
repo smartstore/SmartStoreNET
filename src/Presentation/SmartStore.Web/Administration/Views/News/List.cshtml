@@ -13,86 +13,124 @@
         @T("Admin.ContentManagement.News.NewsItems")
     </div>
     <div class="options">
-		@{ Html.RenderWidget("admin_button_toolbar_before"); }
+        @{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-		<a href="@Url.Action("Create")" class="btn btn-primary">
-			<i class="fa fa-plus"></i>
-			<span>@T("Admin.Common.AddNew")</span>
-		</a>
+        <button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+            <i class="fa fa-filter"></i>
+            <span>@T("Common.Filter")</span>
+            <i class="fa fa-angle-double-down"></i>
+        </button>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
+        <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            <span>@T("Admin.Common.Delete.Selected")</span>
+        </button>
 
-		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
-			<i class="far fa-trash-alt"></i>
-			<span>@T("Admin.Common.Delete.Selected")</span>
-		</button>
-
-		@{ Html.RenderWidget("admin_button_toolbar_after"); }
+        @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
 
-@if (Model.AvailableStores.Count > 1)
-{
-	<div class="row mt-3 grid-filter">
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SearchStoreId)
-			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabel(string.Empty, string.Empty)
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-				<span>@T("Admin.Common.ApplyFilter")</span>
-			</button>
-		</div>
-	</div>
-}
-
-<div>
-	@(Html.Telerik().Grid<NewsItemModel>()
-			.Name("newsitem-grid")
-			.Columns(columns =>
-			{
-			columns.Bound(x => x.Id)
-				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-				.Title("<input id='mastercheckbox' type='checkbox'/>")
-				.HtmlAttributes(new { style = "text-align:center" })
-				.HeaderHtmlAttributes(new { style = "text-align:center" });
-			columns.Bound(x => x.Title)
-				.Width(450)
-				.Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
-			columns.Bound(x => x.Published)
-				.Template(item => @Html.SymbolForBool(item.Published))
-				.ClientTemplate(@Html.SymbolForBool("Published"))
-				.Centered();
-			columns.Bound(x => x.LanguageName);
-			columns.Bound(x => x.Comments)
-				.Template(
-				@<div>
-					@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
-				</div>
-					)
-					.ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
-				columns.Bound(x => x.StartDate);
-				columns.Bound(x => x.EndDate);
-				columns.Bound(x => x.LimitedToStores)
-					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-					.Hidden(Model.AvailableStores.Count <= 1)
-					.Centered();
-				columns.Bound(x => x.CreatedOn);
-			})
-			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
-			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
-			.PreserveGridState()
-			.EnableCustomBinding(true))
+<div class="row mt-3 grid-filter" style="display: none">
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchTitle)
+        @Html.TextBoxFor(model => Model.SearchTitle, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchShort)
+        @Html.TextBoxFor(model => Model.SearchShort, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchFull)
+        @Html.TextBoxFor(model => Model.SearchFull, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchStartDate)
+        @Html.EditorFor(model => model.SearchStartDate)
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchEndDate)
+        @Html.EditorFor(model => model.SearchEndDate)
+    </div>
+    @if (!Model.IsSingleStoreMode)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchStoreId)
+            @Html.EditorFor(model => model.SearchStoreId)
+        </div>
+    }
+    @if (!Model.IsSingleLangMode)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchLanguageId)
+            @Html.DropDownListFor(model => model.SearchLanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"), T("Admin.Common.All"))
+        </div>
+    }
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchIsPublished)
+        @Html.EditorFor(model => model.SearchIsPublished)
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+        @Html.SmartLabel(string.Empty, string.Empty)
+        <button type="submit" id="search-newsitem" value="search-newsitem" class="btn btn-secondary btn-block">
+            <span>@T("Admin.Common.ApplyFilter")</span>
+        </button>
+    </div>
 </div>
 
+<div>
+    @(Html.Telerik().Grid<NewsItemModel>()
+            .Name("newsitem-grid")
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Id)
+                    .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                    .Title("<input id='mastercheckbox' type='checkbox'/>")
+                    .HtmlAttributes(new { style = "text-align:center" })
+                    .HeaderHtmlAttributes(new { style = "text-align:center" });
+                columns.Bound(x => x.Title)
+                    .Width(450)
+                    .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+                    .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+                columns.Bound(x => x.Published)
+                    .Template(item => @Html.SymbolForBool(item.Published))
+                    .ClientTemplate(@Html.SymbolForBool("Published"))
+                    .Centered();
+                columns.Bound(x => x.LanguageName);
+                columns.Bound(x => x.Comments)
+                    .Template(
+                    @<div>
+                        @Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
+                    </div>
+                        )
+                        .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+                columns.Bound(x => x.StartDate);
+                columns.Bound(x => x.EndDate);
+                columns.Bound(x => x.LimitedToStores)
+                    .Template(item => @Html.SymbolForBool(item.LimitedToStores))
+                    .ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+                    .Hidden(Model.IsSingleStoreMode)
+                    .Centered();
+                columns.Bound(x => x.CreatedOn);
+            })
+            .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+            .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
+            .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+            .PreserveGridState()
+            .EnableCustomBinding(true))
+</div>
 
-
-<script type="text/javascript">
+<script>
 	var selectedIds = [];
 
-    $(document).ready(function () {
+    $(function () {
+        // Filter toggler
+		$('.btn-toggle-filter').on('click', function (e) {
+			$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+		});
+
         //search button
         $('#search-newsitem').click(function () {
             //search
@@ -140,20 +178,20 @@
     		$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
     	});
 
-    	//wire up checkboxes. 
+    	//wire up checkboxes.
     	$(document).on('change', '#newsitem-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
     		var $check = $(this);
     		if ($check.is(":checked") == true) {
     			var checked = jQuery.inArray($check.val(), selectedIds);
     			if (checked == -1) {
-    				//add id to selectedIds.  
+    				//add id to selectedIds.
     				selectedIds.push($check.val());
     			}
     		}
     		else {
     			var checked = jQuery.inArray($check.val(), selectedIds);
     			if (checked > -1) {
-    				//remove id from selectedIds.  
+    				//remove id from selectedIds.
     				selectedIds = $.grep(selectedIds, function (item, index) {
     					return item != $check.val();
     				});
@@ -166,7 +204,14 @@
 
     function onDataBinding(e) {
         var searchModel = {
-            SearchStoreId: $('#SearchStoreId').val()
+            SearchTitle: $('#@Html.FieldIdFor(model => model.SearchTitle)').val(),
+			SearchIntro: $('#SearchShort').val(),
+            SearchBody: $('#SearchFull').val(),
+            SearchStartDate: $('#SearchStartDate').val(),
+			SearchEndDate: $('#SearchEndDate').val(),
+            SearchStoreId: $('#SearchStoreId').val(),
+			SearchIsPublished: $('#SearchIsPublished').val(),
+			SearchLanguageId: $('#SearchLanguageId').val()
         };
         e.data = searchModel;
     }
@@ -181,7 +226,7 @@
     	$('#newsitem-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
     		var currentId = $(this).val();
     		var checked = jQuery.inArray(currentId, selectedIds);
-    		//set checked based on if current checkbox's value is in selectedIds.  
+    		//set checked based on if current checkbox's value is in selectedIds.
     		$(this).attr('checked', checked > -1);
     	});
 

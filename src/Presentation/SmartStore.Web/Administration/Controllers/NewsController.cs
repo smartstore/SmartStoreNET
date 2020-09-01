@@ -90,12 +90,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List()
         {
+            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
             var model = new NewsItemListModel();
 
-            foreach (var s in _storeService.GetAllStores())
-            {
-                model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
-            }
+            // IsSingleStoreMode & IsMultiLangMode
+            model.IsSingleStoreMode = _storeService.IsSingleStoreMode();
+            model.IsSingleLangMode = _languageService.GetAllLanguages(true).Count == 1;
+
+            // Set end date to now.
+            model.SearchEndDate = DateTime.UtcNow;
 
             return View(model);
         }
@@ -104,7 +108,8 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List(GridCommand command, NewsItemListModel model)
         {
-            var news = _newsService.GetAllNews(0, model.SearchStoreId, command.Page - 1, command.PageSize, true);
+            var news = _newsService.GetAllNews(model.SearchLanguageId, model.SearchStoreId, command.Page - 1, command.PageSize, !model.SearchIsPublished ?? true, 
+                title: model.SearchTitle, intro: model.SearchShort, full: model.SearchFull);
 
             var gridModel = new GridModel<NewsItemModel>
             {

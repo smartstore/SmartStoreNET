@@ -40,7 +40,8 @@ namespace SmartStore.Services.News
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="maxAge">The maximum age of returned news</param>
         /// <returns>News items</returns>
-		IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
+		IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
+            string title = "", string intro = "", string full = "");
 
         /// <summary>
         /// Inserts a news item

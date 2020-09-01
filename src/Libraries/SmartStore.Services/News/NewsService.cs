@@ -55,7 +55,8 @@ namespace SmartStore.Services.News
 			return query;
 		}
 
-		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
+		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null, 
+            string title = "", string intro = "", string full = "")
         {
             var query = _newsItemRepository.Table;
 
@@ -69,6 +70,13 @@ namespace SmartStore.Services.News
 				query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
 			}
 
+            if (title.HasValue())
+                query = query.Where(b => b.Title.Contains(title));
+            if (intro.HasValue())
+                query = query.Where(b => b.Short.Contains(intro));
+            if (full.HasValue())
+                query = query.Where(b => b.Full.Contains(full));
+            
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;

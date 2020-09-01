@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Blogs;
-using SmartStore.Services.Seo;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {

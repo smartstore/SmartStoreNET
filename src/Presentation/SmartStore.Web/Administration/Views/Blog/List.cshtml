@@ -2,8 +2,6 @@
 @using Telerik.Web.Mvc.UI
 
 @{
-    var allString = T("Admin.Common.All").Text;
-
     ViewBag.Title = T("Admin.ContentManagement.Blog.BlogPosts").Text;
 }
 
@@ -15,19 +13,16 @@
     <div class="options">
         @{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-        <div class="input-group d-inline-flex">
-            <div class="input-group-append">
-                <a href="@Url.Action("Create")" class="btn btn-primary">
-                    <i class="fa fa-plus"></i>
-                    <span>@T("Admin.Common.AddNew")</span>
-                </a>
-                <button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
-                    <i class="fa fa-filter"></i>
-                    <span>@T("Common.Filter")</span>
-                    <i class="fa fa-angle-double-down"></i>
-                </button>
-            </div>
-        </div>
+        <button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+            <i class="fa fa-filter"></i>
+            <span>@T("Common.Filter")</span>
+            <i class="fa fa-angle-double-down"></i>
+        </button>
+        
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
 
         @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
@@ -48,7 +43,7 @@
     </div>
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
         @Html.SmartLabelFor(model => model.SearchTags)
-        @Html.DropDownListFor(model => model.SearchTags, Model.SearchAvailableTags, allString, new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.SearchTags, Model.SearchAvailableTags, T("Admin.Common.All"), new { @class = "form-control" })
     </div>
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
         @Html.SmartLabelFor(model => model.SearchStartDate)
@@ -69,7 +64,7 @@
     {
         <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
             @Html.SmartLabelFor(model => model.SearchLanguageId)
-            @Html.DropDownListFor(model => model.SearchLanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"), allString)
+            @Html.DropDownListFor(model => model.SearchLanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"), T("Admin.Common.All"))
         </div>
     }
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">

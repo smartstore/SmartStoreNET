@@ -28,6 +28,7 @@
 * **Export**
 	* An empty export file was created at the end of an export when using the batch-size option.
 	* The offset option skipped one record too much.
+	* The XML export of CountryOfOrigin caused an error.
 * Message template attachments were not attached to the email.
 * EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
 

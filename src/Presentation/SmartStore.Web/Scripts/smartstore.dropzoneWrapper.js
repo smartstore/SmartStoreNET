@@ -503,51 +503,6 @@
 							sortMediaFiles();
 						}
 					});
-				}
-				else {
-
-				   const hidden = document.getElementById("media-file-ids");
-				   if (hidden && clearAssignableFiles) {
-					   hidden.value = (hidden.value + assignableFileIds);
-
-					   const items = previewContainer.find('.dz-image-preview');
-					   const hiddenValues = hidden.value.split(',').map(Number);
-
-					   $.each(items, function (index, item) {
-						   if (index < items.length - assignableFiles.length) return;
-
-						   const fileName = $(item).find(".fu-file-info-name").text();
-						   var file = assignableFiles.find(x => x.media.id === hiddenValues[index]);
-						   if (!file) {
-							   file = assignableFiles.find(x => x.name.toLowerCase() === fileName.toLowerCase());
-						   }
-
-						   if (file) {
-							   // Set properties for newly added file preview.
-							   var elPreview = file.previewElement ? $(file.previewElement) : $(previewTemplate.html());
-
-							   elPreview
-								   .attr("data-media-id", hiddenValues[index])
-								   .attr("data-media-name", fileName)
-								   .attr("data-entity-id", file.media.id)
-								   .removeClass("d-none dz-processing");
-
-							   elPreview.find(".fu-file-info-name").html(fileName);
-
-							   elPreview
-								   .find('img')
-								   .attr('src', file.dataURL || file.media.thumbUrl);
-							   previewContainer.append(elPreview);
-							   dzResetProgressBar(elPreview.find(".progress-bar"));
-						   }
-						   else {
-							   console.log("Error while adding preview element.", fileName.toLowerCase());
-						   }
-					   });
-
-					   assignableFileIds = "";
-					   assignableFiles.length = 0;
-				   }
 				}                
 			}
 

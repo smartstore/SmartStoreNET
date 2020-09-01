@@ -312,6 +312,26 @@
 					können aber nicht bearbeitet werden. Die Texte dieser Informationen können über die Sprachresourcen bearbeitet werden
 					<b>Admin > Konfiguration > Regionale Einstellungen > Sprachen</b>.
 				</p>");
+
+			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Style",
+				"Gallery sytle",
+				"Galerie-Stil");
+
+			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Fullscreen",
+				"View fullscreen",
+				"Vollbild anzeigen",
+				"Determines whether the medium is clickable to display it in its original size.",
+				"Bestimmt, ob das Medium anklickbar ist, um es in seiner Originalgröße anzuzeigen:");
+
+			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Zoomer",
+				"Magnify on mouse hover",
+				"Vergrößern beim Maus-Hover",
+				"Displays an enlarged detailed view of the media at the cursor position",
+				"Zeigt eine vergrößerte Detailansicht des Mediums an der Zeigerposition");
+
+			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Padding",
+				"Paddings",
+				"Abstände");
 		}
 	}
 }

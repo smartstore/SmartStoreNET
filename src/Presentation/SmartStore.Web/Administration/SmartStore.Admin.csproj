@@ -247,6 +247,7 @@
     <Compile Include="Infrastructure\SettingsMenu.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
+    <Compile Include="Models\Blogs\BlogListModel.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />

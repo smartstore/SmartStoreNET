@@ -47,7 +47,8 @@ namespace SmartStore.Services.Blogs
         }
 
 		public virtual IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
+			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
+            string title = "", string intro = "", string body = "", string tag = "")
         {
             var query = _blogPostRepository.Table;
 
@@ -63,6 +64,16 @@ namespace SmartStore.Services.Blogs
 			if (maxAge.HasValue)
 				query = query.Where(b => b.CreatedOnUtc >= maxAge.Value);
 
+
+            if (title.HasValue())
+                query = query.Where(b => b.Title.Contains(title));
+            if (intro.HasValue())
+                query = query.Where(b => b.Intro.Contains(intro));
+            if (body.HasValue())
+                query = query.Where(b => b.Body.Contains(body));
+            if (tag.HasValue())
+                query = query.Where(b => b.Tags.Contains(tag));
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -73,7 +84,7 @@ namespace SmartStore.Services.Blogs
 
 			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
-				//Store mapping
+				// Store mapping
 				query = from bp in query
 						join sm in _storeMappingRepository.Table
 						on new { c1 = bp.Id, c2 = "BlogPost" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into bp_sm

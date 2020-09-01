@@ -93,22 +93,39 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List()
         {
             ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
+            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-            return View();
+            // PrepareSearchModel
+            var model = new BlogListModel();
+
+            // Tags
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            model.SearchAvailableTags = new MultiSelectList(allTags);
+
+            // IsSingleStoreMode & IsMultiLangMode
+            model.IsSingleStoreMode = _storeService.IsSingleStoreMode();
+            model.IsSingleLangMode = _languageService.GetAllLanguages(true).Count == 1;
+
+            // Set end date to now.
+            model.SearchEndDate = DateTime.UtcNow;
+
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Cms.Blog.Read)]
-        public ActionResult List(GridCommand command)
+        public ActionResult List(GridCommand command, BlogListModel model)
         {
-            var blogPosts = _blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true);
+            var blogPosts = _blogService.GetAllBlogPosts(model.SearchStoreId, model.SearchLanguageId, model.SearchStartDate, model.SearchEndDate, command.Page - 1, command.PageSize, 
+                !model.SearchIsPublished ?? true, 
+                title: model.SearchTitle, intro: model.SearchIntro, body: model.SearchBody, tag: model.SearchTags);
 
-            var model = new GridModel<BlogPostModel>
+            var gridModel = new GridModel<BlogPostModel>
             {
                 Total = blogPosts.TotalCount
             };
 
-            model.Data = blogPosts.Select(x =>
+            gridModel.Data = blogPosts.Select(x =>
             {
                 var m = x.ToModel();
 
@@ -130,7 +147,7 @@ namespace SmartStore.Admin.Controllers
 
             return new JsonResult
             {
-                Data = model
+                Data = gridModel
             };
         }
 

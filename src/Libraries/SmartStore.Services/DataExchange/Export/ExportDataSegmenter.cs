@@ -121,7 +121,7 @@ namespace SmartStore.Services.DataExchange.Export
                     return false;
                 }
 
-				return true;
+				return RecordCount < TotalRecords;
 			}
 		}
 

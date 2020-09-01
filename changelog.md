@@ -25,9 +25,11 @@
 	* The file date should be displayed in local time and not in UTC.
 * **Page Builder**
 	* Reveal effect on story block conflicted with nested block reveal effects.
+* **Export**
+	* An empty export file was created at the end of an export when using the batch-size option.
+	* The offset option skipped one record too much.
 * Message template attachments were not attached to the email.
 * EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
-* Export: an empty export file was created at the end of an export when using the batch-size option.
 
 
 ## Smartstore 4.0.1

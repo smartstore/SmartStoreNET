@@ -151,6 +151,5 @@ namespace SmartStore.Services.DataExchange.Export.Internal
     {
         public int TotalRecords { get; set; }
         public int MaxId { get; set; }
-        public int OffsetId { get; set; }
     }
 }

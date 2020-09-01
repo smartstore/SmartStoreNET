@@ -358,8 +358,6 @@ namespace SmartStore.Services.DataExchange.Export
 			var recordsPerSegment = ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0);
             var totalRecords = offset + stats.TotalRecords;
 
-            ctx.LastId = stats.OffsetId;
-
             switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
@@ -844,6 +842,14 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			IQueryable<Product> query = null;
 
+			// Skip used for preview (ordinary paging) or initial query (offset option).
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				// Initial query. Apply offset.
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
+
 			if (ctx.Request.ProductQuery == null)
 			{
 				var f = ctx.Filter;
@@ -894,14 +900,13 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            // Skip required for preview.
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
             else if (ctx.LastId > 0)
             {
+				// Fast, ID based paging.
                 query = query.Where(x => x.Id > ctx.LastId);
             }
 
@@ -923,7 +928,6 @@ namespace SmartStore.Services.DataExchange.Export
                 // End of data reached.
                 return null;
             }
-
 
             var products = GetProductQuery(ctx, null, PageSize).ToList();
             if (!products.Any())
@@ -992,6 +996,12 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IQueryable<Order> GetOrderQuery(DataExporterContext ctx, int? skip, int take)
 		{
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
+
 			var query = _orderService.Value.GetOrders(
 				ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId,
 				ctx.Projection.CustomerId ?? 0,
@@ -1011,8 +1021,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1060,6 +1069,13 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
+
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
+
 			var query = _manufacturerService.Value.GetManufacturers(true, storeId);
 
             if (ctx.Request.EntitiesToExport.Any())
@@ -1069,8 +1085,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1113,6 +1128,13 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
+
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
+
 			var query = _categoryService.Value.BuildCategoriesQuery(null, true, null, storeId);
 
             if (ctx.Request.EntitiesToExport.Any())
@@ -1122,8 +1144,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1165,6 +1186,12 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IQueryable<Customer> GetCustomerQuery(DataExporterContext ctx, int? skip, int take)
 		{
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
+
 			var query = _customerRepository.Value.TableUntracked
 				.Expand(x => x.BillingAddress)
 				.Expand(x => x.ShippingAddress)
@@ -1245,8 +1272,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1289,6 +1315,12 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId;
+
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
 
 			var query = _subscriptionRepository.Value.TableUntracked;
 
@@ -1336,8 +1368,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1380,6 +1411,12 @@ namespace SmartStore.Services.DataExchange.Export
 		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId;
+
+			var skipValue = skip.GetValueOrDefault();
+			if (skipValue == 0 && ctx.LastId == 0)
+			{
+				skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
+			}
 
 			var query = _shoppingCartItemRepository.Value.TableUntracked
 				.Expand(x => x.Customer)
@@ -1460,8 +1497,7 @@ namespace SmartStore.Services.DataExchange.Export
 
             query = query.OrderBy(x => x.Id);
 
-            var skipValue = skip.GetValueOrDefault();
-            if (skipValue > 0)
+			if (skipValue > 0)
             {
                 query = query.Skip(() => skipValue);
             }
@@ -1597,11 +1633,7 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (!ctx.IsPreview)
                 {
-                    stats.MaxId = query.Max(x => (int?)x.Id) ?? 0;
-                    if (ctx.Request.Profile.Offset > 0)
-                    {
-                        stats.OffsetId = query.Select(x => x.Id).FirstOrDefault();
-                    }
+                    stats.MaxId = query.Max(x => (int?)x.Id) ?? 0;					
                 }
 
                 ctx.StatsPerStore[store.Id] = stats;

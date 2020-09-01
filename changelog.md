@@ -1,6 +1,9 @@
 # Release Notes
 
 ## Smartstore 4.1.0
+### Highlights
+* **Web API**: now supports the widely extended Version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
+
 ### New Features
 * Theming: responsive font-sizing and spacing
 * #2012 Added paging and sorting for bestsellers report.

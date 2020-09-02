@@ -14,11 +14,6 @@ namespace SmartStore.Core.Domain.Directory
 	[DataContract]
 	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported, ICloneable<Currency>
     {
-        public Currency()
-        {
-            RoundNumDecimals = 2;
-        }
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -97,7 +92,7 @@ namespace SmartStore.Core.Domain.Directory
         /// Gets or sets the number of decimal places to round to
         /// </summary>
         [DataMember]
-        public int RoundNumDecimals { get; set; }
+        public int RoundNumDecimals { get; set; } = 2;
 
         /// <summary>
         /// Gets or sets a value indicating whether to round the order total

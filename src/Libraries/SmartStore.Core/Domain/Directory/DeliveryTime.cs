@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
-    /// Represents a currency
+    /// Represents a delivery time
     /// </summary>
 	[DataContract]
 	public partial class DeliveryTime : BaseEntity, ILocalizedEntity

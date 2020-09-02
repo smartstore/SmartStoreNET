@@ -72,7 +72,7 @@ namespace SmartStore.Core.Domain.Directory
 		/// Gets or sets a value indicating whether the cookie manager should be displayed for visitors of this country.
 		/// </summary>
 		[DataMember]
-		public bool DisplayCookieManager { get; set; }
+		public bool DisplayCookieManager { get; set; } = true;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores

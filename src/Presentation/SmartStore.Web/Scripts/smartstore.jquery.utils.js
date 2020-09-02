@@ -324,11 +324,14 @@
                     }
                 });
 
-                function resizeGridItem(item) {
-                    var rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-                    var rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
-                    var rowSpan = Math.ceil((item.querySelector(itemSelector).getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
-                    item.style.gridRowEnd = "span " + rowSpan;
+				function resizeGridItem(item) {
+					var innerItem = item.querySelector(itemSelector);
+					var computedStyle = window.getComputedStyle(grid);
+					var rowHeight = parseInt(computedStyle.getPropertyValue('grid-auto-rows'));
+					var rowGap = parseInt(computedStyle.getPropertyValue('grid-row-gap'));
+					var rowSpan = Math.ceil((innerItem.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+					item.style.gridRowEnd = "span " + rowSpan;
+					innerItem.style.height = "100%";
                 }
 
                 function resizeAllGridItems() {

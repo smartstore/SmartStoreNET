@@ -37,8 +37,8 @@
                 @RenderTags(item, false)
                 @RenderComments(item)
 
-                <div class="card-img">
-                    <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
+                <div class="card-img h-100">
+                    <img class="card-img h-100 box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                 </div>
                 <div class="bg-overlay bg-@(item.SectionBg)"></div>
                 <div class="bg-overlay gradient-black scrim-linear-gradient bg-shade-@(item.SectionBg)" style="--cendpos: 50%"></div>

@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Data;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Hooks
 {
@@ -19,24 +20,21 @@ namespace SmartStore.Services.Hooks
 			_ctx = ctx;
 		}
 
-		protected override void OnUpdating(ISoftDeletable entity, IHookedEntity entry)
+        protected override void OnUpdating(ISoftDeletable entity, IHookedEntity entry)
 		{
 			var baseEntity = entry.Entity;
 
-			var prop = entry.Entry.Property("Deleted");
+			var prop = entry.Entry.Property(nameof(ISoftDeletable.Deleted));
 			var deletedModified = !prop.CurrentValue.Equals(prop.OriginalValue);
 			if (!deletedModified)
 				return;
 
 			var entityType = entry.EntityType;
 
-			// mark orphaned ACL records as idle
-			var aclSupported = baseEntity as IAclSupported;
-			if (aclSupported != null && aclSupported.SubjectToAcl)
+			// Mark orphaned ACL records as idle
+			if (baseEntity is IAclSupported aclSupported && aclSupported.SubjectToAcl)
 			{
 				var shouldSetIdle = entity.Deleted;
-				var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
-
 				var aclService = _ctx.Resolve<IAclService>();
 				var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
 				foreach (var record in records)
@@ -46,24 +44,42 @@ namespace SmartStore.Services.Hooks
 				}
 			}
 
-			// Delete orphaned inactive UrlRecords.
-			// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
-			var slugSupported = baseEntity as ISlugSupported;
-			if (slugSupported != null && entity.Deleted)
-			{
-				var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
-
-				var urlRecordService = _ctx.Resolve<IUrlRecordService>();
-				var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
-				using (urlRecordService.BeginScope())
+			if (entity.Deleted)
+            {
+				// Delete orphaned inactive UrlRecords.
+				// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
+				if (baseEntity is ISlugSupported)
 				{
-					foreach (var record in activeRecords)
+					var urlRecordService = _ctx.Resolve<IUrlRecordService>();
+					var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
+					using (urlRecordService.BeginScope())
 					{
-						if (!record.IsActive)
+						foreach (var record in activeRecords)
 						{
-							urlRecordService.DeleteUrlRecord(record);
+							if (!record.IsActive)
+							{
+								urlRecordService.DeleteUrlRecord(record);
+							}
 						}
 					}
+				}
+
+				// Unassign any media file and let the media tracker reliably clean up orphaned files later.
+				// TODO: Once we implement "recycle bin" feature for catalog entities, don't unassign anymore.
+				if (baseEntity is Product product)
+				{
+					product.MainPictureId = null;
+					product.ProductPictures.Clear();
+				}
+
+				if (baseEntity is Category category)
+				{
+					category.MediaFileId = null;
+				}
+
+				if (baseEntity is Manufacturer manufacturer)
+				{
+					manufacturer.MediaFileId = null;
 				}
 			}
 		}

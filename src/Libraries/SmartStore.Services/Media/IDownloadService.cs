@@ -81,7 +81,8 @@ namespace SmartStore.Services.Media
         /// <param name="download">Download entity.</param>
         /// <param name="stream">Data stream.</param>
         /// <param name="fileName">File name.</param>
-        void InsertDownload(Download download, Stream stream, string fileName);
+        /// <returns>The inserted <see cref="MediaFileInfo"/> object instance.</returns>
+        MediaFileInfo InsertDownload(Download download, Stream stream, string fileName);
 
 		/// <summary>
 		/// Updates the download.

@@ -107,8 +107,6 @@ namespace SmartStore.Admin.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-
-
         [HttpPost]
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult AsyncUpload(string clientCtrlId, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
@@ -129,14 +127,12 @@ namespace SmartStore.Admin.Controllers
 				UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
-
-            var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+            var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
             return Json(new 
             { 
                 success = true,
-                clientCtrlId = clientCtrlId,
+                clientCtrlId,
                 downloadId = download.Id,
                 id = download.MediaFileId,
                 name = mediaFile.Name,

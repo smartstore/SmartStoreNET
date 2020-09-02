@@ -1198,27 +1198,16 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 			}
 
-            if (model.DownloadFileVersion.HasValue() && model.DownloadId != null)
+			var testVersions = (new string[] { model.DownloadFileVersion, model.NewVersion }).Where(x => x.HasValue());
+			foreach (var testVersion in testVersions)
             {
-                try
-                {
-                    var test = new SemanticVersion(model.DownloadFileVersion).ToString();
-                }
-                catch
-                {
-                    ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
-                }
-            }
-
-			if (model.NewVersion.HasValue() && model.NewVersionDownloadId != null)
-			{
 				try
 				{
-					var test = new SemanticVersion(model.NewVersion).ToString();
+					var test = new SemanticVersion(testVersion).ToString();
 				}
 				catch
 				{
-					ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
+					ModelState.AddModelError("DownloadFileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
 				}
 			}
 
@@ -1239,17 +1228,15 @@ namespace SmartStore.Admin.Controllers
 				// Remove uploaded Download
 				if (model.DownloadId != null)
 				{
-					var currentDownload = _downloadService.GetDownloadById((int)model.DownloadId);
-					_downloadService.DeleteDownload(currentDownload);
+					_downloadService.DeleteDownload(new Download { Id = model.DownloadId.Value });
 				}
 				else if (model.NewVersionDownloadId != null)
 				{
-					var currentDownload = _downloadService.GetDownloadById((int)model.NewVersionDownloadId);
-					_downloadService.DeleteDownload(currentDownload);
+					_downloadService.DeleteDownload(new Download { Id = model.NewVersionDownloadId.Value });
 				}
-				else if (model.SampleDownloadId != null) {
-					var currentDownload = _downloadService.GetDownloadById((int)model.SampleDownloadId);
-					_downloadService.DeleteDownload(currentDownload);
+				else if (model.SampleDownloadId != null) 
+				{
+					_downloadService.DeleteDownload(new Download { Id = model.SampleDownloadId.Value });
 				}
 			}
 

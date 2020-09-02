@@ -1286,9 +1286,7 @@ namespace SmartStore.Web.Controllers
                         EntityName = "CheckoutAttribute"
                     };
 
-                    _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
-
-                    var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+                    var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
                     return Json(new
                     {
@@ -1597,9 +1595,7 @@ namespace SmartStore.Web.Controllers
                 EntityName = "ProductAttribute"
             };
 
-            _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
-
-            var mediaFile = _mediaService.GetFileById((int)download.MediaFileId);
+            var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
             return Json(new
             {

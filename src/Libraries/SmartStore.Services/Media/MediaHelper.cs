@@ -99,17 +99,17 @@ namespace SmartStore.Services.Media
 			UpdateTransientStateForEntityInternal(entity, propName, currentDownloadId, rs, null, save);
 		}
 
-		public static void UpdateDownloadTransientState(int? prevDownloadId, int? currentDownloadId, bool save = false)
-		{
-			var rs = EngineContext.Current.Resolve<IRepository<Download>>();
-			UpdateTransientStateCore(prevDownloadId.GetValueOrDefault(), currentDownloadId.GetValueOrDefault(), rs, null, save);
-		}
+		//public static void UpdateDownloadTransientState(int? prevDownloadId, int? currentDownloadId, bool save = false)
+		//{
+		//	var rs = EngineContext.Current.Resolve<IRepository<Download>>();
+		//	UpdateTransientStateCore(prevDownloadId.GetValueOrDefault(), currentDownloadId.GetValueOrDefault(), rs, null, save);
+		//}
 
-		public static void UpdateDownloadTransientState(int prevDownloadId, int currentDownloadId, bool save = false)
-		{
-			var rs = EngineContext.Current.Resolve<IRepository<Download>>();
-			UpdateTransientStateCore(prevDownloadId, currentDownloadId, rs, null, save);
-		}
+		//public static void UpdateDownloadTransientState(int prevDownloadId, int currentDownloadId, bool save = false)
+		//{
+		//	var rs = EngineContext.Current.Resolve<IRepository<Download>>();
+		//	UpdateTransientStateCore(prevDownloadId, currentDownloadId, rs, null, save);
+		//}
 
 		internal static void UpdateTransientStateForEntityInternal<TEntity, TMedia>(
 			TEntity entity, 
@@ -119,15 +119,15 @@ namespace SmartStore.Services.Media
 			Action<object> deleteAction,
 			bool save) where TEntity : BaseEntity where TMedia : BaseEntity
 		{
-			//object obj = null;
-			//int prevMediaId = 0;
-			//if (rs.Context.TryGetModifiedProperty(entity, propName, out obj))
-			//{
-			//	prevMediaId = ((int?)obj).GetValueOrDefault();
-			//}
+            object obj = null;
+            int prevMediaId = 0;
+            if (rs.Context.TryGetModifiedProperty(entity, propName, out obj))
+            {
+                prevMediaId = ((int?)obj).GetValueOrDefault();
+            }
 
-			//UpdateTransientStateCore(prevMediaId, currentMediaId, rs, deleteAction, save);
-		}
+            UpdateTransientStateCore(prevMediaId, currentMediaId, rs, deleteAction, save);
+        }
 
 		internal static void UpdateTransientStateCore<TMedia>(
 			int prevMediaId,

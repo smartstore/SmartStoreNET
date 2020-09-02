@@ -10,9 +10,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
@@ -141,7 +138,7 @@ namespace SmartStore.Services.Media
             _downloadRepository.Insert(download);
         }
 
-        public virtual void InsertDownload(Download download, Stream stream, string fileName)
+        public virtual MediaFileInfo InsertDownload(Download download, Stream stream, string fileName)
         {
             Guard.NotNull(download, nameof(download));
 
@@ -152,9 +149,7 @@ namespace SmartStore.Services.Media
 
             _downloadRepository.Insert(download);
 
-            // Why saving a second time?? Don't do it!
-            // Save to storage.
-            //_storageProvider.Value.Save(file.File, stream);
+            return file;
         }
 
 		public virtual void UpdateDownload(Download download)

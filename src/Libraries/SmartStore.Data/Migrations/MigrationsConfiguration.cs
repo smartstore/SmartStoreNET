@@ -314,7 +314,7 @@
 				</p>");
 
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Style",
-				"Gallery sytle",
+				"Gallery style",
 				"Galerie-Stil");
 
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Fullscreen",
@@ -332,6 +332,10 @@
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Padding",
 				"Paddings",
 				"Abstände");
+
+			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.HidePreviewPanel",
+				"Toggle preview panel",
+				"Vorschaubilderanzeige umschalten");
 		}
 	}
 }

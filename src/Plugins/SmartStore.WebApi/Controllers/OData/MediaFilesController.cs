@@ -466,17 +466,19 @@ namespace SmartStore.WebApi.Controllers.OData
                 return InternalServerError(ex);
             }
 
-            var contentCount = provider.Contents?.Count ?? 0;
-            if (contentCount == 0)
+            // Get file content.
+            var contents = provider.Contents?.Where(x => x.IsFileContent())?.ToList();
+
+            if ((contents?.Count ?? 0) == 0)
             {
                 return BadRequest("Missing multipart file data.");
             }
-            if (contentCount > 1)
+            if (contents.Count > 1)
             {
                 return BadRequest("Send one file per request, not multiple.");
             }
 
-            var content = provider.Contents.First();
+            var content = contents.First();
             var cd = content.Headers?.ContentDisposition;
 
             if (!(cd?.Parameters?.Any() ?? false))

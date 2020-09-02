@@ -30,8 +30,8 @@ using SmartStore.WebApi.Models.Api;
 
 namespace SmartStore.WebApi.Controllers.Api
 {
-    /// <see cref="http://www.asp.net/web-api/overview/advanced/sending-html-form-data,-part-2"/>
-    public class UploadsController : ApiController
+	/// <see cref="http://www.asp.net/web-api/overview/advanced/sending-html-form-data,-part-2"/>
+	public class UploadsController : ApiController
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
@@ -94,7 +94,7 @@ namespace SmartStore.WebApi.Controllers.Api
 			// Find product entity.
 			foreach (var content in provider.Contents)
 			{
-				if (!IsFileContent(content))
+				if (!content.IsFileContent())
 				{
 					var p = content.Headers?.ContentDisposition?.Parameters;
 					var hv = p.FirstOrDefault(x => identifiers.Contains(x.Value.ToUnquoted()));
@@ -142,7 +142,7 @@ namespace SmartStore.WebApi.Controllers.Api
 
 				foreach (var content in provider.Contents)
 				{
-					if (IsFileContent(content))
+					if (content.IsFileContent())
 					{
 						var image = new UploadImage(content.Headers);
 
@@ -348,14 +348,6 @@ namespace SmartStore.WebApi.Controllers.Api
 		}
 
 		#region Utilities
-
-		private bool IsFileContent(HttpContent hc)
-		{
-			var mediaType = hc.Headers?.ContentType?.MediaType;
-			var fileName = hc.Headers?.ContentDisposition?.FileName;
-
-			return mediaType.HasValue() || fileName.HasValue();
-		}
 
 		private StringContent CloneHeaderContent(string path, MultipartFileData origin)
 		{

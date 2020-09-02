@@ -90,5 +90,13 @@ namespace SmartStore.WebApi
 
 			return config;
 		}
+
+		public static bool IsFileContent(this HttpContent hc)
+		{
+			var mediaType = hc.Headers?.ContentType?.MediaType;
+			var fileName = hc.Headers?.ContentDisposition?.FileName;
+
+			return mediaType.HasValue() || fileName.HasValue();
+		}
 	}
 }

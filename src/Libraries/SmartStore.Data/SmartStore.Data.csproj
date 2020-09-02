@@ -505,6 +505,10 @@
     <Compile Include="Migrations\202008181949580_RenamedCustomerRoleOrderTotal.designer.cs">
       <DependentUpon>202008181949580_RenamedCustomerRoleOrderTotal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202009021705132_Merge9.cs" />
+    <Compile Include="Migrations\202009021705132_Merge9.designer.cs">
+      <DependentUpon>202009021705132_Merge9.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -908,6 +912,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202008181949580_RenamedCustomerRoleOrderTotal.resx">
       <DependentUpon>202008181949580_RenamedCustomerRoleOrderTotal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009021705132_Merge9.resx">
+      <DependentUpon>202009021705132_Merge9.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

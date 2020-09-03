@@ -270,6 +270,7 @@ namespace SmartStore.Services.DataExchange.Import
                         throw new SmartException("You do not have permission to perform the selected import.");
 
                     _dbCache.Enabled = false;
+					_services.MediaService.ImagePostProcessingEnabled = false;
 					scopes.Add(_localizedEntityService.BeginScope());
 					scopes.Add(_urlRecordService.BeginScope());
 
@@ -308,7 +309,7 @@ namespace SmartStore.Services.DataExchange.Import
 
                         fileGroup.Each(x => ImportCoreInner(ctx, x));
                     }
-				}
+                }
 				catch (Exception ex)
 				{
                     logger.ErrorsAll(ex);
@@ -318,6 +319,7 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						_dbCache.Enabled = true;
+						_services.MediaService.ImagePostProcessingEnabled = true;
 						scopes.Each(x => x.Dispose());
 
 						_services.EventPublisher.Publish(new ImportExecutedEvent(ctx.ExecuteContext));

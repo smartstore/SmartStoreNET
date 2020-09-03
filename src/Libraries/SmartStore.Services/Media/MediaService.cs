@@ -77,7 +77,7 @@ namespace SmartStore.Services.Media
             get => _storageProvider;
         }
 
-        public bool ImagePostProcessingEnabled { get; set; }
+        public bool ImagePostProcessingEnabled { get; set; } = true;
 
         #region Query
 

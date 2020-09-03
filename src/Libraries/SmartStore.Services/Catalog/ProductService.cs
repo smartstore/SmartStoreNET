@@ -982,7 +982,7 @@ namespace SmartStore.Services.Catalog
             bool touched = false;
 
 			var combinations =
-				from c in this._productVariantAttributeCombinationRepository.Table
+				from c in _productVariantAttributeCombinationRepository.Table
 				where c.ProductId == productPicture.Product.Id && !String.IsNullOrEmpty(c.AssignedMediaFileIds)
 				select c;
 

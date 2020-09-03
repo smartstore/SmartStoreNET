@@ -287,8 +287,11 @@ namespace SmartStore.Services.Media
                 // Save whole batch to database
                 int num = ctx.SaveChanges();
 
-                // Breathe
-                ctx.DetachEntities<MediaFile>(deep: true);
+                if (num > 0)
+                {
+                    // Breathe
+                    ctx.DetachEntities<MediaFile>(deep: true);
+                }
             }
         }
 

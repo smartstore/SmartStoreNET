@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -39,25 +34,25 @@ namespace SmartStore.Services.Media
 
         protected override void OnUpdating(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, true);
+            HookObject(entry, true);
         }
 
         protected override void OnDeleted(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
         protected override void OnInserted(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
         protected override void OnUpdated(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
-        private void HookObject(BaseEntity entity, IHookedEntity entry, bool beforeSave)
+        private void HookObject(IHookedEntity entry, bool beforeSave)
         {
             if (Silent)
                 return;

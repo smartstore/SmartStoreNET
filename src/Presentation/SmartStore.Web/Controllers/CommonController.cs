@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
+using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -528,9 +531,10 @@ namespace SmartStore.Web.Controllers
         [OutputCache(Duration=3600, VaryByCustom="Theme_Store")]
         public ActionResult Favicon()
         {
+            var store = Services.StoreContext.CurrentStore;
             var icons = new string[] 
             { 
-                "favicon-{0}.ico".FormatInvariant(Services.StoreContext.CurrentStore.Id), 
+                "favicon-{0}.ico".FormatInvariant(store.Id), 
                 "favicon.ico" 
             };
 
@@ -553,7 +557,11 @@ namespace SmartStore.Web.Controllers
             var model = new FaviconModel()
             {
                 Uploaded = true,
-                FaviconUrl = virtualPath
+                FaviconUrl = virtualPath,
+                AppleTouchIconId = store.AppleTouchIconMediaFileId,
+                MsTileColor = store.MsTileColor,
+                MsTileIconId = store.MsTileImageMediaFileId,
+                PngIconId = store.PngIconMediaFileId
             };
 
             return PartialView(model);
@@ -650,13 +658,67 @@ namespace SmartStore.Web.Controllers
                 sb.Append(newLine);
             }
 
-            Response.ContentType = "text/plain";
-            Response.Write(sb.ToStringAndReturn());
-
-            return null;
+            return Content(sb.ToStringAndReturn(), "text/plain");
         }
 
-		private IEnumerable<string> GetLowerCaseVariants(IEnumerable<string> disallows)
+        public ActionResult BrowserConfigXmlFile()
+        {
+            var store = Services.StoreContext.CurrentStore;
+
+            if (store.MsTileImageMediaFileId == 0 || !store.MsTileColor.HasValue())
+                return null;
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            var sb = PooledStringBuilder.Rent();
+
+            using (XmlWriter writer = XmlWriter.Create(sb, settings))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("browserconfig");
+                writer.WriteStartElement("msapplication");
+                writer.WriteStartElement("tile");
+
+                if (store.MsTileImageMediaFileId != 0)
+                {
+                    writer.WriteStartElement("square70x70logo");
+                    writer.WriteAttributeString("src", "{0}".FormatWith(_mediaService.Value.GetUrl(store.MsTileImageMediaFileId, 70, host: string.Empty)));
+                    writer.WriteString("");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("square150x150logo");
+                    writer.WriteAttributeString("src", "{0}".FormatWith(_mediaService.Value.GetUrl(store.MsTileImageMediaFileId, 150, host: string.Empty)));
+                    writer.WriteString("");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("square310x310logo");
+                    writer.WriteAttributeString("src", "{0}".FormatWith(_mediaService.Value.GetUrl(store.MsTileImageMediaFileId, 310, host: string.Empty)));
+                    writer.WriteString("");
+                    writer.WriteEndElement();
+
+                    // New setting ? :-/
+                    writer.WriteStartElement("wide310x150logo");
+                    writer.WriteAttributeString("src", "{0}".FormatWith(_mediaService.Value.GetUrl(store.MsTileImageMediaFileId, 150, host: string.Empty)));
+                    writer.WriteString("");
+                    writer.WriteEndElement();
+                }
+
+                if (store.MsTileColor.HasValue())
+                {
+                    writer.WriteElementString("TileColor", store.MsTileColor);
+                }
+
+                writer.WriteEndElement();   // tile
+                writer.WriteEndElement();   // msapplication
+                writer.WriteEndElement();   // browserconfig
+                writer.WriteEndDocument();
+                writer.Flush();
+            }
+
+            return Content(sb.ToStringAndReturn(), "text/xml");
+        }
+
+        private IEnumerable<string> GetLowerCaseVariants(IEnumerable<string> disallows)
 		{
 			var other = new List<string>();
 			foreach (var item in disallows)

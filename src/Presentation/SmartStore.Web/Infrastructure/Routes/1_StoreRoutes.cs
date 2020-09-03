@@ -359,6 +359,11 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Common", action = "RobotsTextFile" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			routes.MapRoute("browserconfig.xml",
+				"browserconfig.xml",
+				new { controller = "Common", action = "BrowserConfigXmlFile" },
+				new[] { "SmartStore.Web.Controllers" });
+
 			routes.MapLocalizedRoute("Settings",
 				"settings",
 				new { controller = "Common", action = "Settings" },

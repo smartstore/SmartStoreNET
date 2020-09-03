@@ -129,16 +129,7 @@
                 @Html.SettingEditorFor(model => model.SeoSettings.DefaultMetaDescription)
                 @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaDescription)
             </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.UseDefaultsOnHomepageOnly)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.UseDefaultsOnHomepageOnly, Html.CheckBoxFor(model => model.SeoSettings.UseDefaultsOnHomepageOnly))
-                @Html.ValidationMessageFor(model => model.SeoSettings.UseDefaultsOnHomepageOnly)
-            </td>
-        </tr>
+        </tr>        
 	    <tr>
 		    <td class="adminTitle">
 			    @Html.SmartLabelFor(model => model.SeoSettings.MetaRobotsContent)

@@ -132,15 +132,10 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateTitle(bool addDefaultTitle)
         {
-            var result = !_seoSettings.UseDefaultsOnHomepageOnly
-                ? _seoSettings.DefaultTitle
-                : _httpContext.Request.Path == "/"
-                    ? _seoSettings.DefaultTitle
-                    : "";
-
             if (_titleParts == null)
-                return result;
-            
+                return string.Empty;
+
+            var result = string.Empty;
             var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
             if (specificTitle.HasValue())
             {
@@ -151,17 +146,13 @@ namespace SmartStore.Web.Framework.UI
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
                             {
-                                result = result.HasValue() 
-                                    ? string.Join(_seoSettings.PageTitleSeparator, result, specificTitle) 
-                                    : specificTitle;
+                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.DefaultTitle, specificTitle);
                             }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
                             {
-                                result = result.HasValue() 
-                                    ? string.Join(_seoSettings.PageTitleSeparator, specificTitle, result)
-                                    : specificTitle;
+                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.DefaultTitle);
                             }
                             break;
                     }
@@ -171,6 +162,11 @@ namespace SmartStore.Web.Framework.UI
                     // Page title only
                     result = specificTitle;
                 }
+            }
+            else
+            {
+                // Store name only
+                result = _seoSettings.DefaultTitle;
             }
 
             return result;
@@ -184,11 +180,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaDescription()
         {
-            var result = !_seoSettings.UseDefaultsOnHomepageOnly
-                ? _seoSettings.DefaultMetaDescription
-                : _httpContext.Request.Path == "/"
-                    ? _seoSettings.DefaultMetaDescription
-                    : "";
+            var result = _seoSettings.DefaultMetaDescription;
 
             if (_metaDescriptionParts == null)
                 return result;
@@ -210,11 +202,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaKeywords()
         {
-            var result = !_seoSettings.UseDefaultsOnHomepageOnly
-                ? _seoSettings.DefaultMetaKeywords
-                : _httpContext.Request.Path == "/"
-                    ? _seoSettings.DefaultMetaKeywords
-                    : "";
+            var result = _seoSettings.DefaultMetaKeywords;
 
             if (_metaKeywordParts == null)
                 return result;

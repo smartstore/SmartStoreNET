@@ -198,12 +198,6 @@
 				"dass folgende Felder aktiviert und vom Kunden ausgefüllt sind:" +
 				"<ul><li>Vorname</li><li>Nachname</li><li>E-Mail</li><li>und alle Felder die im Tab \"Adressen\" als erforderlich ausgewählt sind</li></ul>");
 
-			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.UseDefaultsOnHomepageOnly",
-				"Use defaults on Homepage only",
-				"Standards nur auf der Startseite verwenden",
-				"Determines whether the default meta informations are used only on the home page, rather than as defaults for every page.",
-				"Legt fest, ob die Standard-Meta-Informationen nur auf der Startseite anstatt als Standardeinstellung für jede Seite verwendet werden.");
-
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AddCookieInfo.Title",
 				"Add new cookie information",
 				"Neue Cookie-Informationen hinzufügen");

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -46,6 +45,7 @@ namespace SmartStore.Web.Framework.UI
 		public string TypeFilter { get; set; }
 		public string PreviewContainerId { get; set; }
 		public int? MainFileId { get; set; }
+		public long? MaxFileSize { get; set; }
 		public string EntityType { get; set; }
 		public int EntityId { get; set; }
 		public string DeleteUrl { get; set; }

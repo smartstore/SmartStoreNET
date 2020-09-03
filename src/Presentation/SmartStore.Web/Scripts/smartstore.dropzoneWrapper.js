@@ -55,9 +55,12 @@
 				uploadMultiple: true,
 				acceptedFiles: $el.data('accept'),
 				maxFiles: options.maxFiles,
-				maxFilesize: Math.round(options.maxFilesSize / 1024),
 				previewsContainer: options.previewContainerId !== "" ? "#" + options.previewContainerId : null
 			};
+
+			if (options.maxFilesSize > 0) {
+				opts.maxFilesize = Math.round(options.maxFilesSize / 1024);
+			}
 
 			// Place multifile upload preview into the designated spot defined by Media editor template.
 			var previewTemplate;

@@ -1,14 +1,9 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -96,6 +91,17 @@ namespace SmartStore.Web.Framework.UI
 		public FileUploaderBuilder<TModel> MainFileId(int? value)
 		{
 			base.Component.MainFileId = value;
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the maximum file size.
+		/// Use "0" for an unlimited file size and "null" for the default size (MediaSettings.MaxUploadFileSize).
+		/// </summary>
+		/// <param name="value">Maximum file size in KB.</param>
+		public FileUploaderBuilder<TModel> MaxFileSize(long? value)
+		{
+			base.Component.MaxFileSize = value;
 			return this;
 		}
 

@@ -18,7 +18,7 @@
     }
 
     var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-    var maxFilesSize = mediaSettings.MaxUploadFileSize;
+    var maxFilesSize = Model.MaxFileSize ?? mediaSettings.MaxUploadFileSize;
 }
 
 <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>

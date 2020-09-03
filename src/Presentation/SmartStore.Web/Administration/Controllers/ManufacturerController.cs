@@ -256,6 +256,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateInput(false)]
         [Permission(Permissions.Catalog.Manufacturer.Create)]
         public ActionResult Create(ManufacturerModel model, bool continueEditing, FormCollection form)
         {

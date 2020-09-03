@@ -4,15 +4,15 @@
 	// TODO: (mc) ABS4 > delete viewport specific stuff from ~/Scripts/public.common.js, it's shared now.'
 	window.getPageWidth = function () {
 		return parseFloat($("#page").css("width"));
-	}
+	};
 
 	window.getViewport = function () {
 		return viewport;
-	}
+	};
 
 	window.setLocation = function (url) {
 		window.location.href = url;
-	}
+	};
 
 	window.openWindow = function (url, w, h, scroll) {
 		w = w || (screen.availWidth - (screen.availWidth * 0.25));
@@ -24,7 +24,7 @@
 		winprops = 'dependent=1,resizable=0,height=' + h + ',width=' + w + ',top=' + t + ',left=' + l;
 		if (scroll) winprops += ',scrollbars=1';
 		var f = window.open(url, "_blank", winprops);
-	}
+	};
 
 	window.modifyUrl = function (url, qsName, qsValue) {
 		var search = null;
@@ -59,7 +59,7 @@
 			}
 			return bits.length > 0 ? "?" + bits.join("&") : "";
 		}
-	}
+	};
 
 	// http://stackoverflow.com/questions/2907482
 	// Gets Querystring from window.location and converts all keys to lowercase
@@ -76,15 +76,15 @@
 		}
 
 		return assoc;
-	}
+	};
 
 	window.htmlEncode = function (value) {
 		return $('<div/>').text(value).html();
-	}
+	};
 
 	window.htmlDecode = function (value) {
 		return $('<div/>').html(value).text();
-	}
+	};
 
 	window.displayNotification = function (message, type, sticky, delay) {
 		if (window.EventBroker === undefined || window._ === undefined)
@@ -110,7 +110,7 @@
 		else {
 			notify(message);
 		}
-	}
+	};
 
 	window.Prefixer = (function () {
 		var TransitionEndEvent = {
@@ -152,7 +152,7 @@
 				transitionEnd: TransitionEndEvent[prefixDom('transition')],
 				animationEnd: AnimationEndEvent[prefixDom('animation')]
 			}
-		}
+		};
 	})();
 
 	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white, isProgress, showtext) {
@@ -244,7 +244,7 @@
 			}
 		}
 		return result;
-	}
+	};
 
 	window.getImageSize = function (url, callback) {
 		var img = new Image();
@@ -252,7 +252,7 @@
 		img.onload = function () {
 			callback.apply(this, [img.naturalWidth, img.naturalHeight]);
 		};
-	}
+	};
 
 	window.renderGoogleRecaptcha = function (containerId, sitekey, invisible) {
 		var frm = $('#' + containerId).closest('form');
@@ -292,7 +292,44 @@
 				}
 			});
 		}
-	}
+	};
+
+	window.rememberFormFields = function (contextId, storageId) {
+		var context = document.getElementById(contextId);
+		var rememberFields = context.querySelectorAll('.form-control.remember, .form-check-input.remember');
+		var values = {};
+
+		for (let el of rememberFields) {
+			values[el.id] = el.classList.contains('form-check-input') ? el.checked : el.value;
+		}
+
+		localStorage.setItem(storageId, JSON.stringify(values));
+	};
+
+	window.setRememberedFormFields = function (storageId) {
+		var values = localStorage.getItem(storageId);
+		if (values) {
+			values = JSON.parse(values);
+
+			for (var key in values) {
+				var val = values[key];
+
+				if (val !== null && val !== undefined) {
+					var el = document.getElementById(key);
+
+					if (!el)
+						continue;
+
+					if (el.classList.contains('form-check-input'))
+						el.checked = val;
+					else
+						el.value = val;
+
+					el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+				}
+			}
+		}
+	};
 
 	// on document ready
 	$(function () {

@@ -326,10 +326,14 @@ namespace SmartStore.Web.Framework
             daysList.Attributes.Add("name", dayName);
             monthsList.Attributes.Add("name", monthName);
             yearsList.Attributes.Add("name", yearName);
-            
-            daysList.Attributes.Add("class", "date-part form-control noskin");
-            monthsList.Attributes.Add("class", "date-part form-control noskin");
-            yearsList.Attributes.Add("class", "date-part form-control noskin");
+
+			daysList.Attributes.Add("id", dayName);
+			monthsList.Attributes.Add("id", monthName);
+			yearsList.Attributes.Add("id", yearName);
+
+			daysList.Attributes.Add("class", "date-part form-control noskin remember");
+            monthsList.Attributes.Add("class", "date-part form-control noskin remember");
+            yearsList.Attributes.Add("class", "date-part form-control noskin remember");
 
 			daysList.Attributes.Add("data-minimum-results-for-search", "100");
 			monthsList.Attributes.Add("data-minimum-results-for-search", "100");
@@ -567,7 +571,8 @@ namespace SmartStore.Web.Framework
             InputEditorType editorType = InputEditorType.TextBox,
             bool required = false,
             string helpHint = null,
-			string breakpoint = "md")
+			string breakpoint = "md",
+			string additionalCtrlClasses = "")
         {
             if (editorType == InputEditorType.Hidden)
             {
@@ -607,7 +612,7 @@ namespace SmartStore.Web.Framework
 					break;
 			}
             
-            htmlAttributes.Add("class", "form-control");
+            htmlAttributes.Add("class", "form-control" + (additionalCtrlClasses.HasValue() ? " " + additionalCtrlClasses : ""));
             
             switch (editorType)
             {

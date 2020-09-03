@@ -5,7 +5,7 @@
     Html.AddTitleParts(T("PageTitle.Register").Text);
 }
 
-@using (Html.BeginForm("Register", "Customer", new { returnUrl = this.Context.Request.QueryString["returnUrl"] }, FormMethod.Post, new { @class = "form-horizontal" }))
+@using (Html.BeginForm("Register", "Customer", new { returnUrl = this.Context.Request.QueryString["returnUrl"] }, FormMethod.Post, new { @class = "form-horizontal", id = "register-form" }))
 {
     @Html.AntiForgeryToken()
 
@@ -40,19 +40,19 @@
 							<label class="col-md-3 col-form-label">@T("Account.Fields.Gender")</label>
 							<div class="col-md-9 form-inline">
 								<div class="form-check form-check-inline">
-									@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input", id = "gender-male" })
+									@Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { @class = "form-check-input remember", id = "gender-male" })
 									<label class="form-check-label" for="gender-male">@T("Account.Fields.Gender.Male")</label>
 								</div>
 								<div class="form-check form-check-inline">
-									@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input", id = "gender-female" })
+									@Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { @class = "form-check-input remember", id = "gender-female" })
 									<label class="form-check-label" for="gender-female">@T("Account.Fields.Gender.Female")</label>
 								</div>
 							</div>
 						</div>
 					}
 
-					@Html.ControlGroupFor(model => model.FirstName, required: Model.FirstNameRequired, breakpoint: "md")
-					@Html.ControlGroupFor(model => model.LastName, required: Model.LastNameRequired, breakpoint: "md")
+					@Html.ControlGroupFor(model => model.FirstName, required: Model.FirstNameRequired, breakpoint: "md", additionalCtrlClasses: "remember")
+					@Html.ControlGroupFor(model => model.LastName, required: Model.LastNameRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 
 					@if (Model.DateOfBirthEnabled)
 					{
@@ -74,7 +74,7 @@
 						</div>
 					}
 
-					@Html.ControlGroupFor(model => model.Email, required: true, breakpoint: "md")
+					@Html.ControlGroupFor(model => model.Email, required: true, breakpoint: "md", additionalCtrlClasses: "remember")
 
 					@if (Model.UsernamesEnabled)
 					{
@@ -84,13 +84,13 @@
 								@if (Model.CheckUsernameAvailabilityEnabled)
 								{
 									<div class="input-group">
-										@Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+										@Html.TextBoxFor(model => model.Username, new { @class = "form-control remember" })
 										@{ Html.RenderPartial("_CheckUsernameAvailability"); }
 									</div>
 								}
 								else
 								{
-									@Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+									@Html.TextBoxFor(model => model.Username, new { @class = "form-control remember" })
 								}
 								@Html.ValidationMessageFor(model => model.Username)
 							</div>
@@ -124,7 +124,7 @@
 
 						@if (Model.CompanyEnabled)
 						{
-							@Html.ControlGroupFor(model => model.Company, required: Model.CompanyRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.Company, required: Model.CompanyRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.DisplayVatNumber)
 						{
@@ -133,7 +133,7 @@
 								<div class="col-md-9">
                                     <div class="input-group">
                                         
-                                        @Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = (Model.VatRequired ? "" : T("Common.Optional").Text) })
+                                        @Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control remember", placeholder = (Model.VatRequired ? "" : T("Common.Optional").Text) })
                                         @Html.ValidationMessageFor(model => model.VatNumber)
 
                                         @if (Model.VatNumberStatusNote.HasValue())
@@ -156,19 +156,19 @@
 
 						@if (Model.StreetAddressEnabled)
 						{
-							@Html.ControlGroupFor(model => model.StreetAddress, required: Model.StreetAddressRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.StreetAddress, required: Model.StreetAddressRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.StreetAddress2Enabled)
 						{
-							@Html.ControlGroupFor(model => model.StreetAddress2, required: Model.StreetAddress2Required, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.StreetAddress2, required: Model.StreetAddress2Required, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.ZipPostalCodeEnabled)
 						{
-							@Html.ControlGroupFor(model => model.ZipPostalCode, required: Model.ZipPostalCodeRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.ZipPostalCode, required: Model.ZipPostalCodeRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.CityEnabled)
 						{
-							@Html.ControlGroupFor(model => model.City, required: Model.CityRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.City, required: Model.CityRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.CountryEnabled)
 						{
@@ -178,7 +178,7 @@
 									@Html.DropDownList("CountryId", Model.AvailableCountries,
 										new
 										{
-											@class = "form-control country-input country-selector",
+											@class = "form-control country-input country-selector remember",
 											data_region_control_selector = "#StateProvinceId",
 											data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
 											data_addEmptyStateIfRequired = "true"
@@ -191,7 +191,7 @@
 							<div class="form-group row">
 								@Html.LabelFor(model => model.StateProvinceId, new { @class = "col-md-3 col-form-label", @for = "StateProvinceId" })
 								<div class="col-md-9">
-									@Html.DropDownList("StateProvinceId", Model.AvailableStates, new { @class = "form-control" })
+									@Html.DropDownList("StateProvinceId", Model.AvailableStates, new { @class = "form-control remember" })
 								</div>
 							</div>
 						}
@@ -205,11 +205,11 @@
 
 						@if (Model.PhoneEnabled)
 						{
-							@Html.ControlGroupFor(model => model.Phone, required: Model.PhoneRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.Phone, required: Model.PhoneRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 						@if (Model.FaxEnabled)
 						{
-							@Html.ControlGroupFor(model => model.Fax, required: Model.FaxRequired, breakpoint: "md")
+							@Html.ControlGroupFor(model => model.Fax, required: Model.FaxRequired, breakpoint: "md", additionalCtrlClasses: "remember")
 						}
 
 					</fieldset>
@@ -222,7 +222,7 @@
 						<div class="form-group row">
 							<div class="col">
 								<div class="form-check">
-									@Html.EditorFor(model => model.Newsletter, new { @class = "form-check-input" })
+									@Html.CheckBoxFor(model => model.Newsletter, new { @class = "form-check-input remember" })
 									<label class="form-check-label" for="Newsletter">
 										@T("Account.Fields.Newsletter", Url.Topic("PrivacyInfo"))
 									</label>
@@ -242,7 +242,7 @@
 							<div class="form-group row">
 								@Html.LabelFor(model => model.TimeZoneId, new { @class = "col-md-3 col-form-label", @for = "TimeZoneId" })
 								<div class="col-md-9">
-									@Html.DropDownList("TimeZoneId", Model.AvailableTimeZones, new { @class = "form-control" })
+									@Html.DropDownList("TimeZoneId", Model.AvailableTimeZones, new { @class = "form-control remember" })
 									@Html.ValidationMessageFor(model => model.TimeZoneId)
 								</div>
 							</div>
@@ -258,7 +258,7 @@
 
 				<div class="form-group row">
 					<div class="col">
-						<button type="submit" class="btn btn-primary btn-lg" name="register-button">
+						<button type="submit" class="btn btn-primary btn-lg" name="register-button" id="register-button">
 							@T("Account.Register.Button")
 						</button>
 					</div>
@@ -267,3 +267,14 @@
         </div>
     </div>
 }
+
+<script>
+	$(function () {
+        setRememberedFormFields("registerVals");
+    });
+
+    const form = document.getElementById('register-form');
+	form.addEventListener('focusout', (event) => {
+	  rememberFormFields("register-form", "registerVals");
+	});
+</script>

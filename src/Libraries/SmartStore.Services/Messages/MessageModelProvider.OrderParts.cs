@@ -385,12 +385,21 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));
 
-            var orderService = _services.Resolve<IOrderService>();
-            var orderItems = orderService.GetOrderItemsByOrderIds(new int[] { part.OrderId })[part.OrderId];
-            var itemParts = orderItems
-                .Where(x => x.Product != null)
-                .Select(x => CreateModelPart(x, messageContext))
-                .ToList();
+			var itemParts = new List<object>();
+			var orderService = _services.Resolve<IOrderService>();
+			var orderItems = orderService.GetOrderItemsByOrderIds(new int[] { part.OrderId })[part.OrderId];
+			var orderItemsDic = orderItems.ToDictionarySafe(x => x.Id);
+
+			foreach (var shipmentItem in part.ShipmentItems)
+			{
+				if (orderItemsDic.TryGetValue(shipmentItem.OrderItemId, out var orderItem) && orderItem.Product != null)
+				{
+					var itemPart = CreateModelPart(orderItem, messageContext) as Dictionary<string, object>;
+					itemPart["Qty"] = shipmentItem.Quantity;
+
+					itemParts.Add(itemPart);
+				}
+			}
 
             var trackingUrl = part.TrackingUrl;
 

@@ -30,6 +30,7 @@
 	* The offset option skipped one record too much.
 	* The XML export of CountryOfOrigin caused an error.
 * Message template attachments were not attached to the email.
+* Shipment templates showed all products of the order instead of only those of the shipment.
 * EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
 
 

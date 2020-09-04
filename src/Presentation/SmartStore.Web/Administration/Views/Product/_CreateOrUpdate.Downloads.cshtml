@@ -140,7 +140,7 @@
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <a href="@Url.Action("DeleteDownloadVersion", "Product", new { downloadId = download.DownloadId, productId = Model.Id })"
-                                               class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
+                                               onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
                                                 <i class="far fa-trash-alt"></i>
                                             </a>
                                         </td>

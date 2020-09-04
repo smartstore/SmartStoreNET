@@ -73,11 +73,13 @@
         {
             var previewUrl = mediaService.GetUrl(file.MediaFileId, 250);
             var isMainPic = file.MediaFileId == Model.MainFileId;
-            var entityMediaId = file.MediaFileId;
+            var entityMediaId = 0;
 
-            //if (Model.EntityType.Equals("Product"))
-            //{
-            //entityMediaId = file.MediaFileId;
+            if (Model.EntityType.Equals("Product"))
+            {
+                var entityMediaFile = file as ProductMediaFile;
+                entityMediaId = entityMediaFile.Id;
+            }
         
             <div class="fu-file-preview dz-image-preview dz-success dz-complete shadow-sm"
                  data-display-order="@file.DisplayOrder"

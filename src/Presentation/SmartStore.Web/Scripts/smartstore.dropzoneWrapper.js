@@ -591,17 +591,16 @@
 
 			// Deletes a media file assignment of an entity (multifile upload).
 			fuContainer.on("click", ".delete-entity-picture", function (e) {
-
-				if ($el.data('remove-url')) {
+				var removeUrl = $el.data('remove-url');
+				if (removeUrl) {
 					var previewThumb = $(this).closest('.dz-image-preview');
-					var entityMediaFileId = previewThumb.data("entity-id");
+					var entityMediaFileId = previewThumb.data("entity-media-id");
 					var mediaFileId = previewThumb.data("media-id");
 
 					$.ajax({
-						async: false,
 						cache: false,
 						type: 'POST',
-						url: $el.data('remove-url'),
+						url: removeUrl,
 						data: { id: entityMediaFileId },
 						success: function () {
 							previewThumb.remove();

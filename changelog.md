@@ -19,6 +19,7 @@
 * #1981 Added grouping for cart rules.
 * #1407 Added menu to set order and payment status for orders checked in backend grid.
 * #1778 Back button closes offcanvas menu/cart.
+* #2069 MegaSearch: product order is applied to all categories in which a product appears.
 
 ### Bugfixes
 * **Media Manager**

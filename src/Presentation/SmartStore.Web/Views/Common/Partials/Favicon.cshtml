@@ -2,15 +2,14 @@
 
 @using SmartStore.Web.Models.Common;
 
-@if (Model.Uploaded)
+@if (Model.FavIconId != 0)
 {
-    <link rel="shortcut icon" href="@Model.FaviconUrl?v=@SmartStoreVersion.CurrentVersion" />
+    <link rel="shortcut icon" href="@Url.Media(Model.FavIconId, 0, null, false)?v=@SmartStoreVersion.CurrentVersion" />
 }
 
 @if (Model.PngIconId != 0)
 {
     @*16x16 (browser tabs), 32x32 (Taskbar), 96x96 (Desktop), 196x196 (Android Chrome)*@
-
     <!-- png icons -->
     <link rel="icon" type="image/png" sizes="16x16" href="@Url.Media(Model.PngIconId, 16, null, false)">
     <link rel="icon" type="image/png" sizes="32x32" href="@Url.Media(Model.PngIconId, 32, null, false)">

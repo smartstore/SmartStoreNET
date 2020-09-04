@@ -532,32 +532,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult Favicon()
         {
             var store = Services.StoreContext.CurrentStore;
-            var icons = new string[] 
-            { 
-                "favicon-{0}.ico".FormatInvariant(store.Id), 
-                "favicon.ico" 
-            };
-
-            string virtualPath = null;
-
-            foreach (var icon in icons)
-            {
-                virtualPath = Url.ThemeAwareContent(icon);
-                if (virtualPath.HasValue())
-                {
-                    break;
-                }
-            }
-
-            if (virtualPath.IsEmpty())
-            {
-                return Content("");
-            }
-
+            
             var model = new FaviconModel()
             {
-                Uploaded = true,
-                FaviconUrl = virtualPath,
+                FavIconId = store.FavIconMediaFileId,
                 AppleTouchIconId = store.AppleTouchIconMediaFileId,
                 MsTileColor = store.MsTileColor,
                 MsTileIconId = store.MsTileImageMediaFileId,

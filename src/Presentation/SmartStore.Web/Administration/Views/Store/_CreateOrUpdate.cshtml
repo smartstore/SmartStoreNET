@@ -4,15 +4,6 @@
 @Html.HiddenFor(model => model.Id)
 
 <table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.LogoMediaFileId)
-        </td>
-        <td class="adminData" id="store-logo-picture">
-            @Html.EditorFor(model => model.LogoMediaFileId, "#store-logo-picture", new { transientUpload = true })
-            @Html.ValidationMessageFor(model => model.LogoMediaFileId)
-        </td>
-    </tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.Name)
@@ -146,6 +137,24 @@
     </tr>
 	<tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FavIconMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.FavIconMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.FavIconMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PngIconMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.PngIconMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.PngIconMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.AppleTouchIconMediaFileId)
         </td>
 		<td class="adminData">
@@ -160,15 +169,6 @@
 		<td class="adminData">
 			@Html.EditorFor(model => model.MsTileImageMediaFileId, new { transientUpload = true })
 			@Html.ValidationMessageFor(model => model.MsTileImageMediaFileId)
-		</td>
-    </tr>
-	<tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.PngIconMediaFileId)
-        </td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.PngIconMediaFileId, new { transientUpload = true })
-			@Html.ValidationMessageFor(model => model.PngIconMediaFileId)
 		</td>
     </tr>
 	<tr>

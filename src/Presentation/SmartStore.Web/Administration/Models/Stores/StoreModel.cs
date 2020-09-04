@@ -39,17 +39,20 @@ namespace SmartStore.Admin.Models.Stores
 		[UIHint("Media"), AdditionalMetadata("album", "content")]
 		public int LogoMediaFileId { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.FavIconMediaFileId")]
+		[UIHint("Media"), AdditionalMetadata("album", "content"), AdditionalMetadata("typeFilter", ".ico")]
+		public int FavIconMediaFileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.PngIconMediaFileId")]
-		[UIHint("Media"), AdditionalMetadata("album", "content")]
+		[UIHint("Media"), AdditionalMetadata("album", "content"), AdditionalMetadata("typeFilter", ".png")]
 		public int PngIconMediaFileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.AppleTouchIconMediaFileId")]
-		[UIHint("Media"), AdditionalMetadata("album", "content")]
+		[UIHint("Media"), AdditionalMetadata("album", "content"), AdditionalMetadata("typeFilter", "image")]
 		public int AppleTouchIconMediaFileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.MsTileImageMediaFileId")]
-		[UIHint("Media"), AdditionalMetadata("album", "content")]
+		[UIHint("Media"), AdditionalMetadata("album", "content"), AdditionalMetadata("typeFilter", "image")]
 		public int MsTileImageMediaFileId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.MsTileColor")]

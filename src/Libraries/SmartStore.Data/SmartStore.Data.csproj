@@ -509,9 +509,9 @@
     <Compile Include="Migrations\202009021705132_Merge9.designer.cs">
       <DependentUpon>202009021705132_Merge9.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202009031412478_ShopIcons.cs" />
-    <Compile Include="Migrations\202009031412478_ShopIcons.designer.cs">
-      <DependentUpon>202009031412478_ShopIcons.cs</DependentUpon>
+    <Compile Include="Migrations\202009041122208_ShopIcons.cs" />
+    <Compile Include="Migrations\202009041122208_ShopIcons.designer.cs">
+      <DependentUpon>202009041122208_ShopIcons.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -921,8 +921,8 @@
     <EmbeddedResource Include="Migrations\202009021705132_Merge9.resx">
       <DependentUpon>202009021705132_Merge9.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202009031412478_ShopIcons.resx">
-      <DependentUpon>202009031412478_ShopIcons.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202009041122208_ShopIcons.resx">
+      <DependentUpon>202009041122208_ShopIcons.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

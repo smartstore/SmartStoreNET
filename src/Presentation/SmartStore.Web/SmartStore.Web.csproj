@@ -1095,7 +1095,6 @@
     <Content Include="App_Data\Geo\dbip-country-lite.mmdb" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
-    <Content Include="favicon.readme.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />

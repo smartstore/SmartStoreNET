@@ -52,6 +52,11 @@ namespace SmartStore.Core.Domain.Stores
 		[DataMember]
 		public int LogoMediaFileId { get; set; }
 
+		/// <summary>
+		/// Gets or sets the png icon media file id 
+		/// </summary>
+		[DataMember]
+		public int FavIconMediaFileId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the png icon media file id 

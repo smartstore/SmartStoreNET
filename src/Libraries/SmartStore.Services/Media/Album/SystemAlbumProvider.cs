@@ -139,6 +139,10 @@ namespace SmartStore.Services.Media
                 table.Register<NewsItem>(x => x.MediaFileId);
                 table.Register<NewsItem>(x => x.PreviewMediaFileId);
                 table.Register<Store>(x => x.LogoMediaFileId);
+                table.Register<Store>(x => x.FavIconMediaFileId);
+                table.Register<Store>(x => x.PngIconMediaFileId);
+                table.Register<Store>(x => x.AppleTouchIconMediaFileId);
+                table.Register<Store>(x => x.MsTileImageMediaFileId);
             }
             else if (albumName == Downloads)
             {

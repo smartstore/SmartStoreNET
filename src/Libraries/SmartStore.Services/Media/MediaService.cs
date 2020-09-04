@@ -14,6 +14,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Runtime.CompilerServices;
+using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Media;
@@ -129,28 +130,28 @@ namespace SmartStore.Web.Framework
 
 		#region Media
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string Media(this UrlHelper urlHelper, int? fileId, int thumbnailSize = 0, string host = null, bool doFallback = true)
 		{
-			var mediaService = EngineContext.Current.Resolve<IMediaService>();
-			return mediaService.GetUrl(fileId, thumbnailSize, host, doFallback);
+			return EngineContext.Current.Resolve<IMediaService>().GetUrl(fileId, thumbnailSize, host, doFallback);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string Media(this UrlHelper urlHelper, MediaFileInfo file, int thumbnailSize = 0, string host = null, bool doFallback = true)
 		{
-			var mediaService = EngineContext.Current.Resolve<IMediaService>();
-			return mediaService.GetUrl(file, thumbnailSize, host, doFallback);
+			return EngineContext.Current.Resolve<IMediaService>().GetUrl(file, thumbnailSize, host, doFallback);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string Media(this UrlHelper urlHelper, int? fileId, ProcessImageQuery query, string host = null, bool doFallback = true)
 		{
-			var mediaService = EngineContext.Current.Resolve<IMediaService>();
-			return mediaService.GetUrl(fileId, query, host, doFallback);
+			return EngineContext.Current.Resolve<IMediaService>().GetUrl(fileId, query, host, doFallback);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string Media(this UrlHelper urlHelper, MediaFileInfo file, ProcessImageQuery query, string host = null, bool doFallback = true)
 		{
-			var mediaService = EngineContext.Current.Resolve<IMediaService>();
-			return mediaService.GetUrl(file, query, host, doFallback);
+			return EngineContext.Current.Resolve<IMediaService>().GetUrl(file, query, host, doFallback);
 		}
 
 		#endregion

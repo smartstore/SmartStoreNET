@@ -5,14 +5,11 @@
 	using System.Data.Entity.Migrations;
 	using Setup;
     using SmartStore.Core.Data;
-    using SmartStore.Core.Domain.Catalog;
-	using SmartStore.Core.Domain.Common;
-    using SmartStore.Core.Domain.Configuration;
-    using SmartStore.Core.Domain.Media;
-    using SmartStore.Core.Domain.Tasks;
     using SmartStore.Utilities;
+    using SmartStore.Core.Domain.Media;
+    using SmartStore.Core.Domain.Configuration;
 
-	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
+    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
 		public MigrationsConfiguration()
 		{
@@ -49,8 +46,22 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+			// Add .ico extension to MediaSettings.ImageTypes
+			var name = TypeHelper.NameOf<MediaSettings>(y => y.ImageTypes, true);
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
+			if (setting != null)
+            {
+				var arr = setting.Value.EmptyNull()
+					.Replace(Environment.NewLine, " ")
+					.ToLower()
+					.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-        }
+				if (!arr.Contains("ico"))
+                {
+					setting.Value += " ico";
+                }
+			}
+		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{

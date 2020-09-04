@@ -47,6 +47,7 @@ namespace SmartStore.Services.Media
             return service.GetUrl(file != null ? service.ConvertMediaFile(file) : null, query, host, doFallback);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetUrl(this IMediaService service, MediaFileInfo file, int thumbnailSize, string host = null, bool doFallback = true)
         {
             ProcessImageQuery query = thumbnailSize > 0
@@ -56,6 +57,7 @@ namespace SmartStore.Services.Media
             return service.GetUrl(file, query, host, doFallback);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetFallbackUrl(this IMediaService service, int thumbnailSize = 0)
         {
             ProcessImageQuery query = thumbnailSize > 0

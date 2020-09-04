@@ -23,16 +23,14 @@
         .cm-consent-title {
             margin-bottom: 0;
 
-            &:after {
-                @include fontawesome("\f106");
+            .collapse-chevron {
                 position: absolute;
                 right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
+                transition: transform 0.35s, -webkit-transform 0.35s;
             }
 
-            &.collapsed:after {
-                content: "\f107";
+            &.collapsed .collapse-chevron {
+                transform: rotate(180deg);
             }
         }
     }
@@ -44,9 +42,23 @@
 
     .cm-info-table {
         margin-bottom: 0;
+
+        > tbody > tr {
+            > td {
+                padding: 0.5rem;
+            }
+
+            > th {
+                padding: 0.5rem;
+                padding-right: 0;
+                width: 35%
+            }
+        }
     }
 
     @include media-breakpoint-down(sm) {
+        font-size: 0.825rem;
+
         .cm-footer {
             padding: 0;
         }

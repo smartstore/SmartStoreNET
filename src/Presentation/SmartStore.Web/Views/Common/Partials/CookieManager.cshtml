@@ -67,6 +67,7 @@
 					</div>
 					<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#required-cookies" aria-controls="required-cookies" aria-expanded="false">
 						@T("CookieManager.Dialog.Required.Heading")
+						<i class="fas fa-angle-down collapse-chevron"></i>
 					</h5>
 				</div>
 
@@ -100,6 +101,7 @@
 					</div>
 					<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#analytics-cookies" aria-controls="analytics-cookies" aria-expanded="false">
 						@T("CookieManager.Dialog.Analytics.Heading")
+						<i class="fas fa-angle-down collapse-chevron"></i>
 					</h5>
 				</div>
 
@@ -122,39 +124,41 @@
 					}
 				</div>
 			</div>
-
-			<div class="cm-consent">
-				<div class="row nav-toggler align-items-center no-gutters px-0">
-					<div class="cm-consent-switch col col-auto">
-						<label class="switch">
-							@Html.EditorFor(x => x.ThirdPartyConsent)
-							<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
-						</label>
+			@if (thirdPartyCookieInfos.Count > 0)
+			{
+				<div class="cm-consent">
+					<div class="row nav-toggler align-items-center no-gutters px-0">
+						<div class="cm-consent-switch col col-auto">
+							<label class="switch">
+								@Html.EditorFor(x => x.ThirdPartyConsent)
+								<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
+							</label>
+						</div>
+						<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#third-party-cookies" aria-controls="third-party-cookies" aria-expanded="false">
+							@T("CookieManager.Dialog.ThirdParty.Heading")
+							<i class="fas fa-angle-down collapse-chevron"></i>
+						</h5>
 					</div>
-					<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#third-party-cookies" aria-controls="third-party-cookies" aria-expanded="false">
-						@T("CookieManager.Dialog.ThirdParty.Heading")
-					</h5>
-				</div>
 
-				<div id="third-party-cookies" class="collapse nav-collapse" data-parent="#cookie-manager">
-					<p class="cm-consent-intro">
-						@T("CookieManager.Dialog.ThirdParty.Intro")
-					</p>
+					<div id="third-party-cookies" class="collapse nav-collapse" data-parent="#cookie-manager">
+						<p class="cm-consent-intro">
+							@T("CookieManager.Dialog.ThirdParty.Intro")
+						</p>
 
-					@if (thirdPartyCookieInfos.Count > 0)
-					{
-						<table class="cm-info-table table table-light">
-							@foreach (var info in thirdPartyCookieInfos)
-							{
-								<tr>
-									<th scope="row">@info.Name</th>
-									<td>@info.Description</td>
-								</tr>
-							}
-						</table>		
-					 }
+
+							<table class="cm-info-table table table-light">
+								@foreach (var info in thirdPartyCookieInfos)
+								{
+									<tr>
+										<th scope="row">@info.Name</th>
+										<td>@info.Description</td>
+									</tr>
+								}
+							</table>		
+					 
+					</div>
 				</div>
-			</div>
+			}
 		</div>
 	}
 }

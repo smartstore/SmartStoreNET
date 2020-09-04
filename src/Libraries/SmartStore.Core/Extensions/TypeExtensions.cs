@@ -237,9 +237,10 @@ namespace SmartStore
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check)
         {
-			return IsSubClass(type, check, out Type _);
+			return IsSubClass(type, check, out _);
 		}
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check, out Type implementingType)
         {
 			if (type == null)
@@ -279,7 +280,8 @@ namespace SmartStore
             {
                 if (IsSubClassInternal(initialType, currentType.GetGenericTypeDefinition(), check, out implementingType))
                 {
-                    implementingType = currentType;
+                    // INFO: this seems to be wrong! Don't we need the implementing base type (?!?)
+                    implementingType = currentType; 
                     return true;
                 }
             }

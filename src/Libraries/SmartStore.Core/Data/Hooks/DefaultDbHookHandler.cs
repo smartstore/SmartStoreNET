@@ -9,9 +9,9 @@ namespace SmartStore.Core.Data.Hooks
 {
 	public class DefaultDbHookHandler : IDbHookHandler
 	{
-		private readonly IList<Lazy<IDbHook, HookMetadata>> _saveHooks;
+		private readonly IEnumerable<Lazy<IDbSaveHook, HookMetadata>> _saveHooks;
 
-		private readonly Multimap<RequestHookKey, IDbHook> _hooksRequestCache = new Multimap<RequestHookKey, IDbHook>();
+		private readonly Multimap<RequestHookKey, IDbSaveHook> _hooksRequestCache = new Multimap<RequestHookKey, IDbSaveHook>();
 
 		// Prevents repetitive hooking of the same entity/state/[pre|post] combination within a single request
 		private readonly HashSet<HookedEntityKey> _hookedEntities = new HashSet<HookedEntityKey>();
@@ -19,15 +19,15 @@ namespace SmartStore.Core.Data.Hooks
 		private static HashSet<Type> _importantSaveHookTypes;
 		private readonly static object _lock = new object();
 
-		// Contains all IDbHook/EntityType/State/Stage combinations in which
+		// Contains all IDbSaveHook/EntityType/State/Stage combinations in which
 		// the implementor threw either NotImplementedException or NotSupportedException.
 		// This boosts performance because these VOID combinations are not processed again
 		// and frees us mostly from the obligation always to detect changes.
 		private readonly static HashSet<HookKey> _voidHooks = new HashSet<HookKey>();
 
-		public DefaultDbHookHandler(IEnumerable<Lazy<IDbHook, HookMetadata>> hooks)
+		public DefaultDbHookHandler(IEnumerable<Lazy<IDbSaveHook, HookMetadata>> hooks)
 		{
-			_saveHooks = hooks.Where(x => x.Metadata.IsLoadHook == false).ToList();
+			_saveHooks = hooks;
 		}
 
 		public ILogger Logger
@@ -87,7 +87,7 @@ namespace SmartStore.Core.Data.Hooks
 					}
 					catch (Exception ex) when (ex is NotImplementedException || ex is NotSupportedException)
 					{
-						RegisterVoidHook(hook, e.EntityType, e.InitialState, HookStage.PreSave);
+						RegisterVoidHook(hook, e, HookStage.PreSave);
 					}
 					catch (Exception ex)
 					{
@@ -127,7 +127,7 @@ namespace SmartStore.Core.Data.Hooks
 					continue;
 				}
 
-				var hooks = GetSaveHookInstancesFor(e, HookStage.PostSave, importantHooksOnly).ToList();
+				var hooks = GetSaveHookInstancesFor(e, HookStage.PostSave, importantHooksOnly);
 				
 				foreach (var hook in hooks)
 				{
@@ -140,7 +140,7 @@ namespace SmartStore.Core.Data.Hooks
 					}
 					catch (Exception ex) when (ex is NotImplementedException || ex is NotSupportedException)
 					{
-						RegisterVoidHook(hook, e.EntityType, e.InitialState, HookStage.PostSave);
+						RegisterVoidHook(hook, e, HookStage.PostSave);
 					}
 					catch (Exception ex)
 					{
@@ -154,35 +154,17 @@ namespace SmartStore.Core.Data.Hooks
 			return processedHooks;
 		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private IEnumerable<IDbSaveHook> GetSaveHookInstancesFor(IHookedEntity entry, HookStage stage, bool importantOnly)
 		{
-			return GetHookInstancesFor<IDbSaveHook>(
-				entry.EntityType,
-				entry.InitialState,
-				stage,
-				importantOnly, 
-				_saveHooks,
-				_importantSaveHookTypes);
-		}
-
-        private IEnumerable<THook> GetHookInstancesFor<THook>(
-			Type entityType,
-			EntityState entityState,
-			HookStage stage,
-			bool importantOnly,
-			IList<Lazy<IDbHook, HookMetadata>> hookList,
-			HashSet<Type> importantHookTypes) where THook : IDbHook
-		{
-			IEnumerable<IDbHook> hooks;
-
-			if (entityType == null)
+			if (entry.EntityType == null)
 			{
-				return Enumerable.Empty<THook>();
+				return Enumerable.Empty<IDbSaveHook>();
 			}
 
+			IEnumerable<IDbSaveHook> hooks;
+			
 			// For request cache lookup
-			var requestKey = new RequestHookKey(entityType, entityState, stage, importantOnly);
+			var requestKey = new RequestHookKey(entry, stage, importantOnly);
 
 			if (_hooksRequestCache.ContainsKey(requestKey))
 			{
@@ -190,20 +172,22 @@ namespace SmartStore.Core.Data.Hooks
 			}
 			else
 			{
-				hooks = hookList
+				hooks = _saveHooks
+					// Reduce by data context types
+					.Where(x => x.Metadata.DbContextType.IsAssignableFrom(entry.ContextType))
 					// Reduce by entity types which can be processed by this hook
-					.Where(x => x.Metadata.HookedType.IsAssignableFrom(entityType))
+					.Where(x => x.Metadata.HookedType.IsAssignableFrom(entry.EntityType))
 					// When importantOnly, only include hook types with [ImportantAttribute]
-					.Where(x => !importantOnly || importantHookTypes.Contains(x.Metadata.ImplType))
+					.Where(x => !importantOnly || _importantSaveHookTypes.Contains(x.Metadata.ImplType))
 					// Exclude void hooks (hooks known to be useless for the current EntityType/State/Stage combination)
-					.Where(x => !_voidHooks.Contains(new HookKey(x.Metadata.ImplType, entityType, entityState, stage)))
+					.Where(x => !_voidHooks.Contains(new HookKey(x.Metadata.ImplType, entry, stage)))
 					.Select(x => x.Value)
 					.ToArray();
 
 				_hooksRequestCache.AddRange(requestKey, hooks);
 			}
 
-			return hooks.Cast<THook>();
+			return hooks;
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -214,7 +198,7 @@ namespace SmartStore.Core.Data.Hooks
 			if (entity == null || entity.IsTransientRecord())
 				return false;
 
-			var key = new HookedEntityKey(entry.EntityType, entity.Id, entry.InitialState, stage);
+			var key = new HookedEntityKey(entry, stage, entity.Id);
 			if (_hookedEntities.Contains(key))
 			{
 				return true;
@@ -225,48 +209,47 @@ namespace SmartStore.Core.Data.Hooks
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RegisterVoidHook(IDbHook hook, Type entityType, EntityState entityState, HookStage stage)
+        private void RegisterVoidHook(IDbSaveHook hook, IHookedEntity entry, HookStage stage)
 		{
 			var hookType = hook.GetType();
 
 			// Unregister from request cache (if cached)
-			_hooksRequestCache.Remove(new RequestHookKey(entityType, entityState, stage, false), hook);
-			_hooksRequestCache.Remove(new RequestHookKey(entityType, entityState, stage, true), hook);
+			_hooksRequestCache.Remove(new RequestHookKey(entry, stage, false), hook);
+			_hooksRequestCache.Remove(new RequestHookKey(entry, stage, true), hook);
 
 			lock (_lock)
 			{
 				// Add to static void hooks set
-				_voidHooks.Add(new HookKey(hookType, entityType, entityState, stage));
+				_voidHooks.Add(new HookKey(hookType, entry, stage));
 			}
 		}
 
 		enum HookStage
 		{
-			Load,
 			PreSave,
 			PostSave
 		}
 
-		class HookedEntityKey : Tuple<Type, int, EntityState, HookStage>
+		class HookedEntityKey : Tuple<Type, Type, int, EntityState, HookStage>
 		{
-			public HookedEntityKey(Type entityType, int entityId, EntityState initialState, HookStage stage)
-				: base(entityType, entityId, initialState, stage)
+			public HookedEntityKey(IHookedEntity entry, HookStage stage, int entityId)
+				: base(entry.ContextType, entry.EntityType, entityId, entry.InitialState, stage)
 			{
 			}
 		}
 
-		class RequestHookKey : Tuple<Type, EntityState, HookStage, bool>
+		class RequestHookKey : Tuple<Type, Type, EntityState, HookStage, bool>
 		{
-			public RequestHookKey(Type entityType, EntityState entityState, HookStage stage, bool importantOnly)
-				: base(entityType, entityState, stage, importantOnly)
+			public RequestHookKey(IHookedEntity entry, HookStage stage, bool importantOnly)
+				: base(entry.ContextType, entry.EntityType, entry.InitialState, stage, importantOnly)
 			{
 			}
 		}
 
 		class HookKey : Tuple<Type, Type, EntityState, HookStage>
 		{
-			public HookKey(Type hookType, Type entityType, EntityState entityState, HookStage stage)
-				: base(hookType, entityType, entityState, stage)
+			public HookKey(Type hookType, IHookedEntity entry, HookStage stage)
+				: base(hookType, entry.EntityType, entry.InitialState, stage)
 			{
 			}
 		}

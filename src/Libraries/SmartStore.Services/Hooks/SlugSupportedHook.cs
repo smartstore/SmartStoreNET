@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Data;
 using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Common
 {
-	public class SlugSupportedHook : DbSaveHook<ISlugSupported>
+	public class SlugSupportedHook : DbSaveHook<ObjectContextBase, ISlugSupported>
 	{
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly HashSet<UrlRecord> _toDelete = new HashSet<UrlRecord>();

@@ -10,7 +10,7 @@ using SmartStore.Data;
 namespace SmartStore.Services.Media
 {
     [Important]
-    public sealed class MediaTrackerHook : DbSaveHook<BaseEntity>
+    public sealed class MediaTrackerHook : DbSaveHook<ObjectContextBase, BaseEntity>
     {   
         // Track items for the current (SaveChanges) unit.
         private readonly HashSet<MediaTrack> _actionsUnit = new HashSet<MediaTrack>();

@@ -40,32 +40,29 @@ namespace SmartStore.Services.Payments
 
 		protected override void OnUpdating(Order entity, IHookedEntity entry)
 		{
-			if (entry.State == Core.Data.EntityState.Modified)
-			{
-				var isShipped = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Shipped);
-				var isDelivered = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Delivered);
+			var isShipped = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Shipped);
+			var isDelivered = IsStatusPropertyModifiedTo(entry, nameof(entity.ShippingStatusId), (int)ShippingStatus.Delivered);
 
-				if (isShipped || isDelivered)
+			if (isShipped || isDelivered)
+			{
+				var settings = _services.Value.Settings.LoadSetting<PaymentSettings>(entity.StoreId);
+				if (settings.CapturePaymentReason.HasValue)
 				{
-					var settings = _services.Value.Settings.LoadSetting<PaymentSettings>(entity.StoreId);
-					if (settings.CapturePaymentReason.HasValue)
+					if (isShipped && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderShipped)
 					{
-						if (isShipped && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderShipped)
-						{
-							_toCapture.Add(entity);
-						}
-						else if (isDelivered && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderDelivered)
-						{
-							_toCapture.Add(entity);
-						}
+						_toCapture.Add(entity);
+					}
+					else if (isDelivered && settings.CapturePaymentReason.Value == CapturePaymentReason.OrderDelivered)
+					{
+						_toCapture.Add(entity);
 					}
 				}
-
-				//if (IsStatusPropertyModifiedTo(entry, nameof(entity.OrderStatusId), (int)OrderStatus.Complete))
-				//{
-				// That's too late. The payment is already marked as paid and the capture process would never be executed.
-				//}
 			}
+
+			//if (IsStatusPropertyModifiedTo(entry, nameof(entity.OrderStatusId), (int)OrderStatus.Complete))
+			//{
+			// That's too late. The payment is already marked as paid and the capture process would never be executed.
+			//}
 		}
 
 		public override void OnAfterSave(IHookedEntity entry)

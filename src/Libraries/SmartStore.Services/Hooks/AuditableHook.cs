@@ -1,11 +1,12 @@
 ﻿using System;
 using SmartStore.Core;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Hooks
 {
 	[Important]
-	public class AuditableHook : DbSaveHook<IAuditable>
+	public class AuditableHook : DbSaveHook<ObjectContextBase, IAuditable>
 	{
 		protected override void OnInserting(IAuditable entity, IHookedEntity entry)
 		{

@@ -7,12 +7,23 @@ namespace SmartStore.Core.Data.Hooks
 	public interface IHookedEntity
 	{
 		/// <summary>
+		/// Gets the impl type of the data context that triggered the hook.
+		/// </summary>
+		Type ContextType { get; }
+
+		/// <summary>
 		/// Gets the hooked entity entry
 		/// </summary>
 		DbEntityEntry Entry { get; }
 
+		/// <summary>
+		/// Gets the hooked entity instance
+		/// </summary>
 		BaseEntity Entity { get; }
 
+		/// <summary>
+		/// Gets the unproxied type of the hooked entity instance. 
+		/// </summary>
 		Type EntityType { get; }
 
 		/// <summary>
@@ -50,29 +61,36 @@ namespace SmartStore.Core.Data.Hooks
 	{
 		private Type _entityType;
 
-		public HookedEntity(DbEntityEntry entry)
+		public HookedEntity(IDbContext context, DbEntityEntry entry)
+			: this(context.GetType(), entry)
 		{
+		}
+
+		internal HookedEntity(Type contextType, DbEntityEntry entry)
+		{
+			ContextType = contextType;
 			Entry = entry;
 			InitialState = (EntityState)entry.State;
+		}
+
+		public Type ContextType 
+		{ 
+			get; 
 		}
 
 		public DbEntityEntry Entry
 		{
 			get;
-			private set;
 		}
 
 		public BaseEntity Entity
 		{
-			get { return Entry.Entity as BaseEntity; }
+			get => Entry.Entity as BaseEntity;
 		}
 
 		public Type EntityType
 		{
-			get
-			{
-				return _entityType ?? (_entityType = this.Entity?.GetUnproxiedType());
-			}
+			get => _entityType ?? (_entityType = this.Entity?.GetUnproxiedType());
 		}
 
 		public EntityState InitialState
@@ -95,10 +113,7 @@ namespace SmartStore.Core.Data.Hooks
 
 		public bool HasStateChanged
 		{
-			get
-			{
-				return InitialState != State;
-			}
+			get => InitialState != State;
 		}
 
 		public bool IsPropertyModified(string propertyName)

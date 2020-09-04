@@ -10,8 +10,7 @@ namespace SmartStore.Services.Hooks
 		private readonly ICustomerActivityService _customerActivityService;
 		private readonly ILocalizationService _localizationService;
 
-		public SettingSaveHook(ICustomerActivityService customerActivityService,
-			ILocalizationService localizationService)
+		public SettingSaveHook(ICustomerActivityService customerActivityService, ILocalizationService localizationService)
 		{
 			_customerActivityService = customerActivityService;
 			_localizationService = localizationService;

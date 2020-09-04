@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Data;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Hooks
 {
-	public class LocalizedEntityHook : DbSaveHook<ILocalizedEntity>
+	public class LocalizedEntityHook : DbSaveHook<ObjectContextBase, ILocalizedEntity>
 	{
 		private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly HashSet<LocalizedProperty> _toDelete = new HashSet<LocalizedProperty>();

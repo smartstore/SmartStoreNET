@@ -22,7 +22,7 @@ namespace SmartStore.Core.Tests.Data.Hooks
 	[TestFixture]
 	public class DefaultDbHookHandlerTests
 	{
-		private Lazy<IDbHook, HookMetadata>[] _hooks;
+		private Lazy<IDbSaveHook, HookMetadata>[] _hooks;
 		private IDbHookHandler _handler;
 
 		[SetUp]
@@ -46,7 +46,7 @@ namespace SmartStore.Core.Tests.Data.Hooks
 		{
 			var hset = new HashSet<Type>();
 
-			foreach (var hook in _hooks.Where(x => x.Metadata.IsLoadHook == false))
+			foreach (var hook in _hooks)
 			{
 				foreach (var e in entries)
 				{
@@ -144,9 +144,9 @@ namespace SmartStore.Core.Tests.Data.Hooks
 			return new HookedEntityMock(new T(), state);
 		}
 
-		private static Lazy<IDbHook, HookMetadata> CreateHook<THook, TEntity>() where THook : IDbHook, new() where TEntity : class
+		private static Lazy<IDbSaveHook, HookMetadata> CreateHook<THook, TEntity>() where THook : IDbSaveHook, new() where TEntity : class
 		{
-			var hook = new Lazy<IDbHook, HookMetadata>(() => new THook(), new HookMetadata
+			var hook = new Lazy<IDbSaveHook, HookMetadata>(() => new THook(), new HookMetadata
 			{
 				HookedType = typeof(TEntity),
 				ImplType = typeof(THook),

@@ -567,6 +567,7 @@
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
     <Compile Include="Setup\Builder\BuilderDbContextExtensions.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
+    <Compile Include="SmartObjectContextSaveHook.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
     <Compile Include="Mapping\Affiliates\AffiliateMap.cs" />

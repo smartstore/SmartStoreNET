@@ -14,20 +14,26 @@ namespace SmartStore.Core.Data.Hooks
 		/// </summary>
 		public Type ImplType { get; set; }
 
-		public bool IsLoadHook { get; set; }
+		/// <summary>
+		/// The impl type of <see cref="IDbContext"/> to which the hook belongs to.
+		/// </summary>
+		public Type DbContextType { get; set; }
 
 		/// <summary>
 		/// Whether the hook should run in any case, even if hooking has been turned off.
 		/// </summary>
 		public bool Important { get; set; }
 
-		public static HookMetadata Create<THook>(Type hookedType, bool important = false) where THook : IDbHook
+		public static HookMetadata Create<THook, TContext>(Type hookedType, bool important = false) 
+			where THook : IDbSaveHook
+			where TContext : IDbContext
 		{
 			Guard.NotNull(hookedType, nameof(hookedType));
 
 			return new HookMetadata
 			{
 				ImplType = typeof(THook),
+				DbContextType = typeof(TContext),
 				HookedType = hookedType,
 				Important = important
 			};

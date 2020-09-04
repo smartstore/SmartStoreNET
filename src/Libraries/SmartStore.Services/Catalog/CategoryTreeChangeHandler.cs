@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Search;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Catalog
 {
@@ -35,7 +36,7 @@ namespace SmartStore.Services.Catalog
 		public CategoryTreeChangeReason Reason { get; private set; }
 	}
 
-	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer
+	public class CategoryTreeChangeHook : IDbSaveHook<SmartObjectContext>, IConsumer
 	{
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;

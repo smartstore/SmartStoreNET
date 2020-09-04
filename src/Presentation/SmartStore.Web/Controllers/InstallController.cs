@@ -521,7 +521,7 @@ namespace SmartStore.Web.Controllers
 					// AuditableHook must run during install
 					dbContext.DbHookHandler = new DefaultDbHookHandler(new[] 
 					{
-						new Lazy<IDbHook, HookMetadata>(() => new AuditableHook(), HookMetadata.Create<AuditableHook>(typeof(IAuditable), true), false)
+						new Lazy<IDbSaveHook, HookMetadata>(() => new AuditableHook(), HookMetadata.Create<AuditableHook, SmartObjectContext>(typeof(IAuditable), true), false)
 					});
 
 					// IMPORTANT: Migration would run way too early otherwise

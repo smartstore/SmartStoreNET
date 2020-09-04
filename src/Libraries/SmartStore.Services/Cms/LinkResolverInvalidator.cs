@@ -46,6 +46,9 @@ namespace SmartStore.Services.Cms
 			var e = entry.Entity;
 
 			var evict = e is Topic || e is Product || e is Category || e is Manufacturer || e is StoreMapping || e is UrlRecord;
+			if (!evict)
+				throw new NotSupportedException(); // Perf
+
 			if (evict && entry.InitialState == EntityState.Modified)
 			{
 				var modProps = entry.Entry.GetModifiedProperties(_services.DbContext);

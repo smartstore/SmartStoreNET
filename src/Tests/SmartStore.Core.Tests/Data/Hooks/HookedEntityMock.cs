@@ -21,6 +21,8 @@ namespace SmartStore.Core.Tests.Data.Hooks
 			InitialState = state;
 		}
 
+		public Type ContextType => typeof(IDbContext);
+
 		public DbEntityEntry Entry
 		{
 			// Is unmockable

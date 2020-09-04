@@ -21,7 +21,7 @@ namespace SmartStore.Services
 		protected override void OnInserted(BaseEntity entity, IHookedEntity entry)
 		{
 			if (entry.EntityType != typeof(Store) && entry.EntityType != typeof(Language))
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 
 			_cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
 		}

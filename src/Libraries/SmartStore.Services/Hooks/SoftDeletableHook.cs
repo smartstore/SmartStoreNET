@@ -17,7 +17,7 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Hooks
 {
-	public class SoftDeletablePreUpdateHook : DbSaveHook<ISoftDeletable>
+	public class SoftDeletablePreUpdateHook : DbSaveHook<ObjectContextBase, ISoftDeletable>
 	{
 		private readonly IComponentContext _ctx;
 

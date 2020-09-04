@@ -11,7 +11,7 @@ using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Core.Tests.Data.Hooks
 {
-	internal class Hook_Entity_Inserted_Deleted_Update : DbSaveHook<BaseEntity>
+	internal class Hook_Entity_Inserted_Deleted_Update : DbSaveHook<IDbContext, BaseEntity>
 	{
 		protected override void OnInserted(BaseEntity entity, IHookedEntity entry) {}
 		protected override void OnDeleted(BaseEntity entity, IHookedEntity entry) {}
@@ -19,19 +19,19 @@ namespace SmartStore.Core.Tests.Data.Hooks
 		protected override void OnUpdated(BaseEntity entity, IHookedEntity entry) { }
 	}
 
-	internal class Hook_Acl_Deleted : DbSaveHook<IAclSupported>
+	internal class Hook_Acl_Deleted : DbSaveHook<IDbContext, IAclSupported>
 	{
 		protected override void OnDeleted(IAclSupported entity, IHookedEntity entry) { }
 	}
 
 	[Important]
-	internal class Hook_Auditable_Inserting_Updating_Important : DbSaveHook<IAuditable>
+	internal class Hook_Auditable_Inserting_Updating_Important : DbSaveHook<IDbContext, IAuditable>
 	{
 		protected override void OnInserting(IAuditable entity, IHookedEntity entry) { }
 		protected override void OnUpdating(IAuditable entity, IHookedEntity entry) { }
 	}
 
-	internal class Hook_SoftDeletable_Updating_ChangingState : DbSaveHook<ISoftDeletable>
+	internal class Hook_SoftDeletable_Updating_ChangingState : DbSaveHook<IDbContext, ISoftDeletable>
 	{
 		protected override void OnUpdating(ISoftDeletable entity, IHookedEntity entry)
 		{
@@ -39,7 +39,7 @@ namespace SmartStore.Core.Tests.Data.Hooks
 		}
 	}
 
-	internal class Hook_LocalizedEntity_Deleted : DbSaveHook<ILocalizedEntity>
+	internal class Hook_LocalizedEntity_Deleted : DbSaveHook<IDbContext, ILocalizedEntity>
 	{
 		protected override void OnDeleted(ILocalizedEntity entity, IHookedEntity entry) { }
 	}

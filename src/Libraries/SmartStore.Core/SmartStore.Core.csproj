@@ -208,8 +208,6 @@
     <Compile Include="Data\Hooks\DbSaveHook.cs" />
     <Compile Include="Data\Hooks\DefaultDbHookHandler.cs" />
     <Compile Include="Data\Hooks\HookedEntity.cs" />
-    <Compile Include="Data\Hooks\IDbHook.cs" />
-    <Compile Include="Data\Hooks\IDbLoadHook.cs" />
     <Compile Include="Data\Hooks\IDbSaveHook.cs" />
     <Compile Include="Data\Hooks\IDbHookHandler.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />

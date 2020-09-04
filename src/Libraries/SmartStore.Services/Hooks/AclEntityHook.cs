@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Data;
 using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Common
 {
-	public class AclEntityHook : DbSaveHook<IAclSupported>
+	public class AclEntityHook : DbSaveHook<ObjectContextBase, IAclSupported>
 	{
 		private readonly Lazy<IAclService> _aclService;
 		private readonly HashSet<AclRecord> _toDelete = new HashSet<AclRecord>();

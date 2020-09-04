@@ -144,17 +144,6 @@ namespace SmartStore.Data
 			get { return _currentSaveOperation != null; }
 		}
 
-		private bool IsHookableEntry(IHookedEntity entry)
-		{
-			var entity = entry.Entity;
-			if (entity == null)
-			{
-				return false;
-			}
-
-			return IsHookableEntityType(entry.EntityType);
-		}
-
 		private static bool IsHookableEntityType(Type entityType)
 		{
 			var isHookable = _hookableEntities.GetOrAdd(entityType, t =>
@@ -280,8 +269,10 @@ namespace SmartStore.Data
 
 				if (enableHooks)
 				{
+					var contextType = _ctx.GetType();
+					
 					changedHookEntries = _changedEntries
-						.Select(x => new HookedEntity(x))
+						.Select(x => new HookedEntity(contextType, x))
 						.Where(x => IsHookableEntityType(x.EntityType))
 						.ToArray();
 					

@@ -12,11 +12,12 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Data;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Infrastructure.Cache
 {
-	public partial class ModelCacheEventConsumer : IDbSaveHook
+	public partial class ModelCacheEventConsumer : IDbSaveHook<SmartObjectContext>
 	{
         /// <summary>
         /// Key for ManufacturerNavigationModel caching

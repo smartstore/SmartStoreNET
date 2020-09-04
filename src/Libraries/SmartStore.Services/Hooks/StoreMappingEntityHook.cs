@@ -4,11 +4,12 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Data;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Common
 {
-	public class StoreMappingEntityHook : DbSaveHook<IStoreMappingSupported>
+	public class StoreMappingEntityHook : DbSaveHook<ObjectContextBase, IStoreMappingSupported>
 	{
 		private readonly Lazy<IStoreMappingService> _storeMappingService;
 		private readonly HashSet<StoreMapping> _toDelete = new HashSet<StoreMapping>();

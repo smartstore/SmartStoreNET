@@ -357,7 +357,57 @@ namespace SmartStore.Web.Framework
 		{
 			_typeFinder = typeFinder;
 		}
-		
+
+		private static (Type ContextType, Type EntityType) DiscoverHookTypes(Type type)
+		{
+			var x = type.BaseType;
+            while (x != null && x != typeof(object))
+            {
+                if (x.IsGenericType)
+                {
+					var gtd = x.GetGenericTypeDefinition();
+					if (gtd == typeof(DbSaveHook<>))
+					{
+						return (typeof(SmartObjectContext), x.GetGenericArguments()[0]);
+					}
+					if (gtd == typeof(DbSaveHook<,>))
+					{
+						var args = x.GetGenericArguments();
+						return (args[0], args[1]);
+					}
+				}
+
+                x = x.BaseType;
+            }
+
+			foreach (var intface in type.GetInterfaces())
+			{
+				if (intface.IsGenericType)
+                {
+					var gtd = intface.GetGenericTypeDefinition();
+					if (gtd == typeof(IDbSaveHook<>))
+                    {
+						return (intface.GetGenericArguments()[0], typeof(BaseEntity));
+					}
+				}
+			}
+
+			return (typeof(SmartObjectContext), typeof(BaseEntity));
+
+			//if (type.IsSubClass(typeof(DbSaveHook<,>), out Type baseType))
+			//{
+			//    var args = baseType.GetGenericArguments();
+			//    return (args[0], args[1]);
+			//}
+			//else if (type.IsSubClass(typeof(IDbSaveHook<>), out baseType))
+			//{
+			//    var args = baseType.GetGenericArguments();
+			//    return (args[0], typeof(BaseEntity));
+			//}
+
+			//return (typeof(SmartObjectContext), typeof(BaseEntity));
+		}
+
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.Register(c => DataSettings.Current).As<DataSettings>().InstancePerDependency();
@@ -372,37 +422,22 @@ namespace SmartStore.Web.Framework
 
 			if (DataSettings.DatabaseIsInstalled())
 			{
-				// register DB Hooks (only when app was installed properly)
+				// Register DB Hooks (only when app was installed properly)
 
-				Type findHookedType(Type t)
+				var hookTypes = _typeFinder.FindClassesOfType<IDbSaveHook>(ignoreInactivePlugins: true);
+				foreach (var hookType in hookTypes)
 				{
-					var x = t;
-					while (x != null)
-					{
-						if (x.IsGenericType)
-						{
-							return x.GetGenericArguments()[0];
-						}
-						x = x.BaseType;
-					}
+					var types = DiscoverHookTypes(hookType);
 
-					return typeof(BaseEntity);
-				}
-
-				var hooks = _typeFinder.FindClassesOfType<IDbHook>(ignoreInactivePlugins: true);
-				foreach (var hook in hooks)
-				{
-					var hookedType = findHookedType(hook);
-
-					var registration = builder.RegisterType(hook)
-						.As<IDbHook>()
+					var registration = builder.RegisterType(hookType)
+						.As<IDbSaveHook>()
 						.InstancePerRequest()
 						.WithMetadata<HookMetadata>(m =>
 						{
-							m.For(em => em.HookedType, hookedType);
-							m.For(em => em.ImplType, hook);
-							m.For(em => em.IsLoadHook, false);
-							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
+							m.For(em => em.HookedType, types.EntityType);
+							m.For(em => em.ImplType, hookType);
+							m.For(em => em.DbContextType, types.ContextType ?? typeof(SmartObjectContext));
+							m.For(em => em.Important, hookType.HasAttribute<ImportantAttribute>(false));
 						});
 				}
 

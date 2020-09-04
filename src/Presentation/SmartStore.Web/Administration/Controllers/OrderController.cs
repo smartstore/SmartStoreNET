@@ -2369,7 +2369,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifyError(T("Admin.Orders.Shipments.NoProductsSelected"));
 
-                    return RedirectToAction("AddShipment", new { order.Id });
+                    return RedirectToAction("AddShipment", new { orderId = order.Id });
                 }
             }
 

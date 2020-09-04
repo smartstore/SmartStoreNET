@@ -3,6 +3,7 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
 @using SmartStore.Core.Domain.Media;
+@using SmartStore.Core.Domain.Catalog;
 
 @functions {
 	bool? _minimalMode = null;
@@ -90,6 +91,7 @@
 	var clientId = "download-editor-" + random;
 	var mediaService = this.CommonServices.MediaService;
 	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
+	var catalogSettings = this.CommonServices.Resolve<CatalogSettings>();
 	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
 	var fileName = string.Empty;
@@ -156,10 +158,12 @@
 					.DeleteUrl(Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" }))
 					.Multifile(false)
 					.Path(Path)
-					.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
+					.TypeFilter(string.Join("|", catalogSettings.FileUploadAllowedExtensions.Select(x => x.Trim()).ToList()))
+					.UploadText(hasFile ? fileName : T("Common.Fileuploader.Upload").Text)
 					.HasTemplatePreview(true)
-					.ShowRemoveButton(false)
-					.ShowRemoveButtonAfterUpload(false)
+					.ShowBrowseMedia(true)
+					.ShowRemoveButton(hasFile)
+					.ShowRemoveButtonAfterUpload(true)
 					.OnMediaSelectedHandlerName("onMediaSelected_" + random)
 				)
 			</div>
@@ -204,7 +208,7 @@
                 entityId: @EntityId,
 				entityName: "@EntityName"
 			},
-			success: function (response) {
+            success: function (response) {
                 if (!response.success)
                     displayNotification("Error when trying to create a download for the selected file.", "error");
 			}

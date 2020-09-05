@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SmartStore.Core;
+using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Localization
@@ -93,18 +94,43 @@ namespace SmartStore.Services.Localization
         /// <typeparam name="T">Type</typeparam>
         /// <param name="entity">Entity</param>
         /// <param name="keySelector">Key selector</param>
-        /// <param name="localeValue">Locale value</param>
+        /// <param name="value">Locale value</param>
         /// <param name="languageId">Language ID</param>
         void SaveLocalizedValue<T>(
 			T entity,
             Expression<Func<T, string>> keySelector,
-            string localeValue,
+            string value,
             int languageId) where T : BaseEntity, ILocalizedEntity;
 
+
+        /// <summary>
+        /// Save localized value
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <typeparam name="TPropType">Property type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="value">Locale value</param>
+        /// <param name="languageId">Language ID</param>
         void SaveLocalizedValue<T, TPropType>(
 		   T entity,
            Expression<Func<T, TPropType>> keySelector,
-           TPropType localeValue,
+           TPropType value,
            int languageId) where T : BaseEntity, ILocalizedEntity;
+
+        /// <summary>
+        /// Save localized setting value
+        /// </summary>
+        /// <typeparam name="TSetting">Setting impl type</typeparam>
+        /// <typeparam name="TPropType">Property type</typeparam>
+        /// <param name="settings">Settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="value">Locale value</param>
+        /// <param name="languageId">Language ID</param>
+        void SaveLocalizedSetting<TSetting, TPropType>(
+           TSetting settings,
+           Expression<Func<TSetting, TPropType>> keySelector,
+           TPropType value,
+           int languageId) where TSetting : class, ISettings;
     }
 }

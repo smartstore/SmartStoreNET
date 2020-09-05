@@ -226,7 +226,7 @@ namespace SmartStore.Web
             
             if (localizationService != null)
             {
-                string salutations = addressSettings.GetLocalized(x => x.Salutations);
+                string salutations = addressSettings.GetLocalizedSetting(x => x.Salutations);
                 foreach (var sal in salutations.SplitSafe(","))
                 {
                     model.AvailableSalutations.Add(new SelectListItem { Value = sal, Text = sal });

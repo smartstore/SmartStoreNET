@@ -658,8 +658,8 @@ namespace SmartStore.Admin.Controllers
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
-				locale.ReturnRequestActions = orderSettings.GetLocalized(x => x.ReturnRequestActions, languageId, false, false);
-				locale.ReturnRequestReasons = orderSettings.GetLocalized(x => x.ReturnRequestReasons, languageId, false, false);
+				locale.ReturnRequestActions = orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, languageId, false, false);
+				locale.ReturnRequestReasons = orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, languageId, false, false);
 			});
 
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
@@ -696,8 +696,8 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var localized in model.Locales)
 				{
-					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
-					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
 				}
 
                 if (model.GiftCards_Activated_OrderStatusId.HasValue)
@@ -751,7 +751,7 @@ namespace SmartStore.Admin.Controllers
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
-				locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, languageId, false, false);
+				locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, languageId, false, false);
 			});
 
 			return View(model);
@@ -786,7 +786,7 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var localized in model.Locales)
 			{
-				_localizedEntityService.SaveLocalizedValue(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId);
 			}
             
             return NotifyAndRedirect("ShoppingCart");
@@ -936,7 +936,7 @@ namespace SmartStore.Admin.Controllers
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Salutations = addressSettings.GetLocalized(x => x.Salutations, languageId, false, false);
+                locale.Salutations = addressSettings.GetLocalizedSetting(x => x.Salutations, languageId, false, false);
 			});
 
 			return View(model);
@@ -996,7 +996,7 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var localized in model.Locales)
 			{
-				_localizedEntityService.SaveLocalizedValue(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
 			}
 			
 			return NotifyAndRedirect("CustomerUser");

@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Xml;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
+using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
@@ -14,6 +15,8 @@ namespace SmartStore.Services.Localization
 {
 	public static class LocalizationExtensions
     {
+        #region GetLocalized BaseEntity
+
         /// <summary>
         /// Get localized property of an entity
         /// </summary>
@@ -28,6 +31,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, string>)invoker,
@@ -57,6 +61,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 invoker,
@@ -88,6 +93,7 @@ namespace SmartStore.Services.Localization
         {
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, TProp>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 localeKey,
                 x => fallback,
@@ -119,6 +125,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 invoker,
@@ -151,6 +158,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, TProp>)invoker,
@@ -183,6 +191,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, TProp>)invoker,
@@ -192,17 +201,22 @@ namespace SmartStore.Services.Localization
                 detectEmptyHtml);
         }
 
-		/// <summary>
-		/// Get localized property of an <see cref="ICategoryNode"/> instance
-		/// </summary>
-		/// <param name="node">Node</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
+        #endregion
+
+        #region GetLocalized ICategoryNode
+
+        /// <summary>
+        /// Get localized property of an <see cref="ICategoryNode"/> instance
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
 		{
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
 				node,
+                node.Id,
 				"Category",
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
@@ -221,7 +235,8 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
 	            node,
-	            "Category",
+                node.Id,
+	            nameof(Category),
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
 	            languageId);
@@ -239,11 +254,102 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
 		        node,
-		        "Category",
+                node.Id,
+                nameof(Category),
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
 		        language);
         }
+
+        #endregion
+
+        #region GetLocalized ISettings
+
+        /// <summary>
+        /// Get localized property of an <see cref="ISettings"/> implementation
+        /// </summary>
+        /// <param name="settings">The settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings, 
+            Expression<Func<TSetting, string>> keySelector,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where TSetting : class, ISettings
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                settings,
+                0,
+                typeof(TSetting).Name,
+                invoker.Property.Name,
+                (Func<TSetting, string>)invoker,
+                EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
+
+        /// <summary>
+        /// Get localized property of an <see cref="ISettings"/> implementation
+        /// </summary>
+        /// <param name="settings">The settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings, 
+            Expression<Func<TSetting, string>> keySelector, 
+            int languageId,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where TSetting : class, ISettings
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                settings,
+                0,
+                typeof(TSetting).Name,
+                invoker.Property.Name,
+                (Func<TSetting, string>)invoker,
+                languageId,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
+
+        /// <summary>
+        /// Get localized property of an <see cref="ISettings"/> implementation
+        /// </summary>
+        /// <param name="settings">The settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="language">Language</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings, 
+            Expression<Func<TSetting, string>> keySelector, 
+            Language language,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where TSetting : class, ISettings
+        {
+            var invoker = keySelector.CompileFast();
+            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
+                settings,
+                0,
+                typeof(TSetting).Name,
+                invoker.Property.Name,
+                (Func<TSetting, string>)invoker,
+                language,
+                returnDefaultValue,
+                ensureTwoPublishedLanguages,
+                detectEmptyHtml);
+        }
+
+        #endregion
+
+        #region GetLocalizedEnum
 
         /// <summary>
         /// Get localized value of enum
@@ -300,6 +406,10 @@ namespace SmartStore.Services.Localization
 
             return result;
         }
+
+        #endregion
+
+        #region Plugin Localization
 
         /// <summary>
         /// Delete a locale resource
@@ -576,5 +686,7 @@ namespace SmartStore.Services.Localization
 
             service.ImportResourcesFromXml(language, xmlDoc, rootKey, sourceIsPlugin, mode, updateTouchedResources);
         }
+
+        #endregion
     }
 }

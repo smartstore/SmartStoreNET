@@ -62,8 +62,8 @@ namespace SmartStore.Web.Controllers
             model.OrderId = order.Id;
 
 			var language = Services.WorkContext.WorkingLanguage;
-			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
-			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
+			string returnRequestReasons = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
+			string returnRequestActions = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
 
             // Return reasons.
             foreach (var rrr in returnRequestReasons.SplitSafe(","))

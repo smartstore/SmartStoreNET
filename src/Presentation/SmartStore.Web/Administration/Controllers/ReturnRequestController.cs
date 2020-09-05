@@ -296,8 +296,8 @@ namespace SmartStore.Admin.Controllers
             if (!forList)
             {
                 // That's what we also offer in frontend.
-                string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
-                string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
+                string returnRequestReasons = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
+                string returnRequestActions = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
                 string unspec = T("Common.Unspecified");
 
                 model.AvailableReasonForReturn.Add(new SelectListItem { Text = unspec, Value = "" });

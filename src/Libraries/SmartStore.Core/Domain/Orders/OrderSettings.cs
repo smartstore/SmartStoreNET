@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Orders
 {
-	public class OrderSettings : BaseEntity, ISettings, ILocalizedEntity
+	public class OrderSettings : ISettings
     {
 		public OrderSettings()
 		{

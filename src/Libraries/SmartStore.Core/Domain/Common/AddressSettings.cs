@@ -3,13 +3,10 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Common
 {
-    public class AddressSettings : BaseEntity, ISettings, ILocalizedEntity
+    public class AddressSettings : ISettings
     {
 		public AddressSettings()
 		{
-            ValidateEmailAddress = false;
-            SalutationEnabled = false;
-            TitleEnabled = false;
 			CompanyEnabled = true;
 			StreetAddressEnabled = true;
 			StreetAddressRequired = true;
@@ -21,7 +18,6 @@ namespace SmartStore.Core.Domain.Common
 			CountryEnabled = true;
 			CountryRequired = true;
 			StateProvinceEnabled = true;
-			StateProvinceRequired = false;
 			PhoneEnabled = true;
 			PhoneRequired = true;
 			FaxEnabled = true;

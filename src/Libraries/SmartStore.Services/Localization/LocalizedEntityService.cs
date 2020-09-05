@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
@@ -312,75 +314,98 @@ namespace SmartStore.Services.Localization
 			return localizedProperty;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public virtual void SaveLocalizedValue<T>(
 			T entity,
             Expression<Func<T, string>> keySelector,
-            string localeValue,
+            string value,
             int languageId) where T : BaseEntity, ILocalizedEntity
         {
-            SaveLocalizedValue<T, string>(entity, keySelector, localeValue, languageId);
-        }
+			SaveLocalizedValue(entity, entity.Id, entity.GetEntityName(), keySelector, value, languageId);
+		}
 
-        public virtual void SaveLocalizedValue<T, TPropType>(
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void SaveLocalizedValue<T, TPropType>(
 			T entity,
             Expression<Func<T, TPropType>> keySelector,
-            TPropType localeValue,
+            TPropType value,
             int languageId) where T : BaseEntity, ILocalizedEntity
         {
-			Guard.NotNull(entity, nameof(entity));
+			SaveLocalizedValue(entity, entity.Id, entity.GetEntityName(), keySelector, value, languageId);
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public virtual void SaveLocalizedSetting<TSetting, TPropType>(
+			TSetting settings,
+			Expression<Func<TSetting, TPropType>> keySelector,
+			TPropType value,
+			int languageId) where TSetting : class, ISettings
+		{
+			SaveLocalizedValue(settings, 0, typeof(TSetting).Name, keySelector, value, languageId);
+		}
+
+		protected virtual void SaveLocalizedValue<T, TPropType>(
+			T obj,
+			int id,
+			string keyGroup,
+			Expression<Func<T, TPropType>> keySelector,
+			TPropType value,
+			int languageId) where T : class
+		{
+			Guard.NotNull(obj, nameof(obj));
+			Guard.NotEmpty(keyGroup, nameof(keyGroup));
 			Guard.NotZero(languageId, nameof(languageId));
 
-            var member = keySelector.Body as MemberExpression;
-            if (member == null)
-            {
-                throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
-            }
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
+			}
 
-            var propInfo = member.Member as PropertyInfo;
-            if (propInfo == null)
-            {
-                throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
-            }
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
+			}
 
-            var keyGroup = entity.GetEntityName();
-            var key = propInfo.Name;
-			var valueStr = localeValue.Convert<string>();
-			var prop = GetLocalizedProperty(languageId, entity.Id, keyGroup, key);
+			var key = propInfo.Name;
+			var valueStr = value.Convert<string>();
+			var prop = GetLocalizedProperty(languageId, id, keyGroup, key);
 
-            if (prop != null)
-            {
-                if (valueStr.IsEmpty())
-                {
-                    // Delete
-                    DeleteLocalizedProperty(prop);
-                }
-                else
-                {
-                    // Update
+			if (prop != null)
+			{
+				if (valueStr.IsEmpty())
+				{
+					// Delete
+					DeleteLocalizedProperty(prop);
+				}
+				else
+				{
+					// Update
 					if (prop.LocaleValue != valueStr)
 					{
 						prop.LocaleValue = valueStr;
 						UpdateLocalizedProperty(prop);
 					}
-                }
-            }
-            else
-            {
-                if (valueStr.HasValue())
-                {
-                    // insert
-                    prop = new LocalizedProperty
-                    {
-                        EntityId = entity.Id,
-                        LanguageId = languageId,
-                        LocaleKey = key,
-                        LocaleKeyGroup = keyGroup,
-                        LocaleValue = valueStr
-                    };
-                    InsertLocalizedProperty(prop);
-                }
-            }
-        }
+				}
+			}
+			else
+			{
+				if (valueStr.HasValue())
+				{
+					// insert
+					prop = new LocalizedProperty
+					{
+						EntityId = id,
+						LanguageId = languageId,
+						LocaleKey = key,
+						LocaleKeyGroup = keyGroup,
+						LocaleValue = valueStr
+					};
+					InsertLocalizedProperty(prop);
+				}
+			}
+		}
 
 		private string BuildCacheSegmentKey(string segment, int languageId)
 		{

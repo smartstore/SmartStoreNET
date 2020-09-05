@@ -4,7 +4,7 @@ using System.Web;
 
 namespace SmartStore.Core.Domain.Customers
 {
-	public class PrivacySettings : BaseEntity, ISettings, ILocalizedEntity
+	public class PrivacySettings : ISettings
 	{
 		/// <summary>
 		/// Specifies whether cookie hint and consent will be displayed to customers in the frontent 

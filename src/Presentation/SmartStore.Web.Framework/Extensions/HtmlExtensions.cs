@@ -62,7 +62,7 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(a.ToString());
         }
 
-        public static HelperResult LocalizedEditor<T, TLocalizedModelLocal>(this HtmlHelper<T> helper, string name, Func<int, HelperResult> localizedTemplate, Func<T, HelperResult> standardTemplate)
+		public static HelperResult LocalizedEditor<T, TLocalizedModelLocal>(this HtmlHelper<T> helper, string name, Func<int, HelperResult> localizedTemplate, Func<T, HelperResult> standardTemplate)
             where T : ILocalizedModel<TLocalizedModelLocal>
             where TLocalizedModelLocal : ILocalizedModelLocal
         {

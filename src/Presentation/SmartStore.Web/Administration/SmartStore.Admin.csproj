@@ -661,6 +661,7 @@
     <Content Include="Views\Setting\_CreateOrUpdateCookieInfo.cshtml" />
     <Content Include="Views\Setting\CookieInfoCreatePopup.cshtml" />
     <Content Include="Views\Setting\CookieInfoEditPopup.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SeoModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

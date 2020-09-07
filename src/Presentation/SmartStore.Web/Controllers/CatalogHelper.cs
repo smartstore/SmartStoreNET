@@ -759,7 +759,7 @@ namespace SmartStore.Web.Controllers
 			var bundleItemId = productBundleItem == null ? 0 : productBundleItem.Item.Id;
 
 			var hasSelectedAttributesValues = false;
-			var hasSelectedAttributes = query.Variants.Count > 0;
+			var hasSelectedAttributes = query.Variants.Any();
 			List<ProductVariantAttributeValue> selectedAttributeValues = null;
 			var variantAttributes = isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
@@ -874,13 +874,9 @@ namespace SmartStore.Web.Controllers
                         };
 
 						if (linkedProduct != null && linkedProduct.Visibility != ProductVisibility.Hidden)
+						{
 							pvaValueModel.SeName = linkedProduct.GetSeName();
-
-                        // Explicitly selected always discards pre-selected by merchant.
-                        if (hasSelectedAttributes || query.VariantCombinationId != 0)
-                        {
-                            pvaValueModel.IsPreSelected = false;
-                        }
+						}
 
 						// Display price if allowed.
 						if (displayPrices && !isBundlePricing)
@@ -997,7 +993,16 @@ namespace SmartStore.Web.Controllers
                     }
                     else
                     {
-                        attributeXml = query.CreateSelectedAttributesXml(product.Id, bundleItemId, variantAttributes, _productAttributeParser, _localizationService, _downloadService, _catalogSettings, _httpRequest, warnings);
+                        attributeXml = query.CreateSelectedAttributesXml(
+							product.Id,
+							bundleItemId,
+							variantAttributes,
+							_productAttributeParser,
+							_localizationService,
+							_downloadService,
+							_catalogSettings,
+							_httpRequest,
+							warnings);
                     }
 
 					selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
@@ -1025,18 +1030,26 @@ namespace SmartStore.Web.Controllers
 
 					product.MergeWithCombination(model.SelectedCombination);
 
-					// Mark explicitly selected as pre-selected.
+					// Explicitly selected values always discards values pre-selected by merchant.
+					var selectedValueIds = selectedAttributeValues.Select(x => x.Id).ToArray();
+
 					foreach (var attribute in model.ProductVariantAttributes)
 					{
-						foreach (var value in attribute.Values)
-						{
-							if (selectedAttributeValues.FirstOrDefault(v => v.Id == value.Id) != null)
-								value.IsPreSelected = true;
+						var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
 
-							if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
-								value.PriceAdjustment = "";
-						}
-					}
+                        foreach (var value in attribute.Values)
+                        {
+							if (updatePreSelection)
+							{
+								value.IsPreSelected = selectedValueIds.Contains(value.Id);
+							}
+
+                            if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+                            {
+                                value.PriceAdjustment = string.Empty;
+                            }
+                        }
+                    }
 				}
 			}
 

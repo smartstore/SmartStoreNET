@@ -33,6 +33,7 @@
 * Message template attachments were not attached to the email.
 * Shipment templates showed all products of the order instead of only those of the shipment.
 * EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
+* #2076 Attributes were not pre-selected for all associated products of a grouped product.
 
 
 ## Smartstore 4.0.1

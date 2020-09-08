@@ -45,6 +45,7 @@ namespace SmartStore.Rules
             }
 
             expression.Id = entity.Id;
+            expression.RuleSetId = entity.RuleSetId;
             expression.Descriptor = descriptor;
             expression.Operator = entity.Operator;
             expression.RawValue = entity.Value;

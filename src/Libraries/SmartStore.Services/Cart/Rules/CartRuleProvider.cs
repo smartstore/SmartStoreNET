@@ -135,7 +135,8 @@ namespace SmartStore.Services.Cart.Rules
             {
                 Customer = _services.WorkContext.CurrentCustomer,
                 Store = _services.StoreContext.CurrentStore,
-                WorkContext = _services.WorkContext
+                WorkContext = _services.WorkContext,
+                GetRuleHashCode = () => group.GetHashCode()
             };
 
             var processor = GetProcessor(group);

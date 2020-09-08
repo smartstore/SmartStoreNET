@@ -131,12 +131,11 @@ namespace SmartStore.Services.Cart.Rules
                 group.AddExpressions(expressions);
             }
 
-            var context = new CartRuleContext
+            var context = new CartRuleContext(() => group.GetHashCode())
             {
                 Customer = _services.WorkContext.CurrentCustomer,
                 Store = _services.StoreContext.CurrentStore,
-                WorkContext = _services.WorkContext,
-                GetRuleHashCode = () => group.GetHashCode()
+                WorkContext = _services.WorkContext
             };
 
             var processor = GetProcessor(group);

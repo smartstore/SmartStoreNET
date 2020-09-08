@@ -18,8 +18,8 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var hashCode = context.GetRuleHashCode();
-            var lockKey = "rule:cart:cartsubtotalrule:" + hashCode.ToString();
+            var sessionKey = context.SessionKey;
+            var lockKey = "rule:cart:cartsubtotalrule:" + sessionKey.ToString();
 
             if (KeyedLock.IsLockHeld(lockKey))
             {

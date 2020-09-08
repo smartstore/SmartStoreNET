@@ -318,6 +318,10 @@
 					<b>Admin > Konfiguration > Regionale Einstellungen > Sprachen</b>.
 				</p>");
 
+			builder.AddOrUpdate("Admin.Catalog.Products.StockQuantityNotChanged",
+				"The stock quantity has not been updated because the value has changed since the page was loaded (e.g. due to a placed order). Current value is {0}.",
+				"Der Lagerbestand wurde nicht aktualisiert, weil sich der Wert seit Laden der Seite geändert hat (z.B. durch einen Auftragseingang). Aktueller Wert ist {0}.");
+
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Style",
 				"Gallery style",
 				"Galerie-Stil");
@@ -325,14 +329,14 @@
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Fullscreen",
 				"View fullscreen",
 				"Vollbild anzeigen",
-				"Determines whether the medium is clickable to display it in its original size.",
-				"Bestimmt, ob das Medium anklickbar ist, um es in seiner Originalgröße anzuzeigen:");
+				"Specifies whether the medium is clickable to display it in its original size.",
+				"Legt fest, ob das Medium anklickbar ist, um es in seiner Originalgröße anzuzeigen.");
 
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Zoomer",
 				"Magnify on mouse hover",
 				"Vergrößern beim Maus-Hover",
-				"Displays an enlarged detailed view of the media at the cursor position",
-				"Zeigt eine vergrößerte Detailansicht des Mediums an der Zeigerposition");
+				"Displays an enlarged detailed view of the media at the cursor position.",
+				"Zeigt eine vergrößerte Detailansicht des Mediums an der Zeigerposition.");
 
 			builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Padding",
 				"Paddings",

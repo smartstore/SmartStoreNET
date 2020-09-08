@@ -236,6 +236,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.StockQuantity")]
 		public int StockQuantity { get; set; }
+		public int OriginalStockQuantity { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisplayStockAvailability")]
 		public bool DisplayStockAvailability { get; set; }

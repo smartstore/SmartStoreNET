@@ -315,11 +315,30 @@ namespace SmartStore.Admin.Controllers
 		{
 			var p = product;
 			var m = model;
+			var updateStockQuantity = true;
+			var stockQuantityInDatabase = product.StockQuantity;
 
-			var prevStockQuantity = product.StockQuantity;
+			if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock && p.Id != 0)
+			{
+				if (m.OriginalStockQuantity != stockQuantityInDatabase)
+				{
+					// The stock has changed since the edit page was loaded, e.g. because an order has been placed.
+					updateStockQuantity = false;
+
+					if (m.StockQuantity != m.OriginalStockQuantity)
+					{
+						// The merchant has changed the stock quantity manually.
+						NotifyWarning(T("Admin.Catalog.Products.StockQuantityNotChanged", stockQuantityInDatabase.ToString("N0")));
+					}
+				}
+            }
+
+			if (updateStockQuantity)
+			{
+				p.StockQuantity = m.StockQuantity;
+			}
 
 			p.ManageInventoryMethodId = m.ManageInventoryMethodId;
-			p.StockQuantity = m.StockQuantity;
 			p.DisplayStockAvailability = m.DisplayStockAvailability;
 			p.DisplayStockQuantity = m.DisplayStockQuantity;
 			p.MinStockQuantity = m.MinStockQuantity;
@@ -332,22 +351,24 @@ namespace SmartStore.Admin.Controllers
             p.QuantityStep = m.QuantityStep;
             p.HideQuantityControl = m.HideQuantityControl;
 
-            // back in stock notifications
-            if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
-				p.BackorderMode == BackorderMode.NoBackorders &&
-				p.AllowBackInStockSubscriptions &&
-				p.StockQuantity > 0 &&
-				prevStockQuantity <= 0 &&
-				p.Published &&
-				!p.Deleted &&
-				!p.IsSystemProduct)
+			if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock && updateStockQuantity)
 			{
-				_backInStockSubscriptionService.SendNotificationsToSubscribers(p);
-			}
+				// Back in stock notifications.
+				if (p.BackorderMode == BackorderMode.NoBackorders &&
+					p.AllowBackInStockSubscriptions &&
+					p.StockQuantity > 0 &&
+					stockQuantityInDatabase <= 0 &&
+					p.Published &&
+					!p.Deleted &&
+					!p.IsSystemProduct)
+				{
+					_backInStockSubscriptionService.SendNotificationsToSubscribers(p);
+				}
 
-			if (p.StockQuantity != prevStockQuantity && p.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-			{
-				_productService.AdjustInventory(p, true, 0, string.Empty);
+				if (p.StockQuantity != stockQuantityInDatabase)
+				{
+					_productService.AdjustInventory(p, true, 0, string.Empty);
+				}
 			}
 		}
 
@@ -523,6 +544,7 @@ namespace SmartStore.Admin.Controllers
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(product);
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
+				model.OriginalStockQuantity = product.StockQuantity;
 
                 if (product.LimitedToStores)
 				{

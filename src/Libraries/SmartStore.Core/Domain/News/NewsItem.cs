@@ -13,6 +13,24 @@ namespace SmartStore.Core.Domain.News
     /// </summary>
 	public partial class NewsItem : BaseEntity, ISlugSupported, IStoreMappingSupported
     {
+        #region static
+
+        private static readonly List<string> _visibilityAffectingProps = new List<string>
+        {
+            nameof(NewsItem.Published),
+            nameof(NewsItem.StartDateUtc),
+            nameof(NewsItem.EndDateUtc),
+            nameof(NewsItem.LimitedToStores),
+            nameof(NewsItem.LanguageId)
+        };
+
+        public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
+        {
+            return _visibilityAffectingProps;
+        }
+
+        #endregion
+
         private ICollection<NewsComment> _newsComments;
 
         /// <summary>

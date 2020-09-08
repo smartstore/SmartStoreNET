@@ -39,9 +39,10 @@
 
 @*Import resources dialog*@
 @{Html.SmartStore().Window()
-    .Name("importxml-window")
-    .Title(T("Admin.Configuration.Languages.Import"))
-    .Content(@<text>
+      .Name("importxml-window")
+      .Title(T("Admin.Configuration.Languages.Import"))
+      .BodyHtmlAttributes(new { @class = "pt-0" })
+      .Content(@<text>
 
 	<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportXml", "Language", new { id = Model.Id })">
 

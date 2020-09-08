@@ -14,7 +14,25 @@ namespace SmartStore.Core.Domain.Blogs
 	[DataContract]
 	public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported
     {
-        private ICollection<BlogComment> _blogComments;
+		#region static
+
+		private static readonly List<string> _visibilityAffectingProps = new List<string>
+		{
+			nameof(BlogPost.IsPublished),
+			nameof(BlogPost.StartDateUtc),
+			nameof(BlogPost.EndDateUtc),
+			nameof(BlogPost.LimitedToStores),
+			nameof(BlogPost.LanguageId)
+		};
+
+		public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
+		{
+			return _visibilityAffectingProps;
+		}
+
+		#endregion
+
+		private ICollection<BlogComment> _blogComments;
 
         /// <summary>
         /// Gets or sets a value indicating whether the blog post comments are allowed 

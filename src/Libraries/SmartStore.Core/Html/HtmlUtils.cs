@@ -169,9 +169,17 @@ namespace SmartStore.Core.Html
 					{
 						case "html":
 						case "head":
-						case "body":
 						case "br":
 							continue;
+						case "body":
+							if (el.ChildElementCount > 0)
+							{
+								continue;
+							}
+							else
+                            {
+								return el.Text().Trim().IsEmpty();
+							}
 						case "p":
 						case "div":
 						case "span":

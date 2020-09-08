@@ -747,9 +747,9 @@ namespace SmartStore.Web.Framework
 				return editor; // CONTROL
 
 			var sb = PooledStringBuilder.Rent("<div class='form-row flex-nowrap multi-store-setting-group'>");
-			sb.Append("<div class='col-auto'><div class='form-control-plaintext'>");
+			sb.Append("<div class='col-auto'>");
 			sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
-			sb.Append("</div></div>");
+			sb.Append("</div>");
 			sb.Append("<div class='col multi-store-setting-control'>");
 			sb.Append(editor.ToHtmlString()); // CONTROL
 			sb.Append("</div></div>");

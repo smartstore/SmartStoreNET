@@ -6,22 +6,29 @@
 -------------------------------------------------------------- */
 
 .switch {
+    @extend .col-form-label;
+}
+
+.switcher-sm > .switch {
+    @extend .col-form-label-sm;
+}
+
+.switch {
     $h: $font-size-base * $line-height-base;
     $h-sm: $font-size-sm * $line-height-sm;
     $w: $h * 2;
     $w-sm: $h-sm * 2;
-    position: relative;
-    display: inline-block;
-    vertical-align: bottom;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-    box-sizing: content-box;
-    font-size: 0.725em;
     --switcher-w: #{$w};
     --switcher-h: #{$h};
     --switch-size: calc(var(--switcher-h) - 4px);
     --switch-bg-rgb: #{red($orange)}, #{green($orange)}, #{blue($orange)};
+    position: relative;
+    display: inline-block;
+    vertical-align: bottom;
+    margin: 0;
+    user-select: none;
+    box-sizing: content-box;
+    font-size: 0.725em !important;
     width: var(--switcher-w);
     height: var(--switcher-h);
 

@@ -713,19 +713,6 @@ legend {
         margin-bottom: 0;
     }
 
-    .adminData {
-        > .switch,
-        .multi-store-setting-control > .switch {
-            padding-top: calc(#{$input-padding-y} + #{$input-border-width});
-            padding-bottom: calc(#{$input-padding-y} + #{$input-border-width});
-        }
-
-        > .switch {
-            margin-bottom: 0;
-            line-height: $input-line-height;
-        }
-    }
-
     > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
     > tr > td:only-child:not(.adminData):not(.adminTitle) {
         flex-grow: 1;

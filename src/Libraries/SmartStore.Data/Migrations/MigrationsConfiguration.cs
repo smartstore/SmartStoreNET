@@ -300,8 +300,6 @@
 				@"<p>
 					If you have included third-party scripts in your shop that use cookies and are not integrated into Smartstore via a plugin,
 					you can provide your own information about these cookies for the Cookie Manager in the following table.
-				</p>
-				<p>
 					The added information is displayed in the Cookie Manager of the front end, corresponding to the type.
 					Cookie information provided to the Cookie Manager by active plug-ins is displayed in this table,
 					but cannot be edited. The texts of this information can be edited using the language resources
@@ -310,9 +308,7 @@
 				@"<p>
 					Wenn Sie Scripte von Drittanbietern in Ihren Shop eingebunden haben, die Cookies nutzen und die nicht über ein Plugin in Smartstore integriert sind,
 					können Sie in folgender Tabelle eigene Informationen über diese Cookies für den Cookie-Manager bereitstellen.
-				</p>
-				<p>
-					Die zugefügten Informtionen werden, dem Typ entsprechend, im Cookie-Manager des Frontends angezeigt.
+					Die zugefügten Informationen werden, dem Typ entsprechend, im Cookie-Manager des Frontends angezeigt.
 					Cookie-Informationen, die dem Cookie-Manager von aktiven Plugins zur Verfügung gestellt werden, werden in dieser Tabelle angezeigt,
 					können aber nicht bearbeitet werden. Die Texte dieser Informationen können über die Sprachresourcen bearbeitet werden
 					<b>Admin > Konfiguration > Regionale Einstellungen > Sprachen</b>.

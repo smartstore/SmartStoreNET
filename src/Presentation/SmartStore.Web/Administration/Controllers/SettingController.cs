@@ -249,16 +249,30 @@ namespace SmartStore.Admin.Controllers
         {
 			var model = blogSettings.ToModel();
 
-            return View(model);
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.MetaTitle = blogSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
+				locale.MetaDescription = blogSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
+				locale.MetaKeywords = blogSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+			});
+
+			return View(model);
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost, SaveSetting]
         public ActionResult Blog(BlogSettings blogSettings, BlogSettingsModel model)
         {
-			blogSettings = model.ToEntity(blogSettings);
+			_ = model.ToEntity(blogSettings);
+			
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+			}
 
-            return NotifyAndRedirect("Blog");
+			return NotifyAndRedirect("Blog");
         }
 
         [Permission(Permissions.Configuration.Setting.Read)]
@@ -266,7 +280,14 @@ namespace SmartStore.Admin.Controllers
 		public ActionResult Forum(ForumSettings forumSettings)
         {
 			var model = forumSettings.ToModel();
-			
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.MetaTitle = forumSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
+				locale.MetaDescription = forumSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
+				locale.MetaKeywords = forumSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+			});
+
 			return View(model);
         }
 
@@ -274,9 +295,16 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting]
         public ActionResult Forum(ForumSettings forumSettings, ForumSettingsModel model)
         {
-			forumSettings = model.ToEntity(forumSettings);
+			_ = model.ToEntity(forumSettings);
 
-            return NotifyAndRedirect("Forum");
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+			}
+
+			return NotifyAndRedirect("Forum");
         }
 
 
@@ -285,6 +313,14 @@ namespace SmartStore.Admin.Controllers
 		public ActionResult News(NewsSettings newsSettings)
         {
 			var model = newsSettings.ToModel();
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.MetaTitle = newsSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
+				locale.MetaDescription = newsSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
+				locale.MetaKeywords = newsSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+			});
+
 			return View(model);
         }
 
@@ -292,11 +328,17 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting]
 		public ActionResult News(NewsSettings newsSettings, NewsSettingsModel model)
         {
-			newsSettings = model.ToEntity(newsSettings);
+			_ = model.ToEntity(newsSettings);
 
-            return NotifyAndRedirect("News");
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+			}
+
+			return NotifyAndRedirect("News");
         }
-
 
         [Permission(Permissions.Configuration.Setting.Read)]
         public ActionResult Shipping()
@@ -408,7 +450,6 @@ namespace SmartStore.Admin.Controllers
 
             return NotifyAndRedirect("Shipping");
         }
-
 
         [Permission(Permissions.Configuration.Setting.Read)]
         public ActionResult Tax()

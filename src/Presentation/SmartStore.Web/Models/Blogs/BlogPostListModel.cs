@@ -18,5 +18,8 @@ namespace SmartStore.Web.Models.Blogs
         public bool DisableCommentCount { get; set; }
         public BlogPagingFilteringModel PagingFilteringContext { get; set; }
         public IList<BlogPostModel> BlogPosts { get; set; }
+        public string MetaTitle { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaKeywords { get; set; }
     }
 }

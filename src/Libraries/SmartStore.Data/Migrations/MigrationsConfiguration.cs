@@ -321,6 +321,22 @@
 			builder.AddOrUpdate("Admin.Catalog.Products.StockQuantityNotChanged",
 				"The stock quantity has not been updated because the value has changed since the page was loaded (e.g. due to a placed order). Current value is {0}.",
 				"Der Lagerbestand wurde nicht aktualisiert, weil sich der Wert seit Laden der Seite geändert hat (z.B. durch einen Auftragseingang). Aktueller Wert ist {0}.");
+
+			builder.AddOrUpdate("Admin.Configuration.SeoTab.Title",
+				"SEO settings",
+				"SEO-Einstellungen");
+
+			builder.AddOrUpdate("Admin.Configuration.Seo.MetaTitle",
+				"Meta title",
+				"Meta Titel");
+
+			builder.AddOrUpdate("Admin.Configuration.Seo.MetaDescription",
+				"Meta description",
+				"Meta Beschreibung");
+
+			builder.AddOrUpdate("Admin.Configuration.Seo.MetaKeywords",
+				"Meta keywords",
+				"Meta Keywords");
 		}
 	}
 }

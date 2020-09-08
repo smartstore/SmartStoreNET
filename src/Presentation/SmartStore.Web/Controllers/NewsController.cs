@@ -220,7 +220,14 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
-			Services.DisplayControl.AnnounceRange(newsItems);
+            model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle);
+            model.MetaDescription = _newsSettings.GetLocalizedSetting(x => x.MetaDescription);
+            model.MetaKeywords = _newsSettings.GetLocalizedSetting(x => x.MetaKeywords);
+
+            if (!model.MetaTitle.HasValue())
+                model.MetaTitle = T("PageTitle.NewsArchive").Text;
+
+            Services.DisplayControl.AnnounceRange(newsItems);
 
             return View(model);
         }

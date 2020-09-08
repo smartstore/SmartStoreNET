@@ -3,7 +3,9 @@
 @using SmartStore.Web.Framework.UI;
 @{
     Layout = "_Layout";
-    Html.AddTitleParts(T("PageTitle.NewsArchive").Text);
+    Html.AddTitleParts(Model.MetaTitle);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 
 <div class="page news-list-page">
@@ -14,7 +16,7 @@
             </div>
         </div>
         <div class="col col-auto">
-            <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+            <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">*
                 <i class="fa fa-rss"></i>
                 <span>@T("News.RSS")</span>
             </a>

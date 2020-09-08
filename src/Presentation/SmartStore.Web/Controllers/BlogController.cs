@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
@@ -230,6 +231,28 @@ namespace SmartStore.Web.Controllers
 
             model.PagingFilteringContext.LoadPagedList(blogPosts);
 
+            // Prepare SEO model
+            var parsedMonth = model.PagingFilteringContext.GetParsedMonth();
+            var tag = model.PagingFilteringContext.Tag;
+
+            if (parsedMonth == null && tag == null)
+            {
+                model.MetaTitle = _blogSettings.GetLocalizedSetting(x => x.MetaTitle);
+                model.MetaDescription = _blogSettings.GetLocalizedSetting(x => x.MetaDescription);
+                model.MetaKeywords = _blogSettings.GetLocalizedSetting(x => x.MetaKeywords);
+            }
+            else {
+                model.MetaTitle = parsedMonth != null ? 
+                    T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+                    T("PageTitle.Blog.Tag").Text.FormatWith(tag);
+
+                model.MetaDescription = parsedMonth != null ?
+                    T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+                    T("Metadesc.Blog.Tag").Text.FormatWith(tag);
+
+                model.MetaKeywords = parsedMonth != null ? parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year : tag;
+            }
+
             model.BlogPosts = blogPosts
                 .Select(x =>
                 {
@@ -264,11 +287,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!postsWithTag.IsEmpty())
             {
-                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, postsWithTag, 0, maxPostAmount ?? 100, false, maxAge);
+                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, postsWithTag, 0, maxPostAmount ?? 100, _services.WorkContext.CurrentCustomer.IsAdmin(), maxAge);
             }
             else
             {
-                blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, maxPostAmount ?? 100, false, maxAge);
+                blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, maxPostAmount ?? 100, _services.WorkContext.CurrentCustomer.IsAdmin(), maxAge);
             }
 
             model.BlogPosts = blogPosts
@@ -293,6 +316,7 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
+
             return View("List", model);
         }
 

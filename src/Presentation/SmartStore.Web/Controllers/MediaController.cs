@@ -165,7 +165,7 @@ namespace SmartStore.Web.Controllers
 				// This is most likely a request for a default placeholder image
 				pathData = new MediaPathData(path);
 			}
-			else if (!_mediaHelper.TokenizePath(path, out pathData))
+			else if (!_mediaHelper.TokenizePath(path, false, out pathData))
 			{
 				// Missing or malformed Uri: get file metadata from DB by id, but only when current user has media manage rights
 				if (!_permissionService.Authorize(Permissions.Media.Update))

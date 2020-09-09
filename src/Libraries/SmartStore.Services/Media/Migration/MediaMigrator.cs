@@ -357,7 +357,7 @@ namespace SmartStore.Services.Media.Migration
                         }
                         else
                         {
-                            name = fixedName = file.Name.Truncate(292).ToValidFileName();
+                            name = fixedName = MediaHelper.NormalizeFileName(file.Name.Truncate(292));
                             if (name == prevName)
                             {
                                 // Make file name unique
@@ -426,7 +426,7 @@ namespace SmartStore.Services.Media.Migration
                         }
                         else
                         {
-                            name = file.Name.Truncate(292).ToValidFileName();
+                            name = MediaHelper.NormalizeFileName(file.Name.Truncate(292));
                         }
 
                         file.Name = name + "." + file.Extension;

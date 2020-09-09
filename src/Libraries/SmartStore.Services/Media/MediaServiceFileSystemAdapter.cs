@@ -229,7 +229,7 @@ namespace SmartStore.Services.Media
 
         public IFolder GetFolderForFile(string path)
         {
-            if (!_mediaHelper.TokenizePath(path, out var pathData))
+            if (!_mediaHelper.TokenizePath(path, false, out var pathData))
             {
                 throw _exceptionFactory.FolderNotFound(Fix(Path.GetDirectoryName(path)));
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
@@ -12,6 +13,23 @@ namespace SmartStore.Services.Media
 {
     public partial class MediaHelper
 	{
+		#region Static
+
+		private readonly static char[] _invalidFileNameChars = Path.GetInvalidFileNameChars().Concat(new[] { '&' }).ToArray();
+		private readonly static char[] _invalidFolderNameChars = Path.GetInvalidPathChars().Concat(new[] { '&', '/', '\\' }).ToArray();
+
+		public static string NormalizeFileName(string fileName)
+        {
+			return string.Join("-", fileName.ToSafe().Split(_invalidFileNameChars));
+		}
+
+		public static string NormalizeFolderName(string folderName)
+		{
+			return string.Join("-", folderName.ToSafe().Split(_invalidFolderNameChars));
+		}
+
+		#endregion
+
 		private readonly IFolderService _folderService;
 
 		public MediaHelper(IFolderService folderService)
@@ -19,7 +37,7 @@ namespace SmartStore.Services.Media
 			_folderService = folderService;
 		}
 
-		public bool TokenizePath(string path, out MediaPathData data)
+		public bool TokenizePath(string path, bool normalizeFileName, out MediaPathData data)
 		{
 			data = null;
 
@@ -34,7 +52,7 @@ namespace SmartStore.Services.Media
 				var node = _folderService.GetNodeByPath(dir);
 				if (node != null)
 				{
-					data = new MediaPathData(node, path.Substring(dir.Length + 1));
+					data = new MediaPathData(node, path.Substring(dir.Length + 1), normalizeFileName);
 					return true;
 				}
 			}

@@ -185,7 +185,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_helper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, false, out var tokens))
             {
                 return _fileRepo.Table.Any(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
             }
@@ -197,7 +197,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_helper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, false, out var tokens))
             {
                 var table = _searcher.ApplyLoadFlags(_fileRepo.Table, flags);
 
@@ -265,7 +265,7 @@ namespace SmartStore.Services.Media
 
             newPath = null;
 
-            if (!_helper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, false, out var pathData))
             {
                 return false;
             }
@@ -476,7 +476,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (!_helper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, true, out var pathData))
             {
                 throw new ArgumentException(T("Admin.Media.Exception.InvalidPathExample", path), nameof(path));
             }
@@ -536,7 +536,7 @@ namespace SmartStore.Services.Media
                 file.IsTransient = false;
             }
 
-            var name = pathData.FileName.ToValidFileName();
+            var name = pathData.FileName;
             if (name != pathData.FileName)
             {
                 pathData.FileName = name;
@@ -786,7 +786,7 @@ namespace SmartStore.Services.Media
 
                 if (nameChanged)
                 {
-                    var title = destPathData.FileTitle.ToValidFileName();
+                    var title = destPathData.FileTitle;
                     var ext = destPathData.Extension.ToLower();
 
                     file.Name = title + "." + ext;
@@ -984,7 +984,7 @@ namespace SmartStore.Services.Media
 
         private MediaPathData CreateDestinationPathData(MediaFile file, string destinationFileName)
         {
-            if (!_helper.TokenizePath(destinationFileName, out var pathData))
+            if (!_helper.TokenizePath(destinationFileName, true, out var pathData))
             {
                 // Passed path is NOT a path, but a file name
 

@@ -142,7 +142,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(download, nameof(download));
 
-            var path = _mediaService.CombinePaths(SystemAlbumProvider.Downloads, fileName.ToValidFileName());
+            var path = _mediaService.CombinePaths(SystemAlbumProvider.Downloads, fileName);
             var file = _mediaService.SaveFile(path, stream, dupeFileHandling: DuplicateFileHandling.Rename);
             file.File.Hidden = true;
             download.MediaFile = file.File;

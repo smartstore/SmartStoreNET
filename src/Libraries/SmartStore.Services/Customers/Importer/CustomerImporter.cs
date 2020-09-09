@@ -629,7 +629,7 @@ namespace SmartStore.Services.Customers.Importer
                             if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
                             {
                                 // Don't manage avatar files. Just overwrite existing file.
-                                var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName.ToValidFileName());
+                                var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName);
 
                                 var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Overwrite);
                                 if ((newFile?.Id ?? 0) != 0)

@@ -12,20 +12,24 @@ namespace SmartStore.Services.Media
 		private string _ext;
 		private string _mime;
 
-		public MediaPathData(TreeNode<MediaFolderNode> node, string fileName)
+		public MediaPathData(TreeNode<MediaFolderNode> node, string fileName, bool normalizeFileName = false)
 		{
 			Guard.NotNull(node, nameof(node));
 			Guard.NotEmpty(fileName, nameof(fileName));
 
 			Node = node;
-			_name = fileName;
+			_name = normalizeFileName 
+				? MediaHelper.NormalizeFileName(fileName) 
+				: fileName;
 		}
 
-		public MediaPathData(string path)
+		public MediaPathData(string path, bool normalizeFileName = false)
 		{
 			Guard.NotEmpty(path, nameof(path));
 
-			_name = Path.GetFileName(path);
+			_name = normalizeFileName 
+				? MediaHelper.NormalizeFileName(Path.GetFileName(path)) 
+				: Path.GetFileName(path);
 		}
 
 		public MediaPathData(MediaPathData pathData)

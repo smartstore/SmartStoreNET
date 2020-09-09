@@ -47,7 +47,7 @@ namespace SmartStore.Services.Media
             {
                 for (int i = 0; i < folderNames.Length; i++)
                 {
-                    var folderName = folderNames[i].ToValidPath();
+                    var folderName = MediaHelper.NormalizeFolderName(folderNames[i]);
                     path += (i > 0 ? sep : string.Empty) + folderName;
 
                     if (!flag)

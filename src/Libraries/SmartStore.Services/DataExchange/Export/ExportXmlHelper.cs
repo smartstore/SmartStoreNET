@@ -295,6 +295,8 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("ColorHexValue", entity.ColorHexValue);
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("IsDefault", entity.IsDefault.ToString());
+			_writer.Write("MinDays", entity.MinDays.HasValue ? entity.MinDays.Value.ToString() : "");
+			_writer.Write("MaxDays", entity.MaxDays.HasValue ? entity.MaxDays.Value.ToString() : "");
 
 			WriteLocalized(deliveryTime);
 

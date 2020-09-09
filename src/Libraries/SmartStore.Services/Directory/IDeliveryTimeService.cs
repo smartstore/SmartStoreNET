@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Directory
 {
@@ -65,5 +66,19 @@ namespace SmartStore.Services.Directory
         /// <param name="product">The product</param>
         /// <returns>Delivery time</returns>
         DeliveryTime GetDefaultDeliveryTime();
+
+        /// <summary>
+        /// Creates the formatted representation of a delivery time.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <param name="language">Language.</param>
+        /// <param name="dateFormat">Date format.</param>
+        /// <param name="delimiter">Delimiter if the delivery time representation is a concatenation of label and date.</param>
+        /// <returns>Formatted representation of a delivery time.</returns>
+        string FormatDeliveryTime(
+            DeliveryTime deliveryTime,
+            Language language,
+            string dateFormat = "M",
+            string delimiter = " ");
     }
 }

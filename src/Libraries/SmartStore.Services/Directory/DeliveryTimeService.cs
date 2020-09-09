@@ -1,12 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Directory
 {
@@ -15,17 +20,20 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
-		private readonly CatalogSettings _catalogSettings;
+        private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly CatalogSettings _catalogSettings;
 
         public DeliveryTimeService(
             IRepository<DeliveryTime> deliveryTimeRepository,
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
-			CatalogSettings catalogSettings)
+            IDateTimeHelper dateTimeHelper,
+            CatalogSettings catalogSettings)
         {
             _deliveryTimeRepository = deliveryTimeRepository;
             _productRepository = productRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
+            _dateTimeHelper = dateTimeHelper;
 			_catalogSettings = catalogSettings;
 		}
 
@@ -152,6 +160,93 @@ namespace SmartStore.Services.Directory
         public virtual DeliveryTime GetDefaultDeliveryTime()
         {
             return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();
+        }
+
+        public virtual string FormatDeliveryTime(
+            DeliveryTime deliveryTime,
+            Language language,
+            string dateFormat = "M",
+            string delimiter = " ")
+        {
+            Guard.NotNull(language, nameof(language));
+            Guard.NotEmpty(dateFormat, nameof(dateFormat));
+            Guard.NotNull(delimiter, nameof(delimiter));
+
+            if (deliveryTime == null)
+            {
+                return null;
+            }
+
+            string result = null;
+            CultureInfo ci;
+
+            try
+            {
+                ci = new CultureInfo(language.LanguageCulture);
+            }
+            catch
+            {
+                ci = CultureInfo.CurrentCulture;
+            }
+
+
+            switch (_catalogSettings.DeliveryTimesPresentation)
+            {
+                case DeliveryTimesPresentation.LabelAndDate:
+                    result = deliveryTime.GetLocalized(x => x.Name, language).Value.Grow(GetFormattedDate(), delimiter);
+                    break;
+                case DeliveryTimesPresentation.LabelOnly:
+                    result = deliveryTime.GetLocalized(x => x.Name, language);
+                    break;
+                case DeliveryTimesPresentation.DateOnly:
+                default:
+                    result = GetFormattedDate();
+                    break;
+            }
+
+            // Fallback.
+            if (string.IsNullOrEmpty(result))
+            {
+                result = deliveryTime.GetLocalized(x => x.Name, language);
+            }
+
+            return result;
+
+            string GetFormattedDate()
+            {
+                var minDays = deliveryTime.MinDays ?? 0;
+                var maxDays = deliveryTime.MaxDays ?? 0;
+
+                var dtMin = minDays > 0
+                    ? _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow.AddDays(minDays))
+                    : (DateTime?)null;
+
+                var dtMax = maxDays > 0
+                    ? _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow.AddDays(maxDays))
+                    : (DateTime?)null;
+
+                if (dtMin.HasValue && dtMax.HasValue)
+                {
+                    if (minDays == maxDays)
+                    {
+                        return T("DeliveryTimes.Date.DeliveredOn", dtMin.Value.ToString(dateFormat, ci));
+                    }
+                    else if (minDays < maxDays)
+                    {
+                        return T("DeliveryTimes.Date.Between", dtMin.Value.ToString(dateFormat), dtMax.Value.ToString(dateFormat));
+                    }
+                }
+                else if (dtMin.HasValue)
+                {
+                    return T("DeliveryTimes.Date.EarliestOn", dtMin.Value.ToString(dateFormat, ci));
+                }
+                else if (dtMax.HasValue)
+                {
+                    return T("DeliveryTimes.Date.LatestOn", dtMax.Value.ToString(dateFormat, ci));
+                }
+
+                return null;
+            }
         }
     }
 }

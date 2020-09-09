@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -82,6 +83,7 @@ namespace SmartStore.Core.Domain.Catalog
             AllowDifferingEmailAddressForEmailAFriend = false;
 			AllowAnonymousUsersToEmailAFriend = false;
 			AllowAnonymousUsersToReviewProduct = false;
+            DeliveryTimesPresentation = DeliveryTimesPresentation.DateOnly;
         }
 
         /// <summary>
@@ -118,6 +120,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether to display the delivery time of a product
         /// </summary>
         public bool ShowDeliveryTimesInProductDetail { get; set; }
+
+        /// <summary>
+        /// Specifies how to display delivery times.
+        /// </summary>
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to display the base price of a product

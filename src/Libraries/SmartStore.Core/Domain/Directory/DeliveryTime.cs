@@ -1,6 +1,5 @@
-using System;
-using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Directory
 {
@@ -39,5 +38,39 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
 		[DataMember]
         public bool? IsDefault { get; set; }
+
+        /// <summary>
+        /// Specifies the earliest time of delivery in days.
+        /// </summary>
+        [DataMember]
+        public int? MinDays { get; set; }
+
+        /// <summary>
+        /// Specifies the latest time of delivery in days.
+        /// </summary>
+        [DataMember]
+        public int? MaxDays { get; set; }
+    }
+
+
+    /// <summary>
+    /// Represents how to present delivery times.
+    /// </summary>
+    public enum DeliveryTimesPresentation
+    {
+        /// <summary>
+        /// Display date only if possible.
+        /// </summary>
+        DateOnly = 0,
+
+        /// <summary>
+        /// Display label only.
+        /// </summary>
+        LabelOnly = 5,
+
+        /// <summary>
+        /// Display label and date.
+        /// </summary>
+        LabelAndDate = 10
     }
 }

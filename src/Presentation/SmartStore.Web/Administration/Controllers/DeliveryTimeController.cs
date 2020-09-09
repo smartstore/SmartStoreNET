@@ -29,8 +29,7 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
 
-        [NonAction]
-        public void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
+        private void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
         {
             foreach (var localized in model.Locales)
             {

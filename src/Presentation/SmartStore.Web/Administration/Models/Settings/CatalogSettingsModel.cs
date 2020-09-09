@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -116,6 +117,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductCondition")]
         public bool ShowProductCondition { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimesPresentation")]
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
 
         #endregion
 

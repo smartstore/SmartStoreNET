@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Mvc;
 using FluentValidation;
@@ -22,6 +21,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+        public string FormattedDate { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayLocale")]
         [AllowHtml]

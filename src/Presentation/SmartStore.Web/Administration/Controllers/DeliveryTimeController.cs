@@ -52,12 +52,18 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Configuration.DeliveryTime.Read)]
-        public ActionResult List(GridCommand command)
+        public ActionResult List(GridCommand _)
         {
             var gridModel = new GridModel<DeliveryTimeModel>();
 
             var deliveryTimeModels = _deliveryTimeService.GetAllDeliveryTimes()
-                .Select(x => x.ToModel())
+                .Select(x =>
+                {
+                    var model = x.ToModel();
+                    model.FormattedDate = _deliveryTimeService.GetFormattedDate(x, Services.WorkContext.WorkingLanguage);
+
+                    return model;
+                })
                 .ToList();
 
             gridModel.Data = deliveryTimeModels;

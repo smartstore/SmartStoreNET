@@ -59,18 +59,23 @@ namespace SmartStore.Core.Domain.Directory
     public enum DeliveryTimesPresentation
     {
         /// <summary>
+        /// Do not display.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Display date only if possible.
         /// </summary>
-        DateOnly = 0,
+        DateOnly = 5,
 
         /// <summary>
         /// Display label only.
         /// </summary>
-        LabelOnly = 5,
+        LabelOnly = 10,
 
         /// <summary>
         /// Display label and date.
         /// </summary>
-        LabelAndDate = 10
+        LabelAndDate = 15
     }
 }

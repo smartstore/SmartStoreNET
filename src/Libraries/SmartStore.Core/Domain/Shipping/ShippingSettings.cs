@@ -62,5 +62,14 @@ namespace SmartStore.Core.Domain.Shipping
         /// Gets or sets a value indicating whether to charge only the highest shipping surcharge of products
         /// </summary>
         public bool ChargeOnlyHighestProductShippingSurcharge { get; set; }
+
+        #region Delivery Time
+
+        /// <summary>
+        /// Specifies the format string for delivery time dates.
+        /// </summary>
+        public string DeliveryTimesDateFormat { get; set; }
+
+        #endregion
     }
 }

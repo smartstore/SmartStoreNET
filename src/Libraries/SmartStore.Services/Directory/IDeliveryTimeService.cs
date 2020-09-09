@@ -68,17 +68,11 @@ namespace SmartStore.Services.Directory
         DeliveryTime GetDefaultDeliveryTime();
 
         /// <summary>
-        /// Creates the formatted representation of a delivery time.
+        /// Gets the formatted date of a delivery time.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
         /// <param name="language">Language.</param>
-        /// <param name="dateFormat">Date format.</param>
-        /// <param name="delimiter">Delimiter if the delivery time representation is a concatenation of label and date.</param>
-        /// <returns>Formatted representation of a delivery time.</returns>
-        string FormatDeliveryTime(
-            DeliveryTime deliveryTime,
-            Language language,
-            string dateFormat = "M",
-            string delimiter = " ");
+        /// <returns>Formatted date.</returns>
+        string GetFormattedDate(DeliveryTime deliveryTime, Language language);
     }
 }

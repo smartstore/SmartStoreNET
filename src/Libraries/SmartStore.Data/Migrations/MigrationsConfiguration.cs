@@ -357,22 +357,23 @@
 				"Legt die Meta Keywords für die Startseite fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.Fields.MinDays",
-				"Earliest time (in days)",
-				"Frühester Zeitpunkt (in Tagen)",
-				"Specifies the earliest time of delivery in days.",
+				"Delivery not before (in days)",
+				"Lieferung frühestens (in Tagen)",
+				"Specifies the minimum number of days for the delivery.",
 				"Legt den frühesten Zeitpunkt der Lieferung in Tagen fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.Fields.MaxDays",
-				"Latest time (in days)",
-				"Spätester Zeitpunkt (in Tagen)",
-				"Specifies the latest time of delivery in days.",
+				"Delivery not later than (in days)",
+				"Lieferung spätestens (in Tagen)",
+				"Specifies the maximum number of days for the delivery.",
 				"Legt den spätesten Zeitpunkt der Lieferung in Tagen fest.");
 
-			builder.AddOrUpdate("DeliveryTimes.Date.EarliestOn", "Earliest on {0}.", "Frühestens am {0}.");
-			builder.AddOrUpdate("DeliveryTimes.Date.LatestOn", "At the latest on {0}.", "Spätestens am {0}.");
+			builder.AddOrUpdate("DeliveryTimes.Date.NotBefore", "Not before {0}.", "Frühestens am {0}.");
+			builder.AddOrUpdate("DeliveryTimes.Date.NotLaterThan", "Not later than {0}.", "Spätestens am {0}.");
 			builder.AddOrUpdate("DeliveryTimes.Date.Between", "Between {0} and {1}.", "Zwischen {0} und {1}.");
-			builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "Will be delivered on {0}.", "Wird am {0} geliefert.");
+			builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "On {0}.", "Am {0}.");
 
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "None", "Keine");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly", "Date only (if possible)", "Nur Datum (sofern möglich)");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelOnly", "Label only", "Nur Label");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelAndDate", "Label and date", "Label und Datum");

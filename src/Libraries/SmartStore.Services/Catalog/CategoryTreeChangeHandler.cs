@@ -39,7 +39,6 @@ namespace SmartStore.Services.Catalog
 	public class CategoryTreeChangeHook : IDbSaveHook<SmartObjectContext>, IConsumer
 	{
 		private readonly ICommonServices _services;
-		private readonly ICategoryService _categoryService;
 
 		private readonly bool[] _handledReasons = new bool[(int)CategoryTreeChangeReason.Hierarchy + 1];
 		private bool _invalidated;
@@ -63,10 +62,9 @@ namespace SmartStore.Services.Catalog
 			typeof(AclRecord)
 		};
 
-		public CategoryTreeChangeHook(ICommonServices services, ICategoryService categoryService)
+		public CategoryTreeChangeHook(ICommonServices services)
 		{
 			_services = services;
-			_categoryService = categoryService;
 		}
 
 		public void OnBeforeSave(IHookedEntity entry)

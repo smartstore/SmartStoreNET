@@ -1271,6 +1271,28 @@ namespace SmartStore.Admin.Controllers
 			// Fix Disallows joined with comma in MiniMapper (we need NewLine).
 			model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
+			model.SeoSettings.DefaultSeoModel.MetaTitle = seoSettings.DefaultTitle;
+			model.SeoSettings.DefaultSeoModel.MetaDescription = seoSettings.DefaultMetaDescription;
+			model.SeoSettings.DefaultSeoModel.MetaKeywords = seoSettings.DefaultMetaKeywords;
+
+			AddLocales(_languageService, model.SeoSettings.DefaultSeoModel.Locales, (locale, languageId) =>
+			{
+				locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.DefaultTitle, languageId, false, false);
+				locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription, languageId, false, false);
+				locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords, languageId, false, false);
+			});
+
+			model.SeoSettings.HomepageSeoModel.MetaTitle = seoSettings.HomepageMetaTitle;
+			model.SeoSettings.HomepageSeoModel.MetaDescription = seoSettings.HomepageMetaDescription;
+			model.SeoSettings.HomepageSeoModel.MetaKeywords = seoSettings.HomepageMetaKeywords;
+
+			AddLocales(_languageService, model.SeoSettings.HomepageSeoModel.Locales, (locale, languageId) =>
+			{
+				locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.HomepageMetaTitle, languageId, false, false);
+				locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.HomepageMetaDescription, languageId, false, false);
+				locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.HomepageMetaKeywords, languageId, false, false);
+			});
+
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, Services.Settings, false);
 
 			// Security.
@@ -1374,6 +1396,28 @@ namespace SmartStore.Admin.Controllers
 			var seoSettings = Services.Settings.LoadSetting<SeoSettings>(storeScope);
 			var resetUserSeoCharacterTable = (seoSettings.SeoNameCharConversion != model.SeoSettings.SeoNameCharConversion);
 			MiniMapper.Map(model.SeoSettings, seoSettings);
+
+			seoSettings.DefaultTitle = model.SeoSettings.DefaultSeoModel.MetaTitle;
+			seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultSeoModel.MetaDescription;
+			seoSettings.DefaultMetaKeywords = model.SeoSettings.DefaultSeoModel.MetaKeywords;
+
+			foreach (var localized in model.SeoSettings.DefaultSeoModel.Locales)
+			{
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultTitle, localized.MetaTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaKeywords, localized.LanguageId);
+			}
+
+			seoSettings.HomepageMetaTitle = model.SeoSettings.HomepageSeoModel.MetaTitle;
+			seoSettings.HomepageMetaDescription = model.SeoSettings.HomepageSeoModel.MetaDescription;
+			seoSettings.HomepageMetaKeywords = model.SeoSettings.HomepageSeoModel.MetaKeywords;
+
+			foreach (var localized in model.SeoSettings.HomepageSeoModel.Locales)
+			{
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaTitle, localized.MetaTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaDescription, localized.MetaDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaKeywords, localized.MetaKeywords, localized.LanguageId);
+			}
 
 			// Security.
 			var securitySettings = Services.Settings.LoadSetting<SecuritySettings>(storeScope);

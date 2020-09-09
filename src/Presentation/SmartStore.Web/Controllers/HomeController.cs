@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -21,23 +22,30 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
 		private readonly Lazy<PrivacySettings> _privacySettings;
+		private readonly Lazy<SeoSettings> _seoSettings;
 
 		public HomeController(
 			Lazy<ITopicService> topicService,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-			Lazy<PrivacySettings> privacySettings)
+			Lazy<PrivacySettings> privacySettings,
+			Lazy<SeoSettings> seoSettings)
         {
 			_topicService = topicService;
 			_captchaSettings = captchaSettings;
 			_commonSettings = commonSettings;
 			_privacySettings = privacySettings;
+			_seoSettings = seoSettings;
 		}
 		
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
-            return View();
+			ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle);
+			ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription);
+			ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords);
+
+			return View();
         }
 
 		public ActionResult StoreClosed()

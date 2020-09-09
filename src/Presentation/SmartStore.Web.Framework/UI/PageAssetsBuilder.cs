@@ -12,6 +12,7 @@ using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
@@ -146,13 +147,13 @@ namespace SmartStore.Web.Framework.UI
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.DefaultTitle, specificTitle);
+                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value, specificTitle);
                             }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.DefaultTitle);
+                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value);
                             }
                             break;
                     }
@@ -166,7 +167,7 @@ namespace SmartStore.Web.Framework.UI
             else
             {
                 // Store name only
-                result = _seoSettings.DefaultTitle;
+                result = _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value;
             }
 
             return result;
@@ -180,7 +181,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaDescription()
         {
-            var result = _seoSettings.DefaultMetaDescription;
+            var result = _seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription).Value;
 
             if (_metaDescriptionParts == null)
                 return result;
@@ -202,7 +203,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaKeywords()
         {
-            var result = _seoSettings.DefaultMetaKeywords;
+            var result = _seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords).Value;
 
             if (_metaKeywordParts == null)
                 return result;

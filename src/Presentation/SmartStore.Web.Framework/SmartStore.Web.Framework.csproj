@@ -250,6 +250,7 @@
     <Compile Include="Security\SameSiteBrowserDetector.cs" />
     <Compile Include="Security\SanitizeHtmlAttribute.cs" />
     <Compile Include="Seo\GenericPath.cs" />
+    <Compile Include="Seo\SeoModel.cs" />
     <Compile Include="Seo\ISeoModel.cs" />
     <Compile Include="Settings\SaveSettingAttribute.cs" />
     <Compile Include="Settings\LoadSettingAttribute.cs" />

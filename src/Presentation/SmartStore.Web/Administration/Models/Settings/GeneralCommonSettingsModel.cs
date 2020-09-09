@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Seo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
@@ -56,6 +57,12 @@ namespace SmartStore.Admin.Models.Settings
 
 		public partial class SeoSettingsModel
         {
+            public SeoSettingsModel ()
+            {
+                DefaultSeoModel = new SeoModel();
+                HomepageSeoModel = new SeoModel();
+            }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator")]
             [AllowHtml]
             public string PageTitleSeparator { get; set; }
@@ -63,17 +70,15 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment")]
             public PageTitleSeoAdjustment PageTitleSeoAdjustment { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultTitle")]
-            [AllowHtml]
-            public string DefaultTitle { get; set; }
+            [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultTitle")]
+            [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription")]
+            [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords")]
+            public SeoModel DefaultSeoModel { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords")]
-            [AllowHtml]
-            public string DefaultMetaKeywords { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription")]
-            [AllowHtml]
-            public string DefaultMetaDescription { get; set; }
+            [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageTitle")]
+            [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription")]
+            [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords")]
+            public SeoModel HomepageSeoModel { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent")]
 			public string MetaRobotsContent { get; set; }
@@ -124,7 +129,7 @@ namespace SmartStore.Admin.Models.Settings
             public bool XmlSitemapIncludesTopics { get; set; }
         }
 
-		public partial class SecuritySettingsModel
+        public partial class SecuritySettingsModel
         {
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.EncryptionKey")]
             [AllowHtml]

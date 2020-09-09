@@ -2,12 +2,27 @@
 
 @using SmartStore.Web.Framework.Seo;
 
+@{ 
+    var random = CommonHelper.GenerateRandomDigitCode(5);
+
+    var metaTitleResKey = GetMetadata<string>("MetaTitleResKey");
+    var metaDescriptionResKey = GetMetadata<string>("MetaDescriptionResKey");
+    var metaKeywordsResKey = GetMetadata<string>("MetaKeywordsResKey");
+}
+
 @{
-    @(Html.LocalizedEditor<ISeoModel, SeoModelLocal>("seo-model-localized",
+    @(Html.LocalizedEditor<ISeoModel, SeoModelLocal>("seo-model-localized" + random,
 		@<table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaTitle, metaTitleResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                    }
                 </td>
                 <td class="adminData">
 					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
@@ -19,16 +34,30 @@
             </tr>
 			<tr>
 				<td class="adminTitle">
-				 	@Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaDescription, metaDescriptionResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+                    }
 				</td>
 				<td class="adminData">
 				 	@Html.EditorFor(model => Model.Locales[item].MetaDescription)
 				 	@Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
 				</td>
 			</tr>
-            <tr class="description-container">
+            <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords, metaKeywordsResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                    }
                 </td>
                 <td class="adminData wide">
                     @Html.EditorFor(model => model.Locales[item].MetaKeywords)
@@ -40,7 +69,14 @@
 		@<table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.MetaTitle)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.MetaTitle, metaTitleResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.MetaTitle)
+                    }
                 </td>
                 <td class="adminData">
                     @Html.EditorFor(model => model.MetaTitle)
@@ -49,16 +85,30 @@
             </tr>
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.MetaDescription)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.MetaDescription, metaDescriptionResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.MetaDescription)
+                    }
                 </td>
                 <td class="adminData">
                     @Html.EditorFor(model => model.MetaDescription)
                     @Html.ValidationMessageFor(model => model.MetaDescription)
                 </td>
             </tr>
-            <tr class="description-container">
+            <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.MetaKeywords)
+                    @if (metaTitleResKey.HasValue())
+                    {
+                        @Html.SmartLabelFor(model => model.MetaKeywords, metaKeywordsResKey)
+                    }
+                    else
+                    {
+                        @Html.SmartLabelFor(model => model.MetaKeywords)
+                    }
                 </td>
                 <td class="adminData wide">
                     @Html.EditorFor(x => x.MetaKeywords)

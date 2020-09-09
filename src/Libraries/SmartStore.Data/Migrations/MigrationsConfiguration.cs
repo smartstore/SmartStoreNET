@@ -333,6 +333,28 @@
 			builder.AddOrUpdate("Admin.Configuration.Seo.MetaKeywords",
 				"Meta keywords",
 				"Meta Keywords");
+
+			builder.AddOrUpdate("Admin.System.MetaInfos",
+				"Meta tags",
+				"Meta-Elemente");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageTitle",
+				"Meta title (Homepage)",
+				"Meta Titel (Startseite)",
+				"Defines the meta title for the homepage.",
+				"Legt den Meta Titel für die Startseite fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription",
+				"Meta description (Homepage)",
+				"Meta Beschreibung (Startseite)",
+				"Defines the meta description for the homepage.",
+				"Legt die Meta Beschreibung für die Startseite fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords",
+				"Meta keywords (Homepage)",
+				"Meta Keywords (Startseite)",
+				"Defines the meta keywords for the homepage.",
+				"Legt die Meta Keywords für die Startseite fest.");
 		}
 	}
 }

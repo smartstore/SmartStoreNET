@@ -85,51 +85,6 @@
 @helper TabSEOSettings()
 {
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeparator)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.PageTitleSeparator)
-                @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeparator)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeoAdjustment)
-            </td>
-            <td class="adminData">
-			    @Html.EnumSettingEditorFor(model => model.SeoSettings.PageTitleSeoAdjustment)
-                @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeoAdjustment)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.DefaultTitle)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.DefaultTitle)
-                @Html.ValidationMessageFor(model => model.SeoSettings.DefaultTitle)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.DefaultMetaKeywords)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.DefaultMetaKeywords)
-                @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaKeywords)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.DefaultMetaDescription)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.DefaultMetaDescription)
-                @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaDescription)
-            </td>
-        </tr>        
 	    <tr>
 		    <td class="adminTitle">
 			    @Html.SmartLabelFor(model => model.SeoSettings.MetaRobotsContent)
@@ -174,6 +129,41 @@
             <td class="adminData">
                 @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { style = "height:250px" })
                 @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
+            </td>
+        </tr>
+        <tr>
+		    <td colspan="2">
+			    <div class="admin-config-group">
+				    <div class="title">@T("Admin.System.MetaInfos")</div>
+			    </div>
+		    </td>
+	    </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeparator)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SeoSettings.PageTitleSeparator)
+                @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeparator)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeoAdjustment)
+            </td>
+            <td class="adminData">
+			    @Html.EnumSettingEditorFor(model => model.SeoSettings.PageTitleSeoAdjustment)
+                @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeoAdjustment)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.EditorFor(model => model.SeoSettings.DefaultSeoModel, "SeoModel")
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.EditorFor(model => model.SeoSettings.HomepageSeoModel, "SeoModel")
             </td>
         </tr>
 	    <tr>

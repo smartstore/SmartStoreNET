@@ -12,7 +12,6 @@ using SmartStore.Data.Caching;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Directory
 {
@@ -180,14 +179,12 @@ namespace SmartStore.Services.Directory
             }
 
             CultureInfo ci;
-            var minDays = deliveryTime.MinDays ?? 0;
-            var maxDays = deliveryTime.MaxDays ?? 0;
             var daysToAdd = 0;
             var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
 
             // TODO: at the moment the server's local time is used as shop time but the server can be anywhere.
             // What we actually need is the actual time\timezone of the physical location of the business because only the merchant knows this.
-            var shopDate = DateTime.Now;
+            var now = DateTime.Now;
 
             try
             {
@@ -198,52 +195,123 @@ namespace SmartStore.Services.Directory
                 ci = CultureInfo.CurrentCulture;
             }
 
-            // shopDate.Hour: 0-23. TodayDeliveryHour: 1-24
-            if (_shippingSettings.TodayDeliveryHour.HasValue && shopDate.Hour < _shippingSettings.TodayDeliveryHour)
+            // shopDate.Hour: 0-23. TodayDeliveryHour: 1-24.
+            if (_shippingSettings.TodayDeliveryHour.HasValue && now.Hour < _shippingSettings.TodayDeliveryHour)
             {
                 daysToAdd -= 1;
             }
 
-            // TODO: more settings, more calculation required.
-
-            if (minDays > 0)
-            {
-                minDays = Math.Max(minDays + daysToAdd, 0);
-            }
-            if (maxDays > 0)
-            {
-                maxDays = Math.Max(maxDays + daysToAdd, 0);
-            }
-
-            var minDate = minDays > 0
-                ? _dateTimeHelper.ConvertToUserTime(shopDate.AddDays(minDays))
+            // Normalization. "Today" is not supported\allowed.
+            var minDate = deliveryTime.MinDays.HasValue
+                ? AddDays(now, Math.Max(deliveryTime.MinDays.Value + daysToAdd, 1))
                 : (DateTime?)null;
 
-            var maxDate = maxDays > 0
-                ? _dateTimeHelper.ConvertToUserTime(shopDate.AddDays(maxDays))
+            var maxDate = deliveryTime.MaxDays.HasValue
+                ? AddDays(now, Math.Max(deliveryTime.MaxDays.Value + daysToAdd, 1))
                 : (DateTime?)null;
 
             if (minDate.HasValue && maxDate.HasValue)
             {
-                if (minDays == maxDays)
+                if (minDate == maxDate)
                 {
-                    return T("DeliveryTimes.Date.DeliveredOn", minDate.Value.ToString(dateFormat, ci));
+                    if (IsTomorrow(minDate.Value))
+                        return T("Time.Tomorrow");
+                    else
+                        return T("DeliveryTimes.Date.DeliveredOn", Format(minDate.Value));
                 }
-                else if (minDays < maxDays)
+                else if (minDate < maxDate)
                 {
-                    return T("DeliveryTimes.Date.Between", minDate.Value.ToString(dateFormat, ci), maxDate.Value.ToString(dateFormat, ci));
+                    return T("DeliveryTimes.Date.Between",
+                        IsTomorrow(minDate.Value) ? T("Time.Tomorrow").Text : Format(minDate.Value),
+                        Format(maxDate.Value));
                 }
             }
             else if (minDate.HasValue)
             {
-                return T("DeliveryTimes.Date.NotBefore", minDate.Value.ToString(dateFormat, ci));
+                if (IsTomorrow(minDate.Value))
+                    return T("Time.Tomorrow");
+                else
+                    return T("DeliveryTimes.Date.NotBefore", Format(minDate.Value));
             }
             else if (maxDate.HasValue)
             {
-                return T("DeliveryTimes.Date.NotLaterThan", maxDate.Value.ToString(dateFormat, ci));
+                if (IsTomorrow(maxDate.Value))
+                    return T("Time.Tomorrow");
+                else
+                    return T("DeliveryTimes.Date.NotLaterThan", Format(maxDate.Value));
             }
 
             return null;
+
+            bool IsTomorrow(DateTime date)
+            {
+                return (date - now).TotalDays == 1;
+            }
+
+            string Format(DateTime date)
+            {
+                return _dateTimeHelper.ConvertToUserTime(date).ToString(dateFormat, ci);
+            }
         }
+
+        #region Utilities
+
+        /// <see cref="https://stackoverflow.com/questions/1044688/addbusinessdays-and-getbusinessdays"/>
+        /// <seealso cref="https://en.wikipedia.org/wiki/Workweek_and_weekend"/>
+        private DateTime AddDays(DateTime date, int days)
+        {
+            Guard.NotNegative(days, nameof(days));
+
+            if (days == 0)
+            {
+                return date;
+            }
+
+            if (!_shippingSettings.DeliveryOnWorkweekDaysOnly)
+            {
+                return date.AddDays(days);
+            }
+
+            // Add days for non workweek days.
+            if (date.DayOfWeek == DayOfWeek.Saturday)
+            {
+                date = date.AddDays(2);
+                days -= 1;
+            }
+            else if (date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                date = date.AddDays(1);
+                days -= 1;
+            }
+
+            date = date.AddDays(days / 5 * 7);
+            int extraDays = days % 5;
+
+            if ((int)date.DayOfWeek + extraDays > 5)
+            {
+                extraDays += 2;
+            }
+
+            return date.AddDays(extraDays);
+        }
+
+        //private DateTime AddWorkweekDays(DateTime date, int days, DayOfWeek[] nonWorkweekDays)
+        //{
+        //    var sign = Math.Sign(days);
+        //    var unsignedDays = Math.Abs(days);
+
+        //    for (var i = 0; i < unsignedDays; ++i)
+        //    {
+        //        do
+        //        {
+        //            date = date.AddDays(sign);
+        //        }
+        //        while (nonWorkweekDays.Contains(date.DayOfWeek));
+        //    }
+
+        //    return date;
+        //}
+
+        #endregion
     }
 }

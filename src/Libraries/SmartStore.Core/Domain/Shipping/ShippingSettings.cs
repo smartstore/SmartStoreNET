@@ -11,6 +11,7 @@ namespace SmartStore.Core.Domain.Shipping
 			EstimateShippingEnabled = true;
 			ReturnValidOptionsIfThereAreAny = true;
             TodayDeliveryHour = 14;
+            DeliveryOnWorkweekDaysOnly = true;
         }
 
         /// <summary>
@@ -75,6 +76,11 @@ namespace SmartStore.Core.Domain.Shipping
         /// Specifies the hour (value between 1 and 24) up to which the delivery will be shipped today.
         /// </summary>
         public int? TodayDeliveryHour { get; set; }
+
+        /// <summary>
+        /// Specifies whether delivery takes place only on workweek days.
+        /// </summary>
+        public bool DeliveryOnWorkweekDaysOnly { get; set; }
 
         #endregion
     }

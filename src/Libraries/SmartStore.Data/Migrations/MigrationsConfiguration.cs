@@ -378,11 +378,23 @@
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelOnly", "Label only", "Nur Label");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelAndDate", "Label and date", "Label und Datum");
 
-			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DeliveryTimesPresentation",
+			builder.Delete(
+				"Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists",
+				"Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists.Hint",
+				"Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail",
+				"Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail",
 				"Presentation of delivery times",
-				"Darstellung der Lieferzeiten",
-				"Specifies how to present delivery times.",
-				"Legt die Art der Darstellung von Lieferzeiten fest.");
+				"Darstellung von Lieferzeiten",
+				"Specifies the way delivery times are displayed on product detail pages.",
+				"Legt die Darstellungsart von Lieferzeiten auf Produktdetailseiten fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DeliveryTimesInLists",
+				"Presentation of delivery times",
+				"Darstellung von Lieferzeiten",
+				"Specifies the way delivery times are displayed in product lists. Due to lack of space, the grid view does not show a date for the delivery time.",
+				"Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Tabellenansicht kein Datum zur Lieferzeit angezeigt.");
 		}
 	}
 }

@@ -174,9 +174,20 @@ namespace SmartStore.Services.Directory
             {
                 return null;
             }
+            if (!deliveryTime.MinDays.HasValue && !deliveryTime.MaxDays.HasValue)
+            {
+                return null;
+            }
 
-            var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
             CultureInfo ci;
+            var minDays = deliveryTime.MinDays ?? 0;
+            var maxDays = deliveryTime.MaxDays ?? 0;
+            var daysToAdd = 0;
+            var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
+
+            // TODO: at the moment the server's local time is used as shop time but the server can be anywhere.
+            // What we actually need is the actual time\timezone of the physical location of the business because only the merchant knows this.
+            var shopDate = DateTime.Now;
 
             try
             {
@@ -187,37 +198,49 @@ namespace SmartStore.Services.Directory
                 ci = CultureInfo.CurrentCulture;
             }
 
-            var minDays = deliveryTime.MinDays ?? 0;
-            var maxDays = deliveryTime.MaxDays ?? 0;
+            // shopDate.Hour: 0-23. TodayDeliveryHour: 1-24
+            if (_shippingSettings.TodayDeliveryHour.HasValue && shopDate.Hour < _shippingSettings.TodayDeliveryHour)
+            {
+                daysToAdd -= 1;
+            }
 
             // TODO: more settings, more calculation required.
 
-            var dtMin = minDays > 0
-                ? _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow.AddDays(minDays))
+            if (minDays > 0)
+            {
+                minDays = Math.Max(minDays + daysToAdd, 0);
+            }
+            if (maxDays > 0)
+            {
+                maxDays = Math.Max(maxDays + daysToAdd, 0);
+            }
+
+            var minDate = minDays > 0
+                ? _dateTimeHelper.ConvertToUserTime(shopDate.AddDays(minDays))
                 : (DateTime?)null;
 
-            var dtMax = maxDays > 0
-                ? _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow.AddDays(maxDays))
+            var maxDate = maxDays > 0
+                ? _dateTimeHelper.ConvertToUserTime(shopDate.AddDays(maxDays))
                 : (DateTime?)null;
 
-            if (dtMin.HasValue && dtMax.HasValue)
+            if (minDate.HasValue && maxDate.HasValue)
             {
                 if (minDays == maxDays)
                 {
-                    return T("DeliveryTimes.Date.DeliveredOn", dtMin.Value.ToString(dateFormat, ci));
+                    return T("DeliveryTimes.Date.DeliveredOn", minDate.Value.ToString(dateFormat, ci));
                 }
                 else if (minDays < maxDays)
                 {
-                    return T("DeliveryTimes.Date.Between", dtMin.Value.ToString(dateFormat, ci), dtMax.Value.ToString(dateFormat, ci));
+                    return T("DeliveryTimes.Date.Between", minDate.Value.ToString(dateFormat, ci), maxDate.Value.ToString(dateFormat, ci));
                 }
             }
-            else if (dtMin.HasValue)
+            else if (minDate.HasValue)
             {
-                return T("DeliveryTimes.Date.NotBefore", dtMin.Value.ToString(dateFormat, ci));
+                return T("DeliveryTimes.Date.NotBefore", minDate.Value.ToString(dateFormat, ci));
             }
-            else if (dtMax.HasValue)
+            else if (maxDate.HasValue)
             {
-                return T("DeliveryTimes.Date.NotLaterThan", dtMax.Value.ToString(dateFormat, ci));
+                return T("DeliveryTimes.Date.NotLaterThan", maxDate.Value.ToString(dateFormat, ci));
             }
 
             return null;

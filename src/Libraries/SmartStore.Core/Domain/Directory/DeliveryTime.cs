@@ -64,14 +64,14 @@ namespace SmartStore.Core.Domain.Directory
         None = 0,
 
         /// <summary>
-        /// Display date only if possible.
-        /// </summary>
-        DateOnly = 5,
-
-        /// <summary>
         /// Display label only.
         /// </summary>
-        LabelOnly = 10,
+        LabelOnly = 5,
+
+        /// <summary>
+        /// Display date only (if possible).
+        /// </summary>
+        DateOnly = 10,
 
         /// <summary>
         /// Display label and date.

@@ -7,9 +7,10 @@ namespace SmartStore.Core.Domain.Shipping
     {
         public ShippingSettings()
         {
-			ActiveShippingRateComputationMethodSystemNames = new List<string>() { "Shipping.FixedRate" };
+			ActiveShippingRateComputationMethodSystemNames = new List<string> { "Shipping.FixedRate" };
 			EstimateShippingEnabled = true;
 			ReturnValidOptionsIfThereAreAny = true;
+            TodayDeliveryHour = 14;
         }
 
         /// <summary>
@@ -69,6 +70,11 @@ namespace SmartStore.Core.Domain.Shipping
         /// Specifies the format string for delivery time dates.
         /// </summary>
         public string DeliveryTimesDateFormat { get; set; }
+
+        /// <summary>
+        /// Specifies the hour (value between 1 and 24) up to which the delivery will be shipped today.
+        /// </summary>
+        public int? TodayDeliveryHour { get; set; }
 
         #endregion
     }

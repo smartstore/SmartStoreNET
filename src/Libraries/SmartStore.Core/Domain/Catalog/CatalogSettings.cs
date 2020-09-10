@@ -83,7 +83,8 @@ namespace SmartStore.Core.Domain.Catalog
             AllowDifferingEmailAddressForEmailAFriend = false;
 			AllowAnonymousUsersToEmailAFriend = false;
 			AllowAnonymousUsersToReviewProduct = false;
-            DeliveryTimesPresentation = DeliveryTimesPresentation.DateOnly;
+            DeliveryTimesInLists = DeliveryTimesPresentation.DateOnly;
+            DeliveryTimesInProductDetail = DeliveryTimesPresentation.DateOnly;
         }
 
         /// <summary>
@@ -112,19 +113,14 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowDimensions { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to display the delivery time of a product
+        /// Specifies the presentation of delivery times in product lists.
         /// </summary>
-        public bool ShowDeliveryTimesInProductLists { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesInLists { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to display the delivery time of a product
+        /// Specifies the presentation of delivery times in product detail pages.
         /// </summary>
-        public bool ShowDeliveryTimesInProductDetail { get; set; }
-
-        /// <summary>
-        /// Specifies how to display delivery times.
-        /// </summary>
-        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesInProductDetail { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to display the base price of a product

@@ -110,7 +110,7 @@ namespace SmartStore.Web.Controllers
 				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
 				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
 				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
 			}
 			else if (viewMode == ProductSummaryViewMode.List)
 			{
@@ -121,7 +121,7 @@ namespace SmartStore.Web.Controllers
 				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
 				//settings.MapSpecificationAttributes = true; // TODO: (mc) What about SpecAttrs in List-Mode (?) Option?
 				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
 				settings.MapDimensions = _catalogSettings.ShowDimensions;
 			}
 			else if (viewMode == ProductSummaryViewMode.Compare)
@@ -133,7 +133,7 @@ namespace SmartStore.Web.Controllers
 				settings.MapAttributes = true;
 				settings.MapSpecificationAttributes = true;
 				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
 				settings.MapDimensions = _catalogSettings.ShowDimensions;
 			}
 

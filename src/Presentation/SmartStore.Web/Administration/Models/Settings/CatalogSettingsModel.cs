@@ -118,9 +118,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductCondition")]
         public bool ShowProductCondition { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimesPresentation")]
-        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
-
         #endregion
 
         #region Product lists
@@ -202,8 +199,8 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists")]
 		public bool ShowProductOptionsInLists { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
-        public bool ShowDeliveryTimesInProductLists { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimesInLists")]
+        public DeliveryTimesPresentation DeliveryTimesInLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBasePriceInProductLists")]
         public bool ShowBasePriceInProductLists { get; set; }
@@ -294,8 +291,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail")]
 		public bool ShowManufacturerPicturesInProductDetail { get; set; }
         
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
-        public bool ShowDeliveryTimesInProductDetail { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail")]
+        public DeliveryTimesPresentation DeliveryTimesInProductDetail { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock")]
         public int? DeliveryTimeIdForEmptyStock { get; set; }

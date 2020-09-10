@@ -163,15 +163,6 @@
 				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DeliveryTimesPresentation)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.DeliveryTimesPresentation)
-				@Html.ValidationMessageFor(model => model.DeliveryTimesPresentation)
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.HideProductDefaultPictures)
@@ -483,15 +474,15 @@
                 @Html.ValidationMessageFor(model => model.ShowShortDescriptionInGridStyleLists)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductLists)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowDeliveryTimesInProductLists)
-                @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductLists)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DeliveryTimesInLists)
+			</td>
+			<td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.DeliveryTimesInLists)
+				@Html.ValidationMessageFor(model => model.DeliveryTimesInLists)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowManufacturerInGridStyleLists)
@@ -796,15 +787,15 @@
                 @Html.ValidationMessageFor(model => model.ShowManufacturerPicturesInProductDetail)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductDetail)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowDeliveryTimesInProductDetail)
-                @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductDetail)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DeliveryTimesInProductDetail)
+			</td>
+			<td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.DeliveryTimesInProductDetail)
+				@Html.ValidationMessageFor(model => model.DeliveryTimesInProductDetail)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)

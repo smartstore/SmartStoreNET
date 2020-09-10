@@ -1186,7 +1186,7 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
+			model.DisplayDeliveryTime = _catalogSettings.DeliveryTimesInProductDetail != DeliveryTimesPresentation.None;
 			model.IsShipEnabled = product.IsShipEnabled;
 			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 

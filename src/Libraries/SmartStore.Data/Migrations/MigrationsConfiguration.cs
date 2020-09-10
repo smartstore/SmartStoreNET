@@ -334,6 +334,12 @@
 				"Meta keywords",
 				"Meta Keywords");
 
+			builder.AddOrUpdate("Admin.Configuration.Seo.SeName",
+				"URL-Alias",
+				"URL alias",
+				"Set a search engine friendly page name e.g. 'my-landing-page' to make the page URL 'http://www.yourStore.com/my-landing-page'. Leave empty to generate it automatically based on the name of the entity.",
+				"Legen Sie einen suchmaschinenfreundlichen Seitennamen fest, z.B. 'meine-landing-page', um die URL zu 'http://www.yourStore.com/meine-landing-page' zu machen. Lassen Sie das Feld leer, um den Pfad automatisch auf Basis des Namens der Entität zu generieren.");
+
 			builder.AddOrUpdate("Admin.System.MetaInfos",
 				"Meta tags",
 				"Meta-Elemente");

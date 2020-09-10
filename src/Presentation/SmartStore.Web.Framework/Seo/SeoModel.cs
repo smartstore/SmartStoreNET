@@ -14,4 +14,9 @@ namespace SmartStore.Web.Framework.Seo
         public string MetaKeywords { get; set; }
         public IList<SeoModelLocal> Locales { get; set; }
     }
+
+    public partial class UrlAliasSeoModel : SeoModel, IUrlAlias
+    {
+        public string SeName { get; set; }
+    } 
 }

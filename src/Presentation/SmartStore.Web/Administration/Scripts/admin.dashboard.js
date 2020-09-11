@@ -68,7 +68,7 @@ SmartStore.Admin.Charts = {
 
         const chartToggleListener = function (el, setChartData) {
             el.querySelectorAll(".btn-dashboard")
-                .forEach(function(value, index) {
+                .forEach(function (value, index) {
                     value.addEventListener("click", function (event) {
                         setChartData(index);
                     })

@@ -28,7 +28,7 @@
         }
 
         if (this.options.lg) {
-        	this.el.addClass('offcanvas-lg');
+            this.el.addClass('offcanvas-lg');
         }
 
         if (this.options.disablescrolling) {
@@ -50,7 +50,7 @@
 
         if (this.options.autohide) {
             $('body, .canvas-blocker').on('click', $.proxy(this.autohide, this));
-        }  
+        }
 
         if (this.options.toggle) {
             this.toggle();
@@ -61,7 +61,7 @@
             self.hide();
         });
 
-		// Set up events to properly handle (touch) gestures
+        // Set up events to properly handle (touch) gestures
         this._makeTouchy();
     }
 
@@ -82,104 +82,104 @@
     };
 
 
-	// OFFCANVAS Internal
-	// ======================================================
+    // OFFCANVAS Internal
+    // ======================================================
 
     OffCanvas.prototype._makeTouchy = function (fn) {
         var self = this;
         var el = this.el;
 
-    	// Move offcanvas on pan[left|right] and close on swipe
-    	var onRight = el.hasClass('offcanvas-right'),
-			canPan = el.hasClass('offcanvas-overlay'),
-			panning = false,
-			scrolling = false,
-			nodeScrollable = null;
+        // Move offcanvas on pan[left|right] and close on swipe
+        var onRight = el.hasClass('offcanvas-right'),
+            canPan = el.hasClass('offcanvas-overlay'),
+            panning = false,
+            scrolling = false,
+            nodeScrollable = null;
 
-    	function getDelta(g) {
-    		return onRight
-				? Math.max(0, g.delta.x)
-				: Math.min(0, g.delta.x);
-    	}
+        function getDelta(g) {
+            return onRight
+                ? Math.max(0, g.delta.x)
+                : Math.min(0, g.delta.x);
+        }
 
-    	function isScrolling(e, g) {
-    		if (nodeScrollable === null || nodeScrollable.length === 0)
-    			return false;
+        function isScrolling(e, g) {
+            if (nodeScrollable === null || nodeScrollable.length === 0)
+                return false;
 
-    		var initialScrollDelta = nodeScrollable.data('initial-scroll-top');
-    		if (!_.isNumber(initialScrollDelta))
-    			return false;
+            var initialScrollDelta = nodeScrollable.data('initial-scroll-top');
+            if (!_.isNumber(initialScrollDelta))
+                return false;
 
-    		return nodeScrollable.scrollTop() != initialScrollDelta;
-    	}
+            return nodeScrollable.scrollTop() != initialScrollDelta;
+        }
 
-    	function handleMove(e, g) {
-    		// when scrolling started, do NOT attempt to pan left/right.
-    		if (scrolling || (scrolling = isScrolling(e, g)))
-    			return;
+        function handleMove(e, g) {
+            // when scrolling started, do NOT attempt to pan left/right.
+            if (scrolling || (scrolling = isScrolling(e, g)))
+                return;
 
-    		var delta = getDelta(g);
-    		panning = !scrolling && delta != 0;
+            var delta = getDelta(g);
+            panning = !scrolling && delta != 0;
 
-    		if (panning) {
-    			// prevent scrolling during panning
-    			e.preventDefault();
+            if (panning) {
+                // prevent scrolling during panning
+                e.preventDefault();
 
-    			$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
-    		}
-    		else {
-    			if (nodeScrollable !== null && nodeScrollable.length > 0) {
-    				if (nodeScrollable.height() >= nodeScrollable[0].scrollHeight) {
-    					// Content is NOT scrollable. Don't let iOS Safari scroll the body.
-    					e.preventDefault();
-    				}
-    			}
-    			else {
-    				// Touch occurs outside of any scrollable element. Again: prevent body scrolling.
-    				e.preventDefault();
-    			}
-    		}
-    	}
+                $(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
+            }
+            else {
+                if (nodeScrollable !== null && nodeScrollable.length > 0) {
+                    if (nodeScrollable.height() >= nodeScrollable[0].scrollHeight) {
+                        // Content is NOT scrollable. Don't let iOS Safari scroll the body.
+                        e.preventDefault();
+                    }
+                }
+                else {
+                    // Touch occurs outside of any scrollable element. Again: prevent body scrolling.
+                    e.preventDefault();
+                }
+            }
+        }
 
-    	el.on('tapstart', function (e, gesture) {
-    		if (canPan) {
-    			var tabs = $(e.target).closest('.offcanvas-tabs');
-    			if (tabs.length > 0) {
-    				var tabsWidth = 0;
-    				var cntWidth = el.width();
-    				tabs.find('.nav-item').each(function () { tabsWidth += $(this).width(); });
-    				if (tabsWidth > cntWidth) {
-						// Header tabs width exceed offcanvas width. Let it scroll, don't move offcanvas.
-    					scrolling = true;
-    					return;
-    				}
-    			}
+        el.on('tapstart', function (e, gesture) {
+            if (canPan) {
+                var tabs = $(e.target).closest('.offcanvas-tabs');
+                if (tabs.length > 0) {
+                    var tabsWidth = 0;
+                    var cntWidth = el.width();
+                    tabs.find('.nav-item').each(function () { tabsWidth += $(this).width(); });
+                    if (tabsWidth > cntWidth) {
+                        // Header tabs width exceed offcanvas width. Let it scroll, don't move offcanvas.
+                        scrolling = true;
+                        return;
+                    }
+                }
 
-    			nodeScrollable = $(e.target).closest('.offcanvas-scrollable');
-    			if (nodeScrollable.length > 0) {
-    				nodeScrollable.data('initial-scroll-top', nodeScrollable.scrollTop());
-    			}
+                nodeScrollable = $(e.target).closest('.offcanvas-scrollable');
+                if (nodeScrollable.length > 0) {
+                    nodeScrollable.data('initial-scroll-top', nodeScrollable.scrollTop());
+                }
 
-    			$(".select2-hidden-accessible", el).select2("close");
+                $(".select2-hidden-accessible", el).select2("close");
 
-    			el.css(Prefixer.css('transition'), 'none');
-    			el.on('tapmove.offcanvas', handleMove);
-    		}
-    	});
+                el.css(Prefixer.css('transition'), 'none');
+                el.on('tapmove.offcanvas', handleMove);
+            }
+        });
 
-    	el.on('tapend', function (e, gesture) {
-    		el.off('tapmove.offcanvas')
-				.css(Prefixer.css('transform'), '')
-				.css(Prefixer.css('transition'), '');
+        el.on('tapend', function (e, gesture) {
+            el.off('tapmove.offcanvas')
+                .css(Prefixer.css('transform'), '')
+                .css(Prefixer.css('transition'), '');
 
-    		if (!scrolling && Math.abs(getDelta(gesture)) >= 100) {
-    			self.hide();
-    		}
+            if (!scrolling && Math.abs(getDelta(gesture)) >= 100) {
+                self.hide();
+            }
 
-    		nodeScrollable = null;
-    		panning = false;
-    		scrolling = false;
-    	});
+            nodeScrollable = null;
+            panning = false;
+            scrolling = false;
+        });
     }
 
 
@@ -207,17 +207,17 @@
         }
 
         if (this.options.overlay) {
-        	body.addClass('canvas-overlay');
+            body.addClass('canvas-overlay');
         }
 
         body.one("tapend", ".offcanvas-closer", function (e) {
-        	e.preventDefault();
+            e.preventDefault();
             self.hide();
         });
-        
+
         body.addClass('canvas-sliding canvas-sliding-'
             + (this.options.placement === 'right' ? 'left' : 'right')
-			+ (this.options.lg ? ' canvas-lg' : '')
+            + (this.options.lg ? ' canvas-lg' : '')
             + (this.options.fullscreen ? ' canvas-fullscreen' : ''));
 
         this.el.addClass("on").one(Prefixer.event.transitionEnd, function (e) {
@@ -256,7 +256,7 @@
         });
 
         if (history.state && history.state.offcanvas) {
-            history.back();            
+            history.back();
         }
     };
 
@@ -305,12 +305,12 @@
         if (data)
             data.toggle();
         else
-        	$canvas.offcanvas(options);
+            $canvas.offcanvas(options);
 
         return false;
     })
 
     $('.canvas-blocker').on('touchmove', function (e) {
-    	e.preventDefault();
+        e.preventDefault();
     });
 })(jQuery, window, document);

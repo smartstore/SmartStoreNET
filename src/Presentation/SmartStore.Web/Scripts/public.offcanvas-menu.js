@@ -11,7 +11,7 @@
         ].join('');
     };
 
-    var AjaxMenu = (function() {
+    var AjaxMenu = (function () {
         function AjaxMenu(navbar, menuContainer) {
             this.initialized = false;
 
@@ -41,7 +41,7 @@
                     layer.find('[data-toggle="tab"]').first().trigger('click');
 
                     self.initialized = true;
-                }); 
+                });
 
                 // Tab click event
                 this.container.on('click', '[data-toggle="tab"]', function (e) {
@@ -92,7 +92,7 @@
 
                     return false;
                 });
-            }    
+            }
         };
 
         AjaxMenu.prototype._loadLayer = function (nodeId, callback) {
@@ -120,7 +120,7 @@
 
                         // Init footer controls
                         self._initFooter(layer.find('.offcanvas-menu-footer'));
-                    } 
+                    }
 
                     callback(layer);
                 },
@@ -130,7 +130,7 @@
                 complete: function () {
                     self._loading = undefined;
                 }
-            });  
+            });
         };
 
         AjaxMenu.prototype._initFooter = function (footer) {
@@ -149,7 +149,7 @@
             }
             else {
                 footer.removeClass("d-none");
-            }      
+            }
 
             // Converts all .dropdown-item elements of a dropdown menu to an <option> array
             var dropdownToOptions = function (dd) {
@@ -242,7 +242,7 @@
                 complete: function () {
                     callback();
                 }
-            }); 
+            });
         };
 
         AjaxMenu.prototype.navigateToLayer = function (nodeId, dir, callback) {
@@ -273,7 +273,7 @@
                     finalize(prevLayer);
                     return;
                 }
-            // If no previous layer exists, make ajax call and prepend response
+                // If no previous layer exists, make ajax call and prepend response
             }
             else if (dir === "in") {
                 // Check whether a next layer exists and if it has the same id as the element to which the user is navigating to
@@ -299,7 +299,7 @@
                     : layer.appendTo(self.container);
 
                 // Activate first tab if any
-                layer.find('[data-toggle="tab"]').first().tab('show'); 
+                layer.find('[data-toggle="tab"]').first().tab('show');
 
                 _.delay(function () {
                     elSlideIn.addClass("show");

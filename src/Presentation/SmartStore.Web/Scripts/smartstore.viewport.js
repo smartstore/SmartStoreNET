@@ -8,15 +8,15 @@
  */
 ; var ResponsiveBootstrapToolkit = (function ($) {
 
-	// Internal methods
-	var internal = {
+    // Internal methods
+    var internal = {
 
         breakpoints: {
             xs: 0,
             sm: 576,
             md: 768,
             lg: 992,
-            xl: 1200 
+            xl: 1200
         },
 
         resolveBreakpoints: function () {
@@ -30,19 +30,19 @@
 		/**
          * Determines whether passed string is a parsable expression
          */
-		isAnExpression: function (str) {
-			return (str.charAt(0) == '<' || str.charAt(0) == '>');
-		},
+        isAnExpression: function (str) {
+            return (str.charAt(0) == '<' || str.charAt(0) == '>');
+        },
 
 		/**
          * Splits the expression in into <|> [=] alias
          */
-		splitExpression: function (str) {
+        splitExpression: function (str) {
 
-			// Used operator
-			var operator = str.charAt(0);
-			// Include breakpoint equal to alias?
-			var orEqual = (str.charAt(1) == '=') ? true : false;
+            // Used operator
+            var operator = str.charAt(0);
+            // Include breakpoint equal to alias?
+            var orEqual = (str.charAt(1) == '=') ? true : false;
 
 			/**
              * Index at which breakpoint name starts.
@@ -50,37 +50,37 @@
              * For:  >sm, index = 1
              * For: >=sm, index = 2
              */
-			var index = 1 + (orEqual ? 1 : 0);
+            var index = 1 + (orEqual ? 1 : 0);
 
 			/**
              * The remaining part of the expression, after the operator, will be treated as the
              * breakpoint name to compare with
              */
-			var breakpointName = str.slice(index);
+            var breakpointName = str.slice(index);
 
-			return {
-				operator: operator,
-				orEqual: orEqual,
-				breakpointName: breakpointName
-			};
-		},
+            return {
+                operator: operator,
+                orEqual: orEqual,
+                breakpointName: breakpointName
+            };
+        },
 
 		/**
          * Determines whether current breakpoint matches the expression given
          */
-		isMatchingExpression: function (str) {
+        isMatchingExpression: function (str) {
 
-			var expression = internal.splitExpression(str);
+            var expression = internal.splitExpression(str);
 
-			// Get names of all breakpoints
-			var breakpointList = Object.keys(internal.breakpoints);
+            // Get names of all breakpoints
+            var breakpointList = Object.keys(internal.breakpoints);
 
-			// Get index of sought breakpoint in the list
+            // Get index of sought breakpoint in the list
             var alias = expression.breakpointName;
             var pos = breakpointList.indexOf(alias);
 
-			// Breakpoint found
-			if (pos !== -1) {
+            // Breakpoint found
+            if (pos !== -1) {
                 var width = window.innerWidth;
                 var min, max;
 
@@ -98,24 +98,24 @@
                 }
 
                 return width >= min && width < max;
-			}
-		}
+            }
+        }
 
-	};
+    };
 
-	// Public methods and properties
-	var self = {
+    // Public methods and properties
+    var self = {
 		/**
          * Determines default debouncing interval of 'changed' method
          */
-		interval: 300,
+        interval: 300,
 
 		/**
          * Returns true if current breakpoint matches passed alias
          */
-		is: function (str) {
-			if (internal.isAnExpression(str)) {
-				return internal.isMatchingExpression(str);
+        is: function (str) {
+            if (internal.isAnExpression(str)) {
+                return internal.isMatchingExpression(str);
             }
 
             var match = false;
@@ -134,7 +134,7 @@
             });
 
             return match;
-		},
+        },
 
 		/**
          * Initialize breakpoint detection divs
@@ -164,38 +164,38 @@
                     });
                 }
             });
-		},
+        },
 
 		/**
          * Returns current breakpoint alias
          */
-		current: function () {
-			var name = 'unrecognized';
-			$.each(internal.breakpoints, function (alias) {
-				if (self.is(alias)) {
-					name = alias;
-				}
-			});
-			return name;
-		},
+        current: function () {
+            var name = 'unrecognized';
+            $.each(internal.breakpoints, function (alias) {
+                if (self.is(alias)) {
+                    name = alias;
+                }
+            });
+            return name;
+        },
 
 		/*
          * Waits specified number of miliseconds before executing a callback
          */
-		changed: function (fn, ms) {
-			var timer;
-			return function () {
-				clearTimeout(timer);
-				timer = setTimeout(function () {
-					fn();
-				}, ms || self.interval);
-			};
-		}
+        changed: function (fn, ms) {
+            var timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn();
+                }, ms || self.interval);
+            };
+        }
 
-	};
+    };
 
-	self.init();
+    self.init();
 
-	return self;
+    return self;
 
 })(jQuery);

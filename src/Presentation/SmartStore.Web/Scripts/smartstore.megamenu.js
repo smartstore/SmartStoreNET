@@ -10,14 +10,14 @@
                 productRotatorAjaxUrl: ""
             };
 
-			var rtl = SmartStore.globalization.culture.isRTL,
-				marginX = rtl ? 'margin-right' : 'margin-left';
+            var rtl = SmartStore.globalization.culture.isRTL,
+                marginX = rtl ? 'margin-right' : 'margin-left';
 
             settings = $.extend(defaults, settings);
 
             return this.each(function () {
                 var megamenuContainer = $(this);
-				var megamenu = $(".megamenu", megamenuContainer);
+                var megamenu = $(".megamenu", megamenuContainer);
                 var isSimple = megamenu.hasClass("simple");
                 var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
                 var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
@@ -43,7 +43,7 @@
                 }
 
                 function tryOpen(link) {
-                	// if new link was passed into function clear tryOpen-timeout
+                    // if new link was passed into function clear tryOpen-timeout
                     if (tempLink && link.data("target") != tempLink.data("target")) {
                         clearTimeout(openTimeout);
                     }
@@ -54,17 +54,17 @@
                         openTimeout = setTimeout(function () { tryOpen(link); }, 50);
                     }
                     else {
-                    	clearTimeout(openTimeout);
+                        clearTimeout(openTimeout);
 
-                    	$(link.data("target")).addClass("show");
+                        $(link.data("target")).addClass("show");
 
-                    	if (link.hasClass("dropdown-toggle")) {
-                    		link.closest("li").addClass("active");
-                    	}
+                        if (link.hasClass("dropdown-toggle")) {
+                            link.closest("li").addClass("active");
+                        }
 
-                    	initRotator(link.data("target"));
+                        initRotator(link.data("target"));
 
-                    	zoomContainer.css("z-index", "0");          	
+                        zoomContainer.css("z-index", "0");
                     }
                 }
 
@@ -93,12 +93,12 @@
                     $(".dropdown-menu", megamenuContainer).on('mouseenter', function (e) {
                         clearTimeout(closingTimeout);
                     })
-                    .on('mouseleave', function () {
-                        var targetId = $(this).parent().attr("id");
-                        var link = megamenu.find("[data-target='#" + targetId + "']");
+                        .on('mouseleave', function () {
+                            var targetId = $(this).parent().attr("id");
+                            var link = megamenu.find("[data-target='#" + targetId + "']");
 
-                        closeMenuHandler(link);
-                    });
+                            closeMenuHandler(link);
+                        });
 
                     navElems.on("mouseenter", function () {
                         var link = $(this).find(".nav-link");
@@ -125,23 +125,23 @@
                             openTimeout = setTimeout(function () { tryOpen(link); }, 300);
                         }
                     })
-                    .on("mouseleave", function () {
+                        .on("mouseleave", function () {
 
-                        clearTimeout(openTimeout);
+                            clearTimeout(openTimeout);
 
-                        var link = $(this).find(".nav-link");
-                        closeMenuHandler(link);
-                    });
+                            var link = $(this).find(".nav-link");
+                            closeMenuHandler(link);
+                        });
                 }
 
                 function alignDrop(popper, drop, container) {
 
-					var nav = $(".navbar-nav", container),
-						left,
-						right,
-						popperWidth = popper.width(),
-						dropWidth = drop.width(),
-						containerWidth = container.width();
+                    var nav = $(".navbar-nav", container),
+                        left,
+                        right,
+                        popperWidth = popper.width(),
+                        dropWidth = drop.width(),
+                        containerWidth = container.width();
 
                     if (!rtl) {
 
@@ -151,18 +151,18 @@
                         else {
                             left = Math.ceil(popper.position().left + nav.position().left);
                         }
-                        
-						right = "auto";
 
-						if (left < 0) {
-							left = 0;
-						}
-						else if (left + dropWidth > containerWidth) {
-							left = "auto";
-							right = 0;
-						}
-					}
-					else {
+                        right = "auto";
+
+                        if (left < 0) {
+                            left = 0;
+                        }
+                        else if (left + dropWidth > containerWidth) {
+                            left = "auto";
+                            right = 0;
+                        }
+                    }
+                    else {
                         left = "auto";
 
                         if (!Modernizr.touchevents) {
@@ -172,101 +172,101 @@
                             right = Math.ceil(popper.position().right + nav.position().left);
                         }
 
-						if (right < 0) {
-							right = 0;
-						}
-						else if (right + dropWidth > containerWidth) {
-							left = 0;
-							right = "auto";
-						}
-					}
+                        if (right < 0) {
+                            right = 0;
+                        }
+                        else if (right + dropWidth > containerWidth) {
+                            left = 0;
+                            right = "auto";
+                        }
+                    }
 
-					if (popperWidth > dropWidth) {
-						// ensure that drop is not smaller than popper
-						drop.width(popperWidth);
-					}
+                    if (popperWidth > dropWidth) {
+                        // ensure that drop is not smaller than popper
+                        drop.width(popperWidth);
+                    }
 
-					drop.toggleClass("ar", (rtl && left == "auto") || _.isNumber(right));
+                    drop.toggleClass("ar", (rtl && left == "auto") || _.isNumber(right));
 
-					if (_.isNumber(left)) left = left + "px";
-					if (_.isNumber(right)) right = right + "px";
+                    if (_.isNumber(left)) left = left + "px";
+                    if (_.isNumber(right)) right = right + "px";
 
-					// jQuery does not accept "!important"
-					drop[0].style.setProperty('left', left, 'important');
+                    // jQuery does not accept "!important"
+                    drop[0].style.setProperty('left', left, 'important');
                     drop[0].style.setProperty('right', right, 'important');
-				}
+                }
 
                 // correct dropdown position
                 if (isSimple) {
                     var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
-                        
-						var navItem = $(this);
-						var targetSelector = navItem.find(".nav-link").data("target");
-						if (!targetSelector)
-							return;
 
-						var drop = $(targetSelector).find(".dropdown-menu");
-						if (!drop.length)
-							return;
+                        var navItem = $(this);
+                        var targetSelector = navItem.find(".nav-link").data("target");
+                        if (!targetSelector)
+                            return;
 
-						alignDrop(navItem, drop, megamenu);
+                        var drop = $(targetSelector).find(".dropdown-menu");
+                        if (!drop.length)
+                            return;
+
+                        alignDrop(navItem, drop, megamenu);
                     });
-				}
+                }
 
                 megamenuContainer.evenIfHidden(function (el) {
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
-					var navSlider = $(".nav-slider", megamenu);
-					var nav = $(".navbar-nav", navSlider);
+                    var navSlider = $(".nav-slider", megamenu);
+                    var nav = $(".navbar-nav", navSlider);
 
                     if (!Modernizr.touchevents) {
                         megamenuNext.on('click', function (e) {
-							e.preventDefault();
+                            e.preventDefault();
                             scrollToNextInvisibleNavItem(false);
                         });
 
-						megamenuPrev.on('click', function (e) {
-							e.preventDefault();
+                        megamenuPrev.on('click', function (e) {
+                            e.preventDefault();
                             scrollToNextInvisibleNavItem(true);
                         });
                     }
 
-					function scrollToNextInvisibleNavItem(backwards) {
+                    function scrollToNextInvisibleNavItem(backwards) {
                         // determine the first completely visible nav item (either from left or right side, depending on 'backwards')
                         var firstVisible = findFirstVisibleNavItem(backwards);
 
                         // depending on 'backwards': take next or previous nav item (it's not visible yet and should scroll into the visible area now)  
                         var nextItem = backwards
-							? firstVisible.prev()
-							: firstVisible.next();
+                            ? firstVisible.prev()
+                            : firstVisible.next();
 
                         if (nextItem.length === 0)
                             return;
 
                         // determine left pos of the item 
-						var leftPos = nextItem.position().left;
-						var offset = Math.abs(parseFloat(nav.css(marginX)));
+                        var leftPos = nextItem.position().left;
+                        var offset = Math.abs(parseFloat(nav.css(marginX)));
 
                         // 30 = offset for arrows
                         // if 'backwards': scroll to the left position of the current item 
-						var newMarginStart = rtl
-							? leftPos - offset - 31
-							: (leftPos * -1) + 31;
+                        var newMarginStart = rtl
+                            ? leftPos - offset - 31
+                            : (leftPos * -1) + 31;
 
                         if ((!rtl && !backwards) || (rtl && backwards)) {
                             // if 'forward': scroll to the right position of the current item 
-							var rightPos = leftPos + nextItem.outerWidth(true) + 1;
-							newMarginStart = rtl
-								? (nav.width() - rightPos - (nextItem[0].previousElementSibling ? 30 : 0)) * -1
-								: navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
+                            var rightPos = leftPos + nextItem.outerWidth(true) + 1;
+                            newMarginStart = rtl
+                                ? (nav.width() - rightPos - (nextItem[0].previousElementSibling ? 30 : 0)) * -1
+                                : navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
                         }
 
-						newMarginStart = Math.min(0, newMarginStart);
+                        newMarginStart = Math.min(0, newMarginStart);
 
-						nav.css(marginX, Math.ceil(newMarginStart) + 'px').one(Prefixer.event.transitionEnd, function (e) {
+                        nav.css(marginX, Math.ceil(newMarginStart) + 'px').one(Prefixer.event.transitionEnd, function (e) {
                             // performs UI update after end of animation (.one(trans...))
                             updateNavState();
                         });
@@ -274,28 +274,28 @@
 
                     function findFirstVisibleNavItem(fromStart) {
                         var navItems = navElems;
-						if (!fromStart) {
+                        if (!fromStart) {
                             // turn nav items around as we start iteration from the right side
                             navItems = $($.makeArray(navElems).reverse());
                         }
 
                         var result;
                         var cntWidth = navSlider.width();
-						var curMarginStart = rtl ? 0 : parseFloat(nav.css(marginX));
+                        var curMarginStart = rtl ? 0 : parseFloat(nav.css(marginX));
 
                         function isInView(pos) {
-							var realPos = pos + curMarginStart;
+                            var realPos = pos + curMarginStart;
                             return realPos >= 0 && realPos < cntWidth;
                         }
 
                         navItems.each(function (i, el) {
                             // iterates all nav items from the left OR the right side and breaks loop once the left AND the right edges fall into the viewport
                             var navItem = $(el);
-							var leftPos = navItem.position().left;
+                            var leftPos = navItem.position().left;
                             var leftIn = isInView(leftPos);
                             if (leftIn) {
                                 var rightIn = isInView(leftPos + navItem.outerWidth(true));
-								if (rightIn) {
+                                if (rightIn) {
                                     result = navItem;
                                     return false;
                                 }
@@ -305,35 +305,35 @@
                         return result;
                     }
 
-					function updateNavState() {
+                    function updateNavState() {
                         // updates megamenu status: arrows etc.
-						var navWidth = 0;
-						var realNavWidth = 0;
-						var curMarginStart = 0;
+                        var navWidth = 0;
+                        var realNavWidth = 0;
+                        var curMarginStart = 0;
 
                         navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
-						realNavWidth = Math.floor(realNavWidth);
+                        realNavWidth = Math.floor(realNavWidth);
 
-						if (Modernizr.touchevents) {
-							navWidth = nav.width();
-							var offset = nav.position().left;
+                        if (Modernizr.touchevents) {
+                            navWidth = nav.width();
+                            var offset = nav.position().left;
                             curMarginStart = rtl ? (offset - 1) * -1 : offset;
-						}
-						else {
-							navWidth = megamenu.width();
-							curMarginStart = parseFloat(nav.css(marginX));	
-						}
+                        }
+                        else {
+                            navWidth = megamenu.width();
+                            curMarginStart = parseFloat(nav.css(marginX));
+                        }
 
                         // If nav items don't fit in the megamenu container: display next arrow, otherwise hide it. 
-						megamenu.toggleClass('megamenu-blend--next', realNavWidth > megamenu.width());
+                        megamenu.toggleClass('megamenu-blend--next', realNavWidth > megamenu.width());
 
-						if (curMarginStart < 0) {
+                        if (curMarginStart < 0) {
                             // user has scrolled: show prev arrow 
                             megamenu.addClass('megamenu-blend--prev');
 
                             // determine whether we reached the end
-							var endReached = navWidth + Math.abs(curMarginStart) >= realNavWidth;
-							megamenu.toggleClass('megamenu-blend--next', !endReached);
+                            var endReached = navWidth + Math.abs(curMarginStart) >= realNavWidth;
+                            megamenu.toggleClass('megamenu-blend--next', !endReached);
                         }
                         else {
                             // we're at the beginning: fade out prev arrow
@@ -348,34 +348,34 @@
                             updateNavState();
                         });
                     }
-                    
+
                     function onPageResized() {
-                    	updateNavState();
+                        updateNavState();
 
-                    	var liWidth = 0;
-                    	navElems.each(function () { liWidth += $(this).width(); });
+                        var liWidth = 0;
+                        navElems.each(function () { liWidth += $(this).width(); });
 
-                    	if (liWidth > megamenuContainer.width()) {
-                    		megamenuContainer.addClass("show-scroll-buttons");
-                    	}
-                    	else {
-                    		megamenuContainer.removeClass("show-scroll-buttons");
-                    	}
+                        if (liWidth > megamenuContainer.width()) {
+                            megamenuContainer.addClass("show-scroll-buttons");
+                        }
+                        else {
+                            megamenuContainer.removeClass("show-scroll-buttons");
+                        }
 
-                    	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
-                    		try {
-								$(this).slick('unslick');
-								$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
-                    			applyCommonPlugins($(this).closest('.rotator-content'));
-                    		}
-							catch (err) { }
-						});
+                        megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function (i, el) {
+                            try {
+                                $(this).slick('unslick');
+                                $(this).attr('data-slick', '{"dots": false, "autoplay": true}');
+                                applyCommonPlugins($(this).closest('.rotator-content'));
+                            }
+                            catch (err) { }
+                        });
                     }
 
-                	// show scroll buttons when menu items don't fit into screen
+                    // show scroll buttons when menu items don't fit into screen
                     EventBroker.subscribe("page.resized", function (msg, viewport) {
-                    	onPageResized();
-					});
+                        onPageResized();
+                    });
 
                     onPageResized();
                 });
@@ -390,8 +390,8 @@
                     // reinit slick product rotator
                     container.find('.mega-menu-product-rotator > .artlist-grid').each(function (i, el) {
                         try {
-							$(this).slick('unslick');
-							$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
+                            $(this).slick('unslick');
+                            $(this).attr('data-slick', '{"dots": false, "autoplay": true}');
                             applyCommonPlugins($(this).closest('.rotator-content'));
                         }
                         catch (err) {
@@ -405,8 +405,8 @@
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")
-							.html('<div class="placeholder"></div>')
-							.throbber({ white: true, small: true, message: '' });
+                            .html('<div class="placeholder"></div>')
+                            .throbber({ white: true, small: true, message: '' });
 
                         // wait a little to imply hard work is going on ;-)
                         setTimeout(function () {
@@ -419,10 +419,10 @@
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
 
-									var list = container.find('.mega-menu-product-rotator > .artlist-grid');
-									list.attr('data-slick', '{"dots": false, "autoplay": true}');
+                                    var list = container.find('.mega-menu-product-rotator > .artlist-grid');
+                                    list.attr('data-slick', '{"dots": false, "autoplay": true}');
 
-                                	// Init carousel
+                                    // Init carousel
                                     applyCommonPlugins(container);
 
                                     if (container.hasClass("show")) {

@@ -1,29 +1,29 @@
-;(function ( $, window, document, undefined ) {
-    
+; (function ($, window, document, undefined) {
+
     var pluginName = 'productDetail';
     var galPluginName = "smartGallery";
-    
-    function ProductDetail( element, options ) {
-    	
-		var self = this;
 
-		this.element = element;
-		var el = this.el = $(element);
+    function ProductDetail(element, options) {
 
-		var meta = $.metadata ? $.metadata.get(element) : {};
-		var opts = this.options = $.extend(true, {}, options, meta || {});
-		
-		this.init = function() {
+        var self = this;
+
+        this.element = element;
+        var el = this.el = $(element);
+
+        var meta = $.metadata ? $.metadata.get(element) : {};
+        var opts = this.options = $.extend(true, {}, options, meta || {});
+
+        this.init = function () {
             var opts = this.options;
 
             this.createGallery(opts.galleryStartIndex);
-			
-			// Update product data and gallery
+
+            // Update product data and gallery
             $(el).on('change', ':input', function (e) {
-				var ctx = $(this).closest('.update-container');
+                var ctx = $(this).closest('.update-container');
                 var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
                 var isFileUpload = $(this).data("fileupload");
-				
+
                 if (ctx.length === 0) {
                     // associated or bundled item
                     ctx = el;
@@ -46,14 +46,14 @@
                     }
                 });
             });
-			
-			return this;
-		};
+
+            return this;
+        };
 
         this.updateDetailData = function (data, ctx, isTouchSpin, isFileUpload) {
-			var gallery = $('#pd-gallery').data(galPluginName);
+            var gallery = $('#pd-gallery').data(galPluginName);
 
-			// Image gallery needs special treatment
+            // Image gallery needs special treatment
             if (!isFileUpload) {
                 if (data.GalleryHtml) {
                     var cnt = $('#pd-gallery-container');
@@ -68,23 +68,23 @@
                 }
             }
 
-			ctx.find('[data-partial]').each(function (i, el) {
-				// Iterate all elems with [data-partial] attribute...
-				var $el = $(el);
-				var partial = $el.data('partial');
-				if (partial && !(isTouchSpin && partial === 'OfferActions')) {
-					// ...fetch the updated html from the corresponding AJAX result object's properties
-					if (data.Partials && data.Partials.hasOwnProperty(partial)) {
-						var updatedHtml = data.Partials[partial] || "";
-						// ...and update the inner html
-						$el.html($(updatedHtml.trim()));
-					}
-				}
-			});
+            ctx.find('[data-partial]').each(function (i, el) {
+                // Iterate all elems with [data-partial] attribute...
+                var $el = $(el);
+                var partial = $el.data('partial');
+                if (partial && !(isTouchSpin && partial === 'OfferActions')) {
+                    // ...fetch the updated html from the corresponding AJAX result object's properties
+                    if (data.Partials && data.Partials.hasOwnProperty(partial)) {
+                        var updatedHtml = data.Partials[partial] || "";
+                        // ...and update the inner html
+                        $el.html($(updatedHtml.trim()));
+                    }
+                }
+            });
 
-			applyCommonPlugins(ctx);
+            applyCommonPlugins(ctx);
 
-			ctx.find(".pd-tierprices").html(data.Partials["TierPrices"]);
+            ctx.find(".pd-tierprices").html(data.Partials["TierPrices"]);
 
             if (data.DynamicThumblUrl && data.DynamicThumblUrl.length > 0) {
                 $(ctx).find('.pd-dyn-thumb').attr('src', data.DynamicThumblUrl);
@@ -92,13 +92,13 @@
 
             // trigger event for plugins devs to subscribe
             $('#main-update-container').trigger("updated");
-		};
-		
-		this.initialized = false;
-		this.init();
-		this.initialized = true;
-	}
-	
+        };
+
+        this.initialized = false;
+        this.init();
+        this.initialized = true;
+    }
+
     ProductDetail.prototype = {
         gallery: null,
         activePictureIndex: 0,
@@ -131,7 +131,7 @@
         // url to the ajax method, which loads variant combination data
         updateUrl: null,
     };
-	
+
     $.fn[pluginName] = function (options) {
 
         return this.each(function () {
@@ -141,5 +141,5 @@
             }
         });
     };
-    
+
 })(jQuery, window, document);

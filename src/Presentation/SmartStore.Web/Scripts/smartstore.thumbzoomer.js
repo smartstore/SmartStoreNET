@@ -29,17 +29,17 @@
 
             // Handle grid thumbs scaling on hover
             el.on("mouseenter", "img.zoomable-thumb", function (e) {
-            	var img = $(this).css("position", "relative"),
+                var img = $(this).css("position", "relative"),
                     offset = img.position(),
                     left = offset.left,
                     top = offset.top,
                     width = img.width(),
                     height = img.height();
 
-            	var maxSize = 120;
-            	var ratioX = maxSize / img[0].naturalWidth;
-            	var ratioY = maxSize / img[0].naturalHeight;
-            	var ratio = Math.min(ratioX, ratioY);
+                var maxSize = 120;
+                var ratioX = maxSize / img[0].naturalWidth;
+                var ratioY = maxSize / img[0].naturalHeight;
+                var ratio = Math.min(ratioX, ratioY);
 
                 var realWidth = img[0].naturalWidth * ratio;
                 var realHeight = img[0].naturalHeight * ratio;
@@ -51,18 +51,18 @@
 
                 var clone =
                     img.clone(false)
-                       .removeClass("zoomable-thumb")
-                       .addClass("zoomable-thumb-clone")
-                       .data("original", img[0])
-                       .css({
-                           position: "absolute",
-                           opacity: 0,
-                           left: left + "px",
-                           top: top + "px",
-                           width: width + "px",
-                           height: height + "px"
-                       })
-                       .appendTo(el /*$("body")*/);
+                        .removeClass("zoomable-thumb")
+                        .addClass("zoomable-thumb-clone")
+                        .data("original", img[0])
+                        .css({
+                            position: "absolute",
+                            opacity: 0,
+                            left: left + "px",
+                            top: top + "px",
+                            width: width + "px",
+                            height: height + "px"
+                        })
+                        .appendTo(el /*$("body")*/);
 
                 if (opts.setZIndex) {
                     //$.topZIndex(clone);
@@ -84,15 +84,15 @@
                 }));
 
                 clone.on("mouseleave", function () { hideClone(clone); })
-                     .stop(true, true)
-                     .animate({
-                         delay: 200,
-                         opacity: 1,
-                         width: realWidth,
-                         height: realHeight,
-                         top: top - ((realHeight - height) / 2),
-                         left: left - ((realWidth - width) / 2)
-                     }, 250, "ease-in-out");
+                    .stop(true, true)
+                    .animate({
+                        delay: 200,
+                        opacity: 1,
+                        width: realWidth,
+                        height: realHeight,
+                        top: top - ((realHeight - height) / 2),
+                        left: left - ((realWidth - width) / 2)
+                    }, 250, "ease-in-out");
 
             });
 

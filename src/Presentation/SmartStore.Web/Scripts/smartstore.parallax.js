@@ -39,8 +39,7 @@
         });
         window.addEventListener("testPassive", null, opts);
         window.removeEventListener("testPassive", null, opts);
-    } catch (e)
-    {
+    } catch (e) {
         //
     }
 
@@ -94,13 +93,13 @@
         var style = originalStyle || el.style.cssText;
         if (!originalStyle) {
             $(el).data('original-style', style);
-        }      
+        }
 
         var originalTransform = $(el).data('original-transform');
         var transform = originalTransform || $el.css('transform') || '';
         if (!originalTransform) {
             $(el).data('original-transform', transform);
-        }  
+        }
 
         if (transform === 'none') { transform = ''; }
 
@@ -184,7 +183,7 @@
     }
 
     // Loop
-    function update () {
+    function update() {
         if (setPosition() && pause === false) {
             animate();
             // loop again

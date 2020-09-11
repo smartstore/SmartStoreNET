@@ -44,9 +44,9 @@
             // create throbber if not avail
             if (!self.throbber) {
                 self.throbber = $('<div class="throbber"><div class="throbber-flex"><div><div class="throbber-content"></div></div></div></div>')
-                                 .addClass(opts.cssClass)
-                                 .addClass(opts.small ? "small" : "large")
-                                 .appendTo(opts._global ? 'body' : self.el);
+                    .addClass(opts.cssClass)
+                    .addClass(opts.small ? "small" : "large")
+                    .appendTo(opts._global ? 'body' : self.el);
                 if (opts.white) {
                     self.throbber.addClass("white");
                 }
@@ -58,7 +58,7 @@
                         self.el.css("position", "relative");
                     }
                 }
-                
+
                 self.throbberContent = self.throbber.find(".throbber-content");
                 var spinner = window.createCircularSpinner(opts.small ? 50 : 100, true, 3);
                 spinner.insertAfter(self.throbberContent);
@@ -102,7 +102,7 @@
                 self.visible = false;
 
                 !defaults.speed || _.isTrue(immediately)
-            		? self.throbber.stop(true).hide(0, hide)
+                    ? self.throbber.stop(true).hide(0, hide)
                     : self.throbber.stop(true).animate({ opacity: 0 }, opts.speed || 0, "linear", hide);
             }
 

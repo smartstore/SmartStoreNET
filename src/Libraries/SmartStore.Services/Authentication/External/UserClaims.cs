@@ -142,6 +142,6 @@ namespace SmartStore.Services.Authentication.External
         public DateTime? WholeBirthDate { get; set; }
         public int Year { get; set; }
         public string Raw { get; set; }
-        public DateTime GeneratedBirthDate { get { return new DateTime(Year, Month, DayOfMonth); } }
+        public DateTime GeneratedBirthDate => new DateTime(Year, Month, DayOfMonth);
     }
 }

@@ -44,7 +44,7 @@ namespace SmartStore.Services.Common
         /// </summary>
         /// <typeparam name="T">Entity</typeparam>
         /// <returns>Integer ident; null if cannot get the result</returns>
-        public virtual int? GetTableIdent<T>() where T: BaseEntity
+        public virtual int? GetTableIdent<T>() where T : BaseEntity
         {
             if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
             {

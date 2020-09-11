@@ -15,7 +15,7 @@ namespace SmartStore.Services.Customers
         private readonly IRuleFactory _ruleFactory;
         private readonly WeakReference<IRuleVisitor> _ruleVisitor;
 
-        public TargetGroupFilterDescriptor(IRuleFactory ruleFactory, IRuleVisitor ruleVisitor) 
+        public TargetGroupFilterDescriptor(IRuleFactory ruleFactory, IRuleVisitor ruleVisitor)
             : base(x => true)
         {
             _ruleFactory = ruleFactory;
@@ -25,7 +25,7 @@ namespace SmartStore.Services.Customers
         public override Expression GetExpression(RuleOperator op, Expression valueExpression, bool liftToNull)
         {
             var ruleSetId = ((ConstantExpression)valueExpression).Value.Convert<int>();
-            
+
             // Get other expression group
             _ruleVisitor.TryGetTarget(out var visitor);
             var otherGroup = _ruleFactory.CreateExpressionGroup(ruleSetId, visitor) as FilterExpressionGroup;

@@ -30,10 +30,10 @@ namespace SmartStore.Services.Media
 
         public static string GetUrl(this IMediaService service, int? fileId, int thumbnailSize, string host = null, bool doFallback = true)
         {
-            ProcessImageQuery query = thumbnailSize > 0 
-                ? new ProcessImageQuery { MaxSize = thumbnailSize } 
+            ProcessImageQuery query = thumbnailSize > 0
+                ? new ProcessImageQuery { MaxSize = thumbnailSize }
                 : null;
-            
+
             return service.GetUrl(service.GetFileById(fileId ?? 0, MediaLoadFlags.AsNoTracking), query, host, doFallback);
         }
 

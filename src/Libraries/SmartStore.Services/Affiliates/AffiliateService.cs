@@ -20,7 +20,7 @@ namespace SmartStore.Services.Affiliates
         {
             if (affiliateId == 0)
                 return null;
-            
+
             return _affiliateRepository.GetById(affiliateId);
         }
 

@@ -365,7 +365,7 @@ namespace SmartStore.Services.Orders
             }
 
             query = query.Where(x =>
-                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped 
+                x.ShippingStatusId == (int)ShippingStatus.NotYetShipped
                 || x.PaymentStatusId == (int)PaymentStatus.Pending
             );
             var dataPoints = query.Select(x => new OrderDataPoint
@@ -402,7 +402,7 @@ namespace SmartStore.Services.Orders
             {
                 CreatedOn = x.CreatedOnUtc,
                 OrderTotal = x.OrderTotal,
-                OrderStatusId = x.OrderStatusId 
+                OrderStatusId = x.OrderStatusId
             });
             return new PagedList<OrderDataPoint>(dataPoints, pageIndex, pageSize);
         }

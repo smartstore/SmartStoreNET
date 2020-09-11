@@ -6,9 +6,9 @@ using ImageProcessor;
 namespace SmartStore.Services.Media.Imaging.Impl
 {
     public class IPImage : DisposableObject, IProcessableImage
-    {        
+    {
         private readonly ImageFactory _image;
-        
+
         public IPImage(ImageFactory image)
         {
             _image = image;
@@ -21,7 +21,7 @@ namespace SmartStore.Services.Media.Imaging.Impl
         public Size Size => _image.Image.Size;
 
         /// <inheritdoc/>
-        public BitDepth BitDepth 
+        public BitDepth BitDepth
         {
             get => (BitDepth)Convert.ToInt32(_image.CurrentBitDepth);
             set => _image.BitDepth(Convert.ToInt64(value));
@@ -40,10 +40,7 @@ namespace SmartStore.Services.Media.Imaging.Impl
 
         #endregion
 
-        public ImageFactory ImageFactory 
-        {
-            get => _image; 
-        }
+        public ImageFactory ImageFactory => _image;
 
         /// <inheritdoc/>
         public Size SourceSize { get; }

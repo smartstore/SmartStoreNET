@@ -72,7 +72,7 @@ namespace SmartStore.Services.Orders
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
 		decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart,
-			ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
+            ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
 
         /// <summary>
         /// Gets shopping cart additional shipping charge
@@ -114,14 +114,14 @@ namespace SmartStore.Services.Orders
 		decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax,
             out decimal taxRate, out Discount appliedDiscount);
 
-		/// <summary>
-		/// Gets a shipping discount
-		/// </summary>
-		/// <param name="customer">Customer</param>
-		/// <param name="shippingTotal">Shipping total</param>
-		/// <param name="appliedDiscount">Applied discount</param>
-		/// <returns>Shipping discount</returns>
-		decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount);
+        /// <summary>
+        /// Gets a shipping discount
+        /// </summary>
+        /// <param name="customer">Customer</param>
+        /// <param name="shippingTotal">Shipping total</param>
+        /// <param name="appliedDiscount">Applied discount</param>
+        /// <returns>Shipping discount</returns>
+        decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount);
 
 
 
@@ -161,7 +161,7 @@ namespace SmartStore.Services.Orders
             IList<OrganizedShoppingCartItem> cart,
             bool ignoreRewardPoints = false,
             bool usePaymentMethodAdditionalFee = true,
-			bool ignoreCreditBalance = false);
+            bool ignoreCreditBalance = false);
 
 
         /// <summary>

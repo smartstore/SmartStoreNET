@@ -5,177 +5,162 @@ using System.Xml.Serialization;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public class ImportResult : ICloneable<SerializableImportResult>
-	{
-		public ImportResult()
-		{
-			this.Messages = new List<ImportMessage>();
-			Clear();
-		}
+    public class ImportResult : ICloneable<SerializableImportResult>
+    {
+        public ImportResult()
+        {
+            this.Messages = new List<ImportMessage>();
+            Clear();
+        }
 
-		public DateTime StartDateUtc
-		{
-			get;
-			set;
-		}
+        public DateTime StartDateUtc
+        {
+            get;
+            set;
+        }
 
-		public DateTime EndDateUtc
-		{
-			get;
-			set;
-		}
+        public DateTime EndDateUtc
+        {
+            get;
+            set;
+        }
 
-		public int TotalRecords
-		{
-			get;
-			set;
-		}
+        public int TotalRecords
+        {
+            get;
+            set;
+        }
 
-		public int SkippedRecords
-		{
-			get;
-			set;
-		}
+        public int SkippedRecords
+        {
+            get;
+            set;
+        }
 
-		public int NewRecords
-		{
-			get;
-			set;
-		}
+        public int NewRecords
+        {
+            get;
+            set;
+        }
 
-		public int ModifiedRecords
-		{
-			get;
-			set;
-		}
+        public int ModifiedRecords
+        {
+            get;
+            set;
+        }
 
-		public int AffectedRecords
-		{
-			get { return NewRecords + ModifiedRecords; }
-		}
+        public int AffectedRecords => NewRecords + ModifiedRecords;
 
-		public bool Cancelled
-		{
-			get;
-			set;
-		}
+        public bool Cancelled
+        {
+            get;
+            set;
+        }
 
-		public void Clear()
-		{
-			Messages.Clear();
-			StartDateUtc = EndDateUtc = DateTime.UtcNow;
-			TotalRecords = 0;
-			SkippedRecords = 0;
-			NewRecords = 0;
-			ModifiedRecords = 0;
-			Cancelled = false;
-		}
+        public void Clear()
+        {
+            Messages.Clear();
+            StartDateUtc = EndDateUtc = DateTime.UtcNow;
+            TotalRecords = 0;
+            SkippedRecords = 0;
+            NewRecords = 0;
+            ModifiedRecords = 0;
+            Cancelled = false;
+        }
 
-		public ImportMessage AddInfo(string message, ImportRowInfo affectedRow = null, string affectedField = null)
-		{
-			return this.AddMessage(message, ImportMessageType.Info, affectedRow, affectedField);
-		}
+        public ImportMessage AddInfo(string message, ImportRowInfo affectedRow = null, string affectedField = null)
+        {
+            return this.AddMessage(message, ImportMessageType.Info, affectedRow, affectedField);
+        }
 
-		public ImportMessage AddWarning(string message, ImportRowInfo affectedRow = null, string affectedField = null)
-		{
-			return this.AddMessage(message, ImportMessageType.Warning, affectedRow, affectedField);
-		}
+        public ImportMessage AddWarning(string message, ImportRowInfo affectedRow = null, string affectedField = null)
+        {
+            return this.AddMessage(message, ImportMessageType.Warning, affectedRow, affectedField);
+        }
 
-		public ImportMessage AddError(string message, ImportRowInfo affectedRow = null, string affectedField = null)
-		{
-			return this.AddMessage(message, ImportMessageType.Error, affectedRow, affectedField);
-		}
+        public ImportMessage AddError(string message, ImportRowInfo affectedRow = null, string affectedField = null)
+        {
+            return this.AddMessage(message, ImportMessageType.Error, affectedRow, affectedField);
+        }
 
-		public ImportMessage AddError(Exception exception, int? affectedBatch = null, string stage = null)
-		{
-			var prefix = new List<string>();
-			if (affectedBatch.HasValue)
-			{
-				prefix.Add("Batch: " + affectedBatch.Value);
-			}
-			if (stage.HasValue())
-			{
-				prefix.Add("Stage: " + stage);
-			}
+        public ImportMessage AddError(Exception exception, int? affectedBatch = null, string stage = null)
+        {
+            var prefix = new List<string>();
+            if (affectedBatch.HasValue)
+            {
+                prefix.Add("Batch: " + affectedBatch.Value);
+            }
+            if (stage.HasValue())
+            {
+                prefix.Add("Stage: " + stage);
+            }
 
-			string msg = string.Empty;
-			if (prefix.Any())
-			{
-				msg = "[{0}] ".FormatCurrent(String.Join(", ", prefix));
-			}
+            string msg = string.Empty;
+            if (prefix.Any())
+            {
+                msg = "[{0}] ".FormatCurrent(String.Join(", ", prefix));
+            }
 
-			msg += exception.ToAllMessages();
+            msg += exception.ToAllMessages();
 
-			return this.AddMessage(msg, ImportMessageType.Error, fullMessage: exception.StackTrace);
-		}
+            return this.AddMessage(msg, ImportMessageType.Error, fullMessage: exception.StackTrace);
+        }
 
-		public ImportMessage AddError(Exception exception, string message)
-		{
-			return AddMessage(
-				message ?? exception.ToAllMessages(),
-				ImportMessageType.Error,
-				null,
-				null,
-				exception.StackTrace);
-		}
+        public ImportMessage AddError(Exception exception, string message)
+        {
+            return AddMessage(
+                message ?? exception.ToAllMessages(),
+                ImportMessageType.Error,
+                null,
+                null,
+                exception.StackTrace);
+        }
 
-		public ImportMessage AddMessage(string message, ImportMessageType severity, ImportRowInfo affectedRow = null, string affectedField = null, string fullMessage = null)
-		{
-			var msg = new ImportMessage(message, severity);
+        public ImportMessage AddMessage(string message, ImportMessageType severity, ImportRowInfo affectedRow = null, string affectedField = null, string fullMessage = null)
+        {
+            var msg = new ImportMessage(message, severity);
 
-			msg.AffectedItem = affectedRow;
-			msg.AffectedField = affectedField;
-			msg.FullMessage = fullMessage;
+            msg.AffectedItem = affectedRow;
+            msg.AffectedField = affectedField;
+            msg.FullMessage = fullMessage;
 
-			this.Messages.Add(msg);
-			return msg;
-		}
+            this.Messages.Add(msg);
+            return msg;
+        }
 
-		public IList<ImportMessage> Messages
-		{
-			get;
-			private set;
-		}
+        public IList<ImportMessage> Messages
+        {
+            get;
+            private set;
+        }
 
-		public bool HasWarnings
-		{
-			get { return this.Messages.Any(x => x.MessageType == ImportMessageType.Warning); }
-		}
+        public bool HasWarnings => this.Messages.Any(x => x.MessageType == ImportMessageType.Warning);
 
-		public int Warnings
-		{
-			get { return Messages.Count(x => x.MessageType == ImportMessageType.Warning); }
-		}
+        public int Warnings => Messages.Count(x => x.MessageType == ImportMessageType.Warning);
 
-		public bool HasErrors
-		{
-			get { return this.Messages.Any(x => x.MessageType == ImportMessageType.Error); }
-		}
+        public bool HasErrors => this.Messages.Any(x => x.MessageType == ImportMessageType.Error);
 
-		public int Errors
-		{
-			get { return Messages.Count(x => x.MessageType == ImportMessageType.Error); }
-		}
+        public int Errors => Messages.Count(x => x.MessageType == ImportMessageType.Error);
 
-		public string LastError
-		{
-			get
-			{
-				var lastError = Messages.LastOrDefault(x => x.MessageType == ImportMessageType.Error);
-				if (lastError != null)
-					return lastError.Message;
+        public string LastError
+        {
+            get
+            {
+                var lastError = Messages.LastOrDefault(x => x.MessageType == ImportMessageType.Error);
+                if (lastError != null)
+                    return lastError.Message;
 
-				return null;
-			}
-		}
+                return null;
+            }
+        }
 
-		object ICloneable.Clone()
-		{
-			return this.MemberwiseClone();
-		}
+        object ICloneable.Clone()
+        {
+            return this.MemberwiseClone();
+        }
 
-		public SerializableImportResult Clone()
-		{
+        public SerializableImportResult Clone()
+        {
             var result = new SerializableImportResult();
             result.StartDateUtc = StartDateUtc;
             result.EndDateUtc = EndDateUtc;
@@ -191,22 +176,22 @@ namespace SmartStore.Services.DataExchange.Import
 
             return result;
         }
-	}
+    }
 
 
-	[Serializable]
-	public partial class SerializableImportResult
-	{
-		public DateTime StartDateUtc { get; set; }
-		public DateTime EndDateUtc { get; set; }
-		public int TotalRecords { get; set; }
-		public int SkippedRecords { get; set; }
-		public int NewRecords { get; set; }
-		public int ModifiedRecords { get; set; }
-		public int AffectedRecords { get; set; }
-		public bool Cancelled { get; set; }
-		public int Warnings { get; set; }
-		public int Errors { get; set; }
-		public string LastError { get; set; }
-	}
+    [Serializable]
+    public partial class SerializableImportResult
+    {
+        public DateTime StartDateUtc { get; set; }
+        public DateTime EndDateUtc { get; set; }
+        public int TotalRecords { get; set; }
+        public int SkippedRecords { get; set; }
+        public int NewRecords { get; set; }
+        public int ModifiedRecords { get; set; }
+        public int AffectedRecords { get; set; }
+        public bool Cancelled { get; set; }
+        public int Warnings { get; set; }
+        public int Errors { get; set; }
+        public string LastError { get; set; }
+    }
 }

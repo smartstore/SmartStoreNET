@@ -66,7 +66,7 @@ namespace SmartStore.Services.Media.Migration
             if (toDelete.Any())
             {
                 setFolders.RemoveRange(toDelete);
-            }         
+            }
 
             _db.SaveChanges();
 

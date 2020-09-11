@@ -22,7 +22,7 @@ namespace SmartStore.Services.Media
         private readonly string _mediaRootPath;
 
         public MediaServiceFileSystemAdapter(
-            IMediaService mediaService, 
+            IMediaService mediaService,
             IFolderService folderService,
             MediaHelper mediaHelper,
             MediaExceptionFactory exceptionFactory)
@@ -42,10 +42,7 @@ namespace SmartStore.Services.Media
 
         #region IFileSystem
 
-        public bool IsCloudStorage
-        {
-            get => _storageProvider.IsCloudStorage;
-        }
+        public bool IsCloudStorage => _storageProvider.IsCloudStorage;
 
         public string Root => string.Empty;
 
@@ -73,13 +70,13 @@ namespace SmartStore.Services.Media
                 // Is a folder path, no need to strip off public URL stuff.
                 return url;
             }
-            
+
             // Strip off root, e.g. "media/"
             var path = url.Substring(_mediaRootPath.Length);
 
             // Strip off media id from path, e.g. "123/"
             var firstSlashIndex = path.IndexOf('/');
-            
+
             return path.Substring(firstSlashIndex);
         }
 
@@ -146,7 +143,7 @@ namespace SmartStore.Services.Media
             {
                 throw _exceptionFactory.FolderNotFound(path);
             }
-            
+
             var query = new MediaSearchQuery
             {
                 FolderId = node.Value.Id,
@@ -201,15 +198,15 @@ namespace SmartStore.Services.Media
             var file = _mediaService.GetFileByPath(path);
             if (file == null)
             {
-                var mediaFile = new MediaFile 
-                { 
+                var mediaFile = new MediaFile
+                {
                     Name = Path.GetFileName(path),
                     Extension = Path.GetExtension(path).TrimStart('.'),
                     MimeType = MimeTypes.MapNameToMimeType(path),
                     FolderId = _folderService.GetNodeByPath(Fix(Path.GetDirectoryName(path)))?.Value.Id
                 };
                 _mediaService.ConvertMediaFile(mediaFile);
-                   
+
                 file = _mediaService.ConvertMediaFile(mediaFile);
             }
 
@@ -254,7 +251,7 @@ namespace SmartStore.Services.Media
             }
 
             _mediaService.CopyFile(
-                sourceFile, 
+                sourceFile,
                 newPath,
                 overwrite ? DuplicateFileHandling.Overwrite : DuplicateFileHandling.ThrowError);
         }
@@ -280,8 +277,8 @@ namespace SmartStore.Services.Media
 
         public void CopyFolder(string path, string destinationPath, bool overwrite = true)
         {
-            var dupeEntryHandling = overwrite 
-                ? DuplicateEntryHandling.Overwrite 
+            var dupeEntryHandling = overwrite
+                ? DuplicateEntryHandling.Overwrite
                 : DuplicateEntryHandling.ThrowError;
 
             _mediaService.CopyFolder(path, destinationPath, dupeEntryHandling);

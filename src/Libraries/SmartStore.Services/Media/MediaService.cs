@@ -73,10 +73,7 @@ namespace SmartStore.Services.Media
         public Localizer T { get; set; } = NullLocalizer.Instance;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public IMediaStorageProvider StorageProvider
-        {
-            get => _storageProvider;
-        }
+        public IMediaStorageProvider StorageProvider => _storageProvider;
 
         public bool ImagePostProcessingEnabled { get; set; } = true;
 
@@ -85,7 +82,7 @@ namespace SmartStore.Services.Media
         public int CountFiles(MediaSearchQuery query)
         {
             Guard.NotNull(query, nameof(query));
-            
+
             var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             var count = q.Count();
             return count;
@@ -114,15 +111,15 @@ namespace SmartStore.Services.Media
 
             // Determine counts
             var result = (from f in q
-                    group f by 1 into g
-                    select new FileCountResult
-                    {
-                        Total = g.Count(),
-                        Trash = g.Count(x => x.Deleted),
-                        Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
-                        Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
-                        Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
-                    }).FirstOrDefault() ?? new FileCountResult();
+                          group f by 1 into g
+                          select new FileCountResult
+                          {
+                              Total = g.Count(),
+                              Trash = g.Count(x => x.Deleted),
+                              Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
+                              Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
+                              Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
+                          }).FirstOrDefault() ?? new FileCountResult();
 
             if (result.Total == 0)
             {
@@ -132,9 +129,9 @@ namespace SmartStore.Services.Media
 
             // Determine file count for each folder
             var byFolders = from f in q
-                     where f.FolderId > 0 && !f.Deleted
-                     group f by f.FolderId.Value into grp
-                     select grp;
+                            where f.FolderId > 0 && !f.Deleted
+                            group f by f.FolderId.Value into grp
+                            select grp;
 
             result.Folders = byFolders
                 .Select(grp => new { FolderId = grp.Key, Count = grp.Count() })
@@ -189,7 +186,7 @@ namespace SmartStore.Services.Media
             {
                 return _fileRepo.Table.Any(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
             }
-            
+
             return false;
         }
 
@@ -413,13 +410,13 @@ namespace SmartStore.Services.Media
                 }
                 catch (Exception ex)
                 {
-                    if (isNewFile) 
+                    if (isNewFile)
                     {
                         // New file's metadata should be removed on storage save failure immediately
                         DeleteFile(file, true, true);
                         await scope.CommitAsync();
                     }
-                    
+
                     Logger.Error(ex);
                 }
             }
@@ -490,10 +487,10 @@ namespace SmartStore.Services.Media
         }
 
         protected MediaStorageItem ProcessFile(
-            ref MediaFile file, 
-            MediaPathData pathData, 
-            Stream inStream, 
-            bool isTransient = true, 
+            ref MediaFile file,
+            MediaPathData pathData,
+            Stream inStream,
+            bool isTransient = true,
             DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
             if (file != null)
@@ -584,7 +581,7 @@ namespace SmartStore.Services.Media
             {
                 outImage = new ImageWrapper(inStream, originalSize, format);
                 return true;
-            }    
+            }
 
             var maxSize = _mediaSettings.MaximumImageSize;
 
@@ -641,7 +638,7 @@ namespace SmartStore.Services.Media
                 true /* copyData */,
                 (DuplicateEntryHandling)((int)dupeFileHandling),
                 () => dupe,
-                p => CheckUniqueFileName(p), 
+                p => CheckUniqueFileName(p),
                 out var isDupe);
 
             return new FileOperationResult
@@ -807,10 +804,10 @@ namespace SmartStore.Services.Media
         }
 
         private bool ValidateMoveOperation(
-            MediaFile file, 
+            MediaFile file,
             string destinationFileName,
             DuplicateFileHandling dupeFileHandling,
-            out bool nameChanged, 
+            out bool nameChanged,
             out MediaPathData destPathData)
         {
             Guard.NotNull(file, nameof(file));
@@ -994,7 +991,7 @@ namespace SmartStore.Services.Media
                 {
                     // ...but file name includes path chars, which is not allowed
                     throw new ArgumentException(
-                        T("Admin.Media.Exception.InvalidPath", Path.GetDirectoryName(destinationFileName)), 
+                        T("Admin.Media.Exception.InvalidPath", Path.GetDirectoryName(destinationFileName)),
                         nameof(destinationFileName));
                 }
 
@@ -1023,7 +1020,7 @@ namespace SmartStore.Services.Media
             if (!_folderService.AreInSameAlbum(folderId1, folderId2))
             {
                 throw _exceptionFactory.NotSameAlbum(
-                    _folderService.GetNodeById(folderId1).Value.Path, 
+                    _folderService.GetNodeById(folderId1).Value.Path,
                     _folderService.GetNodeById(folderId2).Value.Path);
             }
         }

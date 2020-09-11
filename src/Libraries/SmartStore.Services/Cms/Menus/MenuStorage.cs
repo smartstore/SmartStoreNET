@@ -190,7 +190,7 @@ namespace SmartStore.Services.Cms
                 return false;
             }
 
-			return GetMenuSystemNames(true).Contains(systemName);
+            return GetMenuSystemNames(true).Contains(systemName);
         }
 
         #region Menu items
@@ -207,8 +207,8 @@ namespace SmartStore.Services.Cms
 
             _menuItemRepository.Insert(item);
 
-			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
-		}
+            _services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
+        }
 
         public virtual void UpdateMenuItem(MenuItemRecord item)
         {
@@ -222,8 +222,8 @@ namespace SmartStore.Services.Cms
 
             _menuItemRepository.Update(item);
 
-			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
-		}
+            _services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
+        }
 
         public virtual void DeleteMenuItem(MenuItemRecord item, bool deleteChilds = true)
         {
@@ -236,21 +236,21 @@ namespace SmartStore.Services.Cms
             {
                 _menuItemRepository.Delete(item);
             }
-			else
-			{
-				var ids = new HashSet<int> { item.Id };
-				GetChildIds(item.Id, ids);
+            else
+            {
+                var ids = new HashSet<int> { item.Id };
+                GetChildIds(item.Id, ids);
 
-				foreach (var chunk in ids.Slice(200))
-				{
-					var items = _menuItemRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
-					_menuItemRepository.DeleteRange(items);
-				}
-			}
+                foreach (var chunk in ids.Slice(200))
+                {
+                    var items = _menuItemRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
+                    _menuItemRepository.DeleteRange(items);
+                }
+            }
 
-			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
+            _services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
 
-			void GetChildIds(int parentId, HashSet<int> ids)
+            void GetChildIds(int parentId, HashSet<int> ids)
             {
                 var childIds = _menuItemRepository.TableUntracked
                     .Where(x => x.ParentItemId == parentId)
@@ -302,22 +302,22 @@ namespace SmartStore.Services.Cms
         #region Utilities
 
         private ISet GetMenuSystemNames(bool ensureCreated)
-		{
-			if (ensureCreated || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
-			{
-				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMES_CACHE_KEY, () =>
-				{
-					return _menuRepository.TableUntracked
-						.Where(x => x.Published)
+        {
+            if (ensureCreated || _services.Cache.Contains(MENU_ALLSYSTEMNAMES_CACHE_KEY))
+            {
+                return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMES_CACHE_KEY, () =>
+                {
+                    return _menuRepository.TableUntracked
+                        .Where(x => x.Published)
                         .OrderByDescending(x => x.IsSystemMenu)
                         .ThenBy(x => x.Id)
-						.Select(x => x.SystemName)
-						.ToArray();
-				});
-			}
+                        .Select(x => x.SystemName)
+                        .ToArray();
+                });
+            }
 
-			return null;
-		}
+            return null;
+        }
 
         protected virtual IQueryable<MenuRecord> BuildMenuQuery(
             int id,
@@ -352,7 +352,7 @@ namespace SmartStore.Services.Cms
 
             if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
             {
-                query = 
+                query =
                     from x in query
                     join m in _storeMappingRepository.Table
                     on new { x1 = x.Id, x2 = entityName } equals new { x1 = m.EntityId, x2 = m.EntityName } into sm
@@ -367,7 +367,7 @@ namespace SmartStore.Services.Cms
             {
                 var allowedRoleIds = _services.WorkContext.CurrentCustomer.GetRoleIds();
 
-                query = 
+                query =
                     from x in query
                     join a in _aclRepository.Table
                     on new { x1 = x.Id, x2 = entityName } equals new { x1 = a.EntityId, x2 = a.EntityName } into ac
@@ -380,7 +380,7 @@ namespace SmartStore.Services.Cms
 
             if (applied && groupBy)
             {
-                query = 
+                query =
                     from x in query
                     group x by x.Id into grp
                     orderby grp.Key

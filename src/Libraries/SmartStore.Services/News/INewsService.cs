@@ -23,12 +23,12 @@ namespace SmartStore.Services.News
         /// <returns>News</returns>
         NewsItem GetNewsById(int newsId);
 
-		/// <summary>
-		/// Get news by identifiers
-		/// </summary>
-		/// <param name="newsIds">News identifiers</param>
-		/// <returns>News query</returns>
-		IQueryable<NewsItem> GetNewsByIds(int[] newsIds);
+        /// <summary>
+        /// Get news by identifiers
+        /// </summary>
+        /// <param name="newsIds">News identifiers</param>
+        /// <returns>News query</returns>
+        IQueryable<NewsItem> GetNewsByIds(int[] newsIds);
 
         /// <summary>
         /// Gets all news

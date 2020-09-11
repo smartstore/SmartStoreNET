@@ -7,7 +7,7 @@ namespace SmartStore.Services.Media.Imaging
     public class ImageWrapper : DisposableObject, IImage
     {
         private readonly bool _disposeStream;
-        
+
         public ImageWrapper(Stream stream, Size size, IImageFormat format, BitDepth bitDepth = BitDepth.Bit24, bool disposeStream = true)
         {
             Guard.NotNull(stream, nameof(stream));
@@ -58,7 +58,7 @@ namespace SmartStore.Services.Media.Imaging
         public IImage Save(Stream stream)
         {
             Guard.NotNull(stream, nameof(stream));
-            
+
             if (stream.CanSeek)
             {
                 stream.SetLength(0);

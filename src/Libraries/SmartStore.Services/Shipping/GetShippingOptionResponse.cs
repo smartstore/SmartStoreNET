@@ -24,13 +24,7 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         public IList<string> Errors { get; set; }
 
-        public bool Success
-        {
-            get 
-            { 
-                return this.Errors.Count == 0; 
-            }
-        }
+        public bool Success => this.Errors.Count == 0;
 
         public void AddError(string error)
         {

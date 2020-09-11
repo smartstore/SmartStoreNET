@@ -39,6 +39,6 @@ namespace SmartStore.Services.Affiliates
         /// </summary>
         /// <param name="affiliate">Affiliate</param>
         void UpdateAffiliate(Affiliate affiliate);
-        
+
     }
 }

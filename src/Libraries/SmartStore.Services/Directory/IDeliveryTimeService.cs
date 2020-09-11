@@ -15,7 +15,7 @@ namespace SmartStore.Services.Directory
         /// at least one dependant entity
         /// </summary>
         bool IsAssociated(int deliveryTimeId);
-        
+
         /// <summary>
         /// Deletes delivery time
         /// </summary>
@@ -29,12 +29,12 @@ namespace SmartStore.Services.Directory
         /// <returns>DeliveryTime</returns>
         DeliveryTime GetDeliveryTimeById(int deliveryTimeId);
 
-		/// <summary>
-		/// Gets the delivery time for a product
-		/// </summary>
-		/// <param name="product">The product</param>
-		/// <returns>Delivery time</returns>
-		DeliveryTime GetDeliveryTime(Product product);
+        /// <summary>
+        /// Gets the delivery time for a product
+        /// </summary>
+        /// <param name="product">The product</param>
+        /// <returns>Delivery time</returns>
+        DeliveryTime GetDeliveryTime(Product product);
 
         /// <summary>
         /// Gets all delivery times

@@ -15,46 +15,46 @@ namespace SmartStore.Services.Media.Imaging.Impl
             ImageProcessorBootstrapper.Instance.AddImageFormats(new WebPFormat { Quality = 100 });
         }
 
-		public bool IsSupportedImage(string extension)
-		{
-			return GetInternalImageFormat(extension) != null;
-		}
+        public bool IsSupportedImage(string extension)
+        {
+            return GetInternalImageFormat(extension) != null;
+        }
 
-		public IImageFormat GetImageFormat(string extension)
-		{
-			var internalFormat = GetInternalImageFormat(extension);
-			if (internalFormat != null)
-			{
-				return new IPImageFormat(internalFormat);
-			}
+        public IImageFormat GetImageFormat(string extension)
+        {
+            var internalFormat = GetInternalImageFormat(extension);
+            if (internalFormat != null)
+            {
+                return new IPImageFormat(internalFormat);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		private ISupportedImageFormat GetInternalImageFormat(string extension)
-		{
-			if (extension.IsEmpty())
-			{
-				return null;
-			}
+        private ISupportedImageFormat GetInternalImageFormat(string extension)
+        {
+            if (extension.IsEmpty())
+            {
+                return null;
+            }
 
-			if (extension[0] == '.' && extension.Length > 1)
-			{
-				extension = extension.Substring(1);
-			}
+            if (extension[0] == '.' && extension.Length > 1)
+            {
+                extension = extension.Substring(1);
+            }
 
-			return ImageProcessorBootstrapper.Instance.SupportedImageFormats
-				.FirstOrDefault(x => x.FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase));
-		}
+            return ImageProcessorBootstrapper.Instance.SupportedImageFormats
+                .FirstOrDefault(x => x.FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase));
+        }
 
-		public IProcessableImage LoadImage(string path, bool preserveExif = false)
-		{
-			return new IPImage(new ImageFactory(preserveExif, fixGamma: false).Load(path));
-		}
+        public IProcessableImage LoadImage(string path, bool preserveExif = false)
+        {
+            return new IPImage(new ImageFactory(preserveExif, fixGamma: false).Load(path));
+        }
 
-		public IProcessableImage LoadImage(Stream stream, bool preserveExif = false)
-		{
-			return new IPImage(new ImageFactory(preserveExif, fixGamma: false).Load(stream));
-		}
-	}
+        public IProcessableImage LoadImage(Stream stream, bool preserveExif = false)
+        {
+            return new IPImage(new ImageFactory(preserveExif, fixGamma: false).Load(stream));
+        }
+    }
 }

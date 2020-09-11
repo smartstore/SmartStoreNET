@@ -10,7 +10,7 @@ namespace SmartStore.Services.Media.Storage
     public abstract class MediaStorageItem : IDisposable
     {
         private Stream _sourceStream;
-        
+
         public Stream SourceStream
         {
             get
@@ -24,7 +24,7 @@ namespace SmartStore.Services.Media.Storage
                 {
                     _sourceStream.Position = 0;
                 }
-                
+
                 return _sourceStream;
             }
         }
@@ -66,7 +66,7 @@ namespace SmartStore.Services.Media.Storage
         public class ImageStorageItem : MediaStorageItem
         {
             private readonly IImage _image;
-            
+
             public ImageStorageItem(IImage image)
             {
                 _image = image;
@@ -113,7 +113,7 @@ namespace SmartStore.Services.Media.Storage
                 {
                     stream.SetLength(0);
                 }
-                
+
                 SourceStream.CopyTo(stream);
 
                 if (stream.CanSeek)

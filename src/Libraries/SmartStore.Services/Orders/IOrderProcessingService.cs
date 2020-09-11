@@ -81,7 +81,7 @@ namespace SmartStore.Services.Orders
         bool CanCancelRecurringPayment(Customer customerToValidate, RecurringPayment recurringPayment);
 
 
-        
+
 
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SmartStore.Services.Orders
         /// <param name="shipment">Shipment</param>
         /// <param name="notifyCustomer">True to notify customer</param>
         void Ship(Shipment shipment, bool notifyCustomer);
-        
+
         /// <summary>
         /// Marks a shipment as delivered
         /// </summary>
@@ -114,11 +114,11 @@ namespace SmartStore.Services.Orders
         /// <param name="notifyCustomer">True to notify customer</param>
         void CancelOrder(Order order, bool notifyCustomer);
 
-		/// <summary>
-		/// Auto update order details
-		/// </summary>
-		/// <param name="context">Context parameters</param>
-		void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
+        /// <summary>
+        /// Auto update order details
+        /// </summary>
+        /// <param name="context">Context parameters</param>
+        void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
 
 
         /// <summary>
@@ -135,18 +135,18 @@ namespace SmartStore.Services.Orders
         void MarkAsAuthorized(Order order);
 
 
-		/// <summary>
-		/// Gets a value indicating whether the order can be marked as completed
-		/// </summary>
-		/// <param name="order">Order</param>
-		/// <returns>A value indicating whether the order can be marked as completed</returns>
-		bool CanCompleteOrder(Order order);
+        /// <summary>
+        /// Gets a value indicating whether the order can be marked as completed
+        /// </summary>
+        /// <param name="order">Order</param>
+        /// <returns>A value indicating whether the order can be marked as completed</returns>
+        bool CanCompleteOrder(Order order);
 
-		/// <summary>
-		/// Marks the order as completed
-		/// </summary>
-		/// <param name="order">Order</param>
-		void CompleteOrder(Order order);
+        /// <summary>
+        /// Marks the order as completed
+        /// </summary>
+        /// <param name="order">Order</param>
+        void CompleteOrder(Order order);
 
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">The order</param>
         void ReOrder(Order order);
-        
+
         /// <summary>
         /// Check whether return request is allowed
         /// </summary>

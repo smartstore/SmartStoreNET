@@ -11,7 +11,7 @@ namespace SmartStore.Services.Security
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {
             var permissionSystemNames = PermissionHelper.GetPermissions(typeof(Permissions));
-            var permissions = permissionSystemNames.Select(x => new PermissionRecord { SystemName = x });            
+            var permissions = permissionSystemNames.Select(x => new PermissionRecord { SystemName = x });
 
             return permissions;
         }

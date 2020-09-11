@@ -18,7 +18,7 @@ namespace SmartStore.Services.Media
         private readonly Work<IFolderService> _folderService;
 
         public MediaSearcher(
-            IRepository<MediaFile> fileRepo, 
+            IRepository<MediaFile> fileRepo,
             Work<IFolderService> folderService)
         {
             _fileRepo = fileRepo;
@@ -164,7 +164,7 @@ namespace SmartStore.Services.Media
             {
                 var predicates = new List<Expression<Func<MediaFile, bool>>>(5);
 
-                foreach (var dim in filter.Dimensions.OrderBy(x => x).Distinct()) 
+                foreach (var dim in filter.Dimensions.OrderBy(x => x).Distinct())
                 {
                     if (dim == ImageDimension.VerySmall)
                         predicates.Add(x => x.PixelSize > 0 && x.PixelSize <= 50000);

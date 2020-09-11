@@ -12,7 +12,7 @@ namespace SmartStore.Services.Media.Imaging
         /// The image factory adapter used to load and process images.
         /// </summary>
         IImageFactory Factory { get; }
-        
+
         /// <summary>
         /// Processes an image
         /// </summary>
@@ -21,9 +21,9 @@ namespace SmartStore.Services.Media.Imaging
         /// <returns>The resizing result encapsulated in <see cref="ProcessImageResult"/> type</returns>
         ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true);
 
-		/// <summary>
-		/// Gets the cumulative total processing time since app start in miliseconds
-		/// </summary>
-		long TotalProcessingTimeMs { get; }
-	}
+        /// <summary>
+        /// Gets the cumulative total processing time since app start in miliseconds
+        /// </summary>
+        long TotalProcessingTimeMs { get; }
+    }
 }

@@ -8,7 +8,7 @@ using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Directory
 {
-	public partial class StateProvinceService : IStateProvinceService
+    public partial class StateProvinceService : IStateProvinceService
     {
         private readonly IRepository<StateProvince> _stateProvinceRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -25,21 +25,21 @@ namespace SmartStore.Services.Directory
         {
             if (stateProvince == null)
                 throw new ArgumentNullException("stateProvince");
-            
+
             _stateProvinceRepository.Delete(stateProvince);
         }
 
-		public virtual IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false)
-		{
-			var query = _stateProvinceRepository.Table;
+        public virtual IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false)
+        {
+            var query = _stateProvinceRepository.Table;
 
-			if (!showHidden)
-				query = query.Where(x => x.Published);
+            if (!showHidden)
+                query = query.Where(x => x.Published);
 
-			return query;
-		}
+            return query;
+        }
 
-		public virtual StateProvince GetStateProvinceById(int stateProvinceId)
+        public virtual StateProvince GetStateProvinceById(int stateProvinceId)
         {
             if (stateProvinceId == 0)
                 return null;
@@ -55,7 +55,7 @@ namespace SmartStore.Services.Directory
             var stateProvince = query.FirstOrDefault();
             return stateProvince;
         }
-        
+
         public virtual IList<StateProvince> GetStateProvincesByCountryId(int countryId, bool showHidden = false)
         {
             if (countryId == 0)
@@ -63,15 +63,15 @@ namespace SmartStore.Services.Directory
                 return new List<StateProvince>();
             }
 
-			var query = from sp in _stateProvinceRepository.Table
-						orderby sp.DisplayOrder
-						where sp.CountryId == countryId &&
-						(showHidden || sp.Published)
-						select sp;
+            var query = from sp in _stateProvinceRepository.Table
+                        orderby sp.DisplayOrder
+                        where sp.CountryId == countryId &&
+                        (showHidden || sp.Published)
+                        select sp;
 
-			var stateProvinces = query.ToListCached("db.regions.{0}.{1}".FormatInvariant(countryId, showHidden));
-			return stateProvinces;
-		}
+            var stateProvinces = query.ToListCached("db.regions.{0}.{1}".FormatInvariant(countryId, showHidden));
+            return stateProvinces;
+        }
 
         public virtual void InsertStateProvince(StateProvince stateProvince)
         {

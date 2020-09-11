@@ -36,7 +36,7 @@ namespace SmartStore.Services.Customers
             ReportSorting sorting,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
-        
+
         /// <summary>
         /// Gets a report of customers registered in the last days
         /// </summary>

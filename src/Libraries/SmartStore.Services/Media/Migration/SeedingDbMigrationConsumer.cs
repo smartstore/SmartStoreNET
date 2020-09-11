@@ -19,7 +19,7 @@ namespace SmartStore.Services.Media.Migration
             else if (message.MigrationName == MediaMigrator3.MigrationName)
             {
                 componentContext.Resolve<MediaMigrator3>().Migrate();
-            } 
+            }
         }
     }
 }

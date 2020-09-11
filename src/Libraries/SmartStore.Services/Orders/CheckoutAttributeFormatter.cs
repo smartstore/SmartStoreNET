@@ -68,9 +68,9 @@ namespace SmartStore.Services.Orders
         /// <param name="allowHyperlinks">A value indicating whether to HTML hyperink tags could be rendered (if required)</param>
         /// <returns>Attributes</returns>
         public string FormatAttributes(string attributes,
-            Customer customer, 
-            string serapator = "<br />", 
-            bool htmlEncode = true, 
+            Customer customer,
+            string serapator = "<br />",
+            bool htmlEncode = true,
             bool renderPrices = true,
             bool allowHyperlinks = true)
         {
@@ -101,8 +101,8 @@ namespace SmartStore.Services.Orders
                             if (htmlEncode)
                                 attributeName = HttpUtility.HtmlEncode(attributeName);
 
-                            caAttribute = string.Format("{0}: {1}", attributeName, 
-								HtmlUtils.ConvertPlainTextToHtml(valueStr.EmptyNull().Replace(":", "").HtmlEncode()));
+                            caAttribute = string.Format("{0}: {1}", attributeName,
+                                HtmlUtils.ConvertPlainTextToHtml(valueStr.EmptyNull().Replace(":", "").HtmlEncode()));
 
                             //we never encode multiline textbox input
                         }
@@ -184,6 +184,6 @@ namespace SmartStore.Services.Orders
 
             return result.ToString();
         }
-    
+
     }
 }

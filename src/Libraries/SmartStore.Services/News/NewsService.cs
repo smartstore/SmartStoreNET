@@ -13,18 +13,18 @@ namespace SmartStore.Services.News
     public partial class NewsService : INewsService, IXmlSitemapPublisher
     {
         private readonly IRepository<NewsItem> _newsItemRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
 
         public NewsService(IRepository<NewsItem> newsItemRepository,
-			IRepository<StoreMapping> storeMappingRepository)
+            IRepository<StoreMapping> storeMappingRepository)
         {
             _newsItemRepository = newsItemRepository;
-			_storeMappingRepository = storeMappingRepository;
+            _storeMappingRepository = storeMappingRepository;
 
-			this.QuerySettings = DbQuerySettings.Default;
-		}
+            this.QuerySettings = DbQuerySettings.Default;
+        }
 
-		public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
         public virtual void DeleteNews(NewsItem newsItem)
         {
@@ -42,33 +42,33 @@ namespace SmartStore.Services.News
             return _newsItemRepository.GetById(newsId);
         }
 
-		public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
-		{
-			if (newsIds == null || newsIds.Length == 0)
-				return null;
+        public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
+        {
+            if (newsIds == null || newsIds.Length == 0)
+                return null;
 
-			var query =
-				from x in _newsItemRepository.Table
-				where newsIds.Contains(x.Id)
-				select x;
+            var query =
+                from x in _newsItemRepository.Table
+                where newsIds.Contains(x.Id)
+                select x;
 
-			return query;
-		}
+            return query;
+        }
 
-		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null, 
+        public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
             string title = "", string intro = "", string full = "")
         {
             var query = _newsItemRepository.Table;
 
-			if (languageId > 0)
-			{
-				query = query.Where(n => languageId == n.LanguageId);
-			}
+            if (languageId > 0)
+            {
+                query = query.Where(n => languageId == n.LanguageId);
+            }
 
-			if (maxAge.HasValue)
-			{
-				query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
-			}
+            if (maxAge.HasValue)
+            {
+                query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
+            }
 
             if (title.HasValue())
                 query = query.Where(b => b.Title.Contains(title));
@@ -76,7 +76,7 @@ namespace SmartStore.Services.News
                 query = query.Where(b => b.Short.Contains(intro));
             if (full.HasValue())
                 query = query.Where(b => b.Full.Contains(full));
-            
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -85,26 +85,26 @@ namespace SmartStore.Services.News
                 query = query.Where(n => !n.EndDateUtc.HasValue || n.EndDateUtc >= utcNow);
             }
 
-			query = query.OrderByDescending(n => n.CreatedOnUtc);
+            query = query.OrderByDescending(n => n.CreatedOnUtc);
 
-			//Store mapping
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
-			{
-				query = from n in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = n.Id, c2 = "NewsItem" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into n_sm
-						from sm in n_sm.DefaultIfEmpty()
-						where !n.LimitedToStores || storeId == sm.StoreId
-						select n;
+            //Store mapping
+            if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+            {
+                query = from n in query
+                        join sm in _storeMappingRepository.Table
+                        on new { c1 = n.Id, c2 = "NewsItem" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into n_sm
+                        from sm in n_sm.DefaultIfEmpty()
+                        where !n.LimitedToStores || storeId == sm.StoreId
+                        select n;
 
-				//only distinct items (group by ID)
-				query = from n in query
-						group n by n.Id	into nGroup
-						orderby nGroup.Key
-						select nGroup.FirstOrDefault();
+                //only distinct items (group by ID)
+                query = from n in query
+                        group n by n.Id into nGroup
+                        orderby nGroup.Key
+                        select nGroup.FirstOrDefault();
 
-				query = query.OrderByDescending(n => n.CreatedOnUtc);
-			}
+                query = query.OrderByDescending(n => n.CreatedOnUtc);
+            }
 
             var news = new PagedList<NewsItem>(query, pageIndex, pageSize);
             return news;
@@ -125,7 +125,7 @@ namespace SmartStore.Services.News
 
             _newsItemRepository.Update(news);
         }
-        
+
         public virtual void UpdateCommentTotals(NewsItem newsItem)
         {
             if (newsItem == null)

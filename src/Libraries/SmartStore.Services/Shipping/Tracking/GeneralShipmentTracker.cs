@@ -18,7 +18,7 @@ namespace SmartStore.Services.Shipping.Tracking
         private readonly ITypeFinder _typeFinder;
 
         #endregion
-        
+
         #region Ctor
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SmartStore.Services.Shipping.Tracking
         }
 
         #endregion
-        
+
         #region Utilities
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SmartStore.Services.Shipping.Tracking
         /// <returns>All available shipment trackers</returns>
         protected virtual IList<IShipmentTracker> GetAllTrackers()
         {
-			return _typeFinder.FindClassesOfType<IShipmentTracker>(ignoreInactivePlugins: true)
+            return _typeFinder.FindClassesOfType<IShipmentTracker>(ignoreInactivePlugins: true)
                 //exclude this one
                 .Where(x => x != typeof(GeneralShipmentTracker))
                 .Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IShipmentTracker)
@@ -51,9 +51,9 @@ namespace SmartStore.Services.Shipping.Tracking
         {
             return GetAllTrackers().FirstOrDefault(c => c.IsMatch(trackingNumber));
         }
-        
+
         #endregion
-        
+
         #region Methods
 
         /// <summary>

@@ -7,33 +7,33 @@ using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.Hooks
 {
-	public class ProductVariantAttributeHook : DbSaveHook<ProductVariantAttribute>
-	{
-		private readonly Lazy<IProductAttributeService> _productAttributeService;
-		private readonly HashSet<int> _toDelete = new HashSet<int>();
+    public class ProductVariantAttributeHook : DbSaveHook<ProductVariantAttribute>
+    {
+        private readonly Lazy<IProductAttributeService> _productAttributeService;
+        private readonly HashSet<int> _toDelete = new HashSet<int>();
 
-		public ProductVariantAttributeHook(Lazy<IProductAttributeService> productAttributeService)
-		{
-			_productAttributeService = productAttributeService;
-		}
+        public ProductVariantAttributeHook(Lazy<IProductAttributeService> productAttributeService)
+        {
+            _productAttributeService = productAttributeService;
+        }
 
-		protected override void OnDeleted(ProductVariantAttribute entity, IHookedEntity entry)
-		{
-			_toDelete.Add(entity.Id);
-		}
+        protected override void OnDeleted(ProductVariantAttribute entity, IHookedEntity entry)
+        {
+            _toDelete.Add(entity.Id);
+        }
 
-		public override void OnAfterSaveCompleted()
-		{
-			if (_toDelete.Count == 0)
-				return;
+        public override void OnAfterSaveCompleted()
+        {
+            if (_toDelete.Count == 0)
+                return;
 
-			using (var scope = new DbContextScope(autoCommit: false))
-			{
-				_toDelete.Each(x => _productAttributeService.Value.DeleteProductBundleItemAttributeFilter(x));
-				scope.Commit();
-			}
+            using (var scope = new DbContextScope(autoCommit: false))
+            {
+                _toDelete.Each(x => _productAttributeService.Value.DeleteProductBundleItemAttributeFilter(x));
+                scope.Commit();
+            }
 
-			_toDelete.Clear();
-		}
-	}
+            _toDelete.Clear();
+        }
+    }
 }

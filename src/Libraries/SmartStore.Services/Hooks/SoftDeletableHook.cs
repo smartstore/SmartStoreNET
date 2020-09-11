@@ -17,23 +17,23 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Hooks
 {
-	public class SoftDeletablePreUpdateHook : DbSaveHook<ObjectContextBase, ISoftDeletable>
-	{
-		private readonly IComponentContext _ctx;
+    public class SoftDeletablePreUpdateHook : DbSaveHook<ObjectContextBase, ISoftDeletable>
+    {
+        private readonly IComponentContext _ctx;
 
-		public SoftDeletablePreUpdateHook(IComponentContext ctx)
-		{
-			_ctx = ctx;
-		}
+        public SoftDeletablePreUpdateHook(IComponentContext ctx)
+        {
+            _ctx = ctx;
+        }
 
         protected override void OnUpdating(ISoftDeletable entity, IHookedEntity entry)
-		{
-			var baseEntity = entry.Entity;
+        {
+            var baseEntity = entry.Entity;
 
-			var prop = entry.Entry.Property(nameof(ISoftDeletable.Deleted));
-			var deletedModified = !prop.CurrentValue.Equals(prop.OriginalValue);
-			if (!deletedModified)
-				return;
+            var prop = entry.Entry.Property(nameof(ISoftDeletable.Deleted));
+            var deletedModified = !prop.CurrentValue.Equals(prop.OriginalValue);
+            if (!deletedModified)
+                return;
 
             var entityType = entry.EntityType;
 
@@ -78,31 +78,31 @@ namespace SmartStore.Services.Hooks
                 product.MainPictureId = null;
 
                 var productService = _ctx.Resolve<IProductService>();
-				var mediaTracker = _ctx.Resolve<IMediaTracker>();
-				var tracks = new List<MediaTrack>();
+                var mediaTracker = _ctx.Resolve<IMediaTracker>();
+                var tracks = new List<MediaTrack>();
 
-				foreach (var pm in product.ProductPictures.ToList())
+                foreach (var pm in product.ProductPictures.ToList())
                 {
                     productService.DeleteProductPicture(pm);
 
-					tracks.Add(new MediaTrack
-					{
-						EntityId = pm.Id,
-						EntityName = nameof(ProductMediaFile),
-						MediaFileId = pm.MediaFileId,
-						Property = nameof(pm.MediaFileId),
-						Operation = MediaTrackOperation.Untrack
-					});
-				}
+                    tracks.Add(new MediaTrack
+                    {
+                        EntityId = pm.Id,
+                        EntityName = nameof(ProductMediaFile),
+                        MediaFileId = pm.MediaFileId,
+                        Property = nameof(pm.MediaFileId),
+                        Operation = MediaTrackOperation.Untrack
+                    });
+                }
 
-				// We have to untrack manually, because the tracker hook will not run in the scope of another hook.
-				mediaTracker.TrackMany(SystemAlbumProvider.Catalog, tracks);
-			}
+                // We have to untrack manually, because the tracker hook will not run in the scope of another hook.
+                mediaTracker.TrackMany(SystemAlbumProvider.Catalog, tracks);
+            }
 
             // Although nested hooks do not run, the following stuff will still trigger the tracker hook,
             // because this hook runs before the tracker hook.
 
-			if (baseEntity is Category category)
+            if (baseEntity is Category category)
             {
                 category.MediaFileId = null;
             }
@@ -112,5 +112,5 @@ namespace SmartStore.Services.Hooks
                 manufacturer.MediaFileId = null;
             }
         }
-	}
+    }
 }

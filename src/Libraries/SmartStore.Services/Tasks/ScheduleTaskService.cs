@@ -33,20 +33,20 @@ namespace SmartStore.Services.Tasks
         {
             _taskRepository = taskRepository;
             _taskHistoryRepository = taskHistoryRepository;
-			_dtHelper = dtHelper;
+            _dtHelper = dtHelper;
             _env = env;
             _commonSettings = commonSettings;
 
-			T = NullLocalizer.Instance;
-			Logger = NullLogger.Instance;
+            T = NullLocalizer.Instance;
+            Logger = NullLogger.Instance;
         }
 
-		public Localizer T { get; set; }
-		public ILogger Logger { get; set; }
+        public Localizer T { get; set; }
+        public ILogger Logger { get; set; }
 
         public virtual void DeleteTask(ScheduleTask task)
         {
-			Guard.NotNull(task, nameof(task));
+            Guard.NotNull(task, nameof(task));
 
             _taskRepository.Delete(task);
         }
@@ -56,49 +56,49 @@ namespace SmartStore.Services.Tasks
             if (taskId == 0)
                 return null;
 
-			return Retry.Run(
-				() => _taskRepository.GetById(taskId),
-				3, TimeSpan.FromMilliseconds(100),
-				RetryOnDeadlockException);
-		}
+            return Retry.Run(
+                () => _taskRepository.GetById(taskId),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
+        }
 
         public virtual ScheduleTask GetTaskByType(string type)
         {
-			try
-			{
-				if (type.HasValue())
-				{
-					var query = _taskRepository.Table
-						.Where(t => t.Type == type)
-						.OrderByDescending(t => t.Id);
+            try
+            {
+                if (type.HasValue())
+                {
+                    var query = _taskRepository.Table
+                        .Where(t => t.Type == type)
+                        .OrderByDescending(t => t.Id);
 
-					var task = query.FirstOrDefault();
-					return task;
-				}
-			}
-			catch (Exception exc)
-			{
-				// Do not throw an exception if the underlying provider failed on Open.
-				exc.Dump();
-			}
+                    var task = query.FirstOrDefault();
+                    return task;
+                }
+            }
+            catch (Exception exc)
+            {
+                // Do not throw an exception if the underlying provider failed on Open.
+                exc.Dump();
+            }
 
-			return null;
+            return null;
         }
 
-		public virtual IList<ScheduleTask> GetAllTasks(bool includeDisabled = false)
+        public virtual IList<ScheduleTask> GetAllTasks(bool includeDisabled = false)
         {
             var query = _taskRepository.Table;
-			if (!includeDisabled)
+            if (!includeDisabled)
             {
                 query = query.Where(t => t.Enabled);
             }
             query = query.OrderByDescending(t => t.Enabled);
 
-			return Retry.Run(
-				() => query.ToList(),
-				3, TimeSpan.FromMilliseconds(100),
-				RetryOnDeadlockException);
-		}
+            return Retry.Run(
+                () => query.ToList(),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
+        }
 
         public async virtual Task<IList<ScheduleTask>> GetPendingTasksAsync()
         {
@@ -135,76 +135,76 @@ namespace SmartStore.Services.Tasks
                 .ToList();
 
             return pendingTasks;
-		}
+        }
 
         public virtual void InsertTask(ScheduleTask task)
         {
-			Guard.NotNull(task, nameof(task));
+            Guard.NotNull(task, nameof(task));
 
-			_taskRepository.Insert(task);
+            _taskRepository.Insert(task);
         }
 
         public virtual void UpdateTask(ScheduleTask task)
         {
-			Guard.NotNull(task, nameof(task));
+            Guard.NotNull(task, nameof(task));
 
-			try
-			{
+            try
+            {
                 _taskRepository.Update(task);
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
-				throw;
-			}
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                throw;
+            }
         }
 
-		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
-		{
-			Guard.NotNull(newAction, nameof(newAction));
+        public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
+        {
+            Guard.NotNull(newAction, nameof(newAction));
 
-			var type = typeof(T);
+            var type = typeof(T);
 
-			if (type.IsAbstract || type.IsInterface || type.IsNotPublic)
-			{
-				throw new InvalidOperationException("Only concrete public task types can be registered.");
-			}
+            if (type.IsAbstract || type.IsInterface || type.IsNotPublic)
+            {
+                throw new InvalidOperationException("Only concrete public task types can be registered.");
+            }
 
-			var scheduleTask = this.GetTaskByType<T>();
+            var scheduleTask = this.GetTaskByType<T>();
 
-			if (scheduleTask == null)
-			{
-				scheduleTask = new ScheduleTask { Type = type.AssemblyQualifiedNameWithoutVersion() };
-				newAction(scheduleTask);
-				InsertTask(scheduleTask);
-			}
+            if (scheduleTask == null)
+            {
+                scheduleTask = new ScheduleTask { Type = type.AssemblyQualifiedNameWithoutVersion() };
+                newAction(scheduleTask);
+                InsertTask(scheduleTask);
+            }
 
-			return scheduleTask;
-		}
+            return scheduleTask;
+        }
 
-		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
-		{
-			Guard.NotNull(tasks, nameof(tasks));
-			
-			foreach (var task in tasks)
-			{
-				task.NextRunUtc = GetNextSchedule(task);
-				if (isAppStart)
-				{
-					FixTypeName(task);
-				}
-				else
-				{
-					UpdateTask(task);
-				}
-			}
-			
-			if (isAppStart)
-			{
-				// On app start this method's execution is thread-safe, making it sufficient
-				// to commit all changes in one go.
-				_taskRepository.Context.SaveChanges();
-			}
+        public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
+        {
+            Guard.NotNull(tasks, nameof(tasks));
+
+            foreach (var task in tasks)
+            {
+                task.NextRunUtc = GetNextSchedule(task);
+                if (isAppStart)
+                {
+                    FixTypeName(task);
+                }
+                else
+                {
+                    UpdateTask(task);
+                }
+            }
+
+            if (isAppStart)
+            {
+                // On app start this method's execution is thread-safe, making it sufficient
+                // to commit all changes in one go.
+                _taskRepository.Context.SaveChanges();
+            }
 
             if (isAppStart)
             {
@@ -245,49 +245,49 @@ namespace SmartStore.Services.Tasks
             }
         }
 
-		private void FixTypeName(ScheduleTask task)
-		{
-			// In versions prior V3 a double space could exist in ScheduleTask type name.
-			if (task.Type.IndexOf(",  ") > 0)
-			{
-				task.Type = task.Type.Replace(",  ", ", ");
-			}
-		}
+        private void FixTypeName(ScheduleTask task)
+        {
+            // In versions prior V3 a double space could exist in ScheduleTask type name.
+            if (task.Type.IndexOf(",  ") > 0)
+            {
+                task.Type = task.Type.Replace(",  ", ", ");
+            }
+        }
 
-		public virtual DateTime? GetNextSchedule(ScheduleTask task)
-		{
-			if (task.Enabled)
-			{
-				try
-				{
-					var localTimeZone = _dtHelper.DefaultStoreTimeZone;
-					var baseTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone);
-					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
-					var utcTime = _dtHelper.ConvertToUtcTime(next, localTimeZone);
+        public virtual DateTime? GetNextSchedule(ScheduleTask task)
+        {
+            if (task.Enabled)
+            {
+                try
+                {
+                    var localTimeZone = _dtHelper.DefaultStoreTimeZone;
+                    var baseTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone);
+                    var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
+                    var utcTime = _dtHelper.ConvertToUtcTime(next, localTimeZone);
 
-					return utcTime;
-				}
-				catch (Exception ex)
-				{
-					Logger.ErrorFormat(ex, "Could not calculate next schedule time for task '{0}'", task.Name);
-				}
-			}
+                    return utcTime;
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat(ex, "Could not calculate next schedule time for task '{0}'", task.Name);
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		private static void RetryOnDeadlockException(int attemp, Exception ex)
-		{
-			var isDeadLockException = 
-				(ex as EntityCommandExecutionException).IsDeadlockException() || 
-				(ex as SqlException).IsDeadlockException();
+        private static void RetryOnDeadlockException(int attemp, Exception ex)
+        {
+            var isDeadLockException =
+                (ex as EntityCommandExecutionException).IsDeadlockException() ||
+                (ex as SqlException).IsDeadlockException();
 
-			if (!isDeadLockException)
-			{
-				// We only want to retry on deadlock stuff.
-				throw ex;
-			}
-		}
+            if (!isDeadLockException)
+            {
+                // We only want to retry on deadlock stuff.
+                throw ex;
+            }
+        }
 
         #region Schedule task history
 

@@ -39,7 +39,7 @@ namespace SmartStore.Services.Search
             IForumService forumService,
             ICommonServices services,
             CustomerSettings customerSettings)
-		{
+        {
             _forumPostRepository = forumPostRepository;
             _forumTopicRepository = forumTopicRepository;
             _forumRepository = forumRepository;
@@ -47,7 +47,7 @@ namespace SmartStore.Services.Search
             _storeMappingRepository = storeMappingRepository;
             _aclRepository = aclRepository;
             _forumService = forumService;
-			_services = services;
+            _services = services;
             _customerSettings = customerSettings;
 
             T = NullLocalizer.Instance;
@@ -381,16 +381,16 @@ namespace SmartStore.Services.Search
         }
 
         public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
-		{
+        {
             _services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
 
-			var totalHits = 0;
+            var totalHits = 0;
             int[] hitsEntityIds = null;
             Func<IList<ForumPost>> hitsFactory = null;
             IDictionary<string, FacetGroup> facets = null;
 
             if (searchQuery.Take > 0)
-			{
+            {
                 var query = GetPostQuery(searchQuery, null);
                 totalHits = query.Count();
 
@@ -418,22 +418,22 @@ namespace SmartStore.Services.Search
             }
 
             var result = new ForumSearchResult(
-				null,
-				searchQuery,
-				totalHits,
+                null,
+                searchQuery,
+                totalHits,
                 hitsEntityIds,
                 hitsFactory,
-				null,
+                null,
                 facets);
 
             _services.EventPublisher.Publish(new ForumSearchedEvent(searchQuery, result));
 
-			return result;
-		}
+            return result;
+        }
 
-		public IQueryable<ForumPost> PrepareQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery = null)
-		{
+        public IQueryable<ForumPost> PrepareQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery = null)
+        {
             return GetPostQuery(searchQuery, baseQuery);
         }
-	}
+    }
 }

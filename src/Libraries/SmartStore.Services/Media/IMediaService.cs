@@ -20,7 +20,7 @@ namespace SmartStore.Services.Media
         WithTags = 1 << 1,
         WithTracks = 1 << 2,
         WithFolder = 1 << 3,
-        AsNoTracking  = 1 << 4,
+        AsNoTracking = 1 << 4,
         Full = WithBlob | WithTags | WithTracks | WithFolder,
         FullNoTracking = Full | AsNoTracking
     }

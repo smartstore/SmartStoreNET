@@ -17,7 +17,7 @@ namespace SmartStore.Services.Directory
         {
             // Old database not usable anymore due to US (Florida?) legal issues from 01 Jan 2020 on.
             //_reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/GeoLite2/GeoLite2-Country.mmdb"));
-            
+
             _reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/Geo/dbip-country-lite.mmdb"));
         }
 

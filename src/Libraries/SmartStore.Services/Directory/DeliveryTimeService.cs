@@ -40,11 +40,11 @@ namespace SmartStore.Services.Directory
             _attributeCombinationRepository = attributeCombinationRepository;
             _dateTimeHelper = dateTimeHelper;
             _workContext = workContext;
-			_catalogSettings = catalogSettings;
+            _catalogSettings = catalogSettings;
             _shippingSettings = shippingSettings;
-		}
+        }
 
-		public Localizer T { get; set; } = NullLocalizer.Instance;
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         public virtual void DeleteDeliveryTime(DeliveryTime deliveryTime)
         {
@@ -99,10 +99,10 @@ namespace SmartStore.Services.Directory
             if (deliveryTimeId == 0)
                 return false;
 
-            var query = 
-				from p in _productRepository.Table
-				where p.DeliveryTimeId == deliveryTimeId || p.ProductVariantAttributeCombinations.Any(c => c.DeliveryTimeId == deliveryTimeId)
-				select p.Id;
+            var query =
+                from p in _productRepository.Table
+                where p.DeliveryTimeId == deliveryTimeId || p.ProductVariantAttributeCombinations.Any(c => c.DeliveryTimeId == deliveryTimeId)
+                select p.Id;
 
             return query.Count() > 0;
         }
@@ -120,22 +120,22 @@ namespace SmartStore.Services.Directory
                     return null;
                 }
             }
-            
-            return  _deliveryTimeRepository.GetByIdCached(deliveryTimeId, "deliverytime-{0}".FormatInvariant(deliveryTimeId));
+
+            return _deliveryTimeRepository.GetByIdCached(deliveryTimeId, "deliverytime-{0}".FormatInvariant(deliveryTimeId));
         }
 
         public virtual DeliveryTime GetDeliveryTime(Product product)
-		{
+        {
             var deliveryTimeId = product.GetDeliveryTimeIdAccordingToStock(_catalogSettings);
             return GetDeliveryTimeById(deliveryTimeId ?? 0);
-		}
+        }
 
         public virtual IList<DeliveryTime> GetAllDeliveryTimes()
         {
-			var query = _deliveryTimeRepository.Table.OrderBy(c => c.DisplayOrder);
-			var deliveryTimes = query.ToListCached("db.delivtimes.all");
-			return deliveryTimes;
-		}
+            var query = _deliveryTimeRepository.Table.OrderBy(c => c.DisplayOrder);
+            var deliveryTimes = query.ToListCached("db.delivtimes.all");
+            return deliveryTimes;
+        }
 
         public virtual void InsertDeliveryTime(DeliveryTime deliveryTime)
         {
@@ -157,13 +157,13 @@ namespace SmartStore.Services.Directory
 
             var deliveryTimes = GetAllDeliveryTimes();
 
-            foreach(var time in deliveryTimes)
+            foreach (var time in deliveryTimes)
             {
                 time.IsDefault = time.Equals(deliveryTime) ? true : false;
                 _deliveryTimeRepository.Update(time);
             }
         }
-        
+
         public virtual DeliveryTime GetDefaultDeliveryTime()
         {
             return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();

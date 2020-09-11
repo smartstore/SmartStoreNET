@@ -44,40 +44,40 @@ namespace SmartStore.Services.Catalog
 		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
 		void DeleteCategory(Category category, bool deleteChilds = false);
 
-		/// <summary>
-		/// Builds LINQ query for categories
-		/// </summary>
-		/// <param name="categoryName">Category name filter</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias filter</param>
-		/// <param name="storeId">Store identifier; 0 to load all records</param>
-		/// <returns>Category query</returns>
-		IQueryable<Category> BuildCategoriesQuery(
-			string categoryName = "",
-			bool showHidden = false,
-			string alias = null,
-			int storeId = 0);
+        /// <summary>
+        /// Builds LINQ query for categories
+        /// </summary>
+        /// <param name="categoryName">Category name filter</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <param name="alias">Alias filter</param>
+        /// <param name="storeId">Store identifier; 0 to load all records</param>
+        /// <returns>Category query</returns>
+        IQueryable<Category> BuildCategoriesQuery(
+            string categoryName = "",
+            bool showHidden = false,
+            string alias = null,
+            int storeId = 0);
 
-		/// <summary>
-		/// Gets all categories
-		/// </summary>
-		/// <param name="categoryName">Category name filter</param>
-		/// <param name="pageIndex">Page index</param>
-		/// <param name="pageSize">Page size</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias filter</param>
-		/// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
-		/// <param name="ignoreDetachedCategories">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
-		/// <param name="storeId">Store identifier; 0 to load all records</param>
-		/// <returns>Categories</returns>
-		IPagedList<Category> GetAllCategories(
-			string categoryName = "", 
-			int pageIndex = 0, 
-			int pageSize = int.MaxValue, 
-			bool showHidden = false, 
-			string alias = null,
-			bool ignoreDetachedCategories = true, 
-			int storeId = 0);
+        /// <summary>
+        /// Gets all categories
+        /// </summary>
+        /// <param name="categoryName">Category name filter</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <param name="alias">Alias filter</param>
+        /// <param name="applyNavigationFilters">(Obsolete) Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
+        /// <param name="ignoreDetachedCategories">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+        /// <param name="storeId">Store identifier; 0 to load all records</param>
+        /// <returns>Categories</returns>
+        IPagedList<Category> GetAllCategories(
+            string categoryName = "",
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            bool showHidden = false,
+            string alias = null,
+            bool ignoreDetachedCategories = true,
+            int storeId = 0);
 
         /// <summary>
         /// Gets all categories filtered by parent category identifier
@@ -92,7 +92,7 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <returns>Categories</returns>
         IList<Category> GetAllCategoriesDisplayedOnHomePage();
-                
+
         /// <summary>
         /// Gets a category
         /// </summary>
@@ -140,10 +140,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product a category mapping collection</returns>
         IPagedList<ProductCategory> GetProductCategoriesByCategoryId(
-			int categoryId,
-            int pageIndex, 
-			int pageSize, 
-			bool showHidden = false);
+            int categoryId,
+            int pageIndex,
+            int pageSize,
+            bool showHidden = false);
 
         /// <summary>
         /// Gets a product category mapping collection
@@ -153,21 +153,21 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product category mapping collection</returns>
         IList<ProductCategory> GetProductCategoriesByProductId(int productId, bool showHidden = false);
 
-		/// <summary>
-		/// Gets product category mappings
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <param name="hasDiscountsApplied">A value indicating whether to filter categories with applied discounts</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <returns>Map with product category mappings</returns>
-		Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false);
+        /// <summary>
+        /// Gets product category mappings
+        /// </summary>
+        /// <param name="productIds">Product identifiers</param>
+        /// <param name="hasDiscountsApplied">A value indicating whether to filter categories with applied discounts</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>Map with product category mappings</returns>
+        Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false);
 
-		/// <summary>
-		/// Gets product category mappings
-		/// </summary>
-		/// <param name="categoryIds">Category identifiers</param>
-		/// <returns>Map with product category mappings</returns>
-		Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds);
+        /// <summary>
+        /// Gets product category mappings
+        /// </summary>
+        /// <param name="categoryIds">Category identifiers</param>
+        /// <returns>Map with product category mappings</returns>
+        Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds);
 
         /// <summary>
         /// Gets a product category mapping 
@@ -188,84 +188,84 @@ namespace SmartStore.Services.Catalog
         /// <param name="productCategory">>Product category mapping</param>
         void UpdateProductCategory(ProductCategory productCategory);
 
-		/// <summary>
-		/// Gets the category trail
-		/// </summary>
-		/// <param name="node">The category node</param>
-		/// <returns>Trail</returns>
-		IEnumerable<ICategoryNode> GetCategoryTrail(ICategoryNode node);
+        /// <summary>
+        /// Gets the category trail
+        /// </summary>
+        /// <param name="node">The category node</param>
+        /// <returns>Trail</returns>
+        IEnumerable<ICategoryNode> GetCategoryTrail(ICategoryNode node);
 
 
-		/// <summary>
-		/// Builds a category breadcrumb (path) for a particular category node
-		/// </summary>
-		/// <param name="treeNode">The category node</param>
-		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
-		/// <param name="aliasPattern">How the category alias - if specified - should be appended to the category name (e.g. <c>({0})</c>)</param>
-		/// <param name="separator">The separator string</param>
-		/// <returns>Category breadcrumb path</returns>
-		string GetCategoryPath(
-			TreeNode<ICategoryNode> treeNode,
-			int? languageId = null,
-			string aliasPattern = null,
-			string separator = " » ");
+        /// <summary>
+        /// Builds a category breadcrumb (path) for a particular category node
+        /// </summary>
+        /// <param name="treeNode">The category node</param>
+        /// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
+        /// <param name="aliasPattern">How the category alias - if specified - should be appended to the category name (e.g. <c>({0})</c>)</param>
+        /// <param name="separator">The separator string</param>
+        /// <returns>Category breadcrumb path</returns>
+        string GetCategoryPath(
+            TreeNode<ICategoryNode> treeNode,
+            int? languageId = null,
+            string aliasPattern = null,
+            string separator = " » ");
 
-		/// <summary>
-		/// Gets the tree representation of categories
-		/// </summary>
-		/// <param name="rootCategoryId">Specifies which node to return as root</param>
-		/// <param name="includeHidden"><c>false</c> excludes unpublished and ACL-inaccessible categories</param>
-		/// <param name="storeId">&gt; 0 = apply store mapping, 0 to bypass store mapping</param>
-		/// <returns>The category tree representation</returns>
-		/// <remarks>
-		/// This method puts the tree result into application cache, so subsequent calls are very fast.
-		/// Localization is up to the caller because the nodes only contain unlocalized data.
-		/// Subscribe to the <c>CategoryTreeChanged</c> event if you need to evict cache entries which depend
-		/// on this method's result.
-		/// </remarks>
-		TreeNode<ICategoryNode> GetCategoryTree(
-			int rootCategoryId = 0, 
-			bool includeHidden = false, 
-			int storeId = 0);
+        /// <summary>
+        /// Gets the tree representation of categories
+        /// </summary>
+        /// <param name="rootCategoryId">Specifies which node to return as root</param>
+        /// <param name="includeHidden"><c>false</c> excludes unpublished and ACL-inaccessible categories</param>
+        /// <param name="storeId">&gt; 0 = apply store mapping, 0 to bypass store mapping</param>
+        /// <returns>The category tree representation</returns>
+        /// <remarks>
+        /// This method puts the tree result into application cache, so subsequent calls are very fast.
+        /// Localization is up to the caller because the nodes only contain unlocalized data.
+        /// Subscribe to the <c>CategoryTreeChanged</c> event if you need to evict cache entries which depend
+        /// on this method's result.
+        /// </remarks>
+        TreeNode<ICategoryNode> GetCategoryTree(
+            int rootCategoryId = 0,
+            bool includeHidden = false,
+            int storeId = 0);
 
-		/// <summary>
-		/// Get count of all categories
-		/// </summary>
-		/// <returns>Count</returns>
-		int CountAllCategories();
-	}
+        /// <summary>
+        /// Get count of all categories
+        /// </summary>
+        /// <returns>Count</returns>
+        int CountAllCategories();
+    }
 
-	public static class ICategoryServiceExtensions
-	{
-		/// <summary>
-		/// Builds a category breadcrumb for a particular product
-		/// </summary>
-		/// <param name="product">The product</param>
-		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
-		/// <param name="storeId">The id of store. Pass <c>null</c> to skip store filtering.</param>
-		/// <param name="separator">The separator string</param>
-		/// <returns>Category breadcrumb for product</returns>
-		public static string GetCategoryPath(this ICategoryService categoryService, 
-			Product product, 
-			int? languageId = null,
-			int? storeId = null,
-			string separator = " » ")
-		{
-			Guard.NotNull(product, nameof(product));
+    public static class ICategoryServiceExtensions
+    {
+        /// <summary>
+        /// Builds a category breadcrumb for a particular product
+        /// </summary>
+        /// <param name="product">The product</param>
+        /// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
+        /// <param name="storeId">The id of store. Pass <c>null</c> to skip store filtering.</param>
+        /// <param name="separator">The separator string</param>
+        /// <returns>Category breadcrumb for product</returns>
+        public static string GetCategoryPath(this ICategoryService categoryService,
+            Product product,
+            int? languageId = null,
+            int? storeId = null,
+            string separator = " » ")
+        {
+            Guard.NotNull(product, nameof(product));
 
-			string result = string.Empty;
+            string result = string.Empty;
 
-			var pc = categoryService.GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-			if (pc != null)
-			{
-				var node = categoryService.GetCategoryTree(pc.CategoryId, false, storeId ?? 0);
-				if (node != null)
-				{
-					result = categoryService.GetCategoryPath(node, languageId, null, separator);
-				}
-			}
+            var pc = categoryService.GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+            if (pc != null)
+            {
+                var node = categoryService.GetCategoryTree(pc.CategoryId, false, storeId ?? 0);
+                if (node != null)
+                {
+                    result = categoryService.GetCategoryPath(node, languageId, null, separator);
+                }
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

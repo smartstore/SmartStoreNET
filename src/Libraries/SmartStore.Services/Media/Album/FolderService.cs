@@ -35,13 +35,13 @@ namespace SmartStore.Services.Media
         {
             var cacheKey = FolderTreeKey;
 
-            var root = _cache.Get(cacheKey, () => 
+            var root = _cache.Get(cacheKey, () =>
             {
                 var query = from x in _folderRepo.TableUntracked
                             orderby x.ParentId, x.Name
                             select x;
 
-                var unsortedNodes = query.ToList().Select(x => 
+                var unsortedNodes = query.ToList().Select(x =>
                 {
                     var item = new MediaFolderNode
                     {
@@ -129,7 +129,7 @@ namespace SmartStore.Services.Media
         {
             if (id <= 0)
                 return null;
-            
+
             return GetRootNode().SelectNodeById(id);
         }
 

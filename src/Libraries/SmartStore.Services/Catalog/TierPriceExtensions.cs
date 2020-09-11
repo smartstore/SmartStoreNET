@@ -11,19 +11,19 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public static class TierPriceExtensions
     {
-		/// <summary>
-		/// Filter tier prices by a store
-		/// </summary>
-		/// <param name="source">Tier prices</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <returns>Filtered tier prices</returns>
+        /// <summary>
+        /// Filter tier prices by a store
+        /// </summary>
+        /// <param name="source">Tier prices</param>
+        /// <param name="storeId">Store identifier</param>
+        /// <returns>Filtered tier prices</returns>
         public static IEnumerable<TierPrice> FilterByStore(this IEnumerable<TierPrice> source, int storeId)
-		{
-			if (source == null)
-				throw new ArgumentNullException("source");
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
 
             return source.Where(x => x.StoreId == 0 || x.StoreId == storeId);
-		}
+        }
 
         /// <summary>
         /// Filter tier prices for a customer
@@ -71,7 +71,7 @@ namespace SmartStore.Services.Catalog
         {
             if (source == null)
                 throw new ArgumentNullException("source");
-            
+
             // Find duplicates
             var query = from tierPrice in source
                         group tierPrice by tierPrice.Quantity into g
@@ -83,7 +83,7 @@ namespace SmartStore.Services.Catalog
                 var minTierPrice = item.TierPrices.Aggregate((tp1, tp2) => (tp1.Price < tp2.Price ? tp1 : tp2));
                 // Remove all other records
                 item.TierPrices.Remove(minTierPrice);
-                item.TierPrices.ForEach(x=> source.Remove(x));
+                item.TierPrices.ForEach(x => source.Remove(x));
             }
 
             return source;

@@ -2,19 +2,19 @@
 
 namespace SmartStore.Services.DataExchange.Import.Events
 {
-	public class ImportExecutingEvent
-	{
-		public ImportExecutingEvent(ImportExecuteContext context)
-		{
-			Guard.NotNull(context, nameof(context));
+    public class ImportExecutingEvent
+    {
+        public ImportExecutingEvent(ImportExecuteContext context)
+        {
+            Guard.NotNull(context, nameof(context));
 
-			Context = context;
-		}
+            Context = context;
+        }
 
-		public ImportExecuteContext Context
-		{
-			get;
-			private set;
-		}
-	}
+        public ImportExecuteContext Context
+        {
+            get;
+            private set;
+        }
+    }
 }

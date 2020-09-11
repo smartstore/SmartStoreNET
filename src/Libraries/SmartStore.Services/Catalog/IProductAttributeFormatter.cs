@@ -36,7 +36,7 @@ namespace SmartStore.Services.Catalog
             string separator = "<br />",
             bool htmlEncode = true,
             bool renderPrices = true,
-            bool renderProductAttributes = true, 
+            bool renderProductAttributes = true,
             bool renderGiftCardAttributes = true,
             bool allowHyperlinks = true);
     }

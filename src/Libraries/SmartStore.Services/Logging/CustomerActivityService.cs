@@ -10,38 +10,38 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {
-	/// <summary>
-	/// Customer activity service
-	/// </summary>
-	public class CustomerActivityService : ICustomerActivityService
+    /// <summary>
+    /// Customer activity service
+    /// </summary>
+    public class CustomerActivityService : ICustomerActivityService
     {
-		#region Fields
+        #region Fields
 
-		private const int _deleteNumberOfEntries = 1000;
+        private const int _deleteNumberOfEntries = 1000;
 
-		private readonly IRepository<ActivityLog> _activityLogRepository;
+        private readonly IRepository<ActivityLog> _activityLogRepository;
         private readonly IRepository<ActivityLogType> _activityLogTypeRepository;
-		private readonly IRepository<Customer> _customerRepository;
-		private readonly IWorkContext _workContext;
+        private readonly IRepository<Customer> _customerRepository;
+        private readonly IWorkContext _workContext;
         private readonly IDbContext _dbContext;
 
         private readonly static object s_lock = new object();
         private readonly static ConcurrentDictionary<string, ActivityLogType> s_logTypes = new ConcurrentDictionary<string, ActivityLogType>();
 
-		#endregion
+        #endregion
 
-		#region Ctor
+        #region Ctor
 
-		public CustomerActivityService(
+        public CustomerActivityService(
             IRepository<ActivityLog> activityLogRepository,
             IRepository<ActivityLogType> activityLogTypeRepository,
-			IRepository<Customer> customerRepository,
-			IWorkContext workContext,
+            IRepository<Customer> customerRepository,
+            IWorkContext workContext,
             IDbContext dbContext)
         {
             this._activityLogRepository = activityLogRepository;
             this._activityLogTypeRepository = activityLogTypeRepository;
-			this._customerRepository = customerRepository;
+            this._customerRepository = customerRepository;
             this._workContext = workContext;
             this._dbContext = dbContext;
         }
@@ -111,7 +111,8 @@ namespace SmartStore.Services.Logging
                     var query = from alt in _activityLogTypeRepository.Table
                                 orderby alt.Name
                                 select alt;
-                    query.Each(x => {
+                    query.Each(x =>
+                    {
                         s_logTypes[x.SystemKeyword] = x;
                     });
                 }
@@ -176,9 +177,9 @@ namespace SmartStore.Services.Logging
             if (activityType == null || !activityType.Enabled)
                 return null;
 
-			comment = comment.EmptyNull();
+            comment = comment.EmptyNull();
             comment = string.Format(comment, commentParams);
-			comment = comment.Truncate(4000);
+            comment = comment.Truncate(4000);
 
             var activity = new ActivityLog();
             activity.ActivityLogTypeId = activityType.Id;
@@ -203,45 +204,45 @@ namespace SmartStore.Services.Logging
             _activityLogRepository.Delete(activityLog);
         }
 
-		/// <summary>
-		/// Gets all activity log items
-		/// </summary>
-		/// <param name="createdOnFrom">Log item creation from; null to load all customers</param>
-		/// <param name="createdOnTo">Log item creation to; null to load all customers</param>
-		/// <param name="customerId">Customer identifier; null to load all customers</param>
-		/// <param name="activityLogTypeId">Activity log type identifier</param>
-		/// <param name="pageIndex">Page index</param>
-		/// <param name="pageSize">Page size</param>
-		/// <param name="email">Customer email</param>
-		/// <param name="customerSystemAccount">Customer system name</param>
-		/// <returns>Activity log collection</returns>
-		public virtual IPagedList<ActivityLog> GetAllActivities(
-			DateTime? createdOnFrom,
+        /// <summary>
+        /// Gets all activity log items
+        /// </summary>
+        /// <param name="createdOnFrom">Log item creation from; null to load all customers</param>
+        /// <param name="createdOnTo">Log item creation to; null to load all customers</param>
+        /// <param name="customerId">Customer identifier; null to load all customers</param>
+        /// <param name="activityLogTypeId">Activity log type identifier</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="email">Customer email</param>
+        /// <param name="customerSystemAccount">Customer system name</param>
+        /// <returns>Activity log collection</returns>
+        public virtual IPagedList<ActivityLog> GetAllActivities(
+            DateTime? createdOnFrom,
             DateTime? createdOnTo,
-			int? customerId,
-			int activityLogTypeId,
+            int? customerId,
+            int activityLogTypeId,
             int pageIndex,
-			int pageSize,
-			string email = null,
-			bool? customerSystemAccount = null)
+            int pageSize,
+            string email = null,
+            bool? customerSystemAccount = null)
         {
             var query = _activityLogRepository.Table;
 
-			if (email.HasValue() || customerSystemAccount.HasValue)
-			{
-				var queryCustomers = _customerRepository.Table;
+            if (email.HasValue() || customerSystemAccount.HasValue)
+            {
+                var queryCustomers = _customerRepository.Table;
 
-				if (email.HasValue())
-					queryCustomers = queryCustomers.Where(x => x.Email.Contains(email));
+                if (email.HasValue())
+                    queryCustomers = queryCustomers.Where(x => x.Email.Contains(email));
 
-				if (customerSystemAccount.HasValue)
-					queryCustomers = queryCustomers.Where(x => x.IsSystemAccount == customerSystemAccount.Value);
+                if (customerSystemAccount.HasValue)
+                    queryCustomers = queryCustomers.Where(x => x.IsSystemAccount == customerSystemAccount.Value);
 
-				query =
-					from al in _activityLogRepository.Table
-					join c in queryCustomers on al.CustomerId equals c.Id
-					select al;
-			}
+                query =
+                    from al in _activityLogRepository.Table
+                    join c in queryCustomers on al.CustomerId equals c.Id
+                    select al;
+            }
 
             if (createdOnFrom.HasValue)
                 query = query.Where(al => createdOnFrom.Value <= al.CreatedOnUtc);
@@ -279,54 +280,54 @@ namespace SmartStore.Services.Logging
             return activityLog;
         }
 
-		public virtual IList<ActivityLog> GetActivityByIds(int[] activityLogIds)
-		{
-			if (activityLogIds == null || activityLogIds.Length == 0)
-				return new List<ActivityLog>();
-
-			var query = _activityLogRepository.Table
-				.Where(x => activityLogIds.Contains(x.Id))
-				.OrderByDescending(x => x.CreatedOnUtc);
-
-			return query.ToList();
-		}
-
-		/// <summary>
-		/// Clears activity log
-		/// </summary>
-		public virtual void ClearAllActivities()
+        public virtual IList<ActivityLog> GetActivityByIds(int[] activityLogIds)
         {
-			try
-			{
-				_dbContext.ExecuteSqlCommand("TRUNCATE TABLE [ActivityLog]");
-			}
-			catch
-			{
-				try
-				{
-					for (int i = 0; i < 100000; ++i)
-					{
-						if (_dbContext.ExecuteSqlCommand("Delete Top ({0}) From [ActivityLog]", false, null, _deleteNumberOfEntries) < _deleteNumberOfEntries)
-							break;
-					}
-				}
-				catch { }
+            if (activityLogIds == null || activityLogIds.Length == 0)
+                return new List<ActivityLog>();
 
-				try
-				{
-					_dbContext.ExecuteSqlCommand("DBCC CHECKIDENT('ActivityLog', RESEED, 0)");
-				}
-				catch
-				{
-					try
-					{
-						_dbContext.ExecuteSqlCommand("Alter Table [ActivityLog] Alter Column [Id] Identity(1,1)");
-					}
-					catch { }
-				}
-			}
-		}
-       
-		#endregion
+            var query = _activityLogRepository.Table
+                .Where(x => activityLogIds.Contains(x.Id))
+                .OrderByDescending(x => x.CreatedOnUtc);
+
+            return query.ToList();
+        }
+
+        /// <summary>
+        /// Clears activity log
+        /// </summary>
+        public virtual void ClearAllActivities()
+        {
+            try
+            {
+                _dbContext.ExecuteSqlCommand("TRUNCATE TABLE [ActivityLog]");
+            }
+            catch
+            {
+                try
+                {
+                    for (int i = 0; i < 100000; ++i)
+                    {
+                        if (_dbContext.ExecuteSqlCommand("Delete Top ({0}) From [ActivityLog]", false, null, _deleteNumberOfEntries) < _deleteNumberOfEntries)
+                            break;
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    _dbContext.ExecuteSqlCommand("DBCC CHECKIDENT('ActivityLog', RESEED, 0)");
+                }
+                catch
+                {
+                    try
+                    {
+                        _dbContext.ExecuteSqlCommand("Alter Table [ActivityLog] Alter Column [Id] Identity(1,1)");
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        #endregion
     }
 }

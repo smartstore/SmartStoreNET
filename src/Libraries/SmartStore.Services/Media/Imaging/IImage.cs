@@ -19,7 +19,7 @@ namespace SmartStore.Services.Media.Imaging
         /// <param name="transformer"></param>
         IImage Transform(Action<IImageTransformer> transformer);
     }
-    
+
     /// <summary>
     /// Represents an image.
     /// </summary>

@@ -9,7 +9,7 @@ namespace SmartStore.Services.Authentication.External
     /// Provides an interface for creating external authentication methods
     /// </summary>
     public partial interface IExternalAuthenticationMethod : IProvider, IUserEditable
-    {   
+    {
         /// <summary>
         /// Gets a route for displaying plugin in public store
         /// </summary>

@@ -20,7 +20,7 @@ namespace SmartStore.Services.Catalog
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
-        
+
         #region Ctor
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace SmartStore.Services.Catalog
             var templates = query.ToList();
             return templates;
         }
- 
+
         /// <summary>
         /// Gets a product template
         /// </summary>
@@ -101,7 +101,7 @@ namespace SmartStore.Services.Catalog
 
             _productTemplateRepository.Update(productTemplate);
         }
-        
+
         #endregion
     }
 }

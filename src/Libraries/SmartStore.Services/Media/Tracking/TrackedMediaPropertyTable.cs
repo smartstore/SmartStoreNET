@@ -13,7 +13,7 @@ namespace SmartStore.Services.Media
     public class TrackedMediaPropertyTable
     {
         private readonly IList<TrackedMediaProperty> _propertyList = new List<TrackedMediaProperty>();
-        
+
         protected internal TrackedMediaPropertyTable(string album)
         {
             Album = album;

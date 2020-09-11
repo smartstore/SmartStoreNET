@@ -5,16 +5,16 @@ namespace SmartStore.Services.Common
 {
     public partial class MobileDeviceHelper : IMobileDeviceHelper
     {
-		private readonly IUserAgent _userAgent;
+        private readonly IUserAgent _userAgent;
 
         public MobileDeviceHelper(IUserAgent userAgent)
         {
-			_userAgent = userAgent;
+            _userAgent = userAgent;
         }
 
         public virtual bool IsMobileDevice()
         {
-			return _userAgent.IsMobileDevice && !_userAgent.IsTablet;
+            return _userAgent.IsMobileDevice && !_userAgent.IsTablet;
         }
 
     }

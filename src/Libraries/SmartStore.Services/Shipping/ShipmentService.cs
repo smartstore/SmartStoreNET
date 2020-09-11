@@ -22,7 +22,7 @@ namespace SmartStore.Services.Shipping
         private readonly IRepository<ShipmentItem> _siRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IEventPublisher _eventPublisher;
-        
+
         #endregion
 
         #region Ctor
@@ -58,32 +58,32 @@ namespace SmartStore.Services.Shipping
             if (shipment == null)
                 throw new ArgumentNullException("shipment");
 
-			int orderId = shipment.OrderId;
+            int orderId = shipment.OrderId;
 
             _shipmentRepository.Delete(shipment);
 
-			if (orderId != 0)
-			{
-				var order = _orderRepository.GetById(orderId);
-				_eventPublisher.PublishOrderUpdated(order);
-			}
+            if (orderId != 0)
+            {
+                var order = _orderRepository.GetById(orderId);
+                _eventPublisher.PublishOrderUpdated(order);
+            }
         }
-        
+
         /// <summary>
         /// Search shipments
         /// </summary>
-		/// <param name="trackingNumber">Search by tracking number</param>
+        /// <param name="trackingNumber">Search by tracking number</param>
         /// <param name="createdFrom">Created date from; null to load all records</param>
         /// <param name="createdTo">Created date to; null to load all records</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Customer collection</returns>
-		public virtual IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo, 
+        public virtual IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo,
             int pageIndex, int pageSize)
         {
             var query = _shipmentRepository.Table.Expand(x => x.Order);
-			if (!String.IsNullOrEmpty(trackingNumber))
-				query = query.Where(s => s.TrackingNumber.Contains(trackingNumber));
+            if (!String.IsNullOrEmpty(trackingNumber))
+                query = query.Where(s => s.TrackingNumber.Contains(trackingNumber));
             if (createdFrom.HasValue)
                 query = query.Where(s => createdFrom.Value <= s.CreatedOnUtc);
             if (createdTo.HasValue)
@@ -105,33 +105,33 @@ namespace SmartStore.Services.Shipping
             if (shipmentIds == null || shipmentIds.Length == 0)
                 return new List<Shipment>();
 
-			var query = from o in _shipmentRepository.Table.Expand(x => x.Order)
+            var query = from o in _shipmentRepository.Table.Expand(x => x.Order)
                         where shipmentIds.Contains(o.Id)
                         select o;
 
             var shipments = query.ToList();
 
-			// sort by passed identifier sequence
-			return shipments.OrderBySequence(shipmentIds).ToList();
-		}
+            // sort by passed identifier sequence
+            return shipments.OrderBySequence(shipmentIds).ToList();
+        }
 
-		public virtual Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds)
-		{
-			Guard.NotNull(orderIds, nameof(orderIds));
+        public virtual Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds)
+        {
+            Guard.NotNull(orderIds, nameof(orderIds));
 
-			var query =
-				from x in _shipmentRepository.TableUntracked.Expand(x => x.ShipmentItems)
-				where orderIds.Contains(x.OrderId)
-				select x;
+            var query =
+                from x in _shipmentRepository.TableUntracked.Expand(x => x.ShipmentItems)
+                where orderIds.Contains(x.OrderId)
+                select x;
 
-			var map = query
-				.OrderBy(x => x.OrderId)
-				.ThenBy(x => x.CreatedOnUtc)
-				.ToList()
-				.ToMultimap(x => x.OrderId, x => x);
+            var map = query
+                .OrderBy(x => x.OrderId)
+                .ThenBy(x => x.CreatedOnUtc)
+                .ToList()
+                .ToMultimap(x => x.OrderId, x => x);
 
-			return map;
-		}
+            return map;
+        }
 
         /// <summary>
         /// Gets a shipment
@@ -159,7 +159,7 @@ namespace SmartStore.Services.Shipping
             _shipmentRepository.Insert(shipment);
 
             //event notification
-			_eventPublisher.PublishOrderUpdated(shipment.Order);
+            _eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
         /// <summary>
@@ -174,11 +174,11 @@ namespace SmartStore.Services.Shipping
             _shipmentRepository.Update(shipment);
 
             //event notification
-			_eventPublisher.PublishOrderUpdated(shipment.Order);
+            _eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
 
-        
+
         /// <summary>
         /// Deletes a shipment item
         /// </summary>
@@ -186,17 +186,17 @@ namespace SmartStore.Services.Shipping
         public virtual void DeleteShipmentItem(ShipmentItem shipmentItem)
         {
             if (shipmentItem == null)
-				throw new ArgumentNullException("shipmentItem");
+                throw new ArgumentNullException("shipmentItem");
 
-			int orderId = shipmentItem.Shipment.OrderId;
+            int orderId = shipmentItem.Shipment.OrderId;
 
             _siRepository.Delete(shipmentItem);
 
-			if (orderId != 0)
-			{
-				var order = _orderRepository.GetById(orderId);
-				_eventPublisher.PublishOrderUpdated(order);
-			}
+            if (orderId != 0)
+            {
+                var order = _orderRepository.GetById(orderId);
+                _eventPublisher.PublishOrderUpdated(order);
+            }
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace SmartStore.Services.Shipping
             var si = _siRepository.GetById(shipmentItemId);
             return si;
         }
-        
+
         /// <summary>
         /// Inserts a shipment item
         /// </summary>
@@ -220,23 +220,23 @@ namespace SmartStore.Services.Shipping
         public virtual void InsertShipmentItem(ShipmentItem shipmentItem)
         {
             if (shipmentItem == null)
-				throw new ArgumentNullException("shipmentItem");
+                throw new ArgumentNullException("shipmentItem");
 
             _siRepository.Insert(shipmentItem);
 
-			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
-			{
-				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
-			}
-			else
-			{
-				var shipment = _shipmentRepository.Table
-					.Expand(x => x.Order)
-					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+            if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+            {
+                _eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+            }
+            else
+            {
+                var shipment = _shipmentRepository.Table
+                    .Expand(x => x.Order)
+                    .FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
 
-				if (shipment != null)
-					_eventPublisher.PublishOrderUpdated(shipment.Order);	
-			}
+                if (shipment != null)
+                    _eventPublisher.PublishOrderUpdated(shipment.Order);
+            }
         }
 
         /// <summary>
@@ -246,25 +246,25 @@ namespace SmartStore.Services.Shipping
         public virtual void UpdateShipmentItem(ShipmentItem shipmentItem)
         {
             if (shipmentItem == null)
-				throw new ArgumentNullException("shipmentItem");
+                throw new ArgumentNullException("shipmentItem");
 
             _siRepository.Update(shipmentItem);
 
-			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
-			{
-				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
-			}
-			else
-			{
-				var shipment = _shipmentRepository.Table
-					.Expand(x => x.Order)
-					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+            if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+            {
+                _eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+            }
+            else
+            {
+                var shipment = _shipmentRepository.Table
+                    .Expand(x => x.Order)
+                    .FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
 
-				if (shipment != null)
-					_eventPublisher.PublishOrderUpdated(shipment.Order);
-			}
+                if (shipment != null)
+                    _eventPublisher.PublishOrderUpdated(shipment.Order);
+            }
         }
-        
-		#endregion
+
+        #endregion
     }
 }

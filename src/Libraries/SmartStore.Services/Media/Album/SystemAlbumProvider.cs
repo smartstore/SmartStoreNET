@@ -19,7 +19,7 @@ namespace SmartStore.Services.Media
     public partial class SystemAlbumProvider : IAlbumProvider, IMediaTrackDetector
     {
         private readonly IDbContext _dbContext;
-        
+
         public SystemAlbumProvider(IDbContext dbContext)
         {
             _dbContext = dbContext;

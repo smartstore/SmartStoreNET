@@ -33,7 +33,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="productTagId">Product tag identifier</param>
         /// <returns>Product tag</returns>
         ProductTag GetProductTagById(int productTagId);
-        
+
         /// <summary>
         /// Gets product tag by name
         /// </summary>

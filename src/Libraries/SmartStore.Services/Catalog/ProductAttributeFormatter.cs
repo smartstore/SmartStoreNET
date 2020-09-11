@@ -21,41 +21,41 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkContext _workContext;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-		private readonly IPriceCalculationService _priceCalculationService;
+        private readonly IPriceCalculationService _priceCalculationService;
         private readonly ICurrencyService _currencyService;
         private readonly ILocalizationService _localizationService;
         private readonly ITaxService _taxService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IDownloadService _downloadService;
         private readonly IWebHelper _webHelper;
-		private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly CatalogSettings _catalogSettings;
+        private readonly ShoppingCartSettings _shoppingCartSettings;
+        private readonly CatalogSettings _catalogSettings;
 
-		public ProductAttributeFormatter(IWorkContext workContext,
+        public ProductAttributeFormatter(IWorkContext workContext,
             IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-			IPriceCalculationService priceCalculationService,
+            IPriceCalculationService priceCalculationService,
             ICurrencyService currencyService,
             ILocalizationService localizationService,
             ITaxService taxService,
             IPriceFormatter priceFormatter,
             IDownloadService downloadService,
             IWebHelper webHelper,
-			ShoppingCartSettings shoppingCartSettings,
-			CatalogSettings catalogSettings)
+            ShoppingCartSettings shoppingCartSettings,
+            CatalogSettings catalogSettings)
         {
             _workContext = workContext;
             _productAttributeService = productAttributeService;
             _productAttributeParser = productAttributeParser;
-			_priceCalculationService = priceCalculationService;
+            _priceCalculationService = priceCalculationService;
             _currencyService = currencyService;
             _localizationService = localizationService;
             _taxService = taxService;
             _priceFormatter = priceFormatter;
             _downloadService = downloadService;
             _webHelper = webHelper;
-			_shoppingCartSettings = shoppingCartSettings;
-			_catalogSettings = catalogSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+            _catalogSettings = catalogSettings;
         }
 
         /// <summary>
@@ -183,40 +183,40 @@ namespace SmartStore.Services.Catalog
                                 if (pvaValue != null)
                                 {
                                     pvaAttribute = "{0}: {1}".FormatInvariant(
-										pva.ProductAttribute.GetLocalized(a => a.Name, languageId),
-										pvaValue.GetLocalized(a => a.Name, languageId));
+                                        pva.ProductAttribute.GetLocalized(a => a.Name, languageId),
+                                        pvaValue.GetLocalized(a => a.Name, languageId));
 
                                     if (renderPrices)
                                     {
-										var attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, 1);
-										var priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out var taxRate);
+                                        var attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue, product, customer, null, 1);
+                                        var priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, customer, out var taxRate);
                                         var priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _workContext.WorkingCurrency);
 
-										if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity && 
+                                        if (_shoppingCartSettings.ShowLinkedAttributeValueQuantity &&
                                             pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage &&
-											pvaValue.Quantity > 1)
-										{
-											pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
-										}
+                                            pvaValue.Quantity > 1)
+                                        {
+                                            pvaAttribute += string.Format(" × {0}", pvaValue.Quantity);
+                                        }
 
-										if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
-										{
-											if (priceAdjustmentBase > 0)
-											{
-												pvaAttribute += " (+{0})".FormatInvariant(_priceFormatter.FormatPrice(priceAdjustment, true, false));
-											}
-											else if (priceAdjustmentBase < decimal.Zero)
-											{
-												pvaAttribute += " (-{0})".FormatInvariant(_priceFormatter.FormatPrice(-priceAdjustment, true, false));
-											}
-										}
+                                        if (_catalogSettings.ShowVariantCombinationPriceAdjustment)
+                                        {
+                                            if (priceAdjustmentBase > 0)
+                                            {
+                                                pvaAttribute += " (+{0})".FormatInvariant(_priceFormatter.FormatPrice(priceAdjustment, true, false));
+                                            }
+                                            else if (priceAdjustmentBase < decimal.Zero)
+                                            {
+                                                pvaAttribute += " (-{0})".FormatInvariant(_priceFormatter.FormatPrice(-priceAdjustment, true, false));
+                                            }
+                                        }
                                     }
                                 }
 
-								if (htmlEncode)
-								{
-									pvaAttribute = HttpUtility.HtmlEncode(pvaAttribute);
-								}
+                                if (htmlEncode)
+                                {
+                                    pvaAttribute = HttpUtility.HtmlEncode(pvaAttribute);
+                                }
                             }
                         }
 

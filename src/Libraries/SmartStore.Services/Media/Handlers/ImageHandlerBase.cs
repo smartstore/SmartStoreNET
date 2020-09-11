@@ -76,7 +76,7 @@ namespace SmartStore.Services.Media
                         if (inputStream == null)
                         {
                             context.Exception = ExceptionFactory.ExtractThumbnail(sourceFile.Path, T("Admin.Media.Exception.NullInputStream"));
-                            context.Executed = true;                         
+                            context.Executed = true;
                             return;
                         }
 

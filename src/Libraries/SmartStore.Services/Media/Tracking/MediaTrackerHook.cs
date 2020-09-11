@@ -11,7 +11,7 @@ namespace SmartStore.Services.Media
 {
     [Important]
     public sealed class MediaTrackerHook : DbSaveHook<ObjectContextBase, BaseEntity>
-    {   
+    {
         // Track items for the current (SaveChanges) unit.
         private readonly HashSet<MediaTrack> _actionsUnit = new HashSet<MediaTrack>();
 
@@ -56,7 +56,7 @@ namespace SmartStore.Services.Media
         {
             if (Silent)
                 return;
-            
+
             var type = entry.EntityType;
 
             if (!_mediaTracker.Value.TryGetTrackedPropertiesFor(type, out var properties))
@@ -110,13 +110,13 @@ namespace SmartStore.Services.Media
             if ((int)value > 0)
             {
                 (actions ?? _actionsUnit).Add(new MediaTrack
-                { 
+                {
                     Album = album,
-                    EntityId = entity.Id, 
-                    EntityName = entity.GetEntityName(), 
+                    EntityId = entity.Id,
+                    EntityName = entity.GetEntityName(),
                     Property = prop,
-                    MediaFileId = (int)value, 
-                    Operation = operation 
+                    MediaFileId = (int)value,
+                    Operation = operation
                 });
             }
         }

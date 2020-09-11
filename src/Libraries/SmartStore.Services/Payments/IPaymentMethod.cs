@@ -13,12 +13,12 @@ namespace SmartStore.Services.Payments
     {
         #region Methods
 
-		/// <summary>
-		/// Pre process payment
-		/// </summary>
-		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
-		/// <returns>Pre process payment result</returns>
-		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest);
+        /// <summary>
+        /// Pre process payment
+        /// </summary>
+        /// <param name="processPaymentRequest">Payment info required for an order processing</param>
+        /// <returns>Pre process payment result</returns>
+        PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest);
 
         /// <summary>
         /// Process a payment
@@ -97,16 +97,16 @@ namespace SmartStore.Services.Payments
 
         #region Properties
 
-		/// <summary>
-		/// Gets a value indicating whether the payment method is active and should be offered to customers
-		/// </summary>
-		bool IsActive { get; }
+        /// <summary>
+        /// Gets a value indicating whether the payment method is active and should be offered to customers
+        /// </summary>
+        bool IsActive { get; }
 
-		/// <summary>
-		/// Gets a value indicating whether the payment method requires user input
-		/// before proceeding (e.g. CreditCard, DirectDebit etc.)
-		/// </summary>
-		bool RequiresInteraction { get; }
+        /// <summary>
+        /// Gets a value indicating whether the payment method requires user input
+        /// before proceeding (e.g. CreditCard, DirectDebit etc.)
+        /// </summary>
+        bool RequiresInteraction { get; }
 
         /// <summary>
         /// Gets a value indicating whether capture is supported

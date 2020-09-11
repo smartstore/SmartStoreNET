@@ -10,22 +10,19 @@ namespace SmartStore.Services.Orders
     {
         public IList<string> Errors { get; set; }
 
-        public PlaceOrderResult() 
+        public PlaceOrderResult()
         {
             this.Errors = new List<string>();
         }
 
-        public bool Success
-        {
-            get { return (this.Errors.Count == 0); }
-        }
+        public bool Success => (this.Errors.Count == 0);
 
         public void AddError(string error)
         {
             this.Errors.Add(error);
         }
 
-        
+
         /// <summary>
         /// Gets or sets the placed order
         /// </summary>

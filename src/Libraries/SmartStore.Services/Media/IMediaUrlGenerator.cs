@@ -27,8 +27,8 @@ namespace SmartStore.Services.Media
         /// </param>
         /// <returns>The passed file's public URL.</returns>
         string GenerateUrl(
-            MediaFileInfo file, 
-            ProcessImageQuery imageQuery, 
+            MediaFileInfo file,
+            ProcessImageQuery imageQuery,
             string host = null,
             bool doFallback = true);
     }

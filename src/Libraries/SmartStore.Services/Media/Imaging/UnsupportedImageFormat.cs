@@ -24,14 +24,8 @@ namespace SmartStore.Services.Media.Imaging
         public string DefaultExtension { get; }
         public string DefaultMimeType { get; }
 
-        public IEnumerable<string> FileExtensions
-        {
-            get => new string[] { DefaultExtension };
-        }
+        public IEnumerable<string> FileExtensions => new string[] { DefaultExtension };
 
-        public IEnumerable<string> MimeTypes
-        {
-            get => new string[] { DefaultMimeType };
-        }
+        public IEnumerable<string> MimeTypes => new string[] { DefaultMimeType };
     }
 }

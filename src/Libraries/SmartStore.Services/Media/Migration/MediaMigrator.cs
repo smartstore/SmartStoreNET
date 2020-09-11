@@ -29,10 +29,10 @@ namespace SmartStore.Services.Media.Migration
             public string UniqueName { get; set; }
             public int UniqueIndex { get; set; }
         }
-        
+
         internal static bool Executed;
         internal const string MigrationName = "MediaManager";
-        
+
         private readonly ICommonServices _services;
         private readonly IProviderManager _providerManager;
         private readonly IMediaTypeResolver _mediaTypeResolver;
@@ -45,7 +45,7 @@ namespace SmartStore.Services.Media.Migration
         private readonly bool _isFsProvider;
 
         public MediaMigrator(
-            ICommonServices services, 
+            ICommonServices services,
             IProviderManager providerManager,
             Func<IMediaStorageProvider> mediaStorageProvider,
             IMediaTypeResolver mediaTypeResolver,
@@ -141,10 +141,10 @@ namespace SmartStore.Services.Media.Migration
             var messagesFolderId = _albumRegistry.GetAlbumByName(SystemAlbumProvider.Messages)?.Id;
             var newFiles = new List<MediaFile>();
 
-            using (var scope = new DbContextScope(ctx, 
-                validateOnSave: false, 
-                hooksEnabled: false, 
-                autoCommit: false, 
+            using (var scope = new DbContextScope(ctx,
+                validateOnSave: false,
+                hooksEnabled: false,
+                autoCommit: false,
                 autoDetectChanges: false))
             {
                 var messageTemplates = ctx.Set<MessageTemplate>()
@@ -246,11 +246,11 @@ namespace SmartStore.Services.Media.Migration
 
         private void ReRefMessageTemplateAttachments(
             SmartObjectContext ctx,
-            Dictionary<int, MessageTemplate> messageTemplatesDict, 
+            Dictionary<int, MessageTemplate> messageTemplatesDict,
             Dictionary<int, Download> downloads)
         {
             bool hasChanges = false;
-            
+
             foreach (var kvp in messageTemplatesDict)
             {
                 var downloadId = kvp.Key;
@@ -283,7 +283,7 @@ namespace SmartStore.Services.Media.Migration
 
         private void MoveDownloadFiles(
             Dictionary<int, MediaFile> newFilesDict,
-            Dictionary<int, Download> downloadsDict, 
+            Dictionary<int, Download> downloadsDict,
             Dictionary<int, DownloadStub> downloadStubs)
         {
             if (_mediaFileSystem.FolderExists("Downloads"))
@@ -296,7 +296,7 @@ namespace SmartStore.Services.Media.Migration
                         var stub = downloadStubs.Get(d.Id);
                         if (stub == null || d.MediaFileId == null)
                             continue;
-                    
+
                         var file = newFilesDict.Get(d.MediaFileId.Value);
                         if (file != null)
                         {
@@ -307,7 +307,7 @@ namespace SmartStore.Services.Media.Migration
                                 if (!_mediaFileSystem.FileExists(newPath))
                                 {
                                     _mediaFileSystem.CopyFile(downloadFile.Path, newPath);
-                                } 
+                                }
                             }
                             catch { }
                         }
@@ -361,7 +361,7 @@ namespace SmartStore.Services.Media.Migration
                             if (name == prevName)
                             {
                                 // Make file name unique
-                                fixedName = name + "-" + ++fileIndex; 
+                                fixedName = name + "-" + ++fileIndex;
                             }
                             else
                             {
@@ -395,13 +395,13 @@ namespace SmartStore.Services.Media.Migration
         public void MigrateMediaFiles_Old(SmartObjectContext ctx)
         {
             var query = ctx.Set<MediaFile>();
-                //.Where(x => x.Version == 0)
-                //.Include(x => x.MediaStorage);
+            //.Where(x => x.Version == 0)
+            //.Include(x => x.MediaStorage);
 
             var pager = new FastPager<MediaFile>(query, 1000);
 
-            using (var scope = new DbContextScope(ctx, 
-                hooksEnabled: false, 
+            using (var scope = new DbContextScope(ctx,
+                hooksEnabled: false,
                 autoCommit: false,
                 proxyCreation: false,
                 validateOnSave: false,
@@ -413,7 +413,7 @@ namespace SmartStore.Services.Media.Migration
                     {
                         if (file.Version > 0)
                             continue;
-                        
+
                         if (file.Extension.IsEmpty())
                         {
                             file.Extension = MimeTypes.MapMimeTypeToExtension(file.MimeType);
@@ -597,7 +597,7 @@ namespace SmartStore.Services.Media.Migration
             {
                 //if (albumName == SystemAlbumProvider.Downloads || albumName == SystemAlbumProvider.Messages)
                 //    continue; // Download and MessageTemplate tracks already added in MigrateDownload()
-                
+
                 _mediaTracker.DetectAllTracks(albumName, true);
             }
         }
@@ -627,7 +627,7 @@ namespace SmartStore.Services.Media.Migration
             if (createFolder)
             {
                 _mediaFileSystem.CreateFolder(subfolder);
-            }          
+            }
 
             return _mediaFileSystem.Combine(subfolder, fileName);
         }

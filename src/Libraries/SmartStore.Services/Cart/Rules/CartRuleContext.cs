@@ -9,7 +9,7 @@ namespace SmartStore.Services.Cart.Rules
     {
         private readonly Func<object> _sessionKeyBuilder;
         private object _sessionKey;
-        
+
         internal CartRuleContext(Func<object> sessionKeyBuilder)
         {
             _sessionKeyBuilder = sessionKeyBuilder;
@@ -19,9 +19,6 @@ namespace SmartStore.Services.Cart.Rules
         public Store Store { get; set; }
         public IWorkContext WorkContext { get; set; }
 
-        public object SessionKey 
-        {
-            get => _sessionKey ?? (_sessionKey = _sessionKeyBuilder?.Invoke() ?? 0);
-        }
+        public object SessionKey => _sessionKey ?? (_sessionKey = _sessionKeyBuilder?.Invoke() ?? 0);
     }
 }

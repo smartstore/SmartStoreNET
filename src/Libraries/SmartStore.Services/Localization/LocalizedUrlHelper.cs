@@ -3,9 +3,9 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Localization
 {
-	public class LocalizedUrlHelper
+    public class LocalizedUrlHelper
     {
-        public LocalizedUrlHelper(HttpRequestBase httpRequest, bool rawUrl = false) 
+        public LocalizedUrlHelper(HttpRequestBase httpRequest, bool rawUrl = false)
             : this(httpRequest.ApplicationPath, rawUrl ? httpRequest.RawUrl : httpRequest.AppRelativeCurrentExecutionFilePath, rawUrl)
         {
             Guard.NotNull(httpRequest, nameof(httpRequest));
@@ -55,7 +55,7 @@ namespace SmartStore.Services.Localization
                 firstPart = firstPart.Substring(0, firstSlash);
             }
 
-            if (LocalizationHelper.IsValidCultureCode(firstPart)) 
+            if (LocalizationHelper.IsValidCultureCode(firstPart))
             {
                 seoCode = firstPart;
                 return true;

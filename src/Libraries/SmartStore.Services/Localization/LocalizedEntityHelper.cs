@@ -19,7 +19,7 @@ namespace SmartStore.Services.Localization
         private readonly Language _defaultLanguage;
 
         public LocalizedEntityHelper(
-            ILanguageService languageService, 
+            ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             IUrlRecordService urlRecordService,
             IWorkContext workContext)

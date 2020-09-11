@@ -175,7 +175,7 @@ namespace SmartStore.Services.Media
             {
                 destinationPath += "/" + node.Value.Name;
                 var dupeFiles = new List<DuplicateFileInfo>();
-                
+
                 // >>>> Do the heavy stuff
                 var folder = InternalCopyFolder(node, destinationPath, dupeEntryHandling, dupeFiles);
 
@@ -348,7 +348,7 @@ namespace SmartStore.Services.Media
             TreeNode<MediaFolderNode> root,
             FolderDeleteResult result,
             FileHandling strategy)
-        {            
+        {
             // (perf) We gonna check file tracks, so we should preload all tracks.
             _fileRepo.Context.LoadCollection(folder, (MediaFolder x) => x.Files, false, q => q.Include(f => f.Tracks));
 
@@ -359,8 +359,8 @@ namespace SmartStore.Services.Media
             // First delete files
             if (folder.Files.Any())
             {
-                var albumId = strategy == FileHandling.MoveToRoot 
-                    ? _folderService.FindAlbum(folder.Id).Value.Id 
+                var albumId = strategy == FileHandling.MoveToRoot
+                    ? _folderService.FindAlbum(folder.Id).Value.Id
                     : (int?)null;
 
                 foreach (var batch in files.Slice(500))
@@ -373,7 +373,7 @@ namespace SmartStore.Services.Media
                             trackedFiles.Add(file);
                             continue;
                         }
-                        
+
                         if (strategy == FileHandling.Delete)
                         {
                             try
@@ -388,7 +388,7 @@ namespace SmartStore.Services.Media
                             catch (IOException)
                             {
                                 lockedFiles.Add(file);
-                            }  
+                            }
                         }
                         else if (strategy == FileHandling.SoftDelete)
                         {

@@ -19,22 +19,22 @@ namespace SmartStore.Services.Catalog
 
         private readonly IRepository<BackInStockSubscription> _backInStockSubscriptionRepository;
         private readonly IMessageFactory _messageFactory;
-		private readonly IWorkContext _workContext;
+        private readonly IWorkContext _workContext;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
-        
+
         #region Ctor
 
         public BackInStockSubscriptionService(
-			IRepository<BackInStockSubscription> backInStockSubscriptionRepository,
-			IMessageFactory messageFactory,
-			IWorkContext workContext,
+            IRepository<BackInStockSubscription> backInStockSubscriptionRepository,
+            IMessageFactory messageFactory,
+            IWorkContext workContext,
             IEventPublisher eventPublisher)
         {
             _backInStockSubscriptionRepository = backInStockSubscriptionRepository;
             _messageFactory = messageFactory;
-			_workContext = workContext;
+            _workContext = workContext;
             _eventPublisher = eventPublisher;
         }
 
@@ -67,9 +67,9 @@ namespace SmartStore.Services.Catalog
             var query = _backInStockSubscriptionRepository.Table;
             //customer
             query = query.Where(biss => biss.CustomerId == customerId);
-			//store
-			if (storeId > 0)
-				query = query.Where(biss => biss.StoreId == storeId);
+            //store
+            if (storeId > 0)
+                query = query.Where(biss => biss.StoreId == storeId);
             //product
             query = query.Where(biss => !biss.Product.Deleted);
             query = query.OrderByDescending(biss => biss.CreatedOnUtc);
@@ -86,14 +86,14 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <returns>Subscriptions</returns>
         public virtual IPagedList<BackInStockSubscription> GetAllSubscriptionsByProductId(int productId,
-			int storeId, int pageIndex, int pageSize)
+            int storeId, int pageIndex, int pageSize)
         {
             var query = _backInStockSubscriptionRepository.Table;
             //product
             query = query.Where(biss => biss.ProductId == productId);
-			//store
-			if (storeId > 0)
-				query = query.Where(biss => biss.StoreId == storeId);
+            //store
+            if (storeId > 0)
+                query = query.Where(biss => biss.StoreId == storeId);
             //customer
             query = query.Where(biss => !biss.Customer.Deleted);
             query = query.OrderByDescending(biss => biss.CreatedOnUtc);
@@ -109,11 +109,11 @@ namespace SmartStore.Services.Catalog
         /// <returns>Subscriptions</returns>
 		public virtual BackInStockSubscription FindSubscription(int customerId, int productId, int storeId)
         {
-			var query = 
-				from biss in _backInStockSubscriptionRepository.Table
-				orderby biss.CreatedOnUtc descending
-				where biss.CustomerId == customerId &&	biss.ProductId == productId &&	biss.StoreId == storeId
-				select biss;
+            var query =
+                from biss in _backInStockSubscriptionRepository.Table
+                orderby biss.CreatedOnUtc descending
+                where biss.CustomerId == customerId && biss.ProductId == productId && biss.StoreId == storeId
+                select biss;
 
             var subscription = query.FirstOrDefault();
             return subscription;
@@ -164,17 +164,17 @@ namespace SmartStore.Services.Catalog
         /// <returns>Number of sent email</returns>
         public virtual int SendNotificationsToSubscribers(Product product)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+            if (product == null)
+                throw new ArgumentNullException("product");
 
             int result = 0;
-			var subscriptions = GetAllSubscriptionsByProductId(product.Id, 0, 0, int.MaxValue);
+            var subscriptions = GetAllSubscriptionsByProductId(product.Id, 0, 0, int.MaxValue);
             foreach (var subscription in subscriptions)
             {
                 // Ensure that customer is registered (simple and fast way)
-				if (subscription.Customer.Email.IsEmail())
+                if (subscription.Customer.Email.IsEmail())
                 {
-					_messageFactory.SendBackInStockNotification(subscription);
+                    _messageFactory.SendBackInStockNotification(subscription);
                     result++;
                 }
             }
@@ -182,7 +182,7 @@ namespace SmartStore.Services.Catalog
                 DeleteSubscription(subscriptions[i]);
             return result;
         }
-        
+
         #endregion
     }
 }

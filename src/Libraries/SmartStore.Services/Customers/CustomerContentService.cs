@@ -17,7 +17,7 @@ namespace SmartStore.Services.Customers
 
         public virtual void DeleteCustomerContent(CustomerContent content)
         {
-			Guard.NotNull(content, nameof(content));
+            Guard.NotNull(content, nameof(content));
 
             _contentRepository.Delete(content);
         }
@@ -70,21 +70,21 @@ namespace SmartStore.Services.Customers
                 return null;
 
             return _contentRepository.GetById(contentId);
-                                          
+
         }
 
         public virtual void InsertCustomerContent(CustomerContent content)
         {
-			Guard.NotNull(content, nameof(content));
+            Guard.NotNull(content, nameof(content));
 
-			_contentRepository.Insert(content);
+            _contentRepository.Insert(content);
         }
 
         public virtual void UpdateCustomerContent(CustomerContent content)
         {
-			Guard.NotNull(content, nameof(content));
+            Guard.NotNull(content, nameof(content));
 
-			_contentRepository.Update(content);
+            _contentRepository.Update(content);
         }
     }
 }

@@ -15,8 +15,8 @@ namespace SmartStore.Services.Cms
     public enum LinkStatus
     {
         Ok,
-		Forbidden,
-		NotFound,
+        Forbidden,
+        NotFound,
         Hidden
     }
 
@@ -24,17 +24,17 @@ namespace SmartStore.Services.Cms
     {
         private string _link;
 
-		/// <summary>
-		/// The raw expression without query string.
-		/// </summary>
-		public string Expression { get; set; }
+        /// <summary>
+        /// The raw expression without query string.
+        /// </summary>
+        public string Expression { get; set; }
 
-		/// <summary>
-		/// The query string part.
-		/// </summary>
-		public string QueryString { get; set; }
+        /// <summary>
+        /// The query string part.
+        /// </summary>
+        public string QueryString { get; set; }
 
-		public LinkType Type { get; set; }
+        public LinkType Type { get; set; }
         public object Value { get; set; }
 
         public LinkStatus Status { get; set; }
@@ -71,10 +71,10 @@ namespace SmartStore.Services.Cms
         }
 
         public override string ToString()
-		{
-			return this.Link.EmptyNull();
-		}
-	}
+        {
+            return this.Link.EmptyNull();
+        }
+    }
 
     [Serializable]
     public partial class LinkResolverData : LinkResolverResult, ICloneable<LinkResolverData>
@@ -84,15 +84,15 @@ namespace SmartStore.Services.Cms
         public bool CheckLimitedToStores { get; set; } = true;
 
         public LinkResolverData Clone()
-		{
-			return (LinkResolverData)this.MemberwiseClone();
-		}
+        {
+            return (LinkResolverData)this.MemberwiseClone();
+        }
 
-		object ICloneable.Clone()
-		{
-			return this.MemberwiseClone();
-		}
-	}
+        object ICloneable.Clone()
+        {
+            return this.MemberwiseClone();
+        }
+    }
 
 
     public static class LinkResolverExtensions

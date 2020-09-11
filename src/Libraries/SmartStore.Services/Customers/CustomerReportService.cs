@@ -49,7 +49,7 @@ namespace SmartStore.Services.Customers
             var paymentStatusId = paymentStatus.HasValue ? (int)paymentStatus.Value : (int?)null;
             var shippingStatusId = shippingStatus.HasValue ? (int)shippingStatus.Value : (int?)null;
 
-            var query = 
+            var query =
                 from c in _customerRepository.TableUntracked
                 join o in _orderRepository.TableUntracked on c.Id equals o.CustomerId
                 where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
@@ -61,7 +61,7 @@ namespace SmartStore.Services.Customers
                 (!c.Deleted)
                 select new { c, o };
 
-            var groupedQuery = 
+            var groupedQuery =
                 from co in query
                 group co by co.c.Id into g
                 select new TopCustomerReportLine
@@ -145,7 +145,7 @@ namespace SmartStore.Services.Customers
         public virtual int GetCustomerRegistrations(DateTime? startTimeUtc, DateTime? endTimeUtc)
         {
             var registeredCustomerRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
-            if(registeredCustomerRole == null)
+            if (registeredCustomerRole == null)
             {
                 return 0;
             }

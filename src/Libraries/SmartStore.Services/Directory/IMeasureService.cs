@@ -74,7 +74,7 @@ namespace SmartStore.Services.Directory
         /// <returns>Converted value</returns>
         decimal ConvertFromPrimaryMeasureDimension(decimal quantity,
             MeasureDimension targetMeasureDimension);
-        
+
 
         /// <summary>
         /// Deletes measure weight

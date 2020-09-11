@@ -46,8 +46,8 @@ namespace SmartStore.Services.Media
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MediaFileInfo Clone()
         {
-            var clone = new MediaFileInfo(File, _storageProvider, _urlGenerator, Directory) 
-            { 
+            var clone = new MediaFileInfo(File, _storageProvider, _urlGenerator, Directory)
+            {
                 ThumbSize = this.ThumbSize,
                 _alt = this._alt,
                 _title = this._title
@@ -99,25 +99,20 @@ namespace SmartStore.Services.Media
             set => _title = value;
         }
 
-        public static explicit operator MediaFile(MediaFileInfo fileInfo) => fileInfo.File;
+        public static explicit operator MediaFile(MediaFileInfo fileInfo)
+        {
+            return fileInfo.File;
+        }
 
         #region Url
 
         private readonly IDictionary<(int size, string host), string> _cachedUrls = new Dictionary<(int, string), string>();
 
         [JsonProperty("url")]
-        internal string Url
-        {
-            // For serialization in MediaManager
-            get => GetUrl(0, string.Empty);
-        }
+        internal string Url => GetUrl(0, string.Empty);
 
         [JsonProperty("thumbUrl")]
-        internal string ThumbUrl
-        {
-            // For serialization in MediaManager
-            get => GetUrl(ThumbSize, string.Empty);
-        }
+        internal string ThumbUrl => GetUrl(ThumbSize, string.Empty);
 
         [JsonIgnore]
         internal int ThumbSize

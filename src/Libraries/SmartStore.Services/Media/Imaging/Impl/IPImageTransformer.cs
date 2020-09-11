@@ -26,7 +26,7 @@ namespace SmartStore.Services.Media.Imaging.Impl
         public IImageTransformer Resize(ResizeOptions options)
         {
             Guard.NotNull(options, nameof(options));
-            
+
             var layer = new ResizeLayer(
                 size: options.Size,
                 resizeMode: (ImageProcessor.Imaging.ResizeMode)options.ResizeMode,

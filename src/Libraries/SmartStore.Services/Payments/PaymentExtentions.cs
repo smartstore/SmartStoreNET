@@ -9,7 +9,7 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Payments
 {
-	public static class PaymentExtentions
+    public static class PaymentExtentions
     {
         /// <summary>
         /// Is payment method active?
@@ -28,10 +28,10 @@ namespace SmartStore.Services.Payments
             if (paymentSettings.ActivePaymentMethodSystemNames == null)
                 return false;
 
-			if (!paymentMethod.Value.IsActive)
-				return false;
+            if (!paymentMethod.Value.IsActive)
+                return false;
 
-			return paymentSettings.ActivePaymentMethodSystemNames.Contains(paymentMethod.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
+            return paymentSettings.ActivePaymentMethodSystemNames.Contains(paymentMethod.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace SmartStore.Services.Payments
         /// <param name="usePercentage">Is fee amount specified as percentage or fixed value?</param>
         /// <returns>Result</returns>
         public static decimal CalculateAdditionalFee(this IPaymentMethod paymentMethod,
-			IOrderTotalCalculationService orderTotalCalculationService, 
-			IList<OrganizedShoppingCartItem> cart,
-            decimal fee, 
-			bool usePercentage)
+            IOrderTotalCalculationService orderTotalCalculationService,
+            IList<OrganizedShoppingCartItem> cart,
+            decimal fee,
+            bool usePercentage)
         {
             if (paymentMethod == null)
                 throw new ArgumentNullException("paymentMethod");
@@ -70,43 +70,43 @@ namespace SmartStore.Services.Payments
             return result;
         }
 
-		public static RouteInfo GetConfigurationRoute(this IPaymentMethod method)
-		{
-			Guard.NotNull(method, nameof(method));
-			
-			string action;
-			string controller;
-			RouteValueDictionary routeValues;
+        public static RouteInfo GetConfigurationRoute(this IPaymentMethod method)
+        {
+            Guard.NotNull(method, nameof(method));
 
-			var configurable = method as IConfigurable;
+            string action;
+            string controller;
+            RouteValueDictionary routeValues;
 
-			if (configurable != null)
-			{
-				configurable.GetConfigurationRoute(out action, out controller, out routeValues);
-				if (action.HasValue())
-				{
-					return new RouteInfo(action, controller, routeValues);
-				}
-			}
-			
-			return null;
-		}
+            var configurable = method as IConfigurable;
 
-		public static RouteInfo GetPaymentInfoRoute(this IPaymentMethod method)
-		{
-			Guard.NotNull(method, nameof(method));
+            if (configurable != null)
+            {
+                configurable.GetConfigurationRoute(out action, out controller, out routeValues);
+                if (action.HasValue())
+                {
+                    return new RouteInfo(action, controller, routeValues);
+                }
+            }
 
-			string action;
-			string controller;
-			RouteValueDictionary routeValues;
+            return null;
+        }
 
-			method.GetPaymentInfoRoute(out action, out controller, out routeValues);
-			if (action.HasValue())
-			{
-				return new RouteInfo(action, controller, routeValues);
-			}
+        public static RouteInfo GetPaymentInfoRoute(this IPaymentMethod method)
+        {
+            Guard.NotNull(method, nameof(method));
 
-			return null;
-		}
+            string action;
+            string controller;
+            RouteValueDictionary routeValues;
+
+            method.GetPaymentInfoRoute(out action, out controller, out routeValues);
+            if (action.HasValue())
+            {
+                return new RouteInfo(action, controller, routeValues);
+            }
+
+            return null;
+        }
     }
 }

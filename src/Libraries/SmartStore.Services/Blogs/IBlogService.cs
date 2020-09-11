@@ -36,7 +36,7 @@ namespace SmartStore.Services.Blogs
 		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
 		IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
+            DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
             string title = "", string intro = "", string body = "", string tag = "");
 
         /// <summary>

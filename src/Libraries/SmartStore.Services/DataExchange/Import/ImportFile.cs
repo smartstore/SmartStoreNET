@@ -43,13 +43,7 @@ namespace SmartStore.Services.DataExchange.Import
         /// <summary>
         /// Indicates whether the file has an CSV file extension.
         /// </summary>
-        internal bool IsCsv
-        {
-            get
-            {
-                return (new string[] { ".csv", ".txt", ".tab" }).Contains(Extension, StringComparer.OrdinalIgnoreCase);
-            }
-        }
+        internal bool IsCsv => (new string[] { ".csv", ".txt", ".tab" }).Contains(Extension, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Related entity type.

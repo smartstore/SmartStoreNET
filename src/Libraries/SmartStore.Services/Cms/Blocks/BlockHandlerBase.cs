@@ -16,32 +16,32 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Cms.Blocks
 {
-	public abstract class BlockHandlerBase<T> : IBlockHandler<T> where T : IBlock
-	{
-		public ICommonServices Services { get; set; }
+    public abstract class BlockHandlerBase<T> : IBlockHandler<T> where T : IBlock
+    {
+        public ICommonServices Services { get; set; }
 
         public ILogger Logger { get; set; }
 
-		public ILocalizedEntityService LocalizedEntityService { get; set; }
+        public ILocalizedEntityService LocalizedEntityService { get; set; }
 
-		public virtual T Create(IBlockEntity entity)
-		{
-			return Activator.CreateInstance<T>();
-		}
+        public virtual T Create(IBlockEntity entity)
+        {
+            return Activator.CreateInstance<T>();
+        }
 
-		public virtual T Load(IBlockEntity entity, StoryViewMode viewMode)
-		{
-			Guard.NotNull(entity, nameof(entity));
+        public virtual T Load(IBlockEntity entity, StoryViewMode viewMode)
+        {
+            Guard.NotNull(entity, nameof(entity));
 
-			var block = Create(entity);
-			var json = entity.Model;
+            var block = Create(entity);
+            var json = entity.Model;
 
-			if (json.IsEmpty())
-			{
-				return block;
-			}
+            if (json.IsEmpty())
+            {
+                return block;
+            }
 
-			JsonConvert.PopulateObject(json, block);
+            JsonConvert.PopulateObject(json, block);
 
             if (block is IBindableBlock bindableBlock)
             {
@@ -50,32 +50,32 @@ namespace SmartStore.Services.Cms.Blocks
             }
 
             return block;
-		}
+        }
 
-		public virtual bool IsValid(T block)
-		{
-			return true;
-		}
+        public virtual bool IsValid(T block)
+        {
+            return true;
+        }
 
-		public virtual void Save(T block, IBlockEntity entity)
-		{
-			Guard.NotNull(entity, nameof(entity));
+        public virtual void Save(T block, IBlockEntity entity)
+        {
+            Guard.NotNull(entity, nameof(entity));
 
-			if (block == null)
-			{
-				return;
-			}
+            if (block == null)
+            {
+                return;
+            }
 
-			var settings = new JsonSerializerSettings
-			{
+            var settings = new JsonSerializerSettings
+            {
                 ContractResolver = SmartContractResolver.Instance,
                 TypeNameHandling = TypeNameHandling.Objects,
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-				ObjectCreationHandling = ObjectCreationHandling.Replace,
-				NullValueHandling = NullValueHandling.Ignore
-			};
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                NullValueHandling = NullValueHandling.Ignore
+            };
 
-			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
+            entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
 
             // save BindEntintyName & BindEntintyId
             if (block is IBindableBlock bindableBlock)
@@ -96,54 +96,54 @@ namespace SmartStore.Services.Cms.Blocks
         }
 
         public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
-		{
-			return sourceEntity.Model;
-		}
+        {
+            return sourceEntity.Model;
+        }
 
-		public void Render(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
-		{
-			RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);
-		}
+        public void Render(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
+        {
+            RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);
+        }
 
-		public IHtmlString ToHtmlString(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
-		{
-			using (var writer = new StringWriter(CultureInfo.CurrentCulture))
-			{
-				RenderCore(element, templates, htmlHelper, writer);
-				return MvcHtmlString.Create(writer.ToString());
-			}
-		}
+        public IHtmlString ToHtmlString(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
+        {
+            using (var writer = new StringWriter(CultureInfo.CurrentCulture))
+            {
+                RenderCore(element, templates, htmlHelper, writer);
+                return MvcHtmlString.Create(writer.ToString());
+            }
+        }
 
-		protected virtual void RenderCore(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
-		{
-			RenderByView(element, templates, htmlHelper, textWriter);
-		}
+        protected virtual void RenderCore(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
+        {
+            RenderByView(element, templates, htmlHelper, textWriter);
+        }
 
-		protected void RenderByView(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
-		{
-			Guard.NotNull(element, nameof(element));
-			Guard.NotNull(templates, nameof(templates));
-			Guard.NotNull(htmlHelper, nameof(htmlHelper));
-			Guard.NotNull(textWriter, nameof(textWriter));
+        protected void RenderByView(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
+        {
+            Guard.NotNull(element, nameof(element));
+            Guard.NotNull(templates, nameof(templates));
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
+            Guard.NotNull(textWriter, nameof(textWriter));
 
-			var viewContext = htmlHelper.ViewContext;
+            var viewContext = htmlHelper.ViewContext;
 
-			if (!element.Metadata.IsInbuilt)
-			{
-				// Change "area" token in RouteData in order to begin search in the plugin's view folder.
-				var originalRouteData = htmlHelper.ViewContext.RouteData;
-				var routeData = new RouteData(originalRouteData.Route, originalRouteData.RouteHandler);
-				routeData.Values.Merge(originalRouteData.Values);
-				routeData.DataTokens["area"] = element.Metadata.AreaName;
+            if (!element.Metadata.IsInbuilt)
+            {
+                // Change "area" token in RouteData in order to begin search in the plugin's view folder.
+                var originalRouteData = htmlHelper.ViewContext.RouteData;
+                var routeData = new RouteData(originalRouteData.Route, originalRouteData.RouteHandler);
+                routeData.Values.Merge(originalRouteData.Values);
+                routeData.DataTokens["area"] = element.Metadata.AreaName;
 
-				viewContext = new ViewContext
-				{
-					RouteData = routeData,
-					RequestContext = htmlHelper.ViewContext.RequestContext
-				};
-			}
+                viewContext = new ViewContext
+                {
+                    RouteData = routeData,
+                    RequestContext = htmlHelper.ViewContext.RequestContext
+                };
+            }
 
-			var viewResult = FindFirstView(element.Metadata, templates, viewContext, out var searchedLocations);
+            var viewResult = FindFirstView(element.Metadata, templates, viewContext, out var searchedLocations);
 
             if (viewResult == null)
             {
@@ -152,36 +152,36 @@ namespace SmartStore.Services.Cms.Blocks
                 throw new FileNotFoundException(msg);
             }
 
-			var viewData = new ViewDataDictionary(element.Block);
-			viewData.TemplateInfo.HtmlFieldPrefix = "Block";
+            var viewData = new ViewDataDictionary(element.Block);
+            viewData.TemplateInfo.HtmlFieldPrefix = "Block";
 
-			viewContext = new ViewContext(
-				htmlHelper.ViewContext,
-				viewResult.View,
-				viewData,
-				htmlHelper.ViewContext.TempData,
-				textWriter);
+            viewContext = new ViewContext(
+                htmlHelper.ViewContext,
+                viewResult.View,
+                viewData,
+                htmlHelper.ViewContext.TempData,
+                textWriter);
 
-			viewResult.View.Render(viewContext, textWriter);
-		}
+            viewResult.View.Render(viewContext, textWriter);
+        }
 
-		private ViewEngineResult FindFirstView(IBlockMetadata blockMetadata, IEnumerable<string> templates, ViewContext viewContext, out ICollection<string> searchedLocations)
-		{
-			searchedLocations = new List<string>();
+        private ViewEngineResult FindFirstView(IBlockMetadata blockMetadata, IEnumerable<string> templates, ViewContext viewContext, out ICollection<string> searchedLocations)
+        {
+            searchedLocations = new List<string>();
 
-			foreach (var template in templates)
-			{
-				var viewName = string.Concat("BlockTemplates/", blockMetadata.SystemName, "/", template);
-				var viewResult = ViewEngines.Engines.FindPartialView(viewContext, viewName);
-				searchedLocations.AddRange(viewResult.SearchedLocations);
-				if (viewResult.View != null)
-				{
-					return viewResult;
-				}
-			}
+            foreach (var template in templates)
+            {
+                var viewName = string.Concat("BlockTemplates/", blockMetadata.SystemName, "/", template);
+                var viewResult = ViewEngines.Engines.FindPartialView(viewContext, viewName);
+                searchedLocations.AddRange(viewResult.SearchedLocations);
+                if (viewResult.View != null)
+                {
+                    return viewResult;
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
         protected void RenderByChildAction(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
         {
@@ -273,9 +273,10 @@ namespace SmartStore.Services.Cms.Blocks
 
         #endregion
 
-        protected virtual RouteInfo GetRoute(IBlockContainer element, string template) 
-			=> throw new NotImplementedException();
-
+        protected virtual RouteInfo GetRoute(IBlockContainer element, string template)
+        {
+            throw new NotImplementedException();
+        }
 
         class ActionInvokerWithResultValidator : AsyncControllerActionInvoker
         {

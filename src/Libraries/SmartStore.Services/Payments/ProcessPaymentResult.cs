@@ -44,7 +44,7 @@ namespace SmartStore.Services.Payments
         /// Gets or sets the subscription transaction identifier
         /// </summary>
         public string SubscriptionTransactionId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether storing of credit card number, CVV2 is allowed
         /// </summary>
@@ -60,14 +60,8 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public PaymentStatus NewPaymentStatus
         {
-            get
-            {
-                return _newPaymentStatus;
-            }
-            set
-            {
-                _newPaymentStatus = value;
-            }
+            get => _newPaymentStatus;
+            set => _newPaymentStatus = value;
         }
     }
 }

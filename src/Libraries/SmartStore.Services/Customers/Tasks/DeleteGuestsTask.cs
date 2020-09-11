@@ -28,5 +28,5 @@ namespace SmartStore.Services.Customers
 
             _customerService.DeleteGuestCustomers(null, registrationTo, true);
         }
-	}
+    }
 }

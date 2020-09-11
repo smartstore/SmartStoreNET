@@ -53,12 +53,12 @@ namespace SmartStore.Services.Orders
         /// <param name="purchasedWithOrderItemId">Purchased with order item identifier</param>
         /// <returns>Gift card entries</returns>
         IList<GiftCard> GetGiftCardsByPurchasedWithOrderItemId(int purchasedWithOrderItemId);
-        
+
         /// <summary>
         /// Get active gift cards that are applied by a customer
         /// </summary>
         /// <param name="customer">Customer</param>
-		/// <param name="storeId">Store identifier</param>
+        /// <param name="storeId">Store identifier</param>
         /// <returns>Active gift cards</returns>
         IList<GiftCard> GetActiveGiftCardsAppliedByCustomer(Customer customer, int storeId);
 

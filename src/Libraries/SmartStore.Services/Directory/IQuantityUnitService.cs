@@ -14,7 +14,7 @@ namespace SmartStore.Services.Directory
         /// at least one dependant entity
         /// </summary>
         bool IsAssociated(int quantityUnitId);
-        
+
         /// <summary>
         /// Deletes measure unit
         /// </summary>
@@ -28,10 +28,10 @@ namespace SmartStore.Services.Directory
         /// <returns>QuantityUnit</returns>
         QuantityUnit GetQuantityUnitById(int? quantityUnitId);
 
-		/// <summary>
+        /// <summary>
         /// Gets the measure unit for a product
-		/// </summary>
-		/// <param name="product">The product</param>
+        /// </summary>
+        /// <param name="product">The product</param>
         /// <returns>measure unit</returns>
         QuantityUnit GetQuantityUnit(Product product);
 

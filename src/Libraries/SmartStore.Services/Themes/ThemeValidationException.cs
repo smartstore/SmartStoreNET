@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace SmartStore.Services.Themes
 {
-	public class ThemeValidationException : Exception
-	{
-		public ThemeValidationException(string message, IDictionary<string, object> attemptedVars)
-			: base(message)
-		{
-			Guard.NotNull(attemptedVars, nameof(attemptedVars));
+    public class ThemeValidationException : Exception
+    {
+        public ThemeValidationException(string message, IDictionary<string, object> attemptedVars)
+            : base(message)
+        {
+            Guard.NotNull(attemptedVars, nameof(attemptedVars));
 
-			AttemptedVars = attemptedVars;
-		}
+            AttemptedVars = attemptedVars;
+        }
 
-		public IDictionary<string, object> AttemptedVars { get; private set; }
-	}
+        public IDictionary<string, object> AttemptedVars { get; private set; }
+    }
 }

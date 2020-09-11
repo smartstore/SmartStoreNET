@@ -147,7 +147,7 @@ namespace SmartStore.Services.Cart.Rules
         {
             var group = expression as RuleExpressionGroup;
             var descriptor = expression.Descriptor as CartRuleDescriptor;
-            
+
             if (group == null && descriptor == null)
             {
                 throw new InvalidOperationException($"Missing cart rule descriptor for expression {expression.Id} ('{expression.RawValue.EmptyNull()}').");

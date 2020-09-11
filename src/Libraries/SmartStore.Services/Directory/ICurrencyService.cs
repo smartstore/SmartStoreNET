@@ -112,14 +112,14 @@ namespace SmartStore.Services.Directory
 		/// <param name="store">Store to get the primary store currency from</param>
         /// <returns>Converted value</returns>
 		decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrency, Store store = null);
-       
 
-        
+
+
         /// <summary>
         /// Load active exchange rate provider
         /// </summary>
         /// <returns>Active exchange rate provider</returns>
-		Provider<IExchangeRateProvider> LoadActiveExchangeRateProvider();
+        Provider<IExchangeRateProvider> LoadActiveExchangeRateProvider();
 
         /// <summary>
         /// Load exchange rate provider by system name

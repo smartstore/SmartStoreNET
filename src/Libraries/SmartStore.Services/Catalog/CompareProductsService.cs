@@ -17,18 +17,18 @@ namespace SmartStore.Services.Catalog
 
         private readonly HttpContextBase _httpContext;
         private readonly IProductService _productService;
-		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ICatalogSearchService _catalogSearchService;
         private readonly PrivacySettings _privacySettings;
 
         public CompareProductsService(
             HttpContextBase httpContext,
-			IProductService productService,
-			ICatalogSearchService catalogSearchService,
+            IProductService productService,
+            ICatalogSearchService catalogSearchService,
             PrivacySettings privacySettings)
         {
             _httpContext = httpContext;
             _productService = productService;
-			_catalogSearchService = catalogSearchService;
+            _catalogSearchService = catalogSearchService;
             _privacySettings = privacySettings;
         }
 
@@ -93,16 +93,16 @@ namespace SmartStore.Services.Catalog
 
         public virtual int GetComparedProductsCount()
         {
-			var productIds = GetComparedProductIds();
-			if (productIds.Count == 0)
-				return 0;
+            var productIds = GetComparedProductIds();
+            if (productIds.Count == 0)
+                return 0;
 
-			var searchQuery = new CatalogSearchQuery()
-				.VisibleOnly()
-				.WithProductIds(productIds.ToArray())
-				.BuildHits(false);
+            var searchQuery = new CatalogSearchQuery()
+                .VisibleOnly()
+                .WithProductIds(productIds.ToArray())
+                .BuildHits(false);
 
-			var result = _catalogSearchService.Search(searchQuery);
+            var result = _catalogSearchService.Search(searchQuery);
             return result.TotalHitsCount;
         }
 
@@ -146,13 +146,13 @@ namespace SmartStore.Services.Catalog
             var oldProductIds = GetComparedProductIds();
             var newProductIds = new List<int>();
             newProductIds.Add(productId);
-			
-			foreach (int oldProductId in oldProductIds)
-			{
-				if (oldProductId != productId)
-					newProductIds.Add(oldProductId);
-			}
-            
+
+            foreach (int oldProductId in oldProductIds)
+            {
+                if (oldProductId != productId)
+                    newProductIds.Add(oldProductId);
+            }
+
             var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME) ?? new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
             compareCookie.Values.Clear();
 

@@ -2,89 +2,83 @@
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	
-	public class ImportMessage
-	{
-		public ImportMessage(string message, ImportMessageType messageType = ImportMessageType.Info)
-		{
-			Guard.NotEmpty(message, nameof(message));
 
-			this.Message = message;
-			this.MessageType = messageType;
-		}
-		
-		public ImportRowInfo AffectedItem
-		{
-			get;
-			set;
-		}
+    public class ImportMessage
+    {
+        public ImportMessage(string message, ImportMessageType messageType = ImportMessageType.Info)
+        {
+            Guard.NotEmpty(message, nameof(message));
 
-		public string AffectedField
-		{
-			get;
-			set;
-		}
+            this.Message = message;
+            this.MessageType = messageType;
+        }
 
-		public ImportMessageType MessageType
-		{
-			get;
-			set;
-		}
+        public ImportRowInfo AffectedItem
+        {
+            get;
+            set;
+        }
 
-		public string Message
-		{
-			get;
-			set;
-		}
+        public string AffectedField
+        {
+            get;
+            set;
+        }
 
-		public string FullMessage
-		{
-			get;
-			set;
-		}
+        public ImportMessageType MessageType
+        {
+            get;
+            set;
+        }
 
-		public override string ToString()
-		{
-			var result = Message.NaIfEmpty();
+        public string Message
+        {
+            get;
+            set;
+        }
 
-			string appendix = null;
+        public string FullMessage
+        {
+            get;
+            set;
+        }
 
-			if (AffectedItem != null)
-				appendix = appendix.Grow("Pos: " + (AffectedItem.Position + 1).ToString(), ", ");
+        public override string ToString()
+        {
+            var result = Message.NaIfEmpty();
 
-			if (AffectedField.HasValue())
-				appendix = appendix.Grow("Field: " + AffectedField, ", ");
+            string appendix = null;
 
-			if (appendix.HasValue())
-				result = "{0} [{1}]".FormatInvariant(result, appendix);
+            if (AffectedItem != null)
+                appendix = appendix.Grow("Pos: " + (AffectedItem.Position + 1).ToString(), ", ");
 
-			return result;
-		}
-	}
+            if (AffectedField.HasValue())
+                appendix = appendix.Grow("Field: " + AffectedField, ", ");
 
-	public class ImportRowInfo : Tuple<int, string>
-	{
-		public ImportRowInfo(int position, string entityName) 
-			: base(position, entityName)
-		{
-		}
+            if (appendix.HasValue())
+                result = "{0} [{1}]".FormatInvariant(result, appendix);
 
-		public int Position
-		{
-			get { return base.Item1; }
-		}
+            return result;
+        }
+    }
 
-		public string EntityName
-		{
-			get { return base.Item2; }
-		}
-	}
+    public class ImportRowInfo : Tuple<int, string>
+    {
+        public ImportRowInfo(int position, string entityName)
+            : base(position, entityName)
+        {
+        }
 
-	public enum ImportMessageType
-	{
-		Info = 0,
-		Warning = 5,
-		Error = 10
-	}
+        public int Position => base.Item1;
+
+        public string EntityName => base.Item2;
+    }
+
+    public enum ImportMessageType
+    {
+        Info = 0,
+        Warning = 5,
+        Error = 10
+    }
 
 }

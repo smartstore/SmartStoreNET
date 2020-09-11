@@ -27,16 +27,16 @@ namespace SmartStore.Services.Orders
     /// </summary>
     public partial class OrderTotalCalculationService : IOrderTotalCalculationService
     {
-		private const string CART_TAXING_INFO_KEY = "CartTaxingInfos";
+        private const string CART_TAXING_INFO_KEY = "CartTaxingInfos";
 
-		#region Fields
+        #region Fields
 
-		private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
+        private readonly IWorkContext _workContext;
+        private readonly IStoreContext _storeContext;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ITaxService _taxService;
         private readonly IShippingService _shippingService;
-		private readonly IProviderManager _providerManager;
+        private readonly IProviderManager _providerManager;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly IDiscountService _discountService;
         private readonly IGiftCardService _giftCardService;
@@ -74,11 +74,11 @@ namespace SmartStore.Services.Orders
         /// <param name="catalogSettings">Catalog settings</param>
         public OrderTotalCalculationService(
             IWorkContext workContext,
-			IStoreContext storeContext,
+            IStoreContext storeContext,
             IPriceCalculationService priceCalculationService,
             ITaxService taxService,
             IShippingService shippingService,
-			IProviderManager providerManager,
+            IProviderManager providerManager,
             ICheckoutAttributeParser checkoutAttributeParser,
             IDiscountService discountService,
             IGiftCardService giftCardService,
@@ -93,210 +93,210 @@ namespace SmartStore.Services.Orders
             CatalogSettings catalogSettings)
         {
             _workContext = workContext;
-			_storeContext = storeContext;
+            _storeContext = storeContext;
             _priceCalculationService = priceCalculationService;
             _taxService = taxService;
             _shippingService = shippingService;
-			_providerManager = providerManager;
+            _providerManager = providerManager;
             _checkoutAttributeParser = checkoutAttributeParser;
             _discountService = discountService;
             _giftCardService = giftCardService;
             _genericAttributeService = genericAttributeService;
             _paymentService = paymentService;
             _currencyService = currencyService;
-			_productAttributeParser = productAttributeParser;
+            _productAttributeParser = productAttributeParser;
             _taxSettings = taxSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _shippingSettings = shippingSettings;
             _shoppingCartSettings = shoppingCartSettings;
             _catalogSettings = catalogSettings;
 
-			T = NullLocalizer.Instance;
-		}
+            T = NullLocalizer.Instance;
+        }
 
-		public Localizer T { get; set; }
+        public Localizer T { get; set; }
 
-		#endregion
+        #endregion
 
-		#region Utilities
+        #region Utilities
 
-		private Func<OrganizedShoppingCartItem, CartTaxingInfo> GetTaxingInfo = cartItem => (CartTaxingInfo)cartItem.CustomProperties[CART_TAXING_INFO_KEY];
+        private Func<OrganizedShoppingCartItem, CartTaxingInfo> GetTaxingInfo = cartItem => (CartTaxingInfo)cartItem.CustomProperties[CART_TAXING_INFO_KEY];
 
-		protected virtual void PrepareAuxiliaryServicesTaxingInfos(IList<OrganizedShoppingCartItem> cart)
-		{
-			// no additional infos required
-			if (!cart.Any() || _taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.SpecifiedTaxCategory)
-				return;
+        protected virtual void PrepareAuxiliaryServicesTaxingInfos(IList<OrganizedShoppingCartItem> cart)
+        {
+            // no additional infos required
+            if (!cart.Any() || _taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.SpecifiedTaxCategory)
+                return;
 
-			// additional infos already collected
-			if (cart.First().CustomProperties.ContainsKey(CART_TAXING_INFO_KEY))
-				return;
+            // additional infos already collected
+            if (cart.First().CustomProperties.ContainsKey(CART_TAXING_INFO_KEY))
+                return;
 
-			// instance taxing info objects
-			cart.Each(x => x.CustomProperties[CART_TAXING_INFO_KEY] = new CartTaxingInfo());
+            // instance taxing info objects
+            cart.Each(x => x.CustomProperties[CART_TAXING_INFO_KEY] = new CartTaxingInfo());
 
-			// collect infos
-			if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
-			{
-				// calculate all subtotals
-				cart.Each(x => GetTaxingInfo(x).SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false));
+            // collect infos
+            if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
+            {
+                // calculate all subtotals
+                cart.Each(x => GetTaxingInfo(x).SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false));
 
-				// items with the highest subtotal
-				var highestAmountItems = cart
-					.GroupBy(x => x.Item.Product.TaxCategoryId)
-					.OrderByDescending(x => x.Sum(y => GetTaxingInfo(y).SubTotalWithoutDiscount))
-					.First();
+                // items with the highest subtotal
+                var highestAmountItems = cart
+                    .GroupBy(x => x.Item.Product.TaxCategoryId)
+                    .OrderByDescending(x => x.Sum(y => GetTaxingInfo(y).SubTotalWithoutDiscount))
+                    .First();
 
-				// mark items
-				highestAmountItems.Each(x => GetTaxingInfo(x).HasHighestCartAmount = true);
-			}
-			else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
-			{
-				var customer = cart.GetCustomer();
-				var maxTaxRate = decimal.Zero;
-				var maxTaxCategoryId = 0;
+                // mark items
+                highestAmountItems.Each(x => GetTaxingInfo(x).HasHighestCartAmount = true);
+            }
+            else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
+            {
+                var customer = cart.GetCustomer();
+                var maxTaxRate = decimal.Zero;
+                var maxTaxCategoryId = 0;
 
-				// get tax category id with the highest rate
-				cart.Each(x =>
-				{
-					var taxRate = _taxService.GetTaxRate(x.Item.Product, x.Item.Product.TaxCategoryId, customer);
-					if (taxRate > maxTaxRate)
-					{
-						maxTaxRate = taxRate;
-						maxTaxCategoryId = x.Item.Product.TaxCategoryId;
-					}
-				});
+                // get tax category id with the highest rate
+                cart.Each(x =>
+                {
+                    var taxRate = _taxService.GetTaxRate(x.Item.Product, x.Item.Product.TaxCategoryId, customer);
+                    if (taxRate > maxTaxRate)
+                    {
+                        maxTaxRate = taxRate;
+                        maxTaxCategoryId = x.Item.Product.TaxCategoryId;
+                    }
+                });
 
-				// mark items
-				cart.Where(x => x.Item.Product.TaxCategoryId == maxTaxCategoryId)
-					.Each(x => GetTaxingInfo(x).HasHighestTaxRate = true);
-			}
-			//else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
-			//{
-			//	// calculate all subtotals
-			//	cart.Each(x => GetTaxingInfo(x).SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false));
+                // mark items
+                cart.Where(x => x.Item.Product.TaxCategoryId == maxTaxCategoryId)
+                    .Each(x => GetTaxingInfo(x).HasHighestTaxRate = true);
+            }
+            //else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
+            //{
+            //	// calculate all subtotals
+            //	cart.Each(x => GetTaxingInfo(x).SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false));
 
-			//	// sum over all subtotals
-			//	var subTotalSum = cart.Sum(x => GetTaxingInfo(x).SubTotalWithoutDiscount);
+            //	// sum over all subtotals
+            //	var subTotalSum = cart.Sum(x => GetTaxingInfo(x).SubTotalWithoutDiscount);
 
-			//	// calculate pro rata weightings
-			//	cart.Each(x =>
-			//	{
-			//		var taxingInfo = GetTaxingInfo(x);
-			//		taxingInfo.ProRataWeighting = taxingInfo.SubTotalWithoutDiscount / subTotalSum;
-			//	});
-			//}
-		}
+            //	// calculate pro rata weightings
+            //	cart.Each(x =>
+            //	{
+            //		var taxingInfo = GetTaxingInfo(x);
+            //		taxingInfo.ProRataWeighting = taxingInfo.SubTotalWithoutDiscount / subTotalSum;
+            //	});
+            //}
+        }
 
-		protected virtual decimal? GetAdjustedShippingTotal(IList<OrganizedShoppingCartItem> cart, out Discount appliedDiscount)
-		{
-			appliedDiscount = null;
+        protected virtual decimal? GetAdjustedShippingTotal(IList<OrganizedShoppingCartItem> cart, out Discount appliedDiscount)
+        {
+            appliedDiscount = null;
 
-			decimal? shippingTotal = null;
-			ShippingOption shippingOption = null;
-			var customer = cart.GetCustomer();
-			var storeId = _storeContext.CurrentStore.Id;
+            decimal? shippingTotal = null;
+            ShippingOption shippingOption = null;
+            var customer = cart.GetCustomer();
+            var storeId = _storeContext.CurrentStore.Id;
 
-			if (customer != null)
-			{
-				shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, storeId);
-			}
+            if (customer != null)
+            {
+                shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _genericAttributeService, storeId);
+            }
 
-			if (shippingOption != null)
-			{
-				// use last shipping option (get from cache)
-				var shippingMethods = _shippingService.GetAllShippingMethods(null, storeId);
-				shippingTotal = AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
-			}
-			else
-			{
-				// use fixed rate (if possible)
-				Address shippingAddress = null;
-				if (customer != null)
-					shippingAddress = customer.ShippingAddress;
+            if (shippingOption != null)
+            {
+                // use last shipping option (get from cache)
+                var shippingMethods = _shippingService.GetAllShippingMethods(null, storeId);
+                shippingTotal = AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
+            }
+            else
+            {
+                // use fixed rate (if possible)
+                Address shippingAddress = null;
+                if (customer != null)
+                    shippingAddress = customer.ShippingAddress;
 
-				var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods(storeId);
-				if (!shippingRateComputationMethods.Any())
-					throw new SmartException(T("Shipping.CouldNotLoadMethod"));
+                var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods(storeId);
+                if (!shippingRateComputationMethods.Any())
+                    throw new SmartException(T("Shipping.CouldNotLoadMethod"));
 
-				if (shippingRateComputationMethods.Count() == 1)
-				{
-					var shippingRateComputationMethod = shippingRateComputationMethods.First();
-					var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress, storeId);
-					var fixedRate = shippingRateComputationMethod.Value.GetFixedRate(getShippingOptionRequest);
+                if (shippingRateComputationMethods.Count() == 1)
+                {
+                    var shippingRateComputationMethod = shippingRateComputationMethods.First();
+                    var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress, storeId);
+                    var fixedRate = shippingRateComputationMethod.Value.GetFixedRate(getShippingOptionRequest);
 
-					if (fixedRate.HasValue)
-					{
-						shippingTotal = AdjustShippingRate(fixedRate.Value, cart, null, null, out appliedDiscount);
-					}
-				}
-			}
+                    if (fixedRate.HasValue)
+                    {
+                        shippingTotal = AdjustShippingRate(fixedRate.Value, cart, null, null, out appliedDiscount);
+                    }
+                }
+            }
 
-			return shippingTotal;
-		}
+            return shippingTotal;
+        }
 
-		protected virtual decimal GetShippingTaxAmount(
-			decimal shipping,
-			Customer customer,
-			int taxCategoryId,
-			SortedDictionary<decimal, decimal> taxRates)
-		{
-			var taxRate = decimal.Zero;
-			var shippingExclTax = _taxService.GetShippingPrice(shipping, false, customer, taxCategoryId, out taxRate);
-			var shippingInclTax = _taxService.GetShippingPrice(shipping, true, customer, taxCategoryId, out taxRate);
+        protected virtual decimal GetShippingTaxAmount(
+            decimal shipping,
+            Customer customer,
+            int taxCategoryId,
+            SortedDictionary<decimal, decimal> taxRates)
+        {
+            var taxRate = decimal.Zero;
+            var shippingExclTax = _taxService.GetShippingPrice(shipping, false, customer, taxCategoryId, out taxRate);
+            var shippingInclTax = _taxService.GetShippingPrice(shipping, true, customer, taxCategoryId, out taxRate);
 
-			var shippingTax = shippingInclTax - shippingExclTax;
+            var shippingTax = shippingInclTax - shippingExclTax;
 
-			if (shippingTax < decimal.Zero)
-				shippingTax = decimal.Zero;
+            if (shippingTax < decimal.Zero)
+                shippingTax = decimal.Zero;
 
-			if (taxRate > decimal.Zero && shippingTax > decimal.Zero)
-			{
-				if (taxRates.ContainsKey(taxRate))
-					taxRates[taxRate] = taxRates[taxRate] + shippingTax;
-				else
-					taxRates.Add(taxRate, shippingTax);
-			}
+            if (taxRate > decimal.Zero && shippingTax > decimal.Zero)
+            {
+                if (taxRates.ContainsKey(taxRate))
+                    taxRates[taxRate] = taxRates[taxRate] + shippingTax;
+                else
+                    taxRates.Add(taxRate, shippingTax);
+            }
 
-			return shippingTax;
-		}
+            return shippingTax;
+        }
 
-		protected virtual decimal GetPaymentFeeTaxAmount(
-			decimal paymentFee,
-			Customer customer,
-			int taxCategoryId,
-			SortedDictionary<decimal, decimal> taxRates)
-		{
-			var taxRate = decimal.Zero;
-			var paymentFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentFee, false, customer, taxCategoryId, out taxRate);
-			var paymentFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentFee, true, customer, taxCategoryId, out taxRate);
+        protected virtual decimal GetPaymentFeeTaxAmount(
+            decimal paymentFee,
+            Customer customer,
+            int taxCategoryId,
+            SortedDictionary<decimal, decimal> taxRates)
+        {
+            var taxRate = decimal.Zero;
+            var paymentFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentFee, false, customer, taxCategoryId, out taxRate);
+            var paymentFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentFee, true, customer, taxCategoryId, out taxRate);
 
-			var paymentFeeTax = paymentFeeInclTax - paymentFeeExclTax;
+            var paymentFeeTax = paymentFeeInclTax - paymentFeeExclTax;
 
-			if (taxRate > decimal.Zero && paymentFeeTax != decimal.Zero)
-			{
-				if (taxRates.ContainsKey(taxRate))
-					taxRates[taxRate] = taxRates[taxRate] + paymentFeeTax;
-				else
-					taxRates.Add(taxRate, paymentFeeTax);
-			}
+            if (taxRate > decimal.Zero && paymentFeeTax != decimal.Zero)
+            {
+                if (taxRates.ContainsKey(taxRate))
+                    taxRates[taxRate] = taxRates[taxRate] + paymentFeeTax;
+                else
+                    taxRates.Add(taxRate, paymentFeeTax);
+            }
 
-			return paymentFeeTax;
-		}
+            return paymentFeeTax;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Gets shopping cart subtotal
-		/// </summary>
-		/// <param name="cart">Cart</param>
-		/// <param name="discountAmount">Applied discount amount</param>
-		/// <param name="appliedDiscount">Applied discount</param>
-		/// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
-		/// <param name="subTotalWithDiscount">Sub total (with discount)</param>
-		public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
+        /// <summary>
+        /// Gets shopping cart subtotal
+        /// </summary>
+        /// <param name="cart">Cart</param>
+        /// <param name="discountAmount">Applied discount amount</param>
+        /// <param name="appliedDiscount">Applied discount</param>
+        /// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
+        /// <param name="subTotalWithDiscount">Sub total (with discount)</param>
+        public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             out decimal discountAmount, out Discount appliedDiscount,
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
         {
@@ -312,12 +312,12 @@ namespace SmartStore.Services.Orders
                     break;
             }
 
-            GetShoppingCartSubTotal(cart, 
-				includingTax,
-                out discountAmount, 
-				out appliedDiscount,
-                out subTotalWithoutDiscount, 
-				out subTotalWithDiscount);
+            GetShoppingCartSubTotal(cart,
+                includingTax,
+                out discountAmount,
+                out appliedDiscount,
+                out subTotalWithoutDiscount,
+                out subTotalWithDiscount);
         }
 
         /// <summary>
@@ -336,13 +336,13 @@ namespace SmartStore.Services.Orders
         {
             SortedDictionary<decimal, decimal> taxRates = null;
 
-            GetShoppingCartSubTotal(cart, 
-				includingTax,
-                out discountAmount, 
-				out appliedDiscount,
-                out subTotalWithoutDiscount, 
-				out subTotalWithDiscount, 
-				out taxRates);
+            GetShoppingCartSubTotal(cart,
+                includingTax,
+                out discountAmount,
+                out appliedDiscount,
+                out subTotalWithoutDiscount,
+                out subTotalWithDiscount,
+                out taxRates);
         }
 
         /// <summary>
@@ -357,10 +357,10 @@ namespace SmartStore.Services.Orders
         /// <param name="taxRates">Tax rates (of order sub total)</param>
         public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             bool includingTax,
-            out decimal discountAmount, 
-			out Discount appliedDiscount,
-            out decimal subTotalWithoutDiscount, 
-			out decimal subTotalWithDiscount,
+            out decimal discountAmount,
+            out Discount appliedDiscount,
+            out decimal subTotalWithoutDiscount,
+            out decimal subTotalWithDiscount,
             out SortedDictionary<decimal, decimal> taxRates)
         {
             discountAmount = decimal.Zero;
@@ -374,42 +374,42 @@ namespace SmartStore.Services.Orders
 
             // get the customer 
             var customer = cart.GetCustomer();
-			var currency = _workContext.WorkingCurrency;
+            var currency = _workContext.WorkingCurrency;
 
-			// sub totals
-			decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
+            // sub totals
+            decimal subTotalExclTaxWithoutDiscount = decimal.Zero;
             decimal subTotalInclTaxWithoutDiscount = decimal.Zero;
 
             foreach (var shoppingCartItem in cart)
-			{
-				if (shoppingCartItem.Item.Product == null)
-					continue;
+            {
+                if (shoppingCartItem.Item.Product == null)
+                    continue;
 
-				decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
+                decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
 
-				shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
+                shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
 
-				if (currency.RoundOrderItemsEnabled)
-				{
-					// Gross > Net RoundFix
-					int qty = shoppingCartItem.Item.Quantity;
+                if (currency.RoundOrderItemsEnabled)
+                {
+                    // Gross > Net RoundFix
+                    int qty = shoppingCartItem.Item.Quantity;
 
-					sciSubTotal = _priceCalculationService.GetUnitPrice(shoppingCartItem, true);
+                    sciSubTotal = _priceCalculationService.GetUnitPrice(shoppingCartItem, true);
 
-					// Adaption to eliminate rounding issues
-					sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
-					sciExclTax = sciExclTax.RoundIfEnabledFor(currency) * qty;
-					sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
-					sciInclTax = sciInclTax.RoundIfEnabledFor(currency) * qty;
-				}
-				else
-				{
-					sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
-					sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
-					sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
-				}
+                    // Adaption to eliminate rounding issues
+                    sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
+                    sciExclTax = sciExclTax.RoundIfEnabledFor(currency) * qty;
+                    sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
+                    sciInclTax = sciInclTax.RoundIfEnabledFor(currency) * qty;
+                }
+                else
+                {
+                    sciSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+                    sciExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, false, customer, out taxRate);
+                    sciInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, sciSubTotal, true, customer, out taxRate);
+                }
 
-				subTotalExclTaxWithoutDiscount += sciExclTax;
+                subTotalExclTaxWithoutDiscount += sciExclTax;
                 subTotalInclTaxWithoutDiscount += sciInclTax;
 
                 // tax rates
@@ -430,8 +430,8 @@ namespace SmartStore.Services.Orders
             // checkout attributes
             if (customer != null)
             {
-				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
-				var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
+                var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+                var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
                 if (caValues != null)
                 {
                     foreach (var caValue in caValues)
@@ -460,20 +460,20 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-			//subtotal without discount
-			if (includingTax)
-			{
-				subTotalWithoutDiscount = subTotalInclTaxWithoutDiscount;
-			}
-			else
-			{
-				subTotalWithoutDiscount = subTotalExclTaxWithoutDiscount;
-			}
+            //subtotal without discount
+            if (includingTax)
+            {
+                subTotalWithoutDiscount = subTotalInclTaxWithoutDiscount;
+            }
+            else
+            {
+                subTotalWithoutDiscount = subTotalExclTaxWithoutDiscount;
+            }
 
-			if (subTotalWithoutDiscount < decimal.Zero)
-			{
-				subTotalWithoutDiscount = decimal.Zero;
-			}
+            if (subTotalWithoutDiscount < decimal.Zero)
+            {
+                subTotalWithoutDiscount = decimal.Zero;
+            }
 
             subTotalWithoutDiscount = subTotalWithoutDiscount.RoundIfEnabledFor(currency);
 
@@ -526,11 +526,11 @@ namespace SmartStore.Services.Orders
                 discountAmount = discountAmountExclTax;
             }
 
-			//round
-			if (subTotalWithDiscount < decimal.Zero)
-			{
-				subTotalWithDiscount = decimal.Zero;
-			}
+            //round
+            if (subTotalWithDiscount < decimal.Zero)
+            {
+                subTotalWithDiscount = decimal.Zero;
+            }
 
             subTotalWithDiscount = subTotalWithDiscount.RoundIfEnabledFor(currency);
         }
@@ -551,16 +551,16 @@ namespace SmartStore.Services.Orders
 
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToOrderSubTotal);
             var allowedDiscounts = new List<Discount>();
-			if (allDiscounts != null)
-			{
-				foreach (var discount in allDiscounts)
-				{
-					if (discount.DiscountType == DiscountType.AssignedToOrderSubTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
-					{
-						allowedDiscounts.Add(discount);
-					}
-				}
-			}
+            if (allDiscounts != null)
+            {
+                foreach (var discount in allDiscounts)
+                {
+                    if (discount.DiscountType == DiscountType.AssignedToOrderSubTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+                    {
+                        allowedDiscounts.Add(discount);
+                    }
+                }
+            }
 
             appliedDiscount = allowedDiscounts.GetPreferredDiscount(orderSubTotal);
             if (appliedDiscount != null)
@@ -572,21 +572,21 @@ namespace SmartStore.Services.Orders
             return discountAmount;
         }
 
-        
+
         /// <summary>
         /// Gets shopping cart additional shipping charge
         /// </summary>
         /// <param name="cart">Cart</param>
         /// <returns>Additional shipping charge</returns>
-		public virtual decimal GetShoppingCartAdditionalShippingCharge(IList<OrganizedShoppingCartItem> cart)
+        public virtual decimal GetShoppingCartAdditionalShippingCharge(IList<OrganizedShoppingCartItem> cart)
         {
             if (IsFreeShipping(cart))
                 return decimal.Zero;
 
-			decimal additionalShippingCharge = decimal.Zero;
+            decimal additionalShippingCharge = decimal.Zero;
 
-			foreach (var sci in cart)
-			{
+            foreach (var sci in cart)
+            {
 
                 if (_shippingSettings.ChargeOnlyHighestProductShippingSurcharge)
                 {
@@ -595,7 +595,7 @@ namespace SmartStore.Services.Orders
                         additionalShippingCharge = sci.Item.Product.AdditionalShippingCharge;
                     }
                 }
-                else 
+                else
                 {
                     if (sci.Item.IsShipEnabled && !sci.Item.IsFreeShipping && sci.Item.Product != null)
                     {
@@ -609,7 +609,7 @@ namespace SmartStore.Services.Orders
                         }
                     }
                 }
-			}
+            }
             return additionalShippingCharge;
         }
 
@@ -680,65 +680,65 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-		public virtual decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart, 
-			ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount)
+		public virtual decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart,
+            ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount)
         {
             appliedDiscount = null;
 
-			if (IsFreeShipping(cart))
-			{
-				return decimal.Zero;
-			}
+            if (IsFreeShipping(cart))
+            {
+                return decimal.Zero;
+            }
 
-			var adjustedRate = decimal.Zero;
-			var bundlePerItemShipping = decimal.Zero;
-			var ignoreAdditionalShippingCharge = false;
+            var adjustedRate = decimal.Zero;
+            var bundlePerItemShipping = decimal.Zero;
+            var ignoreAdditionalShippingCharge = false;
 
-			foreach (var sci in cart)
-			{
-				if (sci.Item.Product != null && sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
-				{
-					if (sci.ChildItems != null)
-					{
-						foreach (var childItem in sci.ChildItems.Where(x => x.Item.IsShipEnabled && !x.Item.IsFreeShipping))
-						{
-							bundlePerItemShipping += shippingRate;
-						}
-					}
-				}
-				else if (adjustedRate == decimal.Zero)
-				{
-					adjustedRate = shippingRate;
-				}
-			}
+            foreach (var sci in cart)
+            {
+                if (sci.Item.Product != null && sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShipping)
+                {
+                    if (sci.ChildItems != null)
+                    {
+                        foreach (var childItem in sci.ChildItems.Where(x => x.Item.IsShipEnabled && !x.Item.IsFreeShipping))
+                        {
+                            bundlePerItemShipping += shippingRate;
+                        }
+                    }
+                }
+                else if (adjustedRate == decimal.Zero)
+                {
+                    adjustedRate = shippingRate;
+                }
+            }
 
-			adjustedRate += bundlePerItemShipping;
+            adjustedRate += bundlePerItemShipping;
 
-			if (shippingOption != null && shippingMethods != null)
-			{
-				var shippingMethod = shippingMethods.FirstOrDefault(x => x.Id == shippingOption.ShippingMethodId);
-				if (shippingMethod != null)
-				{
-					ignoreAdditionalShippingCharge = shippingMethod.IgnoreCharges;
-				}
-			}
+            if (shippingOption != null && shippingMethods != null)
+            {
+                var shippingMethod = shippingMethods.FirstOrDefault(x => x.Id == shippingOption.ShippingMethodId);
+                if (shippingMethod != null)
+                {
+                    ignoreAdditionalShippingCharge = shippingMethod.IgnoreCharges;
+                }
+            }
 
-			// Additional shipping charges.
-			if (!ignoreAdditionalShippingCharge)
-			{
-				decimal additionalShippingCharge = GetShoppingCartAdditionalShippingCharge(cart);
-				adjustedRate += additionalShippingCharge;
-			}
+            // Additional shipping charges.
+            if (!ignoreAdditionalShippingCharge)
+            {
+                decimal additionalShippingCharge = GetShoppingCartAdditionalShippingCharge(cart);
+                adjustedRate += additionalShippingCharge;
+            }
 
             // Discount.
             var customer = cart.GetCustomer();
             var discountAmount = GetShippingDiscount(customer, adjustedRate, out appliedDiscount);
             adjustedRate = adjustedRate - discountAmount;
 
-			if (adjustedRate < decimal.Zero)
-			{
-				adjustedRate = decimal.Zero;
-			}
+            if (adjustedRate < decimal.Zero)
+            {
+                adjustedRate = decimal.Zero;
+            }
 
             adjustedRate = adjustedRate.RoundIfEnabledFor(_workContext.WorkingCurrency);
             return adjustedRate;
@@ -773,9 +773,9 @@ namespace SmartStore.Services.Orders
 		public virtual decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax)
         {
             var taxRate = decimal.Zero;
-			Discount appliedDiscount = null;
+            Discount appliedDiscount = null;
 
-			return GetShoppingCartShippingTotal(cart, includingTax, out taxRate, out appliedDiscount);
+            return GetShoppingCartShippingTotal(cart, includingTax, out taxRate, out appliedDiscount);
         }
 
         /// <summary>
@@ -787,93 +787,93 @@ namespace SmartStore.Services.Orders
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Shipping total</returns>
 		public virtual decimal? GetShoppingCartShippingTotal(
-			IList<OrganizedShoppingCartItem> cart,
-			bool includingTax,
+            IList<OrganizedShoppingCartItem> cart,
+            bool includingTax,
             out decimal taxRate,
-			out Discount appliedDiscount)
+            out Discount appliedDiscount)
         {
-			appliedDiscount = null;
-			taxRate = decimal.Zero;
+            appliedDiscount = null;
+            taxRate = decimal.Zero;
 
-			if (IsFreeShipping(cart))
-				return decimal.Zero;
+            if (IsFreeShipping(cart))
+                return decimal.Zero;
 
-			decimal? shippingTotalTaxed = null;
-			var taxCategoryId = 0;
-			var customer = cart.GetCustomer();
-			var currency = _workContext.WorkingCurrency;
+            decimal? shippingTotalTaxed = null;
+            var taxCategoryId = 0;
+            var customer = cart.GetCustomer();
+            var currency = _workContext.WorkingCurrency;
 
-			var shippingTotal = GetAdjustedShippingTotal(cart, out appliedDiscount);
+            var shippingTotal = GetAdjustedShippingTotal(cart, out appliedDiscount);
 
-			if (!shippingTotal.HasValue)
-				return null;
+            if (!shippingTotal.HasValue)
+                return null;
 
-			if (shippingTotal.Value < decimal.Zero)
-			{
-				shippingTotal = decimal.Zero;
-			}
+            if (shippingTotal.Value < decimal.Zero)
+            {
+                shippingTotal = decimal.Zero;
+            }
 
             shippingTotal = shippingTotal.Value.RoundIfEnabledFor(currency);
 
-			PrepareAuxiliaryServicesTaxingInfos(cart);
+            PrepareAuxiliaryServicesTaxingInfos(cart);
 
-			// commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
-			//if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
-			//{
-			//	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
-			//	shippingTotalTaxed = decimal.Zero;
+            // commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
+            //if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
+            //{
+            //	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
+            //	shippingTotalTaxed = decimal.Zero;
 
-			//	var tmpTaxRate = decimal.Zero;
-			//	var taxRates = new List<decimal>();
+            //	var tmpTaxRate = decimal.Zero;
+            //	var taxRates = new List<decimal>();
 
-			//	foreach (var item in cart)
-			//	{
-			//		var proRataShipping = shippingTotal.Value * GetTaxingInfo(item).ProRataWeighting;
-			//		shippingTotalTaxed += _taxService.GetShippingPrice(proRataShipping, includingTax, customer, item.Item.Product.TaxCategoryId, out tmpTaxRate);
+            //	foreach (var item in cart)
+            //	{
+            //		var proRataShipping = shippingTotal.Value * GetTaxingInfo(item).ProRataWeighting;
+            //		shippingTotalTaxed += _taxService.GetShippingPrice(proRataShipping, includingTax, customer, item.Item.Product.TaxCategoryId, out tmpTaxRate);
 
-			//		taxRates.Add(tmpTaxRate);
-			//	}
+            //		taxRates.Add(tmpTaxRate);
+            //	}
 
-			//	// a tax rate is only defined if all rates are equal. return zero tax rate in all other cases.
-			//	if (taxRates.Any() && taxRates.Distinct().Count() == 1)
-			//	{
-			//		taxRate = taxRates.First();
-			//	}
-			//}
-			//else
-			//{
+            //	// a tax rate is only defined if all rates are equal. return zero tax rate in all other cases.
+            //	if (taxRates.Any() && taxRates.Distinct().Count() == 1)
+            //	{
+            //		taxRate = taxRates.First();
+            //	}
+            //}
+            //else
+            //{
 
-			if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
-			{
-				var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
-				taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-			}
-			else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
-			{
-				var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
-				taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-			}
+            if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
+            {
+                var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
+                taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+            }
+            else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
+            {
+                var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
+                taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+            }
 
-			// fallback to setting
-			if (taxCategoryId == 0)
-			{
-				taxCategoryId = _taxSettings.ShippingTaxClassId;
-			}
+            // fallback to setting
+            if (taxCategoryId == 0)
+            {
+                taxCategoryId = _taxSettings.ShippingTaxClassId;
+            }
 
-			shippingTotalTaxed = _taxService.GetShippingPrice(shippingTotal.Value, includingTax, customer, taxCategoryId, out taxRate);
+            shippingTotalTaxed = _taxService.GetShippingPrice(shippingTotal.Value, includingTax, customer, taxCategoryId, out taxRate);
             shippingTotalTaxed = shippingTotalTaxed.Value.RoundIfEnabledFor(currency);
 
-			return shippingTotalTaxed;
+            return shippingTotalTaxed;
         }
 
-		/// <summary>
-		/// Gets a shipping discount
-		/// </summary>
-		/// <param name="customer">Customer</param>
-		/// <param name="shippingTotal">Shipping total</param>
-		/// <param name="appliedDiscount">Applied discount</param>
-		/// <returns>Shipping discount</returns>
-		public virtual decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount)
+        /// <summary>
+        /// Gets a shipping discount
+        /// </summary>
+        /// <param name="customer">Customer</param>
+        /// <param name="shippingTotal">Shipping total</param>
+        /// <param name="appliedDiscount">Applied discount</param>
+        /// <returns>Shipping discount</returns>
+        public virtual decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount)
         {
             appliedDiscount = null;
             decimal shippingDiscountAmount = decimal.Zero;
@@ -883,16 +883,16 @@ namespace SmartStore.Services.Orders
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToShipping);
             var allowedDiscounts = new List<Discount>();
 
-			if (allDiscounts != null)
-			{
-				foreach (var discount in allDiscounts)
-				{
-					if (discount.DiscountType == DiscountType.AssignedToShipping && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
-					{
-						allowedDiscounts.Add(discount);
-					}
-				}
-			}
+            if (allDiscounts != null)
+            {
+                foreach (var discount in allDiscounts)
+                {
+                    if (discount.DiscountType == DiscountType.AssignedToShipping && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+                    {
+                        allowedDiscounts.Add(discount);
+                    }
+                }
+            }
 
             appliedDiscount = allowedDiscounts.GetPreferredDiscount(shippingTotal);
             if (appliedDiscount != null)
@@ -900,10 +900,10 @@ namespace SmartStore.Services.Orders
                 shippingDiscountAmount = appliedDiscount.GetDiscountAmount(shippingTotal);
             }
 
-			if (shippingDiscountAmount < decimal.Zero)
-			{
-				shippingDiscountAmount = decimal.Zero;
-			}
+            if (shippingDiscountAmount < decimal.Zero)
+            {
+                shippingDiscountAmount = decimal.Zero;
+            }
 
             shippingDiscountAmount = shippingDiscountAmount.RoundIfEnabledFor(_workContext.WorkingCurrency);
             return shippingDiscountAmount;
@@ -942,27 +942,27 @@ namespace SmartStore.Services.Orders
 
             taxRates = new SortedDictionary<decimal, decimal>();
 
-			var subTotalTax = decimal.Zero;
-			var shippingTax = decimal.Zero;
-			var paymentFeeTax = decimal.Zero;
-			var customer = cart.GetCustomer();
-			var currency = _workContext.WorkingCurrency;
+            var subTotalTax = decimal.Zero;
+            var shippingTax = decimal.Zero;
+            var paymentFeeTax = decimal.Zero;
+            var customer = cart.GetCustomer();
+            var currency = _workContext.WorkingCurrency;
 
-			//// (VATFIX)
-			if (_taxService.IsVatExempt(null, customer))
-			{
-				taxRates.Add(decimal.Zero, decimal.Zero);
-				return decimal.Zero;
-			}
-			//// (VATFIX)
+            //// (VATFIX)
+            if (_taxService.IsVatExempt(null, customer))
+            {
+                taxRates.Add(decimal.Zero, decimal.Zero);
+                return decimal.Zero;
+            }
+            //// (VATFIX)
 
-			#region order sub total (items + checkout attributes)
+            #region order sub total (items + checkout attributes)
 
-			var orderSubTotalDiscountAmount = decimal.Zero;
+            var orderSubTotalDiscountAmount = decimal.Zero;
             var subTotalWithoutDiscountBase = decimal.Zero;
             var subTotalWithDiscountBase = decimal.Zero;
-			Discount appliedDiscount = null;
-			SortedDictionary<decimal, decimal> orderSubTotalTaxRates = null;
+            Discount appliedDiscount = null;
+            SortedDictionary<decimal, decimal> orderSubTotalTaxRates = null;
 
             GetShoppingCartSubTotal(cart, false,
                 out orderSubTotalDiscountAmount, out appliedDiscount,
@@ -984,114 +984,114 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-			#endregion
+            #endregion
 
-			#region shipping tax amount
+            #region shipping tax amount
 
-			if (_taxSettings.ShippingIsTaxable && !IsFreeShipping(cart))
-			{
-				var taxCategoryId = 0;
-				var shippingTotal = GetAdjustedShippingTotal(cart, out appliedDiscount);
+            if (_taxSettings.ShippingIsTaxable && !IsFreeShipping(cart))
+            {
+                var taxCategoryId = 0;
+                var shippingTotal = GetAdjustedShippingTotal(cart, out appliedDiscount);
 
-				if (shippingTotal.HasValue)
-				{
-					if (shippingTotal.Value < decimal.Zero)
-					{
-						shippingTotal = decimal.Zero;
-					}
+                if (shippingTotal.HasValue)
+                {
+                    if (shippingTotal.Value < decimal.Zero)
+                    {
+                        shippingTotal = decimal.Zero;
+                    }
 
                     shippingTotal = shippingTotal.Value.RoundIfEnabledFor(currency);
 
-					PrepareAuxiliaryServicesTaxingInfos(cart);
+                    PrepareAuxiliaryServicesTaxingInfos(cart);
 
-					// commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
-					//if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
-					//{
-					//	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
-					//	foreach (var item in cart)
-					//	{
-					//		var proRataShipping = shippingTotal.Value * GetTaxingInfo(item).ProRataWeighting;
-					//		shippingTax += GetShippingTaxAmount(proRataShipping, customer, item.Item.Product.TaxCategoryId, taxRates);
-					//	}
-					//}
-					//else
-					//{
+                    // commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
+                    //if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
+                    //{
+                    //	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
+                    //	foreach (var item in cart)
+                    //	{
+                    //		var proRataShipping = shippingTotal.Value * GetTaxingInfo(item).ProRataWeighting;
+                    //		shippingTax += GetShippingTaxAmount(proRataShipping, customer, item.Item.Product.TaxCategoryId, taxRates);
+                    //	}
+                    //}
+                    //else
+                    //{
 
-					if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
-					{
-						var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
-						taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-					}
-					else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
-					{
-						var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
-						taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-					}
+                    if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
+                    {
+                        var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
+                        taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+                    }
+                    else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
+                    {
+                        var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
+                        taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+                    }
 
-					// fallback to setting
-					if (taxCategoryId == 0)
-					{
-						taxCategoryId = _taxSettings.ShippingTaxClassId;
-					}
+                    // fallback to setting
+                    if (taxCategoryId == 0)
+                    {
+                        taxCategoryId = _taxSettings.ShippingTaxClassId;
+                    }
 
-					shippingTax = GetShippingTaxAmount(shippingTotal.Value, customer, taxCategoryId, taxRates);
+                    shippingTax = GetShippingTaxAmount(shippingTotal.Value, customer, taxCategoryId, taxRates);
                     shippingTax = shippingTax.RoundIfEnabledFor(currency);
-				}
-			}
+                }
+            }
 
-			#endregion
+            #endregion
 
-			#region payment fee tax amount
+            #region payment fee tax amount
 
-			if (usePaymentMethodAdditionalFee && _taxSettings.PaymentMethodAdditionalFeeIsTaxable && customer != null)
-			{
-				var paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
-				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
+            if (usePaymentMethodAdditionalFee && _taxSettings.PaymentMethodAdditionalFeeIsTaxable && customer != null)
+            {
+                var paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+                var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
 
-				if (provider != null)
-				{
-					var taxCategoryId = 0;
-					var paymentFee = provider.Value.GetAdditionalHandlingFee(cart);
+                if (provider != null)
+                {
+                    var taxCategoryId = 0;
+                    var paymentFee = provider.Value.GetAdditionalHandlingFee(cart);
                     paymentFee = paymentFee.RoundIfEnabledFor(currency);
 
-					PrepareAuxiliaryServicesTaxingInfos(cart);
+                    PrepareAuxiliaryServicesTaxingInfos(cart);
 
-					// commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
-					//if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
-					//{
-					//	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
-					//	foreach (var item in cart)
-					//	{
-					//		var proRataPaymentFees = paymentFee * GetTaxingInfo(item).ProRataWeighting;
-					//		paymentFeeTax += GetPaymentFeeTaxAmount(proRataPaymentFees, customer, item.Item.Product.TaxCategoryId, taxRates);
-					//	}
-					//}
-					//else
-					//{
+                    // commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate
+                    //if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
+                    //{
+                    //	// calculate proRataShipping: get product weightings for cart and multiply them with the shipping amount
+                    //	foreach (var item in cart)
+                    //	{
+                    //		var proRataPaymentFees = paymentFee * GetTaxingInfo(item).ProRataWeighting;
+                    //		paymentFeeTax += GetPaymentFeeTaxAmount(proRataPaymentFees, customer, item.Item.Product.TaxCategoryId, taxRates);
+                    //	}
+                    //}
+                    //else
+                    //{
 
-					if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
-					{
-						var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
-						taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-					}
-					else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
-					{
-						var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
-						taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
-					}
+                    if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
+                    {
+                        var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestCartAmount);
+                        taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+                    }
+                    else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestTaxRate)
+                    {
+                        var cartItem = cart.FirstOrDefault(x => GetTaxingInfo(x).HasHighestTaxRate);
+                        taxCategoryId = (cartItem != null ? cartItem.Item.Product.TaxCategoryId : 0);
+                    }
 
-					// fallback to setting
-					if (taxCategoryId == 0)
-						taxCategoryId = _taxSettings.PaymentMethodAdditionalFeeTaxClassId;
+                    // fallback to setting
+                    if (taxCategoryId == 0)
+                        taxCategoryId = _taxSettings.PaymentMethodAdditionalFeeTaxClassId;
 
-					paymentFeeTax = GetPaymentFeeTaxAmount(paymentFee, customer, taxCategoryId, taxRates);
-				}
-			}
+                    paymentFeeTax = GetPaymentFeeTaxAmount(paymentFee, customer, taxCategoryId, taxRates);
+                }
+            }
 
-			#endregion
+            #endregion
 
-			// add at least one tax rate (0%)
-			if (taxRates.Count == 0)
+            // add at least one tax rate (0%)
+            if (taxRates.Count == 0)
                 taxRates.Add(decimal.Zero, decimal.Zero);
 
             // summarize taxes
@@ -1114,7 +1114,7 @@ namespace SmartStore.Services.Orders
             IList<OrganizedShoppingCartItem> cart,
             bool ignoreRewardPoints = false,
             bool usePaymentMethodAdditionalFee = true,
-			bool ignoreCreditBalance = false)
+            bool ignoreCreditBalance = false)
         {
             var customer = cart.GetCustomer();
             var store = _storeContext.CurrentStore;
@@ -1247,47 +1247,47 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-			#endregion
+            #endregion
 
-			if (resultTemp < decimal.Zero)
+            if (resultTemp < decimal.Zero)
             {
                 resultTemp = decimal.Zero;
             }
 
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
-			var roundingAmount = decimal.Zero;
+            var roundingAmount = decimal.Zero;
             var roundingAmountConverted = decimal.Zero;
             // Return null if we have errors:
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
             var orderTotalConverted = orderTotal;
-			var appliedCreditBalance = decimal.Zero;
+            var appliedCreditBalance = decimal.Zero;
 
-			if (orderTotal.HasValue)
+            if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
 
-				// Credit balance.
-				if (!ignoreCreditBalance && customer != null && orderTotal > decimal.Zero)
-				{
-					var creditBalance = customer.GetAttribute<decimal>(SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, _genericAttributeService, store.Id);
-					if (creditBalance > decimal.Zero)
-					{
-						if (creditBalance > orderTotal)
-						{
-							// Normalize used amount.
-							appliedCreditBalance = orderTotal.Value;
-							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, orderTotal.Value,	store.Id);
-						}
-						else
-						{
-							appliedCreditBalance = creditBalance;
-						}
-					}
-				}
+                // Credit balance.
+                if (!ignoreCreditBalance && customer != null && orderTotal > decimal.Zero)
+                {
+                    var creditBalance = customer.GetAttribute<decimal>(SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, _genericAttributeService, store.Id);
+                    if (creditBalance > decimal.Zero)
+                    {
+                        if (creditBalance > orderTotal)
+                        {
+                            // Normalize used amount.
+                            appliedCreditBalance = orderTotal.Value;
+                            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, orderTotal.Value, store.Id);
+                        }
+                        else
+                        {
+                            appliedCreditBalance = creditBalance;
+                        }
+                    }
+                }
 
-				orderTotal = orderTotal.Value - appliedCreditBalance;
-				orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
+                orderTotal = orderTotal.Value - appliedCreditBalance;
+                orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
 
                 orderTotalConverted = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, currency, store);
 
@@ -1310,7 +1310,7 @@ namespace SmartStore.Services.Orders
             result.AppliedGiftCards = appliedGiftCards;
             result.RedeemedRewardPoints = redeemedRewardPoints;
             result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
-			result.CreditBalance = appliedCreditBalance;
+            result.CreditBalance = appliedCreditBalance;
 
             result.ConvertedFromPrimaryStoreCurrency.TotalAmount = orderTotalConverted;
             result.ConvertedFromPrimaryStoreCurrency.RoundingAmount = roundingAmountConverted;
@@ -1335,16 +1335,16 @@ namespace SmartStore.Services.Orders
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToOrderTotal);
             var allowedDiscounts = new List<Discount>();
 
-			if (allDiscounts != null)
-			{
-				foreach (var discount in allDiscounts)
-				{
-					if (discount.DiscountType == DiscountType.AssignedToOrderTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) &&_discountService.IsDiscountValid(discount, customer))
-					{
-						allowedDiscounts.Add(discount);
-					}
-				}
-			}
+            if (allDiscounts != null)
+            {
+                foreach (var discount in allDiscounts)
+                {
+                    if (discount.DiscountType == DiscountType.AssignedToOrderTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+                    {
+                        allowedDiscounts.Add(discount);
+                    }
+                }
+            }
 
             appliedDiscount = allowedDiscounts.GetPreferredDiscount(orderTotal);
             if (appliedDiscount != null)
@@ -1389,13 +1389,13 @@ namespace SmartStore.Services.Orders
             if (amount <= 0)
                 return 0;
 
-			if (_rewardPointsSettings.ExchangeRate > 0)
-			{
-				if (_rewardPointsSettings.RoundDownRewardPoints)
-					result = (int)Math.Floor(amount / _rewardPointsSettings.ExchangeRate);
-				else
-					result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
-			}
+            if (_rewardPointsSettings.ExchangeRate > 0)
+            {
+                if (_rewardPointsSettings.RoundDownRewardPoints)
+                    result = (int)Math.Floor(amount / _rewardPointsSettings.ExchangeRate);
+                else
+                    result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
+            }
 
             return result;
         }
@@ -1404,16 +1404,16 @@ namespace SmartStore.Services.Orders
     }
 
 
-	internal class CartTaxingInfo
-	{
-		internal CartTaxingInfo()
-		{
-			ProRataWeighting = decimal.Zero;
-		}
+    internal class CartTaxingInfo
+    {
+        internal CartTaxingInfo()
+        {
+            ProRataWeighting = decimal.Zero;
+        }
 
-		public decimal SubTotalWithoutDiscount { get; internal set; }
-		public bool HasHighestCartAmount { get; internal set; }
-		public bool HasHighestTaxRate { get; internal set; }
-		public decimal ProRataWeighting { get; internal set; }
-	}
+        public decimal SubTotalWithoutDiscount { get; internal set; }
+        public bool HasHighestCartAmount { get; internal set; }
+        public bool HasHighestTaxRate { get; internal set; }
+        public decimal ProRataWeighting { get; internal set; }
+    }
 }

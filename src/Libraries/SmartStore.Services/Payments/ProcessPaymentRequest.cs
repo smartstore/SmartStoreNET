@@ -11,17 +11,17 @@ namespace SmartStore.Services.Payments
     [Serializable]
     public partial class ProcessPaymentRequest
     {
-		public ProcessPaymentRequest()
-		{
-			CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
+        public ProcessPaymentRequest()
+        {
+            CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
             IsMultiOrder = false;
             ShoppingCartItemIds = new List<int>();
         }
 
-		/// <summary>
-		/// Gets or sets a store identifier
-		/// </summary>
-		public int StoreId { get; set; }
+        /// <summary>
+        /// Gets or sets a store identifier
+        /// </summary>
+        public int StoreId { get; set; }
 
         /// <summary>
         /// Gets or sets a customer
@@ -38,10 +38,10 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public decimal OrderTotal { get; set; }
 
-		/// <summary>
-		/// Gets or sets an order tax total
-		/// </summary>
-		public decimal OrderTax { get; set; }
+        /// <summary>
+        /// Gets or sets an order tax total
+        /// </summary>
+        public decimal OrderTax { get; set; }
 
         /// <summary>
         /// Gets or sets a payment method identifier
@@ -53,10 +53,10 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public bool IsMultiOrder { get; set; }
 
-		/// <summary>
-		/// Use that dictionary for any payment method or checkout flow specific data
-		/// </summary>
-		public Dictionary<string, CustomPaymentRequestValue> CustomProperties { get; set; }
+        /// <summary>
+        /// Use that dictionary for any payment method or checkout flow specific data
+        /// </summary>
+        public Dictionary<string, CustomPaymentRequestValue> CustomProperties { get; set; }
 
         public IList<int> ShoppingCartItemIds { get; set; }
 
@@ -112,16 +112,16 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public string PurchaseOrderNumber { get; set; }
 
-		public int CreditCardStartYear { get; set; }
-		public int CreditCardStartMonth { get; set; }
-		public string CreditCardIssueNumber { get; set; }
-		public string DirectDebitAccountHolder { get; set; }
-		public string DirectDebitAccountNumber { get; set; }
-		public string DirectDebitBankCode { get; set; }
-		public string DirectDebitCountry { get; set; }
-		public string DirectDebitBankName { get; set; }
-		public string DirectDebitIban { get; set; }
-		public string DirectDebitBic { get; set; }
+        public int CreditCardStartYear { get; set; }
+        public int CreditCardStartMonth { get; set; }
+        public string CreditCardIssueNumber { get; set; }
+        public string DirectDebitAccountHolder { get; set; }
+        public string DirectDebitAccountNumber { get; set; }
+        public string DirectDebitBankCode { get; set; }
+        public string DirectDebitCountry { get; set; }
+        public string DirectDebitBankName { get; set; }
+        public string DirectDebitIban { get; set; }
+        public string DirectDebitBic { get; set; }
 
         public bool IsShippingMethodSet { get; set; }
 
@@ -138,7 +138,7 @@ namespace SmartStore.Services.Payments
         /// Gets or sets an initial (parent) order identifier if order is recurring
         /// </summary>
         public int InitialOrderId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the cycle length
         /// </summary>
@@ -158,17 +158,17 @@ namespace SmartStore.Services.Payments
     }
 
 
-	[Serializable]
-	public partial class CustomPaymentRequestValue
-	{
-		/// <summary>
-		/// The value of the custom property
-		/// </summary>
-		public object Value { get; set; }
+    [Serializable]
+    public partial class CustomPaymentRequestValue
+    {
+        /// <summary>
+        /// The value of the custom property
+        /// </summary>
+        public object Value { get; set; }
 
-		/// <summary>
-		/// Indicates whether to automatically create a generic attribute if an order has been placed
-		/// </summary>
-		public bool AutoCreateGenericAttribute { get; set; }
-	}
+        /// <summary>
+        /// Indicates whether to automatically create a generic attribute if an order has been placed
+        /// </summary>
+        public bool AutoCreateGenericAttribute { get; set; }
+    }
 }

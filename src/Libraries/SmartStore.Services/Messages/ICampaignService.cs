@@ -35,7 +35,7 @@ namespace SmartStore.Services.Messages
         /// </summary>
         /// <returns>Campaign collection</returns>
         IList<Campaign> GetAllCampaigns();
-        
+
         /// <summary>
         /// Sends a campaign to all newsletter subscribers.
         /// </summary>
@@ -57,5 +57,5 @@ namespace SmartStore.Services.Messages
         /// <param name="campaign">The campaign to preview</param>
         /// <returns>The preview result</returns>
         CreateMessageResult Preview(Campaign campaign);
-	}
+    }
 }

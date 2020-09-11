@@ -26,7 +26,7 @@ namespace SmartStore.Services.Orders
                 checkoutAttribute.AttributeControlType == AttributeControlType.Datepicker ||
                 checkoutAttribute.AttributeControlType == AttributeControlType.FileUpload)
                 return false;
-            
+
             //other attribute controle types support values
             return true;
         }

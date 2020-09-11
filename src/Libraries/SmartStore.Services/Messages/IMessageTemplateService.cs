@@ -8,11 +8,11 @@ namespace SmartStore.Services.Messages
     /// </summary>
     public partial interface IMessageTemplateService
     {
-		/// <summary>
-		/// Delete a message template
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
-		void DeleteMessageTemplate(MessageTemplate messageTemplate);
+        /// <summary>
+        /// Delete a message template
+        /// </summary>
+        /// <param name="messageTemplate">Message template</param>
+        void DeleteMessageTemplate(MessageTemplate messageTemplate);
 
         /// <summary>
         /// Inserts a message template
@@ -48,11 +48,11 @@ namespace SmartStore.Services.Messages
         /// <returns>Message template list</returns>
 		IList<MessageTemplate> GetAllMessageTemplates(int storeId);
 
-		/// <summary>
-		/// Create a copy of message template with all depended data
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
-		/// <returns>Message template copy</returns>
-		MessageTemplate CopyMessageTemplate(MessageTemplate messageTemplate);
+        /// <summary>
+        /// Create a copy of message template with all depended data
+        /// </summary>
+        /// <param name="messageTemplate">Message template</param>
+        /// <returns>Message template copy</returns>
+        MessageTemplate CopyMessageTemplate(MessageTemplate messageTemplate);
     }
 }

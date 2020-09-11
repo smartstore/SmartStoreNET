@@ -9,32 +9,32 @@ using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Orders
 {
-	public partial class CheckoutAttributeService : ICheckoutAttributeService
+    public partial class CheckoutAttributeService : ICheckoutAttributeService
     {
         private readonly IRepository<CheckoutAttribute> _checkoutAttributeRepository;
         private readonly IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly IEventPublisher _eventPublisher;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IEventPublisher _eventPublisher;
 
         public CheckoutAttributeService(
             IRepository<CheckoutAttribute> checkoutAttributeRepository,
             IRepository<CheckoutAttributeValue> checkoutAttributeValueRepository,
-			IRepository<StoreMapping> storeMappingRepository,
-			IEventPublisher eventPublisher)
+            IRepository<StoreMapping> storeMappingRepository,
+            IEventPublisher eventPublisher)
         {
             _checkoutAttributeRepository = checkoutAttributeRepository;
             _checkoutAttributeValueRepository = checkoutAttributeValueRepository;
-			_storeMappingRepository = storeMappingRepository;
+            _storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
 
-			this.QuerySettings = DbQuerySettings.Default;
-		}
+            this.QuerySettings = DbQuerySettings.Default;
+        }
 
-		public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
-		#region Checkout attributes
+        #region Checkout attributes
 
-		public virtual void DeleteCheckoutAttribute(CheckoutAttribute checkoutAttribute)
+        public virtual void DeleteCheckoutAttribute(CheckoutAttribute checkoutAttribute)
         {
             if (checkoutAttribute == null)
                 throw new ArgumentNullException("checkoutAttribute");
@@ -42,39 +42,39 @@ namespace SmartStore.Services.Orders
             _checkoutAttributeRepository.Delete(checkoutAttribute);
         }
 
-		public virtual IQueryable<CheckoutAttribute> GetCheckoutAttributes(int storeId = 0, bool showHidden = false)
-		{
-			var query = _checkoutAttributeRepository.Table;
-
-			if (!showHidden)
-				query = query.Where(x => x.IsActive);
-
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
-			{
-				query =
-					from x in query
-					join sm in _storeMappingRepository.Table on new { c1 = x.Id, c2 = "CheckoutAttribute" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
-					from sm in x_sm.DefaultIfEmpty()
-					where !x.LimitedToStores || storeId == sm.StoreId
-					select x;
-
-				query =
-					from x in query
-					group x by x.Id into grp
-					orderby grp.Key
-					select grp.FirstOrDefault();
-			}
-
-			query = query.OrderBy(x => x.DisplayOrder);
-
-			return query;
-		}
-
-		public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes(int storeId = 0, bool showHidden = false)
+        public virtual IQueryable<CheckoutAttribute> GetCheckoutAttributes(int storeId = 0, bool showHidden = false)
         {
-			var query = GetCheckoutAttributes(storeId, showHidden);
-			return query.ToListCached("db.checkoutattrs.{0}.{1}".FormatInvariant(storeId, showHidden));
-		}
+            var query = _checkoutAttributeRepository.Table;
+
+            if (!showHidden)
+                query = query.Where(x => x.IsActive);
+
+            if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+            {
+                query =
+                    from x in query
+                    join sm in _storeMappingRepository.Table on new { c1 = x.Id, c2 = "CheckoutAttribute" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
+                    from sm in x_sm.DefaultIfEmpty()
+                    where !x.LimitedToStores || storeId == sm.StoreId
+                    select x;
+
+                query =
+                    from x in query
+                    group x by x.Id into grp
+                    orderby grp.Key
+                    select grp.FirstOrDefault();
+            }
+
+            query = query.OrderBy(x => x.DisplayOrder);
+
+            return query;
+        }
+
+        public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes(int storeId = 0, bool showHidden = false)
+        {
+            var query = GetCheckoutAttributes(storeId, showHidden);
+            return query.ToListCached("db.checkoutattrs.{0}.{1}".FormatInvariant(storeId, showHidden));
+        }
 
         /// <summary>
         /// Gets a checkout attribute 
@@ -86,8 +86,8 @@ namespace SmartStore.Services.Orders
             if (checkoutAttributeId == 0)
                 return null;
 
-			return _checkoutAttributeRepository.GetByIdCached(checkoutAttributeId, "db.checkoutattr.id-" + checkoutAttributeId);
-		}
+            return _checkoutAttributeRepository.GetByIdCached(checkoutAttributeId, "db.checkoutattr.id-" + checkoutAttributeId);
+        }
 
         public virtual void InsertCheckoutAttribute(CheckoutAttribute checkoutAttribute)
         {
@@ -119,21 +119,21 @@ namespace SmartStore.Services.Orders
 
         public virtual IList<CheckoutAttributeValue> GetCheckoutAttributeValues(int checkoutAttributeId)
         {
-			var query = from cav in _checkoutAttributeValueRepository.Table
-						orderby cav.DisplayOrder
-						where cav.CheckoutAttributeId == checkoutAttributeId
-						select cav;
-			var checkoutAttributeValues = query.ToListCached();
-			return checkoutAttributeValues;
-		}
-        
+            var query = from cav in _checkoutAttributeValueRepository.Table
+                        orderby cav.DisplayOrder
+                        where cav.CheckoutAttributeId == checkoutAttributeId
+                        select cav;
+            var checkoutAttributeValues = query.ToListCached();
+            return checkoutAttributeValues;
+        }
+
         public virtual CheckoutAttributeValue GetCheckoutAttributeValueById(int checkoutAttributeValueId)
         {
             if (checkoutAttributeValueId == 0)
                 return null;
 
-			return _checkoutAttributeValueRepository.GetByIdCached(checkoutAttributeValueId, "db.checkoutattrval.id-" + checkoutAttributeValueId);
-		}
+            return _checkoutAttributeValueRepository.GetByIdCached(checkoutAttributeValueId, "db.checkoutattrval.id-" + checkoutAttributeValueId);
+        }
 
         public virtual void InsertCheckoutAttributeValue(CheckoutAttributeValue checkoutAttributeValue)
         {
@@ -150,7 +150,7 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeValueRepository.Update(checkoutAttributeValue);
         }
-        
+
         #endregion
     }
 }

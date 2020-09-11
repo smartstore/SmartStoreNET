@@ -7,8 +7,8 @@ namespace SmartStore.Services.Tasks
     public interface ITaskExecutor
     {
         Task ExecuteAsync(
-			ScheduleTask entity,
-			IDictionary<string, string> taskParameters = null, 
-			bool throwOnError = false);
+            ScheduleTask entity,
+            IDictionary<string, string> taskParameters = null,
+            bool throwOnError = false);
     }
 }

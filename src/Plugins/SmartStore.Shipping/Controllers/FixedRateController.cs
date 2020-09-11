@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Web.Mvc;
-using SmartStore.Shipping.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Shipping;
+using SmartStore.Shipping.Models;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -13,8 +11,8 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Shipping.Controllers
 {
-	[AdminAuthorize]
-	public class FixedRateController : PluginControllerBase
+    [AdminAuthorize]
+    public class FixedRateController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
         private readonly ISettingService _settingService;
@@ -79,10 +77,10 @@ namespace SmartStore.Shipping.Controllers
             int shippingMethodId = model.ShippingMethodId;
             decimal rate = model.Rate;
 
-			if (shippingMethodId != 0)
-			{
-				_settingService.SetSetting(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId), rate);
-			}
+            if (shippingMethodId != 0)
+            {
+                _settingService.SetSetting(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId), rate);
+            }
 
             var tmp = new List<FixedRateModel>();
             foreach (var shippingMethod in _shippingService.GetAllShippingMethods())

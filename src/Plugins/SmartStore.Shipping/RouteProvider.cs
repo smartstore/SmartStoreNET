@@ -23,12 +23,6 @@ namespace SmartStore.Shipping
             .DataTokens["area"] = "SmartStore.Shipping";
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

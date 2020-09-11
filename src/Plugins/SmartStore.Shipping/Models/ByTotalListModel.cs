@@ -15,8 +15,8 @@ namespace SmartStore.Shipping.Models
             AvailableStores = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Store")]
-		public int AddStoreId { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Store")]
+        public int AddStoreId { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByTotal.Fields.Country")]
         public int? AddCountryId { get; set; }
@@ -68,11 +68,11 @@ namespace SmartStore.Shipping.Models
 
         public string PrimaryStoreCurrencyCode { get; set; }
 
-		public int GridPageSize { get; set; }
+        public int GridPageSize { get; set; }
 
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableShippingMethods { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
+        public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

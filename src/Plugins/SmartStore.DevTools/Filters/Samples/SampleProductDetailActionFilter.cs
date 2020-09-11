@@ -1,36 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using SmartStore.Core.Logging;
-using SmartStore.Core.Localization;
-using SmartStore.Web.Models.Catalog;
+﻿using System.Web.Mvc;
 using SmartStore.Services;
+using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.DevTools.Filters
 {
-	public class SampleProductDetailActionFilter : IActionFilter
-	{
-		private readonly ICommonServices _services;
+    public class SampleProductDetailActionFilter : IActionFilter
+    {
+        private readonly ICommonServices _services;
         private readonly UrlHelper _urlHelper;
 
         public SampleProductDetailActionFilter(ICommonServices services, UrlHelper urlHelper)
-		{
+        {
             _services = services;
             _urlHelper = urlHelper;
         }
-		
-		public void OnActionExecuting(ActionExecutingContext filterContext)
-		{
-			
-		}
-		
-		public void OnActionExecuted(ActionExecutedContext filterContext)
-		{
+
+        public void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+
+        }
+
+        public void OnActionExecuted(ActionExecutedContext filterContext)
+        {
             var result = filterContext.Result as ViewResultBase;
             if (result == null)
             {
@@ -59,5 +50,5 @@ namespace SmartStore.DevTools.Filters
                 Href = "https://www.smartstore.com"
             }; ;
         }
-	}
+    }
 }

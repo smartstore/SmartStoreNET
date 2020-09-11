@@ -20,27 +20,27 @@ namespace SmartStore.PayPal
     public class Plugin : BasePlugin, IWidget
     {
         private readonly ICommonServices _services;
-		private readonly Lazy<IPayPalService> _payPalService;
+        private readonly Lazy<IPayPalService> _payPalService;
         private readonly Lazy<ICurrencyService> _currencyService;
 
         public Plugin(
             ICommonServices services,
-			Lazy<IPayPalService> payPalService,
+            Lazy<IPayPalService> payPalService,
             Lazy<ICurrencyService> currencyService)
-		{
+        {
             _services = services;
-			_payPalService = payPalService;
+            _payPalService = payPalService;
             _currencyService = currencyService;
 
-			Logger = NullLogger.Instance;
-		}
+            Logger = NullLogger.Instance;
+        }
 
-		public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
-		public static string SystemName => "SmartStore.PayPal";
+        public static string SystemName => "SmartStore.PayPal";
 
-		public override void Install()
-		{
+        public override void Install()
+        {
             _services.Settings.SaveSetting(new PayPalExpressPaymentSettings());
             _services.Settings.SaveSetting(new PayPalDirectPaymentSettings());
             _services.Settings.SaveSetting(new PayPalStandardPaymentSettings());
@@ -49,11 +49,11 @@ namespace SmartStore.PayPal
 
             _services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			base.Install();
-		}
+            base.Install();
+        }
 
-		public override void Uninstall()
-		{
+        public override void Uninstall()
+        {
             DeleteWebhook(_services.Settings.LoadSetting<PayPalPlusPaymentSettings>(), PayPalPlusProvider.SystemName);
             DeleteWebhook(_services.Settings.LoadSetting<PayPalInstalmentsSettings>(), PayPalInstalmentsProvider.SystemName);
 
@@ -65,8 +65,8 @@ namespace SmartStore.PayPal
 
             _services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
-			base.Uninstall();
-		}
+            base.Uninstall();
+        }
 
         public IList<string> GetWidgetZones()
         {
@@ -161,5 +161,5 @@ namespace SmartStore.PayPal
                 Logger.Log(LogLevel.Error, ex, null, null);
             }
         }
-	}
+    }
 }

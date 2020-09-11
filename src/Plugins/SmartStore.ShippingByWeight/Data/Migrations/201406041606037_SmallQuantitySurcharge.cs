@@ -1,6 +1,5 @@
 namespace SmartStore.ShippingByWeight.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data;
     using SmartStore.Data.Setup;
@@ -12,17 +11,14 @@ namespace SmartStore.ShippingByWeight.Data.Migrations
             AddColumn("dbo.ShippingByWeight", "SmallQuantitySurcharge", c => c.Decimal(nullable: false, precision: 18, scale: 2));
             AddColumn("dbo.ShippingByWeight", "SmallQuantityThreshold", c => c.Decimal(nullable: false, precision: 18, scale: 2));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.ShippingByWeight", "SmallQuantityThreshold");
             DropColumn("dbo.ShippingByWeight", "SmallQuantitySurcharge");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

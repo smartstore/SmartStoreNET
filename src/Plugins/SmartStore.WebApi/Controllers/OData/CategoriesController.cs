@@ -14,115 +14,115 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class CategoriesController : WebApiEntityController<Category, ICategoryService>
-	{
-		private readonly Lazy<IUrlRecordService> _urlRecordService;
+    {
+        private readonly Lazy<IUrlRecordService> _urlRecordService;
 
-		public CategoriesController(Lazy<IUrlRecordService> urlRecordService)
-		{
-			_urlRecordService = urlRecordService;
-		}
+        public CategoriesController(Lazy<IUrlRecordService> urlRecordService)
+        {
+            _urlRecordService = urlRecordService;
+        }
 
-		protected override IQueryable<Category> GetEntitySet()
-		{
-			var query =
-				from x in Repository.Table
-				where !x.Deleted
-				select x;
+        protected override IQueryable<Category> GetEntitySet()
+        {
+            var query =
+                from x in Repository.Table
+                where !x.Deleted
+                select x;
 
-			return query;
-		}
+            return query;
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
-		public IHttpActionResult Get()
-		{
-			return Ok(GetEntitySet());
-		}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
         public IHttpActionResult Get(int key)
-		{
-			return Ok(GetByKey(key));
-		}
+        {
+            return Ok(GetByKey(key));
+        }
 
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
-		public IHttpActionResult GetProperty(int key, string propertyName)
-		{
-			return GetPropertyValue(key, propertyName);
-		}
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Create)]
-		public IHttpActionResult Post(Category entity)
-		{
-			var result = Insert(entity, () =>
-			{
-				Service.InsertCategory(entity);
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Create)]
+        public IHttpActionResult Post(Category entity)
+        {
+            var result = Insert(entity, () =>
+            {
+                Service.InsertCategory(entity);
 
-				this.ProcessEntity(() =>
-				{
-					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
-				});
-			});
+                this.ProcessEntity(() =>
+                {
+                    _urlRecordService.Value.SaveSlug(entity, x => x.Name);
+                });
+            });
 
-			return result;
-		}
+            return result;
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
-		public async Task<IHttpActionResult> Put(int key, Category entity)
-		{
-			var result = await UpdateAsync(entity, key, () =>
-			{
-				Service.UpdateCategory(entity);
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
+        public async Task<IHttpActionResult> Put(int key, Category entity)
+        {
+            var result = await UpdateAsync(entity, key, () =>
+            {
+                Service.UpdateCategory(entity);
 
-				this.ProcessEntity(() =>
-				{
-					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
-				});
-			});
+                this.ProcessEntity(() =>
+                {
+                    _urlRecordService.Value.SaveSlug(entity, x => x.Name);
+                });
+            });
 
-			return result;
-		}
+            return result;
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
-		public async Task<IHttpActionResult> Patch(int key, Delta<Category> model)
-		{
-			var result = await PartiallyUpdateAsync(key, model, entity =>
-			{
-				Service.UpdateCategory(entity);
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Update)]
+        public async Task<IHttpActionResult> Patch(int key, Delta<Category> model)
+        {
+            var result = await PartiallyUpdateAsync(key, model, entity =>
+            {
+                Service.UpdateCategory(entity);
 
-				this.ProcessEntity(() =>
-				{
-					_urlRecordService.Value.SaveSlug(entity, x => x.Name);
-				});
-			});
+                this.ProcessEntity(() =>
+                {
+                    _urlRecordService.Value.SaveSlug(entity, x => x.Name);
+                });
+            });
 
-			return result;
-		}
+            return result;
+        }
 
-		[WebApiAuthenticate(Permission = Permissions.Catalog.Category.Delete)]
-		public async Task<IHttpActionResult> Delete(int key)
-		{
-			var result = await DeleteAsync(key, entity =>
-			{
-				Service.DeleteCategory(entity);
-			});
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Delete)]
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity =>
+            {
+                Service.DeleteCategory(entity);
+            });
 
-			return result;
-		}
+            return result;
+        }
 
-		#region Navigation properties
+        #region Navigation properties
 
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Category.Read)]
         public IHttpActionResult GetAppliedDiscounts(int key)
-		{
-			return Ok(GetRelatedCollection(key, x => x.AppliedDiscounts));
-		}
+        {
+            return Ok(GetRelatedCollection(key, x => x.AppliedDiscounts));
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

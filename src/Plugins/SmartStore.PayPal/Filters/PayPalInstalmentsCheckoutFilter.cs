@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Web.Mvc;
 using Newtonsoft.Json;
@@ -119,7 +118,7 @@ namespace SmartStore.PayPal.Filters
                 {
                     // Show instalments total and fees.
                     _widgetProvider.Value.RegisterAction("order_summary_totals_after", "OrderSummaryTotals", "PayPalInstalments", new { area = Plugin.SystemName });
-                }                
+                }
             }
         }
 

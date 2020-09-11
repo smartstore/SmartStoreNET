@@ -8,19 +8,13 @@ namespace SmartStore.OfflinePayment
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-			routes.MapRoute("SmartStore.OfflinePayment",
-				 "Plugins/SmartStore.OfflinePayment/{action}",
-				 new { controller = "OfflinePayment", action = "Index" },
-				 new[] { "SmartStore.OfflinePayment.Controllers" }
+            routes.MapRoute("SmartStore.OfflinePayment",
+                 "Plugins/SmartStore.OfflinePayment/{action}",
+                 new { controller = "OfflinePayment", action = "Index" },
+                 new[] { "SmartStore.OfflinePayment.Controllers" }
             )
-			.DataTokens["area"] = "SmartStore.OfflinePayment";
+            .DataTokens["area"] = "SmartStore.OfflinePayment";
         }
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

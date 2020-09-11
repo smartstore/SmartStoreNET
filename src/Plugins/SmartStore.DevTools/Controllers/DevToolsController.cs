@@ -54,11 +54,11 @@ namespace SmartStore.DevTools.Controllers
         [ChildActionOnly]
         public ActionResult WidgetZone(string widgetZone)
         {
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<ProfilerSettings>(storeScope);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<ProfilerSettings>(storeScope);
 
             if (settings.DisplayWidgetZones)
-            { 
+            {
                 ViewData["widgetZone"] = widgetZone;
 
                 return View();
@@ -67,23 +67,23 @@ namespace SmartStore.DevTools.Controllers
             return new EmptyResult();
         }
 
-		[ChildActionOnly]
-		public ActionResult SampleBlock(SampleBlock block)
-		{
-			// Do something here with your block instance and return a result that should be rendered by the Page Builder.
-			return View(block);
-		}
+        [ChildActionOnly]
+        public ActionResult SampleBlock(SampleBlock block)
+        {
+            // Do something here with your block instance and return a result that should be rendered by the Page Builder.
+            return View(block);
+        }
 
-		[AdminAuthorize, AdminThemed]
-		public ActionResult BackendExtension()
-		{
-			var model = new BackendExtensionModel
-			{
-				Welcome = "Hello world!"
-			};
+        [AdminAuthorize, AdminThemed]
+        public ActionResult BackendExtension()
+        {
+            var model = new BackendExtensionModel
+            {
+                Welcome = "Hello world!"
+            };
 
-			return View(model);
-		}
+            return View(model);
+        }
 
         [AdminAuthorize]
         public ActionResult ProductEditTab(int productId, FormCollection form)
@@ -98,9 +98,9 @@ namespace SmartStore.DevTools.Controllers
             return result;
         }
 
-		public ActionResult MyDemoWidget()
-		{
-			return Content("Hello world! This is a sample widget created for demonstration purposes by Dev-Tools plugin.");
-		}
-	}
+        public ActionResult MyDemoWidget()
+        {
+            return Content("Hello world! This is a sample widget created for demonstration purposes by Dev-Tools plugin.");
+        }
+    }
 }

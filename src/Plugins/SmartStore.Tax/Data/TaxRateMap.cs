@@ -9,7 +9,7 @@ namespace SmartStore.Tax.Data
         {
             this.ToTable("TaxRate");
             this.HasKey(tr => tr.Id);
-	        this.Property(tr => tr.Percentage).HasPrecision(18, 4);
+            this.Property(tr => tr.Percentage).HasPrecision(18, 4);
         }
     }
 }

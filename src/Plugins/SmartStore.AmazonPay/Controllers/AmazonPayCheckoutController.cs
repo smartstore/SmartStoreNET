@@ -13,109 +13,109 @@ using SmartStore.Services.Payments;
 namespace SmartStore.AmazonPay.Controllers
 {
     public class AmazonPayCheckoutController : AmazonPayControllerBase
-	{
-		private readonly HttpContextBase _httpContext;
-		private readonly IAmazonPayService _apiService;
-		private readonly IGenericAttributeService _genericAttributeService;
+    {
+        private readonly HttpContextBase _httpContext;
+        private readonly IAmazonPayService _apiService;
+        private readonly IGenericAttributeService _genericAttributeService;
         private readonly IOrderProcessingService _orderProcessingService;
 
         public AmazonPayCheckoutController(
-			HttpContextBase httpContext,
-			IAmazonPayService apiService,
-			IGenericAttributeService genericAttributeService,
+            HttpContextBase httpContext,
+            IAmazonPayService apiService,
+            IGenericAttributeService genericAttributeService,
             IOrderProcessingService orderProcessingService)
-		{
-			_httpContext = httpContext;
-			_apiService = apiService;
-			_genericAttributeService = genericAttributeService;
+        {
+            _httpContext = httpContext;
+            _apiService = apiService;
+            _genericAttributeService = genericAttributeService;
             _orderProcessingService = orderProcessingService;
-		}
+        }
 
-		public ActionResult OrderReferenceCreated(string orderReferenceId/*, string accessToken*/)
-		{
-			var success = false;
-			var error = string.Empty;
+        public ActionResult OrderReferenceCreated(string orderReferenceId/*, string accessToken*/)
+        {
+            var success = false;
+            var error = string.Empty;
 
-			try
-			{
-				var state = _httpContext.GetAmazonPayState(Services.Localization);
-				state.OrderReferenceId = orderReferenceId;
+            try
+            {
+                var state = _httpContext.GetAmazonPayState(Services.Localization);
+                state.OrderReferenceId = orderReferenceId;
 
-				//if (accessToken.HasValue())
-				//{
-				//	state.AccessToken = accessToken;
-				//}
+                //if (accessToken.HasValue())
+                //{
+                //	state.AccessToken = accessToken;
+                //}
 
-				if (state.OrderReferenceId.IsEmpty())
-				{
-					success = false;
-					error = T("Plugins.Payments.AmazonPay.MissingOrderReferenceId");
-				}
+                if (state.OrderReferenceId.IsEmpty())
+                {
+                    success = false;
+                    error = T("Plugins.Payments.AmazonPay.MissingOrderReferenceId");
+                }
 
-				if (state.AccessToken.IsEmpty())
-				{
-					success = false;
-					error = error.Grow(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"), " ");
-				}
-			}
-			catch (Exception ex)
-			{
-				error = ex.Message;
-			}
+                if (state.AccessToken.IsEmpty())
+                {
+                    success = false;
+                    error = error.Grow(T("Plugins.Payments.AmazonPay.MissingAddressConsentToken"), " ");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
 
-			return new JsonResult { Data = new { success = success, error = error } };
-		}
+            return new JsonResult { Data = new { success = success, error = error } };
+        }
 
-		public ActionResult BillingAddress()
-		{
-			return RedirectToAction("ShippingAddress", "Checkout", new { area = "" });
-		}
+        public ActionResult BillingAddress()
+        {
+            return RedirectToAction("ShippingAddress", "Checkout", new { area = "" });
+        }
 
-		public ActionResult ShippingAddress()
-		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.Address, TempData);
+        public ActionResult ShippingAddress()
+        {
+            var model = _apiService.CreateViewModel(AmazonPayRequestType.Address, TempData);
 
-			return GetActionResult(model);
-		}
+            return GetActionResult(model);
+        }
 
-		public ActionResult PaymentMethod()
-		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.PaymentMethod, TempData);
+        public ActionResult PaymentMethod()
+        {
+            var model = _apiService.CreateViewModel(AmazonPayRequestType.PaymentMethod, TempData);
 
-			return GetActionResult(model);
-		}
+            return GetActionResult(model);
+        }
 
-		[HttpPost]
-		public ActionResult PaymentMethod(FormCollection form)
-		{
-			// Display biling address on confirm page.
-			_apiService.GetBillingAddress();
+        [HttpPost]
+        public ActionResult PaymentMethod(FormCollection form)
+        {
+            // Display biling address on confirm page.
+            _apiService.GetBillingAddress();
 
-			var customer = Services.WorkContext.CurrentCustomer;
-			if (customer.BillingAddress == null)
-			{
-				NotifyError(T("Plugins.Payments.AmazonPay.MissingBillingAddress"));
-				return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
-			}
+            var customer = Services.WorkContext.CurrentCustomer;
+            if (customer.BillingAddress == null)
+            {
+                NotifyError(T("Plugins.Payments.AmazonPay.MissingBillingAddress"));
+                return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
+            }
 
-			return RedirectToAction("Confirm", "Checkout", new { area = "" });
-		}
+            return RedirectToAction("Confirm", "Checkout", new { area = "" });
+        }
 
-		public ActionResult PaymentInfo()
-		{
-			return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
-		}
+        public ActionResult PaymentInfo()
+        {
+            return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
+        }
 
-		public ActionResult CheckoutCompleted()
-		{
-			var note = _httpContext.Session["AmazonPayCheckoutCompletedNote"] as string;
-			if (note.HasValue())
-			{
-				return Content(note);
-			}
+        public ActionResult CheckoutCompleted()
+        {
+            var note = _httpContext.Session["AmazonPayCheckoutCompletedNote"] as string;
+            if (note.HasValue())
+            {
+                return Content(note);
+            }
 
-			return new EmptyResult();
-		}
+            return new EmptyResult();
+        }
 
         #region Confirmation flow
 

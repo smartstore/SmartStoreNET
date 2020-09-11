@@ -15,13 +15,7 @@ namespace SmartStore.FacebookAuth.Core
             this._providerSystemName = providerSystemName;
         }
 
-        public override IList<UserClaims> UserClaims
-        {
-            get
-            {
-                return _claims;
-            }
-        }
+        public override IList<UserClaims> UserClaims => _claims;
 
         public void AddClaim(UserClaims claim)
         {
@@ -31,9 +25,6 @@ namespace SmartStore.FacebookAuth.Core
             _claims.Add(claim);
         }
 
-        public override string ProviderSystemName
-        {
-            get { return _providerSystemName; }
-        }
+        public override string ProviderSystemName => _providerSystemName;
     }
 }

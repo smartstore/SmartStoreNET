@@ -5,50 +5,49 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
-using SmartStore.DevTools.Security;
 using SmartStore.Services;
 
 namespace SmartStore.DevTools
 {
     [DisplayOrder(10)]
-	[SystemName("Widgets.DevToolsDemo")]
-	[FriendlyName("Dev-Tools Demo Widget")]
-	public class DevToolsPlugin : BasePlugin, IConfigurable //, IWidget
-	{
+    [SystemName("Widgets.DevToolsDemo")]
+    [FriendlyName("Dev-Tools Demo Widget")]
+    public class DevToolsPlugin : BasePlugin, IConfigurable //, IWidget
+    {
         private readonly ICommonServices _services;
-		private readonly ICacheableRouteRegistrar _cacheableRouteRegistrar;
+        private readonly ICacheableRouteRegistrar _cacheableRouteRegistrar;
 
-		public DevToolsPlugin(
+        public DevToolsPlugin(
             ICommonServices services,
-			ICacheableRouteRegistrar cacheAbleRouteRegistrar)
+            ICacheableRouteRegistrar cacheAbleRouteRegistrar)
         {
             _services = services;
-			_cacheableRouteRegistrar = cacheAbleRouteRegistrar;
+            _cacheableRouteRegistrar = cacheAbleRouteRegistrar;
 
-			Logger = NullLogger.Instance;
+            Logger = NullLogger.Instance;
         }
 
-		public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
-		//public IList<string> GetWidgetZones() => new List<string> { "home_page_top" };
+        //public IList<string> GetWidgetZones() => new List<string> { "home_page_top" };
 
-		//public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-		//{
-		//	actionName = "MyDemoWidget";
-		//	controllerName = "DevTools";
+        //public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        //{
+        //	actionName = "MyDemoWidget";
+        //	controllerName = "DevTools";
 
-		//	routeValues = new RouteValueDictionary
-		//	{
-		//		{ "Namespaces", "SmartStore.DevTools.Controllers" },
-		//		{ "area", "SmartStore.DevTools" }
-		//	};
-		//}
+        //	routeValues = new RouteValueDictionary
+        //	{
+        //		{ "Namespaces", "SmartStore.DevTools.Controllers" },
+        //		{ "area", "SmartStore.DevTools" }
+        //	};
+        //}
 
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "DevTools";
-			routeValues = new RouteValueDictionary() { { "area", "SmartStore.DevTools" } };
+            routeValues = new RouteValueDictionary() { { "area", "SmartStore.DevTools" } };
         }
 
         public override void Install()
@@ -58,9 +57,9 @@ namespace SmartStore.DevTools
 
             _services.Settings.SaveSetting(new ProfilerSettings());
 
-			base.Install();
+            base.Install();
 
-			Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
+            Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
         public override void Uninstall()
@@ -70,35 +69,35 @@ namespace SmartStore.DevTools
 
             _services.Settings.DeleteSetting<ProfilerSettings>();
 
-			base.Uninstall();
+            base.Uninstall();
         }
 
-		private static bool? _hasPendingMigrations;
-		internal static bool HasPendingMigrations()
-		{
-			bool result = true;
+        private static bool? _hasPendingMigrations;
+        internal static bool HasPendingMigrations()
+        {
+            bool result = true;
 
-			if (_hasPendingMigrations == null)
-			{
-				try
-				{
-					var migrator = new DbSeedingMigrator<SmartObjectContext>();
-					result = migrator.GetPendingMigrations().Any();
+            if (_hasPendingMigrations == null)
+            {
+                try
+                {
+                    var migrator = new DbSeedingMigrator<SmartObjectContext>();
+                    result = migrator.GetPendingMigrations().Any();
 
-					if (result == false)
-					{
-						// Don't check again
-						_hasPendingMigrations = false;
-					}
-				}
-				catch { }
-			}
-			else
-			{
-				result = _hasPendingMigrations.Value;
-			}
+                    if (result == false)
+                    {
+                        // Don't check again
+                        _hasPendingMigrations = false;
+                    }
+                }
+                catch { }
+            }
+            else
+            {
+                result = _hasPendingMigrations.Value;
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

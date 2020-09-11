@@ -12,35 +12,29 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Clickatell
 {
-	public class ClickatellSmsProvider : BasePlugin, IConfigurable
+    public class ClickatellSmsProvider : BasePlugin, IConfigurable
     {
         private readonly ClickatellSettings _clickatellSettings;
         private readonly ILocalizationService _localizationService;
-		private readonly ILogger _logger;
+        private readonly ILogger _logger;
 
-		public ClickatellSmsProvider(
-			ClickatellSettings clickatellSettings,
+        public ClickatellSmsProvider(
+            ClickatellSettings clickatellSettings,
             ILocalizationService localizationService,
-			ILogger logger)
+            ILogger logger)
         {
             _clickatellSettings = clickatellSettings;
             _localizationService = localizationService;
-			_logger = logger;			
-		}
+            _logger = logger;
+        }
 
-		public static string SystemName
-		{
-			get
-			{
-				return "SmartStore.Clickatell";
-			}
-		}
+        public static string SystemName => "SmartStore.Clickatell";
 
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "SmsClickatell";
-			routeValues = new RouteValueDictionary { { "area", SystemName } };
+            routeValues = new RouteValueDictionary { { "area", SystemName } };
         }
 
         public override void Install()
@@ -57,77 +51,77 @@ namespace SmartStore.Clickatell
             base.Uninstall();
         }
 
-		public void SendSms(string text)
-		{
-			if (text.IsEmpty())
-				return;
+        public void SendSms(string text)
+        {
+            if (text.IsEmpty())
+                return;
 
-			string error = null;
-			HttpWebResponse webResponse = null;
+            string error = null;
+            HttpWebResponse webResponse = null;
 
-			try
-			{
-				// https://www.clickatell.com/developers/api-documentation/rest-api-request-parameters/
-				var request = (HttpWebRequest)WebRequest.Create("https://platform.clickatell.com/messages");
-				request.Method = "POST";
-				request.Accept = "application/json";
-				request.ContentType = "application/json";
-				request.Headers["Authorization"] = _clickatellSettings.ApiId;
+            try
+            {
+                // https://www.clickatell.com/developers/api-documentation/rest-api-request-parameters/
+                var request = (HttpWebRequest)WebRequest.Create("https://platform.clickatell.com/messages");
+                request.Method = "POST";
+                request.Accept = "application/json";
+                request.ContentType = "application/json";
+                request.Headers["Authorization"] = _clickatellSettings.ApiId;
 
-				var data = new Dictionary<string, object>
-				{
-					{ "content", text },
-					{ "to", _clickatellSettings.PhoneNumber.SplitSafe(";") }
-				};
+                var data = new Dictionary<string, object>
+                {
+                    { "content", text },
+                    { "to", _clickatellSettings.PhoneNumber.SplitSafe(";") }
+                };
 
-				var json = JsonConvert.SerializeObject(data);
+                var json = JsonConvert.SerializeObject(data);
 
-				// UTF8 is default encoding
-				var bytes = Encoding.UTF8.GetBytes(json);
-				request.ContentLength = bytes.Length;
+                // UTF8 is default encoding
+                var bytes = Encoding.UTF8.GetBytes(json);
+                request.ContentLength = bytes.Length;
 
-				using (var stream = request.GetRequestStream())
-				{
-					stream.Write(bytes, 0, bytes.Length);
-				}
+                using (var stream = request.GetRequestStream())
+                {
+                    stream.Write(bytes, 0, bytes.Length);
+                }
 
-				webResponse = request.GetResponse() as HttpWebResponse;
-			}
-			catch (WebException wexc)
-			{
-				webResponse = wexc.Response as HttpWebResponse;
-			}
-			catch (Exception exception)
-			{
-				error = exception.ToString();
-			}
+                webResponse = request.GetResponse() as HttpWebResponse;
+            }
+            catch (WebException wexc)
+            {
+                webResponse = wexc.Response as HttpWebResponse;
+            }
+            catch (Exception exception)
+            {
+                error = exception.ToString();
+            }
 
-			if (webResponse != null)
-			{
-				using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
-				{
-					var rawResponse = reader.ReadToEnd();
+            if (webResponse != null)
+            {
+                using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
+                {
+                    var rawResponse = reader.ReadToEnd();
 
-					if (webResponse.StatusCode == HttpStatusCode.OK || webResponse.StatusCode == HttpStatusCode.Accepted)
-					{
-						dynamic response = JObject.Parse(rawResponse);
+                    if (webResponse.StatusCode == HttpStatusCode.OK || webResponse.StatusCode == HttpStatusCode.Accepted)
+                    {
+                        dynamic response = JObject.Parse(rawResponse);
 
-						error = (string)response.error;
-						if (error.IsEmpty() && response.messages != null)
-							error = response.messages[0].error;
-					}
-					else
-					{
-						error = rawResponse;
-					}
-				}
-			}
+                        error = (string)response.error;
+                        if (error.IsEmpty() && response.messages != null)
+                            error = response.messages[0].error;
+                    }
+                    else
+                    {
+                        error = rawResponse;
+                    }
+                }
+            }
 
-			if (error.HasValue())
-			{
-				_logger.Error(error);
-				throw new SmartException(error);
-			}
-		}
-	}
+            if (error.HasValue())
+            {
+                _logger.Error(error);
+                throw new SmartException(error);
+            }
+        }
+    }
 }

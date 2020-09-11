@@ -9,16 +9,16 @@ using SmartStore.Services.Payments;
 namespace SmartStore.AmazonPay.Services
 {
     public partial interface IAmazonPayService : IExternalProviderAuthorizer
-	{
-		void SetupConfiguration(ConfigurationModel model);
+    {
+        void SetupConfiguration(ConfigurationModel model);
 
-		AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData);
+        AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData);
 
-		void CloseOrderReference(AmazonPaySettings settings, Order order);
+        void CloseOrderReference(AmazonPaySettings settings, Order order);
 
-		void AddCustomerOrderNoteLoop(AmazonPayActionState state);
+        void AddCustomerOrderNoteLoop(AmazonPayActionState state);
 
-		void GetBillingAddress();
+        void GetBillingAddress();
 
         bool SetOrderReferenceDetails(
             Client client,
@@ -29,20 +29,20 @@ namespace SmartStore.AmazonPay.Services
 
         bool ConfirmOrderReference();
 
-		ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);
+        ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request);
 
-		void PostProcessPayment(PostProcessPaymentRequest request);
+        void PostProcessPayment(PostProcessPaymentRequest request);
 
-		CapturePaymentResult Capture(CapturePaymentRequest request);
+        CapturePaymentResult Capture(CapturePaymentRequest request);
 
-		RefundPaymentResult Refund(RefundPaymentRequest request);
+        RefundPaymentResult Refund(RefundPaymentRequest request);
 
-		VoidPaymentResult Void(VoidPaymentRequest request);
+        VoidPaymentResult Void(VoidPaymentRequest request);
 
-		void ProcessIpn(HttpRequestBase request);
+        void ProcessIpn(HttpRequestBase request);
 
-		void StartDataPolling();
+        void StartDataPolling();
 
-		void ShareKeys(string payload, int storeId);
-	}
+        void ShareKeys(string payload, int storeId);
+    }
 }

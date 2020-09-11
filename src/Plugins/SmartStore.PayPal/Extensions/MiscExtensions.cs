@@ -8,28 +8,28 @@ using SmartStore.Services.Common;
 namespace SmartStore.PayPal
 {
     internal static class MiscExtensions
-	{
-		public static string GetPayPalUrl(this PayPalSettingsBase settings)
-		{
-			return settings.UseSandbox ?
-				"https://www.sandbox.paypal.com/cgi-bin/webscr" :
-				"https://www.paypal.com/cgi-bin/webscr";
-		}
+    {
+        public static string GetPayPalUrl(this PayPalSettingsBase settings)
+        {
+            return settings.UseSandbox ?
+                "https://www.sandbox.paypal.com/cgi-bin/webscr" :
+                "https://www.paypal.com/cgi-bin/webscr";
+        }
 
-		public static PayPalSessionData GetPayPalState(this HttpContextBase httpContext, string providerSystemName)
-		{
+        public static PayPalSessionData GetPayPalState(this HttpContextBase httpContext, string providerSystemName)
+        {
             Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
-			var state = httpContext.GetCheckoutState();
+            var state = httpContext.GetCheckoutState();
 
             if (!state.CustomProperties.ContainsKey(providerSystemName))
             {
                 state.CustomProperties.Add(providerSystemName, new PayPalSessionData { ProviderSystemName = providerSystemName });
             }
 
-			var session = state.CustomProperties.Get(providerSystemName) as PayPalSessionData;
+            var session = state.CustomProperties.Get(providerSystemName) as PayPalSessionData;
             return session;
-		}
+        }
 
         public static PayPalSessionData GetPayPalState(
             this HttpContextBase httpContext,

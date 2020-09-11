@@ -12,86 +12,86 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class OrderNotesController : WebApiEntityController<OrderNote, IOrderService>
-	{
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
-		public IHttpActionResult Get()
-		{
-			return Ok(GetEntitySet());
-		}
+    {
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Read)]
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public IHttpActionResult Get(int key)
-		{
-			return Ok(GetByKey(key));
-		}
+        {
+            return Ok(GetByKey(key));
+        }
 
-		[WebApiAuthenticate(Permission = Permissions.Order.Read)]
-		public IHttpActionResult GetProperty(int key, string propertyName)
-		{
-			return GetPropertyValue(key, propertyName);
-		}
+        [WebApiAuthenticate(Permission = Permissions.Order.Read)]
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public IHttpActionResult Post(OrderNote entity)
-		{
-			var result = Insert(entity, () =>
-			{
-				var order = Service.GetOrderById(entity.OrderId);
-				if (order == null || order.Deleted)
-				{
-					throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(entity.OrderId));
-				}
-				if (entity.Note.IsEmpty())
-				{
-					throw Request.BadRequestException("Missing or empty order note text.");
-				}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
+        public IHttpActionResult Post(OrderNote entity)
+        {
+            var result = Insert(entity, () =>
+            {
+                var order = Service.GetOrderById(entity.OrderId);
+                if (order == null || order.Deleted)
+                {
+                    throw Request.NotFoundException(WebApiGlobal.Error.EntityNotFound.FormatInvariant(entity.OrderId));
+                }
+                if (entity.Note.IsEmpty())
+                {
+                    throw Request.BadRequestException("Missing or empty order note text.");
+                }
 
-				entity.CreatedOnUtc = DateTime.UtcNow;
+                entity.CreatedOnUtc = DateTime.UtcNow;
 
-				order.OrderNotes.Add(entity);
-				Service.UpdateOrder(order);
+                order.OrderNotes.Add(entity);
+                Service.UpdateOrder(order);
 
-				if (entity.DisplayToCustomer && this.GetQueryStringValue("customernotification", true))
-				{
-					Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(entity, order.CustomerLanguageId);
-				}
-			});
+                if (entity.DisplayToCustomer && this.GetQueryStringValue("customernotification", true))
+                {
+                    Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(entity, order.CustomerLanguageId);
+                }
+            });
 
-			return result;
-		}
+            return result;
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public IHttpActionResult Put()
-		{
-			return StatusCode(HttpStatusCode.NotImplemented);
-		}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
+        public IHttpActionResult Put()
+        {
+            return StatusCode(HttpStatusCode.NotImplemented);
+        }
 
-		[WebApiQueryable]
-		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public IHttpActionResult Patch()
-		{
-			return StatusCode(HttpStatusCode.NotImplemented);
-		}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
+        public IHttpActionResult Patch()
+        {
+            return StatusCode(HttpStatusCode.NotImplemented);
+        }
 
-		[WebApiAuthenticate(Permission = Permissions.Order.Update)]
-		public async Task<IHttpActionResult> Delete(int key)
-		{
-			var result = await DeleteAsync(key, entity => Service.DeleteOrderNote(entity));
-			return result;
-		}
+        [WebApiAuthenticate(Permission = Permissions.Order.Update)]
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity => Service.DeleteOrderNote(entity));
+            return result;
+        }
 
-		#region Navigation properties
+        #region Navigation properties
 
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.Read)]
         public IHttpActionResult GetOrder(int key)
-		{
-			return Ok(GetRelatedEntity(key, x => x.Order));
-		}
+        {
+            return Ok(GetRelatedEntity(key, x => x.Order));
+        }
 
         #endregion
     }

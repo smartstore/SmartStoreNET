@@ -1,6 +1,5 @@
 using Autofac;
 using Autofac.Core;
-using Autofac.Integration.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -13,9 +12,9 @@ namespace SmartStore.ShippingByWeight
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
+        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
-			builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().InstancePerRequest();
+            builder.RegisterType<ShippingByWeightService>().As<IShippingByWeightService>().InstancePerRequest();
 
             // data layer
             // register named context
@@ -23,7 +22,7 @@ namespace SmartStore.ShippingByWeight
                 .Named<IDbContext>(ShippingByWeightObjectContext.ALIASKEY)
                 .InstancePerRequest();
 
-			builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
+            builder.Register<ShippingByWeightObjectContext>(c => new ShippingByWeightObjectContext(DataSettings.Current.DataConnectionString))
                 .InstancePerRequest();
 
             // override required repository with our custom context
@@ -33,9 +32,6 @@ namespace SmartStore.ShippingByWeight
                 .InstancePerRequest();
         }
 
-        public int Order
-        {
-            get { return 1; }
-        }
+        public int Order => 1;
     }
 }

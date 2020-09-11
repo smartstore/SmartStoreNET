@@ -1,9 +1,6 @@
 namespace SmartStore.Shipping.Data.Migrations
 {
-    using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
-    using System.Linq;
 
     internal sealed class Configuration : DbMigrationsConfiguration<ByTotalObjectContext>
     {
@@ -11,7 +8,7 @@ namespace SmartStore.Shipping.Data.Migrations
         {
             AutomaticMigrationsEnabled = false;
             MigrationsDirectory = @"Data\Migrations";
-			ContextKey = "SmartStore.ShippingByTotal";
+            ContextKey = "SmartStore.ShippingByTotal";
         }
 
         protected override void Seed(ByTotalObjectContext context)

@@ -17,19 +17,19 @@ namespace SmartStore.FacebookAuth
             _localizationService = localizationService;
         }
 
-		public static string SystemName => "SmartStore.FacebookAuth";
+        public static string SystemName => "SmartStore.FacebookAuth";
 
-		/// <summary>
-		/// Gets a route for provider configuration
-		/// </summary>
-		/// <param name="actionName">Action name</param>
-		/// <param name="controllerName">Controller name</param>
-		/// <param name="routeValues">Route values</param>
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        /// <summary>
+        /// Gets a route for provider configuration
+        /// </summary>
+        /// <param name="actionName">Action name</param>
+        /// <param name="controllerName">Controller name</param>
+        /// <param name="routeValues">Route values</param>
+        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
-			actionName = "Configure";
-			controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
+            actionName = "Configure";
+            controllerName = "ExternalAuthFacebook";
+            routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SmartStore.FacebookAuth
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
+            routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
         }
 
         /// <summary>
@@ -60,6 +60,6 @@ namespace SmartStore.FacebookAuth
             _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
             base.Uninstall();
-        }        
+        }
     }
 }

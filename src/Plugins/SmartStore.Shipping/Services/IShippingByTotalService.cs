@@ -8,20 +8,20 @@ namespace SmartStore.Shipping.Services
 {
     public partial interface IShippingByTotalService
     {
-		/// <summary>
-		/// Get queryable shipping by total records
-		/// </summary>
-		IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords();
+        /// <summary>
+        /// Get queryable shipping by total records
+        /// </summary>
+        IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords();
 
-		/// <summary>
-		/// Get paged shipping by total records
-		/// </summary>
-		IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize);
+        /// <summary>
+        /// Get paged shipping by total records
+        /// </summary>
+        IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize);
 
-		/// <summary>
-		/// Get models for shipping by total records
-		/// </summary>
-		IList<ByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount);
+        /// <summary>
+        /// Get models for shipping by total records
+        /// </summary>
+        IList<ByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount);
 
         /// <summary>
         /// Finds the ShippingByTotalRecord by its identifier
@@ -39,7 +39,7 @@ namespace SmartStore.Shipping.Services
         /// <param name="stateProvinceId">state province identifier</param>
         /// <param name="zip">Zip code</param>
         /// <returns>ShippingByTotalRecord</returns>
-		ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int storeId, int countryId, 
+		ShippingByTotalRecord FindShippingByTotalRecord(int shippingMethodId, int storeId, int countryId,
             decimal subTotal, int stateProvinceId, string zip);
 
         /// <summary>

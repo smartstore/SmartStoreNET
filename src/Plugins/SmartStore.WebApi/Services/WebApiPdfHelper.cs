@@ -95,7 +95,7 @@ namespace SmartStore.WebApi.Services
 
             if (fileName.HasValue())
             {
-				if (ContentDispositionHeaderValue.TryParse($"inline; filename=\"{PathHelper.SanitizeFileName(fileName)}\"", out ContentDispositionHeaderValue contentDisposition))
+                if (ContentDispositionHeaderValue.TryParse($"inline; filename=\"{PathHelper.SanitizeFileName(fileName)}\"", out ContentDispositionHeaderValue contentDisposition))
                 {
                     response.Content.Headers.ContentDisposition = contentDisposition;
                 }

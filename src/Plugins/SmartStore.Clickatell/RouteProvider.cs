@@ -4,24 +4,18 @@ using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Clickatell
 {
-	public partial class RouteProvider : IRouteProvider
+    public partial class RouteProvider : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
             routes.MapRoute("SmartStore.Clickatell",
-				 "Plugins/SmartStore.Clickatell/{action}",
+                 "Plugins/SmartStore.Clickatell/{action}",
                  new { controller = "SmsClickatell", action = "Configure" },
                  new[] { "SmartStore.Clickatell.Controllers" }
             )
-			.DataTokens["area"] = ClickatellSmsProvider.SystemName;
+            .DataTokens["area"] = ClickatellSmsProvider.SystemName;
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

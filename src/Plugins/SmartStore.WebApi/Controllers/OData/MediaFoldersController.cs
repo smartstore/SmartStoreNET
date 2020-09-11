@@ -209,7 +209,7 @@ namespace SmartStore.WebApi.Controllers.OData
             this.ProcessEntity(() =>
             {
                 var path = parameters.GetValueSafe<string>("Path");
-                
+
                 var result = _mediaService.CreateFolder(path);
                 newFolder = Convert(result.Node, false)?.FirstOrDefault();
             });

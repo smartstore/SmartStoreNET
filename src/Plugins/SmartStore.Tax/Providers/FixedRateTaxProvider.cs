@@ -6,9 +6,9 @@ using SmartStore.Services.Tax;
 namespace SmartStore.Tax
 {
     [SystemName("Tax.FixedRate")]
-	[FriendlyName("Fixed Tax Rate")]
-	[DisplayOrder(5)]
-	public class FixedRateTaxProvider : ITaxProvider, IConfigurable
+    [FriendlyName("Fixed Tax Rate")]
+    [DisplayOrder(5)]
+    public class FixedRateTaxProvider : ITaxProvider, IConfigurable
     {
         private readonly ISettingService _settingService;
 
@@ -16,7 +16,7 @@ namespace SmartStore.Tax
         {
             _settingService = settingService;
         }
-        
+
         public CalculateTaxResult GetTaxRate(CalculateTaxRequest calculateTaxRequest)
         {
             var result = new CalculateTaxResult
@@ -32,12 +32,12 @@ namespace SmartStore.Tax
             var rate = _settingService.GetSettingByKey<decimal>($"Tax.TaxProvider.FixedRate.TaxCategoryId{taxCategoryId}");
             return rate;
         }
-        
+
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "TaxFixedRate";
-			routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
+            routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
         }
     }
 }

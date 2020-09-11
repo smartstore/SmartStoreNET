@@ -9,9 +9,9 @@ using SmartStore.Tax.Services;
 namespace SmartStore.Tax
 {
     [SystemName("Tax.CountryStateZip")]
-	[FriendlyName("Tax By Region")]
-	[DisplayOrder(10)]
-	public class ByRegionTaxProvider : ITaxProvider, IConfigurable
+    [FriendlyName("Tax By Region")]
+    [DisplayOrder(10)]
+    public class ByRegionTaxProvider : ITaxProvider, IConfigurable
     {
         private readonly ITaxRateService _taxRateService;
         private readonly ISettingService _settingService;
@@ -46,11 +46,11 @@ namespace SmartStore.Tax
                     return result;
                 }
             }
-            
+
             var taxRates = _taxRateService.GetAllTaxRates(
                 calculateTaxRequest.TaxCategoryId,
                 calculateTaxRequest.Address.Country?.Id ?? 0,
-                calculateTaxRequest.Address.StateProvince?.Id ?? 0, 
+                calculateTaxRequest.Address.StateProvince?.Id ?? 0,
                 calculateTaxRequest.Address.ZipPostalCode);
 
             if (taxRates.Any())
@@ -65,7 +65,7 @@ namespace SmartStore.Tax
         {
             actionName = "Configure";
             controllerName = "TaxByRegion";
-			routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
+            routeValues = new RouteValueDictionary { { "area", "SmartStore.Tax" } };
         }
     }
 }

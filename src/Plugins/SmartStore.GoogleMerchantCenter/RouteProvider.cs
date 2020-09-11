@@ -8,20 +8,14 @@ namespace SmartStore.GoogleMerchantCenter
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-			routes.MapRoute("SmartStore.GoogleMerchantCenter",
-				 "Plugins/SmartStore.GoogleMerchantCenter/{action}",
-				 new { controller = "FeedGoogleMerchantCenter", action = "Configure" },
-				 new[] { "SmartStore.GoogleMerchantCenter.Controllers" }
+            routes.MapRoute("SmartStore.GoogleMerchantCenter",
+                 "Plugins/SmartStore.GoogleMerchantCenter/{action}",
+                 new { controller = "FeedGoogleMerchantCenter", action = "Configure" },
+                 new[] { "SmartStore.GoogleMerchantCenter.Controllers" }
             )
-			.DataTokens["area"] = GoogleMerchantCenterFeedPlugin.SystemName;
+            .DataTokens["area"] = GoogleMerchantCenterFeedPlugin.SystemName;
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

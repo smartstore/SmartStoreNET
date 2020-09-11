@@ -225,12 +225,12 @@ namespace SmartStore.WebApi.Controllers.OData
                 if (ids?.Any() ?? false)
                 {
                     var mediaFiles = Service.GetFilesByIds(ids.ToArray(), _defaultLoadFlags);
-                    
+
                     files = mediaFiles.Select(x => Convert(x)).AsQueryable();
                 }
             });
 
-            return Ok(files ??  new List<FileItemInfo>().AsQueryable());
+            return Ok(files ?? new List<FileItemInfo>().AsQueryable());
         }
 
         /// GET /MediaFiles/Download(Id=123)
@@ -379,7 +379,7 @@ namespace SmartStore.WebApi.Controllers.OData
                 var duplicateFileHandling = parameters.GetValueSafe("DuplicateFileHandling", DuplicateFileHandling.ThrowError);
 
                 var result = Service.MoveFile(file.File, destinationFileName, duplicateFileHandling);
-                movedFile = Convert(result); 
+                movedFile = Convert(result);
             });
 
             return Ok(movedFile);

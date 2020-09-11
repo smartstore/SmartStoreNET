@@ -3,18 +3,18 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay
 {
-	public class DataPollingTask : ITask
+    public class DataPollingTask : ITask
     {
-		private readonly IAmazonPayService _apiService;
+        private readonly IAmazonPayService _apiService;
 
-		public DataPollingTask(IAmazonPayService apiService)
-		{
-			_apiService = apiService;
-		}
-		
-		public void Execute(TaskExecutionContext ctx)
+        public DataPollingTask(IAmazonPayService apiService)
         {
-			_apiService.StartDataPolling();
+            _apiService = apiService;
+        }
+
+        public void Execute(TaskExecutionContext ctx)
+        {
+            _apiService.StartDataPolling();
         }
     }
 }

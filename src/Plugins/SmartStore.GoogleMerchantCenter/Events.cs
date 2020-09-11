@@ -8,20 +8,20 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.GoogleMerchantCenter
 {
-	public class Events : IConsumer
-	{
-		private readonly IGoogleFeedService _googleService;
+    public class Events : IConsumer
+    {
+        private readonly IGoogleFeedService _googleService;
 
-		public Events(IGoogleFeedService googleService)
-		{
-			_googleService = googleService;
-		}
+        public Events(IGoogleFeedService googleService)
+        {
+            _googleService = googleService;
+        }
 
-		public void HandleEvent(TabStripCreated eventMessage)
-		{
-			if (eventMessage.TabStripName == "product-edit")
-			{
-				var productId = ((TabbableModel)eventMessage.Model).Id;
+        public void HandleEvent(TabStripCreated eventMessage)
+        {
+            if (eventMessage.TabStripName == "product-edit")
+            {
+                var productId = ((TabbableModel)eventMessage.Model).Id;
 
                 eventMessage.ItemFactory.Add().Text("GMC")
                     .Name("tab-gmc")
@@ -30,65 +30,65 @@ namespace SmartStore.GoogleMerchantCenter
                     .Route("SmartStore.GoogleMerchantCenter", new { action = "ProductEditTab", productId = productId })
                     .Ajax();
             }
-		}
+        }
 
-		public void HandleEvent(ModelBoundEvent eventMessage)
-		{
-			if (!eventMessage.BoundModel.CustomProperties.ContainsKey("GMC"))
-				return;
-			
-			var model = eventMessage.BoundModel.CustomProperties["GMC"] as GoogleProductModel;
-			if (model == null)
-				return;
+        public void HandleEvent(ModelBoundEvent eventMessage)
+        {
+            if (!eventMessage.BoundModel.CustomProperties.ContainsKey("GMC"))
+                return;
 
-			var utcNow = DateTime.UtcNow;
-			var entity = _googleService.GetGoogleProductRecord(model.ProductId);
-			var insert = (entity == null);
+            var model = eventMessage.BoundModel.CustomProperties["GMC"] as GoogleProductModel;
+            if (model == null)
+                return;
 
-			if (entity == null)
-			{
-				entity = new GoogleProductRecord
-				{
-					ProductId = model.ProductId,
-					CreatedOnUtc = utcNow
-				};
-			}
+            var utcNow = DateTime.UtcNow;
+            var entity = _googleService.GetGoogleProductRecord(model.ProductId);
+            var insert = (entity == null);
 
-			entity.AgeGroup = model.AgeGroup;
-			entity.Color = model.Color;
-			entity.Gender = model.Gender;
-			entity.Size = model.Size;
-			entity.Taxonomy = model.Taxonomy;
-			entity.Material = model.Material;
-			entity.Pattern = model.Pattern;
-			entity.Export = model.Export2;
-			entity.UpdatedOnUtc = utcNow;
-			entity.Multipack = model.Multipack2 ?? 0;
-			entity.IsBundle = model.IsBundle;
-			entity.IsAdult = model.IsAdult;
-			entity.EnergyEfficiencyClass = model.EnergyEfficiencyClass;
-			entity.CustomLabel0 = model.CustomLabel0;
-			entity.CustomLabel1 = model.CustomLabel1;
-			entity.CustomLabel2 = model.CustomLabel2;
-			entity.CustomLabel3 = model.CustomLabel3;
-			entity.CustomLabel4 = model.CustomLabel4;
+            if (entity == null)
+            {
+                entity = new GoogleProductRecord
+                {
+                    ProductId = model.ProductId,
+                    CreatedOnUtc = utcNow
+                };
+            }
 
-			entity.IsTouched = entity.IsTouched();
+            entity.AgeGroup = model.AgeGroup;
+            entity.Color = model.Color;
+            entity.Gender = model.Gender;
+            entity.Size = model.Size;
+            entity.Taxonomy = model.Taxonomy;
+            entity.Material = model.Material;
+            entity.Pattern = model.Pattern;
+            entity.Export = model.Export2;
+            entity.UpdatedOnUtc = utcNow;
+            entity.Multipack = model.Multipack2 ?? 0;
+            entity.IsBundle = model.IsBundle;
+            entity.IsAdult = model.IsAdult;
+            entity.EnergyEfficiencyClass = model.EnergyEfficiencyClass;
+            entity.CustomLabel0 = model.CustomLabel0;
+            entity.CustomLabel1 = model.CustomLabel1;
+            entity.CustomLabel2 = model.CustomLabel2;
+            entity.CustomLabel3 = model.CustomLabel3;
+            entity.CustomLabel4 = model.CustomLabel4;
 
-			if (!insert && !entity.IsTouched)
-			{
-				_googleService.DeleteGoogleProductRecord(entity);
-				return;
-			}
+            entity.IsTouched = entity.IsTouched();
 
-			if (insert)
-			{
-				_googleService.InsertGoogleProductRecord(entity);
-			}
-			else
-			{
-				_googleService.UpdateGoogleProductRecord(entity);
-			}
-		}
-	}
+            if (!insert && !entity.IsTouched)
+            {
+                _googleService.DeleteGoogleProductRecord(entity);
+                return;
+            }
+
+            if (insert)
+            {
+                _googleService.InsertGoogleProductRecord(entity);
+            }
+            else
+            {
+                _googleService.UpdateGoogleProductRecord(entity);
+            }
+        }
+    }
 }

@@ -4,7 +4,6 @@ using System.Web.OData;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
-using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 

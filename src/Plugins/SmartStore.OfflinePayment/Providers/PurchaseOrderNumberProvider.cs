@@ -35,13 +35,7 @@ namespace SmartStore.OfflinePayment
             return result;
         }
 
-        public override bool RequiresInteraction
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool RequiresInteraction => true;
 
         protected override string GetActionPrefix()
         {

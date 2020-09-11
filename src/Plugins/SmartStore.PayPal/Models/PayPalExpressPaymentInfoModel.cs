@@ -6,7 +6,7 @@ namespace SmartStore.PayPal.Models
     {
         public PayPalExpressPaymentInfoModel()
         {
-            
+
         }
 
         public bool CurrentPageIsBasket { get; set; }

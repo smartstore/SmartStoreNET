@@ -27,20 +27,20 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LanguageCulture")]
         [AllowHtml]
         public string LanguageCulture { get; set; }
-		public List<SelectListItem> AvailableCultures { get; set; }
+        public List<SelectListItem> AvailableCultures { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.UniqueSeoCode")]
+        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.UniqueSeoCode")]
         [AllowHtml]
         public string UniqueSeoCode { get; set; }
-		public List<SelectListItem> AvailableTwoLetterLanguageCodes { get; set; }
+        public List<SelectListItem> AvailableTwoLetterLanguageCodes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.FlagImageFileName")]
+        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.FlagImageFileName")]
         [AllowHtml]
         public string FlagImageFileName { get; set; }
         public IList<string> FlagFileNames { get; set; }
-		public List<SelectListItem> AvailableFlags { get; set; }
+        public List<SelectListItem> AvailableFlags { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Rtl")]
+        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Rtl")]
         public bool Rtl { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Published")]
@@ -62,11 +62,11 @@ namespace SmartStore.Admin.Models.Localization
         public int AvailableLanguageSetId { get; set; }
         public List<AvailableLanguageModel> AvailableDownloadLanguages { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
-		public DateTime? LastResourcesImportOn { get; set; }
-		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
-		public string LastResourcesImportOnString { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
+        public DateTime? LastResourcesImportOn { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
+        public string LastResourcesImportOnString { get; set; }
+    }
 
     public partial class LanguageValidator : AbstractValidator<LanguageModel>
     {

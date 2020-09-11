@@ -26,27 +26,27 @@ namespace SmartStore.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
         private readonly LocalizationSettings _localizationSettings;
-		private readonly IOrderProcessingService _orderProcessingService;
-		private readonly IPriceFormatter _priceFormatter;
-		private readonly OrderSettings _orderSettings;
-		private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly IOrderProcessingService _orderProcessingService;
+        private readonly IPriceFormatter _priceFormatter;
+        private readonly OrderSettings _orderSettings;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         public ReturnRequestController(
-			IOrderService orderService,
-            ICustomerService customerService, 
+            IOrderService orderService,
+            ICustomerService customerService,
             LocalizationSettings localizationSettings,
-			IOrderProcessingService orderProcessingService,
-			IPriceFormatter priceFormatter,
-			OrderSettings orderSettings,
-			AdminAreaSettings adminAreaSettings)
+            IOrderProcessingService orderProcessingService,
+            IPriceFormatter priceFormatter,
+            OrderSettings orderSettings,
+            AdminAreaSettings adminAreaSettings)
         {
             _orderService = orderService;
             _customerService = customerService;
             _localizationSettings = localizationSettings;
-			_orderProcessingService = orderProcessingService;
-			_priceFormatter = priceFormatter;
-			_orderSettings = orderSettings;
-			_adminAreaSettings = adminAreaSettings;
+            _orderProcessingService = orderProcessingService;
+            _priceFormatter = priceFormatter;
+            _orderSettings = orderSettings;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         public ActionResult Index()
@@ -57,8 +57,8 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.ReturnRequest.Read)]
         public ActionResult List()
         {
-			var model = new ReturnRequestListModel();
-			PrepareReturnRequestListModel(model);
+            var model = new ReturnRequestListModel();
+            PrepareReturnRequestListModel(model);
 
             return View(model);
         }
@@ -67,29 +67,29 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.ReturnRequest.Read)]
         public ActionResult List(GridCommand command, ReturnRequestListModel model)
         {
-			var gridModel = new GridModel<ReturnRequestModel>();
-			var data = new List<ReturnRequestModel>();
-			var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            var gridModel = new GridModel<ReturnRequestModel>();
+            var data = new List<ReturnRequestModel>();
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
 
-			var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
-				command.Page - 1, command.PageSize, model.SearchId ?? 0);
+            var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
+                command.Page - 1, command.PageSize, model.SearchId ?? 0);
 
-			foreach (var rr in returnRequests)
-			{
-				var m = new ReturnRequestModel();
-				if (PrepareReturnRequestModel(m, rr, allStores, false, true))
-				{
-					data.Add(m);
-				}
-			}
+            foreach (var rr in returnRequests)
+            {
+                var m = new ReturnRequestModel();
+                if (PrepareReturnRequestModel(m, rr, allStores, false, true))
+                {
+                    data.Add(m);
+                }
+            }
 
-			gridModel.Data = data;
-			gridModel.Total = returnRequests.TotalCount;
+            gridModel.Data = data;
+            gridModel.Total = returnRequests.TotalCount;
 
-			return new JsonResult
-			{
-				Data = gridModel
-			};
+            return new JsonResult
+            {
+                Data = gridModel
+            };
         }
 
         [Permission(Permissions.Order.ReturnRequest.Read)]
@@ -100,10 +100,10 @@ namespace SmartStore.Admin.Controllers
             {
                 return RedirectToAction("List");
             }
-            
+
             var model = new ReturnRequestModel();
-			var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
-			PrepareReturnRequestModel(model, returnRequest, allStores);
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            PrepareReturnRequestModel(model, returnRequest, allStores);
 
             return View(model);
         }
@@ -121,19 +121,19 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				var utcNow = DateTime.UtcNow;
+                var utcNow = DateTime.UtcNow;
 
                 if (returnRequest.RequestedAction != model.RequestedAction)
                 {
                     returnRequest.RequestedActionUpdatedOnUtc = utcNow;
                 }
 
-				returnRequest.Quantity = model.Quantity;
+                returnRequest.Quantity = model.Quantity;
                 returnRequest.ReasonForReturn = model.ReasonForReturn;
                 returnRequest.RequestedAction = model.RequestedAction;
                 returnRequest.CustomerComments = model.CustomerComments;
                 returnRequest.StaffNotes = model.StaffNotes;
-				returnRequest.AdminComment = model.AdminComment;
+                returnRequest.AdminComment = model.AdminComment;
                 returnRequest.ReturnRequestStatusId = model.ReturnRequestStatusId;
                 returnRequest.UpdatedOnUtc = utcNow;
 
@@ -148,14 +148,14 @@ namespace SmartStore.Admin.Controllers
 
                 _customerService.UpdateCustomer(returnRequest.Customer);
 
-				Services.CustomerActivity.InsertActivity("EditReturnRequest", T("ActivityLog.EditReturnRequest"), returnRequest.Id);
+                Services.CustomerActivity.InsertActivity("EditReturnRequest", T("ActivityLog.EditReturnRequest"), returnRequest.Id);
 
                 NotifySuccess(T("Admin.ReturnRequests.Updated"));
                 return continueEditing ? RedirectToAction("Edit", returnRequest.Id) : RedirectToAction("List");
             }
 
-			// If we got this far, something failed, redisplay form.
-			var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+            // If we got this far, something failed, redisplay form.
+            var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
             PrepareReturnRequestModel(model, returnRequest, allStores, true);
 
             return View(model);
@@ -201,33 +201,33 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-		[HttpPost]
+        [HttpPost]
         [Permission(Permissions.Order.ReturnRequest.Accept)]
         public ActionResult Accept(AutoUpdateOrderItemModel model)
-		{
-			var returnRequest = _orderService.GetReturnRequestById(model.Id);
-			var oi = _orderService.GetOrderItemById(returnRequest.OrderItemId);
-			var cancelQuantity = returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity;
+        {
+            var returnRequest = _orderService.GetReturnRequestById(model.Id);
+            var oi = _orderService.GetOrderItemById(returnRequest.OrderItemId);
+            var cancelQuantity = returnRequest.Quantity > oi.Quantity ? oi.Quantity : returnRequest.Quantity;
 
-			var context = new AutoUpdateOrderItemContext
-			{
-				OrderItem = oi,
-				QuantityOld = oi.Quantity,
-				QuantityNew = Math.Max(oi.Quantity - cancelQuantity, 0),
-				AdjustInventory = model.AdjustInventory,
-				UpdateRewardPoints = model.UpdateRewardPoints,
-				UpdateTotals = model.UpdateTotals
-			};
+            var context = new AutoUpdateOrderItemContext
+            {
+                OrderItem = oi,
+                QuantityOld = oi.Quantity,
+                QuantityNew = Math.Max(oi.Quantity - cancelQuantity, 0),
+                AdjustInventory = model.AdjustInventory,
+                UpdateRewardPoints = model.UpdateRewardPoints,
+                UpdateTotals = model.UpdateTotals
+            };
 
-			returnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
-			_customerService.UpdateCustomer(returnRequest.Customer);
+            returnRequest.ReturnRequestStatus = ReturnRequestStatus.ReturnAuthorized;
+            _customerService.UpdateCustomer(returnRequest.Customer);
 
-			_orderProcessingService.AutoUpdateOrderDetails(context);
+            _orderProcessingService.AutoUpdateOrderDetails(context);
 
-			TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(Services.Localization);
+            TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(Services.Localization);
 
-			return RedirectToAction("Edit", new { id = returnRequest.Id });
-		}
+            return RedirectToAction("Edit", new { id = returnRequest.Id });
+        }
 
         private void PrepareReturnRequestListModel(ReturnRequestListModel model)
         {

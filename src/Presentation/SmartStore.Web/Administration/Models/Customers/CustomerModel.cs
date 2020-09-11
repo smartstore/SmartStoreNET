@@ -40,14 +40,14 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Password")]
         [AllowHtml]
-		[DataType(DataType.Password)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
-		public string Title { get; set; }
-		public bool TitleEnabled { get; set; }
+        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
+        public string Title { get; set; }
+        public bool TitleEnabled { get; set; }
 
-		public bool GenderEnabled { get; set; }
+        public bool GenderEnabled { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Gender")]
         public string Gender { get; set; }
 
@@ -59,7 +59,7 @@ namespace SmartStore.Admin.Models.Customers
         public string LastName { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.FullName")]
         public string FullName { get; set; }
-        
+
         public bool DateOfBirthEnabled { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.DateOfBirth")]
         public DateTime? DateOfBirth { get; set; }
@@ -114,11 +114,11 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Fax")]
         [AllowHtml]
         public string Fax { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.AdminComment")]
         [AllowHtml]
         public string AdminComment { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.IsTaxExempt")]
         public bool IsTaxExempt { get; set; }
 
@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Affiliate")]
         public int AffiliateId { get; set; }
-		public string AffiliateFullName { get; set; }
+        public string AffiliateFullName { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.TimeZoneId")]
         [AllowHtml]
@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public string CustomerRoleNames { get; set; }
-        
+
         [UIHint("CustomerRoles")]
         [AdditionalMetadata("multiple", true)]
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles")]
@@ -174,14 +174,14 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.RewardPoints.Fields.AddRewardPointsMessage")]
         [AllowHtml]
         public string AddRewardPointsMessage { get; set; }
-        
+
         public SendEmailModel SendEmail { get; set; }
         public SendPmModel SendPm { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.AssociatedExternalAuth")]
         public IList<AssociatedExternalAuthModel> AssociatedExternalAuthRecords { get; set; }
 
-		public bool Deleted { get; set; }
+        public bool Deleted { get; set; }
 
         public TreeNode<IPermissionNode> PermissionTree { get; set; }
         public List<AddressModel> Addresses { get; set; }
@@ -217,7 +217,7 @@ namespace SmartStore.Admin.Models.Customers
         }
 
         public class SendEmailModel : ModelBase
-        {   
+        {
             [AllowHtml]
             [Required]
             [SmartResourceDisplayName("Admin.Customers.Customers.SendEmail.Subject")]
@@ -257,8 +257,8 @@ namespace SmartStore.Admin.Models.Customers
             [SmartResourceDisplayName("Admin.Customers.Customers.Orders.OrderTotal")]
             public string OrderTotal { get; set; }
 
-			[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
-			public string StoreName { get; set; }
+            [SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
+            public string StoreName { get; set; }
 
             [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Security;
 using SmartStore.Data.Utilities;
@@ -11,7 +12,6 @@ using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
-using Newtonsoft.Json.Linq;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -31,7 +31,7 @@ namespace SmartStore.Admin.Controllers
         {
             _mediaService = mediaService;
             _mediaTypeResolver = mediaTypeResolver;
-			_mediaSettings = mediaSettings;
+            _mediaSettings = mediaSettings;
             _exceptionFactory = exceptionFactory;
         }
 
@@ -69,7 +69,7 @@ namespace SmartStore.Admin.Controllers
                             throw _exceptionFactory.DeniedMediaType(fileName, extension);
                         }
                     }
-                    
+
                     var mediaFile = await _mediaService.SaveFileAsync(filePath, uploadedFile.InputStream, isTransient, duplicateFileHandling);
 
                     dynamic o = JObject.FromObject(mediaFile);
@@ -91,7 +91,7 @@ namespace SmartStore.Admin.Controllers
                     o.uniquePath = newPath;
                     o.createdOn = dupe.CreatedOn.ToString();
                     o.lastUpdated = dupe.LastUpdated.ToString();
-                    
+
                     result.Add(o);
                 }
                 catch (Exception)
@@ -116,9 +116,9 @@ namespace SmartStore.Admin.Controllers
         }
 
         public ActionResult MoveFsMedia()
-		{
-			var count = DataMigrator.MoveFsMedia(Services.DbContext);
-			return Content("Moved and reorganized {0} media files.".FormatInvariant(count));
-		}
+        {
+            var count = DataMigrator.MoveFsMedia(Services.DbContext);
+            return Content("Moved and reorganized {0} media files.".FormatInvariant(count));
+        }
     }
 }

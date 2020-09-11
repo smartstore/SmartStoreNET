@@ -28,10 +28,10 @@ namespace SmartStore.Admin.Controllers
 
         public ShoppingCartController(
             ICustomerService customerService,
-            IDateTimeHelper dateTimeHelper, 
+            IDateTimeHelper dateTimeHelper,
             IPriceFormatter priceFormatter,
             ITaxService taxService,
-			IPriceCalculationService priceCalculationService)
+            IPriceCalculationService priceCalculationService)
         {
             _customerService = customerService;
             _dateTimeHelper = dateTimeHelper;
@@ -39,7 +39,7 @@ namespace SmartStore.Admin.Controllers
             _taxService = taxService;
             _priceCalculationService = priceCalculationService;
         }
-        
+
         [Permission(Permissions.Cart.Read)]
         public ActionResult CurrentCarts()
         {
@@ -50,30 +50,30 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cart.Read)]
         public ActionResult CurrentCarts(GridCommand command)
         {
-			var gridModel = new GridModel<ShoppingCartModel>();
+            var gridModel = new GridModel<ShoppingCartModel>();
 
-			var query = new CustomerSearchQuery
-			{
-				OnlyWithCart = true,
-				CartType = ShoppingCartType.ShoppingCart,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize
-			};
+            var query = new CustomerSearchQuery
+            {
+                OnlyWithCart = true,
+                CartType = ShoppingCartType.ShoppingCart,
+                PageIndex = command.Page - 1,
+                PageSize = command.PageSize
+            };
 
             var guestStr = T("Admin.Customers.Guest").Text;
             var customers = _customerService.SearchCustomers(query);
-				
-			gridModel.Data = customers.Select(x =>
-			{
-				return new ShoppingCartModel
-				{
-					CustomerId = x.Id,
-					CustomerEmail = x.IsGuest() ? guestStr : x.Email,
-					TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
-				};
-			});
-				
-			gridModel.Total = customers.TotalCount;
+
+            gridModel.Data = customers.Select(x =>
+            {
+                return new ShoppingCartModel
+                {
+                    CustomerId = x.Id,
+                    CustomerEmail = x.IsGuest() ? guestStr : x.Email,
+                    TotalItems = x.CountProductsInCart(ShoppingCartType.ShoppingCart)
+                };
+            });
+
+            gridModel.Total = customers.TotalCount;
 
             return new JsonResult
             {
@@ -110,30 +110,30 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cart.Read)]
         public ActionResult CurrentWishlists(GridCommand command)
         {
-			var gridModel = new GridModel<ShoppingCartModel>();
+            var gridModel = new GridModel<ShoppingCartModel>();
 
-			var query = new CustomerSearchQuery
-			{
-				OnlyWithCart = true,
-				CartType = ShoppingCartType.Wishlist,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize
-			};
+            var query = new CustomerSearchQuery
+            {
+                OnlyWithCart = true,
+                CartType = ShoppingCartType.Wishlist,
+                PageIndex = command.Page - 1,
+                PageSize = command.PageSize
+            };
 
             var guestStr = T("Admin.Customers.Guest").Text;
             var customers = _customerService.SearchCustomers(query);
 
-			gridModel.Data = customers.Select(x =>
-			{
-				return new ShoppingCartModel
-				{
-					CustomerId = x.Id,
-					CustomerEmail = x.IsGuest() ? guestStr : x.Email,
-					TotalItems = x.CountProductsInCart(ShoppingCartType.Wishlist)
-				};
-			});
+            gridModel.Data = customers.Select(x =>
+            {
+                return new ShoppingCartModel
+                {
+                    CustomerId = x.Id,
+                    CustomerEmail = x.IsGuest() ? guestStr : x.Email,
+                    TotalItems = x.CountProductsInCart(ShoppingCartType.Wishlist)
+                };
+            });
 
-			gridModel.Total = customers.TotalCount;
+            gridModel.Total = customers.TotalCount;
 
             return new JsonResult
             {

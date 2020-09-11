@@ -251,7 +251,7 @@ namespace SmartStore.Admin.Controllers
 
             NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
-        }               
+        }
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("notifyRecipient")]

@@ -1,11 +1,11 @@
-﻿using SmartStore.Core.Domain.Forums;
+﻿using System.Collections.Generic;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Seo;
-using System.Collections.Generic;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class ForumSettingsModel : ISeoModel
+    public class ForumSettingsModel : ISeoModel
     {
         public ForumSettingsModel()
         {

@@ -11,15 +11,15 @@ namespace SmartStore.Admin.Models.Orders
 {
     [Validator(typeof(CheckoutAttributeValidator))]
     public class CheckoutAttributeModel : EntityModelBase, ILocalizedModel<CheckoutAttributeLocalizedModel>
-	{
+    {
         public CheckoutAttributeModel()
         {
             Locales = new List<CheckoutAttributeLocalizedModel>();
             AvailableTaxCategories = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Common.IsActive")]
-		public bool IsActive { get; set; }
+        [SmartResourceDisplayName("Common.IsActive")]
+        public bool IsActive { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Fields.Name")]
         [AllowHtml]
@@ -50,7 +50,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
-        
+
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }
 
         [UIHint("Stores")]
@@ -59,10 +59,10 @@ namespace SmartStore.Admin.Models.Orders
         public int[] SelectedStoreIds { get; set; }
 
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-	}
+        public bool LimitedToStores { get; set; }
+    }
 
-	public class CheckoutAttributeLocalizedModel : ILocalizedModelLocal
+    public class CheckoutAttributeLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 

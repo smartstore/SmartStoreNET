@@ -108,7 +108,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List(GridCommand command, NewsItemListModel model)
         {
-            var news = _newsService.GetAllNews(model.SearchLanguageId, model.SearchStoreId, command.Page - 1, command.PageSize, !model.SearchIsPublished ?? true, 
+            var news = _newsService.GetAllNews(model.SearchLanguageId, model.SearchStoreId, command.Page - 1, command.PageSize, !model.SearchIsPublished ?? true,
                 title: model.SearchTitle, intro: model.SearchShort, full: model.SearchFull);
 
             var gridModel = new GridModel<NewsItemModel>

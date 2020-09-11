@@ -15,12 +15,12 @@ namespace SmartStore.Admin.Models.Messages
     [Validator(typeof(QueuedEmailValidator))]
     public class QueuedEmailModel : EntityModelBase
     {
-		public QueuedEmailModel()
-		{
-			Attachments = new List<QueuedEmailAttachmentModel>();
-		}
-		
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Id")]
+        public QueuedEmailModel()
+        {
+            Attachments = new List<QueuedEmailAttachmentModel>();
+        }
+
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Id")]
         public override int Id { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Priority")]
@@ -57,26 +57,26 @@ namespace SmartStore.Admin.Models.Messages
         public int SentTries { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SentOn")]
-		//[DisplayFormat(DataFormatString = "{0}", NullDisplayText = "n/a")]
+        //[DisplayFormat(DataFormatString = "{0}", NullDisplayText = "n/a")]
         public DateTime? SentOn { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.EmailAccountName")]
         [AllowHtml]
         public string EmailAccountName { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SendManually")]
-		public bool SendManually { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SendManually")]
+        public bool SendManually { get; set; }
 
-		public int AttachmentsCount { get; set; }
+        public int AttachmentsCount { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Attachments")]
-		public ICollection<QueuedEmailAttachmentModel> Attachments { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.Attachments")]
+        public ICollection<QueuedEmailAttachmentModel> Attachments { get; set; }
 
-		public class QueuedEmailAttachmentModel : EntityModelBase
-		{
-			public string Name { get; set; }
-			public string MimeType { get; set; }
-		}
+        public class QueuedEmailAttachmentModel : EntityModelBase
+        {
+            public string Name { get; set; }
+            public string MimeType { get; set; }
+        }
     }
 
     public partial class QueuedEmailValidator : AbstractValidator<QueuedEmailModel>

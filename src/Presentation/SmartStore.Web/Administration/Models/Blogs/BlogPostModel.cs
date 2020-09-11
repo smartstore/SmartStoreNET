@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
@@ -14,7 +13,7 @@ namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
     public class BlogPostModel : TabbableModel
-	{
+    {
         [SmartResourceDisplayName("Admin.Common.IsPublished")]
         public bool IsPublished { get; set; }
 
@@ -54,7 +53,7 @@ namespace SmartStore.Admin.Models.Blogs
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg")]
         public string SectionBg { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.AllowComments")]
         public bool AllowComments { get; set; }
 

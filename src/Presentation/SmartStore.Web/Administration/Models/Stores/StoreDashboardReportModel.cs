@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SmartStore.Web.Framework.Modelling;
+﻿using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Store
 {

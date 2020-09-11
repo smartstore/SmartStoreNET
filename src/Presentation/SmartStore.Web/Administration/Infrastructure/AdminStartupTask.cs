@@ -10,16 +10,13 @@ namespace SmartStore.Admin.Infrastructure
     {
         public void Start()
         {
-			TypeConverterFactory.RegisterConverter<CsvConfiguration>(new CsvConfigurationConverter());
-			TypeConverterFactory.RegisterConverter<ColumnMapConverter>(new ColumnMapConverter());
+            TypeConverterFactory.RegisterConverter<CsvConfiguration>(new CsvConfigurationConverter());
+            TypeConverterFactory.RegisterConverter<ColumnMapConverter>(new ColumnMapConverter());
 
-			WebAssetDefaultSettings.ScriptFilesPath = "~/Administration/Content/telerik/js";
-			WebAssetDefaultSettings.StyleSheetFilesPath = "~/Administration/Content/telerik/css";
-		}
-
-        public int Order
-        {
-            get { return 100; }
+            WebAssetDefaultSettings.ScriptFilesPath = "~/Administration/Content/telerik/js";
+            WebAssetDefaultSettings.StyleSheetFilesPath = "~/Administration/Content/telerik/css";
         }
+
+        public int Order => 100;
     }
 }

@@ -13,15 +13,15 @@ using Telerik.Web.Mvc;
 namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
-    public class QuantityUnitController :  AdminControllerBase
+    public class QuantityUnitController : AdminControllerBase
     {
         private readonly IQuantityUnitService _quantityUnitService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 
         public QuantityUnitController(
-			IQuantityUnitService quantityUnitService,
-            ILocalizedEntityService localizedEntityService, 
+            IQuantityUnitService quantityUnitService,
+            ILocalizedEntityService localizedEntityService,
             ILanguageService languageService)
         {
             _quantityUnitService = quantityUnitService;
@@ -85,7 +85,7 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new QuantityUnitModel();
             AddLocales(_languageService, model.Locales);
-            
+
             return View(model);
         }
 

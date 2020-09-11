@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using SmartStore.Core.Domain.Dashboard;
-using SmartStore.Core.Domain.Orders;
-
 namespace SmartStore.Admin.Models.Dashboard
 {
     public class DashboardChartReportModel

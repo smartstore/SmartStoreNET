@@ -30,7 +30,6 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -497,7 +496,7 @@ namespace SmartStore.Admin.Controllers
                 HasSpentAtLeastAmount = filter.HasSpentAtLeastAmount,
                 HasPlacedAtLeastOrders = filter.HasPlacedAtLeastOrders,
                 ProductType = filter.ProductType,
-				Visibility = filter.Visibility,
+                Visibility = filter.Visibility,
                 IdMinimum = filter.IdMinimum,
                 IdMaximum = filter.IdMaximum,
                 OrderStatusIds = filter.OrderStatusIds,
@@ -581,9 +580,9 @@ namespace SmartStore.Admin.Controllers
                         model.Filter.SelectedCategories = new List<SelectListItem>();
                     }
 
-					model.Filter.AvailableManufacturers = allManufacturers
-						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-						.ToList();
+                    model.Filter.AvailableManufacturers = allManufacturers
+                        .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                        .ToList();
 
                     model.Filter.AvailableManufacturers = allManufacturers
                         .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
@@ -892,42 +891,42 @@ namespace SmartStore.Admin.Controllers
                 profile.Projection = XmlHelper.Serialize(projection);
             }
 
-			// Filtering.
-			if (model.Filter != null)
-			{
-				var filter = new ExportFilter
-				{
-					StoreId = model.Filter.StoreId ?? 0,
-					CreatedFrom = model.Filter.CreatedFrom,
-					CreatedTo = model.Filter.CreatedTo,
-					PriceMinimum = model.Filter.PriceMinimum,
-					PriceMaximum = model.Filter.PriceMaximum,
-					AvailabilityMinimum = model.Filter.AvailabilityMinimum,
-					AvailabilityMaximum = model.Filter.AvailabilityMaximum,
-					IsPublished = model.Filter.IsPublished,
-					CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0],
-					WithoutCategories = model.Filter.WithoutCategories,
-					ManufacturerId = model.Filter.ManufacturerId,
-					WithoutManufacturers = model.Filter.WithoutManufacturers,
-					ProductTagId = model.Filter.ProductTagId,
-					FeaturedProducts = model.Filter.FeaturedProducts,
-					IsActiveCustomer = model.Filter.IsActiveCustomer,
-					IsTaxExempt = model.Filter.IsTaxExempt,
-					BillingCountryIds = model.Filter.BillingCountryIds,
-					ShippingCountryIds = model.Filter.ShippingCountryIds,
-					LastActivityFrom = model.Filter.LastActivityFrom,
-					LastActivityTo = model.Filter.LastActivityTo,
-					HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
-					HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
-					ProductType = model.Filter.ProductType,
+            // Filtering.
+            if (model.Filter != null)
+            {
+                var filter = new ExportFilter
+                {
+                    StoreId = model.Filter.StoreId ?? 0,
+                    CreatedFrom = model.Filter.CreatedFrom,
+                    CreatedTo = model.Filter.CreatedTo,
+                    PriceMinimum = model.Filter.PriceMinimum,
+                    PriceMaximum = model.Filter.PriceMaximum,
+                    AvailabilityMinimum = model.Filter.AvailabilityMinimum,
+                    AvailabilityMaximum = model.Filter.AvailabilityMaximum,
+                    IsPublished = model.Filter.IsPublished,
+                    CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0],
+                    WithoutCategories = model.Filter.WithoutCategories,
+                    ManufacturerId = model.Filter.ManufacturerId,
+                    WithoutManufacturers = model.Filter.WithoutManufacturers,
+                    ProductTagId = model.Filter.ProductTagId,
+                    FeaturedProducts = model.Filter.FeaturedProducts,
+                    IsActiveCustomer = model.Filter.IsActiveCustomer,
+                    IsTaxExempt = model.Filter.IsTaxExempt,
+                    BillingCountryIds = model.Filter.BillingCountryIds,
+                    ShippingCountryIds = model.Filter.ShippingCountryIds,
+                    LastActivityFrom = model.Filter.LastActivityFrom,
+                    LastActivityTo = model.Filter.LastActivityTo,
+                    HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
+                    HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
+                    ProductType = model.Filter.ProductType,
                     Visibility = model.Filter.Visibility,
-					IdMinimum = model.Filter.IdMinimum,
-					IdMaximum = model.Filter.IdMaximum,
-					OrderStatusIds = model.Filter.OrderStatusIds,
-					PaymentStatusIds = model.Filter.PaymentStatusIds,
-					ShippingStatusIds = model.Filter.ShippingStatusIds,
-					CustomerRoleIds = model.Filter.CustomerRoleIds,
-					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+                    IdMinimum = model.Filter.IdMinimum,
+                    IdMaximum = model.Filter.IdMaximum,
+                    OrderStatusIds = model.Filter.OrderStatusIds,
+                    PaymentStatusIds = model.Filter.PaymentStatusIds,
+                    ShippingStatusIds = model.Filter.ShippingStatusIds,
+                    CustomerRoleIds = model.Filter.CustomerRoleIds,
+                    IsActiveSubscriber = model.Filter.IsActiveSubscriber,
                     WorkingLanguageId = model.Filter.WorkingLanguageId,
                     ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
                 };

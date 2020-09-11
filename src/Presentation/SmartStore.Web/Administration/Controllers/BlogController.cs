@@ -116,8 +116,8 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult List(GridCommand command, BlogListModel model)
         {
-            var blogPosts = _blogService.GetAllBlogPosts(model.SearchStoreId, model.SearchLanguageId, model.SearchStartDate, model.SearchEndDate, command.Page - 1, command.PageSize, 
-                !model.SearchIsPublished ?? true, 
+            var blogPosts = _blogService.GetAllBlogPosts(model.SearchStoreId, model.SearchLanguageId, model.SearchStartDate, model.SearchEndDate, command.Page - 1, command.PageSize,
+                !model.SearchIsPublished ?? true,
                 title: model.SearchTitle, intro: model.SearchIntro, body: model.SearchBody, tag: model.SearchTags);
 
             var gridModel = new GridModel<BlogPostModel>
@@ -181,7 +181,7 @@ namespace SmartStore.Admin.Controllers
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
-                
+
                 _blogService.InsertBlogPost(blogPost);
 
                 // Search engine name.
@@ -201,7 +201,7 @@ namespace SmartStore.Admin.Controllers
             // Tags
             var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            
+
             PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -222,7 +222,7 @@ namespace SmartStore.Admin.Controllers
             model.EndDate = blogPost.EndDateUtc;
 
             // Tags
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select( x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
             model.Tags = blogPost.Tags.SplitSafe(",");
 

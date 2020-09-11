@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
             Guard.NotNull(model, nameof(model));
 
             model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
-            
+
             model.AllCurrencies = _currencyService.GetAllCurrencies(true)
                 .Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name), Value = x.Id.ToString() })
                 .ToList();

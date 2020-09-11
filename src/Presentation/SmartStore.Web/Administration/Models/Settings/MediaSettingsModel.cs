@@ -15,10 +15,10 @@ namespace SmartStore.Admin.Models.Settings
             AvailablePictureZoomTypes = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls")]
-		public bool AutoGenerateAbsoluteUrls { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls")]
+        public bool AutoGenerateAbsoluteUrls { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
         public int AvatarPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSize")]
@@ -30,16 +30,16 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage")]
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.MessageProductThumbPictureSize")]
-		public int MessageProductThumbPictureSize { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MessageProductThumbPictureSize")]
+        public int MessageProductThumbPictureSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AssociatedProductPictureSize")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AssociatedProductPictureSize")]
         public int AssociatedProductPictureSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.BundledProductPictureSize")]
-		public int BundledProductPictureSize { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.BundledProductPictureSize")]
+        public int BundledProductPictureSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
         public int CategoryThumbPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ManufacturerThumbPictureSize")]
@@ -48,12 +48,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbPictureSize")]
         public int CartThumbPictureSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize")]
-		public int CartThumbBundleItemPictureSize { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize")]
+        public int CartThumbBundleItemPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MiniCartThumbPictureSize")]
         public int MiniCartThumbPictureSize { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaximumImageSize")]
         public int MaximumImageSize { get; set; }
 
@@ -95,9 +95,9 @@ namespace SmartStore.Admin.Models.Settings
         #endregion
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.StorageProvider")]
-		public string StorageProvider { get; set; }
-		public List<SelectListItem> AvailableStorageProvider { get; set; }
-	}
+        public string StorageProvider { get; set; }
+        public List<SelectListItem> AvailableStorageProvider { get; set; }
+    }
 
     public partial class MediaSettingsValidator : AbstractValidator<MediaSettingsModel>
     {

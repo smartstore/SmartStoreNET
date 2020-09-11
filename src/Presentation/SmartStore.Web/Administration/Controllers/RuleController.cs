@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Customers;
@@ -333,7 +332,7 @@ namespace SmartStore.Admin.Controllers
                     }
             }
 
-            return new JsonResult { Data = null };            
+            return new JsonResult { Data = null };
         }
 
         [HttpPost]
@@ -342,7 +341,7 @@ namespace SmartStore.Admin.Controllers
         {
             var provider = _ruleProvider(scope);
             var descriptor = provider.RuleDescriptors.FindDescriptor(ruleType);
-            
+
             RuleOperator op;
             if (descriptor.RuleType == RuleType.NullableInt || descriptor.RuleType == RuleType.NullableFloat)
             {

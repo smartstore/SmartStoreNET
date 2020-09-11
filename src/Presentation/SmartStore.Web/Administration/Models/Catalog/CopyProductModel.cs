@@ -25,11 +25,11 @@ namespace SmartStore.Admin.Models.Catalog
         public bool Published { get; set; }
     }
 
-	public partial class CopyProductValidator : AbstractValidator<CopyProductModel>
-	{
-		public CopyProductValidator()
-		{
-			RuleFor(x => x.NumberOfCopies).NotEmpty().GreaterThan(0);
-		}
-	}
+    public partial class CopyProductValidator : AbstractValidator<CopyProductModel>
+    {
+        public CopyProductValidator()
+        {
+            RuleFor(x => x.NumberOfCopies).NotEmpty().GreaterThan(0);
+        }
+    }
 }

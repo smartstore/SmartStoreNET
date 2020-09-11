@@ -548,7 +548,7 @@ namespace SmartStore.Admin.Controllers
 
             return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
         }
-        
+
         [HttpPost]
         [Permission(Permissions.Configuration.Import.Update)]
         public ActionResult ResetColumnMappings(int id)
@@ -594,7 +594,7 @@ namespace SmartStore.Admin.Controllers
 
             return RedirectToAction("List");
         }
-        
+
         [HttpPost, ActionName("Delete")]
         [Permission(Permissions.Configuration.Import.Delete)]
         public ActionResult DeleteConfirmed(int id)
@@ -618,7 +618,7 @@ namespace SmartStore.Admin.Controllers
 
             return RedirectToAction("Edit", new { id = profile.Id });
         }
-        
+
         [HttpPost]
         [Permission(Permissions.Configuration.Import.Delete)]
         public ActionResult DeleteImportFile(int id, string name)

@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Controllers
         {
             var store = _services.StoreContext.CurrentStore;
             var model = currency.ToModel();
-            
+
             model.IsPrimaryStoreCurrency = store.PrimaryStoreCurrencyId == model.Id;
             model.IsPrimaryExchangeRateCurrency = store.PrimaryExchangeRateCurrencyId == model.Id;
 

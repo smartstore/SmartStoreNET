@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class GiftCardModel: EntityModelBase
+    public class GiftCardModel : EntityModelBase
     {
         [SmartResourceDisplayName("Admin.GiftCards.Fields.GiftCardType")]
         public int GiftCardTypeId { get; set; }

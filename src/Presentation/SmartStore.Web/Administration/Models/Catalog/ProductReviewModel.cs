@@ -15,12 +15,12 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Product")]
         public string ProductName { get; set; }
-		public string ProductTypeName { get; set; }
-		public string ProductTypeLabelHint { get; set; }
+        public string ProductTypeName { get; set; }
+        public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.Customer")]
         public int CustomerId { get; set; }
-		public string CustomerName { get; set; }
+        public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.IPAddress")]
         public string IpAddress { get; set; }
@@ -43,12 +43,12 @@ namespace SmartStore.Admin.Models.Catalog
         public DateTime CreatedOn { get; set; }
     }
 
-	public partial class ProductReviewValidator : AbstractValidator<ProductReviewModel>
-	{
-		public ProductReviewValidator()
-		{
-			RuleFor(x => x.Title).NotEmpty();
-			RuleFor(x => x.ReviewText).NotEmpty();
-		}
-	}
+    public partial class ProductReviewValidator : AbstractValidator<ProductReviewModel>
+    {
+        public ProductReviewValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.ReviewText).NotEmpty();
+        }
+    }
 }

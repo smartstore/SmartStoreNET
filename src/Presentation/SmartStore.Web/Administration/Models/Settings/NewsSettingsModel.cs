@@ -1,10 +1,10 @@
-﻿using SmartStore.Web.Framework;
+﻿using System.Collections.Generic;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Seo;
-using System.Collections.Generic;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class NewsSettingsModel : ISeoModel
+    public class NewsSettingsModel : ISeoModel
     {
         public NewsSettingsModel()
         {
@@ -12,7 +12,7 @@ namespace SmartStore.Admin.Models.Settings
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.Enabled")]
-		public bool Enabled { get; set; }
+        public bool Enabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.AllowNotRegisteredUsersToLeaveComments")]
         public bool AllowNotRegisteredUsersToLeaveComments { get; set; }
@@ -29,8 +29,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.NewsArchivePageSize")]
         public int NewsArchivePageSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.News.MaxAgeInDays")]
-		public int MaxAgeInDays { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.News.MaxAgeInDays")]
+        public int MaxAgeInDays { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.ShowHeaderRSSUrl")]
         public bool ShowHeaderRssUrl { get; set; }

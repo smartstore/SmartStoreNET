@@ -125,27 +125,27 @@ namespace SmartStore.Admin
             return entity;
         }
 
-		public static ProductAttributeOptionModel ToModel(this ProductAttributeOption entity)
-		{
+        public static ProductAttributeOptionModel ToModel(this ProductAttributeOption entity)
+        {
             return MapperFactory.Map<ProductAttributeOption, ProductAttributeOptionModel>(entity);
-		}
+        }
 
-		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model)
-		{
+        public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model)
+        {
             return MapperFactory.Map<ProductAttributeOptionModel, ProductAttributeOption>(model);
-		}
+        }
 
-		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model, ProductAttributeOption entity)
-		{
+        public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model, ProductAttributeOption entity)
+        {
             MapperFactory.Map(model, entity);
             return entity;
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region Specification attributes
+        #region Specification attributes
 
-		public static SpecificationAttributeModel ToModel(this SpecificationAttribute entity)
+        public static SpecificationAttributeModel ToModel(this SpecificationAttribute entity)
         {
             return MapperFactory.Map<SpecificationAttribute, SpecificationAttributeModel>(entity);
         }
@@ -212,32 +212,32 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-        
+
         #endregion
 
-		#region Product bundle items
+        #region Product bundle items
 
-		public static ProductBundleItemModel ToModel(this ProductBundleItem entity)
-		{
+        public static ProductBundleItemModel ToModel(this ProductBundleItem entity)
+        {
             return MapperFactory.Map<ProductBundleItem, ProductBundleItemModel>(entity);
-		}
+        }
 
-		public static ProductBundleItem ToEntity(this ProductBundleItemModel model)
-		{
+        public static ProductBundleItem ToEntity(this ProductBundleItemModel model)
+        {
             return MapperFactory.Map<ProductBundleItemModel, ProductBundleItem>(model);
-		}
+        }
 
-		public static ProductBundleItem ToEntity(this ProductBundleItemModel model, ProductBundleItem entity)
-		{
+        public static ProductBundleItem ToEntity(this ProductBundleItemModel model, ProductBundleItem entity)
+        {
             MapperFactory.Map(model, entity);
             return entity;
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region Languages
+        #region Languages
 
-		public static LanguageModel ToModel(this Language entity)
+        public static LanguageModel ToModel(this Language entity)
         {
             return MapperFactory.Map<Language, LanguageModel>(entity);
         }
@@ -252,7 +252,7 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-        
+
         #endregion
 
         #region Email account
@@ -384,7 +384,7 @@ namespace SmartStore.Admin
         }
 
         #endregion
-        
+
         #region Currencies
 
         public static CurrencyModel ToModel(this Currency entity)
@@ -402,7 +402,7 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-        
+
         #endregion
 
         #region Delivery Times
@@ -533,7 +533,7 @@ namespace SmartStore.Admin
         }
 
         #endregion
-        
+
         #region Shipping rate computation method
 
         public static ShippingRateComputationMethodModel ToModel(this IShippingRateComputationMethod entity)
@@ -570,8 +570,8 @@ namespace SmartStore.Admin
             return MapperFactory.Map<Address, AddressModel>(entity);
         }
 
-		public static AddressModel ToModel(this Address entity, IAddressService addressService)
-		{
+        public static AddressModel ToModel(this Address entity, IAddressService addressService)
+        {
             var model = MapperFactory.Map<Address, AddressModel>(entity);
 
             if (addressService != null)
@@ -579,10 +579,10 @@ namespace SmartStore.Admin
                 model.FormattedAddress = addressService.FormatAddress(entity, true);
             }
 
-			return model;
-		}
+            return model;
+        }
 
-		public static Address ToEntity(this AddressModel model)
+        public static Address ToEntity(this AddressModel model)
         {
             return MapperFactory.Map<AddressModel, Address>(model);
         }
@@ -668,7 +668,7 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-        
+
         #endregion
 
         #region Blog
@@ -944,7 +944,7 @@ namespace SmartStore.Admin
         }
 
 
-		public static MediaSettingsModel ToModel(this MediaSettings entity)
+        public static MediaSettingsModel ToModel(this MediaSettings entity)
         {
             return MapperFactory.Map<MediaSettings, MediaSettingsModel>(entity);
         }
@@ -971,7 +971,7 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-        
+
         public static CustomerUserSettingsModel.AddressSettingsModel ToModel(this AddressSettings entity)
         {
             return MapperFactory.Map<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>(entity);
@@ -985,20 +985,20 @@ namespace SmartStore.Admin
             MapperFactory.Map(model, entity);
             return entity;
         }
-		
+
         public static CustomerUserSettingsModel.PrivacySettingsModel ToModel(this PrivacySettings entity)
-		{
+        {
             return MapperFactory.Map<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>(entity);
-		}
-		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model)
-		{
+        }
+        public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model)
+        {
             return MapperFactory.Map<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>(model);
-		}
-		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model, PrivacySettings entity)
-		{
+        }
+        public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model, PrivacySettings entity)
+        {
             MapperFactory.Map(model, entity);
             return entity;
-		}
+        }
 
         public static ThemeListModel ToModel(this ThemeSettings entity)
         {
@@ -1027,24 +1027,24 @@ namespace SmartStore.Admin
         #endregion
 
 
-		#region Stores
+        #region Stores
 
-		public static StoreModel ToModel(this Store entity)
-		{
+        public static StoreModel ToModel(this Store entity)
+        {
             return MapperFactory.Map<Store, StoreModel>(entity);
-		}
+        }
 
-		public static Store ToEntity(this StoreModel model)
-		{
+        public static Store ToEntity(this StoreModel model)
+        {
             return MapperFactory.Map<StoreModel, Store>(model);
-		}
+        }
 
-		public static Store ToEntity(this StoreModel model, Store entity)
-		{
+        public static Store ToEntity(this StoreModel model, Store entity)
+        {
             MapperFactory.Map(model, entity);
             return entity;
-		}
+        }
 
-		#endregion
+        #endregion
     }
 }

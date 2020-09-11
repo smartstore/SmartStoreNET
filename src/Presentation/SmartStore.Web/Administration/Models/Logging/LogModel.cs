@@ -8,7 +8,7 @@ namespace SmartStore.Admin.Models.Logging
     public class LogModel : EntityModelBase
     {
         public string LogLevelHint { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.System.Log.Fields.LogLevel")]
         public string LogLevel { get; set; }
 
@@ -40,16 +40,16 @@ namespace SmartStore.Admin.Models.Logging
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
-		public string Logger { get; set; }
+        [SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
+        public string Logger { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
-		public string LoggerShort { get; set; }
+        [SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
+        public string LoggerShort { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.HttpMethod")]
-		public string HttpMethod { get; set; }
+        [SmartResourceDisplayName("Admin.System.Log.Fields.HttpMethod")]
+        public string HttpMethod { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.Fields.UserName")]
-		public string UserName { get; set; }
+        [SmartResourceDisplayName("Admin.System.Log.Fields.UserName")]
+        public string UserName { get; set; }
     }
 }

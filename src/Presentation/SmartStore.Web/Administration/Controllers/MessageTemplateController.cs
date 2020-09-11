@@ -120,7 +120,7 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
             }
         }
-        
+
         private void PrepareLastModelTree(MessageTemplate template)
         {
             ViewBag.LastModelTreeJson = template.LastModelTree;
@@ -263,7 +263,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Preview(int id, bool isCampaign = false)
         {
             var model = new MessageTemplatePreviewModel();
-                        
+
             // TODO: (mc) Liquid > Display info about preview models
             try
             {

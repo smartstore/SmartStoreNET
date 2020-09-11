@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Controllers
         {
             Guard.NotNull(model, nameof(model));
             Guard.NotNull(recurringPayment, nameof(recurringPayment));
-            
+
             model.Id = recurringPayment.Id;
             model.CycleLength = recurringPayment.CycleLength;
             model.CyclePeriodId = recurringPayment.CyclePeriodId;
@@ -109,17 +109,17 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult List(GridCommand command)
         {
-			var gridModel = new GridModel<RecurringPaymentModel>();
-			var payments = _orderService.SearchRecurringPayments(0, 0, 0, null, true);
+            var gridModel = new GridModel<RecurringPaymentModel>();
+            var payments = _orderService.SearchRecurringPayments(0, 0, 0, null, true);
 
-			gridModel.Data = payments.PagedForCommand(command).Select(x =>
-			{
-				var m = new RecurringPaymentModel();
-				PrepareRecurringPaymentModel(m, x, false);
-				return m;
-			});
+            gridModel.Data = payments.PagedForCommand(command).Select(x =>
+            {
+                var m = new RecurringPaymentModel();
+                PrepareRecurringPaymentModel(m, x, false);
+                return m;
+            });
 
-			gridModel.Total = payments.Count;
+            gridModel.Total = payments.Count;
 
             return new JsonResult
             {
@@ -183,20 +183,20 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Order.Read)]
         public ActionResult HistoryList(int recurringPaymentId, GridCommand command)
         {
-			var model = new GridModel<RecurringPaymentModel.RecurringPaymentHistoryModel>();
-			var payment = _orderService.GetRecurringPaymentById(recurringPaymentId);
+            var model = new GridModel<RecurringPaymentModel.RecurringPaymentHistoryModel>();
+            var payment = _orderService.GetRecurringPaymentById(recurringPaymentId);
 
-			var historyModel = payment.RecurringPaymentHistory.OrderBy(x => x.CreatedOnUtc)
-				.Select(x =>
-				{
-					var m = new RecurringPaymentModel.RecurringPaymentHistoryModel();
-					PrepareRecurringPaymentHistoryModel(m, x);
-					return m;
-				})
-				.ToList();
+            var historyModel = payment.RecurringPaymentHistory.OrderBy(x => x.CreatedOnUtc)
+                .Select(x =>
+                {
+                    var m = new RecurringPaymentModel.RecurringPaymentHistoryModel();
+                    PrepareRecurringPaymentHistoryModel(m, x);
+                    return m;
+                })
+                .ToList();
 
-			model.Data = historyModel;
-			model.Total = historyModel.Count;
+            model.Data = historyModel;
+            model.Total = historyModel.Count;
 
             return new JsonResult
             {

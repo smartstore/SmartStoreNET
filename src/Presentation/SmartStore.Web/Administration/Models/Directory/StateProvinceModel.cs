@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Models.Directory
     public class StateProvinceLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Configuration.Countries.States.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }

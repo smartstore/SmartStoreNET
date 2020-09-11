@@ -1,13 +1,14 @@
-﻿using SmartStore.Web.Framework;
+﻿using System.Collections.Generic;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Seo;
-using System.Collections.Generic;
 
 namespace SmartStore.Admin.Models.Settings
 {
     public class BlogSettingsModel : ModelBase, ISeoModel
     {
-        public BlogSettingsModel() {
+        public BlogSettingsModel()
+        {
             Locales = new List<SeoModelLocal>();
         }
 
@@ -26,8 +27,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.NumberOfTags")]
         public int NumberOfTags { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Blog.MaxAgeInDays")]
-		public int MaxAgeInDays { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.MaxAgeInDays")]
+        public int MaxAgeInDays { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.ShowHeaderRSSUrl")]
         public bool ShowHeaderRssUrl { get; set; }

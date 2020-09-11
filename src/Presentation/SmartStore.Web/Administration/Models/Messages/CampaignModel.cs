@@ -12,7 +12,7 @@ namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(CampaignValidator))]
     public class CampaignModel : EntityModelBase
-    {       
+    {
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -24,7 +24,7 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
-        
+
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 

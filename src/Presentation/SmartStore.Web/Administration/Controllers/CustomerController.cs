@@ -1476,7 +1476,7 @@ namespace SmartStore.Admin.Controllers
                     // Today & yesterday
                     if (i <= 1)
                     {
-                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - " 
+                        model[i].Labels[j] = userTime.AddHours(j).ToString("t") + " - "
                             + userTime.AddHours(j).AddMinutes(59).ToString("t");
                     }
                     // Last 7 days
@@ -1526,7 +1526,7 @@ namespace SmartStore.Admin.Controllers
             // Format percentage value
             for (int i = 0; i < model.Count; i++)
             {
-                model[i].PercentageDelta =  model[i].TotalAmount != 0 && sumBefore[i] != 0
+                model[i].PercentageDelta = model[i].TotalAmount != 0 && sumBefore[i] != 0
                     ? (int)Math.Round(model[i].TotalAmount / sumBefore[i] * 100 - 100)
                     : 0;
             }

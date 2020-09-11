@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-	[Validator(typeof(ProductAttributeValidator))]
+    [Validator(typeof(ProductAttributeValidator))]
     public class ProductAttributeModel : EntityModelBase, ILocalizedModel<ProductAttributeLocalizedModel>
     {
         public ProductAttributeModel()
@@ -18,55 +18,55 @@ namespace SmartStore.Admin.Models.Catalog
         }
 
         [AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
-		public string Alias { get; set; }
-        
+        public string Alias { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Description")]
         [AllowHtml]
-        public string Description {get; set;}
+        public string Description { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
-		public bool AllowFiltering { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
+        public bool AllowFiltering { get; set; }
 
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
-		public FacetTemplateHint FacetTemplateHint { get; set; }
+        public FacetTemplateHint FacetTemplateHint { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.IndexOptionNames")]
         public bool IndexOptionNames { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings")]
-		public string ExportMappings { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings")]
+        public string ExportMappings { get; set; }
 
-		public IList<ProductAttributeLocalizedModel> Locales { get; set; }
+        public IList<ProductAttributeLocalizedModel> Locales { get; set; }
     }
 
     public class ProductAttributeLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 
-		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
-		public string Alias { get; set; }
+        [AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+        public string Alias { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
+        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Description")]
         [AllowHtml]
-        public string Description {get;set;}
+        public string Description { get; set; }
     }
 
-	public partial class ProductAttributeValidator : AbstractValidator<ProductAttributeModel>
-	{
-		public ProductAttributeValidator()
-		{
-			RuleFor(x => x.Name).NotEmpty();
-		}
-	}
+    public partial class ProductAttributeValidator : AbstractValidator<ProductAttributeModel>
+    {
+        public ProductAttributeValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

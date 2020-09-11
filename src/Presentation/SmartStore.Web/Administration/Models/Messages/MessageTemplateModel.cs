@@ -6,8 +6,6 @@ using FluentValidation;
 using FluentValidation.Attributes;
 using Newtonsoft.Json;
 using SmartStore.Collections;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Services;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -23,7 +21,7 @@ namespace SmartStore.Admin.Models.Messages
             AvailableEmailAccounts = new List<EmailAccountModel>();
         }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
         [ScriptIgnore, JsonIgnore]
         public TreeNode<string> TokensTree { get; set; }
 
@@ -31,19 +29,19 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
-		[AllowHtml]
-		public string To { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
+        [AllowHtml]
+        public string To { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")] 
-		[AllowHtml]
-		public string ReplyTo { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")]
+        [AllowHtml]
+        public string ReplyTo { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
-		[ScriptIgnore, JsonIgnore]
-		public string LastModelTree { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
+        [ScriptIgnore, JsonIgnore]
+        public string LastModelTree { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
         [AllowHtml]
         public string BccEmailAddresses { get; set; }
 
@@ -61,18 +59,18 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.SendManually")]
-		public bool SendManually { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.SendManually")]
+        public bool SendManually { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment1FileId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment2FileId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment3FileId { get; set; }
 
@@ -87,21 +85,21 @@ namespace SmartStore.Admin.Models.Messages
 
         public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
-	}
+    }
 
     public class MessageTemplateLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
-		[AllowHtml]
-		public string To { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
+        [AllowHtml]
+        public string To { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")]
-		[AllowHtml]
-		public string ReplyTo { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ReplyTo")]
+        [AllowHtml]
+        public string ReplyTo { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.BccEmailAddresses")]
         [AllowHtml]
         public string BccEmailAddresses { get; set; }
 
@@ -116,15 +114,15 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment1FileId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment2FileId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
         [UIHint("Media"), AdditionalMetadata("album", "content")]
         public int? Attachment3FileId { get; set; }
     }

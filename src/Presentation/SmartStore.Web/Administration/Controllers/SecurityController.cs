@@ -10,13 +10,13 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public class SecurityController : AdminControllerBase
-	{
+    {
         private readonly IWorkContext _workContext;
 
         public SecurityController(IWorkContext workContext)
-		{
+        {
             _workContext = workContext;
-		}
+        }
 
         // Ajax.
         public ActionResult AllAccessPermissions(string selected)
@@ -42,12 +42,12 @@ namespace SmartStore.Admin.Controllers
 
             if (customer == null || customer.IsGuest())
             {
-				Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
+                Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
                 return View();
             }
 
-			Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
-				customer.Email.NaIfEmpty(), customer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
+            Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
+                customer.Email.NaIfEmpty(), customer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
 
             return View();
         }

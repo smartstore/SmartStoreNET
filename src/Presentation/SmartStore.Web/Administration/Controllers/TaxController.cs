@@ -16,50 +16,50 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public class TaxController : AdminControllerBase
-	{
+    {
         private readonly ITaxService _taxService;
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly TaxSettings _taxSettings;
         private readonly ISettingService _settingService;
-		private readonly PluginMediator _pluginMediator;
+        private readonly PluginMediator _pluginMediator;
 
         public TaxController(
-			ITaxService taxService,
-            ITaxCategoryService taxCategoryService, 
-			TaxSettings taxSettings,
-            ISettingService settingService, 
-			PluginMediator pluginMediator)
-		{
+            ITaxService taxService,
+            ITaxCategoryService taxCategoryService,
+            TaxSettings taxSettings,
+            ISettingService settingService,
+            PluginMediator pluginMediator)
+        {
             _taxService = taxService;
             _taxCategoryService = taxCategoryService;
             _taxSettings = taxSettings;
             _settingService = settingService;
-			_pluginMediator = pluginMediator;
-		}
+            _pluginMediator = pluginMediator;
+        }
 
         #region Tax Providers
 
         [Permission(Permissions.Configuration.Tax.Read)]
         public ActionResult Providers()
-        {		
+        {
             var taxProviderModels = _taxService.LoadAllTaxProviders()
-				.Select(x => 
-				{
-					var model = _pluginMediator.ToProviderModel<ITaxProvider, TaxProviderModel>(x);
-					if (x.Metadata.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase))
-					{
-						model.IsPrimaryTaxProvider = true;
-					}
-					else
-					{
-						_pluginMediator.ActivateDependentWidgets(x.Metadata, false);
-					}
+                .Select(x =>
+                {
+                    var model = _pluginMediator.ToProviderModel<ITaxProvider, TaxProviderModel>(x);
+                    if (x.Metadata.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        model.IsPrimaryTaxProvider = true;
+                    }
+                    else
+                    {
+                        _pluginMediator.ActivateDependentWidgets(x.Metadata, false);
+                    }
 
-					return model; 
-				})
-				.ToList();
+                    return model;
+                })
+                .ToList();
 
-			return View(taxProviderModels);
+            return View(taxProviderModels);
         }
 
         [Permission(Permissions.Configuration.Tax.Activate)]
@@ -103,14 +103,14 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Tax.Read)]
         public ActionResult Categories(GridCommand command)
         {
-			var model = new GridModel<TaxCategoryModel>();
-			var categoriesModel = _taxCategoryService.GetAllTaxCategories()
-				.Select(x => x.ToModel())
-				.ForCommand(command)
-				.ToList();
+            var model = new GridModel<TaxCategoryModel>();
+            var categoriesModel = _taxCategoryService.GetAllTaxCategories()
+                .Select(x => x.ToModel())
+                .ForCommand(command)
+                .ToList();
 
-			model.Data = categoriesModel;
-			model.Total = categoriesModel.Count;
+            model.Data = categoriesModel;
+            model.Total = categoriesModel.Count;
 
             return new JsonResult
             {
@@ -122,16 +122,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Tax.Update)]
         public ActionResult CategoryUpdate(TaxCategoryModel model, GridCommand command)
         {
-			if (!ModelState.IsValid)
-			{
-				var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-				return Content(modelStateErrors.FirstOrDefault());
-			}
+            if (!ModelState.IsValid)
+            {
+                var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrors.FirstOrDefault());
+            }
 
-			var taxCategory = _taxCategoryService.GetTaxCategoryById(model.Id);
-			taxCategory = model.ToEntity(taxCategory);
+            var taxCategory = _taxCategoryService.GetTaxCategoryById(model.Id);
+            taxCategory = model.ToEntity(taxCategory);
 
-			_taxCategoryService.UpdateTaxCategory(taxCategory);
+            _taxCategoryService.UpdateTaxCategory(taxCategory);
 
             return Categories(command);
         }
@@ -140,16 +140,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Tax.Create)]
         public ActionResult CategoryAdd([Bind(Exclude = "Id")] TaxCategoryModel model, GridCommand command)
         {
-			if (!ModelState.IsValid)
-			{
-				var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-				return Content(modelStateErrors.FirstOrDefault());
-			}
+            if (!ModelState.IsValid)
+            {
+                var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+                return Content(modelStateErrors.FirstOrDefault());
+            }
 
-			var taxCategory = new TaxCategory();
-			taxCategory = model.ToEntity(taxCategory);
+            var taxCategory = new TaxCategory();
+            taxCategory = model.ToEntity(taxCategory);
 
-			_taxCategoryService.InsertTaxCategory(taxCategory);
+            _taxCategoryService.InsertTaxCategory(taxCategory);
 
             return Categories(command);
         }
@@ -158,9 +158,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Tax.Delete)]
         public ActionResult CategoryDelete(int id, GridCommand command)
         {
-			var taxCategory = _taxCategoryService.GetTaxCategoryById(id);
+            var taxCategory = _taxCategoryService.GetTaxCategoryById(id);
 
-			_taxCategoryService.DeleteTaxCategory(taxCategory);
+            _taxCategoryService.DeleteTaxCategory(taxCategory);
 
             return Categories(command);
         }

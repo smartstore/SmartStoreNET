@@ -22,16 +22,16 @@ namespace SmartStore.Admin.Controllers
     {
         #region Fields
 
-		private readonly ICommonServices _services;
-		private readonly CommonSettings _commonSettings;
-		private readonly Lazy<IUserAgent> _userAgent;
+        private readonly ICommonServices _services;
+        private readonly CommonSettings _commonSettings;
+        private readonly Lazy<IUserAgent> _userAgent;
         private readonly CustomerController _customerController;
 
         #endregion
 
         #region Ctor
 
-		public HomeController(
+        public HomeController(
             ICommonServices services,
             CommonSettings commonSettings,
             Lazy<IUserAgent> userAgent,
@@ -39,8 +39,8 @@ namespace SmartStore.Admin.Controllers
             )
         {
             _commonSettings = commonSettings;
-			_services = services;
-			_userAgent = userAgent;
+            _services = services;
+            _userAgent = userAgent;
             _customerController = customerController;
         }
 
@@ -50,23 +50,23 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Index()
         {
-			Debug.WriteLine("--------------------------");
+            Debug.WriteLine("--------------------------");
             return View();
         }
 
-		public ActionResult About()
-		{
-			return View();
-		}
+        public ActionResult About()
+        {
+            return View();
+        }
 
-		public ActionResult UaTester(string ua = null)
-		{
-			if (ua.HasValue())
-			{
-				_userAgent.Value.RawValue = ua;
-			}
-			return View(_userAgent.Value);
-		}
+        public ActionResult UaTester(string ua = null)
+        {
+            if (ua.HasValue())
+            {
+                _userAgent.Value.RawValue = ua;
+            }
+            return View(_userAgent.Value);
+        }
 
         [ChildActionOnly]
         public ActionResult SmartStoreNews()
@@ -77,7 +77,7 @@ namespace SmartStore.Admin.Controllers
                     SmartStoreVersion.CurrentVersion,
                     Request.Url.IsLoopback,
                     _commonSettings.HideAdvertisementsOnAdminArea,
-					_services.StoreContext.CurrentStore.Url);
+                    _services.StoreContext.CurrentStore.Url);
 
                 //specify timeout (5 secs)
                 var request = WebRequest.Create(feedUrl);
@@ -95,71 +95,72 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-		[ChildActionOnly]
-		public ActionResult MarketplaceFeed()
-		{
-			var watch = new Stopwatch();
-			watch.Start();
+        [ChildActionOnly]
+        public ActionResult MarketplaceFeed()
+        {
+            var watch = new Stopwatch();
+            watch.Start();
 
-			var result = _services.Cache.Get("admin:marketplacefeed", () => {
-				try
-				{
-					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
-					var request = (HttpWebRequest)WebRequest.Create(url);
-					request.Timeout = 3000;
-					request.UserAgent = "Smartstore {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+            var result = _services.Cache.Get("admin:marketplacefeed", () =>
+            {
+                try
+                {
+                    string url = "http://community.smartstore.com/index.php?/rss/downloads/";
+                    var request = (HttpWebRequest)WebRequest.Create(url);
+                    request.Timeout = 3000;
+                    request.UserAgent = "Smartstore {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 
-					using (WebResponse response = request.GetResponse())
-					{
-						using (var reader = XmlReader.Create(response.GetResponseStream()))
-						{
-							var feed = SyndicationFeed.Load(reader);
-							var model = new List<FeedItemModel>();
-							foreach (var item in feed.Items)
-							{
-								if (!item.Id.EndsWith("error=1", StringComparison.OrdinalIgnoreCase))
-								{
-									var modelItem = new FeedItemModel();
-									modelItem.Title = item.Title.Text;
-									modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
-									modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
+                    using (WebResponse response = request.GetResponse())
+                    {
+                        using (var reader = XmlReader.Create(response.GetResponseStream()))
+                        {
+                            var feed = SyndicationFeed.Load(reader);
+                            var model = new List<FeedItemModel>();
+                            foreach (var item in feed.Items)
+                            {
+                                if (!item.Id.EndsWith("error=1", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    var modelItem = new FeedItemModel();
+                                    modelItem.Title = item.Title.Text;
+                                    modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
+                                    modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
 
-									var link = item.Links.FirstOrDefault();
-									if (link != null)
-									{
-										modelItem.Link = link.Uri.ToString();
-									}
+                                    var link = item.Links.FirstOrDefault();
+                                    if (link != null)
+                                    {
+                                        modelItem.Link = link.Uri.ToString();
+                                    }
 
-									model.Add(modelItem);
-								}
-							}
+                                    model.Add(modelItem);
+                                }
+                            }
 
-							return model;
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
-				}
-			}, TimeSpan.FromHours(12));
+                            return model;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new List<FeedItemModel> { new FeedItemModel { IsError = true, Summary = ex.Message } };
+                }
+            }, TimeSpan.FromHours(12));
 
-			if (result.Any() && result.First().IsError)
-			{
-				ModelState.AddModelError("", result.First().Summary);
-			}
+            if (result.Any() && result.First().IsError)
+            {
+                ModelState.AddModelError("", result.First().Summary);
+            }
 
-			watch.Stop();
-			Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
+            watch.Stop();
+            Debug.WriteLine("MarketplaceFeed >>> " + watch.ElapsedMilliseconds);
 
-			return PartialView(result);
-		}
+            return PartialView(result);
+        }
 
         [HttpPost]
         public ActionResult SmartStoreNewsHideAdv()
         {
             _commonSettings.HideAdvertisementsOnAdminArea = !_commonSettings.HideAdvertisementsOnAdminArea;
-			_services.Settings.SaveSetting(_commonSettings);
+            _services.Settings.SaveSetting(_commonSettings);
             return Content("Setting changed");
         }
         #endregion

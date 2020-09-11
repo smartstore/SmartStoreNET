@@ -1,13 +1,13 @@
-﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {
     public class BlogListModel : TabbableModel
-	{
+    {
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Title")]
         public string SearchTitle { get; set; }
 

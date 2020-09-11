@@ -20,33 +20,33 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public partial class ShippingController : AdminControllerBase
-	{
+    {
         private readonly IShippingService _shippingService;
         private readonly ShippingSettings _shippingSettings;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
-		private readonly PluginMediator _pluginMediator;
-		private readonly IStoreMappingService _storeMappingService;
+        private readonly PluginMediator _pluginMediator;
+        private readonly IStoreMappingService _storeMappingService;
         private readonly IRuleStorage _ruleStorage;
 
         public ShippingController(
-			IShippingService shippingService,
-			ShippingSettings shippingSettings,
+            IShippingService shippingService,
+            ShippingSettings shippingSettings,
             ILocalizedEntityService localizedEntityService,
-			ILanguageService languageService,
-			PluginMediator pluginMediator,
-			IStoreMappingService storeMappingService,
+            ILanguageService languageService,
+            PluginMediator pluginMediator,
+            IStoreMappingService storeMappingService,
             IRuleStorage ruleStorage)
-		{
+        {
             _shippingService = shippingService;
             _shippingSettings = shippingSettings;
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
-			_pluginMediator = pluginMediator;
-			_storeMappingService = storeMappingService;
+            _pluginMediator = pluginMediator;
+            _storeMappingService = storeMappingService;
             _ruleStorage = ruleStorage;
-		}
-        
+        }
+
         #region Utilities
 
         private void UpdateLocales(ShippingMethod shippingMethod, ShippingMethodModel model)
@@ -58,12 +58,12 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
-		{
-			if (shippingMethod != null)
-			{
+        private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
+        {
+            if (shippingMethod != null)
+            {
                 model.SelectedRuleSetIds = shippingMethod.RuleSets.Select(x => x.Id).ToArray();
-			}
+            }
 
             model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
         }
@@ -80,25 +80,25 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var shippingProvider in shippingProviders)
             {
-				var model = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
-				model.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
+                var model = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
+                model.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
                 shippingProvidersModel.Add(model);
             }
 
-			return View(shippingProvidersModel);
+            return View(shippingProvidersModel);
         }
 
         [Permission(Permissions.Configuration.Shipping.Activate)]
         public ActionResult ActivateProvider(string systemName, bool activate)
-		{
-			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
+        {
+            var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
 
-			if (activate && !srcm.Value.IsActive)
-			{
-				NotifyWarning(T("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
-			}
-			else
-			{
+            if (activate && !srcm.Value.IsActive)
+            {
+                NotifyWarning(T("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
+            }
+            else
+            {
                 if (!activate)
                 {
                     _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.Metadata.SystemName);
@@ -108,12 +108,12 @@ namespace SmartStore.Admin.Controllers
                     _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
                 }
 
-				Services.Settings.SaveSetting(_shippingSettings);
-				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
-			}
+                Services.Settings.SaveSetting(_shippingSettings);
+                _pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
+            }
 
-			return RedirectToAction("Providers");
-		}
+            return RedirectToAction("Providers");
+        }
 
         #endregion
 
@@ -144,9 +144,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Shipping.Read)]
         public ActionResult Methods(GridCommand command)
         {
-			var model = new GridModel<ShippingMethodModel>();
+            var model = new GridModel<ShippingMethodModel>();
 
-			var shippingMethodsModel = _shippingService.GetAllShippingMethods()
+            var shippingMethodsModel = _shippingService.GetAllShippingMethods()
                 .Select(x =>
                 {
                     var smm = x.ToModel();
@@ -154,10 +154,10 @@ namespace SmartStore.Admin.Controllers
                     return smm;
                 })
                 .ForCommand(command)
-				.ToList();
+                .ToList();
 
-			model.Data = shippingMethodsModel;
-			model.Total = shippingMethodsModel.Count;
+            model.Data = shippingMethodsModel;
+            model.Total = shippingMethodsModel.Count;
 
             return new JsonResult
             {
@@ -169,7 +169,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult CreateMethod()
         {
             var model = new ShippingMethodModel();
-			PrepareShippingMethodModel(model, null);
+            PrepareShippingMethodModel(model, null);
 
             AddLocales(_languageService, model.Locales);
             return View(model);
@@ -192,7 +192,7 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 SaveStoreMappings(sm, model.SelectedStoreIds);
-				UpdateLocales(sm, model);
+                UpdateLocales(sm, model);
 
                 NotifySuccess(T("Admin.Configuration.Shipping.Methods.Added"));
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
@@ -211,7 +211,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = sm.ToModel();
-			PrepareShippingMethodModel(model, sm);
+            PrepareShippingMethodModel(model, sm);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -241,12 +241,12 @@ namespace SmartStore.Admin.Controllers
 
                 _shippingService.UpdateShippingMethod(sm);
 
-				SaveStoreMappings(sm, model.SelectedStoreIds);
-				UpdateLocales(sm, model);
+                SaveStoreMappings(sm, model.SelectedStoreIds);
+                UpdateLocales(sm, model);
 
-				Services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));
 
-				NotifySuccess(T("Admin.Configuration.Shipping.Methods.Updated"));
+                NotifySuccess(T("Admin.Configuration.Shipping.Methods.Updated"));
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
             }
 
@@ -265,10 +265,10 @@ namespace SmartStore.Admin.Controllers
 
             _shippingService.DeleteShippingMethod(sm);
 
-			NotifySuccess(T("Admin.Configuration.Shipping.Methods.Deleted"));
+            NotifySuccess(T("Admin.Configuration.Shipping.Methods.Deleted"));
             return RedirectToAction("Methods");
         }
-        
-        #endregion        
+
+        #endregion
     }
 }

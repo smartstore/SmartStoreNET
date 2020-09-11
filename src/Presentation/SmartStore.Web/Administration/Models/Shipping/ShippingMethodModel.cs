@@ -12,7 +12,7 @@ namespace SmartStore.Admin.Models.Shipping
 {
     [Validator(typeof(ShippingMethodValidator))]
     public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>
-	{
+    {
         public ShippingMethodModel()
         {
             Locales = new List<ShippingMethodLocalizedModel>();
@@ -29,8 +29,8 @@ namespace SmartStore.Admin.Models.Shipping
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges")]
-		public bool IgnoreCharges { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges")]
+        public bool IgnoreCharges { get; set; }
 
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
 
@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Shipping
         public int NumberOfRules { get; set; }
     }
 
-	public class ShippingMethodLocalizedModel : ILocalizedModelLocal
+    public class ShippingMethodLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 

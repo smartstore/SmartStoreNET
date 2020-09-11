@@ -1,9 +1,9 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -31,7 +31,7 @@ namespace SmartStore.Admin.Models.Messages
 
         [SmartResourceDisplayName("Admin.Configuration.EmailAccounts.Fields.Password")]
         [AllowHtml]
-		[DataType(DataType.Password)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.EmailAccounts.Fields.EnableSsl")]
@@ -48,9 +48,9 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string SendTestEmailTo { get; set; }
 
-		public string TestEmailShortErrorMessage { get; set; }
-		public string TestEmailFullErrorMessage { get; set; }
-	}
+        public string TestEmailShortErrorMessage { get; set; }
+        public string TestEmailFullErrorMessage { get; set; }
+    }
 
     public partial class EmailAccountValidator : AbstractValidator<EmailAccountModel>
     {

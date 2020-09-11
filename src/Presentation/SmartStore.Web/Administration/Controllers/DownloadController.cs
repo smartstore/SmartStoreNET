@@ -8,12 +8,12 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
-		private const string DOWNLOAD_TEMPLATE = "~/Administration/Views/Shared/EditorTemplates/Download.cshtml";
-		
-		private readonly IDownloadService _downloadService;
+        private const string DOWNLOAD_TEMPLATE = "~/Administration/Views/Shared/EditorTemplates/Download.cshtml";
+
+        private readonly IDownloadService _downloadService;
         private readonly IMediaService _mediaService;
         private readonly MediaSettings _mediaSettings;
 
@@ -40,19 +40,19 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-				//use stored data
-				var data = _downloadService.LoadDownloadBinary(download);
+                //use stored data
+                var data = _downloadService.LoadDownloadBinary(download);
 
-				if (data == null || data.LongLength == 0)
-					return Content(T("Common.Download.NoDataAvailable"));
+                if (data == null || data.LongLength == 0)
+                    return Content(T("Common.Download.NoDataAvailable"));
 
-				var fileName = download.MediaFile.Name;
-				var contentType = download.MediaFile.MimeType;
+                var fileName = download.MediaFile.Name;
+                var contentType = download.MediaFile.MimeType;
 
                 return new FileContentResult(data, contentType)
-				{
-					FileDownloadName = fileName
-				};
+                {
+                    FileDownloadName = fileName
+                };
             }
         }
 
@@ -61,25 +61,25 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
-			var download = new Download
-			{
+            var download = new Download
+            {
                 EntityId = entityId,
                 EntityName = entityName,
-				DownloadGuid = Guid.NewGuid(),
-				UseDownloadUrl = true,
-				DownloadUrl = downloadUrl,
-				IsTransient = true,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
+                DownloadGuid = Guid.NewGuid(),
+                UseDownloadUrl = true,
+                DownloadUrl = downloadUrl,
+                IsTransient = true,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
 
             _downloadService.InsertDownload(download);
 
-			return Json(new
-			{
-				success = true,
-				downloadId = download.Id,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
-			}, JsonRequestBehavior.AllowGet);
+            return Json(new
+            {
+                success = true,
+                downloadId = download.Id,
+                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -111,11 +111,11 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult AsyncUpload(string clientCtrlId, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
-			var postedFile = Request.ToPostedFileResult();
-			if (postedFile == null)
-			{
-				throw new ArgumentException(T("Common.NoFileUploaded"));
-			}
+            var postedFile = Request.ToPostedFileResult();
+            if (postedFile == null)
+            {
+                throw new ArgumentException(T("Common.NoFileUploaded"));
+            }
 
             var download = new Download
             {
@@ -124,13 +124,13 @@ namespace SmartStore.Admin.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = string.Empty,
-				UpdatedOnUtc = DateTime.UtcNow
+                UpdatedOnUtc = DateTime.UtcNow
             };
 
             var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
 
-            return Json(new 
-            { 
+            return Json(new
+            {
                 success = true,
                 clientCtrlId,
                 downloadId = download.Id,
@@ -156,7 +156,7 @@ namespace SmartStore.Admin.Controllers
                 _downloadService.UpdateDownload(download);
                 success = true;
             }
-            
+
             return Json(new { success });
         }
 
@@ -184,14 +184,14 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         [Permission(Permissions.Media.Download.Delete)]
         public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
-		{
+        {
             // We don't actually delete here. We just return the editor in it's init state.
             // So the download entity can be set to transient state and deleted later by a scheduled task.
             return Json(new
-			{
-				success = true,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode, fieldName }),
-			});
-		}
+            {
+                success = true,
+                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode, fieldName }),
+            });
+        }
     }
 }

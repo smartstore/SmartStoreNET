@@ -43,7 +43,7 @@ namespace SmartStore.Admin.Models.Common
             public DateTime? EndDate { get; set; }
 
             public int? NumberOfDeletedFiles { get; set; }
-			public int? NumberOfDeletedFolders { get; set; }
+            public int? NumberOfDeletedFolders { get; set; }
         }
 
         public class DeleteImageCacheModel : ModelBase

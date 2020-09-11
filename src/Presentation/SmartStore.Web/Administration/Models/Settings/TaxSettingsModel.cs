@@ -6,14 +6,14 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class TaxSettingsModel
+    public class TaxSettingsModel
     {
         public TaxSettingsModel()
         {
             PaymentMethodAdditionalFeeTaxCategories = new List<SelectListItem>();
             ShippingTaxCategories = new List<SelectListItem>();
             EuVatShopCountries = new List<SelectListItem>();
-			DefaultTaxAddress = new AddressModel();
+            DefaultTaxAddress = new AddressModel();
             VatRequired = false;
         }
 
@@ -22,79 +22,79 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.AllowCustomersToSelectTaxDisplayType")]
         public bool AllowCustomersToSelectTaxDisplayType { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.TaxDisplayType")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.TaxDisplayType")]
         public TaxDisplayType TaxDisplayType { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DisplayTaxSuffix")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DisplayTaxSuffix")]
         public bool DisplayTaxSuffix { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DisplayTaxRates")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DisplayTaxRates")]
         public bool DisplayTaxRates { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.HideZeroTax")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.HideZeroTax")]
         public bool HideZeroTax { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.HideTaxInOrderSummary")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.HideTaxInOrderSummary")]
         public bool HideTaxInOrderSummary { get; set; }
 
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShowLegalHintsInProductList")]
         public bool ShowLegalHintsInProductList { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShowLegalHintsInProductDetails")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShowLegalHintsInProductDetails")]
         public bool ShowLegalHintsInProductDetails { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShowLegalHintsInFooter")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShowLegalHintsInFooter")]
         public bool ShowLegalHintsInFooter { get; set; }
 
-		
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.TaxBasedOn")]
         public TaxBasedOn TaxBasedOn { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DefaultTaxAddress")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DefaultTaxAddress")]
         public AddressModel DefaultTaxAddress { get; set; }
-       
+
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShippingIsTaxable")]
         public bool ShippingIsTaxable { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShippingPriceIncludesTax")]
-        public bool ShippingPriceIncludesTax { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShippingTaxClass")]
-        public int? ShippingTaxClassId { get; set; }
-		public IList<SelectListItem> ShippingTaxCategories { get; set; }
 
-		
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShippingPriceIncludesTax")]
+        public bool ShippingPriceIncludesTax { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.ShippingTaxClass")]
+        public int? ShippingTaxClassId { get; set; }
+        public IList<SelectListItem> ShippingTaxCategories { get; set; }
+
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeIsTaxable")]
         public bool PaymentMethodAdditionalFeeIsTaxable { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeIncludesTax")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeIncludesTax")]
         public bool PaymentMethodAdditionalFeeIncludesTax { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeTaxClass")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeTaxClass")]
         public int? PaymentMethodAdditionalFeeTaxClassId { get; set; }
-		public IList<SelectListItem> PaymentMethodAdditionalFeeTaxCategories { get; set; }
+        public IList<SelectListItem> PaymentMethodAdditionalFeeTaxCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.AuxiliaryServicesTaxingType")]
-		public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.AuxiliaryServicesTaxingType")]
+        public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
 
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEnabled")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEnabled")]
         public bool EuVatEnabled { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatShopCountry")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatShopCountry")]
         public int? EuVatShopCountryId { get; set; }
-		public IList<SelectListItem> EuVatShopCountries { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatAllowVatExemption")]
+        public IList<SelectListItem> EuVatShopCountries { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatAllowVatExemption")]
         public bool EuVatAllowVatExemption { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatUseWebService")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatUseWebService")]
         public bool EuVatUseWebService { get; set; }
-        
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEmailAdminWhenNewVatSubmitted")]
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEmailAdminWhenNewVatSubmitted")]
         public bool EuVatEmailAdminWhenNewVatSubmitted { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.VatRequired")]

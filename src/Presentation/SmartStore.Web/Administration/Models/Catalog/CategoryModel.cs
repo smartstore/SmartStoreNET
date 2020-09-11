@@ -26,22 +26,22 @@ namespace SmartStore.Admin.Models.Catalog
             AvailableBadgeStyles = new List<SelectListItem>();
         }
 
-		public int GridPageSize { get; set; }
+        public int GridPageSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Name")]
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
-		public string FullName { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
+        public string FullName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Description")]
         [AllowHtml]
         public string Description { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
-		[AllowHtml]
-		public string BottomDescription { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.ExternalLink")]
         [AllowHtml, UIHint("Link")]
@@ -54,9 +54,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeStyle")]
         public int BadgeStyle { get; set; }
         public IList<SelectListItem> AvailableBadgeStyles { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
-		public string Alias { get; set; }
+        public string Alias { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.CategoryTemplate")]
         [AllowHtml]
@@ -107,12 +107,12 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Common.CreatedOn")]
-		public DateTime? CreatedOn { get; set; }
+        [SmartResourceDisplayName("Common.CreatedOn")]
+        public DateTime? CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Common.UpdatedOn")]
-		public DateTime? UpdatedOn { get; set; }
-        
+        [SmartResourceDisplayName("Common.UpdatedOn")]
+        public DateTime? UpdatedOn { get; set; }
+
         public IList<CategoryLocalizedModel> Locales { get; set; }
 
         public string Breadcrumb { get; set; }
@@ -165,15 +165,15 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.Product")]
             public string ProductName { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
-			public string Sku { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+            public string Sku { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
-			public string ProductTypeName { get; set; }
-			public string ProductTypeLabelHint { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+            public string ProductTypeName { get; set; }
+            public string ProductTypeLabelHint { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
-			public bool Published { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+            public bool Published { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Categories.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
@@ -199,16 +199,16 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
-		public string FullName { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
+        public string FullName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Description")]
         [AllowHtml]
-        public string Description { get;set; }
+        public string Description { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
-		[AllowHtml]
-		public string BottomDescription { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
+        [AllowHtml]
+        public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
         [AllowHtml]
@@ -231,13 +231,13 @@ namespace SmartStore.Admin.Models.Catalog
         public string SeName { get; set; }
     }
 
-	public partial class CategoryValidator : AbstractValidator<CategoryModel>
-	{
-		public CategoryValidator()
-		{
-			RuleFor(x => x.Name).NotEmpty();
-		}
-	}
+    public partial class CategoryValidator : AbstractValidator<CategoryModel>
+    {
+        public CategoryValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 
     public class CategoryMapper :
         IMapper<Category, CategoryModel>,

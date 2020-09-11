@@ -13,8 +13,8 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.Common.Entity.Fields.Id")]
         public int ProductId { get; set; }
-		public string ProductTypeName { get; set; }
-		public string ProductTypeLabelHint { get; set; }
+        public string ProductTypeName { get; set; }
+        public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.PictureThumbnailUrl")]
         public string PictureThumbnailUrl { get; set; }

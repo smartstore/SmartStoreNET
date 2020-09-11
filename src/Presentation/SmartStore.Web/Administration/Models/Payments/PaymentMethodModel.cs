@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Models.Payments
 {
-	public class PaymentMethodModel : ProviderModel, IActivatable
+    public class PaymentMethodModel : ProviderModel, IActivatable
     {
         public bool IsActive { get; set; }
 

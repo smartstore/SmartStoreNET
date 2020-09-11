@@ -14,6 +14,6 @@ namespace SmartStore.Data.Mapping.Media
                 .WithMany()
                 .HasForeignKey(x => x.MediaFileId)
                 .WillCascadeOnDelete(false);
-		}
+        }
     }
 }

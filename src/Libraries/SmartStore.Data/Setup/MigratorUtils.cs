@@ -3,172 +3,170 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Setup
 {
-	internal static class MigratorUtils
-	{
-		private static readonly Regex _migrationIdPattern = new Regex(@"\d{15}_.+");
-		private const string _migrationTypeFormat = "{0}.{1}, {2}";
-		private const string _automaticMigration = "AutomaticMigration";
+    internal static class MigratorUtils
+    {
+        private static readonly Regex _migrationIdPattern = new Regex(@"\d{15}_.+");
+        private const string _migrationTypeFormat = "{0}.{1}, {2}";
+        private const string _automaticMigration = "AutomaticMigration";
 
-		/// <summary>
-		/// Creates a full type instance for the migration id by using the current migrations namespace
-		/// ie: SmartStore.Data.Migrations.34589734533_Initial
-		/// </summary>
-		/// <param name="migrator">The migrator context</param>
-		/// <param name="migrationId">The migration id from the migrations list of the migrator</param>
-		/// <returns>The full DbMigration instance</returns>
-		public static DbMigration CreateMigrationInstanceByMigrationId(string migrationId, DbMigrationsConfiguration config)
-		{
-			string migrationTypeName =
-				string.Format(_migrationTypeFormat,
-							  config.MigrationsNamespace,
-							  GetMigrationClassName(migrationId),
-							  config.MigrationsAssembly.FullName);
+        /// <summary>
+        /// Creates a full type instance for the migration id by using the current migrations namespace
+        /// ie: SmartStore.Data.Migrations.34589734533_Initial
+        /// </summary>
+        /// <param name="migrator">The migrator context</param>
+        /// <param name="migrationId">The migration id from the migrations list of the migrator</param>
+        /// <returns>The full DbMigration instance</returns>
+        public static DbMigration CreateMigrationInstanceByMigrationId(string migrationId, DbMigrationsConfiguration config)
+        {
+            string migrationTypeName =
+                string.Format(_migrationTypeFormat,
+                              config.MigrationsNamespace,
+                              GetMigrationClassName(migrationId),
+                              config.MigrationsAssembly.FullName);
 
-			return CreateTypeInstance<DbMigration>(migrationTypeName);
-		}
+            return CreateTypeInstance<DbMigration>(migrationTypeName);
+        }
 
-		/// <summary>
-		/// Checks if the migration id is valid
-		/// </summary>
-		/// <param name="migrationId">The migration id from the migrations list of the migrator</param>
-		/// <returns>true if valid, otherwise false</returns>
-		/// <remarks>
-		/// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
-		/// </remarks>
-		public static bool IsValidMigrationId(string migrationId)
-		{
-			if (string.IsNullOrWhiteSpace(migrationId))
-				return false;
+        /// <summary>
+        /// Checks if the migration id is valid
+        /// </summary>
+        /// <param name="migrationId">The migration id from the migrations list of the migrator</param>
+        /// <returns>true if valid, otherwise false</returns>
+        /// <remarks>
+        /// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
+        /// </remarks>
+        public static bool IsValidMigrationId(string migrationId)
+        {
+            if (string.IsNullOrWhiteSpace(migrationId))
+                return false;
 
-			return _migrationIdPattern.IsMatch(migrationId) || migrationId == DbMigrator.InitialDatabase;
-		}
+            return _migrationIdPattern.IsMatch(migrationId) || migrationId == DbMigrator.InitialDatabase;
+        }
 
-		/// <summary>
-		/// Checks if the the migration id belongs to an automatic migration
-		/// </summary>
-		/// <param name="migrationId">The migration id from the migrations list of the migrator</param>
-		/// <returns>true if automatic, otherwise false</returns>
-		/// <remarks>
-		/// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
-		/// </remarks>
-		public static bool IsAutomaticMigration(string migrationId)
-		{
-			if (string.IsNullOrWhiteSpace(migrationId))
-				return false;
+        /// <summary>
+        /// Checks if the the migration id belongs to an automatic migration
+        /// </summary>
+        /// <param name="migrationId">The migration id from the migrations list of the migrator</param>
+        /// <returns>true if automatic, otherwise false</returns>
+        /// <remarks>
+        /// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
+        /// </remarks>
+        public static bool IsAutomaticMigration(string migrationId)
+        {
+            if (string.IsNullOrWhiteSpace(migrationId))
+                return false;
 
-			return migrationId.EndsWith(_automaticMigration, StringComparison.Ordinal);
-		}
+            return migrationId.EndsWith(_automaticMigration, StringComparison.Ordinal);
+        }
 
-		/// <summary>
-		/// Gets the ClassName from a migration id
-		/// </summary>
-		/// <param name="migrationId">The migration id from the migrations list of the migrator</param>
-		/// <returns>The class name for this migration id</returns>
-		/// <remarks>
-		/// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
-		/// </remarks>
-		public static string GetMigrationClassName(string migrationId)
-		{
-			if (string.IsNullOrWhiteSpace(migrationId))
-				return string.Empty;
+        /// <summary>
+        /// Gets the ClassName from a migration id
+        /// </summary>
+        /// <param name="migrationId">The migration id from the migrations list of the migrator</param>
+        /// <returns>The class name for this migration id</returns>
+        /// <remarks>
+        /// This snippet has been copied from the EntityFramework source (http://entityframework.codeplex.com/)
+        /// </remarks>
+        public static string GetMigrationClassName(string migrationId)
+        {
+            if (string.IsNullOrWhiteSpace(migrationId))
+                return string.Empty;
 
-			return migrationId.Substring(16);
-		}
+            return migrationId.Substring(16);
+        }
 
-		/// <summary>
-		/// Creates a new instance of a typename
-		/// </summary>
-		/// <typeparam name="TType">The type of the return instance</typeparam>
-		/// <param name="typeName">The full name (including assembly and namespaces) of the type to create</param>
-		/// <returns>
-		/// A new instance of the type if it is (or boxable to) <typeparamref name="TType"/>, 
-		/// otherwise the default of <typeparamref name="TType"/>
-		/// </returns>
-		private static TType CreateTypeInstance<TType>(string typeName) where TType : class
-		{
-			Type classType = Type.GetType(typeName, false);
+        /// <summary>
+        /// Creates a new instance of a typename
+        /// </summary>
+        /// <typeparam name="TType">The type of the return instance</typeparam>
+        /// <param name="typeName">The full name (including assembly and namespaces) of the type to create</param>
+        /// <returns>
+        /// A new instance of the type if it is (or boxable to) <typeparamref name="TType"/>, 
+        /// otherwise the default of <typeparamref name="TType"/>
+        /// </returns>
+        private static TType CreateTypeInstance<TType>(string typeName) where TType : class
+        {
+            Type classType = Type.GetType(typeName, false);
 
-			if (classType == null)
-				return default(TType);
+            if (classType == null)
+                return default(TType);
 
-			object newType = Activator.CreateInstance(classType);
+            object newType = Activator.CreateInstance(classType);
 
-			return newType as TType;
-		}
+            return newType as TType;
+        }
 
 
-		public static void ExecutePendingResourceMigrations(string resPath, SmartObjectContext dbContext)
-		{
-			Guard.NotNull(dbContext, nameof(dbContext));
-			
-			string headPath = Path.Combine(resPath, "head.txt");
-			if (!File.Exists(headPath))
-				return;
+        public static void ExecutePendingResourceMigrations(string resPath, SmartObjectContext dbContext)
+        {
+            Guard.NotNull(dbContext, nameof(dbContext));
 
-			string resHead = File.ReadAllText(headPath).Trim();
-			if (!MigratorUtils.IsValidMigrationId(resHead))
-				return;
+            string headPath = Path.Combine(resPath, "head.txt");
+            if (!File.Exists(headPath))
+                return;
 
-			var migrator = new DbMigrator(new MigrationsConfiguration());
-			var migrations = GetPendingResourceMigrations(migrator, resHead);
+            string resHead = File.ReadAllText(headPath).Trim();
+            if (!MigratorUtils.IsValidMigrationId(resHead))
+                return;
 
-			foreach (var id in migrations)
-			{
-				if (IsAutomaticMigration(id))
-					continue;
+            var migrator = new DbMigrator(new MigrationsConfiguration());
+            var migrations = GetPendingResourceMigrations(migrator, resHead);
 
-				if (!IsValidMigrationId(id))
-					continue;
+            foreach (var id in migrations)
+            {
+                if (IsAutomaticMigration(id))
+                    continue;
 
-				// Resolve and instantiate the DbMigration instance from the assembly
-				var migration = CreateMigrationInstanceByMigrationId(id, migrator.Configuration);
+                if (!IsValidMigrationId(id))
+                    continue;
 
-				var provider = migration as ILocaleResourcesProvider;
-				if (provider == null)
-					continue;
+                // Resolve and instantiate the DbMigration instance from the assembly
+                var migration = CreateMigrationInstanceByMigrationId(id, migrator.Configuration);
 
-				var builder = new LocaleResourcesBuilder();
-				provider.MigrateLocaleResources(builder);
+                var provider = migration as ILocaleResourcesProvider;
+                if (provider == null)
+                    continue;
 
-				var resEntries = builder.Build();
-				var resMigrator = new LocaleResourcesMigrator(dbContext);
-				resMigrator.Migrate(resEntries);
-			}
-		}
+                var builder = new LocaleResourcesBuilder();
+                provider.MigrateLocaleResources(builder);
 
-		private static IEnumerable<string> GetPendingResourceMigrations(DbMigrator migrator, string resHead)
-		{
-			var local = migrator.GetLocalMigrations();
-			var atHead = false;
+                var resEntries = builder.Build();
+                var resMigrator = new LocaleResourcesMigrator(dbContext);
+                resMigrator.Migrate(resEntries);
+            }
+        }
 
-			if (local.Last().IsCaseInsensitiveEqual(resHead))
-				yield break;
+        private static IEnumerable<string> GetPendingResourceMigrations(DbMigrator migrator, string resHead)
+        {
+            var local = migrator.GetLocalMigrations();
+            var atHead = false;
 
-			foreach (var id in local)
-			{
-				if (!atHead)
-				{
-					if (!id.IsCaseInsensitiveEqual(resHead))
-					{
-						continue;
-					}
-					else
-					{
-						atHead = true;
-						continue;
-					}
-				}
+            if (local.Last().IsCaseInsensitiveEqual(resHead))
+                yield break;
 
-				yield return id;
-			}
-		}
+            foreach (var id in local)
+            {
+                if (!atHead)
+                {
+                    if (!id.IsCaseInsensitiveEqual(resHead))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        atHead = true;
+                        continue;
+                    }
+                }
 
-	}
+                yield return id;
+            }
+        }
+
+    }
 }

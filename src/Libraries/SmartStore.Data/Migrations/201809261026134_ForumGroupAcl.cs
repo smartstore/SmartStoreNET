@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class ForumGroupAcl : DbMigration
     {
         public override void Up()
@@ -24,7 +23,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.Forums_Group", "LimitedToStores");
             CreateIndex("dbo.Forums_Group", "SubjectToAcl");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.Forums_Group", new[] { "SubjectToAcl" });

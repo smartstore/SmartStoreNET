@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity.ModelConfiguration;
+﻿using System.Data.Entity.ModelConfiguration;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Data.Mapping.Media

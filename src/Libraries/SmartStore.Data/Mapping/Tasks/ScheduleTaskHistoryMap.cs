@@ -11,7 +11,7 @@ namespace SmartStore.Data.Mapping.Tasks
             HasKey(x => x.Id);
             Property(x => x.MachineName).IsRequired().HasMaxLength(400);
             Property(x => x.Error);
-			Property(x => x.ProgressMessage).HasMaxLength(1000);
+            Property(x => x.ProgressMessage).HasMaxLength(1000);
 
             HasRequired(x => x.ScheduleTask)
                 .WithMany(x => x.ScheduleTaskHistory)

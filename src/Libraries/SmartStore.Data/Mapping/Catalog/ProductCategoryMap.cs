@@ -9,7 +9,7 @@ namespace SmartStore.Data.Mapping.Catalog
         {
             this.ToTable("Product_Category_Mapping");
             this.HasKey(pc => pc.Id);
-            
+
             this.HasRequired(pc => pc.Category)
                 .WithMany()
                 .HasForeignKey(pc => pc.CategoryId);

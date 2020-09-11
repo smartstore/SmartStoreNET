@@ -2,12 +2,12 @@ namespace SmartStore.Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    using SmartStore.Data.Setup;
-    using SmartStore.Core.Domain.Media;
-    using SmartStore.Core.Domain.Configuration;
     using System.Linq;
     using System.Web.Hosting;
     using SmartStore.Core.Data;
+    using SmartStore.Core.Domain.Configuration;
+    using SmartStore.Core.Domain.Media;
+    using SmartStore.Data.Setup;
 
     public partial class V400Resources : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
@@ -19,15 +19,12 @@ namespace SmartStore.Data.Migrations
                 Sql("UPDATE [dbo].[Setting] SET [Value] = '102400' WHERE [Name] = 'MediaSettings.MaxUploadFileSize' And [Value] = ''");
             }
         }
-        
+
         public override void Down()
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

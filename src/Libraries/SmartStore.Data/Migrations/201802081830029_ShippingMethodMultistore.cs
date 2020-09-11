@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class ShippingMethodMultistore : DbMigration
     {
         public override void Up()
@@ -15,18 +14,18 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.PaymentMethod", "LimitedToStores", c => c.Boolean(nullable: false));
             DropTable("dbo.ShippingMethodRestrictions");
         }
-        
+
         public override void Down()
         {
             CreateTable(
                 "dbo.ShippingMethodRestrictions",
                 c => new
-                    {
-                        ShippingMethod_Id = c.Int(nullable: false),
-                        Country_Id = c.Int(nullable: false),
-                    })
+                {
+                    ShippingMethod_Id = c.Int(nullable: false),
+                    Country_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.ShippingMethod_Id, t.Country_Id });
-            
+
             DropColumn("dbo.PaymentMethod", "LimitedToStores");
             DropColumn("dbo.ShippingMethod", "LimitedToStores");
             CreateIndex("dbo.ShippingMethodRestrictions", "Country_Id");

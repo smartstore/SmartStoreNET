@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
@@ -9,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Data.Caching;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
@@ -30,32 +28,26 @@ namespace SmartStore.Data
         {
             get
             {
-				if (_context.ForceNoTracking)
-				{
-					return this.Entities.AsNoTracking();
-				}
+                if (_context.ForceNoTracking)
+                {
+                    return this.Entities.AsNoTracking();
+                }
 
-				return this.Entities;
+                return this.Entities;
             }
         }
 
         public virtual IQueryable<T> TableUntracked
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return this.Entities.AsNoTracking();
-            }
+            get => this.Entities.AsNoTracking();
         }
 
         public virtual ICollection<T> Local
-		{
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-			{
-				return this.Entities.Local;
-			}
-		}
+            get => this.Entities.Local;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual T Create()
@@ -77,17 +69,17 @@ namespace SmartStore.Data
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual T Attach(T entity)
-		{
-			return this.Entities.Attach(entity);
-		}
-
-		public virtual void Insert(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            return this.Entities.Attach(entity);
+        }
 
-			this.Entities.Add(entity);
-			if (this.AutoCommitEnabledInternal)
-				_context.SaveChanges();
+        public virtual void Insert(T entity)
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            this.Entities.Add(entity);
+            if (this.AutoCommitEnabledInternal)
+                _context.SaveChanges();
         }
 
         public virtual async Task InsertAsync(T entity)
@@ -139,11 +131,11 @@ namespace SmartStore.Data
 
         public virtual void Update(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            Guard.NotNull(entity, nameof(entity));
 
-			ChangeStateToModifiedIfApplicable(entity);
-			if (this.AutoCommitEnabledInternal)
-				_context.SaveChanges();
+            ChangeStateToModifiedIfApplicable(entity);
+            if (this.AutoCommitEnabledInternal)
+                _context.SaveChanges();
         }
 
         public virtual async Task UpdateAsync(T entity)
@@ -156,19 +148,19 @@ namespace SmartStore.Data
         }
 
         public virtual void UpdateRange(IEnumerable<T> entities)
-		{
-			Guard.NotNull(entities, nameof(entities));
+        {
+            Guard.NotNull(entities, nameof(entities));
 
-			foreach (var entity in entities)
-			{
-				ChangeStateToModifiedIfApplicable(entity);
-			}
+            foreach (var entity in entities)
+            {
+                ChangeStateToModifiedIfApplicable(entity);
+            }
 
-			if (this.AutoCommitEnabledInternal)
-			{
-				_context.SaveChanges();
-			}
-		}
+            if (this.AutoCommitEnabledInternal)
+            {
+                _context.SaveChanges();
+            }
+        }
 
         public virtual async Task UpdateRangeAsync(IEnumerable<T> entities)
         {
@@ -186,37 +178,37 @@ namespace SmartStore.Data
         }
 
         private void ChangeStateToModifiedIfApplicable(T entity)
-		{
-			if (entity.IsTransientRecord())
-				return;
-
-			var entry = InternalContext.Entry(entity);
-
-			if (entry.State == EfState.Detached)
-			{
-				// Entity was detached before or was explicitly constructed.
-				// This unfortunately sets all properties to modified.
-				entry.State = EfState.Modified;
-			}
-			else if (entry.State == EfState.Unchanged)
-			{
-				// We simply do nothing here, because it is ensured now that DetectChanges()
-				// gets implicitly called prior SaveChanges().
-
-				//if (this.AutoCommitEnabledInternal && !ctx.Configuration.AutoDetectChangesEnabled)
-				//{
-				//	_context.DetectChanges();
-				//}
-			}
-		}
-
-		public virtual void Delete(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            if (entity.IsTransientRecord())
+                return;
 
-			InternalContext.Entry(entity).State = EfState.Deleted;
-			if (this.AutoCommitEnabledInternal)
-				_context.SaveChanges(); 
+            var entry = InternalContext.Entry(entity);
+
+            if (entry.State == EfState.Detached)
+            {
+                // Entity was detached before or was explicitly constructed.
+                // This unfortunately sets all properties to modified.
+                entry.State = EfState.Modified;
+            }
+            else if (entry.State == EfState.Unchanged)
+            {
+                // We simply do nothing here, because it is ensured now that DetectChanges()
+                // gets implicitly called prior SaveChanges().
+
+                //if (this.AutoCommitEnabledInternal && !ctx.Configuration.AutoDetectChangesEnabled)
+                //{
+                //	_context.DetectChanges();
+                //}
+            }
+        }
+
+        public virtual void Delete(T entity)
+        {
+            Guard.NotNull(entity, nameof(entity));
+
+            InternalContext.Entry(entity).State = EfState.Deleted;
+            if (this.AutoCommitEnabledInternal)
+                _context.SaveChanges();
         }
 
         public virtual async Task DeleteAsync(T entity)
@@ -229,19 +221,19 @@ namespace SmartStore.Data
         }
 
         public virtual void DeleteRange(IEnumerable<T> entities)
-		{
-			Guard.NotNull(entities, nameof(entities));
+        {
+            Guard.NotNull(entities, nameof(entities));
 
-			foreach (var entity in entities)
-			{
-				InternalContext.Entry(entity).State = EfState.Deleted;
-			}
+            foreach (var entity in entities)
+            {
+                InternalContext.Entry(entity).State = EfState.Deleted;
+            }
 
-			if (this.AutoCommitEnabledInternal)
-			{
-				_context.SaveChanges();
-			}	
-		}
+            if (this.AutoCommitEnabledInternal)
+            {
+                _context.SaveChanges();
+            }
+        }
 
         public virtual async Task DeleteRangeAsync(IEnumerable<T> entities)
         {
@@ -267,7 +259,7 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
-		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
+        [Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path)
         {
             Guard.NotNull(query, "query");
@@ -276,29 +268,17 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
-		public virtual IDbContext Context
-        {
-            get { return _context; }
-        }
+        public virtual IDbContext Context => _context;
 
         public bool? AutoCommitEnabled { get; set; }
 
-		private bool AutoCommitEnabledInternal
-		{
-			get
-			{
-				return this.AutoCommitEnabled ?? _context.AutoCommitEnabled;
-			}
-		}
+        private bool AutoCommitEnabledInternal => this.AutoCommitEnabled ?? _context.AutoCommitEnabled;
 
         #endregion
 
         #region Helpers
 
-        protected internal ObjectContextBase InternalContext
-        {
-            get { return _context as ObjectContextBase; }
-        }
+        protected internal ObjectContextBase InternalContext => _context as ObjectContextBase;
 
         private DbSet<T> Entities
         {

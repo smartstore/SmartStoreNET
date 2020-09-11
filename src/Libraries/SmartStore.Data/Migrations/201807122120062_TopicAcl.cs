@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class TopicAcl : DbMigration
     {
         public override void Up()
@@ -14,7 +13,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Topic", "IsPublished", c => c.Boolean(nullable: false, defaultValue: true));
             CreateIndex("dbo.Customer", "CustomerNumber", name: "IX_Customer_CustomerNumber");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.Customer", "IX_Customer_CustomerNumber");

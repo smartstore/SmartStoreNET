@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace SmartStore.Data.Setup
+﻿namespace SmartStore.Data.Setup
 {
-	
-	public interface ILocaleResourcesProvider
-	{
-		void MigrateLocaleResources(LocaleResourcesBuilder builder);
-	}
+
+    public interface ILocaleResourcesProvider
+    {
+        void MigrateLocaleResources(LocaleResourcesBuilder builder);
+    }
 
 }

@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
     using SmartStore.Core.Domain.Localization;
@@ -14,20 +13,20 @@ namespace SmartStore.Data.Migrations
             CreateTable(
                 "dbo.RuleSet_Category_Mapping",
                 c => new
-                    {
-                        Category_Id = c.Int(nullable: false),
-                        RuleSetEntity_Id = c.Int(nullable: false),
-                    })
+                {
+                    Category_Id = c.Int(nullable: false),
+                    RuleSetEntity_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.Category_Id, t.RuleSetEntity_Id })
                 .ForeignKey("dbo.Category", t => t.Category_Id, cascadeDelete: true)
                 .ForeignKey("dbo.RuleSet", t => t.RuleSetEntity_Id, cascadeDelete: true)
                 .Index(t => t.Category_Id)
                 .Index(t => t.RuleSetEntity_Id);
-            
+
             AddColumn("dbo.Product_Category_Mapping", "IsSystemMapping", c => c.Boolean(nullable: false));
             CreateIndex("dbo.Product_Category_Mapping", "IsSystemMapping");
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.RuleSet_Category_Mapping", "RuleSetEntity_Id", "dbo.RuleSet");

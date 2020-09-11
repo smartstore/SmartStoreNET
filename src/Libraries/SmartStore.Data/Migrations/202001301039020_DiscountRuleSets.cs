@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Core.Data;
     using SmartStore.Data.Setup;
@@ -13,45 +12,45 @@ namespace SmartStore.Data.Migrations
             CreateTable(
                 "dbo.RuleSet_PaymentMethod_Mapping",
                 c => new
-                    {
-                        PaymentMethod_Id = c.Int(nullable: false),
-                        RuleSetEntity_Id = c.Int(nullable: false),
-                    })
+                {
+                    PaymentMethod_Id = c.Int(nullable: false),
+                    RuleSetEntity_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.PaymentMethod_Id, t.RuleSetEntity_Id })
                 .ForeignKey("dbo.PaymentMethod", t => t.PaymentMethod_Id, cascadeDelete: true)
                 .ForeignKey("dbo.RuleSet", t => t.RuleSetEntity_Id, cascadeDelete: true)
                 .Index(t => t.PaymentMethod_Id)
                 .Index(t => t.RuleSetEntity_Id);
-            
+
             CreateTable(
                 "dbo.RuleSet_ShippingMethod_Mapping",
                 c => new
-                    {
-                        ShippingMethod_Id = c.Int(nullable: false),
-                        RuleSetEntity_Id = c.Int(nullable: false),
-                    })
+                {
+                    ShippingMethod_Id = c.Int(nullable: false),
+                    RuleSetEntity_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.ShippingMethod_Id, t.RuleSetEntity_Id })
                 .ForeignKey("dbo.ShippingMethod", t => t.ShippingMethod_Id, cascadeDelete: true)
                 .ForeignKey("dbo.RuleSet", t => t.RuleSetEntity_Id, cascadeDelete: true)
                 .Index(t => t.ShippingMethod_Id)
                 .Index(t => t.RuleSetEntity_Id);
-            
+
             CreateTable(
                 "dbo.RuleSet_Discount_Mapping",
                 c => new
-                    {
-                        Discount_Id = c.Int(nullable: false),
-                        RuleSetEntity_Id = c.Int(nullable: false),
-                    })
+                {
+                    Discount_Id = c.Int(nullable: false),
+                    RuleSetEntity_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.Discount_Id, t.RuleSetEntity_Id })
                 .ForeignKey("dbo.Discount", t => t.Discount_Id, cascadeDelete: true)
                 .ForeignKey("dbo.RuleSet", t => t.RuleSetEntity_Id, cascadeDelete: true)
                 .Index(t => t.Discount_Id)
                 .Index(t => t.RuleSetEntity_Id);
-            
+
             CreateIndex("dbo.RuleSet", "IsSubGroup");
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.RuleSet_Discount_Mapping", "RuleSetEntity_Id", "dbo.RuleSet");

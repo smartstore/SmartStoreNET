@@ -9,7 +9,7 @@ namespace SmartStore.Data.Mapping.Discounts
         {
             this.ToTable("DiscountUsageHistory");
             this.HasKey(duh => duh.Id);
-            
+
             this.HasRequired(duh => duh.Discount)
                 .WithMany()
                 .HasForeignKey(duh => duh.DiscountId);

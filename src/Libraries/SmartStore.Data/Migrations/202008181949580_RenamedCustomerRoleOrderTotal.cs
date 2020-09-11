@@ -1,8 +1,7 @@
 ﻿namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class RenamedCustomerRoleOrderTotal : DbMigration
     {
         public override void Up()

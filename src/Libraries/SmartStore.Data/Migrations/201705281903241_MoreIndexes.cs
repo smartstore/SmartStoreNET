@@ -1,58 +1,58 @@
 namespace SmartStore.Data.Migrations
 {
-	using System.Data.Entity.Migrations;
-	using System.Web.Hosting;
-	using Core.Data;
+    using System.Data.Entity.Migrations;
+    using System.Web.Hosting;
+    using Core.Data;
     using SmartStore.Data.Setup;
 
     public partial class MoreIndexes : DbMigration
-	{
-		public override void Up()
-		{
-			if (!DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
+    {
+        public override void Up()
+        {
+            if (!DbMigrationContext.Current.SuppressInitialCreate<SmartObjectContext>())
             {
                 UpInitial();
             }
-            
-            if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
-			{
-				// Avoid "Column 'Name' in table 'dbo.ProductVariantAttributeValue' is of a type that is invalid for use as a key column in an index".
-				Sql("If -1 = (SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'ProductVariantAttributeValue' AND COLUMN_NAME = 'Name') ALTER TABLE [dbo].[ProductVariantAttributeValue] ALTER COLUMN [Name] nvarchar(4000) NULL;");
-			}
 
-			CreateIndex("dbo.Product_Category_Mapping", "IsFeaturedProduct");
-			CreateIndex("dbo.Product_Manufacturer_Mapping", "IsFeaturedProduct");
-			CreateIndex("dbo.SpecificationAttribute", "AllowFiltering");
-			CreateIndex("dbo.Product_ProductAttribute_Mapping", "AttributeControlTypeId");
-			CreateIndex("dbo.ProductAttribute", "AllowFiltering");
-			CreateIndex("dbo.ProductVariantAttributeValue", "ValueTypeId");
+            if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
+            {
+                // Avoid "Column 'Name' in table 'dbo.ProductVariantAttributeValue' is of a type that is invalid for use as a key column in an index".
+                Sql("If -1 = (SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'ProductVariantAttributeValue' AND COLUMN_NAME = 'Name') ALTER TABLE [dbo].[ProductVariantAttributeValue] ALTER COLUMN [Name] nvarchar(4000) NULL;");
+            }
+
+            CreateIndex("dbo.Product_Category_Mapping", "IsFeaturedProduct");
+            CreateIndex("dbo.Product_Manufacturer_Mapping", "IsFeaturedProduct");
+            CreateIndex("dbo.SpecificationAttribute", "AllowFiltering");
+            CreateIndex("dbo.Product_ProductAttribute_Mapping", "AttributeControlTypeId");
+            CreateIndex("dbo.ProductAttribute", "AllowFiltering");
+            CreateIndex("dbo.ProductVariantAttributeValue", "ValueTypeId");
 
             // Useless index. The name field with 4000 characters is too long for an index.
             if (DataSettings.Current.IsSqlServer)
             {
                 CreateIndex("dbo.ProductVariantAttributeValue", "Name");
             }
-		}
+        }
 
-		public override void Down()
-		{
+        public override void Down()
+        {
             if (DataSettings.Current.IsSqlServer)
             {
                 DropIndex("dbo.ProductVariantAttributeValue", new[] { "Name" });
             }
 
             DropIndex("dbo.ProductVariantAttributeValue", new[] { "ValueTypeId" });
-			DropIndex("dbo.ProductAttribute", new[] { "AllowFiltering" });
-			DropIndex("dbo.Product_ProductAttribute_Mapping", new[] { "AttributeControlTypeId" });
-			DropIndex("dbo.SpecificationAttribute", new[] { "AllowFiltering" });
-			DropIndex("dbo.Product_Manufacturer_Mapping", new[] { "IsFeaturedProduct" });
-			DropIndex("dbo.Product_Category_Mapping", new[] { "IsFeaturedProduct" });
+            DropIndex("dbo.ProductAttribute", new[] { "AllowFiltering" });
+            DropIndex("dbo.Product_ProductAttribute_Mapping", new[] { "AttributeControlTypeId" });
+            DropIndex("dbo.SpecificationAttribute", new[] { "AllowFiltering" });
+            DropIndex("dbo.Product_Manufacturer_Mapping", new[] { "IsFeaturedProduct" });
+            DropIndex("dbo.Product_Category_Mapping", new[] { "IsFeaturedProduct" });
 
             DownInitial();
-		}
+        }
 
-		private void UpInitial()
-		{
+        private void UpInitial()
+        {
             #region auto-generated
 
             CreateTable(
@@ -2141,7 +2141,7 @@ namespace SmartStore.Data.Migrations
         }
 
         private void DownInitial()
-		{
+        {
             DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
             DropForeignKey("dbo.ProductReview", "Id", "dbo.CustomerContent");
             DropForeignKey("dbo.ProductReviewHelpfulness", "ProductReviewId", "dbo.ProductReview");
@@ -2508,5 +2508,5 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.TaxCategory");
             DropTable("dbo.Topic");
         }
-	}
+    }
 }

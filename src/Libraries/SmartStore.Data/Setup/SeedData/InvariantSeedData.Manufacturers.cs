@@ -323,7 +323,7 @@ namespace SmartStore.Data.Setup
 
             var entities = new List<Manufacturer>
             {
-                manufacturerEASports, manufacturerWarnerHome, manufacturerBreitling, manufacturerTissot, manufacturerSeiko, 
+                manufacturerEASports, manufacturerWarnerHome, manufacturerBreitling, manufacturerTissot, manufacturerSeiko,
                 manufacturerTitleist, manufacturerApple, manufacturerFestina, manufacturerCertina,
                 manufacturerSony, manufacturerUbisoft, manufacturerOakley, manufacturerRayban, manufacturerAdidas,
                 manufacturerPuma, manufacturerNike,  manufacturerJackWolfskin, manufacturerMicrosoft,

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Configuration;
 
@@ -73,13 +70,13 @@ namespace SmartStore.Data.Setup
                     TKey key = fn.Invoke(entity);
                     _entityMap.Add(key, entity);
                 }
-                
+
             }
 
             public SeedEntityAlterer<T, TKey> Alter(TKey key, Action<T> action)
             {
                 T entity = default(T);
-                if (_entityMap.TryGetValue(key, out entity)) 
+                if (_entityMap.TryGetValue(key, out entity))
                 {
                     action(entity);
                 }

@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using Setup;
-    using System;
     using System.Data.Entity.Migrations;
+    using Setup;
 
     public partial class TierPriceCalcMethod : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
@@ -10,17 +9,14 @@ namespace SmartStore.Data.Migrations
         {
             AddColumn("dbo.TierPrice", "CalculationMethod", c => c.Int(nullable: false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.TierPrice", "CalculationMethod");
         }
 
-		public bool RollbackOnFailure
-		{
-			get { return false; }
-		}
-        
+        public bool RollbackOnFailure => false;
+
         public void Seed(SmartObjectContext context)
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
@@ -41,7 +37,7 @@ namespace SmartStore.Data.Migrations
                 "Specifies whether to apply tierprice percentage to attribute price adjustments",
                 "Bestimmt ob prozentuale Erm‰ﬂigungen von Staffelpreisen auf Auf- & Abpreise von Attributen angewendet werden sollen");
 
-			builder.AddOrUpdate("Admin.Header.Account", "Account", "Account");
+            builder.AddOrUpdate("Admin.Header.Account", "Account", "Account");
         }
     }
 }

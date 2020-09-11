@@ -1,13 +1,12 @@
 namespace SmartStore.Data.Migrations
 {
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using System.Web.Hosting;
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Catalog;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
-    using System;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
-    using System.Web.Hosting;
 
     public partial class DownloadVersions : DbMigration, IDataSeeder<SmartObjectContext>
     {
@@ -37,10 +36,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.Download", "EntityId");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return true; }
-        }
+        public bool RollbackOnFailure => true;
 
         public void Seed(SmartObjectContext context)
         {

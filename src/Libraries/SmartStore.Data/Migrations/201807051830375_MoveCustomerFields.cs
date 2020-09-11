@@ -4,13 +4,11 @@ namespace SmartStore.Data.Migrations
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using System.Linq;
-    using SmartStore.Core.Domain.Common;
-    using SmartStore.Core.Domain.Customers;
     using SmartStore.Data.Setup;
-	using SmartStore.Data.Utilities;
+    using SmartStore.Data.Utilities;
 
-	public partial class MoveCustomerFields : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
-	{
+    public partial class MoveCustomerFields : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
+    {
         public override void Up()
         {
             AddColumn("dbo.Customer", "Salutation", c => c.String(maxLength: 50));
@@ -26,7 +24,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.Customer", "CustomerNumber", name: "IX_Customer_CustomerNumber", unique: false);
             CreateIndex("dbo.Customer", "BirthDate", name: "IX_Customer_BirthDate");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.Customer", "IX_Customer_BirthDate");
@@ -43,10 +41,10 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.Customer", "Salutation");
         }
 
-		public bool RollbackOnFailure => true;
+        public bool RollbackOnFailure => true;
 
-		public void Seed(SmartObjectContext context)
-		{
+        public void Seed(SmartObjectContext context)
+        {
             context.MigrateLocaleResources(MigrateLocaleResources);
 
             // Perf
@@ -87,20 +85,20 @@ namespace SmartStore.Data.Migrations
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
-		{
-			builder.Delete(
-				"Admin.Customers.Customers.List.SearchFirstName",
-				"Admin.Customers.Customers.List.SearchFirstName.Hint",
-				"Admin.Customers.Customers.List.SearchLastName",
-				"Admin.Customers.Customers.List.SearchLastName.Hint",
-				"Admin.Customers.Customers.List.SearchCompany",
-				"Admin.Customers.Customers.List.SearchCompany.Hint");
+        {
+            builder.Delete(
+                "Admin.Customers.Customers.List.SearchFirstName",
+                "Admin.Customers.Customers.List.SearchFirstName.Hint",
+                "Admin.Customers.Customers.List.SearchLastName",
+                "Admin.Customers.Customers.List.SearchLastName.Hint",
+                "Admin.Customers.Customers.List.SearchCompany",
+                "Admin.Customers.Customers.List.SearchCompany.Hint");
 
-			builder.AddOrUpdate("Admin.Customers.Customers.List.SearchTerm",
-				"Search term",
-				"Suchbegriff",
-				"Name or company",
-				"Name oder Firma");
-		}
-	}
+            builder.AddOrUpdate("Admin.Customers.Customers.List.SearchTerm",
+                "Search term",
+                "Suchbegriff",
+                "Name or company",
+                "Name oder Firma");
+        }
+    }
 }

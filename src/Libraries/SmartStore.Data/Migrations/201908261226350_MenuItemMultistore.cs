@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
@@ -14,7 +13,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.MenuItemRecord", "LimitedToStores", name: "IX_MenuItem_LimitedToStores");
             CreateIndex("dbo.MenuItemRecord", "SubjectToAcl", name: "IX_MenuItem_SubjectToAcl");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.MenuItemRecord", "IX_MenuItem_SubjectToAcl");

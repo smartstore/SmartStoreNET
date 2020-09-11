@@ -1,10 +1,9 @@
 ﻿namespace SmartStore.Data.Migrations
 {
+    using System.Data.Entity.Migrations;
     using SmartStore.Core.Data;
     using SmartStore.Data.Setup;
-    using System;
-    using System.Data.Entity.Migrations;
-    
+
     public partial class ShopIcons : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
@@ -15,7 +14,7 @@
             AddColumn("dbo.Store", "MsTileImageMediaFileId", c => c.Int(nullable: false));
             AddColumn("dbo.Store", "MsTileColor", c => c.String());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Store", "MsTileColor");

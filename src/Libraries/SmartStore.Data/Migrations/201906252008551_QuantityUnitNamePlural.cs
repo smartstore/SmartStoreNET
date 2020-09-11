@@ -12,7 +12,7 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.QuantityUnit", "NamePlural", c => c.String(nullable: false, maxLength: 50, defaultValue: "" ));
+            AddColumn("dbo.QuantityUnit", "NamePlural", c => c.String(nullable: false, maxLength: 50, defaultValue: ""));
         }
 
         public override void Down()

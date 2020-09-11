@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Web.Hosting;
     using SmartStore.Core.Data;
@@ -25,7 +24,7 @@ namespace SmartStore.Data.Migrations
 
                 Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_SeekExport1' AND object_id = OBJECT_ID('[dbo].[Product]')) DROP INDEX [IX_SeekExport1] ON [dbo].[Product];");
 
-				Sql(@"CREATE NONCLUSTERED INDEX [IX_SeekExport1] ON [dbo].[Product]
+                Sql(@"CREATE NONCLUSTERED INDEX [IX_SeekExport1] ON [dbo].[Product]
                 (
 	                [Published] ASC,
 	                [Id] ASC,
@@ -63,7 +62,7 @@ namespace SmartStore.Data.Migrations
                     "END\r\n");
             }
         }
-        
+
         public override void Down()
         {
             if (DataSettings.Current.IsSqlServer)

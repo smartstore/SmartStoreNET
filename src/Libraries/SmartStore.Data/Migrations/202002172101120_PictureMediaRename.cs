@@ -112,7 +112,7 @@ namespace SmartStore.Data.Migrations
                     new[] { "dbo.MediaFile", "Id", "false", "FK_dbo.Category_dbo.Picture_PictureId" },
                     true,
                     true);
-                
+
                 RenameColumnCe("dbo.MediaFile", "SeoFilename", "Name", c => c.String(maxLength: 300));
 
                 RenameColumnCe("dbo.Product_MediaFile_Mapping", "PictureId", "MediaFileId", c => c.Int(nullable: false),
@@ -120,7 +120,7 @@ namespace SmartStore.Data.Migrations
                     new[] { "dbo.MediaFile", "Id", "true", "FK_dbo.Product_Picture_Mapping_dbo.Picture_PictureId" },
                     true,
                     true);
-                
+
                 RenameColumnCe("dbo.Manufacturer", "PictureId", "MediaFileId", c => c.Int(),
                     new[] { "PictureId", "dbo.Picture" },
                     new[] { "dbo.MediaFile", "Id", "false", "FK_dbo.Manufacturer_dbo.Picture_PictureId" },
@@ -136,7 +136,7 @@ namespace SmartStore.Data.Migrations
                 RenameColumnCe("dbo.Store", "LogoPictureId", "LogoMediaFileId", c => c.Int(nullable: false));
             }
         }
-        
+
         public override void Down()
         {
             if (DataSettings.Current.IsSqlServer)

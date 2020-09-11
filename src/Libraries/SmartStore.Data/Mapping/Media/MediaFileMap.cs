@@ -24,9 +24,9 @@ namespace SmartStore.Data.Mapping.Media
                 .WillCascadeOnDelete(false);
 
             HasOptional(x => x.MediaStorage)
-				.WithMany()
-				.HasForeignKey(x => x.MediaStorageId)
-				.WillCascadeOnDelete(false);
+                .WithMany()
+                .HasForeignKey(x => x.MediaStorageId)
+                .WillCascadeOnDelete(false);
 
             HasMany(x => x.Tags)
                 .WithMany(t => t.MediaFiles)

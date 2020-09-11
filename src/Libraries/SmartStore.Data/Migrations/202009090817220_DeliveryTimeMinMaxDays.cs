@@ -1,6 +1,5 @@
 ﻿namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
     using SmartStore.Core.Data;
@@ -16,7 +15,7 @@
             AddColumn("dbo.DeliveryTime", "MinDays", c => c.Int());
             AddColumn("dbo.DeliveryTime", "MaxDays", c => c.Int());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.DeliveryTime", "MaxDays");

@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class NewPropertiesAndIndexes : DbMigration
     {
         public override void Up()
@@ -24,7 +23,7 @@ namespace SmartStore.Data.Migrations
             AddForeignKey("dbo.Country", "DefaultCurrencyId", "dbo.Currency", "Id");
             AddForeignKey("dbo.CheckoutAttributeValue", "MediaFileId", "dbo.MediaFile", "Id");
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.CheckoutAttributeValue", "MediaFileId", "dbo.MediaFile");

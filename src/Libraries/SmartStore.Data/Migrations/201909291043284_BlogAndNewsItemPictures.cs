@@ -1,13 +1,12 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
     public partial class BlogAndNewsItemPictures : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
-        {   
+        {
             AddColumn("dbo.BlogPost", "PictureId", c => c.Int());
             AddColumn("dbo.BlogPost", "PreviewPictureId", c => c.Int());
             AddColumn("dbo.BlogPost", "SectionBg", c => c.String(maxLength: 100));
@@ -18,7 +17,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.News", "PictureId", c => c.Int());
             AddColumn("dbo.News", "PreviewPictureId", c => c.Int());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.News", "PreviewPictureId");
@@ -95,7 +94,7 @@ namespace SmartStore.Data.Migrations
                 "Veröffentlicht",
                 "Specifies whether the blog post is published and thus will be displayed in the frontend",
                 "Bestimmt, ob der Blog-Eintrag veröffentlicht ist und somit im Frontend dargestellt wird.");
-            
+
             builder.AddOrUpdate("Common.Cms.EditBlogPost",
                 "Edit blog post",
                 "Blog-Post bearbeiten");

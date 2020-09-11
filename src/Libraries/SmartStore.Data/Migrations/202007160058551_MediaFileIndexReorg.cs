@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class MediaFileIndexReorg : DbMigration
     {
         public override void Up()
@@ -25,7 +24,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.MediaFile", new[] { "FolderId", "Size", "Deleted" }, name: "IX_Media_Size");
             CreateIndex("dbo.MediaFile", new[] { "FolderId", "Deleted" }, name: "IX_Media_UpdatedOnUtc");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.MediaFile", "IX_Media_UpdatedOnUtc");

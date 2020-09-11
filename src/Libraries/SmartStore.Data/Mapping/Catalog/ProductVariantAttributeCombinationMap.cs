@@ -13,7 +13,7 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(pvac => pvac.Sku).HasMaxLength(400);
             Property(pvac => pvac.ManufacturerPartNumber).HasMaxLength(400);
             Property(pvac => pvac.Gtin).HasMaxLength(400);
-			Property(pvac => pvac.Price).HasPrecision(18, 4);
+            Property(pvac => pvac.Price).HasPrecision(18, 4);
             Property(pvac => pvac.AssignedMediaFileIds).HasMaxLength(1000).HasColumnName("AssignedMediaFileIds");
             Property(pvac => pvac.Length).HasPrecision(18, 4);
             Property(pvac => pvac.Width).HasPrecision(18, 4);

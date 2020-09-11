@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Core.Data;
 
@@ -15,7 +14,7 @@ namespace SmartStore.Data.Migrations
             }
             CreateIndex("dbo.Product", new[] { "Published", "Deleted", "IsSystemProduct" }, name: "IX_Product_Published_Deleted_IsSystemProduct");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.Product", "IX_Product_Published_Deleted_IsSystemProduct");

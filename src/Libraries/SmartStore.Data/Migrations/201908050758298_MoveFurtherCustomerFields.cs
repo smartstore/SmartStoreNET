@@ -1,13 +1,11 @@
 namespace SmartStore.Data.Migrations
 {
-    using SmartStore.Core.Domain.Common;
-    using SmartStore.Core.Domain.Customers;
-    using SmartStore.Data.Setup;
-    using SmartStore.Data.Utilities;
     using System;
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
-    
+    using SmartStore.Data.Setup;
+    using SmartStore.Data.Utilities;
+
     public partial class MoveFurtherCustomerFields : DbMigration, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
@@ -24,7 +22,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Customer", "LastUserAgent", c => c.String());
             AddColumn("dbo.Customer", "LastUserDeviceType", c => c.String());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Customer", "LastUserDeviceType");

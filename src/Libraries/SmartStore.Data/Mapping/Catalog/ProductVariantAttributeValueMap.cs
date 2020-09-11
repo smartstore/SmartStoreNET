@@ -16,7 +16,7 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(pvav => pvav.PriceAdjustment).HasPrecision(18, 4);
             Property(pvav => pvav.WeightAdjustment).HasPrecision(18, 4);
 
-			Ignore(pvav => pvav.ValueType);
+            Ignore(pvav => pvav.ValueType);
 
             HasRequired(pvav => pvav.ProductVariantAttribute)
                 .WithMany(pva => pva.ProductVariantAttributeValues)

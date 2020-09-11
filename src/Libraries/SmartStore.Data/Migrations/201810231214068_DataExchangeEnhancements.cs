@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
@@ -14,7 +13,7 @@ namespace SmartStore.Data.Migrations
             AlterColumn("dbo.ScheduleTaskHistory", "MachineName", c => c.String(nullable: false, maxLength: 400));
             CreateIndex("dbo.ScheduleTaskHistory", new[] { "MachineName", "IsRunning" });
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.ScheduleTaskHistory", new[] { "MachineName", "IsRunning" });

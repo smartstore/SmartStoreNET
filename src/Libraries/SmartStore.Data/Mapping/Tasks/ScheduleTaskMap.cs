@@ -11,10 +11,10 @@ namespace SmartStore.Data.Mapping.Tasks
             HasKey(t => t.Id);
             Property(t => t.Name).HasMaxLength(500).IsRequired();
             Property(t => t.Type).HasMaxLength(800).IsRequired();
-			Property(t => t.Alias).HasMaxLength(500);
-			Property(t => t.CronExpression).HasMaxLength(1000);
+            Property(t => t.Alias).HasMaxLength(500);
+            Property(t => t.CronExpression).HasMaxLength(1000);
 
-			Ignore(t => t.IsPending);
+            Ignore(t => t.IsPending);
             Ignore(t => t.LastHistoryEntry);
         }
     }

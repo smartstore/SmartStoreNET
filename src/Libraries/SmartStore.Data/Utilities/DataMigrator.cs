@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Security.Policy;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -41,7 +36,7 @@ using EfState = System.Data.Entity.EntityState;
 namespace SmartStore.Data.Utilities
 {
     public static class DataMigrator
-	{
+    {
         #region Download.ProductId
 
         /// <summary>
@@ -55,23 +50,23 @@ namespace SmartStore.Data.Utilities
             if (ctx == null)
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			const string entityName = "Product";
+            const string entityName = "Product";
 
 #pragma warning disable 612, 618
             // Get all products with a download 
             var productQuery = from p in ctx.Set<Product>().AsNoTracking()
-                        where (p.DownloadId != 0)
-                        orderby p.Id
-                        select new { p.Id, p.DownloadId };
+                               where (p.DownloadId != 0)
+                               orderby p.Id
+                               select new { p.Id, p.DownloadId };
 #pragma warning restore 612, 618
 
             var downloads = context.Set<Download>().Select(x => x).ToDictionary(x => x.Id);
-            
+
             int pageIndex = -1;
             while (true)
             {
                 var products = PagedList.Create(productQuery, ++pageIndex, 1000);
-                
+
                 foreach (var p in products)
                 {
                     try
@@ -106,248 +101,248 @@ namespace SmartStore.Data.Utilities
         /// <param name="product">Product to fix</param>
         /// <returns><c>true</c> when value was fixed</returns>
         public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductMediaFile> entities = null)
-		{
-			Guard.NotNull(product, nameof(product));
+        {
+            Guard.NotNull(product, nameof(product));
 
-			// INFO: this method must be able to handle pre-save state also.
+            // INFO: this method must be able to handle pre-save state also.
 
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			entities = entities ?? product.ProductPictures;
-			if (entities == null)
-				return false;
+            entities = entities ?? product.ProductPictures;
+            if (entities == null)
+                return false;
 
-			var transientEntities = entities.Where(x => x.Id == 0);
+            var transientEntities = entities.Where(x => x.Id == 0);
 
-			var sortedEntities = entities
-				// Remove transient entities
-				.Except(transientEntities) 
-				.OrderBy(x => x.DisplayOrder)
-				.ThenBy(x => x.Id)
-				.Select(x => ctx.Entry(x))
-				// Remove deleted and detached entities
-				.Where(x => x.State != EfState.Deleted && x.State != EfState.Detached) 
-				.Select(x => x.Entity)
-				// Added/transient entities must be appended
-				.Concat(transientEntities.OrderBy(x => x.DisplayOrder));
+            var sortedEntities = entities
+                // Remove transient entities
+                .Except(transientEntities)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.Id)
+                .Select(x => ctx.Entry(x))
+                // Remove deleted and detached entities
+                .Where(x => x.State != EfState.Deleted && x.State != EfState.Detached)
+                .Select(x => x.Entity)
+                // Added/transient entities must be appended
+                .Concat(transientEntities.OrderBy(x => x.DisplayOrder));
 
-			var newMainPictureId = sortedEntities.FirstOrDefault()?.MediaFileId;
+            var newMainPictureId = sortedEntities.FirstOrDefault()?.MediaFileId;
 
-			if (newMainPictureId != product.MainPictureId)
-			{
-				product.MainPictureId = newMainPictureId;
-				return true;
-			}
+            if (newMainPictureId != product.MainPictureId)
+            {
+                product.MainPictureId = newMainPictureId;
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		/// <summary>
-		/// Traverses all products and fixes 'MainPictureId' property values if it is out of sync.
-		/// </summary>
-		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
-		/// <param name="ifModifiedSinceUtc">Minimum modified or created date of products to process. Pass <c>null</c> to fix all products.</param>
-		/// <returns>The total count of fixed and updated product entities</returns>
-		public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
-		{
-			return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);
-		}
+        /// <summary>
+        /// Traverses all products and fixes 'MainPictureId' property values if it is out of sync.
+        /// </summary>
+        /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
+        /// <param name="ifModifiedSinceUtc">Minimum modified or created date of products to process. Pass <c>null</c> to fix all products.</param>
+        /// <returns>The total count of fixed and updated product entities</returns>
+        public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
+        {
+            return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);
+        }
 
-		/// <summary>
-		/// Called from migration seeder and only processes product entities without MainPictureId value.
-		/// </summary>
-		/// <returns>The total count of fixed and updated product entities</returns>
-		internal static int FixProductMainPictureIds(IDbContext context, bool initial, DateTime? ifModifiedSinceUtc = null)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        /// <summary>
+        /// Called from migration seeder and only processes product entities without MainPictureId value.
+        /// </summary>
+        /// <returns>The total count of fixed and updated product entities</returns>
+        internal static int FixProductMainPictureIds(IDbContext context, bool initial, DateTime? ifModifiedSinceUtc = null)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			var query = from p in ctx.Set<Product>().AsNoTracking()
-						where (!initial || p.MainPictureId == null) && (ifModifiedSinceUtc == null || p.UpdatedOnUtc >= ifModifiedSinceUtc.Value)
-						orderby p.Id
-						select new { p.Id, p.MainPictureId };	
+            var query = from p in ctx.Set<Product>().AsNoTracking()
+                        where (!initial || p.MainPictureId == null) && (ifModifiedSinceUtc == null || p.UpdatedOnUtc >= ifModifiedSinceUtc.Value)
+                        orderby p.Id
+                        select new { p.Id, p.MainPictureId };
 
-			// Key = ProductId, Value = MainPictureId
-			var toUpdate = new Dictionary<int, int?>();
+            // Key = ProductId, Value = MainPictureId
+            var toUpdate = new Dictionary<int, int?>();
 
-			// 1st pass
-			int pageIndex = -1;
-			while (true)
-			{
-				var products = PagedList.Create(query, ++pageIndex, 1000);
-				var map = GetPoductPictureMap(ctx, products.Select(x => x.Id).ToArray());
+            // 1st pass
+            int pageIndex = -1;
+            while (true)
+            {
+                var products = PagedList.Create(query, ++pageIndex, 1000);
+                var map = GetPoductPictureMap(ctx, products.Select(x => x.Id).ToArray());
 
-				foreach (var p in products)
-				{
-					int? fixedPictureId = null;
-					if (map.ContainsKey(p.Id))
-					{
-						// Product has still a pic.
-						fixedPictureId = map[p.Id];
-					}
+                foreach (var p in products)
+                {
+                    int? fixedPictureId = null;
+                    if (map.ContainsKey(p.Id))
+                    {
+                        // Product has still a pic.
+                        fixedPictureId = map[p.Id];
+                    }
 
-					// Update only if fixed PictureId differs from current
-					if (fixedPictureId != p.MainPictureId)
-					{
-						toUpdate.Add(p.Id, fixedPictureId);
-					}
-				}
+                    // Update only if fixed PictureId differs from current
+                    if (fixedPictureId != p.MainPictureId)
+                    {
+                        toUpdate.Add(p.Id, fixedPictureId);
+                    }
+                }
 
-				if (!products.HasNextPage)
-					break;
-			}
+                if (!products.HasNextPage)
+                    break;
+            }
 
-			// 2nd pass
-			foreach (var chunk in toUpdate.Slice(1000))
-			{
-				using (var tx = ctx.Database.BeginTransaction())
-				{
-					foreach (var kvp in chunk)
-					{
-						context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
-					}
+            // 2nd pass
+            foreach (var chunk in toUpdate.Slice(1000))
+            {
+                using (var tx = ctx.Database.BeginTransaction())
+                {
+                    foreach (var kvp in chunk)
+                    {
+                        context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
+                    }
 
-					context.SaveChanges();
-					tx.Commit();
-				}
-			}
+                    context.SaveChanges();
+                    tx.Commit();
+                }
+            }
 
-			return toUpdate.Count;
-		}
+            return toUpdate.Count;
+        }
 
-		private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
-		{
-			var map = new Dictionary<int, int>();
+        private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
+        {
+            var map = new Dictionary<int, int>();
 
-			var query = from pp in context.Set<ProductMediaFile>().AsNoTracking()
-						where productIds.Contains(pp.ProductId)
-						group pp by pp.ProductId into g
-						select new
-						{
-							ProductId = g.Key,
-							PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
-								.Take(1)
-								.Select(x => x.MediaFileId)
-						};
+            var query = from pp in context.Set<ProductMediaFile>().AsNoTracking()
+                        where productIds.Contains(pp.ProductId)
+                        group pp by pp.ProductId into g
+                        select new
+                        {
+                            ProductId = g.Key,
+                            PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
+                                .Take(1)
+                                .Select(x => x.MediaFileId)
+                        };
 
-			map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
+            map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
 
-			return map;
-		}
+            return map;
+        }
 
-		#endregion
+        #endregion
 
-		#region MoveFsMedia (V3.1)
+        #region MoveFsMedia (V3.1)
 
-		/// <summary>
-		/// Reorganizes media files in subfolders for V3.1
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static int MoveFsMedia(IDbContext context)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        /// <summary>
+        /// Reorganizes media files in subfolders for V3.1
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static int MoveFsMedia(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			int dirMaxLength = 4;
+            int dirMaxLength = 4;
 
-			// Check whether FS storage provider is active...
-			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Storage.Provider");
-			if (setting == null || !setting.Value.IsCaseInsensitiveEqual("MediaStorage.SmartStoreFileSystem"))
-			{
-				// DB provider is active: no need to move anything.
-				return 0;
-			}
+            // Check whether FS storage provider is active...
+            var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Storage.Provider");
+            if (setting == null || !setting.Value.IsCaseInsensitiveEqual("MediaStorage.SmartStoreFileSystem"))
+            {
+                // DB provider is active: no need to move anything.
+                return 0;
+            }
 
-			// What a huge, fucking hack! > IMediaFileSystem is defined in an
-			// assembly which we don't reference from here. But it also implements
-			// IFileSystem, which we can cast to.
-			var fsType = Type.GetType("SmartStore.Services.Media.IMediaFileSystem, SmartStore.Services");
-			var fs = EngineContext.Current.Resolve(fsType) as IFileSystem;
+            // What a huge, fucking hack! > IMediaFileSystem is defined in an
+            // assembly which we don't reference from here. But it also implements
+            // IFileSystem, which we can cast to.
+            var fsType = Type.GetType("SmartStore.Services.Media.IMediaFileSystem, SmartStore.Services");
+            var fs = EngineContext.Current.Resolve(fsType) as IFileSystem;
 
-			// Pattern for file matching. E.g. matches 0000234-0.png
-			var rg = new Regex(@"^([0-9]{7})-0[.](.{3,4})$", RegexOptions.Compiled | RegexOptions.Singleline);
-			var subfolders = new Dictionary<string, string>();
-			int i = 0;
+            // Pattern for file matching. E.g. matches 0000234-0.png
+            var rg = new Regex(@"^([0-9]{7})-0[.](.{3,4})$", RegexOptions.Compiled | RegexOptions.Singleline);
+            var subfolders = new Dictionary<string, string>();
+            int i = 0;
 
-			// Get root files
-			var files = fs.ListFiles("");
-			foreach (var chunk in files.Slice(500))
-			{
-				foreach (var file in chunk)
-				{
-					var match = rg.Match(file.Name);
-					if (match.Success)
-					{
-						var name = match.Groups[1].Value;
-						var ext = match.Groups[2].Value;
-						// The new file name without trailing -0
-						var newName = string.Concat(name, ".", ext);
-						// The subfolder name, e.g. 0024, when file name is 0024893.png
-						var dirName = name.Substring(0, dirMaxLength);
+            // Get root files
+            var files = fs.ListFiles("");
+            foreach (var chunk in files.Slice(500))
+            {
+                foreach (var file in chunk)
+                {
+                    var match = rg.Match(file.Name);
+                    if (match.Success)
+                    {
+                        var name = match.Groups[1].Value;
+                        var ext = match.Groups[2].Value;
+                        // The new file name without trailing -0
+                        var newName = string.Concat(name, ".", ext);
+                        // The subfolder name, e.g. 0024, when file name is 0024893.png
+                        var dirName = name.Substring(0, dirMaxLength);
 
-						if (!subfolders.TryGetValue(dirName, out string subfolder))
-						{
-							// Create subfolder "Storage/0000"
-							subfolder = fs.Combine("Storage", dirName);
-							fs.CreateFolder(subfolder);
-							subfolders[dirName] = subfolder;
-						}
+                        if (!subfolders.TryGetValue(dirName, out string subfolder))
+                        {
+                            // Create subfolder "Storage/0000"
+                            subfolder = fs.Combine("Storage", dirName);
+                            fs.CreateFolder(subfolder);
+                            subfolders[dirName] = subfolder;
+                        }
 
-						// Build destination path
-						var destinationPath = fs.Combine(subfolder, newName);
+                        // Build destination path
+                        var destinationPath = fs.Combine(subfolder, newName);
 
-						// Move the file now!
-						fs.RenameFile(file.Path, destinationPath);
-						i++;
-					}
-				}
-			}
+                        // Move the file now!
+                        fs.RenameFile(file.Path, destinationPath);
+                        i++;
+                    }
+                }
+            }
 
-			return i;
-		}
+            return i;
+        }
 
-		#endregion
+        #endregion
 
-		#region Address Formats
+        #region Address Formats
 
-		public static int ImportAddressFormats(IDbContext context)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        public static int ImportAddressFormats(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			var filePath = CommonHelper.MapPath("~/App_Data/AddressFormats.xml");
+            var filePath = CommonHelper.MapPath("~/App_Data/AddressFormats.xml");
 
-			if (!File.Exists(filePath))
-			{
-				return 0;
-			}
+            if (!File.Exists(filePath))
+            {
+                return 0;
+            }
 
-			var countries = ctx.Set<Country>()
-				.Where(x => x.AddressFormat == null)
-				.ToList()
-				.ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
+            var countries = ctx.Set<Country>()
+                .Where(x => x.AddressFormat == null)
+                .ToList()
+                .ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
 
-			var doc = XDocument.Load(filePath);
+            var doc = XDocument.Load(filePath);
 
-			foreach (var node in doc.Root.Nodes().OfType<XElement>())
-			{
-				var code = node.Attribute("code")?.Value?.Trim();
-				var format = node.Value.Trim();
+            foreach (var node in doc.Root.Nodes().OfType<XElement>())
+            {
+                var code = node.Attribute("code")?.Value?.Trim();
+                var format = node.Value.Trim();
 
-				if (code.HasValue() && countries.TryGetValue(code, out var country))
-				{
-					country.AddressFormat = format;
-				}
-			}
+                if (code.HasValue() && countries.TryGetValue(code, out var country))
+                {
+                    country.AddressFormat = format;
+                }
+            }
 
-			return ctx.SaveChanges();
-		}
+            return ctx.SaveChanges();
+        }
 
         #endregion
 
@@ -372,8 +367,8 @@ namespace SmartStore.Data.Utilities
         /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
         /// <returns>The total count of fixed and updated customer entities</returns>
         public static int MoveCustomerFields(
-            IDbContext context, 
-            Action<IDictionary<string, object>, string, string> updater, 
+            IDbContext context,
+            Action<IDictionary<string, object>, string, string> updater,
             params string[] candidates)
         {
             Guard.NotNull(updater, nameof(updater));
@@ -426,14 +421,14 @@ namespace SmartStore.Data.Utilities
 
             return numUpdated;
 
-            int GenerateAndExecuteSql(IEnumerable<CustomerStub> customers) 
+            int GenerateAndExecuteSql(IEnumerable<CustomerStub> customers)
             {
                 var sb = PooledStringBuilder.Rent();
 
                 foreach (var c in customers)
                 {
                     var attrs = c.Attributes.ToArray();
-                    
+
                     if (attrs.Length == 0)
                         continue;
 
@@ -1684,7 +1679,8 @@ DELETE TOP(20000) [c]
                 }
             }
 
-            /*static*/ T GetExtraData<T>(OldDiscountRequirement req, string name)
+            /*static*/
+            T GetExtraData<T>(OldDiscountRequirement req, string name)
             {
                 try
                 {
@@ -1705,7 +1701,8 @@ DELETE TOP(20000) [c]
                 return default(T);
             }
 
-            /*static*/ PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
+            /*static*/
+            PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
             {
                 try
                 {
@@ -1726,7 +1723,8 @@ DELETE TOP(20000) [c]
                 return null;
             }
 
-            /*static*/ void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
+            /*static*/
+            void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
             {
                 // Store id (if plugin is limited to stores).
                 var settingName = $"PluginSetting.{pluginSystemName}.LimitedToStores";

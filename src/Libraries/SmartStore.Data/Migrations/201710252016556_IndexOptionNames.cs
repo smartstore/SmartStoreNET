@@ -10,17 +10,14 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.SpecificationAttribute", "IndexOptionNames", c => c.Boolean(nullable: false));
             AddColumn("dbo.ProductAttribute", "IndexOptionNames", c => c.Boolean(nullable: false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.ProductAttribute", "IndexOptionNames");
             DropColumn("dbo.SpecificationAttribute", "IndexOptionNames");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

@@ -1,16 +1,15 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
-	using System.Data.Entity.Migrations;
-	using System.Web.Hosting;
-	using System.Linq;
-	using SmartStore.Core.Data;
-	using SmartStore.Core.Domain.Localization;
-	using SmartStore.Data.Setup;
-	using SmartStore.Data.Utilities;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using System.Web.Hosting;
+    using SmartStore.Core.Data;
+    using SmartStore.Core.Domain.Localization;
+    using SmartStore.Data.Setup;
+    using SmartStore.Data.Utilities;
 
-	public partial class Liquid : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
-	{
+    public partial class Liquid : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
+    {
         public override void Up()
         {
             AddColumn("dbo.MessageTemplate", "To", c => c.String(nullable: false, maxLength: 500, defaultValue: " "));
@@ -21,7 +20,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.QueuedEmail", "ToName");
             DropColumn("dbo.QueuedEmail", "ReplyToName");
         }
-        
+
         public override void Down()
         {
             AddColumn("dbo.QueuedEmail", "ReplyToName", c => c.String(maxLength: 500));
@@ -33,83 +32,83 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.MessageTemplate", "To");
         }
 
-		public void Seed(SmartObjectContext context)
-		{
-			context.MigrateLocaleResources(MigrateLocaleResources);
-			context.SaveChanges();
-			
-			if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
-			{
-				// Import all xml templates on disk 
-				var converter = new MessageTemplateConverter(context);
-				var language = ResolveMasterLanguage(context);
-				converter.ImportAll(language);
+        public void Seed(SmartObjectContext context)
+        {
+            context.MigrateLocaleResources(MigrateLocaleResources);
+            context.SaveChanges();
 
-				DropDefaultValueConstraint(context);
-			}
-		}
+            if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
+            {
+                // Import all xml templates on disk 
+                var converter = new MessageTemplateConverter(context);
+                var language = ResolveMasterLanguage(context);
+                converter.ImportAll(language);
 
-		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
-		{
-			builder.Delete(
-				"Admin.System.QueuedEmails.Fields.FromName",
-				"Admin.System.QueuedEmails.Fields.FromName.Hint",
-				"Admin.System.QueuedEmails.Fields.ToName",
-				"Admin.System.QueuedEmails.Fields.ToName.Hint");
+                DropDefaultValueConstraint(context);
+            }
+        }
 
-			builder.AddOrUpdate("Admin.System.QueuedEmails.Fields.ReplyTo",
-				"Reply to",
-				"Antwort an",
-				"Reply-To address of the email.",
-				"Antwortadresse der E-Mail.");
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        {
+            builder.Delete(
+                "Admin.System.QueuedEmails.Fields.FromName",
+                "Admin.System.QueuedEmails.Fields.FromName.Hint",
+                "Admin.System.QueuedEmails.Fields.ToName",
+                "Admin.System.QueuedEmails.Fields.ToName.Hint");
 
-			builder.AddOrUpdate("Common.Error.NoMessageTemplate",
-				"The message template '{0}' does not exist.",
-				"Die Nachrichtenvorlage '{0}' existiert nicht.");
+            builder.AddOrUpdate("Admin.System.QueuedEmails.Fields.ReplyTo",
+                "Reply to",
+                "Antwort an",
+                "Reply-To address of the email.",
+                "Antwortadresse der E-Mail.");
 
-			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.NoModelTree",
-				"Variables are unknown until at least one message of the current type has either been sent or previewed.",
-				"Variablen sind erst bekannt, wenn mind. eine Nachricht vom aktuellen Typ entweder gesendet oder getestet wurde.");
+            builder.AddOrUpdate("Common.Error.NoMessageTemplate",
+                "The message template '{0}' does not exist.",
+                "Die Nachrichtenvorlage '{0}' existiert nicht.");
 
-			builder.AddOrUpdate("Admin.Promotions.Campaigns.Fields.AllowedTokens",
-				"Allowed template variables",
-				"Erlaubte Template Variablen",
-				"Inserts the selected variable in the HTML document.",
-				"Fügt die gewählte Variable in das HTML-Dokument ein.");
-		}
+            builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.NoModelTree",
+                "Variables are unknown until at least one message of the current type has either been sent or previewed.",
+                "Variablen sind erst bekannt, wenn mind. eine Nachricht vom aktuellen Typ entweder gesendet oder getestet wurde.");
 
-		private Language ResolveMasterLanguage(SmartObjectContext context)
-		{
-			var query = context.Set<Language>().OrderBy(x => x.DisplayOrder);
+            builder.AddOrUpdate("Admin.Promotions.Campaigns.Fields.AllowedTokens",
+                "Allowed template variables",
+                "Erlaubte Template Variablen",
+                "Inserts the selected variable in the HTML document.",
+                "Fügt die gewählte Variable in das HTML-Dokument ein.");
+        }
 
-			var language = query
-				.Where(x => (x.UniqueSeoCode == "de" || x.UniqueSeoCode == "en") && x.Published)
-				.FirstOrDefault();
+        private Language ResolveMasterLanguage(SmartObjectContext context)
+        {
+            var query = context.Set<Language>().OrderBy(x => x.DisplayOrder);
 
-			if (language == null)
-			{
-				language = query.Where(x => x.Published).FirstOrDefault();
-			}
+            var language = query
+                .Where(x => (x.UniqueSeoCode == "de" || x.UniqueSeoCode == "en") && x.Published)
+                .FirstOrDefault();
 
-			return language;
-		}
+            if (language == null)
+            {
+                language = query.Where(x => x.Published).FirstOrDefault();
+            }
 
-		private void DropDefaultValueConstraint(SmartObjectContext context)
-		{
-			// During migration we created a new NON-Nullable column ("To")
-			// with a default value contraint of ' ', otherwise column creation
-			// would have failed. Now we need to get rid of this constraint.
+            return language;
+        }
 
-			if (DataSettings.Current.IsSqlServer)
-			{
-				string sql = @"DECLARE @name nvarchar(100)
+        private void DropDefaultValueConstraint(SmartObjectContext context)
+        {
+            // During migration we created a new NON-Nullable column ("To")
+            // with a default value contraint of ' ', otherwise column creation
+            // would have failed. Now we need to get rid of this constraint.
+
+            if (DataSettings.Current.IsSqlServer)
+            {
+                string sql = @"DECLARE @name nvarchar(100)
 SELECT @name = [name] from sys.objects WHERE type = 'D' and parent_object_id = object_id('MessageTemplate')
 IF (@name is not null) BEGIN EXEC ('ALTER TABLE [MessageTemplate] Drop Constraint [' + @name +']') END";
 
-				context.ExecuteSqlCommand(sql);
-			}	
-		}
+                context.ExecuteSqlCommand(sql);
+            }
+        }
 
-		public bool RollbackOnFailure => true;
-	}
+        public bool RollbackOnFailure => true;
+    }
 }

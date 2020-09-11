@@ -994,7 +994,7 @@ namespace SmartStore.Data.Setup
                 ShortDescription = "Table Barcelona, Designer: Mies van der Rohe, width 90 cm, height 46 cm, depth 90 cm, base: chromed flat steel, table top: glass (12 mm)",
                 FullDescription = "<p>This table by Mies van der Rohe matches the famous Barcelona series of armchair and stool, which was designed for the King of Spain and presented at the World Fair in 1929. " +
                 "Although the coffee table was not made until some time later by Mies van der Rohe for the house 'Tugendhat', it forms an attractive sitting area for offices and living rooms with the furniture of the Barcelona series. " +
-                "The table by Mies van der Rohe consists of a flat steel frame and a 12 mm thick glass plate, under the transparent plate a chromed 'X' appears through the construction.</p>"+
+                "The table by Mies van der Rohe consists of a flat steel frame and a 12 mm thick glass plate, under the transparent plate a chromed 'X' appears through the construction.</p>" +
                 "<p>dimensions: width 90 cm, height 46 cm, depth 90 cm, glass plate thickness: 12 mm </p>",
                 Sku = "LM T/98",
                 ProductTemplateId = productTemplateSimple.Id,
@@ -1241,7 +1241,7 @@ namespace SmartStore.Data.Setup
                miesBarcelonaSofa, corbusierSofa, josefHoffmannSofa
             };
         }
-                
+
         public IList<Product> Products()
         {
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);

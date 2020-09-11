@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Core.Data;
     using SmartStore.Data.Setup;
@@ -11,7 +10,7 @@ namespace SmartStore.Data.Migrations
         {
             AddColumn("dbo.Country", "DisplayCookieManager", c => c.Boolean(nullable: false, defaultValue: true));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Country", "DisplayCookieManager");
@@ -32,8 +31,8 @@ namespace SmartStore.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.AddOrUpdate("Admin.Configuration.Countries.Fields.DisplayCookieManager", 
-                "Display Cookie Manager", 
+            builder.AddOrUpdate("Admin.Configuration.Countries.Fields.DisplayCookieManager",
+                "Display Cookie Manager",
                 "Cookie-Manager anzeigen",
                 "Specifies whether the Cookie Manager will be displayed to shop visitors from this country.",
                 "Bestimmt, ob der Cookie-Manager Shop-Besuchern aus diesem Land angezeigt wird.");

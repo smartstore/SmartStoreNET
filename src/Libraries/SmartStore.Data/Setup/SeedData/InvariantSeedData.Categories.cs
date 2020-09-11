@@ -153,7 +153,7 @@ namespace SmartStore.Data.Setup
             var entities = new List<Category>
             {
                 categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads,
-                categoryGaming, categoryGiftCards, categoryFashion, categoryWatches                
+                categoryGaming, categoryGiftCards, categoryFashion, categoryWatches
             };
 
             this.Alter(entities);
@@ -397,7 +397,7 @@ namespace SmartStore.Data.Setup
 
             var entities = new List<Category>
             {
-                categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel, 
+                categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel,
                 categoryBooksCookAndEnjoy, categoryGamingAccessories, categoryGamingGames, categoryFashionJackets, categoryFashionShoes,
                 categoryFashionTrousers, categoryFashionSunglasses, categoryFurnitureChairs, categoryFurnitureSofas, categoryFurnitureTables
             };

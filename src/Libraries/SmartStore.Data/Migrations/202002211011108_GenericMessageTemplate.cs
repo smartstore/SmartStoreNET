@@ -11,7 +11,7 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }
@@ -25,7 +25,7 @@ namespace SmartStore.Data.Migrations
                 return;
             }
 
-            context.MigrateLocaleResources(MigrateLocaleResources); 
+            context.MigrateLocaleResources(MigrateLocaleResources);
 
             var defaultEmailAccount = context.Set<EmailAccount>().FirstOrDefault(x => x.Email != null);
             var table = context.Set<MessageTemplate>();
@@ -49,8 +49,8 @@ namespace SmartStore.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.AddOrUpdate("Admin.Customers.Customers.SendEmail.EmailNotValid", 
-                "No valid e-mail address is stored for the customer.", 
+            builder.AddOrUpdate("Admin.Customers.Customers.SendEmail.EmailNotValid",
+                "No valid e-mail address is stored for the customer.",
                 "Für den Kunden ist keine gültige E-Mail-Adresse hinterlegt.");
 
             builder.Delete("Admin.Customers.Customers.SendPM.Message.Hint");

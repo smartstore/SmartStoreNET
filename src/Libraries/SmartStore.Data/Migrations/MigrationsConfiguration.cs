@@ -323,38 +323,44 @@
 				"SEO-Einstellungen");
 
 			builder.AddOrUpdate("Admin.Configuration.Seo.MetaTitle",
-				"Meta title",
-				"Meta Titel");
+				"Title tag",
+				"Title-Tag",
+				"Defines the title of the page, which is displayed in search engine results. If possible, enter a unique, concise title here.",
+				"Bestimmt den Titel der Seite, der unter anderem in den Ergebnissen von Suchmaschinen angezeigt wird. Geben Sie hier nach Möglichkeit einen einzigartigen, prägnanten Titel an.");
 
 			builder.AddOrUpdate("Admin.Configuration.Seo.MetaDescription",
 				"Meta description",
-				"Meta Beschreibung");
+				"Meta Description",
+				"Defines the meta description of the site. An extract of this description is displayed in search engine results below the title.",
+				"Bestimmt die Meta Desciption der Seite. Ein Auszug dieser Beschreibung wird in den Ergebnissen von Suchmaschinen unterhalb des Titels dargestellt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Seo.MetaKeywords",
 				"Meta keywords",
-				"Meta Keywords");
+				"Meta Keywords",
+				"Defines the meta keywords of the site. Enter the keywords as a comma separated list.",
+				"Bestimmt die Meta Keywords der Seite. Geben Sie die Keywords als kommagetrennte Liste an.");
 
 			builder.AddOrUpdate("Admin.System.MetaInfos",
 				"Meta tags",
 				"Meta-Elemente");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageTitle",
-				"Meta title (Homepage)",
-				"Meta Titel (Startseite)",
-				"Defines the meta title for the homepage.",
-				"Legt den Meta Titel für die Startseite fest.");
+				"Title tag (Homepage)",
+				"Title-Tag (Startseite)",
+				"Defines the title tag for the homepage, which is displayed in search engine results.",
+				"Legt das Title-Tag für die Startseite fest, das unter anderem in den Ergebnissen von Suchmaschinen angezeigt wird.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription",
 				"Meta description (Homepage)",
-				"Meta Beschreibung (Startseite)",
-				"Defines the meta description for the homepage.",
-				"Legt die Meta Beschreibung für die Startseite fest.");
+				"Meta Description (Startseite)",
+				"Defines the meta description for the homepage. An extract of this description is displayed in search engine results below the title.",
+				"Legt die Meta Description für die Startseite fest. Ein Auszug dieser Beschreibung wird in den Ergebnissen von Suchmaschinen unterhalb des Titels dargestellt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords",
 				"Meta keywords (Homepage)",
 				"Meta Keywords (Startseite)",
-				"Defines the meta keywords for the homepage.",
-				"Legt die Meta Keywords für die Startseite fest.");
+				"Defines the meta keywords for the homepage. Enter the keywords as a comma separated list.",
+				"Legt die Meta Keywords für die Startseite fest. Geben Sie die Keywords als kommagetrennte Liste an.");
 
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.Fields.MinDays",
 				"Delivery not before (in days)",
@@ -411,6 +417,99 @@
 				"Lieferungen nur an Werktagen",
 				"Specifies whether delivery takes place only on workweek days.",
 				"Legt fest, ob Lieferungen nur an Werktagen stattfinden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Seo.SeName",
+				"URL alias",
+				"URL-Alias",
+				"Set a search engine friendly page name e.g. 'my-landing-page' to make the page URL 'http://www.yourStore.com/my-landing-page'. Leave empty to generate it automatically based on the name of the entity.",
+				"Legen Sie einen suchmaschinenfreundlichen Seitennamen fest, z.B. 'meine-landing-page', um die URL zu 'http://www.yourStore.com/meine-landing-page' zu machen. Lassen Sie das Feld leer, um den Pfad automatisch auf Basis des Namens der Entität zu generieren.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator",
+				"Page title separator",
+				"Titel-Trennzeichen",
+				"Specify page title tag separator.",
+				"Legt das Trennzeichen für das Titel-Tag fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment",
+				"Title tag order",
+				"Titel-Tag Reihenfolge",
+				"Select the page title order. The generated title tag can be (PAGE NAME | YOURSTORE.COM) or (YOURSTORE.COM | PAGE NAME).",
+				"Legen Sie hier die Seitentitel-Reihenfolge fest. Das erzeugte Title-Tag könnte z.B. (MEINSHOP.DE | SEITE NAME) oder (SEITE NAME | MEINSHOP.DE) lauten.");
+			
+			builder.Delete("Admin.Catalog.Categories.Fields.SeName",
+				"Admin.Catalog.Categories.Fields.SeName.Hint",
+				"Admin.Catalog.Manufacturers.Fields.SeName",
+				"Admin.Catalog.Manufacturers.Fields.SeName.Hint",
+				"Admin.Catalog.Products.Fields.SeName",
+				"Admin.Catalog.Products.Fields.SeName.Hint",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.SeName",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.SeName.Hint",
+				"Admin.ContentManagement.Forums.Forum.Fields.SeName",
+				"Admin.ContentManagement.Forums.Forum.Fields.SeName.Hint",
+				"Admin.ContentManagement.Forums.ForumGroup.Fields.SeName",
+				"Admin.ContentManagement.Forums.ForumGroup.Fields.SeName.Hint",
+				"Admin.ContentManagement.News.NewsItems.Fields.SeName",
+				"Admin.ContentManagement.News.NewsItems.Fields.SeName.Hint",
+				"Admin.ContentManagement.Topics.Fields.SeName",
+				"Admin.ContentManagement.Topics.Fields.SeName.Hint");
+
+			builder.Delete("Admin.Catalog.Categories.Fields.MetaTitle",
+				"Admin.Catalog.Categories.Fields.MetaTitle.Hint",
+				"Admin.Catalog.Manufacturers.Fields.MetaTitle",
+				"Admin.Catalog.Manufacturers.Fields.MetaTitle.Hint",
+				"Admin.Catalog.Products.Fields.MetaTitle",
+				"Admin.Catalog.Products.Fields.MetaTitle.Hint",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle.Hint",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaTitle",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaTitle.Hint",
+				"Admin.ContentManagement.Topics.Fields.MetaTitle",
+				"Admin.ContentManagement.Topics.Fields.MetaTitle.Hint");
+
+			builder.Delete("Admin.Catalog.Categories.Fields.MetaDescription",
+				"Admin.Catalog.Categories.Fields.MetaDescription.Hint",
+				"Admin.Catalog.Manufacturers.Fields.MetaDescription",
+				"Admin.Catalog.Manufacturers.Fields.MetaDescription.Hint",
+				"Admin.Catalog.Products.Fields.MetaDescription",
+				"Admin.Catalog.Products.Fields.MetaDescription.Hint",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription.Hint",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaDescription",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaDescription.Hint",
+				"Admin.ContentManagement.Topics.Fields.MetaDescription",
+				"Admin.ContentManagement.Topics.Fields.MetaDescription.Hint");
+
+			builder.Delete("Admin.Catalog.Categories.Fields.MetaKeywords",
+				"Admin.Catalog.Categories.Fields.MetaKeywords.Hint",
+				"Admin.Catalog.Manufacturers.Fields.MetaKeywords",
+				"Admin.Catalog.Manufacturers.Fields.MetaKeywords.Hint",
+				"Admin.Catalog.Products.Fields.MetaKeywords",
+				"Admin.Catalog.Products.Fields.MetaKeywords.Hint",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaKeywords",
+				"Admin.ContentManagement.Blog.BlogPosts.Fields.MetaKeywords.Hint",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords",
+				"Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords.Hint",
+				"Admin.ContentManagement.Topics.Fields.MetaKeywords",
+				"Admin.ContentManagement.Topics.Fields.MetaKeywords.Hint");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DefaultTitle",
+				"Default title tag",
+				"Standard-Titel-Tag",
+				"Defines the default title for pages in your store. You can override this for individual categories, products, manufacturer and topic pages.",
+				"Legt das Standard-Titel-Tag für Seiten im Shop fest. Es kann für Warengruppen, Produkte, Hersteller und Seiten individuell angegeben werden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription",
+				"Default meta description",
+				"Standard Meta Beschreibung",
+				"Defines the default meta description for pages in your store. You can override this for individual categories, products, manufacturer and topic pages.",
+				"Legt die Meta Beschreibung für Seiten im Shop fest. Diese kann für Warengruppen, Produkte, Hersteller und Seiten individuell angegeben werden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords",
+				"Default meta keywords",
+				"Standard Meta Keywords",
+				"Defines the default meta keywords for pages in your store. You can override these for individual categories, products, manufacturer and topic pages.",
+				"Legt die Meta Keywords für Seiten im Shop fest. Für Warengruppen, Produkte, Hersteller und Seiten können diese individuell angegeben werden.");
+
 		}
 	}
 }

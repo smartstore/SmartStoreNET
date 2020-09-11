@@ -92,19 +92,19 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int HomePageDisplayOrder { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -772,19 +772,19 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string FullDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 

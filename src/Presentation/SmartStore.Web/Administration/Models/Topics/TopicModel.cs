@@ -92,19 +92,19 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
+		[SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
 		public string SeName { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
@@ -162,7 +162,7 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
@@ -170,11 +170,11 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
+		[SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
 		public string SeName { get; set; }
 	}
 

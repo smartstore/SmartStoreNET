@@ -63,19 +63,19 @@ namespace SmartStore.Admin.Models.Catalog
         public int CategoryTemplateId { get; set; }
         public IList<SelectListItem> AvailableCategoryTemplates { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -214,19 +214,19 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string BadgeText { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
     }

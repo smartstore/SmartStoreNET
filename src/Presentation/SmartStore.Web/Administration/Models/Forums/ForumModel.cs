@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Models.Forums
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.Forum.Fields.SeName")]
+		[SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
 		[AllowHtml]
 		public string SeName { get; set; }
 
@@ -55,7 +55,7 @@ namespace SmartStore.Admin.Models.Forums
 		[AllowHtml]
 		public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.Forum.Fields.SeName")]
+		[SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
 		[AllowHtml]
 		public string SeName { get; set; }
 

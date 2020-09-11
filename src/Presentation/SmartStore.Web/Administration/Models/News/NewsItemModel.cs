@@ -34,7 +34,7 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -63,15 +63,15 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.EndDate")]
         public DateTime? EndDate { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 

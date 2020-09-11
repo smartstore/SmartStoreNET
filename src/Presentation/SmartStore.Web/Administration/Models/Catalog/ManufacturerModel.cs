@@ -42,19 +42,19 @@ namespace SmartStore.Admin.Models.Catalog
         public int ManufacturerTemplateId { get; set; }
         public IList<SelectListItem> AvailableManufacturerTemplates { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -162,19 +162,19 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string BottomDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
     }

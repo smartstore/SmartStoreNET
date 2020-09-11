@@ -29,7 +29,7 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -81,11 +81,11 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 

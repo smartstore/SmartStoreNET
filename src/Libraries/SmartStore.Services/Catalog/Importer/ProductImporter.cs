@@ -855,8 +855,10 @@ namespace SmartStore.Services.Catalog.Importer
             _productRepository.AutoCommitEnabled = false;
 
             var numberOfPictures = context.ExtraData.NumberOfPictures ?? int.MaxValue;
+            var productIds = batch.Select(x => x.Entity.Id).ToArray();
+            var tmpFileMap = _productService.GetProductPicturesByProductIds(productIds, null, MediaLoadFlags.None);
 
-			foreach (var row in batch)
+            foreach (var row in batch)
 			{
 				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
                 if (imageUrls.IsNullOrEmpty())
@@ -890,8 +892,8 @@ namespace SmartStore.Services.Catalog.Importer
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
 				}
 
-				// Import images.
-				foreach (var image in imageFiles.OrderBy(x => x.DisplayOrder))
+                // Import images.
+                foreach (var image in imageFiles.OrderBy(x => x.DisplayOrder))
 				{
 					try
 					{
@@ -902,8 +904,6 @@ namespace SmartStore.Services.Catalog.Importer
                             {
                                 if ((stream?.Length ?? 0) > 0)
                                 {
-                                    var tmpFileMap = _productService.GetProductPicturesByProductIds(new int[] { productId }, null, MediaLoadFlags.None);                                    
-                                    
                                     var currentFiles = tmpFileMap.ContainsKey(productId)
                                         ? tmpFileMap[productId]
                                         : Enumerable.Empty<ProductMediaFile>();
@@ -919,22 +919,25 @@ namespace SmartStore.Services.Catalog.Importer
                                         var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
                                         if ((newFile?.Id ?? 0) != 0)
                                         {
-                                            _productService.InsertProductPicture(new ProductMediaFile
+                                            var productMediaFile = new ProductMediaFile
                                             {
                                                 ProductId = productId,
                                                 MediaFileId = newFile.Id,
                                                 DisplayOrder = ++displayOrder
-                                            });
+                                            };
 
+                                            _productService.InsertProductPicture(productMediaFile);
+
+                                            tmpFileMap.Add(productId, productMediaFile);
                                             // Update for FixProductMainPictureIds.
                                             row.Entity.UpdatedOnUtc = DateTime.UtcNow;
-                                            // Required otherwise nothing updated.
-                                            _productRepository.Update(row.Entity);
+                                            
+                                            //_productRepository.Update(row.Entity);
                                         }
                                     }
                                     else
                                     {
-                                        context.Result.AddInfo($"Found equal image in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                        context.Result.AddInfo($"Found equal image in product data for {image.FileName}. Skipping file.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
                                     }
                                 }
                             }

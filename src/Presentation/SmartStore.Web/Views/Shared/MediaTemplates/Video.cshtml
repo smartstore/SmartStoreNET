@@ -4,8 +4,8 @@
 
 @if (Model.RenderViewer)
 {
-    <div class="w-100 embed-responsive embed-responsive-16by9 file-preview-container">
-        <video class="@("file-preview".Grow(Model.ExtraCssClasses, " "))" src="@Model.File.Url" controls preload="metadata" />
+    <div @Html.Attrs(Model.HtmlAttributes.AppendCssClass("embed-responsive embed-responsive-16by9 w-100 file-preview-container"))>
+        <video class="file-preview" src="@Model.File.GetUrl()" controls preload="metadata" />
     </div>
 }
 else

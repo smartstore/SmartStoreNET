@@ -62,7 +62,7 @@
                         @{ Html.RenderWidget("productdetails_pictures_top"); }
 						
                         <div id="pd-gallery-container">
-							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+							@{ Html.RenderPartial("Product.Media", Model.MediaGalleryModel); }
 						</div>
                         
                         @{ Html.RenderWidget("productdetails_pictures_bottom"); }
@@ -175,8 +175,8 @@
 <script>
     $(function () {
         var settings = {
-            galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
-            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)')
+            galleryStartIndex: @(Model.MediaGalleryModel.GalleryStartIndex),
+            enableZoom: toBool('@(Model.MediaGalleryModel.ImageZoomEnabled)')
         };
 		
     	$('#pd-form').productDetail(settings);

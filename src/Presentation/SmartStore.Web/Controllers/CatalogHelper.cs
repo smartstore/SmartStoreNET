@@ -506,16 +506,16 @@ namespace SmartStore.Web.Controllers
 						combination = model.SelectedCombination;
 				}
 
-                var files = _productService.GetProductPicturesByProductId(product.Id)
-                    .Select(x => x.MediaFile)
-                    .ToList();
+				var files = _productService.GetProductPicturesByProductId(product.Id)
+					.Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
+					.ToList();
 
                 if (product.HasPreviewPicture && files.Count > 1)
                 {
                     files.RemoveAt(0);
                 }
 
-                PrepareProductDetailsPictureModel(model.DetailsPictureModel, files, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
+				model.MediaGalleryModel = PrepareProductDetailsMediaGalleryModel(files, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
 
 				return model;
 			}
@@ -576,28 +576,18 @@ namespace SmartStore.Web.Controllers
 			model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage;
 		}
 
-		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, MediaFile file, int pictureSize)
+		private MediaFileInfo PrepareMediaFileInfo(MediaFileInfo file, MediaGalleryModel model)
 		{
-			var result = new PictureModel
-			{
-				PictureId = file?.Id ?? 0,
-				Size = pictureSize,
-				ThumbImageUrl = _mediaService.GetUrl(file, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
-				ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !_catalogSettings.HideProductDefaultPictures),
-				FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
-				FullSizeImageWidth = file?.Width,
-				FullSizeImageHeight = file?.Height,
-				AlternateText = file?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? model.AlternateText,
-				Title = file?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? model.Name,
-				File = _mediaService.ConvertMediaFile(file)
-			};
+			file.Alt = file.File.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? model.DefaultAlt;
+			file.TitleAttribute = file.File.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? model.ModelName;
 
-			_services.DisplayControl.Announce(file);
+			_services.DisplayControl.Announce(file.File);
 
-			return result;
+			// Return for chaining
+			return file;
 		}
 
-        public IList<ProductDetailsModel.TierPriceModel> CreateTierPriceModel (Product product, decimal adjustment = decimal.Zero)
+		public IList<ProductDetailsModel.TierPriceModel> CreateTierPriceModel (Product product, decimal adjustment = decimal.Zero)
         {
             var model = product.TierPrices
                 .OrderBy(x => x.Quantity)
@@ -633,105 +623,92 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-		public void PrepareProductDetailsPictureModel(
-			ProductDetailsPictureModel model, 
-			IList<MediaFile> files, 
-			string name, 
+		public MediaGalleryModel PrepareProductDetailsMediaGalleryModel(
+			IList<MediaFileInfo> files,
+			string productName,
 			IList<int> allCombinationImageIds,
-			bool isAssociatedProduct, 
-			ProductBundleItemData bundleItem = null, 
+			bool isAssociatedProduct,
+			ProductBundleItemData bundleItem = null,
 			ProductVariantAttributeCombination combination = null)
 		{
-			model.Name = name;
-			model.DefaultPictureZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled;
-			model.PictureZoomType = _mediaSettings.PictureZoomType;
-
-			MediaFile defaultFile = null;
-			var combiAssignedImages = combination?.GetAssignedMediaIds();
-			int defaultPictureSize;
-
-			if (isAssociatedProduct)
-				defaultPictureSize = _mediaSettings.AssociatedProductPictureSize;
-			else if (bundleItem != null)
-				defaultPictureSize = _mediaSettings.BundledProductPictureSize;
-			else
-				defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
-
-			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
+			var model = new MediaGalleryModel
 			{
-    			if (files.Count > 0)
-				{
-					if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
-					{
-						// Show all images.
-						foreach (var file in files)
-						{
-							model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
+				ModelName = productName,
+				DefaultAlt = T("Media.Product.ImageAlternateTextFormat", productName),
+				BoxEnabled = true, // TODO: make a setting for this in the future
+				ImageZoomEnabled = _mediaSettings.DefaultPictureZoomEnabled,
+				ImageZoomType = _mediaSettings.PictureZoomType,
+				ThumbSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+				ImageSize = _mediaSettings.ProductDetailsPictureSize
+			};
 
-							if (defaultFile == null && combiAssignedImages != null && combiAssignedImages.Contains(file.Id))
+			MediaFileInfo defaultFile = null;
+			var combiAssignedImages = combination?.GetAssignedMediaIds();
+
+			if (files.Count > 0)
+			{
+				if (files.Count <= _catalogSettings.DisplayAllImagesNumber)
+				{
+					// Show all images.
+					foreach (var file in files)
+					{
+						model.Files.Add(PrepareMediaFileInfo(file, model));
+
+						if (defaultFile == null && combiAssignedImages != null && combiAssignedImages.Contains(file.Id))
+						{
+							model.GalleryStartIndex = model.Files.Count - 1;
+							defaultFile = file;
+						}
+					}
+				}
+				else
+				{
+					// Images not belonging to any combination...
+					allCombinationImageIds = allCombinationImageIds ?? new List<int>();
+					foreach (var file in files.Where(p => !allCombinationImageIds.Contains(p.Id)))
+					{
+						model.Files.Add(PrepareMediaFileInfo(file, model));
+					}
+
+					// Plus images belonging to selected combination.
+					if (combiAssignedImages != null)
+					{
+						foreach (var file in files.Where(p => combiAssignedImages.Contains(p.Id)))
+						{
+							model.Files.Add(PrepareMediaFileInfo(file, model));
+
+							if (defaultFile == null)
 							{
-								model.GalleryStartIndex = model.PictureModels.Count - 1;
+								model.GalleryStartIndex = model.Files.Count - 1;
 								defaultFile = file;
 							}
 						}
 					}
-					else
-					{
-						// Images not belonging to any combination...
-						allCombinationImageIds = allCombinationImageIds ?? new List<int>();
-						foreach (var file in files.Where(p => !allCombinationImageIds.Contains(p.Id)))
-						{
-							model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
-						}
-
-						// Plus images belonging to selected combination.
-						if (combiAssignedImages != null)
-						{
-							foreach (var file in files.Where(p => combiAssignedImages.Contains(p.Id)))
-							{
-								model.PictureModels.Add(CreatePictureModel(model, file, _mediaSettings.ProductDetailsPictureSize));
-
-								if (defaultFile == null)
-								{
-									model.GalleryStartIndex = model.PictureModels.Count - 1;
-									defaultFile = file;
-								}
-							}
-						}
-					}
-
-					if (defaultFile == null)
-					{    
-                        model.GalleryStartIndex = 0;
-						defaultFile = files.First();
-					}
 				}
 
-				scope.Commit();
-			}
-
-			model.AlternateText = defaultFile?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", model.Name);
-
-			if (defaultFile == null)
-			{
-				model.DefaultPictureModel = new PictureModel
+				if (defaultFile == null)
 				{
-					Title = T("Media.Product.ImageLinkTitleFormat", model.Name),
-					AlternateText = model.AlternateText
-				};
+					model.GalleryStartIndex = 0;
+					defaultFile = files.First();
+				}
+			}
 
-				if (!_catalogSettings.HideProductDefaultPictures)
+			if (defaultFile == null && !_catalogSettings.HideProductDefaultPictures)
+            {
+				var fallbackImageSize = _mediaSettings.ProductDetailsPictureSize;
+				if (isAssociatedProduct)
 				{
-					model.DefaultPictureModel.Size = defaultPictureSize;
-                    model.DefaultPictureModel.ThumbImageUrl = _mediaService.GetFallbackUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
-					model.DefaultPictureModel.ImageUrl = _mediaService.GetFallbackUrl(defaultPictureSize);
-					model.DefaultPictureModel.FullSizeImageUrl = _mediaService.GetFallbackUrl();
-                }
-			}
-			else
-			{
-				model.DefaultPictureModel = CreatePictureModel(model, defaultFile, defaultPictureSize);
-			}
+					fallbackImageSize = _mediaSettings.AssociatedProductPictureSize;
+				}
+				else if (bundleItem != null)
+				{
+					fallbackImageSize = _mediaSettings.BundledProductPictureSize;
+				}
+
+				model.FallbackUrl = _mediaService.GetFallbackUrl(fallbackImageSize);
+            }
+
+			return model;
 		}
 
 		public ProductDetailsModel PrepareProductDetailModel(

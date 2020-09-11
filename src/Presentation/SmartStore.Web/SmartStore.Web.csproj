@@ -357,6 +357,7 @@
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
     <Compile Include="Models\Common\CookieManagerModel.cs" />
+    <Compile Include="Models\Media\MediaGalleryModel.cs" />
     <Compile Include="Models\Search\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
@@ -1773,7 +1774,6 @@
     <Content Include="Views\Shared\Partials\Product.List.Item.Buttons.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Variants.cshtml" />
     <Content Include="Themes\Flex\Content\_product.scss" />
-    <Content Include="Views\Product\Partials\Product.Picture.cshtml" />
     <Content Include="Views\Product\Partials\Product.Info.cshtml" />
     <Content Include="Views\Product\Partials\Product.Offer.cshtml" />
     <Content Include="Themes\Flex\Content\_gallery.scss" />
@@ -1884,6 +1884,9 @@
     <Content Include="Views\Shared\MediaTemplates\_Thumbnail.cshtml" />
     <Content Include="Themes\Flex\Content\_variables-reset.scss" />
     <Content Include="Themes\Flex\Content\_cookie-manager.scss" />
+    <Content Include="Views\Shared\Partials\PhotoSwipe.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Media.cshtml" />
+    <Content Include="Views\Shared\Partials\MediaGallery.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

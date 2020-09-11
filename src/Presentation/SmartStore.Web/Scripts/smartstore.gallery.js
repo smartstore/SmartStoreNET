@@ -187,10 +187,13 @@
 
 			self.navItemsCount = items.length;
 
-			items.each(function (i, el) {
+			items.each(function (i) {
 				var $el = $(this);
 				$el.attr('data-gal-index', i);
 			});
+
+			// Lazy load thumbnails for video files.
+			SmartStore.media.lazyLoadThumbnails(list);
 
 			if (items.length > self.options.thumbsToShow) {
 				if (!isInitialized) {
@@ -406,12 +409,14 @@
 		},
 
 		initBox: function () {
-			var self = this;
+			var pswpEl = document.getElementById('pswp');
+			if (!pswpEl)
+				return;
 
-			this.pswp = $('#pswp');
+			this.pswp = $(pswpEl);
 
-			var pswpEl = this.pswp[0];
 			var pswpContainer = $('.pswp__container', pswpEl);
+			var self = this;
 
 			function setTransition(e) {
 				// Photoswipe has no support for transitions on Mouse/Keyboard-Nav out of the box.
@@ -481,17 +486,29 @@
 
 					links.each(function (i, el) {
 						var a = $(el);
-						var width = a.data("width");
-						var height = a.data("height");
-						if (width && height) {
-							items.push({
-								src: a.attr('href'),
-								msrc: a.data('medium-image'),
-								w: width,
-								h: height,
-								el: $this
-							});
+						if (a.data('type') === 'image') {
+							var width = a.data("width");
+							var height = a.data("height");
+							if (width && height) {
+								items.push({
+									src: a.attr('href'),
+									msrc: a.data('medium-image'),
+									w: width,
+									h: height,
+									el: $this
+								});
+							}
 						}
+						else {
+							var html = [
+								'<div class="d-flex w-100 h-100 align-items-center justify-content-center">',
+									'<div class="embed-responsive embed-responsive-16by9 xw-100 file-preview-container" style="max-width: 50%;">',
+										'<video class="file-preview" src="{0}" controls preload="metadata" />'.format(a.attr('href')),
+									'</div>',
+								'</div>'
+							].join();
+							items.push({ html: html, el: $this, width: '800px' });
+                        }
 					});
 
 					if (items.length > 0) {

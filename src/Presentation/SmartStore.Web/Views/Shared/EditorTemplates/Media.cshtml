@@ -120,6 +120,7 @@
                 .UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
                 .Path(Path)
                 .TypeFilter(TypeFilter)
+                .TypeFilter("image,video")
                 .ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.
                 .ShowRemoveButtonAfterUpload(true)
                 .PreviewContainerId("preview-" + random)

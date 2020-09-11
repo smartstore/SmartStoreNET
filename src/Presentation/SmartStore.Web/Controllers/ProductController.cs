@@ -31,6 +31,7 @@ using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
+using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
@@ -456,7 +457,6 @@ namespace SmartStore.Web.Controllers
 			string galleryHtml = null;
 			string dynamicThumbUrl = null;
 			var isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
-			var pictureModel = new ProductDetailsPictureModel();
 			var m = new ProductDetailsModel();
 			var product = _productService.GetProductById(productId);
 			var bItem = _productService.GetBundleItemById(bundleItemId);
@@ -519,7 +519,7 @@ namespace SmartStore.Web.Controllers
 			{
                 // Update image gallery.
                 var files = _productService.GetProductPicturesByProductId(productId)
-                    .Select(x => x.MediaFile)
+                    .Select(x => _mediaService.ConvertMediaFile(x.MediaFile))
                     .ToList();
 
                 if (product.HasPreviewPicture && files.Count > 1)
@@ -543,8 +543,7 @@ namespace SmartStore.Web.Controllers
 				{
 					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);
 
-					_helper.PrepareProductDetailsPictureModel(
-						pictureModel,
+					var mediaModel = _helper.PrepareProductDetailsMediaGalleryModel(
 						files,
 						product.GetLocalized(x => x.Name),
 						allCombinationPictureIds,
@@ -552,8 +551,8 @@ namespace SmartStore.Web.Controllers
 						bundleItem,
 						m.SelectedCombination);
 
-					galleryStartIndex = pictureModel.GalleryStartIndex;
-					galleryHtml = this.RenderPartialViewToString("Product.Picture", pictureModel);
+					galleryStartIndex = mediaModel.GalleryStartIndex;
+					galleryHtml = this.RenderPartialViewToString("Product.Media", mediaModel);
 				}
 
                 m.PriceDisplayStyle = _catalogSettings.PriceDisplayStyle;

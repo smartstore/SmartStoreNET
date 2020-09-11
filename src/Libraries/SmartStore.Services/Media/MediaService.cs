@@ -892,11 +892,13 @@ namespace SmartStore.Services.Media
 
         #region Utils
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MediaFileInfo ConvertMediaFile(MediaFile file)
         {
             return ConvertMediaFile(file, _folderService.FindNode(file)?.Value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
         {
             var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path)

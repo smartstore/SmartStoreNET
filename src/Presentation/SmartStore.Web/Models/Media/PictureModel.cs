@@ -1,4 +1,5 @@
-﻿using SmartStore.Services.Media;
+﻿using System;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Media

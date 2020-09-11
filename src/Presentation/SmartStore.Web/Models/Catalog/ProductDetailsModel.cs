@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
@@ -14,9 +15,7 @@ namespace SmartStore.Web.Models.Catalog
 {
     public partial class ProductDetailsModel : EntityModelBase
     {
-		private ProductDetailsPictureModel _detailsPictureModel;
-
-        public ProductDetailsModel()
+		public ProductDetailsModel()
         {
             Manufacturers = new List<ManufacturerOverviewModel>();
 			GiftCard = new GiftCardModel();
@@ -30,20 +29,9 @@ namespace SmartStore.Web.Models.Catalog
 			IsAvailable = true;
         }
 
-		public ProductDetailsPictureModel DetailsPictureModel
-		{
-			get
-			{
-				if (_detailsPictureModel == null)
-				{
-					_detailsPictureModel = new ProductDetailsPictureModel();
-				}
+		public MediaGalleryModel MediaGalleryModel { get; set; }
 
-				return _detailsPictureModel;
-			}
-		}
-
-        public LocalizedValue<string> Name { get; set; }
+		public LocalizedValue<string> Name { get; set; }
         public LocalizedValue<string> ShortDescription { get; set; }
         public LocalizedValue<string> FullDescription { get; set; }
         public string ProductTemplateViewPath { get; set; }
@@ -75,10 +63,7 @@ namespace SmartStore.Web.Models.Catalog
 		public GiftCardModel GiftCard { get; set; }
 		public string GiftCardFieldPrefix
 		{
-			get
-			{
-				return GiftCardQueryItem.CreateKey(Id, BundleItem.Id, null);
-			}
+			get => GiftCardQueryItem.CreateKey(Id, BundleItem.Id, null);
 		}
 
 		public string StockAvailability { get; set; }
@@ -290,20 +275,4 @@ namespace SmartStore.Web.Models.Catalog
 
 		#endregion
     }
-
-	public partial class ProductDetailsPictureModel : ModelBase
-	{
-		public ProductDetailsPictureModel()
-		{
-			PictureModels = new List<PictureModel>();
-		}
-
-		public string Name { get; set; }
-		public string AlternateText { get; set; }
-		public bool DefaultPictureZoomEnabled { get; set; }
-        public string PictureZoomType { get; set; }
-		public PictureModel DefaultPictureModel { get; set; }
-		public IList<PictureModel> PictureModels { get; set; }
-		public int GalleryStartIndex { get; set; }
-	}
 }

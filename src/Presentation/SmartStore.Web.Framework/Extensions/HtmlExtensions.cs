@@ -15,6 +15,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
@@ -930,61 +931,77 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result);
 		}
 
-        #region Media
+		#region Media
 
-        public static MvcHtmlString MediaThumbnail(
-            this HtmlHelper helper,
-            MediaFileInfo file,
-            int size,
-            string extraCssClasses = null)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static MvcHtmlString MediaViewer(this HtmlHelper helper, MediaFileInfo file, object htmlAttributes = null)
+		{
+			return MediaInternal(helper, file, true, 0, CommonHelper.ObjectToDictionary(htmlAttributes));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static MvcHtmlString MediaViewer(this HtmlHelper helper, MediaFileInfo file, IDictionary<string, object> htmlAttributes)
+		{
+			return MediaInternal(helper, file, true, 0, htmlAttributes);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MvcHtmlString MediaThumbnail(this HtmlHelper helper, MediaFileInfo file, int size, object htmlAttributes = null)
         {
-            return MediaInternal(helper, file, false, size, extraCssClasses);
+            return MediaInternal(helper, file, false, size, CommonHelper.ObjectToDictionary(htmlAttributes));
         }
 
-        public static MvcHtmlString MediaViewer(
-            this HtmlHelper helper,
-            MediaFileInfo file,
-            string extraCssClasses = null)
-        {
-            return MediaInternal(helper, file, true, 0, extraCssClasses);
-        }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static MvcHtmlString MediaThumbnail(this HtmlHelper helper, MediaFileInfo file, int size, IDictionary<string, object> htmlAttributes)
+		{
+			return MediaInternal(helper, file, false, size, htmlAttributes);
+		}
 
-        private static MvcHtmlString MediaInternal(
-            this HtmlHelper helper,
-            MediaFileInfo file,
-            bool renderViewer,
-            int size,
-            string extraCssClasses)
-        {
-            if (file?.File == null)
-            {
-                return MvcHtmlString.Empty;
-            }
+		private static MvcHtmlString MediaInternal(
+			HtmlHelper helper,
+			MediaFileInfo file,
+			bool renderViewer,
+			int size,
+			IDictionary<string, object> htmlAttributes)
+		{
+			if (file?.File == null)
+			{
+				return MvcHtmlString.Empty;
+			}
 
-            // Validate size parameter.
-            if (file.MediaType != "image" && !renderViewer)
-            {
-                Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType.NaIfEmpty()}'.");
-            }
-
-            if (size > 0)
-            {
-                file.ThumbSize = size;
-            }
+			// Validate size parameter.
+			if (file.MediaType != "image" && !renderViewer)
+			{
+				Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType.NaIfEmpty()}'.");
+			}
 
 			var f = file?.File;
 
 			var model = new MediaTemplateModel(file, renderViewer)
-            {
-                ExtraCssClasses = extraCssClasses,
-				Title = f?.GetLocalized(x => x.Title),
-				Alt = f?.GetLocalized(x => x.Alt)
+			{
+				ThumbSize = size,
+				HtmlAttributes = htmlAttributes
 			};
 
-            return helper.Partial("MediaTemplates/" + file.MediaType, model);
-        }
+			if (htmlAttributes.TryGetValue("alt", out var alt))
+			{
+				htmlAttributes.Remove("alt");
+			}
 
-        #endregion
-    }
+			if (htmlAttributes.TryGetValue("title", out var title))
+			{
+				htmlAttributes.Remove("title");
+			}
+
+			//alt != null ? (string)alt : f?.GetLocalized(x => x.Alt).Value
+
+			model.Alt = (string)(alt ?? f?.GetLocalized(x => x.Alt).Value);
+			model.Title = (string)(title ?? f?.GetLocalized(x => x.Title).Value);
+
+			return helper.Partial("MediaTemplates/" + file.MediaType, model);
+		}
+
+		#endregion
+	}
 }
 

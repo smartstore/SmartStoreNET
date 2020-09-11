@@ -462,7 +462,7 @@ namespace SmartStore.Admin.Models.Catalog
         {
             public int ProductId { get; set; }
 
-            [UIHint("Media"), AdditionalMetadata("album", "catalog")]
+            [UIHint("Media"), AdditionalMetadata("album", "catalog"), AdditionalMetadata("typeFilter", "image,video")]
             [SmartResourceDisplayName("Admin.Catalog.Products.Pictures.Fields.Picture")]
             public int PictureId { get; set; }
 

@@ -261,7 +261,7 @@ namespace SmartStore.Utilities
 		public static IDictionary<string, object> ObjectToDictionary(object obj)
 		{
 			if (obj == null)
-				throw new ArgumentNullException(nameof(obj));
+				return new Dictionary<string, object>();
 
 			return FastProperty.ObjectToDictionary(
 				obj,

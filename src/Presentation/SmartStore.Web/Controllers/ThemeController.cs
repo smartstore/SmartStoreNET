@@ -7,33 +7,33 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ThemeController : PublicControllerBase
-	{
-		#region Fields
+    {
+        #region Fields
 
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
-		private readonly IThemeContext _themeContext;
-		private readonly IStoreContext _storeContext;
+        private readonly IThemeContext _themeContext;
+        private readonly IStoreContext _storeContext;
 
-	    #endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
         public ThemeController(
-			IThemeRegistry themeRegistry, 
-			IThemeVariablesService themeVarService,
-			IThemeContext themeContext,
-			IStoreContext storeContext)
-		{
+            IThemeRegistry themeRegistry,
+            IThemeVariablesService themeVarService,
+            IThemeContext themeContext,
+            IStoreContext storeContext)
+        {
             this._themeRegistry = themeRegistry;
             this._themeVarService = themeVarService;
-			this._themeContext = themeContext;
-			this._storeContext = storeContext;
-		}
+            this._themeContext = themeContext;
+            this._storeContext = storeContext;
+        }
 
-		#endregion 
+        #endregion
 
         #region Methods
 
@@ -42,13 +42,13 @@ namespace SmartStore.Web.Controllers
         {
             if (theme.HasValue())
             {
-				_themeContext.SetRequestTheme(theme);
+                _themeContext.SetRequestTheme(theme);
             }
 
-			if (storeId > 0)
-			{
-				_storeContext.SetRequestStore(storeId);
-			}
+            if (storeId > 0)
+            {
+                _storeContext.SetRequestStore(storeId);
+            }
 
             var model = TempData["OverriddenThemeVars"] ?? _themeVarService.GetThemeVariables(theme, storeId);
 

@@ -11,7 +11,7 @@ namespace SmartStore.Web.Models.Boards
         }
 
         public DateTime CurrentTime { get; set; }
-        
+
         public IList<ForumGroupModel> ForumGroups { get; set; }
 
         public string MetaTitle { get; set; }

@@ -1,13 +1,13 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Common
 {
@@ -36,12 +36,12 @@ namespace SmartStore.Web.Models.Common
         public string LastName { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.Email")]
-		[DataType(DataType.EmailAddress)]
-		public string Email { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.EmailMatch")]
-		[DataType(DataType.EmailAddress)]
-		public string EmailMatch { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string EmailMatch { get; set; }
         public bool ValidateEmailAddress { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.Company")]
@@ -87,14 +87,14 @@ namespace SmartStore.Web.Models.Common
         public bool ZipPostalCodeRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.PhoneNumber")]
-		[DataType(DataType.PhoneNumber)]
-		public string PhoneNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.FaxNumber")]
-		[DataType(DataType.PhoneNumber)]
-		public string FaxNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string FaxNumber { get; set; }
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
 
@@ -102,52 +102,52 @@ namespace SmartStore.Web.Models.Common
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableSalutations { get; set; }
 
-		public string FormattedAddress { get; set; }
+        public string FormattedAddress { get; set; }
 
-		public string GetFormattedName()
-		{
-			var sb = new StringBuilder();
+        public string GetFormattedName()
+        {
+            var sb = new StringBuilder();
 
-			sb.Append(FirstName);
-			if (FirstName.HasValue() && LastName.HasValue())
-			{
-				sb.Append(" ");
-			}
-			sb.Append(LastName);
+            sb.Append(FirstName);
+            if (FirstName.HasValue() && LastName.HasValue())
+            {
+                sb.Append(" ");
+            }
+            sb.Append(LastName);
 
-			return sb.ToString();
-		}
+            return sb.ToString();
+        }
 
-		public string GetFormattedCityStateZip()
-		{
-			var sb = new StringBuilder();
+        public string GetFormattedCityStateZip()
+        {
+            var sb = new StringBuilder();
 
-			if (CityEnabled && City.HasValue())
-			{
-				sb.Append(City);
-				if ((StateProvinceEnabled && StateProvinceName.HasValue()) || (ZipPostalCodeEnabled && ZipPostalCode.HasValue()))
-				{
-					sb.Append(", ");
-				}
-			}
+            if (CityEnabled && City.HasValue())
+            {
+                sb.Append(City);
+                if ((StateProvinceEnabled && StateProvinceName.HasValue()) || (ZipPostalCodeEnabled && ZipPostalCode.HasValue()))
+                {
+                    sb.Append(", ");
+                }
+            }
 
-			if (StateProvinceEnabled && StateProvinceName.HasValue())
-			{
-				sb.Append(StateProvinceName);
-				if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
-				{
-					sb.Append(" ");
-				}
-			}
+            if (StateProvinceEnabled && StateProvinceName.HasValue())
+            {
+                sb.Append(StateProvinceName);
+                if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
+                {
+                    sb.Append(" ");
+                }
+            }
 
-			if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
-			{
-				sb.Append(ZipPostalCode);
-			}
+            if (ZipPostalCodeEnabled && ZipPostalCode.HasValue())
+            {
+                sb.Append(ZipPostalCode);
+            }
 
-			return sb.ToString();
-		}
-	}
+            return sb.ToString();
+        }
+    }
 
     public class AddressValidator : AbstractValidator<AddressModel>
     {

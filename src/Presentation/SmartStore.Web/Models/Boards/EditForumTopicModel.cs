@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Boards
 {
-	[Validator(typeof(EditForumTopicValidator))]
+    [Validator(typeof(EditForumTopicValidator))]
     public partial class EditForumTopicModel : EntityModelBase
     {
         public EditForumTopicModel()
@@ -33,7 +33,7 @@ namespace SmartStore.Web.Models.Boards
 
         [SanitizeHtml]
         public string Text { get; set; }
-        
+
         public bool IsModerator { get; set; }
         public IEnumerable<SelectListItem> TopicPriorities { get; set; }
 

@@ -1,9 +1,9 @@
-﻿using FluentValidation;
+﻿using System;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
-using System;
 
 namespace SmartStore.Web.Models.News
 {
@@ -13,7 +13,7 @@ namespace SmartStore.Web.Models.News
         public NewsItemModel()
         {
             AddNewComment = new AddNewsCommentModel();
-			Comments = new CommentListModel();
+            Comments = new CommentListModel();
             PictureModel = new PictureModel();
             PreviewPictureModel = new PictureModel();
         }
@@ -21,7 +21,7 @@ namespace SmartStore.Web.Models.News
         public string MetaDescription { get; set; }
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
-		public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 
         public string Title { get; set; }
         public string Short { get; set; }
@@ -33,7 +33,7 @@ namespace SmartStore.Web.Models.News
         public bool DisplayAdminLink { get; set; }
 
         public AddNewsCommentModel AddNewComment { get; set; }
-		public CommentListModel Comments { get; set; }
+        public CommentListModel Comments { get; set; }
     }
 
     public class NewsItemValidator : AbstractValidator<NewsItemModel>

@@ -13,7 +13,7 @@ namespace SmartStore.Web.Models.Boards
 
         public bool IsCurrentCustomerAllowedToEditPost { get; set; }
         public bool IsCurrentCustomerAllowedToDeletePost { get; set; }
-        
+
         public int CustomerId { get; set; }
         public bool AllowViewingProfiles { get; set; }
         public string CustomerName { get; set; }

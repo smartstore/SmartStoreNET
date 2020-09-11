@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Blogs

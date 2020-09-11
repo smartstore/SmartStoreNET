@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Web.Mvc;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Seo;
@@ -18,8 +16,8 @@ namespace SmartStore.Web.Infrastructure
                 new[] { "SmartStore.Web.Controllers" });
 
             GenericPathRoute.RegisterPaths(
-                new GenericPath 
-                { 
+                new GenericPath
+                {
                     EntityName = "Product",
                     IdParamName = "productid",
                     Order = int.MinValue,

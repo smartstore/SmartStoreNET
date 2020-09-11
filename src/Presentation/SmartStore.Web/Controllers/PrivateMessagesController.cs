@@ -16,7 +16,7 @@ using SmartStore.Web.Models.PrivateMessages;
 
 namespace SmartStore.Web.Controllers
 {
-	[RewriteUrl(SslRequirement.Yes)]
+    [RewriteUrl(SslRequirement.Yes)]
     public partial class PrivateMessagesController : PublicControllerBase
     {
         #region Fields
@@ -25,7 +25,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ForumSettings _forumSettings;
         private readonly CustomerSettings _customerSettings;
@@ -36,18 +36,18 @@ namespace SmartStore.Web.Controllers
 
         public PrivateMessagesController(IForumService forumService,
             ICustomerService customerService,
-			ICustomerActivityService customerActivityService,
-			IWorkContext workContext,
-			IStoreContext storeContext,
+            ICustomerActivityService customerActivityService,
+            IWorkContext workContext,
+            IStoreContext storeContext,
             IDateTimeHelper dateTimeHelper,
             ForumSettings forumSettings,
-			CustomerSettings customerSettings)
+            CustomerSettings customerSettings)
         {
             this._forumService = forumService;
             this._customerService = customerService;
             this._customerActivityService = customerActivityService;
             this._workContext = workContext;
-			this._storeContext = storeContext;
+            this._storeContext = storeContext;
             this._dateTimeHelper = dateTimeHelper;
             this._forumSettings = forumSettings;
             this._customerSettings = customerSettings;
@@ -71,7 +71,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!AllowPrivateMessages())
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (_workContext.CurrentCustomer.IsGuest())
@@ -122,7 +122,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var pageSize = _forumSettings.PrivateMessagesPageSize;
-			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, 0, _workContext.CurrentCustomer.Id, null, null, false, page, pageSize);
+            var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, 0, _workContext.CurrentCustomer.Id, null, null, false, page, pageSize);
             var inbox = new List<PrivateMessageModel>();
 
             foreach (var pm in list)
@@ -163,7 +163,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var pageSize = _forumSettings.PrivateMessagesPageSize;
-			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id, 0, null, false, null, page, pageSize);
+            var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id, 0, null, false, null, page, pageSize);
             var sentItems = new List<PrivateMessageModel>();
 
             foreach (var pm in list)
@@ -220,8 +220,8 @@ namespace SmartStore.Web.Controllers
                     }
                 }
             }
-			return RedirectToAction("Index");
-		}
+            return RedirectToAction("Index");
+        }
 
         [HttpPost, FormValueRequired("mark-unread"), ActionName("InboxUpdate")]
         public ActionResult MarkUnread(FormCollection formCollection)
@@ -249,7 +249,7 @@ namespace SmartStore.Web.Controllers
                     }
                 }
             }
-			return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
         //updates sent items (deletes PrivateMessages)
@@ -287,7 +287,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!AllowPrivateMessages())
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (_workContext.CurrentCustomer.IsGuest())
@@ -299,8 +299,8 @@ namespace SmartStore.Web.Controllers
 
             if (customerTo == null || customerTo.IsGuest())
             {
-				return RedirectToAction("Index");
-			}
+                return RedirectToAction("Index");
+            }
 
             var model = new SendPrivateMessageModel();
             model.ToCustomerId = customerTo.Id;
@@ -312,8 +312,8 @@ namespace SmartStore.Web.Controllers
                 var replyToPM = _forumService.GetPrivateMessageById(replyToMessageId.Value);
                 if (replyToPM == null)
                 {
-					return RedirectToAction("Index");
-				}
+                    return RedirectToAction("Index");
+                }
 
                 if (replyToPM.ToCustomerId == _workContext.CurrentCustomer.Id || replyToPM.FromCustomerId == _workContext.CurrentCustomer.Id)
                 {
@@ -322,10 +322,10 @@ namespace SmartStore.Web.Controllers
                 }
                 else
                 {
-					return RedirectToAction("Index");
-				}
+                    return RedirectToAction("Index");
+                }
             }
-			return View(model);
+            return View(model);
         }
 
         [HttpPost]
@@ -333,7 +333,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!AllowPrivateMessages())
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (_workContext.CurrentCustomer.IsGuest())
@@ -351,8 +351,8 @@ namespace SmartStore.Web.Controllers
                 }
                 else
                 {
-					return RedirectToAction("Index");
-				}
+                    return RedirectToAction("Index");
+                }
             }
             else
             {
@@ -361,8 +361,8 @@ namespace SmartStore.Web.Controllers
 
             if (toCustomer == null || toCustomer.IsGuest())
             {
-				return RedirectToAction("Index");
-			}
+                return RedirectToAction("Index");
+            }
             model.ToCustomerId = toCustomer.Id;
             model.CustomerToName = toCustomer.FormatUserName();
             model.AllowViewingToProfile = _customerSettings.AllowViewingProfiles && !toCustomer.IsGuest();
@@ -387,7 +387,7 @@ namespace SmartStore.Web.Controllers
 
                     var privateMessage = new PrivateMessage
                     {
-						StoreId = _storeContext.CurrentStore.Id,
+                        StoreId = _storeContext.CurrentStore.Id,
                         ToCustomerId = toCustomer.Id,
                         FromCustomerId = _workContext.CurrentCustomer.Id,
                         Subject = subject,
@@ -403,7 +403,7 @@ namespace SmartStore.Web.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("PublicStore.SendPM", T("ActivityLog.PublicStore.SendPM", toCustomer.Email));
 
-					return RedirectToAction("Index", new { tab = "sent" });
+                    return RedirectToAction("Index", new { tab = "sent" });
                 }
                 catch (Exception ex)
                 {
@@ -418,7 +418,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!AllowPrivateMessages())
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (_workContext.CurrentCustomer.IsGuest())
@@ -431,8 +431,8 @@ namespace SmartStore.Web.Controllers
             {
                 if (pm.ToCustomerId != _workContext.CurrentCustomer.Id && pm.FromCustomerId != _workContext.CurrentCustomer.Id)
                 {
-					return RedirectToAction("Index");
-				}
+                    return RedirectToAction("Index");
+                }
 
                 if (!pm.IsRead && pm.ToCustomerId == _workContext.CurrentCustomer.Id)
                 {
@@ -442,8 +442,8 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				return RedirectToAction("Index");
-			}
+                return RedirectToAction("Index");
+            }
 
             var model = new PrivateMessageModel
             {
@@ -467,7 +467,7 @@ namespace SmartStore.Web.Controllers
         {
             if (!AllowPrivateMessages())
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (_workContext.CurrentCustomer.IsGuest())
@@ -490,8 +490,8 @@ namespace SmartStore.Web.Controllers
                     _forumService.UpdatePrivateMessage(pm);
                 }
             }
-			return RedirectToAction("Index");
-		}
+            return RedirectToAction("Index");
+        }
 
         #endregion
     }

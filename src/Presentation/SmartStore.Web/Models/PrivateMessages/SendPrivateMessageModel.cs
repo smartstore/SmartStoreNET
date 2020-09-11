@@ -5,7 +5,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.PrivateMessages
 {
-	[Validator(typeof(SendPrivateMessageValidator))]
+    [Validator(typeof(SendPrivateMessageValidator))]
     public partial class SendPrivateMessageModel : EntityModelBase
     {
         public int ToCustomerId { get; set; }

@@ -3,7 +3,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Web.Models.Blogs
 {
-    public partial class BlogPagingFilteringModel : PagedListBase 
+    public partial class BlogPagingFilteringModel : PagedListBase
     {
         #region Methods
 
@@ -43,7 +43,7 @@ namespace SmartStore.Web.Models.Blogs
         public string Month { get; set; }
 
         public string Tag { get; set; }
-        
+
         #endregion
     }
 }

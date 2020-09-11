@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.News
 {
-	public partial class AddNewsCommentModel : ModelBase
+    public partial class AddNewsCommentModel : ModelBase
     {
         [SmartResourceDisplayName("News.Comments.CommentTitle")]
         public string CommentTitle { get; set; }

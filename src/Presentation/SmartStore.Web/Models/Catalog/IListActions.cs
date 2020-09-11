@@ -5,16 +5,16 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Web.Models.Catalog
 {
     public interface IListActions
-	{
-		ProductSummaryViewMode ViewMode { get; }
-		GridColumnSpan GridColumnSpan { get; }
-		bool AllowViewModeChanging { get; }
+    {
+        ProductSummaryViewMode ViewMode { get; }
+        GridColumnSpan GridColumnSpan { get; }
+        bool AllowViewModeChanging { get; }
 
-		bool AllowFiltering { get; }
+        bool AllowFiltering { get; }
 
-		bool AllowSorting { get; }
-		int? CurrentSortOrder { get; }
-		string CurrentSortOrderName { get; }
+        bool AllowSorting { get; }
+        int? CurrentSortOrder { get; }
+        string CurrentSortOrderName { get; }
         string RelevanceSortOrderName { get; }
         IDictionary<int, string> AvailableSortOptions { get; }
 

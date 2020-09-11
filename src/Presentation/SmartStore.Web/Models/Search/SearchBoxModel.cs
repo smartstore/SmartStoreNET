@@ -13,6 +13,6 @@ namespace SmartStore.Web.Models.Search
         public bool InstantSearchEnabled { get; set; }
         public bool ShowThumbsInInstantSearch { get; set; }
 
-		public string CurrentQuery { get; set; }
+        public string CurrentQuery { get; set; }
     }
 }

@@ -5,14 +5,14 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Infrastructure.Cache;
 
 namespace SmartStore.Web.Controllers
 {
     public partial class CountryController : PublicControllerBase
-	{
-		#region Fields
+    {
+        #region Fields
 
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
@@ -20,22 +20,22 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
 
-	    #endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-        public CountryController(ICountryService countryService, 
-            IStateProvinceService stateProvinceService, 
-            ILocalizationService localizationService, 
+        public CountryController(ICountryService countryService,
+            IStateProvinceService stateProvinceService,
+            ILocalizationService localizationService,
             IWorkContext workContext,
             ICacheManager cacheManager)
-		{
+        {
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
             this._localizationService = localizationService;
             this._workContext = workContext;
             this._cacheManager = cacheManager;
-		}
+        }
 
         #endregion
 

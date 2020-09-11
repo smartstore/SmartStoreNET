@@ -5,21 +5,21 @@ using SmartStore.Services.Search;
 namespace SmartStore.Web.Models.Search
 {
     public interface ISearchResultModel
-	{
-		CatalogSearchResult SearchResult { get; }
-	}
+    {
+        CatalogSearchResult SearchResult { get; }
+    }
 
     public interface IForumSearchResultModel
     {
         ForumSearchResult SearchResult { get; }
     }
 
-	[ModelBinderType(typeof(ISearchResultModel), typeof(IForumSearchResultModel))]
-	public class SearchResultModelBinder : IModelBinder
-	{
-		public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		{
-			var modelType = bindingContext.ModelType;
+    [ModelBinderType(typeof(ISearchResultModel), typeof(IForumSearchResultModel))]
+    public class SearchResultModelBinder : IModelBinder
+    {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            var modelType = bindingContext.ModelType;
 
             if (typeof(ISearchResultModel).IsAssignableFrom(modelType))
             {
@@ -34,5 +34,5 @@ namespace SmartStore.Web.Models.Search
 
             return null;
         }
-	}
+    }
 }

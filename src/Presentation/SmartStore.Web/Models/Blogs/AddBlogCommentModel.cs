@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Blogs
 {
-	public partial class AddBlogCommentModel : EntityModelBase
+    public partial class AddBlogCommentModel : EntityModelBase
     {
         [SmartResourceDisplayName("Blog.Comments.CommentText")]
         [SanitizeHtml]

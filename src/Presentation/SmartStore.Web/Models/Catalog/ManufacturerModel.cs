@@ -7,7 +7,7 @@ using SmartStore.Web.Models.Search;
 namespace SmartStore.Web.Models.Catalog
 {
     public partial class ManufacturerModel : EntityModelBase, ISearchResultModel
-	{
+    {
         public ManufacturerModel()
         {
             PictureModel = new PictureModel();
@@ -25,10 +25,10 @@ namespace SmartStore.Web.Models.Catalog
         public ProductSummaryModel FeaturedProducts { get; set; }
         public ProductSummaryModel Products { get; set; }
 
-		public CatalogSearchResult SearchResult
-		{
-			get;
-			set;
-		}
-	}
+        public CatalogSearchResult SearchResult
+        {
+            get;
+            set;
+        }
+    }
 }

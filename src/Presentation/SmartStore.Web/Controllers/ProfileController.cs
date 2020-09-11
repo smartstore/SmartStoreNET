@@ -60,7 +60,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(id ?? 0);
             if (!_customerSettings.AllowViewingProfiles || (customer == null || customer.IsGuest()))
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             var name = customer.FormatUserName(_customerSettings, T, true);
@@ -84,7 +84,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(id);
             if (customer == null)
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             var model = new ProfileInfoModel
@@ -144,7 +144,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(id);
             if (customer == null)
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             if (page > 0)

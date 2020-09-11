@@ -49,8 +49,8 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
-		private readonly IStoreMappingService _storeMappingService;
-		private readonly ILanguageService _languageService;
+        private readonly IStoreMappingService _storeMappingService;
+        private readonly ILanguageService _languageService;
         private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly MediaSettings _mediaSettings;
@@ -61,7 +61,7 @@ namespace SmartStore.Web.Controllers
         private readonly SeoSettings _seoSettings;
 
         public BlogController(
-            ICommonServices services, 
+            ICommonServices services,
             IBlogService blogService,
             IMediaService mediaService,
             ICustomerContentService customerContentService,
@@ -73,9 +73,9 @@ namespace SmartStore.Web.Controllers
             ILanguageService languageService,
             IGenericAttributeService genericAttributeService,
             MediaSettings mediaSettings,
-			BlogSettings blogSettings,
+            BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
-			CustomerSettings customerSettings,
+            CustomerSettings customerSettings,
             CaptchaSettings captchaSettings,
             SeoSettings seoSettings)
         {
@@ -87,10 +87,10 @@ namespace SmartStore.Web.Controllers
             _webHelper = webHelper;
             _cacheManager = cacheManager;
             _customerActivityService = customerActivityService;
-			_storeMappingService = storeMappingService;
-			_languageService = languageService;
+            _storeMappingService = storeMappingService;
+            _languageService = languageService;
             _genericAttributeService = genericAttributeService;
-            
+
             _mediaSettings = mediaSettings;
             _blogSettings = blogSettings;
             _localizationSettings = localizationSettings;
@@ -118,7 +118,7 @@ namespace SmartStore.Web.Controllers
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? blogPost.Title,
                 File = file
             };
-            
+
             _services.DisplayControl.Announce(file?.File);
 
             return pictureModel;
@@ -135,9 +135,9 @@ namespace SmartStore.Web.Controllers
             model.SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnBlogCommentPage;
-			model.Comments.AllowComments = blogPost.AllowComments;
-			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
-			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+            model.Comments.AllowComments = blogPost.AllowComments;
+            model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
+            model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
 
             model.HasBgImage = blogPost.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg;
@@ -148,13 +148,13 @@ namespace SmartStore.Web.Controllers
             {
                 model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.MediaFileId);
             }
-            else  if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg)
+            else if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || blogPost.PreviewDisplayType == PreviewDisplayType.PreviewSectionBg)
             {
                 model.PreviewPictureModel = PrepareBlogPostPictureModel(blogPost, blogPost.PreviewMediaFileId);
             }
 
-            if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview || 
-                blogPost.PreviewDisplayType == PreviewDisplayType.Default || 
+            if (blogPost.PreviewDisplayType == PreviewDisplayType.Preview ||
+                blogPost.PreviewDisplayType == PreviewDisplayType.Default ||
                 blogPost.PreviewDisplayType == PreviewDisplayType.Bare)
             {
                 model.SectionBg = string.Empty;
@@ -185,8 +185,8 @@ namespace SmartStore.Web.Controllers
                         CustomerName = bc.Customer.FormatUserName(_customerSettings, T, false),
                         CommentText = bc.CommentText,
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(bc.CreatedOnUtc, DateTimeKind.Utc),
-						CreatedOnPretty = bc.CreatedOnUtc.RelativeFormat(true, "f"),
-						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest
+                        CreatedOnPretty = bc.CreatedOnUtc.RelativeFormat(true, "f"),
+                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest
                     };
 
                     commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _customerSettings, _mediaSettings, commentModel.CustomerName);
@@ -195,7 +195,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-			Services.DisplayControl.Announce(blogPost);
+            Services.DisplayControl.Announce(blogPost);
         }
 
         [NonAction]
@@ -222,11 +222,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!command.Tag.HasValue())
             {
-				blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
+                blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
             else
             {
-				blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
+                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, workingLanguageId, command.Tag, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
             }
 
             model.PagingFilteringContext.LoadPagedList(blogPosts);
@@ -241,8 +241,9 @@ namespace SmartStore.Web.Controllers
                 model.MetaDescription = _blogSettings.GetLocalizedSetting(x => x.MetaDescription);
                 model.MetaKeywords = _blogSettings.GetLocalizedSetting(x => x.MetaKeywords);
             }
-            else {
-                model.MetaTitle = parsedMonth != null ? 
+            else
+            {
+                model.MetaTitle = parsedMonth != null ?
                     T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
                     T("PageTitle.Blog.Tag").Text.FormatWith(tag);
 
@@ -330,11 +331,11 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)
         {
-			// INFO: param 'tag' redundant, because OutputCache does not include
-			// complex type params in cache key computing
+            // INFO: param 'tag' redundant, because OutputCache does not include
+            // complex type params in cache key computing
 
-			if (!_blogSettings.Enabled)
-				return HttpNotFound();
+            if (!_blogSettings.Enabled)
+                return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
@@ -342,11 +343,11 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BlogByMonth(string month, BlogPagingFilteringModel command)
         {
-			// INFO: param 'month' redundant, because OutputCache does not include
-			// complex type params in cache key computing
+            // INFO: param 'month' redundant, because OutputCache does not include
+            // complex type params in cache key computing
 
-			if (!_blogSettings.Enabled)
-				return HttpNotFound();
+            if (!_blogSettings.Enabled)
+                return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
@@ -354,65 +355,65 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ListRss(int? languageId)
         {
-			languageId = languageId ?? _services.WorkContext.WorkingLanguage.Id;
+            languageId = languageId ?? _services.WorkContext.WorkingLanguage.Id;
 
-			DateTime? maxAge = null;
-			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = Url.RouteUrl("BlogRSS", new { languageId }, protocol);
-			var blogLink = Url.RouteUrl("Blog", null, protocol);
+            DateTime? maxAge = null;
+            var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+            var selfLink = Url.RouteUrl("BlogRSS", new { languageId }, protocol);
+            var blogLink = Url.RouteUrl("Blog", null, protocol);
             var currentStore = _services.StoreContext.CurrentStore;
             var title = "{0} - Blog".FormatInvariant(currentStore.Name);
 
-			if (_blogSettings.MaxAgeInDays > 0)
-			{
-				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
-			}
+            if (_blogSettings.MaxAgeInDays > 0)
+            {
+                maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+            }
 
-			var language = _languageService.GetLanguageById(languageId.Value);
-			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
+            var language = _languageService.GetLanguageById(languageId.Value);
+            var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
 
-			feed.AddNamespaces(false);
-			feed.Init(selfLink, language);
+            feed.AddNamespaces(false);
+            feed.Init(selfLink, language);
 
-			if (!_blogSettings.Enabled)
-			{
-				return new RssActionResult { Feed = feed };
-			}
+            if (!_blogSettings.Enabled)
+            {
+                return new RssActionResult { Feed = feed };
+            }
 
-			var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(currentStore.Id, languageId.Value, null, null, 0, int.MaxValue, false, maxAge);
+            var items = new List<SyndicationItem>();
+            var blogPosts = _blogService.GetAllBlogPosts(currentStore.Id, languageId.Value, null, null, 0, int.MaxValue, false, maxAge);
 
-			foreach (var blogPost in blogPosts)
-			{
-				var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, protocol);
+            foreach (var blogPost in blogPosts)
+            {
+                var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, protocol);
 
-				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
+                var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
 
-				items.Add(item);
+                items.Add(item);
 
-				Services.DisplayControl.Announce(blogPost);
-			}
+                Services.DisplayControl.Announce(blogPost);
+            }
 
-			feed.Items = items;
+            feed.Items = items;
 
-			return new RssActionResult { Feed = feed };
+            return new RssActionResult { Feed = feed };
         }
 
-		[GdprConsent]
-		public ActionResult BlogPost(int blogPostId)
+        [GdprConsent]
+        public ActionResult BlogPost(int blogPostId)
         {
             if (!_blogSettings.Enabled)
-				return HttpNotFound();
+                return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null || (!blogPost.IsPublished && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
-				return HttpNotFound();
+                return HttpNotFound();
 
-			// Store mapping
-			if (!_storeMappingService.Authorize(blogPost))
-				return HttpNotFound();
+            // Store mapping
+            if (!_storeMappingService.Authorize(blogPost))
+                return HttpNotFound();
 
             var model = new BlogPostModel();
             PrepareBlogPostModel(model, blogPost, true);
@@ -422,15 +423,15 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("BlogPost")]
         [ValidateCaptcha]
-		[GdprConsent]
-		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, string captchaError)
+        [GdprConsent]
+        public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, string captchaError)
         {
             if (!_blogSettings.Enabled)
-				return HttpNotFound();
+                return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null || !blogPost.AllowComments)
-				return HttpNotFound();
+                return HttpNotFound();
 
             var customer = _services.WorkContext.CurrentCustomer;
             if (customer.IsGuest() && !_blogSettings.AllowNotRegisteredUsersToLeaveComments)
@@ -465,7 +466,7 @@ namespace SmartStore.Web.Controllers
 
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", T("ActivityLog.PublicStore.AddBlogComment"));
 
-				NotifySuccess(T("Blog.Comments.SuccessfullyAdded"));
+                NotifySuccess(T("Blog.Comments.SuccessfullyAdded"));
 
                 var url = UrlHelper.GenerateUrl(
                     routeName: "BlogPost",
@@ -502,7 +503,7 @@ namespace SmartStore.Web.Controllers
                 var model = new BlogPostTagListModel();
 
                 //get tags
-				var tags = _blogService.GetAllBlogPostTags(storeId, workingLanguageId)
+                var tags = _blogService.GetAllBlogPostTags(storeId, workingLanguageId)
                     .OrderByDescending(x => x.BlogPostCount)
                     .Take(_blogSettings.NumberOfTags)
                     .ToList();
@@ -535,7 +536,7 @@ namespace SmartStore.Web.Controllers
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new List<BlogPostYearModel>();
-				var blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, int.MaxValue);
+                var blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, int.MaxValue);
 
                 if (blogPosts.Count > 0)
                 {
@@ -593,9 +594,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1} - Blog\" />",
-				Url.RouteUrl("BlogRSS", new { languageId = _services.WorkContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _services.StoreContext.CurrentStore.Name);
+                Url.RouteUrl("BlogRSS", new { languageId = _services.WorkContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _services.StoreContext.CurrentStore.Name);
 
-			return Content(link);
+            return Content(link);
         }
 
         #endregion

@@ -1,11 +1,10 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Common
 {
@@ -13,8 +12,8 @@ namespace SmartStore.Web.Models.Common
     public partial class ContactUsModel : ModelBase
     {
         [SmartResourceDisplayName("ContactUs.Email")]
-		[DataType(DataType.EmailAddress)]
-		public string Email { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
 
         [SanitizeHtml]
         [SmartResourceDisplayName("ContactUs.Enquiry")]
@@ -22,9 +21,9 @@ namespace SmartStore.Web.Models.Common
 
         [SmartResourceDisplayName("ContactUs.FullName")]
         public string FullName { get; set; }
-		public bool FullNameRequired { get; set; }
+        public bool FullNameRequired { get; set; }
 
-		public bool SuccessfullySent { get; set; }
+        public bool SuccessfullySent { get; set; }
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }

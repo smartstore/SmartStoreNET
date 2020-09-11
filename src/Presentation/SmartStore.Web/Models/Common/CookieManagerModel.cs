@@ -1,7 +1,6 @@
-﻿using SmartStore.Core.Plugins;
-using SmartStore.Services.Customers;
+﻿using System.Collections.Generic;
+using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
 
 namespace SmartStore.Web.Models.Common
 {
@@ -23,6 +22,6 @@ namespace SmartStore.Web.Models.Common
         public bool AnalyticsConsent { get; set; }
 
         public bool ThirdPartyConsent { get; set; }
-	}
+    }
 }
 

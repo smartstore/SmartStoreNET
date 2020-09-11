@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-	[Validator(typeof(ProductEmailAFriendValidator))]
+    [Validator(typeof(ProductEmailAFriendValidator))]
     public partial class ProductEmailAFriendModel : ModelBase
     {
         public int ProductId { get; set; }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
-using SmartStore.Core.Domain.Cms;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
     public class EnUSSeedData : InvariantSeedData
     {
-		public EnUSSeedData()
+        public EnUSSeedData()
         {
         }
 

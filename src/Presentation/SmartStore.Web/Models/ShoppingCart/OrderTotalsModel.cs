@@ -29,29 +29,29 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool DisplayTax { get; set; }
         public bool DisplayTaxRates { get; set; }
         public bool DisplayWeight { get; set; }
-        
+
         public IList<GiftCard> GiftCards { get; set; }
 
         public string OrderTotalDiscount { get; set; }
         public bool AllowRemovingOrderTotalDiscount { get; set; }
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
-		public string CreditBalance { get; set; }
-		public string OrderTotalRounding { get; set; }
+        public string CreditBalance { get; set; }
+        public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public decimal Weight { get; set; }
         public string WeightMeasureUnitName { get; set; }
 
         public bool ShowConfirmOrderLegalHint { get; set; }
-		public string OrderAmountWarning { get; set; }
+        public string OrderAmountWarning { get; set; }
 
-		#region Nested classes
+        #region Nested classes
 
-		public partial class TaxRate : ModelBase
+        public partial class TaxRate : ModelBase
         {
             public string Rate { get; set; }
             public string Value { get; set; }
-			public string Label { get; set; }
+            public string Label { get; set; }
         }
 
         public partial class GiftCard : EntityModelBase

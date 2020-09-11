@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation

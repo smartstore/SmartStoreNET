@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(PasswordRecoveryConfirmValidator))]
+    [Validator(typeof(PasswordRecoveryConfirmValidator))]
     public partial class PasswordRecoveryConfirmModel : ModelBase
     {
         [DataType(DataType.Password)]

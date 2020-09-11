@@ -25,27 +25,27 @@ using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public class DeDESeedData : InvariantSeedData
+    public class DeDESeedData : InvariantSeedData
     {
-		private readonly IDictionary<string, TaxCategory> _taxCategories = new Dictionary<string, TaxCategory>();
-		private DeliveryTime _defaultDeliveryTime;
+        private readonly IDictionary<string, TaxCategory> _taxCategories = new Dictionary<string, TaxCategory>();
+        private DeliveryTime _defaultDeliveryTime;
 
-		protected override void Alter(Customer entity)
+        protected override void Alter(Customer entity)
         {
             base.Alter(entity);
 
-			if (entity.SystemName == SystemCustomerNames.SearchEngine)
+            if (entity.SystemName == SystemCustomerNames.SearchEngine)
             {
                 entity.AdminComment = "System-Gastkonto für Suchmaschinenanfragen.";
             }
-			else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
+            else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
             {
                 entity.AdminComment = "Systemkonto für geplante Aufgaben.";
             }
-			else if (entity.SystemName == SystemCustomerNames.PdfConverter)
-			{
-				entity.AdminComment = "Systemkonto für den PDF-Konverter.";
-			}
+            else if (entity.SystemName == SystemCustomerNames.PdfConverter)
+            {
+                entity.AdminComment = "Systemkonto für den PDF-Konverter.";
+            }
         }
 
         protected override void Alter(IList<MeasureDimension> entities)
@@ -210,38 +210,14 @@ namespace SmartStore.Web.Infrastructure.Installation
         }
 
 
-        protected override string TaxNameBooks
-        {
-            get => "Ermäßigt";
-        }
-        protected override string TaxNameDigitalGoods
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameJewelry
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameApparel
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameFood
-        {
-            get => "Ermäßigt";
-        }
-        protected override string TaxNameElectronics
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameTaxFree
-        {
-            get => "Befreit";
-        }
-        public override decimal[] FixedTaxRates
-        {
-            get => new decimal[] { 19, 7, 0 };
-        }
+        protected override string TaxNameBooks => "Ermäßigt";
+        protected override string TaxNameDigitalGoods => "Normal";
+        protected override string TaxNameJewelry => "Normal";
+        protected override string TaxNameApparel => "Normal";
+        protected override string TaxNameFood => "Ermäßigt";
+        protected override string TaxNameElectronics => "Normal";
+        protected override string TaxNameTaxFree => "Befreit";
+        public override decimal[] FixedTaxRates => new decimal[] { 19, 7, 0 };
 
         protected override void Alter(IList<TaxCategory> entities)
         {
@@ -272,123 +248,123 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 .Alter(276, x =>
                 {
-                x.Name = "Deutschland";
-                x.DisplayOrder = -10;
-                x.Published = true;
-                #region Provinces
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Baden-Württemberg",
-                    Abbreviation = "BW",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Bayern",
-                    Abbreviation = "BY",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Berlin",
-                    Abbreviation = "BE",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Brandenburg",
-                    Abbreviation = "BB",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Bremen",
-                    Abbreviation = "HB",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Hamburg",
-                    Abbreviation = "HH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Hessen",
-                    Abbreviation = "HE",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Mecklenburg-Vorpommern",
-                    Abbreviation = "MV",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Niedersachsen",
-                    Abbreviation = "NI",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Nordrhein-Westfalen",
-                    Abbreviation = "NW",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Rheinland-Pfalz",
-                    Abbreviation = "RP",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Saarland",
-                    Abbreviation = "SL",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Sachsen",
-                    Abbreviation = "SN",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Sachsen-Anhalt",
-                    Abbreviation = "ST",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Schleswig-Holstein",
-                    Abbreviation = "SH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Thüringen",
-                    Abbreviation = "TH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                #endregion Provinces
+                    x.Name = "Deutschland";
+                    x.DisplayOrder = -10;
+                    x.Published = true;
+                    #region Provinces
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Baden-Württemberg",
+                        Abbreviation = "BW",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Bayern",
+                        Abbreviation = "BY",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Berlin",
+                        Abbreviation = "BE",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Brandenburg",
+                        Abbreviation = "BB",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Bremen",
+                        Abbreviation = "HB",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Hamburg",
+                        Abbreviation = "HH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Hessen",
+                        Abbreviation = "HE",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Mecklenburg-Vorpommern",
+                        Abbreviation = "MV",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Niedersachsen",
+                        Abbreviation = "NI",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Nordrhein-Westfalen",
+                        Abbreviation = "NW",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Rheinland-Pfalz",
+                        Abbreviation = "RP",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Saarland",
+                        Abbreviation = "SL",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Sachsen",
+                        Abbreviation = "SN",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Sachsen-Anhalt",
+                        Abbreviation = "ST",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Schleswig-Holstein",
+                        Abbreviation = "SH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Thüringen",
+                        Abbreviation = "TH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    #endregion Provinces
                 })
                 .Alter(40, x =>
                 {

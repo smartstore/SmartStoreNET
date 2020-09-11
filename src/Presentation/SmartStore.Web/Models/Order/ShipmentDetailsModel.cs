@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Web.Framework.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -23,7 +23,7 @@ namespace SmartStore.Web.Models.Order
 
         public OrderDetailsModel Order { get; set; }
 
-		#region Nested Classes
+        #region Nested Classes
 
         public partial class ShipmentItemModel : EntityModelBase
         {
@@ -31,7 +31,7 @@ namespace SmartStore.Web.Models.Order
             public int ProductId { get; set; }
             public LocalizedValue<string> ProductName { get; set; }
             public string ProductSeName { get; set; }
-			public string ProductUrl { get; set; }
+            public string ProductUrl { get; set; }
             public string AttributeInfo { get; set; }
 
             public int QuantityOrdered { get; set; }
@@ -46,6 +46,6 @@ namespace SmartStore.Web.Models.Order
             public DateTime? Date { get; set; }
         }
 
-		#endregion
+        #endregion
     }
 }

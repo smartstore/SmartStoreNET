@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-	[Validator(typeof(ProductAskQuestionValidator))]
+    [Validator(typeof(ProductAskQuestionValidator))]
     public partial class ProductAskQuestionModel : EntityModelBase
     {
         public LocalizedValue<string> ProductName { get; set; }
@@ -20,7 +20,7 @@ namespace SmartStore.Web.Models.Catalog
 
         [SmartResourceDisplayName("Account.Fields.FullName")]
         public string SenderName { get; set; }
-		public bool SenderNameRequired { get; set; }
+        public bool SenderNameRequired { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.Phone")]
         public string SenderPhone { get; set; }

@@ -21,55 +21,55 @@ namespace SmartStore.Web.Controllers
 {
     public partial class EntityController : PublicControllerBase
     {
-		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ICatalogSearchService _catalogSearchService;
         private readonly CatalogSettings _catalogSettings;
-		private readonly MediaSettings _mediaSettings;
-		private readonly SearchSettings _searchSettings;
+        private readonly MediaSettings _mediaSettings;
+        private readonly SearchSettings _searchSettings;
         private readonly IMediaService _mediaService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ICustomerService _customerService;
         private readonly ICategoryService _categoryService;
 
         public EntityController(
-			ICatalogSearchService catalogSearchService,
-			CatalogSettings catalogSettings,
-			MediaSettings mediaSettings,
-			SearchSettings searchSettings,
+            ICatalogSearchService catalogSearchService,
+            CatalogSettings catalogSettings,
+            MediaSettings mediaSettings,
+            SearchSettings searchSettings,
             IMediaService mediaService,
             IManufacturerService manufacturerService,
             ICustomerService customerService,
             ICategoryService categoryService)
         {
-			_catalogSearchService = catalogSearchService;
+            _catalogSearchService = catalogSearchService;
             _catalogSettings = catalogSettings;
-			_mediaSettings = mediaSettings;
-			_searchSettings = searchSettings;
+            _mediaSettings = mediaSettings;
+            _searchSettings = searchSettings;
             _mediaService = mediaService;
-			_manufacturerService = manufacturerService;
+            _manufacturerService = manufacturerService;
             _customerService = customerService;
             _categoryService = categoryService;
         }
 
-		#region Entity Picker
+        #region Entity Picker
 
-		public ActionResult Picker(EntityPickerModel model)
-		{
-			if (model.EntityType.IsCaseInsensitiveEqual("product"))
-			{
-				ViewBag.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
-					.FlattenNodes(false)
-					.Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
-					.ToList();
+        public ActionResult Picker(EntityPickerModel model)
+        {
+            if (model.EntityType.IsCaseInsensitiveEqual("product"))
+            {
+                ViewBag.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
+                    .FlattenNodes(false)
+                    .Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
+                    .ToList();
 
-				ViewBag.AvailableManufacturers = _manufacturerService.GetAllManufacturers(true)
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
+                ViewBag.AvailableManufacturers = _manufacturerService.GetAllManufacturers(true)
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                    .ToList();
 
-				ViewBag.AvailableStores = Services.StoreService.GetAllStores()
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
+                ViewBag.AvailableStores = Services.StoreService.GetAllStores()
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                    .ToList();
 
-				ViewBag.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+                ViewBag.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
             }
             else if (model.EntityType.IsCaseInsensitiveEqual("customer"))
             {
@@ -86,21 +86,21 @@ namespace SmartStore.Web.Controllers
             }
 
             return PartialView(model);
-		}
+        }
 
-		[HttpPost]
-		public ActionResult Picker(EntityPickerModel model, FormCollection form)
-		{
-			try
-			{
+        [HttpPost]
+        public ActionResult Picker(EntityPickerModel model, FormCollection form)
+        {
+            try
+            {
                 var languageId = model.LanguageId == 0 ? Services.WorkContext.WorkingLanguage.Id : model.LanguageId;
                 var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
-				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
+                var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
                 var selected = model.Selected.SplitSafe(",");
                 var returnSku = model.ReturnField.IsCaseInsensitiveEqual("sku");
 
                 using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
-				{
+                {
                     if (model.EntityType.IsCaseInsensitiveEqual("product"))
                     {
                         model.SearchTerm = model.SearchTerm.TrimSafe();
@@ -363,15 +363,15 @@ namespace SmartStore.Web.Controllers
                             .ToList();
                     }
                 }
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex.ToAllMessages());
-			}
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex.ToAllMessages());
+            }
 
-			return PartialView("Picker.List", model);
-		}
+            return PartialView("Picker.List", model);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,11 +1,11 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Collections.Generic;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
-using System;
-using System.Collections.Generic;
 
 namespace SmartStore.Web.Models.Blogs
 {
@@ -15,8 +15,8 @@ namespace SmartStore.Web.Models.Blogs
         public BlogPostModel()
         {
             Tags = new List<BlogPostTagModel>();
-			AddNewComment = new AddBlogCommentModel();
-			Comments = new CommentListModel();
+            AddNewComment = new AddBlogCommentModel();
+            Comments = new CommentListModel();
             PictureModel = new PictureModel();
             PreviewPictureModel = new PictureModel();
         }
@@ -25,10 +25,10 @@ namespace SmartStore.Web.Models.Blogs
         public string MetaDescription { get; set; }
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
-		public DateTime CreatedOn { get; set; }
-		public IList<BlogPostTagModel> Tags { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public IList<BlogPostTagModel> Tags { get; set; }
 
-		public string Title { get; set; }
+        public string Title { get; set; }
 
         public PictureModel PictureModel { get; set; }
 
@@ -39,7 +39,7 @@ namespace SmartStore.Web.Models.Blogs
         public string Body { get; set; }
 
         public string SectionBg { get; set; }
-        
+
         public bool HasBgImage { get; set; }
 
         public bool DisplayAdminLink { get; set; }
@@ -49,8 +49,8 @@ namespace SmartStore.Web.Models.Blogs
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
         public AddBlogCommentModel AddNewComment { get; set; }
-		public CommentListModel Comments { get; set; }
-	}
+        public CommentListModel Comments { get; set; }
+    }
 
     public class BlogPostValidator : AbstractValidator<BlogPostModel>
     {

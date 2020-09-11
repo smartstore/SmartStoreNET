@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -24,8 +23,8 @@ namespace SmartStore.Web.Models.Customer
         }
 
         [SmartResourceDisplayName("Account.Fields.Email")]
-		[DataType(DataType.EmailAddress)]
-		public string Email { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
 
         public bool UsernamesEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Username")]
@@ -46,16 +45,16 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
-		public bool FirstNameRequired { get; set; }
-		public bool LastNameRequired { get; set; }
+        public bool FirstNameRequired { get; set; }
+        public bool LastNameRequired { get; set; }
 
-		[SmartResourceDisplayName("Account.Fields.FirstName")]
+        [SmartResourceDisplayName("Account.Fields.FirstName")]
         public string FirstName { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.LastName")]
         public string LastName { get; set; }
 
-		public bool DateOfBirthEnabled { get; set; }
+        public bool DateOfBirthEnabled { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.DateOfBirth")]
         public int? DateOfBirthDay { get; set; }
@@ -105,15 +104,15 @@ namespace SmartStore.Web.Models.Customer
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Phone")]
-		[DataType(DataType.PhoneNumber)]
-		public string Phone { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string Phone { get; set; }
 
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Fax")]
-		[DataType(DataType.PhoneNumber)]
-		public string Fax { get; set; }
-        
+        [DataType(DataType.PhoneNumber)]
+        public string Fax { get; set; }
+
         public bool NewsletterEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Newsletter")]
         public bool Newsletter { get; set; }

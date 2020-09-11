@@ -78,10 +78,7 @@ namespace SmartStore.Web.Controllers
 
         public Localizer T { get; set; } = NullLocalizer.Instance;
 
-        public static string OrderDetailsPrintViewPath
-        {
-            get { return "~/Views/Order/Details.Print.cshtml"; }
-        }
+        public static string OrderDetailsPrintViewPath => "~/Views/Order/Details.Print.cshtml";
 
         private PictureModel PrepareOrderItemPictureModel(
             Product product,
@@ -275,7 +272,7 @@ namespace SmartStore.Web.Controllers
             model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
             model.StoreId = order.StoreId;
-			model.CustomerLanguageId = order.CustomerLanguageId;
+            model.CustomerLanguageId = order.CustomerLanguageId;
             model.CustomerComment = order.CustomerOrderComment;
 
             model.OrderNumber = order.GetOrderNumber();
@@ -353,7 +350,7 @@ namespace SmartStore.Web.Controllers
                 model.DirectDebitCountry = _encryptionService.DecryptText(order.DirectDebitCountry);
                 model.DirectDebitIban = _encryptionService.DecryptText(order.DirectDebitIban);
             }
-            
+
             // Totals.
             switch (order.CustomerTaxDisplayType)
             {
@@ -487,12 +484,12 @@ namespace SmartStore.Web.Controllers
                     true, order.CustomerCurrencyCode, false, language);
             }
 
-			// Credit balance.
-			if (order.CreditBalance > decimal.Zero)
-			{
-				var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
-				model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
-			}
+            // Credit balance.
+            if (order.CreditBalance > decimal.Zero)
+            {
+                var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
+                model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
+            }
 
             // Total.
             var roundingAmount = decimal.Zero;

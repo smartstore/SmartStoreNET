@@ -9,7 +9,7 @@ namespace SmartStore.Web.Models.Customer
     {
         public CustomerOrderListModel()
         {
-			CancelRecurringPaymentErrors = new List<string>();
+            CancelRecurringPaymentErrors = new List<string>();
         }
 
         public PagedList<OrderDetailsModel> Orders { get; set; }

@@ -8,7 +8,7 @@ using SmartStore.Web.Infrastructure.Installation;
 
 namespace SmartStore.Web.Models.Install
 {
-	[Validator(typeof(InstallValidator))]
+    [Validator(typeof(InstallValidator))]
     public partial class InstallModel : ModelBase
     {
         public InstallModel()

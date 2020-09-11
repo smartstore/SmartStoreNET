@@ -5,53 +5,50 @@ using SmartStore.Services.Search.Rendering;
 namespace SmartStore.Web.Infrastructure
 {
     public class DefaultFacetTemplateSelector : IFacetTemplateSelector
-	{
-		public RouteInfo GetTemplateRoute(FacetGroup facetGroup)
-		{
-			var templateName = GetTemplateName(facetGroup);
-			if (templateName.IsEmpty())
-			{
-				return null;
-			}
-
-			string controller = "Search";
-			string action = "FacetGroup";
-			var routeValues = new RouteValueDictionary(new
-			{
-				area = "",
-				facetGroup,
-				templateName
-			});
-
-			return new RouteInfo(action, controller, routeValues);
-		}
-
-		private string GetTemplateName(FacetGroup group)
-		{
-			var prefix = "FacetTemplates/";
-
-			switch (group.Kind)
-			{
-				case FacetGroupKind.Category:
-				case FacetGroupKind.DeliveryTime:
-				case FacetGroupKind.Brand:
-				case FacetGroupKind.Availability:
-				case FacetGroupKind.NewArrivals:
-                case FacetGroupKind.Forum:
-                case FacetGroupKind.Customer:
-					return prefix + (group.IsMultiSelect ? "MultiSelect" : "SingleSelect");
-				case FacetGroupKind.Price:
-					return prefix + "Price";
-				case FacetGroupKind.Rating:
-					return prefix + "Rating";
+    {
+        public RouteInfo GetTemplateRoute(FacetGroup facetGroup)
+        {
+            var templateName = GetTemplateName(facetGroup);
+            if (templateName.IsEmpty())
+            {
+                return null;
             }
 
-			return null;
-		}
+            string controller = "Search";
+            string action = "FacetGroup";
+            var routeValues = new RouteValueDictionary(new
+            {
+                area = "",
+                facetGroup,
+                templateName
+            });
 
-		public int Ordinal
-		{
-			get { return -100; }
-		}
-	}
+            return new RouteInfo(action, controller, routeValues);
+        }
+
+        private string GetTemplateName(FacetGroup group)
+        {
+            var prefix = "FacetTemplates/";
+
+            switch (group.Kind)
+            {
+                case FacetGroupKind.Category:
+                case FacetGroupKind.DeliveryTime:
+                case FacetGroupKind.Brand:
+                case FacetGroupKind.Availability:
+                case FacetGroupKind.NewArrivals:
+                case FacetGroupKind.Forum:
+                case FacetGroupKind.Customer:
+                    return prefix + (group.IsMultiSelect ? "MultiSelect" : "SingleSelect");
+                case FacetGroupKind.Price:
+                    return prefix + "Price";
+                case FacetGroupKind.Rating:
+                    return prefix + "Rating";
+            }
+
+            return null;
+        }
+
+        public int Ordinal => -100;
+    }
 }

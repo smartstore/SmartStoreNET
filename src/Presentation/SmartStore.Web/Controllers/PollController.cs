@@ -13,7 +13,7 @@ using SmartStore.Web.Models.Polls;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class PollController : PublicControllerBase
+    public partial class PollController : PublicControllerBase
     {
         #region Fields
 
@@ -21,7 +21,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPollService _pollService;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -29,16 +29,16 @@ namespace SmartStore.Web.Controllers
 
         public PollController(
             IWorkContext workContext,
-			IPollService pollService,
+            IPollService pollService,
             IWebHelper webHelper,
-			ICacheManager cacheManager,
-			IStoreContext storeContext)
+            ICacheManager cacheManager,
+            IStoreContext storeContext)
         {
             this._workContext = workContext;
             this._pollService = pollService;
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
-			this._storeContext = storeContext;
+            this._storeContext = storeContext;
         }
 
         #endregion
@@ -57,10 +57,10 @@ namespace SmartStore.Web.Controllers
 
             var answers = poll.PollAnswers.OrderBy(x => x.DisplayOrder);
 
-			foreach (var answer in answers)
-			{
-				model.TotalVotes += answer.NumberOfVotes;
-			}
+            foreach (var answer in answers)
+            {
+                model.TotalVotes += answer.NumberOfVotes;
+            }
 
             foreach (var pa in answers)
             {
@@ -92,7 +92,7 @@ namespace SmartStore.Web.Controllers
                 var poll = _pollService.GetPollBySystemKeyword(systemKeyword, _workContext.WorkingLanguage.Id);
 
                 if (poll == null)
-					return new PollModel { Id = 0 };	//we do not cache nulls. that's why let's return an empty record (ID = 0)
+                    return new PollModel { Id = 0 };	//we do not cache nulls. that's why let's return an empty record (ID = 0)
 
                 return PreparePollModel(poll, false);
             });
@@ -114,22 +114,22 @@ namespace SmartStore.Web.Controllers
         {
             var pollAnswer = _pollService.GetPollAnswerById(pollAnswerId);
 
-			if (pollAnswer == null)
-			{
-				return Json(new	{ error = T("Polls.AnswerNotFound", pollAnswerId).Text });
-			}
+            if (pollAnswer == null)
+            {
+                return Json(new { error = T("Polls.AnswerNotFound", pollAnswerId).Text });
+            }
 
             var poll = pollAnswer.Poll;
 
-			if (!poll.Published)
-			{
-				return Json(new	{ error = T("Polls.NotAvailable").Text });
-			}
+            if (!poll.Published)
+            {
+                return Json(new { error = T("Polls.NotAvailable").Text });
+            }
 
-			if (_workContext.CurrentCustomer.IsGuest() && !poll.AllowGuestsToVote)
-			{
-				return Json(new	{ error = T("Polls.OnlyRegisteredUsersVote").Text });
-			}
+            if (_workContext.CurrentCustomer.IsGuest() && !poll.AllowGuestsToVote)
+            {
+                return Json(new { error = T("Polls.OnlyRegisteredUsersVote").Text });
+            }
 
             bool alreadyVoted = _pollService.AlreadyVoted(poll.Id, _workContext.CurrentCustomer.Id);
             if (!alreadyVoted)
@@ -154,7 +154,7 @@ namespace SmartStore.Web.Controllers
                 html = this.RenderPartialViewToString("_Poll", PreparePollModel(poll, true)),
             });
         }
-        
+
         [ChildActionOnly]
         public ActionResult HomePagePolls()
         {
@@ -178,8 +178,8 @@ namespace SmartStore.Web.Controllers
                 model.Add(pollModel);
             }
 
-			if (model.Count == 0)
-				return Content("");
+            if (model.Count == 0)
+                return Content("");
 
             return PartialView(model);
         }

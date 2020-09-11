@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace SmartStore.Web.Infrastructure.Installation
+﻿namespace SmartStore.Web.Infrastructure.Installation
 {
     public class InstallationAppLanguageMetadata
     {

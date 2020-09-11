@@ -17,113 +17,113 @@ using SmartStore.Web.Models.Common;
 namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
-	{
-		private readonly Lazy<ITopicService> _topicService;
-		private readonly Lazy<CaptchaSettings> _captchaSettings;
-		private readonly Lazy<CommonSettings> _commonSettings;
-		private readonly Lazy<PrivacySettings> _privacySettings;
-		private readonly Lazy<SeoSettings> _seoSettings;
+    {
+        private readonly Lazy<ITopicService> _topicService;
+        private readonly Lazy<CaptchaSettings> _captchaSettings;
+        private readonly Lazy<CommonSettings> _commonSettings;
+        private readonly Lazy<PrivacySettings> _privacySettings;
+        private readonly Lazy<SeoSettings> _seoSettings;
 
-		public HomeController(
-			Lazy<ITopicService> topicService,
-			Lazy<CaptchaSettings> captchaSettings,
-			Lazy<CommonSettings> commonSettings,
-			Lazy<PrivacySettings> privacySettings,
-			Lazy<SeoSettings> seoSettings)
+        public HomeController(
+            Lazy<ITopicService> topicService,
+            Lazy<CaptchaSettings> captchaSettings,
+            Lazy<CommonSettings> commonSettings,
+            Lazy<PrivacySettings> privacySettings,
+            Lazy<SeoSettings> seoSettings)
         {
-			_topicService = topicService;
-			_captchaSettings = captchaSettings;
-			_commonSettings = commonSettings;
-			_privacySettings = privacySettings;
-			_seoSettings = seoSettings;
-		}
-		
+            _topicService = topicService;
+            _captchaSettings = captchaSettings;
+            _commonSettings = commonSettings;
+            _privacySettings = privacySettings;
+            _seoSettings = seoSettings;
+        }
+
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
-			ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle);
-			ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription);
-			ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords);
+            ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle);
+            ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription);
+            ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords);
 
-			return View();
+            return View();
         }
 
-		public ActionResult StoreClosed()
-		{
-			return View();
-		}
+        public ActionResult StoreClosed()
+        {
+            return View();
+        }
 
-		[RewriteUrl(SslRequirement.No)]
-		[GdprConsent]
-		public ActionResult ContactUs()
-		{
-			var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
+        [RewriteUrl(SslRequirement.No)]
+        [GdprConsent]
+        public ActionResult ContactUs()
+        {
+            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
             var model = new ContactUsModel
-			{
-				Email = Services.WorkContext.CurrentCustomer.Email,
-				FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
-				FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
-				DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage,
+            {
+                Email = Services.WorkContext.CurrentCustomer.Email,
+                FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
+                FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
+                DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage,
                 MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
             };
 
-			return View(model);
-		}
+            return View(model);
+        }
 
-		[HttpPost, ActionName("ContactUs")]
-		[ValidateCaptcha, ValidateHoneypot]
-		[GdprConsent]
-		public ActionResult ContactUsSend(ContactUsModel model, string captchaError)
-		{
-			if (_captchaSettings.Value.ShowOnContactUsPage && captchaError.HasValue())
-			{
-				ModelState.AddModelError("", captchaError);
-			}
+        [HttpPost, ActionName("ContactUs")]
+        [ValidateCaptcha, ValidateHoneypot]
+        [GdprConsent]
+        public ActionResult ContactUsSend(ContactUsModel model, string captchaError)
+        {
+            if (_captchaSettings.Value.ShowOnContactUsPage && captchaError.HasValue())
+            {
+                ModelState.AddModelError("", captchaError);
+            }
 
-			if (ModelState.IsValid)
-			{
-				var customer = Services.WorkContext.CurrentCustomer;
-				var email = model.Email.Trim();
-				var fullName = model.FullName;
-				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
-				var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
+            if (ModelState.IsValid)
+            {
+                var customer = Services.WorkContext.CurrentCustomer;
+                var email = model.Email.Trim();
+                var fullName = model.FullName;
+                var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
+                var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
 
-				// Required for some SMTP servers.
-				EmailAddress sender = null;
-				if (!_commonSettings.Value.UseSystemEmailForContactUsForm)
-				{
-					sender = new EmailAddress(email, fullName);
-				}
+                // Required for some SMTP servers.
+                EmailAddress sender = null;
+                if (!_commonSettings.Value.UseSystemEmailForContactUsForm)
+                {
+                    sender = new EmailAddress(email, fullName);
+                }
 
-				var msg = Services.MessageFactory.SendContactUsMessage(customer, email, fullName, subject, body, sender);
+                var msg = Services.MessageFactory.SendContactUsMessage(customer, email, fullName, subject, body, sender);
 
-				if (msg?.Email?.Id != null)
-				{
-					model.SuccessfullySent = true;
-					model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-					Services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
-				}
-				else
-				{
-					ModelState.AddModelError("", T("Common.Error.SendMail"));
-					model.Result = T("Common.Error.SendMail");
-				}
+                if (msg?.Email?.Id != null)
+                {
+                    model.SuccessfullySent = true;
+                    model.Result = T("ContactUs.YourEnquiryHasBeenSent");
+                    Services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
+                }
+                else
+                {
+                    ModelState.AddModelError("", T("Common.Error.SendMail"));
+                    model.Result = T("Common.Error.SendMail");
+                }
 
-				return View(model);
-			}
+                return View(model);
+            }
 
-			model.DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage;
+            model.DisplayCaptcha = _captchaSettings.Value.CanDisplayCaptcha && _captchaSettings.Value.ShowOnContactUsPage;
 
-			return View(model);
-		}
+            return View(model);
+        }
 
-		[RewriteUrl(SslRequirement.No)]
-		public ActionResult Sitemap()
-		{
+        [RewriteUrl(SslRequirement.No)]
+        public ActionResult Sitemap()
+        {
             return RedirectPermanent(Services.StoreContext.CurrentStore.Url);
-		}
+        }
     }
 }

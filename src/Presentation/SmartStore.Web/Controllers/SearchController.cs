@@ -23,245 +23,245 @@ using SmartStore.Web.Models.Search;
 namespace SmartStore.Web.Controllers
 {
     public partial class SearchController : PublicControllerBase
-	{
-		private readonly CatalogSettings _catalogSettings;
-		private readonly MediaSettings _mediaSettings;
-		private readonly SearchSettings _searchSettings;
-		private readonly ICatalogSearchService _catalogSearchService;
-		private readonly IGenericAttributeService _genericAttributeService;
-		private readonly CatalogHelper _catalogHelper;
-		private readonly ICatalogSearchQueryFactory _queryFactory;
-		private readonly ILocalizedEntityService _localizedEntityService;
-		private readonly IUrlRecordService _urlRecordService;
-		private readonly Lazy<IFacetTemplateProvider> _templateProvider;
-		private readonly Lazy<IProductService> _productService;
-		private readonly ProductUrlHelper _productUrlHelper;
+    {
+        private readonly CatalogSettings _catalogSettings;
+        private readonly MediaSettings _mediaSettings;
+        private readonly SearchSettings _searchSettings;
+        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly IGenericAttributeService _genericAttributeService;
+        private readonly CatalogHelper _catalogHelper;
+        private readonly ICatalogSearchQueryFactory _queryFactory;
+        private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IUrlRecordService _urlRecordService;
+        private readonly Lazy<IFacetTemplateProvider> _templateProvider;
+        private readonly Lazy<IProductService> _productService;
+        private readonly ProductUrlHelper _productUrlHelper;
 
-		public SearchController(
-			ICatalogSearchQueryFactory queryFactory,
-			ICatalogSearchService catalogSearchService,
-			CatalogSettings catalogSettings,
-			MediaSettings mediaSettings,
-			SearchSettings searchSettings,
-			IGenericAttributeService genericAttributeService,
-			CatalogHelper catalogHelper,
-			ILocalizedEntityService localizedEntityService,
-			IUrlRecordService urlRecordService,
-			Lazy<IFacetTemplateProvider> templateProvider,
-			Lazy<IProductService> productService,
-			ProductUrlHelper productUrlHelper)
-		{
-			_queryFactory = queryFactory;
-			_catalogSearchService = catalogSearchService;
-			_catalogSettings = catalogSettings;
-			_mediaSettings = mediaSettings;
-			_searchSettings = searchSettings;
-			_genericAttributeService = genericAttributeService;
-			_catalogHelper = catalogHelper;
-			_localizedEntityService = localizedEntityService;
-			_urlRecordService = urlRecordService;
-			_templateProvider = templateProvider;
-			_productService = productService;
-			_productUrlHelper = productUrlHelper;
-		}
+        public SearchController(
+            ICatalogSearchQueryFactory queryFactory,
+            ICatalogSearchService catalogSearchService,
+            CatalogSettings catalogSettings,
+            MediaSettings mediaSettings,
+            SearchSettings searchSettings,
+            IGenericAttributeService genericAttributeService,
+            CatalogHelper catalogHelper,
+            ILocalizedEntityService localizedEntityService,
+            IUrlRecordService urlRecordService,
+            Lazy<IFacetTemplateProvider> templateProvider,
+            Lazy<IProductService> productService,
+            ProductUrlHelper productUrlHelper)
+        {
+            _queryFactory = queryFactory;
+            _catalogSearchService = catalogSearchService;
+            _catalogSettings = catalogSettings;
+            _mediaSettings = mediaSettings;
+            _searchSettings = searchSettings;
+            _genericAttributeService = genericAttributeService;
+            _catalogHelper = catalogHelper;
+            _localizedEntityService = localizedEntityService;
+            _urlRecordService = urlRecordService;
+            _templateProvider = templateProvider;
+            _productService = productService;
+            _productUrlHelper = productUrlHelper;
+        }
 
-		[ChildActionOnly]
-		public ActionResult SearchBox()
-		{
-			var model = new SearchBoxModel
-			{
+        [ChildActionOnly]
+        public ActionResult SearchBox()
+        {
+            var model = new SearchBoxModel
+            {
                 Origin = "Search/Search",
                 SearchUrl = Url.RouteUrl("Search"),
                 InstantSearchUrl = Url.RouteUrl("InstantSearch"),
                 InputPlaceholder = T("Search.SearchBox.Tooltip"),
                 InstantSearchEnabled = _searchSettings.InstantSearchEnabled && Services.Permissions.Authorize(Permissions.System.AccessShop),
-				ShowThumbsInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
-				SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
-				CurrentQuery = _queryFactory.Current?.Term
+                ShowThumbsInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
+                SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
+                CurrentQuery = _queryFactory.Current?.Term
             };
 
-			return PartialView(model);
-		}
+            return PartialView(model);
+        }
 
-		[HttpPost]
-		public ActionResult InstantSearch(CatalogSearchQuery query)
-		{
+        [HttpPost]
+        public ActionResult InstantSearch(CatalogSearchQuery query)
+        {
             if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
             {
                 return Content(string.Empty);
             }
 
-			query
-				.BuildFacetMap(false)
-				.Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfProducts))
-				.SortBy(ProductSortingEnum.Relevance);
+            query
+                .BuildFacetMap(false)
+                .Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfProducts))
+                .SortBy(ProductSortingEnum.Relevance);
 
-			var result = _catalogSearchService.Search(query);
+            var result = _catalogSearchService.Search(query);
 
-			var model = new SearchResultModel(query)
-			{
-				SearchResult = result,
-				Term = query.Term,
-				TotalProductsCount = result.TotalHitsCount
-			};
+            var model = new SearchResultModel(query)
+            {
+                SearchResult = result,
+                Term = query.Term,
+                TotalProductsCount = result.TotalHitsCount
+            };
 
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
-			{
-				x.MapPrices = false;
-				x.MapShortDescription = true;
-				x.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
-				x.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
-				x.PrefetchTranslations = true;
-				x.PrefetchUrlSlugs = true;
-			});
+            var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x =>
+            {
+                x.MapPrices = false;
+                x.MapShortDescription = true;
+                x.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
+                x.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+                x.PrefetchTranslations = true;
+                x.PrefetchUrlSlugs = true;
+            });
 
-			using (_urlRecordService.BeginScope(false))
-			using (_localizedEntityService.BeginScope(false))
-			{
-				// InstantSearch should be REALLY very fast! No time for smart caching stuff.
-				if (result.Hits.Count > 0)
-				{
-					_localizedEntityService.PrefetchLocalizedProperties(
-						nameof(Product),
-						Services.WorkContext.WorkingLanguage.Id,
-						result.Hits.Select(x => x.Id).ToArray());
-				}
-				
-				// Add product hits.
-				model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+            using (_urlRecordService.BeginScope(false))
+            using (_localizedEntityService.BeginScope(false))
+            {
+                // InstantSearch should be REALLY very fast! No time for smart caching stuff.
+                if (result.Hits.Count > 0)
+                {
+                    _localizedEntityService.PrefetchLocalizedProperties(
+                        nameof(Product),
+                        Services.WorkContext.WorkingLanguage.Id,
+                        result.Hits.Select(x => x.Id).ToArray());
+                }
 
-				// Add spell checker suggestions (if any).
-				model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
-			}
+                // Add product hits.
+                model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+
+                // Add spell checker suggestions (if any).
+                model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
+            }
 
             return PartialView(model);
-		}
+        }
 
-		[RewriteUrl(SslRequirement.No)]
-		public ActionResult Search(CatalogSearchQuery query)
-		{
-			var model = new SearchResultModel(query);
-			CatalogSearchResult result = null;
+        [RewriteUrl(SslRequirement.No)]
+        public ActionResult Search(CatalogSearchQuery query)
+        {
+            var model = new SearchResultModel(query);
+            CatalogSearchResult result = null;
 
-			if (query.Term == null || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
-			{
-				model.SearchResult = new CatalogSearchResult(query);
-				model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _searchSettings.InstantSearchTermMinLength);
-				return View(model);
-			}
-			
-			// 'Continue shopping' URL.
-			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				Services.WebHelper.GetThisPageUrl(false),
-				Services.StoreContext.CurrentStore.Id);
+            if (query.Term == null || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
+            {
+                model.SearchResult = new CatalogSearchResult(query);
+                model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _searchSettings.InstantSearchTermMinLength);
+                return View(model);
+            }
 
-			try
-			{
-				if (_searchSettings.SearchProductByIdentificationNumber)
-				{
-					var product = _productService.Value.GetProductByIdentificationNumber(query.Term, out var attributeCombination);
-					if (product != null)
-					{
-						if (attributeCombination != null)
-						{
-							return Redirect(_productUrlHelper.GetProductUrl(product.Id, product.GetSeName(), attributeCombination.AttributesXml));
-						}
+            // 'Continue shopping' URL.
+            _genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
+                SystemCustomerAttributeNames.LastContinueShoppingPage,
+                Services.WebHelper.GetThisPageUrl(false),
+                Services.StoreContext.CurrentStore.Id);
 
-						return RedirectToRoute("Product", new { SeName = product.GetSeName() });
-					}
-				}
+            try
+            {
+                if (_searchSettings.SearchProductByIdentificationNumber)
+                {
+                    var product = _productService.Value.GetProductByIdentificationNumber(query.Term, out var attributeCombination);
+                    if (product != null)
+                    {
+                        if (attributeCombination != null)
+                        {
+                            return Redirect(_productUrlHelper.GetProductUrl(product.Id, product.GetSeName(), attributeCombination.AttributesXml));
+                        }
 
-				result = _catalogSearchService.Search(query);
-			}
-			catch (Exception ex)
-			{
-				model.Error = ex.ToString();
-				result = new CatalogSearchResult(query);
-			}
+                        return RedirectToRoute("Product", new { SeName = product.GetSeName() });
+                    }
+                }
 
-			if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())
-			{
-				// No matches, but spell checker made a suggestion.
-				// We implicitly search again with the first suggested term.
-				var oldSuggestions = result.SpellCheckerSuggestions;
-				var oldTerm = query.Term;
-				query.Term = oldSuggestions[0];
+                result = _catalogSearchService.Search(query);
+            }
+            catch (Exception ex)
+            {
+                model.Error = ex.ToString();
+                result = new CatalogSearchResult(query);
+            }
 
-				result = _catalogSearchService.Search(query);
+            if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())
+            {
+                // No matches, but spell checker made a suggestion.
+                // We implicitly search again with the first suggested term.
+                var oldSuggestions = result.SpellCheckerSuggestions;
+                var oldTerm = query.Term;
+                query.Term = oldSuggestions[0];
 
-				if (result.TotalHitsCount > 0)
-				{
-					model.AttemptedTerm = oldTerm;
-					// Restore the original suggestions.
-					result.SpellCheckerSuggestions = oldSuggestions.Where(x => x != query.Term).ToArray();
-				}
-				else
-				{
-					query.Term = oldTerm;
-				}
-			}
+                result = _catalogSearchService.Search(query);
 
-			model.SearchResult = result;
-			model.Term = query.Term;
-			model.TotalProductsCount = result.TotalHitsCount;
+                if (result.TotalHitsCount > 0)
+                {
+                    model.AttemptedTerm = oldTerm;
+                    // Restore the original suggestions.
+                    result.SpellCheckerSuggestions = oldSuggestions.Where(x => x != query.Term).ToArray();
+                }
+                else
+                {
+                    query.Term = oldTerm;
+                }
+            }
 
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+            model.SearchResult = result;
+            model.Term = query.Term;
+            model.TotalProductsCount = result.TotalHitsCount;
 
-			// Prepare paging/sorting/mode stuff.
-			_catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
+            var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
+            var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// Add product hits.
-			model.TopProducts = summaryModel;
+            // Prepare paging/sorting/mode stuff.
+            _catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
+
+            // Add product hits.
+            model.TopProducts = summaryModel;
 
             return View(model);
-		}
+        }
 
-		[ChildActionOnly]
-		public ActionResult Filters(ISearchResultModel model)
-		{
-			if (model == null)
-			{
-				return Content("");
-			}
+        [ChildActionOnly]
+        public ActionResult Filters(ISearchResultModel model)
+        {
+            if (model == null)
+            {
+                return Content("");
+            }
 
-			#region Obsolete
-			//// TODO: (mc) really necessary?
-			//if (excludedFacets != null && excludedFacets.Length > 0)
-			//{
-			//	foreach (var exclude in excludedFacets.Where(x => x.HasValue()))
-			//	{
-			//		var facets = searchResultModel.SearchResult.Facets;
-			//		if (facets.ContainsKey(exclude))
-			//		{
-			//			facets.Remove(exclude);
-			//		}
-			//	} 
-			//}
-			#endregion
+            #region Obsolete
+            //// TODO: (mc) really necessary?
+            //if (excludedFacets != null && excludedFacets.Length > 0)
+            //{
+            //	foreach (var exclude in excludedFacets.Where(x => x.HasValue()))
+            //	{
+            //		var facets = searchResultModel.SearchResult.Facets;
+            //		if (facets.ContainsKey(exclude))
+            //		{
+            //			facets.Remove(exclude);
+            //		}
+            //	} 
+            //}
+            #endregion
 
-			ViewBag.TemplateProvider = _templateProvider.Value;
+            ViewBag.TemplateProvider = _templateProvider.Value;
 
-			return PartialView(model);
-		}
+            return PartialView(model);
+        }
 
-		[ChildActionOnly]
-		public ActionResult ActiveFilters(ISearchResultModel model)
-		{
-			if (model == null || (ControllerContext.ParentActionViewContext != null && ControllerContext.ParentActionViewContext.IsChildAction))
-			{
-				return Content("");
-			}
+        [ChildActionOnly]
+        public ActionResult ActiveFilters(ISearchResultModel model)
+        {
+            if (model == null || (ControllerContext.ParentActionViewContext != null && ControllerContext.ParentActionViewContext.IsChildAction))
+            {
+                return Content("");
+            }
 
-			return PartialView("Filters.Active", model);
-		}
+            return PartialView("Filters.Active", model);
+        }
 
-		[ChildActionOnly]
-		public ActionResult FacetGroup(FacetGroup facetGroup, string templateName)
-		{
-			// Just a "proxy" for our "DefaultFacetTemplateSelector"
-			return PartialView(templateName, facetGroup);
-		}
-	}
+        [ChildActionOnly]
+        public ActionResult FacetGroup(FacetGroup facetGroup, string templateName)
+        {
+            // Just a "proxy" for our "DefaultFacetTemplateSelector"
+            return PartialView(templateName, facetGroup);
+        }
+    }
 }

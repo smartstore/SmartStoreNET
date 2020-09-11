@@ -3,7 +3,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Search;
 
@@ -22,20 +21,20 @@ namespace SmartStore.Web.Models.Catalog
     {
         public CategoryModel()
         {
-			PictureModel = new PictureModel();
+            PictureModel = new PictureModel();
             SubCategories = new List<CategorySummaryModel>();
         }
 
-		public CatalogSearchResult SearchResult
-		{
-			get;
-			set;
-		}
+        public CatalogSearchResult SearchResult
+        {
+            get;
+            set;
+        }
 
-		public LocalizedValue<string> Name { get; set; }
-		public LocalizedValue<string> FullName { get; set; }
+        public LocalizedValue<string> Name { get; set; }
+        public LocalizedValue<string> FullName { get; set; }
         public LocalizedValue<string> Description { get; set; }
-		public LocalizedValue<string> BottomDescription { get; set; }
+        public LocalizedValue<string> BottomDescription { get; set; }
         public LocalizedValue<string> MetaKeywords { get; set; }
         public LocalizedValue<string> MetaDescription { get; set; }
         public LocalizedValue<string> MetaTitle { get; set; }
@@ -45,7 +44,7 @@ namespace SmartStore.Web.Models.Catalog
 
         public bool DisplayCategoryBreadcrumb { get; set; }
 
-		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
+        public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
         public IList<CategorySummaryModel> SubCategories { get; set; }
 
         public ProductSummaryModel FeaturedProducts { get; set; }

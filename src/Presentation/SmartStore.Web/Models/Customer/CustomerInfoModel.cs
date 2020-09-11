@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(CustomerInfoValidator))]
+    [Validator(typeof(CustomerInfoValidator))]
     public partial class CustomerInfoModel : ModelBase
     {
         public CustomerInfoModel()
@@ -22,8 +22,8 @@ namespace SmartStore.Web.Models.Customer
         }
 
         [SmartResourceDisplayName("Account.Fields.Email")]
-		[DataType(DataType.EmailAddress)]
-		public string Email { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.CustomerNumber")]
         public string CustomerNumber { get; set; }
@@ -45,7 +45,7 @@ namespace SmartStore.Web.Models.Customer
         public bool TitleEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Title")]
         public string Title { get; set; }
-        
+
         [SmartResourceDisplayName("Account.Fields.FirstName")]
         public string FirstName { get; set; }
 
@@ -99,14 +99,14 @@ namespace SmartStore.Web.Models.Customer
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Phone")]
-		[DataType(DataType.PhoneNumber)]
-		public string Phone { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string Phone { get; set; }
 
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Fax")]
-		[DataType(DataType.PhoneNumber)]
-		public string Fax { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string Fax { get; set; }
 
         public bool NewsletterEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Newsletter")]
@@ -142,7 +142,7 @@ namespace SmartStore.Web.Models.Customer
             public string ExternalIdentifier { get; set; }
             public string AuthMethodName { get; set; }
         }
-        
+
         #endregion
     }
 

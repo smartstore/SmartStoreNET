@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Order
@@ -12,14 +12,14 @@ namespace SmartStore.Web.Models.Order
         public SubmitReturnRequestModel()
         {
             Items = new List<OrderItemModel>();
-			AddedReturnRequestIds = new List<int>();
+            AddedReturnRequestIds = new List<int>();
             AvailableReturnReasons = new List<SelectListItem>();
-            AvailableReturnActions= new List<SelectListItem>();
+            AvailableReturnActions = new List<SelectListItem>();
         }
 
-        public int OrderId { get; set; }        
+        public int OrderId { get; set; }
         public IList<OrderItemModel> Items { get; set; }
-		public IList<int> AddedReturnRequestIds { get; set; }
+        public IList<int> AddedReturnRequestIds { get; set; }
 
         [SmartResourceDisplayName("ReturnRequests.ReturnReason")]
         public string ReturnReason { get; set; }
@@ -34,7 +34,7 @@ namespace SmartStore.Web.Models.Order
         public string Comments { get; set; }
 
         public string Result { get; set; }
-        
+
         #region Nested classes
 
         public partial class OrderItemModel : EntityModelBase
@@ -45,7 +45,7 @@ namespace SmartStore.Web.Models.Order
 
             public string ProductSeName { get; set; }
 
-			public string ProductUrl { get; set; }
+            public string ProductUrl { get; set; }
 
             public string AttributeInfo { get; set; }
 

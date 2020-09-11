@@ -11,19 +11,19 @@ namespace SmartStore.Web.Models.ShoppingCart
         {
             ShippingOptions = new List<ShippingOptionModel>();
             Warnings = new List<string>();
-            
+
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
         }
 
         public bool Enabled { get; set; }
 
-		public string ShippingInfoUrl { get; set; }
+        public string ShippingInfoUrl { get; set; }
 
         public IList<ShippingOptionModel> ShippingOptions { get; set; }
 
         public IList<string> Warnings { get; set; }
-        
+
         [SmartResourceDisplayName("ShoppingCart.EstimateShipping.Country")]
         public int? CountryId { get; set; }
         [SmartResourceDisplayName("ShoppingCart.EstimateShipping.StateProvince")]
@@ -34,11 +34,11 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
 
-		#region Nested Classes
+        #region Nested Classes
 
         public partial class ShippingOptionModel : ModelBase
         {
-			public int ShippingMethodId { get; set; }
+            public int ShippingMethodId { get; set; }
 
             public string Name { get; set; }
 
@@ -47,6 +47,6 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string Price { get; set; }
         }
 
-		#endregion
+        #endregion
     }
 }

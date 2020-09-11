@@ -5,7 +5,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Customer
 {
-	public partial class LoginModel : ModelBase
+    public partial class LoginModel : ModelBase
     {
         public bool CheckoutAsGuest { get; set; }
 

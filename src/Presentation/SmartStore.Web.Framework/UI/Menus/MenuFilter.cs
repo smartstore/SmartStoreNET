@@ -8,18 +8,18 @@ namespace SmartStore.Web.Framework.UI
 {
     public class MenuActionFilter : IActionFilter
     {
-		private readonly IMenuStorage _menuStorage;
+        private readonly IMenuStorage _menuStorage;
         private readonly IMenuService _menuService;
         private readonly WebViewPageHelper _pageHelper;
         private readonly IPageAssetsBuilder _pageAssetsBuilder;
 
         public MenuActionFilter(
-            IMenuStorage menuStorage, 
+            IMenuStorage menuStorage,
             IMenuService menuService,
             WebViewPageHelper pageHelper,
             IPageAssetsBuilder pageAssetsBuilder)
         {
-			_menuStorage = menuStorage;
+            _menuStorage = menuStorage;
             _menuService = menuService;
             _pageHelper = pageHelper;
             _pageAssetsBuilder = pageAssetsBuilder;

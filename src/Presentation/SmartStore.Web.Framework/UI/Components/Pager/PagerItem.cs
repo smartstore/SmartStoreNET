@@ -54,13 +54,7 @@ namespace SmartStore.Web.Framework.UI
         public PagerItemType Type { get; set; }
         public string ExtraData { get; set; }
 
-        public bool IsNavButton
-        {
-            get
-            {
-                return (Type == PagerItemType.FirstPage || Type == PagerItemType.PreviousPage || Type == PagerItemType.NextPage || Type == PagerItemType.LastPage);
-            }
-        }
+        public bool IsNavButton => (Type == PagerItemType.FirstPage || Type == PagerItemType.PreviousPage || Type == PagerItemType.NextPage || Type == PagerItemType.LastPage);
 
     }
 }

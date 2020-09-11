@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Utilities.ObjectPools;
@@ -15,45 +14,45 @@ namespace SmartStore.Web.Framework.UI
             return new ComponentFactory<TModel>(helper);
         }
 
-		public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
-		{
-			var sb = PooledStringBuilder.Rent();
+        public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
+        {
+            var sb = PooledStringBuilder.Rent();
 
-			using (var writer = new StringWriter(sb))
-			{
-				RenderAttrs(attrs, writer, exclude);
-			}
+            using (var writer = new StringWriter(sb))
+            {
+                RenderAttrs(attrs, writer, exclude);
+            }
 
-			return MvcHtmlString.Create(sb.ToStringAndReturn());	
-		}
+            return MvcHtmlString.Create(sb.ToStringAndReturn());
+        }
 
-		public static void RenderAttrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
-		{
-			RenderAttrs(attrs, html.ViewContext.Writer, exclude);
-		}
+        public static void RenderAttrs(this HtmlHelper html, IDictionary<string, object> attrs, params string[] exclude)
+        {
+            RenderAttrs(attrs, html.ViewContext.Writer, exclude);
+        }
 
-		private static void RenderAttrs(IDictionary<string, object> attrs, TextWriter output, params string[] exclude)
-		{
-			Guard.NotNull(attrs, nameof(attrs));
+        private static void RenderAttrs(IDictionary<string, object> attrs, TextWriter output, params string[] exclude)
+        {
+            Guard.NotNull(attrs, nameof(attrs));
 
-			if (attrs.Count == 0)
-			{
-				return;
-			}
+            if (attrs.Count == 0)
+            {
+                return;
+            }
 
-			var first = true;
+            var first = true;
 
-			foreach (var kvp in attrs)
-			{
+            foreach (var kvp in attrs)
+            {
                 if (exclude.Contains(kvp.Key))
                     continue;
-                
-				if (!first)
-				{
-					output.Write(" ");
-				}
 
-				first = false;
+                if (!first)
+                {
+                    output.Write(" ");
+                }
+
+                first = false;
 
                 output.Write(kvp.Key);
 
@@ -63,7 +62,7 @@ namespace SmartStore.Web.Framework.UI
                     HttpUtility.HtmlAttributeEncode(kvp.Value.ToString(), output);
                     output.Write("\"");
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }

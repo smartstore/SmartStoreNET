@@ -8,28 +8,28 @@ namespace SmartStore.Web.Framework.UI
     /// A hierarchical navigation menu
     /// </summary>
     public interface IMenu
-	{	
-		/// <summary>
-		/// Gets the menu system name (e.g. main, footer, service, admin etc.)
-		/// </summary>
-		string Name { get; }
+    {
+        /// <summary>
+        /// Gets the menu system name (e.g. main, footer, service, admin etc.)
+        /// </summary>
+        string Name { get; }
 
-		/// <summary>
-		/// Gets the root node of the menu
-		/// </summary>
-		TreeNode<MenuItem> Root { get; }
+        /// <summary>
+        /// Gets the root node of the menu
+        /// </summary>
+        TreeNode<MenuItem> Root { get; }
 
-		/// <summary>
-		/// Whether menu items should be hidden based on permission names
-		/// </summary>
-		bool ApplyPermissions { get; }
+        /// <summary>
+        /// Whether menu items should be hidden based on permission names
+        /// </summary>
+        bool ApplyPermissions { get; }
 
-		/// <summary>
-		/// Resolves the contained elements count (e.g. the products count on a category page).
-		/// </summary>
-		/// <param name="curNode">The current node</param>
-		/// <param name="deep"><c>false</c> resolves counts for direct children of <paramref name="curNode"/> only, <c>true</c> traverses the whole sub-tree</param>
-		void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false);
+        /// <summary>
+        /// Resolves the contained elements count (e.g. the products count on a category page).
+        /// </summary>
+        /// <param name="curNode">The current node</param>
+        /// <param name="deep"><c>false</c> resolves counts for direct children of <paramref name="curNode"/> only, <c>true</c> traverses the whole sub-tree</param>
+        void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false);
 
         /// <summary>
         /// Resolves the current node.
@@ -50,9 +50,9 @@ namespace SmartStore.Web.Framework.UI
         /// </remarks>
         IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus();
 
-		/// <summary>
-		/// Removes the menu from the application cache
-		/// </summary>
-		void ClearCache();
-	}
+        /// <summary>
+        /// Removes the menu from the application cache
+        /// </summary>
+        void ClearCache();
+    }
 }

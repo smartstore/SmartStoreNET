@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Routing;
-using SmartStore.Core;
+﻿using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 
@@ -11,8 +6,8 @@ namespace SmartStore.Web.Framework.UI
 {
     public enum PagerSize
     {
-		Mini,
-		Small,
+        Mini,
+        Small,
         Medium,
         Large
     }
@@ -46,7 +41,7 @@ namespace SmartStore.Web.Framework.UI
         }
 
         public Pager(ILocalizationService localizationService)
-			: base()
+            : base()
         {
             _localizationService = localizationService;
 
@@ -82,16 +77,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         public string FirstButtonText
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(_firstButtonText)) ?
+            get => (!string.IsNullOrEmpty(_firstButtonText)) ?
                     _firstButtonText :
                     _localizationService.GetResource("Pager.First");
-            }
-            set
-            {
-                _firstButtonText = value;
-            }
+            set => _firstButtonText = value;
         }
 
         /// <summary>
@@ -99,16 +88,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         public string LastButtonText
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(_lastButtonText)) ?
+            get => (!string.IsNullOrEmpty(_lastButtonText)) ?
                     _lastButtonText :
                     _localizationService.GetResource("Pager.Last");
-            }
-            set
-            {
-                _lastButtonText = value;
-            }
+            set => _lastButtonText = value;
         }
 
         /// <summary>
@@ -116,16 +99,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         public string NextButtonText
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(_nextButtonText)) ?
+            get => (!string.IsNullOrEmpty(_nextButtonText)) ?
                     _nextButtonText :
                     _localizationService.GetResource("Pager.Next");
-            }
-            set
-            {
-                _nextButtonText = value;
-            }
+            set => _nextButtonText = value;
         }
 
         /// <summary>
@@ -133,16 +110,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         public string PreviousButtonText
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(_previousButtonText)) ?
+            get => (!string.IsNullOrEmpty(_previousButtonText)) ?
                     _previousButtonText :
                     _localizationService.GetResource("Pager.Previous");
-            }
-            set
-            {
-                _previousButtonText = value;
-            }
+            set => _previousButtonText = value;
         }
 
         /// <summary>
@@ -150,16 +121,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         public string CurrentPageText
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(_currentPageText)) ?
+            get => (!string.IsNullOrEmpty(_currentPageText)) ?
                     _currentPageText :
                     _localizationService.GetResource("Pager.CurrentPage");
-            }
-            set
-            {
-                _currentPageText = value;
-            }
+            set => _currentPageText = value;
         }
     }
 }

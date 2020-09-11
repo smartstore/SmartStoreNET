@@ -13,13 +13,13 @@ namespace SmartStore.Web.Framework.UI
         {
         }
 
-		public WindowBuilder<TModel> Size(WindowSize value)
-		{
-			base.Component.Size = value;
-			return this;
-		}
+        public WindowBuilder<TModel> Size(WindowSize value)
+        {
+            base.Component.Size = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> Title(string value)
+        public WindowBuilder<TModel> Title(string value)
         {
             base.Component.Title = value;
             return this;
@@ -81,52 +81,52 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
-		public WindowBuilder<TModel> Focus(bool value)
-		{
-			base.Component.Focus = value;
-			return this;
-		}
+        public WindowBuilder<TModel> Focus(bool value)
+        {
+            base.Component.Focus = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> CenterVertically(bool value)
-		{
-			base.Component.CenterVertically = value;
-			return this;
-		}
+        public WindowBuilder<TModel> CenterVertically(bool value)
+        {
+            base.Component.CenterVertically = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> Show(bool value)
-		{
-			base.Component.Show = value;
-			return this;
-		}
+        public WindowBuilder<TModel> Show(bool value)
+        {
+            base.Component.Show = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> CloseOnEscapePress(bool value)
+        public WindowBuilder<TModel> CloseOnEscapePress(bool value)
         {
             base.Component.CloseOnEscapePress = value;
             return this;
         }
 
-		public WindowBuilder<TModel> CloseOnBackdropClick(bool value)
-		{
-			base.Component.CloseOnBackdropClick = value;
-			return this;
-		}
+        public WindowBuilder<TModel> CloseOnBackdropClick(bool value)
+        {
+            base.Component.CloseOnBackdropClick = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> RenderAtPageEnd(bool value)
-		{
-			base.Component.RenderAtPageEnd = value;
-			return this;
-		}
+        public WindowBuilder<TModel> RenderAtPageEnd(bool value)
+        {
+            base.Component.RenderAtPageEnd = value;
+            return this;
+        }
 
-		public WindowBuilder<TModel> BodyHtmlAttributes(object attributes)
-		{
-			return this.BodyHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
-		}
+        public WindowBuilder<TModel> BodyHtmlAttributes(object attributes)
+        {
+            return this.BodyHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
+        }
 
-		public WindowBuilder<TModel> BodyHtmlAttributes(IDictionary<string, object> attributes)
-		{
-			base.Component.BodyHtmlAttributes.Clear();
-			base.Component.BodyHtmlAttributes.Merge(attributes);
-			return this;
-		}
-	}
+        public WindowBuilder<TModel> BodyHtmlAttributes(IDictionary<string, object> attributes)
+        {
+            base.Component.BodyHtmlAttributes.Clear();
+            base.Component.BodyHtmlAttributes.Merge(attributes);
+            return this;
+        }
+    }
 }

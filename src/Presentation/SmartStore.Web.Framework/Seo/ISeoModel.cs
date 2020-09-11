@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Seo

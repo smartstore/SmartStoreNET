@@ -18,15 +18,15 @@ namespace SmartStore.Web.Framework.Security
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
         public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
-		public Lazy<ILocalizationService> LocalizationService { get; set; }
+        public Lazy<ILocalizationService> LocalizationService { get; set; }
 
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var valid = false;
             var verify = true;
 
             try
-			{
+            {
                 verify = CaptchaSettings.Value.CanDisplayCaptcha && VerifyRecaptcha(filterContext);
 
                 if (verify)
@@ -70,14 +70,14 @@ namespace SmartStore.Web.Framework.Security
                         }
                     }
                 }
-			}
-			catch (Exception ex)
-			{
-				Logger.ErrorsAll(ex);
-			}
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorsAll(ex);
+            }
 
-			// Push the result values as parameters in our action method.
-			filterContext.ActionParameters["captchaValid"] = valid;
+            // Push the result values as parameters in our action method.
+            filterContext.ActionParameters["captchaValid"] = valid;
 
             filterContext.ActionParameters["captchaError"] = !valid && verify
                 ? LocalizationService.Value.GetResource(CaptchaSettings.Value.UseInvisibleReCaptcha ? "Common.WrongInvisibleCaptcha" : "Common.WrongCaptcha")
@@ -147,13 +147,13 @@ namespace SmartStore.Web.Framework.Security
     }
 
 
-	[DataContract]
-	public class GoogleRecaptchaApiResponse
-	{
-		[DataMember(Name = "success")]
-		public bool Success { get; set; }
+    [DataContract]
+    public class GoogleRecaptchaApiResponse
+    {
+        [DataMember(Name = "success")]
+        public bool Success { get; set; }
 
-		[DataMember(Name = "error-codes")]
-		public List<string> ErrorCodes { get; set; }
-	}
+        [DataMember(Name = "error-codes")]
+        public List<string> ErrorCodes { get; set; }
+    }
 }

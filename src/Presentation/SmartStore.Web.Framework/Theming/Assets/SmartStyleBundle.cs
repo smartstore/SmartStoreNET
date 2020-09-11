@@ -18,8 +18,8 @@ namespace SmartStore.Web.Framework.Theming.Assets
             : this(virtualPath, null)
         { }
 
-	    [SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
-	    public SmartStyleBundle(string virtualPath, string cdnPath)
+        [SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
+        public SmartStyleBundle(string virtualPath, string cdnPath)
             : base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.Styles.GetDefaultTransformInstance() })
         {
             Builder = new NullBuilder();
@@ -31,10 +31,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
             // to the Bundle.Files collection. This is bad as we allow switching
             // Optimization mode per UI. Switching from true to false would also include
             // ALL LESS/SASS imports in the generated output ('link' tags)
-            
+
             // get all ORIGINAL bundle parts (including LESS/SASS parents, no @imports)
             var files = this.EnumerateFiles(context);
-            
+
             // replace file pattern like {version} and let Bundler resolve min/debug extensions.
             files = context.BundleCollection.FileExtensionReplacementList.ReplaceFileExtensions(context, files);
             // save originals for later use
@@ -53,7 +53,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
             return response;
         }
-		
+
         public override void UpdateCache(BundleContext context, BundleResponse response)
         {
             if (_wasCached && _transformedBundleFiles != null && _transformedBundleFiles.Any())
@@ -89,7 +89,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
         private static bool CacheIsEnabled(BundleContext context)
         {
-			Guard.NotNull(context, nameof(context));
+            Guard.NotNull(context, nameof(context));
 
             return context.HttpContext?.Cache != null && !context.EnableInstrumentation;
 

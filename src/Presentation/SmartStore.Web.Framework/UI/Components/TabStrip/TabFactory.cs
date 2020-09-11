@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
-{  
+{
     public class TabFactory : IHideObjectMembers
     {
         private readonly IList<Tab> _items;

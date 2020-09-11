@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.UI

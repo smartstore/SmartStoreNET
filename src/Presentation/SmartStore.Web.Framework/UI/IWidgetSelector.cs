@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Web.Framework.UI
 {
     public interface IWidgetSelector
     {
-		IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model);
+        IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model);
     }
 }

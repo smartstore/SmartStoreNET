@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Web.Routing;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework.Modelling

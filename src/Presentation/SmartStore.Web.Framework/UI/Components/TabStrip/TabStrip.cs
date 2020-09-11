@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
@@ -18,7 +15,7 @@ namespace SmartStore.Web.Framework.UI
     {
         Tabs,
         Pills,
-		Material
+        Material
     }
 
     public class TabStrip : Component
@@ -28,7 +25,7 @@ namespace SmartStore.Web.Framework.UI
             this.Items = new List<Tab>();
             this.Fade = true;
             this.SmartTabSelection = true;
-			this.Breakpoint = "<lg";
+            this.Breakpoint = "<lg";
         }
 
         public List<Tab> Items
@@ -37,7 +34,7 @@ namespace SmartStore.Web.Framework.UI
             private set;
         }
 
-		public bool IsResponsive
+        public bool IsResponsive
         {
             get;
             set;
@@ -50,18 +47,18 @@ namespace SmartStore.Web.Framework.UI
         }
 
         public string Breakpoint
-		{
-			get;
-			set;
-		}
+        {
+            get;
+            set;
+        }
 
-		public HelperResult TabContentHeaderContent
-		{
-			get;
-			set;
-		}
+        public HelperResult TabContentHeaderContent
+        {
+            get;
+            set;
+        }
 
-		public TabsPosition Position
+        public TabsPosition Position
         {
             get;
             set;
@@ -85,37 +82,31 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
-		public string OnAjaxBegin
-		{
-			get;
-			set;
-		}
-
-		public string OnAjaxSuccess
-		{
-			get;
-			set;
-		}
-
-		public string OnAjaxFailure
-		{
-			get;
-			set;
-		}
-
-		public string OnAjaxComplete
-		{
-			get;
-			set;
-		}
-
-        public override bool NameIsRequired
+        public string OnAjaxBegin
         {
-            get
-            {
-                return true;
-            }
+            get;
+            set;
         }
+
+        public string OnAjaxSuccess
+        {
+            get;
+            set;
+        }
+
+        public string OnAjaxFailure
+        {
+            get;
+            set;
+        }
+
+        public string OnAjaxComplete
+        {
+            get;
+            set;
+        }
+
+        public override bool NameIsRequired => true;
     }
 
 }

@@ -15,39 +15,36 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
 {
-	public class SassCssHttpHandler : CssHttpHandlerBase
-	{
-		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
-		{
-			return InnerTranslateAsset<SassTranslator>("SassTranslator", asset, transformer, isDebugMode);
-		}
-	}
-
-	public abstract class CssHttpHandlerBase : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
-	{
-		protected CssHttpHandlerBase()
-            : this(HttpContext.Current.Cache,
-				BundleTransformerContext.Current.FileSystem.GetVirtualFileSystemWrapper(),
-				BundleTransformerContext.Current.Configuration.GetCoreSettings().AssetHandler)
+    public class SassCssHttpHandler : CssHttpHandlerBase
+    {
+        protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
         {
-		}
+            return InnerTranslateAsset<SassTranslator>("SassTranslator", asset, transformer, isDebugMode);
+        }
+    }
 
-		protected CssHttpHandlerBase(
+    public abstract class CssHttpHandlerBase : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
+    {
+        protected CssHttpHandlerBase()
+            : this(HttpContext.Current.Cache,
+                BundleTransformerContext.Current.FileSystem.GetVirtualFileSystemWrapper(),
+                BundleTransformerContext.Current.Configuration.GetCoreSettings().AssetHandler)
+        {
+        }
+
+        protected CssHttpHandlerBase(
             Cache cache,
             IVirtualFileSystemWrapper virtualFileSystemWrapper,
             AssetHandlerSettings assetHandlerConfig)
             : base(cache, virtualFileSystemWrapper, assetHandlerConfig)
-        {		
-		}
-
-		protected override bool IsStaticAsset
-		{
-			get { return false; }
-		}
-
-		private bool IsThemeableRequest()
         {
-			if (!DataSettings.DatabaseIsInstalled())
+        }
+
+        protected override bool IsStaticAsset => false;
+
+        private bool IsThemeableRequest()
+        {
+            if (!DataSettings.DatabaseIsInstalled())
             {
                 return false;
             }
@@ -63,73 +60,73 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-		protected override string GetCacheKey(string assetVirtualPath, string bundleVirtualPath)
-		{
-			string cacheKey = base.GetCacheKey(assetVirtualPath, bundleVirtualPath);
+        protected override string GetCacheKey(string assetVirtualPath, string bundleVirtualPath)
+        {
+            string cacheKey = base.GetCacheKey(assetVirtualPath, bundleVirtualPath);
 
-			if (IsThemeableRequest())
-			{
-				if (HttpContext.Current?.Request != null)
-				{
-					var qs = QueryString.Current;
-					if (qs.Count > 0)
-					{
-						// required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
-						if (qs.Contains("theme"))
-						{
-							EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
-						}
-						if (qs.Contains("storeId"))
-						{
-							EngineContext.Current.Resolve<IStoreContext>().SetRequestStore(qs["storeId"].ToInt());
-						}
-					}
-				}
+            if (IsThemeableRequest())
+            {
+                if (HttpContext.Current?.Request != null)
+                {
+                    var qs = QueryString.Current;
+                    if (qs.Count > 0)
+                    {
+                        // required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
+                        if (qs.Contains("theme"))
+                        {
+                            EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
+                        }
+                        if (qs.Contains("storeId"))
+                        {
+                            EngineContext.Current.Resolve<IStoreContext>().SetRequestStore(qs["storeId"].ToInt());
+                        }
+                    }
+                }
 
-				cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+                cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
 
-				if (ThemeHelper.IsStyleValidationRequest())
-				{
-					cacheKey += "_Validation";
-				}
-			}
+                if (ThemeHelper.IsStyleValidationRequest())
+                {
+                    cacheKey += "_Validation";
+                }
+            }
 
-			return cacheKey;
-		}
+            return cacheKey;
+        }
 
-		protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
-		{
-			bool validationMode = ThemeHelper.IsStyleValidationRequest();
+        protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
+        {
+            bool validationMode = ThemeHelper.IsStyleValidationRequest();
 
-			try
-			{
-				var processedAsset = TranslateAssetCore(asset, transformer, validationMode || isDebugMode);
+            try
+            {
+                var processedAsset = TranslateAssetCore(asset, transformer, validationMode || isDebugMode);
 
-				if (transformer == null && !validationMode)
-				{
-					// BundleTransformer does NOT PostProcess when transformer instance is null,
-					// therefore we handle it ourselves, because we desperately need
-					// UrlRewrite even in debug mode.
-					return AssetTranslorUtil.PostProcessAsset(processedAsset, isDebugMode);
-				}
-				else
-				{
-					return processedAsset;
-				}
-			}
-			catch (Exception ex)
-			{
-				if (validationMode)
-				{
-					_context.Response.Write(ex.Message);
-					_context.Response.StatusCode = 500;
-					_context.Response.End();
-				}
+                if (transformer == null && !validationMode)
+                {
+                    // BundleTransformer does NOT PostProcess when transformer instance is null,
+                    // therefore we handle it ourselves, because we desperately need
+                    // UrlRewrite even in debug mode.
+                    return AssetTranslorUtil.PostProcessAsset(processedAsset, isDebugMode);
+                }
+                else
+                {
+                    return processedAsset;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (validationMode)
+                {
+                    _context.Response.Write(ex.Message);
+                    _context.Response.StatusCode = 500;
+                    _context.Response.End();
+                }
 
-				throw;
-			}
-		}
+                throw;
+            }
+        }
 
-		protected abstract IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode);
-	}
+        protected abstract IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode);
+    }
 }

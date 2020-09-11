@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
@@ -159,17 +158,17 @@ namespace SmartStore.Web.Framework.UI
 
             try
             {
-				var rootContext = context.GetRootControllerContext();
+                var rootContext = context.GetRootControllerContext();
 
-				int currentCategoryId = GetRequestValue<int?>(rootContext, "currentCategoryId") ?? GetRequestValue<int>(rootContext, "categoryId");
-				int currentProductId = 0;
+                int currentCategoryId = GetRequestValue<int?>(rootContext, "currentCategoryId") ?? GetRequestValue<int>(rootContext, "categoryId");
+                int currentProductId = 0;
 
-				if (currentCategoryId == 0)
-				{
-					currentProductId = GetRequestValue<int?>(rootContext, "currentProductId") ?? GetRequestValue<int>(rootContext, "productId");
-				}
+                if (currentCategoryId == 0)
+                {
+                    currentProductId = GetRequestValue<int?>(rootContext, "currentProductId") ?? GetRequestValue<int>(rootContext, "productId");
+                }
 
-				if (currentCategoryId == 0 && currentProductId == 0)
+                if (currentCategoryId == 0 && currentProductId == 0)
                 {
                     // Possibly not a category node of a menu where the category tree is attached to.
                     return base.ResolveCurrentNode(rootContext);

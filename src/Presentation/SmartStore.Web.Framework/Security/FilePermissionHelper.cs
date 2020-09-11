@@ -156,12 +156,12 @@ namespace SmartStore.Web.Framework.Security
             string rootDir = webHelper.MapPath("~/");
             var dirsToCheck = new List<string>();
             dirsToCheck.Add(Path.Combine(rootDir, "App_Data"));
-			dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName));
-			dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "Media"));
-			dirsToCheck.Add(Path.Combine(rootDir, "bin"));
+            dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName));
+            dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "Media"));
+            dirsToCheck.Add(Path.Combine(rootDir, "bin"));
             dirsToCheck.Add(Path.Combine(rootDir, "content"));
-			dirsToCheck.Add(Path.Combine(rootDir, "Exchange"));
-			dirsToCheck.Add(Path.Combine(rootDir, "plugins"));
+            dirsToCheck.Add(Path.Combine(rootDir, "Exchange"));
+            dirsToCheck.Add(Path.Combine(rootDir, "plugins"));
             dirsToCheck.Add(Path.Combine(rootDir, "plugins\\bin"));
             return dirsToCheck;
         }
@@ -175,12 +175,12 @@ namespace SmartStore.Web.Framework.Security
         {
             string rootDir = webHelper.MapPath("~/");
             var filesToCheck = new List<string>();
-			//filesToCheck.Add(Path.Combine(rootDir, "Global.asax"));
-			//filesToCheck.Add(Path.Combine(rootDir, "web.config"));
-			filesToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "InstalledPlugins.txt"));
-			filesToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "Settings.txt"));
+            //filesToCheck.Add(Path.Combine(rootDir, "Global.asax"));
+            //filesToCheck.Add(Path.Combine(rootDir, "web.config"));
+            filesToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "InstalledPlugins.txt"));
+            filesToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "Settings.txt"));
 
-			return filesToCheck;
+            return filesToCheck;
         }
     }
 }

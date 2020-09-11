@@ -15,14 +15,14 @@ using SmartStore.Web.Framework.Localization;
 namespace SmartStore.Web.Framework.Controllers
 {
     public abstract class ManageController : SmartController
-    { 
-		/// <summary>
-		/// Add locales for localizable entities
-		/// </summary>
-		/// <typeparam name="TLocalizedModelLocal">Localizable model</typeparam>
-		/// <param name="languageService">Language service</param>
-		/// <param name="locales">Locales</param>
-		protected virtual void AddLocales<TLocalizedModelLocal>(ILanguageService languageService, IList<TLocalizedModelLocal> locales) where TLocalizedModelLocal : ILocalizedModelLocal
+    {
+        /// <summary>
+        /// Add locales for localizable entities
+        /// </summary>
+        /// <typeparam name="TLocalizedModelLocal">Localizable model</typeparam>
+        /// <param name="languageService">Language service</param>
+        /// <param name="locales">Locales</param>
+        protected virtual void AddLocales<TLocalizedModelLocal>(ILanguageService languageService, IList<TLocalizedModelLocal> locales) where TLocalizedModelLocal : ILocalizedModelLocal
         {
             AddLocales(languageService, locales, null);
         }
@@ -86,12 +86,12 @@ namespace SmartStore.Web.Framework.Controllers
             return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });
         }
 
-		/// <summary>
-		/// Renders default access denied view as a partial
-		/// </summary>
-		protected ActionResult AccessDeniedPartialView() 
-		{
-			return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");
-		}
+        /// <summary>
+        /// Renders default access denied view as a partial
+        /// </summary>
+        protected ActionResult AccessDeniedPartialView()
+        {
+            return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");
+        }
     }
 }

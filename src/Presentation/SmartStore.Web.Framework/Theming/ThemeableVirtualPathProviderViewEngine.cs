@@ -13,487 +13,481 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Theming
 {
-	public abstract class ThemeableVirtualPathProviderViewEngine : BuildManagerViewEngine
-	{
-		internal Func<string, string> GetExtensionThunk = VirtualPathUtility.GetExtension;
+    public abstract class ThemeableVirtualPathProviderViewEngine : BuildManagerViewEngine
+    {
+        internal Func<string, string> GetExtensionThunk = VirtualPathUtility.GetExtension;
 
-		private static readonly string[] _emptyLocations = new string[0];
+        private static readonly string[] _emptyLocations = new string[0];
 
-		private static bool? _enableLocalizedViews;
+        private static bool? _enableLocalizedViews;
         private static bool? _enableVbViews;
         private readonly string _cacheKeyType = typeof(ThemeableRazorViewEngine).Name;
-		private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}";
+        private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}";
 
-		protected ThemeableVirtualPathProviderViewEngine()
-		{
-			this.ViewLocationCache = new TwoLevelViewLocationCache();
+        protected ThemeableVirtualPathProviderViewEngine()
+        {
+            this.ViewLocationCache = new TwoLevelViewLocationCache();
 
-			// prepare localized mobile & desktop display modes
-			DisplayModeProvider.Modes.Clear();
-			var mobileDisplayMode = new LocalizedDisplayMode(DisplayModeProvider.MobileDisplayModeId, EnableLocalizedViews)
-			{
-				ContextCondition = IsMobileDevice
-			};
-			var desktopDisplayMode = new LocalizedDisplayMode(DisplayModeProvider.DefaultDisplayModeId, EnableLocalizedViews);
+            // prepare localized mobile & desktop display modes
+            DisplayModeProvider.Modes.Clear();
+            var mobileDisplayMode = new LocalizedDisplayMode(DisplayModeProvider.MobileDisplayModeId, EnableLocalizedViews)
+            {
+                ContextCondition = IsMobileDevice
+            };
+            var desktopDisplayMode = new LocalizedDisplayMode(DisplayModeProvider.DefaultDisplayModeId, EnableLocalizedViews);
 
-			DisplayModeProvider.Modes.Add(mobileDisplayMode);
-			DisplayModeProvider.Modes.Add(desktopDisplayMode);
-		}
+            DisplayModeProvider.Modes.Add(mobileDisplayMode);
+            DisplayModeProvider.Modes.Add(desktopDisplayMode);
+        }
 
-		public static bool EnableLocalizedViews
-		{
-			get
-			{
-				if (!_enableLocalizedViews.HasValue)
-				{
-					_enableLocalizedViews = CommonHelper.GetAppSetting<bool>("sm:EnableLocalizedViews", false);
-				}
+        public static bool EnableLocalizedViews
+        {
+            get
+            {
+                if (!_enableLocalizedViews.HasValue)
+                {
+                    _enableLocalizedViews = CommonHelper.GetAppSetting<bool>("sm:EnableLocalizedViews", false);
+                }
 
-				return _enableLocalizedViews.Value;
-			}
-			set
-			{
-				_enableLocalizedViews = value;
-			}
-		}
+                return _enableLocalizedViews.Value;
+            }
+            set => _enableLocalizedViews = value;
+        }
 
-		public static bool EnableVbViews
-		{
-			get
-			{
-				if (!_enableVbViews.HasValue)
-				{
-					_enableVbViews = CommonHelper.GetAppSetting<bool>("sm:EnableVbViews", false);
-				}
+        public static bool EnableVbViews
+        {
+            get
+            {
+                if (!_enableVbViews.HasValue)
+                {
+                    _enableVbViews = CommonHelper.GetAppSetting<bool>("sm:EnableVbViews", false);
+                }
 
-				return _enableVbViews.Value;
-			}
-			set
-			{
-				_enableVbViews = value;
-			}
-		}
+                return _enableVbViews.Value;
+            }
+            set => _enableVbViews = value;
+        }
 
-		public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
-		{
-			Guard.NotNull(controllerContext, nameof(controllerContext));
-			Guard.NotEmpty(viewName, nameof(viewName));
+        public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
+        {
+            Guard.NotNull(controllerContext, nameof(controllerContext));
+            Guard.NotEmpty(viewName, nameof(viewName));
 
-			var chronometer = EngineContext.Current.Resolve<IChronometer>();
-			using (chronometer.Step("Find view '{0}'".FormatInvariant(viewName)))
-			{
-				var themeName = GetCurrentThemeName(controllerContext);
-				var controllerName = controllerContext.RouteData.GetRequiredString("controller");
-				var areaName = controllerContext.RouteData.GetAreaName();
+            var chronometer = EngineContext.Current.Resolve<IChronometer>();
+            using (chronometer.Step("Find view '{0}'".FormatInvariant(viewName)))
+            {
+                var themeName = GetCurrentThemeName(controllerContext);
+                var controllerName = controllerContext.RouteData.GetRequiredString("controller");
+                var areaName = controllerContext.RouteData.GetAreaName();
 
-				var viewPath = ResolveViewPath(
-					controllerContext, 
-					areaName,
-					ViewLocationFormats, 
-					AreaViewLocationFormats, 
-					"ViewLocationFormats", 
-					viewName, 
-					controllerName, 
-					themeName, 
-					"View", 
-					useCache, 
-					out var viewLocationsSearched);
-				var masterPath = ResolveViewPath(
-					controllerContext,
-					areaName, 
-					MasterLocationFormats, 
-					AreaMasterLocationFormats,
-					"MasterLocationFormats",
-					masterName, 
-					controllerName, 
-					themeName, 
-					"Master", 
-					useCache, 
-					out var masterLocationsSearched);
+                var viewPath = ResolveViewPath(
+                    controllerContext,
+                    areaName,
+                    ViewLocationFormats,
+                    AreaViewLocationFormats,
+                    "ViewLocationFormats",
+                    viewName,
+                    controllerName,
+                    themeName,
+                    "View",
+                    useCache,
+                    out var viewLocationsSearched);
+                var masterPath = ResolveViewPath(
+                    controllerContext,
+                    areaName,
+                    MasterLocationFormats,
+                    AreaMasterLocationFormats,
+                    "MasterLocationFormats",
+                    masterName,
+                    controllerName,
+                    themeName,
+                    "Master",
+                    useCache,
+                    out var masterLocationsSearched);
 
-				if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
-				{
-					return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
-				}
+                if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
+                {
+                    return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
+                }
 
-				return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
-			}
-		}
+                return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
+            }
+        }
 
-		public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
-		{
-			Guard.NotNull(controllerContext, nameof(controllerContext));
-			Guard.NotEmpty(partialViewName, nameof(partialViewName));
+        public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
+        {
+            Guard.NotNull(controllerContext, nameof(controllerContext));
+            Guard.NotEmpty(partialViewName, nameof(partialViewName));
 
-			var chronometer = EngineContext.Current.Resolve<IChronometer>();
-			using (chronometer.Step("Find partial view '{0}'".FormatInvariant(partialViewName)))
-			{
-				string[] searchedLocations;
+            var chronometer = EngineContext.Current.Resolve<IChronometer>();
+            using (chronometer.Step("Find partial view '{0}'".FormatInvariant(partialViewName)))
+            {
+                string[] searchedLocations;
 
-				var themeName = GetCurrentThemeName(controllerContext);
-				var controllerName = controllerContext.RouteData.GetRequiredString("controller");
-				var areaName = controllerContext.RouteData.GetAreaName();
+                var themeName = GetCurrentThemeName(controllerContext);
+                var controllerName = controllerContext.RouteData.GetRequiredString("controller");
+                var areaName = controllerContext.RouteData.GetAreaName();
 
-				string partialPath = ResolveViewPath(
-					controllerContext, 
-					areaName,
-					PartialViewLocationFormats, 
-					AreaPartialViewLocationFormats, 
-					"PartialViewLocationFormats", 
-					partialViewName, 
-					controllerName, 
-					themeName, 
-					"Partial", 
-					useCache, 
-					out searchedLocations);
+                string partialPath = ResolveViewPath(
+                    controllerContext,
+                    areaName,
+                    PartialViewLocationFormats,
+                    AreaPartialViewLocationFormats,
+                    "PartialViewLocationFormats",
+                    partialViewName,
+                    controllerName,
+                    themeName,
+                    "Partial",
+                    useCache,
+                    out searchedLocations);
 
-				if (string.IsNullOrEmpty(partialPath))
-				{
-					return new ViewEngineResult(searchedLocations);
-				}
+                if (string.IsNullOrEmpty(partialPath))
+                {
+                    return new ViewEngineResult(searchedLocations);
+                }
 
-				return new ViewEngineResult(CreatePartialView(controllerContext, partialPath), this);
-			}
-		}
+                return new ViewEngineResult(CreatePartialView(controllerContext, partialPath), this);
+            }
+        }
 
         protected virtual string ResolveViewPath(
-			ControllerContext controllerContext,
-			string areaName, 
-			string[] locations, 
-			string[] areaLocations, 
-			string locationsPropertyName, 
-			string name, 
-			string controllerName, 
-			string theme, 
-			string cacheKeyPrefix, 
-			bool useCache, 
-			out string[] searchedLocations)
-		{
-			searchedLocations = _emptyLocations;
+            ControllerContext controllerContext,
+            string areaName,
+            string[] locations,
+            string[] areaLocations,
+            string locationsPropertyName,
+            string name,
+            string controllerName,
+            string theme,
+            string cacheKeyPrefix,
+            bool useCache,
+            out string[] searchedLocations)
+        {
+            searchedLocations = _emptyLocations;
 
-			if (String.IsNullOrEmpty(name))
-			{
-				return String.Empty;
-			}
+            if (String.IsNullOrEmpty(name))
+            {
+                return String.Empty;
+            }
 
-			bool usingAreas = !String.IsNullOrEmpty(areaName);
+            bool usingAreas = !String.IsNullOrEmpty(areaName);
 
-			if (usingAreas)
-			{
-				var isAdminArea = areaName.IsCaseInsensitiveEqual("admin");
+            if (usingAreas)
+            {
+                var isAdminArea = areaName.IsCaseInsensitiveEqual("admin");
 
-				// "ExtraAreaViewLocations" gets injected by AdminThemedAttribute
-				var extraAreaViewLocations = controllerContext.RouteData.DataTokens["ExtraAreaViewLocations"] as string[];
+                // "ExtraAreaViewLocations" gets injected by AdminThemedAttribute
+                var extraAreaViewLocations = controllerContext.RouteData.DataTokens["ExtraAreaViewLocations"] as string[];
 
-				if (isAdminArea && extraAreaViewLocations == null && controllerContext.HttpContext.Request.IsAjaxRequest())
-				{
-					// In admin area AJAX requests DataTokens["ExtraAreaViewLocations"] is not set.
-					extraAreaViewLocations = AdminThemedAttribute.ExtraAreaViewLocations;
-				}
+                if (isAdminArea && extraAreaViewLocations == null && controllerContext.HttpContext.Request.IsAjaxRequest())
+                {
+                    // In admin area AJAX requests DataTokens["ExtraAreaViewLocations"] is not set.
+                    extraAreaViewLocations = AdminThemedAttribute.ExtraAreaViewLocations;
+                }
 
-				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
-				{
-					var newLocations = areaLocations.ToList();
-					var viewType = cacheKeyPrefix == "Partial" 
-						? ViewType.Partial
-						: ViewType.Layout;
+                if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
+                {
+                    var newLocations = areaLocations.ToList();
+                    var viewType = cacheKeyPrefix == "Partial"
+                        ? ViewType.Partial
+                        : ViewType.Layout;
 
-					if (isAdminArea)
-					{
-						// the admin area cannot fallback to itself. Prepend to list.
-						ExpandLocationFormats(extraAreaViewLocations, viewType).Reverse().Each(x => newLocations.Insert(0, x));
-					}
-					else
-					{
-						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations, viewType));
-					}
+                    if (isAdminArea)
+                    {
+                        // the admin area cannot fallback to itself. Prepend to list.
+                        ExpandLocationFormats(extraAreaViewLocations, viewType).Reverse().Each(x => newLocations.Insert(0, x));
+                    }
+                    else
+                    {
+                        newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations, viewType));
+                    }
 
-					areaLocations = newLocations.ToArray();
-				}
-			}
+                    areaLocations = newLocations.ToArray();
+                }
+            }
 
-			var viewLocations = GetViewLocations(locations, (usingAreas) ? areaLocations : null);
+            var viewLocations = GetViewLocations(locations, (usingAreas) ? areaLocations : null);
 
-			if (viewLocations.Count == 0)
-			{
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Properties cannot be null or empty.", new object[] { locationsPropertyName }));
-			}
+            if (viewLocations.Count == 0)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Properties cannot be null or empty.", new object[] { locationsPropertyName }));
+            }
 
-			bool nameRepresentsPath = IsSpecificPath(name);
-			string cacheKey = CreateCacheKey(cacheKeyPrefix, name, (nameRepresentsPath) ? String.Empty : controllerName, areaName, theme);
+            bool nameRepresentsPath = IsSpecificPath(name);
+            string cacheKey = CreateCacheKey(cacheKeyPrefix, name, (nameRepresentsPath) ? String.Empty : controllerName, areaName, theme);
 
-			if (useCache)
-			{
-				// Only look at cached display modes that can handle the context.
-				var possibleDisplayModes = DisplayModeProvider.GetAvailableDisplayModesForContext(controllerContext.HttpContext, controllerContext.DisplayMode);
-				foreach (var displayMode in possibleDisplayModes)
-				{
-					string cachedLocation = ViewLocationCache.GetViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayMode.DisplayModeId));
+            if (useCache)
+            {
+                // Only look at cached display modes that can handle the context.
+                var possibleDisplayModes = DisplayModeProvider.GetAvailableDisplayModesForContext(controllerContext.HttpContext, controllerContext.DisplayMode);
+                foreach (var displayMode in possibleDisplayModes)
+                {
+                    string cachedLocation = ViewLocationCache.GetViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayMode.DisplayModeId));
 
-					if (cachedLocation == null)
-					{
-						// If any matching display mode location is not in the cache, fall back to the uncached behavior, which will repopulate all of our caches.
-						return null;
-					}
+                    if (cachedLocation == null)
+                    {
+                        // If any matching display mode location is not in the cache, fall back to the uncached behavior, which will repopulate all of our caches.
+                        return null;
+                    }
 
-					// A non-empty cachedLocation indicates that we have a matching file on disk. Return that result.
-					if (cachedLocation.Length > 0)
-					{
-						if (controllerContext.DisplayMode == null)
-						{
-							controllerContext.DisplayMode = displayMode;
-						}
+                    // A non-empty cachedLocation indicates that we have a matching file on disk. Return that result.
+                    if (cachedLocation.Length > 0)
+                    {
+                        if (controllerContext.DisplayMode == null)
+                        {
+                            controllerContext.DisplayMode = displayMode;
+                        }
 
-						return cachedLocation;
-					}
-					// An empty cachedLocation value indicates that we don't have a matching file on disk. Keep going down the list of possible display modes.
-				}
+                        return cachedLocation;
+                    }
+                    // An empty cachedLocation value indicates that we don't have a matching file on disk. Keep going down the list of possible display modes.
+                }
 
-				// ResolveViewPath is called again without using the cache.
-				return null;
-			}
-			else
-			{
-				return nameRepresentsPath
-					? GetPathFromSpecificName(controllerContext, name, cacheKey, ref searchedLocations)
-					: GetPathFromGeneralName(controllerContext, viewLocations, name, controllerName, areaName, theme, cacheKey, ref searchedLocations);
-			}
-		}
+                // ResolveViewPath is called again without using the cache.
+                return null;
+            }
+            else
+            {
+                return nameRepresentsPath
+                    ? GetPathFromSpecificName(controllerContext, name, cacheKey, ref searchedLocations)
+                    : GetPathFromGeneralName(controllerContext, viewLocations, name, controllerName, areaName, theme, cacheKey, ref searchedLocations);
+            }
+        }
 
-		protected virtual string GetPathFromSpecificName(ControllerContext controllerContext, string name, string cacheKey, ref string[] searchedLocations)
-		{
-			string result = name;
+        protected virtual string GetPathFromSpecificName(ControllerContext controllerContext, string name, string cacheKey, ref string[] searchedLocations)
+        {
+            string result = name;
 
-			if (!(FilePathIsSupported(name) && FileExists(controllerContext, name)))
-			{
-				result = String.Empty;
-				searchedLocations = new[] { name };
-			}
+            if (!(FilePathIsSupported(name) && FileExists(controllerContext, name)))
+            {
+                result = String.Empty;
+                searchedLocations = new[] { name };
+            }
 
-			ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, cacheKey, result);
-			return result;
-		}
+            ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, cacheKey, result);
+            return result;
+        }
 
-		protected virtual string GetPathFromGeneralName(
-			ControllerContext controllerContext, 
-			List<ViewLocation> locations, 
-			string name, 
-			string controllerName, 
-			string areaName, 
-			string theme, 
-			string cacheKey, 
-			ref string[] searchedLocations)
-		{
-			string result = String.Empty;
-			searchedLocations = new string[locations.Count];
-			
-			for (int i = 0; i < locations.Count; i++)
-			{
-				ViewLocation location = locations[i];
-				string virtualPath = location.Format(name, controllerName, areaName, theme);
-				DisplayInfo virtualPathDisplayInfo = DisplayModeProvider.GetDisplayInfoForVirtualPath(virtualPath, controllerContext.HttpContext, path => FileExists(controllerContext, path), controllerContext.DisplayMode);
+        protected virtual string GetPathFromGeneralName(
+            ControllerContext controllerContext,
+            List<ViewLocation> locations,
+            string name,
+            string controllerName,
+            string areaName,
+            string theme,
+            string cacheKey,
+            ref string[] searchedLocations)
+        {
+            string result = String.Empty;
+            searchedLocations = new string[locations.Count];
 
-				if (virtualPathDisplayInfo != null)
-				{
-					string resolvedVirtualPath = virtualPathDisplayInfo.FilePath;
+            for (int i = 0; i < locations.Count; i++)
+            {
+                ViewLocation location = locations[i];
+                string virtualPath = location.Format(name, controllerName, areaName, theme);
+                DisplayInfo virtualPathDisplayInfo = DisplayModeProvider.GetDisplayInfoForVirtualPath(virtualPath, controllerContext.HttpContext, path => FileExists(controllerContext, path), controllerContext.DisplayMode);
 
-					searchedLocations = _emptyLocations;
-					result = resolvedVirtualPath;
-					ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, GetDisplayModeId(virtualPathDisplayInfo)), result);
+                if (virtualPathDisplayInfo != null)
+                {
+                    string resolvedVirtualPath = virtualPathDisplayInfo.FilePath;
 
-					if (controllerContext.DisplayMode == null)
-					{
-						controllerContext.DisplayMode = virtualPathDisplayInfo.DisplayMode;
-					}
+                    searchedLocations = _emptyLocations;
+                    result = resolvedVirtualPath;
+                    ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, GetDisplayModeId(virtualPathDisplayInfo)), result);
 
-					// Populate the cache for all other display modes. We want to cache both file system hits and misses so that we can distinguish
-					// in future requests whether a file's status was evicted from the cache (null value) or if the file doesn't exist (empty string).
-					IEnumerable<IDisplayMode> allDisplayModes = DisplayModeProvider.Modes;
-					foreach (IDisplayMode displayMode in allDisplayModes)
-					{
-						if (displayMode.DisplayModeId != virtualPathDisplayInfo.DisplayMode.DisplayModeId)
-						{
-							DisplayInfo displayInfoToCache = displayMode.GetDisplayInfo(controllerContext.HttpContext, virtualPath, virtualPathExists: path => FileExists(controllerContext, path));
+                    if (controllerContext.DisplayMode == null)
+                    {
+                        controllerContext.DisplayMode = virtualPathDisplayInfo.DisplayMode;
+                    }
 
-							string displayModeId = String.Empty;
-							string cacheValue = String.Empty;
-							if (displayInfoToCache != null && displayInfoToCache.FilePath != null)
-							{
-								cacheValue = displayInfoToCache.FilePath;
-								displayModeId = GetDisplayModeId(displayInfoToCache);
-							}
-							else
-							{
-								displayModeId = displayMode.DisplayModeId;
-							}
+                    // Populate the cache for all other display modes. We want to cache both file system hits and misses so that we can distinguish
+                    // in future requests whether a file's status was evicted from the cache (null value) or if the file doesn't exist (empty string).
+                    IEnumerable<IDisplayMode> allDisplayModes = DisplayModeProvider.Modes;
+                    foreach (IDisplayMode displayMode in allDisplayModes)
+                    {
+                        if (displayMode.DisplayModeId != virtualPathDisplayInfo.DisplayMode.DisplayModeId)
+                        {
+                            DisplayInfo displayInfoToCache = displayMode.GetDisplayInfo(controllerContext.HttpContext, virtualPath, virtualPathExists: path => FileExists(controllerContext, path));
 
-							ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayModeId), cacheValue);
-						}
-					}
-					break;
-				}
+                            string displayModeId = String.Empty;
+                            string cacheValue = String.Empty;
+                            if (displayInfoToCache != null && displayInfoToCache.FilePath != null)
+                            {
+                                cacheValue = displayInfoToCache.FilePath;
+                                displayModeId = GetDisplayModeId(displayInfoToCache);
+                            }
+                            else
+                            {
+                                displayModeId = displayMode.DisplayModeId;
+                            }
 
-				searchedLocations[i] = virtualPath;
-			}
+                            ViewLocationCache.InsertViewLocation(controllerContext.HttpContext, AppendDisplayModeToCacheKey(cacheKey, displayModeId), cacheValue);
+                        }
+                    }
+                    break;
+                }
 
-			return result;
-		}
+                searchedLocations[i] = virtualPath;
+            }
 
-		protected virtual bool FilePathIsSupported(string virtualPath)
-		{
-			if (this.FileExtensions == null)
-			{
-				// legacy behavior for custom ViewEngine that might not set the FileExtensions property
-				return true;
-			}
+            return result;
+        }
 
-			// get rid of the '.' because the FileExtensions property expects extensions withouth a dot.
-			string extension = GetExtensionThunk(virtualPath).TrimStart('.');
-			return FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
-		}
+        protected virtual bool FilePathIsSupported(string virtualPath)
+        {
+            if (this.FileExtensions == null)
+            {
+                // legacy behavior for custom ViewEngine that might not set the FileExtensions property
+                return true;
+            }
 
-		private string GetDisplayModeId(DisplayInfo displayInfo)
-		{
-			var localizedDisplayInfo = displayInfo as LocalizedDisplayInfo;
+            // get rid of the '.' because the FileExtensions property expects extensions withouth a dot.
+            string extension = GetExtensionThunk(virtualPath).TrimStart('.');
+            return FileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+        }
 
-			return localizedDisplayInfo != null 
-				? localizedDisplayInfo.DisplayModeId 
-				: displayInfo.DisplayMode.DisplayModeId;
-		}
-	
-		protected virtual string CreateCacheKey(string prefix, string name, string controllerName, string areaName, string theme/*, string lang*/)
-		{
-			return string.Format(_cacheKeyEntry,
-				_cacheKeyType,
-				prefix,
-				name,
-				controllerName,
-				areaName,
-				theme);
-		}
+        private string GetDisplayModeId(DisplayInfo displayInfo)
+        {
+            var localizedDisplayInfo = displayInfo as LocalizedDisplayInfo;
 
-		internal static string AppendDisplayModeToCacheKey(string cacheKey, string displayMode)
-		{
-			// key format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}"
-			// so append ":{displayMode}" to the key
-			return string.IsNullOrWhiteSpace(displayMode) 
-				? cacheKey 
-				: cacheKey + ":" + displayMode;
-		}
+            return localizedDisplayInfo != null
+                ? localizedDisplayInfo.DisplayModeId
+                : displayInfo.DisplayMode.DisplayModeId;
+        }
 
-		protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
-		{
-			// Appends razor view file extensions to location formats
-			Guard.NotNull(formats, nameof(formats));
+        protected virtual string CreateCacheKey(string prefix, string name, string controllerName, string areaName, string theme/*, string lang*/)
+        {
+            return string.Format(_cacheKeyEntry,
+                _cacheKeyType,
+                prefix,
+                name,
+                controllerName,
+                areaName,
+                theme);
+        }
 
-			var subfolder = viewType == ViewType.Layout ? "Layouts" : "Partials";
+        internal static string AppendDisplayModeToCacheKey(string cacheKey, string displayMode)
+        {
+            // key format is ":ViewCacheEntry:{cacheType}:{prefix}:{name}:{controllerName}:{areaName}:{theme}"
+            // so append ":{displayMode}" to the key
+            return string.IsNullOrWhiteSpace(displayMode)
+                ? cacheKey
+                : cacheKey + ":" + displayMode;
+        }
 
-			foreach (var format in formats)
-			{
-				if (viewType > ViewType.View)
-				{
-					yield return format.Replace("{0}", subfolder + "/{0}.cshtml");
+        protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
+        {
+            // Appends razor view file extensions to location formats
+            Guard.NotNull(formats, nameof(formats));
 
-					if (EnableVbViews)
-					{
-						yield return format.Replace("{0}", subfolder + "/{0}.vbhtml");
-					}
-				}
+            var subfolder = viewType == ViewType.Layout ? "Layouts" : "Partials";
 
-				yield return format + ".cshtml";
+            foreach (var format in formats)
+            {
+                if (viewType > ViewType.View)
+                {
+                    yield return format.Replace("{0}", subfolder + "/{0}.cshtml");
 
-				if (EnableVbViews)
-				{
-					yield return format + ".vbhtml";
-				}
-			}
-		}
+                    if (EnableVbViews)
+                    {
+                        yield return format.Replace("{0}", subfolder + "/{0}.vbhtml");
+                    }
+                }
 
-		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
-		{
-			List<ViewLocation> locations = new List<ViewLocation>(
-				(viewLocationFormats?.Length ?? 0) +
-				(areaViewLocationFormats?.Length ?? 0));
+                yield return format + ".cshtml";
 
-			if (areaViewLocationFormats != null)
-			{
-				foreach (string areaViewLocationFormat in areaViewLocationFormats)
-				{
-					locations.Add(new AreaAwareViewLocation(areaViewLocationFormat));
-				}
-			}
+                if (EnableVbViews)
+                {
+                    yield return format + ".vbhtml";
+                }
+            }
+        }
 
-			if (viewLocationFormats != null)
-			{
-				foreach (string viewLocationFormat in viewLocationFormats)
-				{
-					locations.Add(new ViewLocation(viewLocationFormat));
-				}
-			}
+        protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
+        {
+            List<ViewLocation> locations = new List<ViewLocation>(
+                (viewLocationFormats?.Length ?? 0) +
+                (areaViewLocationFormats?.Length ?? 0));
 
-			return locations;
-		}
+            if (areaViewLocationFormats != null)
+            {
+                foreach (string areaViewLocationFormat in areaViewLocationFormats)
+                {
+                    locations.Add(new AreaAwareViewLocation(areaViewLocationFormat));
+                }
+            }
 
-		protected virtual bool IsSpecificPath(string name)
-		{
-			char c = name[0];
-			return (c == '~' || c == '/');
-		}
+            if (viewLocationFormats != null)
+            {
+                foreach (string viewLocationFormat in viewLocationFormats)
+                {
+                    locations.Add(new ViewLocation(viewLocationFormat));
+                }
+            }
 
-		protected virtual bool IsMobileDevice(HttpContextBase httpContext)
-		{
-			var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
-			var result = mobileDeviceHelper.IsMobileDevice();
-			return result;
-		}
+            return locations;
+        }
 
-		protected virtual string GetCurrentThemeName(ControllerContext controllerContext)
-		{
-			var theme = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
-			return theme.ThemeName;
-		}
+        protected virtual bool IsSpecificPath(string name)
+        {
+            char c = name[0];
+            return (c == '~' || c == '/');
+        }
 
-		public enum ViewType
-		{
-			View,
-			Layout,
-			Partial
-		}
-	}
+        protected virtual bool IsMobileDevice(HttpContextBase httpContext)
+        {
+            var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
+            var result = mobileDeviceHelper.IsMobileDevice();
+            return result;
+        }
 
-	public class AreaAwareViewLocation : ViewLocation
-	{
-		public AreaAwareViewLocation(string virtualPathFormatString)
-			: base(virtualPathFormatString)
-		{
-		}
+        protected virtual string GetCurrentThemeName(ControllerContext controllerContext)
+        {
+            var theme = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
+            return theme.ThemeName;
+        }
 
-		public override string Format(string viewName, string controllerName, string areaName, string theme)
-		{
-			return string.Format(_virtualPathFormatString,
-				viewName,
-				controllerName,
-				areaName,
-				theme);
-		}
-	}
+        public enum ViewType
+        {
+            View,
+            Layout,
+            Partial
+        }
+    }
 
-	public class ViewLocation
-	{
-		protected readonly string _virtualPathFormatString;
+    public class AreaAwareViewLocation : ViewLocation
+    {
+        public AreaAwareViewLocation(string virtualPathFormatString)
+            : base(virtualPathFormatString)
+        {
+        }
 
-		public ViewLocation(string virtualPathFormatString)
-		{
-			_virtualPathFormatString = virtualPathFormatString;
-		}
+        public override string Format(string viewName, string controllerName, string areaName, string theme)
+        {
+            return string.Format(_virtualPathFormatString,
+                viewName,
+                controllerName,
+                areaName,
+                theme);
+        }
+    }
 
-		public virtual string Format(string viewName, string controllerName, string areaName, string theme)
-		{
-			return string.Format(_virtualPathFormatString,
-				viewName,
-				controllerName,
-				theme);
-		}
-	}
+    public class ViewLocation
+    {
+        protected readonly string _virtualPathFormatString;
+
+        public ViewLocation(string virtualPathFormatString)
+        {
+            _virtualPathFormatString = virtualPathFormatString;
+        }
+
+        public virtual string Format(string viewName, string controllerName, string areaName, string theme)
+        {
+            return string.Format(_virtualPathFormatString,
+                viewName,
+                controllerName,
+                theme);
+        }
+    }
 
 }

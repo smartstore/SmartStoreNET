@@ -96,22 +96,22 @@ namespace SmartStore.Web.Framework.Seo
 
         public static IEnumerable<GenericPath> Paths { get; } = _paths.Values.OrderBy(x => x.Order);
 
-		public static void RegisterUrlPrefix(string prefix, params string[] entityNames)
-		{
-			Guard.NotEmpty(prefix, nameof(prefix));
+        public static void RegisterUrlPrefix(string prefix, params string[] entityNames)
+        {
+            Guard.NotEmpty(prefix, nameof(prefix));
 
-			_urlPrefixes.AddRange(prefix, entityNames);
-		}
-		
-		public static string GetUrlPrefixFor(string entityName)
-		{
-			Guard.NotEmpty(entityName, nameof(entityName));
+            _urlPrefixes.AddRange(prefix, entityNames);
+        }
 
-			if (_urlPrefixes.Count == 0)
-				return null;
+        public static string GetUrlPrefixFor(string entityName)
+        {
+            Guard.NotEmpty(entityName, nameof(entityName));
 
-			return _urlPrefixes.FirstOrDefault(x => x.Value.Contains(entityName, StringComparer.OrdinalIgnoreCase)).Key;
-		}
+            if (_urlPrefixes.Count == 0)
+                return null;
+
+            return _urlPrefixes.FirstOrDefault(x => x.Value.Contains(entityName, StringComparer.OrdinalIgnoreCase)).Key;
+        }
 
         /// <summary>
         /// Returns information about the requested route.
@@ -128,17 +128,17 @@ namespace SmartStore.Web.Framework.Seo
             {
                 var slug = NormalizeSlug(data.Values);
 
-				if (TryResolveUrlPrefix(slug, out var urlPrefix, out var actualSlug, out var entityNames))
-				{
-					slug = actualSlug;
-				}
-				
-				var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
-				var urlRecord = urlRecordService.GetBySlug(slug);
+                if (TryResolveUrlPrefix(slug, out var urlPrefix, out var actualSlug, out var entityNames))
+                {
+                    slug = actualSlug;
+                }
+
+                var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
+                var urlRecord = urlRecordService.GetBySlug(slug);
                 if (urlRecord == null)
                 {
                     // no URL record found
-                    return NotFound(data);				
+                    return NotFound(data);
                 }
 
                 if (!urlRecord.IsActive)
@@ -151,33 +151,33 @@ namespace SmartStore.Web.Framework.Seo
                         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
                         var response = httpContext.Response;
                         response.Status = "301 Moved Permanently";
-						if (urlPrefix.HasValue())
-						{
-							activeSlug = urlPrefix + "/" + activeSlug;
-						}
+                        if (urlPrefix.HasValue())
+                        {
+                            activeSlug = urlPrefix + "/" + activeSlug;
+                        }
                         response.RedirectLocation = string.Format("{0}{1}", webHelper.GetStoreLocation(false), activeSlug);
                         response.End();
                         return null;
                     }
                     else
                     {
-						// no active slug found
-						return NotFound(data);
-					}
+                        // no active slug found
+                        return NotFound(data);
+                    }
                 }
 
-				// Verify prefix matches any assigned entity name
-				if (entityNames != null && !entityNames.Contains(urlRecord.EntityName, StringComparer.OrdinalIgnoreCase))
-				{
-					// does NOT match
-					return NotFound(data);
-				}
+                // Verify prefix matches any assigned entity name
+                if (entityNames != null && !entityNames.Contains(urlRecord.EntityName, StringComparer.OrdinalIgnoreCase))
+                {
+                    // does NOT match
+                    return NotFound(data);
+                }
 
-				// process URL
-				data.DataTokens["UrlRecord"] = urlRecord;
-				data.Values["SeName"] = slug;
+                // process URL
+                data.DataTokens["UrlRecord"] = urlRecord;
+                data.Values["SeName"] = slug;
 
-				//string controller, action, paramName;
+                //string controller, action, paramName;
 
                 if (!_paths.TryGetValue(urlRecord.EntityName, out var path))
                 {
@@ -208,36 +208,36 @@ namespace SmartStore.Web.Framework.Seo
         }
 
         private RouteData NotFound(RouteData data)
-		{
-			data.Values["controller"] = "Error";
-			data.Values["action"] = "NotFound";
+        {
+            data.Values["controller"] = "Error";
+            data.Values["action"] = "NotFound";
 
-			return data;
-		}
+            return data;
+        }
 
-		private bool TryResolveUrlPrefix(string slug, out string urlPrefix, out string actualSlug, out ICollection<string> entityNames)
-		{
-			urlPrefix = null;
-			actualSlug = null;
-			entityNames = null;
+        private bool TryResolveUrlPrefix(string slug, out string urlPrefix, out string actualSlug, out ICollection<string> entityNames)
+        {
+            urlPrefix = null;
+            actualSlug = null;
+            entityNames = null;
 
-			if (_urlPrefixes.Count > 0)
-			{
-				var firstSepIndex = slug.IndexOf('/');
-				if (firstSepIndex > 0)
-				{
-					var prefix = slug.Substring(0, firstSepIndex);
-					if (_urlPrefixes.ContainsKey(prefix))
-					{
-						urlPrefix = prefix;
-						entityNames = _urlPrefixes[prefix];
-						actualSlug = slug.Substring(prefix.Length + 1);
-						return true;
-					}
-				}
-			}
+            if (_urlPrefixes.Count > 0)
+            {
+                var firstSepIndex = slug.IndexOf('/');
+                if (firstSepIndex > 0)
+                {
+                    var prefix = slug.Substring(0, firstSepIndex);
+                    if (_urlPrefixes.ContainsKey(prefix))
+                    {
+                        urlPrefix = prefix;
+                        entityNames = _urlPrefixes[prefix];
+                        actualSlug = slug.Substring(prefix.Length + 1);
+                        return true;
+                    }
+                }
+            }
 
-			return false;
-		}
+            return false;
+        }
     }
 }

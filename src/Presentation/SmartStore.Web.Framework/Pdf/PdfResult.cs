@@ -1,53 +1,50 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using SmartStore.Services.Pdf;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Pdf
 {
-	public class PdfResult : ActionResult
-	{
-		private const string ContentType = "application/pdf";
+    public class PdfResult : ActionResult
+    {
+        private const string ContentType = "application/pdf";
 
-		public PdfResult(IPdfConverter converter, PdfConvertSettings settings)
-		{
-			Guard.NotNull(converter, nameof(converter));
-			
-			this.Converter = converter;
-			this.Settings = settings ?? new PdfConvertSettings();
-		}
+        public PdfResult(IPdfConverter converter, PdfConvertSettings settings)
+        {
+            Guard.NotNull(converter, nameof(converter));
 
-		protected IPdfConverter Converter { get; set; }
+            this.Converter = converter;
+            this.Settings = settings ?? new PdfConvertSettings();
+        }
 
-		protected PdfConvertSettings Settings { get; set; }
+        protected IPdfConverter Converter { get; set; }
 
-		/// <summary>
-		/// The name of the generated PDF file.
-		/// </summary>
-		public string FileName { get; set; }
+        protected PdfConvertSettings Settings { get; set; }
 
-		protected HttpResponseBase PrepareResponse(HttpResponseBase response)
-		{
-			response.ContentType = ContentType;
+        /// <summary>
+        /// The name of the generated PDF file.
+        /// </summary>
+        public string FileName { get; set; }
 
-			if (FileName.HasValue())
-			{
-				response.AddHeader("Content-Disposition", "attachment; filename=\"{0}\"".FormatCurrent(PathHelper.SanitizeFileName(FileName)));
-			}
+        protected HttpResponseBase PrepareResponse(HttpResponseBase response)
+        {
+            response.ContentType = ContentType;
 
-			response.AddHeader("Content-Type", ContentType);
+            if (FileName.HasValue())
+            {
+                response.AddHeader("Content-Disposition", "attachment; filename=\"{0}\"".FormatCurrent(PathHelper.SanitizeFileName(FileName)));
+            }
 
-			return response;
-		}
+            response.AddHeader("Content-Type", ContentType);
 
-		public override void ExecuteResult(ControllerContext context)
-		{	
-			var buffer = Converter.Convert(Settings);
-			var response = PrepareResponse(context.HttpContext.Response);
-			response.OutputStream.Write(buffer, 0, buffer.Length);
-		}
-	}
+            return response;
+        }
+
+        public override void ExecuteResult(ControllerContext context)
+        {
+            var buffer = Converter.Convert(Settings);
+            var response = PrepareResponse(context.HttpContext.Response);
+            response.OutputStream.Write(buffer, 0, buffer.Length);
+        }
+    }
 }

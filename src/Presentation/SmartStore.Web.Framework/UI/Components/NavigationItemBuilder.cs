@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using System.Web.WebPages;
-using SmartStore.Core;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
@@ -36,20 +33,20 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-		public TBuilder Action(string actionName)
-		{
-			return this.Action(actionName, null, null);
-		}
+        public TBuilder Action(string actionName)
+        {
+            return this.Action(actionName, null, null);
+        }
 
-		public TBuilder Action(string actionName, object routeValues)
-		{
-			return this.Action(actionName, null, routeValues);
-		}
+        public TBuilder Action(string actionName, object routeValues)
+        {
+            return this.Action(actionName, null, routeValues);
+        }
 
-		public TBuilder Action(string actionName, RouteValueDictionary routeValues)
-		{
-			return this.Action(actionName, null, routeValues);
-		}
+        public TBuilder Action(string actionName, RouteValueDictionary routeValues)
+        {
+            return this.Action(actionName, null, routeValues);
+        }
 
         public TBuilder Action(string actionName, string controllerName)
         {
@@ -127,13 +124,13 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-		public TBuilder ImageId(int? value)
-		{
-			this.Item.ImageId = value;
-			return (this as TBuilder);
-		}
+        public TBuilder ImageId(int? value)
+        {
+            this.Item.ImageId = value;
+            return (this as TBuilder);
+        }
 
-		public TBuilder Icon(string value)
+        public TBuilder Icon(string value)
         {
             this.Item.Icon = value;
             return (this as TBuilder);
@@ -145,13 +142,13 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-		public TBuilder Summary(string value)
-		{
-			this.Item.Summary = value;
-			return (this as TBuilder);
-		}
+        public TBuilder Summary(string value)
+        {
+            this.Item.Summary = value;
+            return (this as TBuilder);
+        }
 
-		public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Secondary, bool condition = true)
+        public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Secondary, bool condition = true)
         {
             if (condition)
             {
@@ -210,29 +207,29 @@ namespace SmartStore.Web.Framework.UI
             private set;
         }
 
-		/// <summary>
-		/// Specifies whether the content should be loaded per AJAX into the content pane.
-		/// </summary>
-		/// <param name="value">value</param>
-		/// <returns>builder</returns>
-		/// <remarks>
-		///		This setting has no effect when no route is specified OR
-		///		static content was set.
-		/// </remarks>
-		public TBuilder Ajax(bool value = true)
-		{
-			this.Item.Ajax = value;
-			return (this as TBuilder);
-		}
+        /// <summary>
+        /// Specifies whether the content should be loaded per AJAX into the content pane.
+        /// </summary>
+        /// <param name="value">value</param>
+        /// <returns>builder</returns>
+        /// <remarks>
+        ///		This setting has no effect when no route is specified OR
+        ///		static content was set.
+        /// </remarks>
+        public TBuilder Ajax(bool value = true)
+        {
+            this.Item.Ajax = value;
+            return (this as TBuilder);
+        }
 
         public TBuilder Content(string value)
         {
-			if (value.IsEmpty())
-			{
-				// do nothing
-				return (this as TBuilder);
-			}
-			return this.Content(x => new HelperResult(writer => writer.Write(value)));
+            if (value.IsEmpty())
+            {
+                // do nothing
+                return (this as TBuilder);
+            }
+            return this.Content(x => new HelperResult(writer => writer.Write(value)));
         }
 
         public TBuilder Content(Func<dynamic, HelperResult> value)
@@ -255,7 +252,7 @@ namespace SmartStore.Web.Framework.UI
         /// <returns>builder instance</returns>
         public TBuilder Content(string action, string controller, object routeValues)
         {
-            return Content(action, controller, new RouteValueDictionary(routeValues));       
+            return Content(action, controller, new RouteValueDictionary(routeValues));
         }
 
         /// <summary>
@@ -267,7 +264,7 @@ namespace SmartStore.Web.Framework.UI
         /// <returns>builder instance</returns>
         public TBuilder Content(string action, string controller, RouteValueDictionary routeValues)
         {
-            return this.Content(x => new HelperResult(writer => 
+            return this.Content(x => new HelperResult(writer =>
             {
                 var value = this.HtmlHelper.Action(action, controller, routeValues);
                 writer.Write(value);

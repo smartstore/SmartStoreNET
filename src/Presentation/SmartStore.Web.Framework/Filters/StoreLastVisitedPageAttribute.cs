@@ -11,17 +11,17 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class StoreLastVisitedPageAttribute : FilterAttribute, IActionFilter
     {
-		public Lazy<IWebHelper> WebHelper { get; set; }
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<CustomerSettings> CustomerSettings { get; set; }
-		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
-		public Lazy<IUserAgent> UserAgent { get; set; }
+        public Lazy<IWebHelper> WebHelper { get; set; }
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<CustomerSettings> CustomerSettings { get; set; }
+        public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
+        public Lazy<IUserAgent> UserAgent { get; set; }
         public Lazy<ICustomerService> CustomerService { get; set; }
         public Lazy<ILogger> Logger { get; set; }
 
         public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
-			if (!DataSettings.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
@@ -38,13 +38,13 @@ namespace SmartStore.Web.Framework.Filters
             if (!CustomerSettings.Value.StoreLastVisitedPage)
                 return;
 
-			var customer = WorkContext.Value.CurrentCustomer;
+            var customer = WorkContext.Value.CurrentCustomer;
 
-			if (customer == null || customer.Deleted || customer.IsSystemAccount)
-				return;
+            if (customer == null || customer.Deleted || customer.IsSystemAccount)
+                return;
 
-			var pageUrl = WebHelper.Value.GetThisPageUrl(true);
-			var userAgent = UserAgent.Value.RawValue;
+            var pageUrl = WebHelper.Value.GetThisPageUrl(true);
+            var userAgent = UserAgent.Value.RawValue;
 
             try
             {
@@ -71,10 +71,10 @@ namespace SmartStore.Web.Framework.Filters
             {
                 Logger?.Value?.Error(ex);
             }
-		}
+        }
 
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
-	}
+        public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+        }
+    }
 }

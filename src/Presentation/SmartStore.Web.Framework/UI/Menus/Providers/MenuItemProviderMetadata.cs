@@ -12,7 +12,7 @@ namespace SmartStore.Web.Framework.UI
         public MenuItemProviderAttribute(string providerName)
         {
             Guard.NotEmpty(providerName, nameof(providerName));
-            
+
             ProviderName = providerName;
         }
 

@@ -18,7 +18,7 @@ namespace SmartStore.Web.Framework.Localization
         #region Fields
 
         private static bool? _seoFriendlyUrlsForLanguagesEnabled;
-		private string _leftPart;
+        private string _leftPart;
 
         #endregion
 
@@ -96,16 +96,16 @@ namespace SmartStore.Web.Framework.Localization
                 }
             }
 
-			if (_leftPart == null)
-			{
-				var url = this.Url;
-				int idx = url.IndexOf('{');
-				_leftPart = "~/" + (idx >= 0 ? url.Substring(0, idx) : url).TrimEnd('/');
-			}
+            if (_leftPart == null)
+            {
+                var url = this.Url;
+                int idx = url.IndexOf('{');
+                _leftPart = "~/" + (idx >= 0 ? url.Substring(0, idx) : url).TrimEnd('/');
+            }
 
-			// Perf
-			if (!httpContext.Request.AppRelativeCurrentExecutionFilePath.StartsWith(_leftPart, true, CultureInfo.InvariantCulture))
-				return null;
+            // Perf
+            if (!httpContext.Request.AppRelativeCurrentExecutionFilePath.StartsWith(_leftPart, true, CultureInfo.InvariantCulture))
+                return null;
 
             RouteData data = base.GetRouteData(httpContext);
             return data;
@@ -126,8 +126,8 @@ namespace SmartStore.Web.Framework.Localization
             if (data != null && DataSettings.DatabaseIsInstalled() && SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
-				if (helper.IsLocalizedUrl(out string cultureCode))
-				{
+                if (helper.IsLocalizedUrl(out string cultureCode))
+                {
                     if (requestContext.RouteData.DataTokens.Get("SeoCodeReplacement") is string seoCodeReplacement)
                     {
                         // The LanguageSeoCode filter detected a localized URL, but the locale does not exist or is inactive.
@@ -142,7 +142,7 @@ namespace SmartStore.Web.Framework.Localization
                         data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath).TrimEnd('/');
                     }
                 }
-			}
+            }
 
             return data;
         }
@@ -163,16 +163,16 @@ namespace SmartStore.Web.Framework.Localization
             get
             {
                 if (_seoFriendlyUrlsForLanguagesEnabled == null && EngineContext.Current.IsFullyInitialized)
-				{
-					try
-					{
-						var enabled = EngineContext.Current.Resolve<LocalizationSettings>().SeoFriendlyUrlsForLanguagesEnabled;
-						_seoFriendlyUrlsForLanguagesEnabled = enabled;
-					}
-					catch { }
-				}
-                
-				// Assume is enabled on very first request to prevent IIS 404 with localized URLs
+                {
+                    try
+                    {
+                        var enabled = EngineContext.Current.Resolve<LocalizationSettings>().SeoFriendlyUrlsForLanguagesEnabled;
+                        _seoFriendlyUrlsForLanguagesEnabled = enabled;
+                    }
+                    catch { }
+                }
+
+                // Assume is enabled on very first request to prevent IIS 404 with localized URLs
                 return _seoFriendlyUrlsForLanguagesEnabled ?? true;
             }
         }
@@ -183,16 +183,16 @@ namespace SmartStore.Web.Framework.Localization
 
         public LocalizedRoute Clone()
         {
-			var clone = new LocalizedRoute(this.Url,
-				new RouteValueDictionary(this.Defaults),
-				new RouteValueDictionary(this.Constraints),
-				new RouteValueDictionary(this.DataTokens),
-				new MvcRouteHandler())
-			{
-				RouteExistingFiles = this.RouteExistingFiles,
-				IsClone = true
-			};
-			return clone;
+            var clone = new LocalizedRoute(this.Url,
+                new RouteValueDictionary(this.Defaults),
+                new RouteValueDictionary(this.Constraints),
+                new RouteValueDictionary(this.DataTokens),
+                new MvcRouteHandler())
+            {
+                RouteExistingFiles = this.RouteExistingFiles,
+                IsClone = true
+            };
+            return clone;
         }
 
         object ICloneable.Clone()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
-{    
+{
     public static class RouteValueDictionaryExtensions
     {
         public static void ApplyTo(this RouteValueDictionary routeValues, INavigatable instance, Action<INavigatable, string, string, RouteValueDictionary> callBack)

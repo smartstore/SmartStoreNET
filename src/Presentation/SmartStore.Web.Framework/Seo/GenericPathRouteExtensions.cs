@@ -53,29 +53,29 @@ namespace SmartStore.Web.Framework.Seo
             return route;
         }
 
-		/// <summary>
-		/// Changes the url pattern of an existing named route.
-		/// </summary>
-		/// <param name="routes">Route collection</param>
-		/// <param name="name">Name of the route</param>
-		/// <param name="url">The new url pattern</param>
-		/// <returns>The route instance</returns>
-		public static Route ChangeRouteUrl(this RouteCollection routes, string name, string url)
-		{
-			Guard.NotNull(routes, nameof(routes));
-			Guard.NotEmpty(name, nameof(name));
-			Guard.NotEmpty(url, nameof(url));
-			
-			var route = routes[name] as Route;
+        /// <summary>
+        /// Changes the url pattern of an existing named route.
+        /// </summary>
+        /// <param name="routes">Route collection</param>
+        /// <param name="name">Name of the route</param>
+        /// <param name="url">The new url pattern</param>
+        /// <returns>The route instance</returns>
+        public static Route ChangeRouteUrl(this RouteCollection routes, string name, string url)
+        {
+            Guard.NotNull(routes, nameof(routes));
+            Guard.NotEmpty(name, nameof(name));
+            Guard.NotEmpty(url, nameof(url));
 
-			if (route == null)
-			{
-				throw new ArgumentException("The route '{0}' does not exist or is not assignable from 'Route'.".FormatInvariant(name), nameof(name));
-			}
+            var route = routes[name] as Route;
 
-			route.Url = url;
-			
-			return route;
-		}
+            if (route == null)
+            {
+                throw new ArgumentException("The route '{0}' does not exist or is not assignable from 'Route'.".FormatInvariant(name), nameof(name));
+            }
+
+            route.Url = url;
+
+            return route;
+        }
     }
 }

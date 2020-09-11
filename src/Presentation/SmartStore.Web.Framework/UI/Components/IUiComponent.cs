@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore.Web.Framework.UI
+﻿namespace SmartStore.Web.Framework.UI
 {
     public interface IUiComponent : IHtmlAttributesContainer
     {

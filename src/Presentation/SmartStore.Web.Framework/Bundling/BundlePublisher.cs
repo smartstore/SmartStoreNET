@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.Bundling
 
         public void RegisterBundles(BundleCollection bundles)
         {
-			var bundleProviderTypes = _typeFinder.FindClassesOfType<IBundleProvider>(ignoreInactivePlugins: true);
+            var bundleProviderTypes = _typeFinder.FindClassesOfType<IBundleProvider>(ignoreInactivePlugins: true);
             var bundleProviders = new List<IBundleProvider>();
             foreach (var providerType in bundleProviderTypes)
             {

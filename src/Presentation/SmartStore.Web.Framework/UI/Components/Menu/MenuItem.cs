@@ -11,12 +11,12 @@ namespace SmartStore.Web.Framework.UI
         public MenuItem()
         {
             this.Attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-		}
+        }
 
-		/// <summary>
-		/// If this menu item refers to an entity, the id of the backed entity (like category, products e.g.)
-		/// </summary>
-		public int EntityId { get; set; }
+        /// <summary>
+        /// If this menu item refers to an entity, the id of the backed entity (like category, products e.g.)
+        /// </summary>
+        public int EntityId { get; set; }
         public string EntityName { get; set; }
 
         public int MenuItemId { get; set; }
@@ -40,10 +40,7 @@ namespace SmartStore.Web.Framework.UI
 
                 return _id;
             }
-            set
-            {
-                _id = value;
-            }
+            set => _id = value;
         }
 
         public string ResKey { get; set; }
@@ -54,7 +51,7 @@ namespace SmartStore.Web.Framework.UI
 
         public IDictionary<string, object> Attributes { get; set; }
 
-		public MenuItemBuilder ToBuilder()
+        public MenuItemBuilder ToBuilder()
         {
             return new MenuItemBuilder(this);
         }
@@ -64,14 +61,14 @@ namespace SmartStore.Web.Framework.UI
             return menuItem.ToBuilder();
         }
 
-		public MenuItem Clone()
-		{
-			return (MenuItem)this.MemberwiseClone();
-		}
+        public MenuItem Clone()
+        {
+            return (MenuItem)this.MemberwiseClone();
+        }
 
-		object ICloneable.Clone()
-		{
-			return this.Clone();
-		}
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
     }
 }

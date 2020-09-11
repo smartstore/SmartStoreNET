@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace SmartStore.Web.Framework.Filters
@@ -62,19 +58,13 @@ namespace SmartStore.Web.Framework.Filters
         /// <summary>
         /// Determines whether the stream is captured
         /// </summary>
-        private bool IsCaptured
-        {
-            get => CaptureStream != null || CaptureString != null || TransformStream != null || TransformString != null;
-        }
+        private bool IsCaptured => CaptureStream != null || CaptureString != null || TransformStream != null || TransformString != null;
 
         /// <summary>
         /// Determines whether the Write method is outputting data immediately
         /// or delaying output until Flush() is fired.
         /// </summary>
-        private bool IsOutputDelayed
-        {
-            get => TransformStream != null || TransformString != null;
-        }
+        private bool IsOutputDelayed => TransformStream != null || TransformString != null;
 
 
         /// <summary>
@@ -203,39 +193,39 @@ namespace SmartStore.Web.Framework.Filters
             return ms;
         }
 
-        public override bool CanRead
-        {
-            get => true;
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get => true;
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        {
-            get => true;
-        }
+        public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get => 0;
-        }
+        public override long Length => 0;
 
         public override long Position
         {
-            get { return _position; }
-            set { _position = value; }
+            get => _position;
+            set => _position = value;
         }
 
-        public override long Seek(long offset, SeekOrigin direction) => _innerStream.Seek(offset, direction);
+        public override long Seek(long offset, SeekOrigin direction)
+        {
+            return _innerStream.Seek(offset, direction);
+        }
 
-        public override void SetLength(long length) => _innerStream.SetLength(length);
+        public override void SetLength(long length)
+        {
+            _innerStream.SetLength(length);
+        }
 
-        public override void Close() => _innerStream.Close();
+        public override void Close()
+        {
+            _innerStream.Close();
+        }
 
-        public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return _innerStream.Read(buffer, offset, count);
+        }
 
         /// <summary>
         /// Overriden to capture output written by ASP.NET and captured

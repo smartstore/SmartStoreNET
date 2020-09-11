@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Routing;
 
-namespace SmartStore.Web.Framework.UI 
+namespace SmartStore.Web.Framework.UI
 {
     public abstract class Component : IUiComponent
     {
@@ -13,16 +12,10 @@ namespace SmartStore.Web.Framework.UI
 
         public string Id
         {
-            get
-            {
-                return !this.HtmlAttributes.ContainsKey("id") 
-                    ? this.Name 
+            get => !this.HtmlAttributes.ContainsKey("id")
+                    ? this.Name
                     : (this.HtmlAttributes["id"] as string);
-            }
-            set
-            {
-                this.HtmlAttributes["id"] = value;
-            }
+            set => this.HtmlAttributes["id"] = value;
         }
 
         public string Name
@@ -31,7 +24,7 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
-        public IDictionary<string, object> HtmlAttributes 
+        public IDictionary<string, object> HtmlAttributes
         {
             get;
             private set;
@@ -39,12 +32,6 @@ namespace SmartStore.Web.Framework.UI
 
 
 
-        public virtual bool NameIsRequired
-        {
-            get 
-            {
-                return false;
-            }
-        }
-	}
+        public virtual bool NameIsRequired => false;
+    }
 }

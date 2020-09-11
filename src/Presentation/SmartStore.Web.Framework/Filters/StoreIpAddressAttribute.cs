@@ -9,12 +9,12 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class StoreIpAddressAttribute : FilterAttribute, IActionFilter
     {
-		public Lazy<IWebHelper> WebHelper { get; set; }
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<ICustomerService> CustomerService { get; set; }
-		public Lazy<PrivacySettings> PrivacySettings { get; set; }
+        public Lazy<IWebHelper> WebHelper { get; set; }
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<ICustomerService> CustomerService { get; set; }
+        public Lazy<PrivacySettings> PrivacySettings { get; set; }
 
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -30,12 +30,12 @@ namespace SmartStore.Web.Framework.Filters
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-			if (!PrivacySettings.Value.StoreLastIpAddress)
-				return;
+            if (!PrivacySettings.Value.StoreLastIpAddress)
+                return;
 
-			// Update IP address.
-			var webHelper = WebHelper.Value;
-			var currentIpAddress = webHelper.GetCurrentIpAddress();
+            // Update IP address.
+            var webHelper = WebHelper.Value;
+            var currentIpAddress = webHelper.GetCurrentIpAddress();
             if (!String.IsNullOrEmpty(currentIpAddress))
             {
                 var customer = WorkContext.Value.CurrentCustomer;
@@ -48,8 +48,8 @@ namespace SmartStore.Web.Framework.Filters
             }
         }
 
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
-	}
+        public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+        }
+    }
 }

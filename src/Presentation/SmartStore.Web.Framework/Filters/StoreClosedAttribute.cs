@@ -13,84 +13,84 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class StoreClosedAttribute : FilterAttribute, IAuthorizationFilter
     {
-		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
-		{
- 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Login"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Logout"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.HomeController", "StoreClosed"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
-		};
-
-		public Lazy<ILocalizationService> Localizer { get; set; }
-		public Lazy<INotifier> Notifier { get; set; }
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
-		
-		public virtual void OnAuthorization(AuthorizationContext filterContext)
+        private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>>
         {
-			if (filterContext == null || filterContext.HttpContext == null)
-				return;
+             new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Login"),
+            new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Logout"),
+            new Tuple<string, string>("SmartStore.Web.Controllers.HomeController", "StoreClosed"),
+            new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
+        };
 
-			HttpRequestBase request = filterContext.HttpContext.Request;
-			if (request == null)
-				return;
+        public Lazy<ILocalizationService> Localizer { get; set; }
+        public Lazy<INotifier> Notifier { get; set; }
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
 
-			// Don't apply filter to child methods
-			if (filterContext.IsChildAction)
-				return;
+        public virtual void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if (filterContext == null || filterContext.HttpContext == null)
+                return;
 
-			string actionName = filterContext.ActionDescriptor.ActionName;
-			if (String.IsNullOrEmpty(actionName))
-				return;
+            HttpRequestBase request = filterContext.HttpContext.Request;
+            if (request == null)
+                return;
 
-			string controllerName = filterContext.Controller.ToString();
-			if (String.IsNullOrEmpty(controllerName))
-				return;
+            // Don't apply filter to child methods
+            if (filterContext.IsChildAction)
+                return;
 
-			if (!DataSettings.DatabaseIsInstalled())
-				return;
+            string actionName = filterContext.ActionDescriptor.ActionName;
+            if (String.IsNullOrEmpty(actionName))
+                return;
 
-			var storeInformationSettings = StoreInformationSettings.Value;
-			if (!storeInformationSettings.StoreClosed)
-				return;
+            string controllerName = filterContext.Controller.ToString();
+            if (String.IsNullOrEmpty(controllerName))
+                return;
 
-			if (!IsPermittedRoute(controllerName, actionName))
-			{
-				if (storeInformationSettings.StoreClosedAllowForAdmins && WorkContext.Value.CurrentCustomer.IsAdmin())
-				{
-					//do nothing - allow admin access
-				}
-				else
-				{
-					if (request.IsAjaxRequest())
-					{
-						var storeClosedMessage = "{0} {1}".FormatCurrentUI(
-							Localizer.Value.GetResource("StoreClosed", 0, false),
-							Localizer.Value.GetResource("StoreClosed.Hint", 0, false));
-						Notifier.Value.Error(storeClosedMessage);
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
 
-						//filterContext.Result = new ContentResult { Content = "", ContentType = "text/html" };
-					}
-					else
-					{
-						var storeClosedUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("StoreClosed");
-						filterContext.Result = new RedirectResult(storeClosedUrl);
-					}
-				}
-			}
-		}
+            var storeInformationSettings = StoreInformationSettings.Value;
+            if (!storeInformationSettings.StoreClosed)
+                return;
 
-		private static bool IsPermittedRoute(string controllerName, string actionName)
-		{
-			foreach (var route in s_permittedRoutes)
-			{
-				if (controllerName.IsCaseInsensitiveEqual(route.Item1) && actionName.IsCaseInsensitiveEqual(route.Item2))
-				{
-					return true;
-				}
-			}
+            if (!IsPermittedRoute(controllerName, actionName))
+            {
+                if (storeInformationSettings.StoreClosedAllowForAdmins && WorkContext.Value.CurrentCustomer.IsAdmin())
+                {
+                    //do nothing - allow admin access
+                }
+                else
+                {
+                    if (request.IsAjaxRequest())
+                    {
+                        var storeClosedMessage = "{0} {1}".FormatCurrentUI(
+                            Localizer.Value.GetResource("StoreClosed", 0, false),
+                            Localizer.Value.GetResource("StoreClosed.Hint", 0, false));
+                        Notifier.Value.Error(storeClosedMessage);
 
-			return false;
-		}
-	}
+                        //filterContext.Result = new ContentResult { Content = "", ContentType = "text/html" };
+                    }
+                    else
+                    {
+                        var storeClosedUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("StoreClosed");
+                        filterContext.Result = new RedirectResult(storeClosedUrl);
+                    }
+                }
+            }
+        }
+
+        private static bool IsPermittedRoute(string controllerName, string actionName)
+        {
+            foreach (var route in s_permittedRoutes)
+            {
+                if (controllerName.IsCaseInsensitiveEqual(route.Item1) && actionName.IsCaseInsensitiveEqual(route.Item2))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 }

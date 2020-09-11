@@ -7,7 +7,7 @@ using SmartStore.Utilities;
 namespace SmartStore.Web.Framework.Security
 {
     public static class HtmlCaptchaExtensions
-	{
+    {
         public static IHtmlString GenerateCaptcha(this HtmlHelper helper)
         {
             var captchaSettings = EngineContext.Current.Resolve<CaptchaSettings>();
@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.Security
                     widgetUrl,
                     callbackName,
                     workContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower()
-                ); 
+                );
 
                 var script = new[]
                 {

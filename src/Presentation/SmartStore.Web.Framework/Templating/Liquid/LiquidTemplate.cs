@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Web.Hosting;
 using DotLiquid;
@@ -7,81 +6,81 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Templating.Liquid
 {
-	internal class LiquidTemplate : ITemplate
-	{
-		public LiquidTemplate(Template template, string source)
-		{
-			Guard.NotNull(template, nameof(template));
-			Guard.NotNull(source, nameof(source));
+    internal class LiquidTemplate : ITemplate
+    {
+        public LiquidTemplate(Template template, string source)
+        {
+            Guard.NotNull(template, nameof(template));
+            Guard.NotNull(source, nameof(source));
 
-			Template = template;
-			Source = source;
-		}
+            Template = template;
+            Source = source;
+        }
 
-		public string Source
-		{
-			get;
-			internal set;
-		}
+        public string Source
+        {
+            get;
+            internal set;
+        }
 
-		public Template Template
-		{
-			get;
-			internal set;
-		}
+        public Template Template
+        {
+            get;
+            internal set;
+        }
 
-		public string Render(object model, IFormatProvider formatProvider)
-		{
-			Guard.NotNull(model, nameof(model));
-			Guard.NotNull(formatProvider, nameof(formatProvider));
-			
-			var p = CreateParameters(model, formatProvider);
-			return Template.Render(p);
-		}
+        public string Render(object model, IFormatProvider formatProvider)
+        {
+            Guard.NotNull(model, nameof(model));
+            Guard.NotNull(formatProvider, nameof(formatProvider));
 
-		private RenderParameters CreateParameters(object data, IFormatProvider formatProvider)
-		{
-			var p = new RenderParameters(formatProvider);
+            var p = CreateParameters(model, formatProvider);
+            return Template.Render(p);
+        }
 
-			Hash hash = null;
-			
-			if (data is ISafeObject so)
-			{
-				if (so.GetWrappedObject() is IDictionary<string, object> soDict)
-				{
-					hash = Hash.FromDictionary(soDict);
-				}
-				else
-				{
-					data = so.GetWrappedObject();
-				}
-			}
+        private RenderParameters CreateParameters(object data, IFormatProvider formatProvider)
+        {
+            var p = new RenderParameters(formatProvider);
 
-			if (hash == null)
-			{
-				hash = new Hash();
+            Hash hash = null;
 
-				if (data is IDictionary<string, object> dict)
-				{
-					foreach (var kvp in dict)
-					{
-						hash[kvp.Key] = LiquidUtil.CreateSafeObject(kvp.Value);
-					}
-				}
-				else
-				{
-					var props = FastProperty.GetProperties(data.GetType());
-					foreach (var prop in props)
-					{
-						hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
-					}
-				}
-			}
+            if (data is ISafeObject so)
+            {
+                if (so.GetWrappedObject() is IDictionary<string, object> soDict)
+                {
+                    hash = Hash.FromDictionary(soDict);
+                }
+                else
+                {
+                    data = so.GetWrappedObject();
+                }
+            }
 
-			p.LocalVariables = hash;
-			p.ErrorsOutputMode = HostingEnvironment.IsHosted ? ErrorsOutputMode.Display : ErrorsOutputMode.Rethrow;
+            if (hash == null)
+            {
+                hash = new Hash();
 
-			return p;
-		}
-	}
+                if (data is IDictionary<string, object> dict)
+                {
+                    foreach (var kvp in dict)
+                    {
+                        hash[kvp.Key] = LiquidUtil.CreateSafeObject(kvp.Value);
+                    }
+                }
+                else
+                {
+                    var props = FastProperty.GetProperties(data.GetType());
+                    foreach (var prop in props)
+                    {
+                        hash[prop.Key] = LiquidUtil.CreateSafeObject(prop.Value.GetValue(data));
+                    }
+                }
+            }
+
+            p.LocalVariables = hash;
+            p.ErrorsOutputMode = HostingEnvironment.IsHosted ? ErrorsOutputMode.Display : ErrorsOutputMode.Rethrow;
+
+            return p;
+        }
+    }
 }

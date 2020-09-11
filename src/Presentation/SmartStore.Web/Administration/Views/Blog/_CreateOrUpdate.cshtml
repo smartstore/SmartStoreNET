@@ -195,11 +195,11 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaKeywords)
+                @Html.SmartLabelFor(model => model.MetaTitle)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.MetaKeywords)
-                @Html.ValidationMessageFor(model => model.MetaKeywords)
+                @Html.EditorFor(x => x.MetaTitle)
+                @Html.ValidationMessageFor(model => model.MetaTitle)
             </td>
         </tr>
         <tr>
@@ -213,11 +213,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaTitle)
+                @Html.SmartLabelFor(model => model.MetaKeywords)
             </td>
             <td class="adminData">
-                @Html.EditorFor(x => x.MetaTitle)
-                @Html.ValidationMessageFor(model => model.MetaTitle)
+                @Html.EditorFor(x => x.MetaKeywords)
+                @Html.ValidationMessageFor(model => model.MetaKeywords)
             </td>
         </tr>
         <tr>

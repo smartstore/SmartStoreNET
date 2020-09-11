@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Configuration;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests.Domain.Configuration
 {

@@ -13,27 +13,27 @@ namespace SmartStore.Services.Tests
     [TestFixture]
     public abstract class ServiceTest
     {
-		private MockProviderManager _providerManager = new MockProviderManager();
-		
-		[SetUp]
+        private MockProviderManager _providerManager = new MockProviderManager();
+
+        [SetUp]
         public void SetUp()
         {
             //init plugins
             InitPlugins();
 
-			InitProviders();
+            InitProviders();
         }
 
-		private void InitProviders()
-		{
-			_providerManager.RegisterProvider("FixedTaxRateTest", new FixedRateTestTaxProvider());
-			_providerManager.RegisterProvider("FixedRateTestShippingRateComputationMethod", new FixedRateTestShippingRateComputationMethod());
-			_providerManager.RegisterProvider("CurrencyExchange.TestProvider", new TestExchangeRateProvider());
-			_providerManager.RegisterProvider("Payments.TestMethod", new TestPaymentMethod());
-			_providerManager.RegisterProvider(DatabaseMediaStorageProvider.SystemName, new TestDatabaseMediaStorageProvider());
-		}
+        private void InitProviders()
+        {
+            _providerManager.RegisterProvider("FixedTaxRateTest", new FixedRateTestTaxProvider());
+            _providerManager.RegisterProvider("FixedRateTestShippingRateComputationMethod", new FixedRateTestShippingRateComputationMethod());
+            _providerManager.RegisterProvider("CurrencyExchange.TestProvider", new TestExchangeRateProvider());
+            _providerManager.RegisterProvider("Payments.TestMethod", new TestPaymentMethod());
+            _providerManager.RegisterProvider(DatabaseMediaStorageProvider.SystemName, new TestDatabaseMediaStorageProvider());
+        }
 
-		private void InitPlugins()
+        private void InitPlugins()
         {
             var plugins = new List<PluginDescriptor>();
             plugins.Add(new PluginDescriptor(typeof(FixedRateTestTaxProvider).Assembly, null, typeof(FixedRateTestTaxProvider))
@@ -61,15 +61,9 @@ namespace SmartStore.Services.Tests
                 Installed = true,
             });
 
-			PluginManager.ReferencedPlugins = plugins;
+            PluginManager.ReferencedPlugins = plugins;
         }
 
-		protected MockProviderManager ProviderManager
-		{
-			get
-			{
-				return _providerManager;
-			}
-		}
+        protected MockProviderManager ProviderManager => _providerManager;
     }
 }

@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Blogs;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests.Domain.Blogs
 {
@@ -12,7 +12,7 @@ namespace SmartStore.Core.Tests.Domain.Blogs
         {
             var blogPost = new BlogPost()
             {
-				Tags = "tag1, tag2, tag 3 4,  "
+                Tags = "tag1, tag2, tag 3 4,  "
             };
 
             var tags = blogPost.ParseTags();

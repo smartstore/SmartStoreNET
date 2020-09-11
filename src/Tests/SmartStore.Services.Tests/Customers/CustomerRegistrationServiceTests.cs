@@ -27,7 +27,7 @@ namespace SmartStore.Services.Tests.Customers
         IRepository<CustomerRole> _customerRoleRepo;
         IRepository<CustomerRoleMapping> _customerRoleMappingRepo;
         IRepository<GenericAttribute> _genericAttributeRepo;
-		IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
+        IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
         IRepository<ShoppingCartItem> _shoppingCartItemRepo;
         IGenericAttributeService _genericAttributeService;
         IEncryptionService _encryptionService;
@@ -38,12 +38,12 @@ namespace SmartStore.Services.Tests.Customers
         IEventPublisher _eventPublisher;
         Lazy<RewardPointsSettings> _rewardPointsSettings;
         SecuritySettings _securitySettings;
-		IStoreContext _storeContext;
-		ICommonServices _services;
-		IUserAgent _userAgent;
-		Lazy<IGdprTool> _gdprTool;
+        IStoreContext _storeContext;
+        ICommonServices _services;
+        IUserAgent _userAgent;
+        Lazy<IGdprTool> _gdprTool;
 
-		[SetUp]
+        [SetUp]
         public new void SetUp()
         {
             _customerSettings = new CustomerSettings();
@@ -119,37 +119,37 @@ namespace SmartStore.Services.Tests.Customers
             _customerRoleRepo = MockRepository.GenerateMock<IRepository<CustomerRole>>();
             _customerRoleMappingRepo = MockRepository.GenerateMock<IRepository<CustomerRoleMapping>>();
             _genericAttributeRepo = MockRepository.GenerateMock<IRepository<GenericAttribute>>();
-			_rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
+            _rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
             _shoppingCartItemRepo = MockRepository.GenerateMock<IRepository<ShoppingCartItem>>();
-			_userAgent = MockRepository.GenerateMock<IUserAgent>();
+            _userAgent = MockRepository.GenerateMock<IUserAgent>();
 
-			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
-            
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
-			_services = MockRepository.GenerateMock<ICommonServices>();
-			_services.Expect(x => x.StoreContext).Return(_storeContext);
-			_services.Expect(x => x.RequestCache).Return(NullRequestCache.Instance);
-			_services.Expect(x => x.Cache).Return(NullCache.Instance);
-			_services.Expect(x => x.EventPublisher).Return(_eventPublisher);
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
 
-			_gdprTool = MockRepository.GenerateMock<Lazy<IGdprTool>>();
+            _services = MockRepository.GenerateMock<ICommonServices>();
+            _services.Expect(x => x.StoreContext).Return(_storeContext);
+            _services.Expect(x => x.RequestCache).Return(NullRequestCache.Instance);
+            _services.Expect(x => x.Cache).Return(NullCache.Instance);
+            _services.Expect(x => x.EventPublisher).Return(_eventPublisher);
 
-			_customerService = new CustomerService(
-				_customerRepo, 
-				_customerRoleRepo,
+            _gdprTool = MockRepository.GenerateMock<Lazy<IGdprTool>>();
+
+            _customerService = new CustomerService(
+                _customerRepo,
+                _customerRoleRepo,
                 _customerRoleMappingRepo,
-                _genericAttributeRepo, 
-				_rewardPointsHistoryRepo, 
+                _genericAttributeRepo,
+                _rewardPointsHistoryRepo,
                 _shoppingCartItemRepo,
-				_genericAttributeService,
-				_rewardPointsSettings, 
-				_services, 
-				new FakeHttpContext("~/"), 
-				_userAgent, 
-				new CustomerSettings(),
-				_gdprTool);
+                _genericAttributeService,
+                _rewardPointsSettings,
+                _services,
+                new FakeHttpContext("~/"),
+                _userAgent,
+                new CustomerSettings(),
+                _gdprTool);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings.Value, _customerSettings, _storeContext, _eventPublisher);
@@ -189,21 +189,21 @@ namespace SmartStore.Services.Tests.Customers
         }
 
         [Test]
-        public void Can_validate_a_hashed_password() 
+        public void Can_validate_a_hashed_password()
         {
             bool result = _customerRegistrationService.ValidateCustomer("a@b.com", "password");
             result.ShouldBeTrue();
         }
 
         [Test]
-        public void Can_validate_a_clear_password() 
+        public void Can_validate_a_clear_password()
         {
             bool result = _customerRegistrationService.ValidateCustomer("test@test.com", "password");
             result.ShouldBeTrue();
         }
 
         [Test]
-        public void Can_validate_an_encrypted_password() 
+        public void Can_validate_an_encrypted_password()
         {
             bool result = _customerRegistrationService.ValidateCustomer("user@test.com", "password");
             result.ShouldBeTrue();

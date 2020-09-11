@@ -1,11 +1,11 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Discounts
 {
@@ -16,11 +16,11 @@ namespace SmartStore.Data.Tests.Discounts
         public void Can_save_and_load_discountUsageHistory()
         {
             var discount = new DiscountUsageHistory()
-                    {
-                        Discount = GetTestDiscount(),
-                        Order = GetTestOrder(),
-                        CreatedOnUtc = new DateTime(2010, 01, 01)
-                    };
+            {
+                Discount = GetTestDiscount(),
+                Order = GetTestOrder(),
+                CreatedOnUtc = new DateTime(2010, 01, 01)
+            };
 
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
@@ -46,23 +46,23 @@ namespace SmartStore.Data.Tests.Discounts
         protected Order GetTestOrder()
         {
             return new Order()
+            {
+                OrderGuid = Guid.NewGuid(),
+                Customer = GetTestCustomer(),
+                BillingAddress = new Address()
                 {
-                    OrderGuid = Guid.NewGuid(),
-                    Customer = GetTestCustomer(),
-                    BillingAddress = new Address()
+                    Country = new Country()
                     {
-                        Country = new Country()
-                        {
-                            Name = "United States",
-                            TwoLetterIsoCode = "US",
-                            ThreeLetterIsoCode = "USA",
-                        },
-                        CreatedOnUtc = new DateTime(2010, 01, 01),
+                        Name = "United States",
+                        TwoLetterIsoCode = "US",
+                        ThreeLetterIsoCode = "USA",
                     },
-                    Deleted = true,
-					CreatedOnUtc = new DateTime(2010, 01, 01),
-					UpdatedOnUtc = new DateTime(2010, 01, 01)
-                };
+                    CreatedOnUtc = new DateTime(2010, 01, 01),
+                },
+                Deleted = true,
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
+            };
         }
 
         protected Discount GetTestDiscount()

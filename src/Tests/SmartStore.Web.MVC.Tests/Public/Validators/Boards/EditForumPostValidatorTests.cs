@@ -8,13 +8,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Boards
     public class EditForumPostValidatorTests : BaseValidatorTests
     {
         private EditForumPostValidator _validator;
-        
+
         [SetUp]
         public new void Setup()
         {
             _validator = new EditForumPostValidator();
         }
-        
+
         [Test]
         public void Should_have_error_when_text_is_null_or_empty()
         {

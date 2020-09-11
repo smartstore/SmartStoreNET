@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Logging
 {
@@ -14,11 +13,11 @@ namespace SmartStore.Data.Tests.Logging
         public void Can_save_and_load_activityLogType()
         {
             var activityLogType = new ActivityLogType
-                               {
-                                   SystemKeyword = "SystemKeyword 1",
-                                   Name = "Name 1",
-                                   Enabled = true,
-                               };
+            {
+                SystemKeyword = "SystemKeyword 1",
+                Name = "Name 1",
+                Enabled = true,
+            };
 
             var fromDb = SaveAndLoadEntity(activityLogType);
             fromDb.ShouldNotBeNull();

@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Localization;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Localization
 {
@@ -32,7 +32,7 @@ namespace SmartStore.Data.Tests.Localization
             fromDb.LocaleKeyGroup.ShouldEqual("LocaleKeyGroup 1");
             fromDb.LocaleKey.ShouldEqual("LocaleKey 1");
             fromDb.LocaleValue.ShouldEqual("LocaleValue 1");
-            
+
             fromDb.Language.ShouldNotBeNull();
             fromDb.Language.Name.ShouldEqual("English");
         }

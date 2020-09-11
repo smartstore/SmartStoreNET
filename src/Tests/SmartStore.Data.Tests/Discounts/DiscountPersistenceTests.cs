@@ -99,7 +99,7 @@ namespace SmartStore.Data.Tests.Discounts
                 LimitationTimes = 3
             };
 
-			discount.AppliedToProducts.Add(GetTestProduct());
+            discount.AppliedToProducts.Add(GetTestProduct());
             var fromDb = SaveAndLoadEntity(discount);
             fromDb.ShouldNotBeNull();
 
@@ -135,15 +135,15 @@ namespace SmartStore.Data.Tests.Discounts
             fromDb.AppliedToCategories.First().Name.ShouldEqual("Books");
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04)
-			};
-		}
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04)
+            };
+        }
 
         protected Category GetTestCategory()
         {

@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Orders;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests.Domain.Orders
 {
@@ -14,16 +14,16 @@ namespace SmartStore.Core.Tests.Domain.Orders
             {
                 Amount = 100,
                 IsGiftCardActivated = true,
-				PurchasedWithOrderItemId = 2,
-				PurchasedWithOrderItem = new OrderItem
-				{
-					Id = 2,
-					OrderId = 1,
-					Order = new Order
-					{
-						StoreId = 1
-					}
-				}
+                PurchasedWithOrderItemId = 2,
+                PurchasedWithOrderItem = new OrderItem
+                {
+                    Id = 2,
+                    OrderId = 1,
+                    Order = new Order
+                    {
+                        StoreId = 1
+                    }
+                }
             };
 
             gc.GiftCardUsageHistory.Add(new GiftCardUsageHistory
@@ -42,11 +42,11 @@ namespace SmartStore.Core.Tests.Domain.Orders
             //valid
             gc.IsGiftCardValid(1).ShouldEqual(true);
 
-			//wrong store
-			gc.IsGiftCardValid(2).ShouldEqual(false);
+            //wrong store
+            gc.IsGiftCardValid(2).ShouldEqual(false);
 
-			//mark as not active
-			gc.IsGiftCardActivated = false;
+            //mark as not active
+            gc.IsGiftCardActivated = false;
             gc.IsGiftCardValid(1).ShouldEqual(false);
 
             //again active

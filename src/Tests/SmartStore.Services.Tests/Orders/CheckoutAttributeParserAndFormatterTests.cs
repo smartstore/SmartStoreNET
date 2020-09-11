@@ -13,13 +13,13 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-	[TestFixture]
+    [TestFixture]
     public class CheckoutAttributeParserAndFormatterTests : ServiceTest
     {
         IRepository<CheckoutAttribute> _checkoutAttributeRepo;
         IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepo;
-		IRepository<StoreMapping> _storeMappingRepo;
-		IEventPublisher _eventPublisher;
+        IRepository<StoreMapping> _storeMappingRepo;
+        IEventPublisher _eventPublisher;
         ICheckoutAttributeService _checkoutAttributeService;
         ICheckoutAttributeParser _checkoutAttributeParser;
 
@@ -33,7 +33,7 @@ namespace SmartStore.Services.Tests.Orders
 
         CheckoutAttribute ca1, ca2, ca3;
         CheckoutAttributeValue cav1_1, cav1_2, cav2_1, cav2_2;
-        
+
         [SetUp]
         public new void SetUp()
         {
@@ -43,7 +43,7 @@ namespace SmartStore.Services.Tests.Orders
             ca1 = new CheckoutAttribute
             {
                 Id = 1,
-                Name= "Color",
+                Name = "Color",
                 TextPrompt = "Select color:",
                 IsRequired = true,
                 AttributeControlType = AttributeControlType.DropdownList,
@@ -110,7 +110,7 @@ namespace SmartStore.Services.Tests.Orders
 
 
             #endregion
-            
+
             _checkoutAttributeRepo = MockRepository.GenerateMock<IRepository<CheckoutAttribute>>();
             _checkoutAttributeRepo.Expect(x => x.Table).Return(new List<CheckoutAttribute>() { ca1, ca2, ca3 }.AsQueryable());
             _checkoutAttributeRepo.Expect(x => x.GetById(ca1.Id)).Return(ca1);
@@ -124,7 +124,7 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeValueRepo.Expect(x => x.GetById(cav2_1.Id)).Return(cav2_1);
             _checkoutAttributeValueRepo.Expect(x => x.GetById(cav2_2.Id)).Return(cav2_2);
 
-			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+            _storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 
             var cacheManager = new NullCache();
 
@@ -134,7 +134,7 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeService = new CheckoutAttributeService(
                 _checkoutAttributeRepo,
                 _checkoutAttributeValueRepo,
-				_storeMappingRepo,
+                _storeMappingRepo,
                 _eventPublisher);
 
             _checkoutAttributeParser = new CheckoutAttributeParser(_checkoutAttributeService);
@@ -159,7 +159,7 @@ namespace SmartStore.Services.Tests.Orders
             //    _downloadService,
             //    _webHelper);
         }
-        
+
         [Test]
         public void Can_add_and_parse_checkoutAttributes()
         {

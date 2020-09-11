@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Affiliates;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Affiliates
 {
@@ -86,8 +84,8 @@ namespace SmartStore.Data.Tests.Affiliates
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 05, 06),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 05, 06),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

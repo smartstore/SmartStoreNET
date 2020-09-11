@@ -20,14 +20,14 @@ namespace SmartStore.Services.Tests.Directory
     public class CurrencyServiceTests : ServiceTest
     {
         IRepository<Currency> _currencyRepository;
-		IStoreMappingService _storeMappingService;
+        IStoreMappingService _storeMappingService;
         CurrencySettings _currencySettings;
         IEventPublisher _eventPublisher;
         ICurrencyService _currencyService;
-		IStoreContext _storeContext;
+        IStoreContext _storeContext;
 
         Currency currencyUSD, currencyRUR, currencyEUR;
-        
+
         [SetUp]
         public new void SetUp()
         {
@@ -77,30 +77,30 @@ namespace SmartStore.Services.Tests.Directory
             _currencyRepository.Expect(x => x.GetById(currencyEUR.Id)).Return(currencyEUR);
             _currencyRepository.Expect(x => x.GetById(currencyRUR.Id)).Return(currencyRUR);
 
-			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+            _storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             var cacheManager = new NullCache();
 
             _currencySettings = new CurrencySettings();
 
-			_storeContext.Expect(x => x.CurrentStore).Return(new Store
-			{
-				Name = "Computer store",
-				Url = "http://www.yourStore.com",
-				Hosts = "yourStore.com,www.yourStore.com",
-				PrimaryStoreCurrency = currencyUSD,
-				PrimaryExchangeRateCurrency = currencyEUR
-			});
+            _storeContext.Expect(x => x.CurrentStore).Return(new Store
+            {
+                Name = "Computer store",
+                Url = "http://www.yourStore.com",
+                Hosts = "yourStore.com,www.yourStore.com",
+                PrimaryStoreCurrency = currencyUSD,
+                PrimaryExchangeRateCurrency = currencyEUR
+            });
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
-            
+
             var pluginFinder = PluginFinder.Current;
             _currencyService = new CurrencyService(_currencyRepository, _storeMappingService,
-				_currencySettings, pluginFinder, _eventPublisher, this.ProviderManager, _storeContext);
+                _currencySettings, pluginFinder, _eventPublisher, this.ProviderManager, _storeContext);
         }
-        
+
         [Test]
         public void Can_load_exchangeRateProviders()
         {

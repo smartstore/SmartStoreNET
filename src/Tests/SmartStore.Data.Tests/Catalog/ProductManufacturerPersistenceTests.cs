@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {
@@ -12,33 +12,33 @@ namespace SmartStore.Data.Tests.Catalog
         public void Can_save_and_load_productManufacturer()
         {
             var productManufacturer = new ProductManufacturer
-                                     {
-                                         IsFeaturedProduct = true,
-                                         DisplayOrder = 1,
-                                         Product = new Product()
-                                                       {
-                                                           Name = "Name 1",
-                                                           Published = true,
-                                                           Deleted = false,
-                                                           CreatedOnUtc = new DateTime(2010, 01, 01),
-                                                           UpdatedOnUtc = new DateTime(2010, 01, 02)
-                                                       },
-                                         Manufacturer = new Manufacturer()
-                                                                      {
-                                                                          Name = "Name",
-                                                                          Description = "Description 1",
-                                                                          MetaKeywords = "Meta keywords",
-                                                                          MetaDescription = "Meta description",
-                                                                          MetaTitle = "Meta title",
-                                                                          //PictureId = 3,
-                                                                          PageSize = 4,
-                                                                          Published = true,
-                                                                          Deleted = false,
-                                                                          DisplayOrder = 5,
-                                                                          CreatedOnUtc = new DateTime(2010, 01, 01),
-                                                                          UpdatedOnUtc = new DateTime(2010, 01, 02),
-                                                                      }
-                                     };
+            {
+                IsFeaturedProduct = true,
+                DisplayOrder = 1,
+                Product = new Product()
+                {
+                    Name = "Name 1",
+                    Published = true,
+                    Deleted = false,
+                    CreatedOnUtc = new DateTime(2010, 01, 01),
+                    UpdatedOnUtc = new DateTime(2010, 01, 02)
+                },
+                Manufacturer = new Manufacturer()
+                {
+                    Name = "Name",
+                    Description = "Description 1",
+                    MetaKeywords = "Meta keywords",
+                    MetaDescription = "Meta description",
+                    MetaTitle = "Meta title",
+                    //PictureId = 3,
+                    PageSize = 4,
+                    Published = true,
+                    Deleted = false,
+                    DisplayOrder = 5,
+                    CreatedOnUtc = new DateTime(2010, 01, 01),
+                    UpdatedOnUtc = new DateTime(2010, 01, 02),
+                }
+            };
 
             var fromDb = SaveAndLoadEntity(productManufacturer);
             fromDb.ShouldNotBeNull();

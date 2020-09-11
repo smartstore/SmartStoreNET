@@ -1,8 +1,7 @@
-﻿using SmartStore.Core.Domain.Customers;
+﻿using NUnit.Framework;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Discounts;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Discounts
 {

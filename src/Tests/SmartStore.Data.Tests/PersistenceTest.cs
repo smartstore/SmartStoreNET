@@ -1,9 +1,5 @@
-﻿using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+﻿using NUnit.Framework;
 using SmartStore.Core;
-using NUnit.Framework;
-using SmartStore.Data.Migrations;
-using SmartStore.Data.Setup;
 
 namespace SmartStore.Data.Tests
 {
@@ -14,15 +10,15 @@ namespace SmartStore.Data.Tests
 
         [SetUp]
         public virtual void SetUp()
-		{
-			context = new SmartObjectContext(GetTestDbName());
+        {
+            context = new SmartObjectContext(GetTestDbName());
         }
 
         protected string GetTestDbName()
         {
-			return GlobalSetup.GetTestDbName();
-        }        
-        
+            return GlobalSetup.GetTestDbName();
+        }
+
         /// <summary>
         /// Persistance test helper
         /// </summary>
@@ -47,10 +43,10 @@ namespace SmartStore.Data.Tests
             return fromDb;
         }
 
-		protected void ReloadContext()
-		{
-			context.Dispose();
-			context = new SmartObjectContext(GetTestDbName());
-		}
+        protected void ReloadContext()
+        {
+            context.Dispose();
+            context = new SmartObjectContext(GetTestDbName());
+        }
     }
 }

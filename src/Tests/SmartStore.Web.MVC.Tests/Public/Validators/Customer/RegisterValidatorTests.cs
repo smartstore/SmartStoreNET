@@ -17,10 +17,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         public new void Setup()
         {
             _customerSettings = new CustomerSettings();
-			_taxSettings = new TaxSettings();
+            _taxSettings = new TaxSettings();
             _validator = new RegisterValidator(T, _customerSettings, _taxSettings);
         }
-        
+
         [Test]
         public void Should_have_error_when_email_is_null_or_empty()
         {
@@ -47,16 +47,16 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
             _validator.ShouldNotHaveValidationErrorFor(x => x.Email, model);
         }
 
-  //      [Test]
-		//[Ignore("Names are optional since V3.1.5 (GDPR)")]
-		//public void Should_have_error_when_firstName_is_null_or_empty()
-  //      {
-  //          var model = new RegisterModel();
-  //          model.FirstName = null;
-  //          _validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
-  //          model.FirstName = "";
-  //          _validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
-  //      }
+        //      [Test]
+        //[Ignore("Names are optional since V3.1.5 (GDPR)")]
+        //public void Should_have_error_when_firstName_is_null_or_empty()
+        //      {
+        //          var model = new RegisterModel();
+        //          model.FirstName = null;
+        //          _validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
+        //          model.FirstName = "";
+        //          _validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
+        //      }
 
         [Test]
         public void Should_not_have_error_when_firstName_is_specified()
@@ -66,16 +66,16 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
             _validator.ShouldNotHaveValidationErrorFor(x => x.FirstName, model);
         }
 
-  //      [Test]
-		//[Ignore("Names are optional since V3.1.5 (GDPR)")]
-		//public void Should_have_error_when_lastName_is_null_or_empty()
-  //      {
-  //          var model = new RegisterModel();
-  //          model.LastName = null;
-  //          _validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
-  //          model.LastName = "";
-  //          _validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
-  //      }
+        //      [Test]
+        //[Ignore("Names are optional since V3.1.5 (GDPR)")]
+        //public void Should_have_error_when_lastName_is_null_or_empty()
+        //      {
+        //          var model = new RegisterModel();
+        //          model.LastName = null;
+        //          _validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
+        //          model.LastName = "";
+        //          _validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
+        //      }
 
         [Test]
         public void Should_not_have_error_when_lastName_is_specified()

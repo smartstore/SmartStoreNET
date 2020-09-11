@@ -1,10 +1,9 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -19,11 +18,11 @@ namespace SmartStore.Data.Tests.Orders
                 ShoppingCartType = ShoppingCartType.ShoppingCart,
                 AttributesXml = "AttributesXml 1",
                 CustomerEnteredPrice = 1.1M,
-                Quantity= 2,
+                Quantity = 2,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02),
                 Customer = GetTestCustomer(),
-				Product = GetTestProduct()
+                Product = GetTestProduct()
             };
 
             var fromDb = SaveAndLoadEntity(sci);
@@ -37,7 +36,7 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.UpdatedOnUtc.ShouldEqual(new DateTime(2010, 01, 02));
 
             fromDb.Customer.ShouldNotBeNull();
-			fromDb.Product.ShouldNotBeNull();
+            fromDb.Product.ShouldNotBeNull();
         }
 
         protected Customer GetTestCustomer()
@@ -54,14 +53,14 @@ namespace SmartStore.Data.Tests.Orders
             };
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
-			};
-		}
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+            };
+        }
     }
 }

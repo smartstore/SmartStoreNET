@@ -17,7 +17,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
             _customerSettings = new CustomerSettings();
             _validator = new ChangePasswordValidator(T, _customerSettings);
         }
-        
+
         [Test]
         public void Should_have_error_when_oldPassword_is_null_or_empty()
         {

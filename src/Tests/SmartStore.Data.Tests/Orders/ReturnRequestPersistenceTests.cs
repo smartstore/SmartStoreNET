@@ -1,11 +1,10 @@
 ﻿using System;
-using SmartStore.Core.Domain.Catalog;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -17,7 +16,7 @@ namespace SmartStore.Data.Tests.Orders
         {
             var rr = new ReturnRequest()
             {
-				StoreId = 1,
+                StoreId = 1,
                 Customer = GetTestCustomer(),
                 Quantity = 2,
                 ReasonForReturn = "Wrong product",
@@ -31,7 +30,7 @@ namespace SmartStore.Data.Tests.Orders
 
             var fromDb = SaveAndLoadEntity(rr);
             fromDb.ShouldNotBeNull();
-			fromDb.StoreId.ShouldEqual(1);
+            fromDb.StoreId.ShouldEqual(1);
             fromDb.Customer.ShouldNotBeNull();
             fromDb.Quantity.ShouldEqual(2);
             fromDb.ReasonForReturn.ShouldEqual("Wrong product");
@@ -42,7 +41,7 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));
             fromDb.UpdatedOnUtc.ShouldEqual(new DateTime(2010, 01, 02));
         }
-        
+
         protected Customer GetTestCustomer()
         {
             return new Customer
@@ -73,8 +72,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

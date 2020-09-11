@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {
@@ -23,7 +23,7 @@ namespace SmartStore.Data.Tests.Catalog
                 AllowCustomersToSelectPageSize = true,
                 PageSizeOptions = "4, 2, 8, 12",
                 Published = true,
-				LimitedToStores = true, 
+                LimitedToStores = true,
                 Deleted = false,
                 DisplayOrder = 5,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
@@ -41,7 +41,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.AllowCustomersToSelectPageSize.ShouldEqual(true);
             fromDb.PageSizeOptions.ShouldEqual("4, 2, 8, 12");
             fromDb.Published.ShouldEqual(true);
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.Deleted.ShouldEqual(false);
             fromDb.DisplayOrder.ShouldEqual(5);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));

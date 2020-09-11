@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Common;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Common
 {
@@ -11,13 +11,13 @@ namespace SmartStore.Data.Tests.Common
         public void Can_save_and_load_genericAttribute()
         {
             var genericAttribute = new GenericAttribute
-                               {
-                                   EntityId = 1,
-                                   KeyGroup = "KeyGroup 1",
-                                   Key = "Key 1",
-                                   Value = "Value 1",
-								   StoreId = 2
-                               };
+            {
+                EntityId = 1,
+                KeyGroup = "KeyGroup 1",
+                Key = "Key 1",
+                Value = "Value 1",
+                StoreId = 2
+            };
 
             var fromDb = SaveAndLoadEntity(genericAttribute);
             fromDb.ShouldNotBeNull();
@@ -25,7 +25,7 @@ namespace SmartStore.Data.Tests.Common
             fromDb.KeyGroup.ShouldEqual("KeyGroup 1");
             fromDb.Key.ShouldEqual("Key 1");
             fromDb.Value.ShouldEqual("Value 1");
-			fromDb.StoreId.ShouldEqual(2);
+            fromDb.StoreId.ShouldEqual(2);
         }
     }
 }

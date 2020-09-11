@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using SmartStore.Core.Infrastructure;
@@ -27,16 +26,16 @@ namespace SmartStore.Core.Tests.Fakes
             this.Assemblies = assemblies;
         }
 
-		public IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
+        public IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             return Assemblies;
         }
 
         public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
         {
-			return (from t in Types
-					where !t.IsInterface && assignTypeFrom.IsAssignableFrom(t) && (onlyConcreteClasses ? (t.IsClass && !t.IsAbstract) : true)
-					select t).ToList();
+            return (from t in Types
+                    where !t.IsInterface && assignTypeFrom.IsAssignableFrom(t) && (onlyConcreteClasses ? (t.IsClass && !t.IsAbstract) : true)
+                    select t).ToList();
         }
 
     }

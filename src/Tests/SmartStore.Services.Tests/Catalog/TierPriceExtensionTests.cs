@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Catalog
 {

@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Messages
 {
@@ -16,7 +16,7 @@ namespace SmartStore.Data.Tests.Messages
                 Name = "Name 1",
                 Subject = "Subject 1",
                 Body = "Body 1",
-                CreatedOnUtc = new DateTime(2010,01,02)
+                CreatedOnUtc = new DateTime(2010, 01, 02)
             };
 
             var fromDb = SaveAndLoadEntity(campaign);

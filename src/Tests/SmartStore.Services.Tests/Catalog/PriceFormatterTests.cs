@@ -24,15 +24,15 @@ namespace SmartStore.Services.Tests.Catalog
     public class PriceFormatterTests : ServiceTest
     {
         IRepository<Currency> _currencyRepo;
-		IStoreMappingService _storeMappingService;
+        IStoreMappingService _storeMappingService;
         ICurrencyService _currencyService;
         CurrencySettings _currencySettings;
         IWorkContext _workContext;
         ILocalizationService _localizationService;
         TaxSettings _taxSettings;
         IPriceFormatter _priceFormatter;
-		IStoreContext _storeContext;
-        
+        IStoreContext _storeContext;
+
         [SetUp]
         public new void SetUp()
         {
@@ -46,12 +46,12 @@ namespace SmartStore.Services.Tests.Catalog
                 Id = 1,
                 Name = "Euro",
                 CurrencyCode = "EUR",
-                DisplayLocale =  "",
+                DisplayLocale = "",
                 CustomFormatting = "€0.00",
                 DisplayOrder = 1,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc= DateTime.UtcNow
+                UpdatedOnUtc = DateTime.UtcNow
             };
             var currency2 = new Currency
             {
@@ -63,26 +63,26 @@ namespace SmartStore.Services.Tests.Catalog
                 DisplayOrder = 2,
                 Published = true,
                 CreatedOnUtc = DateTime.UtcNow,
-                UpdatedOnUtc= DateTime.UtcNow
-            };            
+                UpdatedOnUtc = DateTime.UtcNow
+            };
 
             _currencyRepo = MockRepository.GenerateMock<IRepository<Currency>>();
             _currencyRepo.Expect(x => x.Table).Return(new List<Currency>() { currency1, currency2 }.AsQueryable());
 
-			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+            _storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             var pluginFinder = PluginFinder.Current;
-			_currencyService = new CurrencyService(_currencyRepo, _storeMappingService,
+            _currencyService = new CurrencyService(_currencyRepo, _storeMappingService,
                 _currencySettings, pluginFinder, null, this.ProviderManager, _storeContext);
-            
+
             _taxSettings = new TaxSettings();
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
             _localizationService.Expect(x => x.GetResource("Products.InclTaxSuffix", 1, false)).Return("{0} incl tax");
             _localizationService.Expect(x => x.GetResource("Products.ExclTaxSuffix", 1, false)).Return("{0} excl tax");
-            
-            _priceFormatter = new PriceFormatter(_workContext, _currencyService,_localizationService, _taxSettings);
+
+            _priceFormatter = new PriceFormatter(_workContext, _currencyService, _localizationService, _taxSettings);
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace SmartStore.Services.Tests.Catalog
                 Id = 1,
                 Name = "Euro",
                 CurrencyCode = "EUR",
-                DisplayLocale =  "",
+                DisplayLocale = "",
                 CustomFormatting = "€0.00"
             };
             var language = new Language()
@@ -122,7 +122,7 @@ namespace SmartStore.Services.Tests.Catalog
                 Id = 2,
                 Name = "British Pound",
                 CurrencyCode = "GBP",
-				DisplayLocale = "en-GB",
+                DisplayLocale = "en-GB",
             };
             var language = new Language()
             {
@@ -131,7 +131,7 @@ namespace SmartStore.Services.Tests.Catalog
                 LanguageCulture = "en-US"
             };
             _priceFormatter.FormatPrice(1234.5M, true, usd_currency, language, false, false).ShouldEqual("$1,234.50");
-			_priceFormatter.FormatPrice(1234.5M, true, rub_currency, language, false, false).ShouldEqual("£1,234.50");
+            _priceFormatter.FormatPrice(1234.5M, true, rub_currency, language, false, false).ShouldEqual("£1,234.50");
         }
 
         [Test]

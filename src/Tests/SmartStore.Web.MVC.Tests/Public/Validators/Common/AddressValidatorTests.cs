@@ -228,10 +228,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 
             //not required
             validator = new AddressValidator(T, new AddressSettings
-                {
-                    ZipPostalCodeEnabled = true,
-                    ZipPostalCodeRequired = false
-                });
+            {
+                ZipPostalCodeEnabled = true,
+                ZipPostalCodeRequired = false
+            });
             model.ZipPostalCode = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.ZipPostalCode, model);
             model.ZipPostalCode = "";

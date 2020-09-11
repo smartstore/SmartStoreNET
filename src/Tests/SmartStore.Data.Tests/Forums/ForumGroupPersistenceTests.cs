@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Forums
 {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Plugins;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.Services.Tests.Payments
@@ -147,13 +146,7 @@ namespace SmartStore.Services.Tests.Payments
         /// Gets a payment method type
         /// </summary>
         /// <returns>A payment method type</returns>
-        public override PaymentMethodType PaymentMethodType
-        {
-            get
-            {
-                return PaymentMethodType.Standard;
-            }
-        }
+        public override PaymentMethodType PaymentMethodType => PaymentMethodType.Standard;
 
         #endregion
     }

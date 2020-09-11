@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
-using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests
 {
@@ -12,7 +12,7 @@ namespace SmartStore.Data.Tests
         public void Can_generate_schema()
         {
             var ctx = new SmartObjectContext("Test");
-			Database.SetInitializer<SmartObjectContext>(null);
+            Database.SetInitializer<SmartObjectContext>(null);
             string result = ctx.CreateDatabaseScript();
             result.ShouldNotBeNull();
             Console.Write(result);

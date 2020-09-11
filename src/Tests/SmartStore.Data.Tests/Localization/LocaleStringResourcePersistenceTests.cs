@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Localization;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Localization
 {
@@ -15,13 +15,13 @@ namespace SmartStore.Data.Tests.Localization
                 ResourceName = "ResourceName1",
                 ResourceValue = "ResourceValue2",
                 Language = new Language()
-                               {
-                                   Name = "English",
-                                   LanguageCulture = "en-Us",
-                                   FlagImageFileName = "us.png",
-                                   Published = true,
-                                   DisplayOrder = 1
-                               }
+                {
+                    Name = "English",
+                    LanguageCulture = "en-Us",
+                    FlagImageFileName = "us.png",
+                    Published = true,
+                    DisplayOrder = 1
+                }
             };
 
             var fromDb = SaveAndLoadEntity(lst);

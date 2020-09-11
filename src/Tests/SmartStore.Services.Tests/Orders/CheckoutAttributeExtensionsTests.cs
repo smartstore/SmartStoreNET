@@ -1,10 +1,8 @@
-﻿using SmartStore.Core.Domain.Customers;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace SmartStore.Services.Tests.Orders
 {

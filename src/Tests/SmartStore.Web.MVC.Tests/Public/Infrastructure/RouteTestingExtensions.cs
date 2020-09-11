@@ -6,10 +6,9 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Collections;
 using SmartStore.Core.Fakes;
 using SmartStore.Tests;
-using SmartStore.Utilities;
-using SmartStore.Collections;
 
 namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 {
@@ -41,16 +40,16 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             if (!httpMethod.HasValue)
                 httpMethod = HttpVerbs.Get;
 
-			int idx = url.LastIndexOf('?');
-			NameValueCollection queryString = null;
-			if (idx > -1)
-			{
-				queryString = new QueryString(QueryString.ExtractQuerystring(url));
-				url = url.Substring(0, idx);
-			}
-			
+            int idx = url.LastIndexOf('?');
+            NameValueCollection queryString = null;
+            if (idx > -1)
+            {
+                queryString = new QueryString(QueryString.ExtractQuerystring(url));
+                url = url.Substring(0, idx);
+            }
+
             var httpMethodStr = httpMethod.Value.ToString().ToUpper();
-			var context = new FakeHttpContext(url, httpMethodStr, null, form, queryString, null, null, null);
+            var context = new FakeHttpContext(url, httpMethodStr, null, form, queryString, null, null, null);
             return context;
         }
 
@@ -64,14 +63,14 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         {
             return FakeHttpContext(url, httpMethod, null);
         }
-        
+
         private static HttpContextBase FakeHttpContext(string url)
         {
             return FakeHttpContext(url, null, null);
         }
 
-        #endregion 
-        
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -124,7 +123,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 
             return method.Name;
         }
-        
+
         /// <summary>
         /// A way to start the fluent interface and and which method to use
         /// since you have a method constraint in the route.
@@ -165,22 +164,22 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             var context = FakeHttpContext(url);
             var routeData = RouteTable.Routes.GetRouteData(context);
 
-			if (routeData != null)
-			{
-				var routeValues = routeData.Values;
+            if (routeData != null)
+            {
+                var routeValues = routeData.Values;
 
-				var queryString = new QueryString(context.Request.QueryString.ToString());
+                var queryString = new QueryString(context.Request.QueryString.ToString());
 
-				foreach (var nv in queryString.AllKeys)
-				{
-					if (!routeValues.ContainsKey(nv))
-					{
-						routeValues[nv] = queryString[nv];
-					}
-				}
-			}
+                foreach (var nv in queryString.AllKeys)
+                {
+                    if (!routeValues.ContainsKey(nv))
+                    {
+                        routeValues[nv] = queryString[nv];
+                    }
+                }
+            }
 
-			return routeData;
+            return routeData;
         }
 
         /// <summary>
@@ -249,7 +248,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             //check action
             var methodCall = (MethodCallExpression)action.Body;
             string actualAction = routeData.Values.GetValue("action").ToString();
-			
+
             string expectedAction = methodCall.Method.ActionName();
             actualAction.AssertSameStringAs(expectedAction);
 
@@ -259,7 +258,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
                 ParameterInfo param = methodCall.Method.GetParameters()[i];
                 bool isReferenceType = !param.ParameterType.IsValueType;
                 bool isNullable = param.ParameterType.IsNullable(out _);
-				
+
                 string controllerParameterName = param.Name;
                 bool routeDataContainsValueForParameterName = routeData.Values.ContainsKey(controllerParameterName);
                 object actualValue = routeData.Values.GetValue(controllerParameterName);
@@ -285,17 +284,17 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
                         break;
                 }
 
-				if (isNullable && actualValue is string && (string)actualValue == String.Empty && expectedValue == null)
-				{
-					// The parameter is nullable so an expected value of '' is equivalent to null;
-					continue;
-				}
+                if (isNullable && actualValue is string && (string)actualValue == String.Empty && expectedValue == null)
+                {
+                    // The parameter is nullable so an expected value of '' is equivalent to null;
+                    continue;
+                }
 
-				// HACK: this is only sufficient while System.Web.Mvc.UrlParameter has only a single value.
-				if (actualValue == UrlParameter.Optional || (actualValue != null && actualValue.ToString().Equals("System.Web.Mvc.UrlParameter")))
-				{
-					actualValue = null;
-				}
+                // HACK: this is only sufficient while System.Web.Mvc.UrlParameter has only a single value.
+                if (actualValue == UrlParameter.Optional || (actualValue != null && actualValue.ToString().Equals("System.Web.Mvc.UrlParameter")))
+                {
+                    actualValue = null;
+                }
 
                 if (expectedValue is DateTime)
                 {
@@ -316,10 +315,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
                     errorMsgFmt += "; no value found in the route context action parameter named '{0}' - does your matching route contain a token called '{0}'?";
                 }
 
-				if (actualValue == null && !param.IsOptional)
-				{
-					actualValue.ShouldEqual(expectedValue, String.Format(errorMsgFmt, controllerParameterName, expectedValue, actualValue));
-				}
+                if (actualValue == null && !param.IsOptional)
+                {
+                    actualValue.ShouldEqual(expectedValue, String.Format(errorMsgFmt, controllerParameterName, expectedValue, actualValue));
+                }
             }
 
             return routeData;
@@ -377,22 +376,22 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         /// <returns></returns>
         public static object GetValue(this RouteValueDictionary routeValues, string key)
         {
-			return routeValues[key];
+            return routeValues[key];
 
-			//foreach (var routeValueKey in routeValues.Keys)
-			//{
-			//	if (string.Equals(routeValueKey, key, StringComparison.InvariantCultureIgnoreCase))
-			//	{
-			//		if (routeValues[routeValueKey] == null)
-			//			return null;
+            //foreach (var routeValueKey in routeValues.Keys)
+            //{
+            //	if (string.Equals(routeValueKey, key, StringComparison.InvariantCultureIgnoreCase))
+            //	{
+            //		if (routeValues[routeValueKey] == null)
+            //			return null;
 
-			//		return routeValues[routeValueKey].ToString();
-			//	}
-			//}
+            //		return routeValues[routeValueKey].ToString();
+            //	}
+            //}
 
-			//return null;
+            //return null;
         }
-        
-        #endregion 
+
+        #endregion
     }
 }

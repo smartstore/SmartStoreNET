@@ -8,7 +8,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Boards
     public class EditForumTopicValidatorTests : BaseValidatorTests
     {
         private EditForumTopicValidator _validator;
-        
+
         [SetUp]
         public new void Setup()
         {

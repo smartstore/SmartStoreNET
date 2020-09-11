@@ -25,7 +25,7 @@ namespace SmartStore.Data.Tests.Tasks
             var fromDb = SaveAndLoadEntity(scheduleTask);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Task 1");
-			fromDb.CronExpression.ShouldEqual("* * * * *");
+            fromDb.CronExpression.ShouldEqual("* * * * *");
             fromDb.Type.ShouldEqual("some type 1");
             fromDb.Enabled.ShouldEqual(true);
             fromDb.StopOnError.ShouldEqual(true);

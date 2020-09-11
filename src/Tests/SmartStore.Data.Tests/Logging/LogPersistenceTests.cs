@@ -1,9 +1,9 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
-using SmartStore.Tests;
-using NUnit.Framework;
 using SmartStore.Core.Logging;
+using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Logging
 {
@@ -22,7 +22,7 @@ namespace SmartStore.Data.Tests.Logging
                 PageUrl = "http://www.someUrl1.com",
                 ReferrerUrl = "http://www.someUrl2.com",
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-				Logger = "UnitTest"
+                Logger = "UnitTest"
             };
 
             var fromDb = SaveAndLoadEntity(log);
@@ -45,14 +45,14 @@ namespace SmartStore.Data.Tests.Logging
                 ShortMessage = "ShortMessage1",
                 Customer = GetTestCustomer(),
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-				Logger = "UnitTest"
-			};
+                Logger = "UnitTest"
+            };
 
             var fromDb = SaveAndLoadEntity(log);
             fromDb.ShouldNotBeNull();
             fromDb.LogLevel.ShouldEqual(LogLevel.Error);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));
-            
+
             fromDb.Customer.ShouldNotBeNull();
             fromDb.Customer.AdminComment.ShouldEqual("some comment here");
         }

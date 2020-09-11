@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using Rhino.Mocks;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
 using SmartStore.Services.Stores;
-using SmartStore.Core;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Localization
 {
@@ -20,9 +18,9 @@ namespace SmartStore.Services.Tests.Localization
     public class LanguageServiceTests : ServiceTest
     {
         IRepository<Language> _languageRepo;
-		IStoreMappingService _storeMappingService;
-		IStoreService _storeService;
-		IStoreContext _storeContext;
+        IStoreMappingService _storeMappingService;
+        IStoreService _storeService;
+        IStoreContext _storeContext;
         ILanguageService _languageService;
         ISettingService _settingService;
         IEventPublisher _eventPublisher;
@@ -51,9 +49,9 @@ namespace SmartStore.Services.Tests.Localization
 
             _languageRepo.Expect(x => x.Table).Return(new List<Language>() { lang1, lang2 }.AsQueryable());
 
-			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
-			_storeService = MockRepository.GenerateMock<IStoreService>();
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+            _storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
+            _storeService = MockRepository.GenerateMock<IStoreService>();
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             var cacheManager = new NullCache();
 
@@ -63,16 +61,16 @@ namespace SmartStore.Services.Tests.Localization
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
             _localizationSettings = new LocalizationSettings();
-			_languageService = new LanguageService(
-				NullRequestCache.Instance,
-				NullCache.Instance, 
-				_languageRepo,
-				_settingService, 
-				_localizationSettings, 
-				_eventPublisher, 
-				_storeMappingService,
-				_storeService,
-				_storeContext);
+            _languageService = new LanguageService(
+                NullRequestCache.Instance,
+                NullCache.Instance,
+                _languageRepo,
+                _settingService,
+                _localizationSettings,
+                _eventPublisher,
+                _storeMappingService,
+                _storeService,
+                _storeContext);
         }
 
         [Test]

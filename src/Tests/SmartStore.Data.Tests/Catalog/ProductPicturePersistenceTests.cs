@@ -6,35 +6,35 @@ using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Catalog
 {
-	[TestFixture]
+    [TestFixture]
     public class ProductPicturePersistenceTests : PersistenceTest
     {
         [Test]
         public void Can_save_and_load_productPicture()
         {
             var productPicture = new ProductMediaFile
-			{
-				DisplayOrder = 1,
-				Product = new Product
-				{
-					Name = "Name 1",
-					Published = true,
-					Deleted = false,
-					CreatedOnUtc = new DateTime(2010, 01, 01),
-					UpdatedOnUtc = new DateTime(2010, 01, 02)
-				},
-				MediaFile = new MediaFile
-				{
-					MediaStorage = new MediaStorage
-					{
-						Data = new byte[] { 1, 2, 3 }
-					},
+            {
+                DisplayOrder = 1,
+                Product = new Product
+                {
+                    Name = "Name 1",
+                    Published = true,
+                    Deleted = false,
+                    CreatedOnUtc = new DateTime(2010, 01, 01),
+                    UpdatedOnUtc = new DateTime(2010, 01, 02)
+                },
+                MediaFile = new MediaFile
+                {
+                    MediaStorage = new MediaStorage
+                    {
+                        Data = new byte[] { 1, 2, 3 }
+                    },
                     CreatedOnUtc = DateTime.UtcNow,
                     UpdatedOnUtc = DateTime.UtcNow,
-					MimeType = "image/pjpeg",
+                    MimeType = "image/pjpeg",
                     MediaType = "image"
                 }
-			};
+            };
 
             var fromDb = SaveAndLoadEntity(productPicture);
             fromDb.ShouldNotBeNull();

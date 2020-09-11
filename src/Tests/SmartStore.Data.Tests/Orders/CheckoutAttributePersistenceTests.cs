@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -17,7 +17,7 @@ namespace SmartStore.Data.Tests.Orders
                 Name = "Name 1",
                 TextPrompt = "TextPrompt 1",
                 IsRequired = true,
-                ShippableProductRequired  = true,
+                ShippableProductRequired = true,
                 IsTaxExempt = true,
                 TaxCategoryId = 1,
                 AttributeControlType = AttributeControlType.Datepicker,

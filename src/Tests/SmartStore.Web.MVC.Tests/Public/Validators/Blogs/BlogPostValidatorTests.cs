@@ -7,7 +7,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Blogs
     public class BlogPostValidatorTests : BaseValidatorTests
     {
         private BlogPostValidator _validator;
-        
+
         [SetUp]
         public new void Setup()
         {

@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
@@ -14,7 +15,6 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
-using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Tests.Tax
 {
@@ -24,10 +24,10 @@ namespace SmartStore.Services.Tests.Tax
         IAddressService _addressService;
         IWorkContext _workContext;
         TaxSettings _taxSettings;
-		ShoppingCartSettings _cartSettings;
+        ShoppingCartSettings _cartSettings;
         IEventPublisher _eventPublisher;
         ITaxService _taxService;
-		IGeoCountryLookup _geoCountryLookup;
+        IGeoCountryLookup _geoCountryLookup;
 
         [SetUp]
         public new void SetUp()
@@ -37,7 +37,7 @@ namespace SmartStore.Services.Tests.Tax
 
             _workContext = null;
 
-			_cartSettings = new ShoppingCartSettings();
+            _cartSettings = new ShoppingCartSettings();
 
             _addressService = MockRepository.GenerateMock<IAddressService>();
             //default tax address
@@ -48,9 +48,9 @@ namespace SmartStore.Services.Tests.Tax
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
+            _geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _geoCountryLookup, this.ProviderManager);
+            _taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _geoCountryLookup, this.ProviderManager);
         }
 
         [Test]
@@ -78,11 +78,11 @@ namespace SmartStore.Services.Tests.Tax
         [Test]
         public void Can_check_taxExempt_product()
         {
-			var product = new Product();
-			product.IsTaxExempt = true;
-			_taxService.IsTaxExempt(product, null).ShouldEqual(true);
-			product.IsTaxExempt = false;
-			_taxService.IsTaxExempt(product, null).ShouldEqual(false);
+            var product = new Product();
+            product.IsTaxExempt = true;
+            _taxService.IsTaxExempt(product, null).ShouldEqual(true);
+            product.IsTaxExempt = false;
+            _taxService.IsTaxExempt(product, null).ShouldEqual(false);
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace SmartStore.Services.Tests.Tax
         public void Can_get_productPrice_priceIncludesTax_includingTax()
         {
             var customer = new Customer();
-			var currency = new Currency();
+            var currency = new Currency();
             var product = new Product();
 
             decimal taxRate;
@@ -151,8 +151,8 @@ namespace SmartStore.Services.Tests.Tax
             // Check VAT of DB Vertrieb GmbH (Deutsche Bahn).
             VatNumberStatus vatNumberStatus1 = _taxService.DoVatCheck("DE", "814160246", out var _, out var _, out ex);
             ex.ShouldBeNull();
-			vatNumberStatus1.ShouldEqual(VatNumberStatus.Valid);
-            
+            vatNumberStatus1.ShouldEqual(VatNumberStatus.Valid);
+
             VatNumberStatus vatNumberStatus2 = _taxService.DoVatCheck("DE", "000000000", out var _, out var _, out ex);
             vatNumberStatus2.ShouldEqual(VatNumberStatus.Invalid);
             ex.ShouldBeNull();

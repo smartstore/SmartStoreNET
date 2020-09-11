@@ -14,11 +14,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             //var routePublisher = new RoutePublisher(typeFinder);
             //routePublisher.RegisterRoutes(RouteTable.Routes);
 
-			DataSettings.SetTestMode(true);
+            DataSettings.SetTestMode(true);
 
-			new SmartStore.Web.Infrastructure.StoreRoutes().RegisterRoutes(RouteTable.Routes);
-			new SmartStore.Web.Infrastructure.GeneralRoutes().RegisterRoutes(RouteTable.Routes);
-			new SmartStore.Web.Infrastructure.SeoRoutes().RegisterRoutes(RouteTable.Routes);
+            new SmartStore.Web.Infrastructure.StoreRoutes().RegisterRoutes(RouteTable.Routes);
+            new SmartStore.Web.Infrastructure.GeneralRoutes().RegisterRoutes(RouteTable.Routes);
+            new SmartStore.Web.Infrastructure.SeoRoutes().RegisterRoutes(RouteTable.Routes);
         }
 
         [TearDown]

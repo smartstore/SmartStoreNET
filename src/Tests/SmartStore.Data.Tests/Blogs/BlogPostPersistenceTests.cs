@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Blogs
 {
@@ -28,7 +28,7 @@ namespace SmartStore.Data.Tests.Blogs
                 MetaTitle = "MetaTitle 1",
                 MetaDescription = "MetaDescription 1",
                 MetaKeywords = "MetaKeywords 1",
-				LimitedToStores = true,
+                LimitedToStores = true,
                 Language = new Language()
                 {
                     Name = "English",
@@ -50,7 +50,7 @@ namespace SmartStore.Data.Tests.Blogs
             fromDb.MetaTitle.ShouldEqual("MetaTitle 1");
             fromDb.MetaDescription.ShouldEqual("MetaDescription 1");
             fromDb.MetaKeywords.ShouldEqual("MetaKeywords 1");
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
 
             fromDb.Language.ShouldNotBeNull();
             fromDb.Language.Name.ShouldEqual("English");

@@ -1,7 +1,7 @@
-﻿using SmartStore.Core.Domain.Customers;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Customers;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Customers
 {
@@ -82,7 +82,7 @@ namespace SmartStore.Services.Tests.Customers
                     SystemName = SystemCustomerRoleNames.Administrators
                 }
             });
-            
+
             customer.IsAdmin().ShouldBeTrue();
         }
         [Test]

@@ -21,9 +21,9 @@ namespace SmartStore.Services.Tests.Discounts
     {
         IRepository<Discount> _discountRepo;
         IRepository<DiscountUsageHistory> _discountUsageHistoryRepo;
-		IGenericAttributeService _genericAttributeService;
+        IGenericAttributeService _genericAttributeService;
         IDiscountService _discountService;
-		IStoreContext _storeContext;
+        IStoreContext _storeContext;
         ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
@@ -57,15 +57,15 @@ namespace SmartStore.Services.Tests.Discounts
 
             _discountRepo.Expect(x => x.Table).Return(new List<Discount> { discount1, discount2 }.AsQueryable());
 
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
-			_storeContext.Expect(x => x.CurrentStore).Return(new Store 
-			{ 
-				Id = 1,
-				Name = "MyStore"
-			});
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
+            _storeContext.Expect(x => x.CurrentStore).Return(new Store
+            {
+                Id = 1,
+                Name = "MyStore"
+            });
 
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
-			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             _discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountUsageHistoryRepo, _storeContext, _genericAttributeService, _cartRuleProvider);
@@ -80,7 +80,7 @@ namespace SmartStore.Services.Tests.Discounts
         }
 
         [Test]
-		public void Should_accept_valid_discount_code()
+        public void Should_accept_valid_discount_code()
         {
             var discount = new Discount
             {
@@ -93,7 +93,7 @@ namespace SmartStore.Services.Tests.Discounts
                 CouponCode = "CouponCode 1",
                 DiscountLimitation = DiscountLimitationType.Unlimited,
             };
-            
+
             var customer = new Customer
             {
                 CustomerGuid = Guid.NewGuid(),
@@ -113,37 +113,37 @@ namespace SmartStore.Services.Tests.Discounts
             result1.ShouldEqual(true);
         }
 
-		[Test]
-		public void Should_not_accept_wrong_discount_code()
-		{
-			var discount = new Discount
-			{
-				DiscountType = DiscountType.AssignedToSkus,
-				Name = "Discount 2",
-				UsePercentage = false,
-				DiscountPercentage = 0,
-				DiscountAmount = 5,
-				RequiresCouponCode = true,
-				CouponCode = "CouponCode 1",
-				DiscountLimitation = DiscountLimitationType.Unlimited,
-			};
+        [Test]
+        public void Should_not_accept_wrong_discount_code()
+        {
+            var discount = new Discount
+            {
+                DiscountType = DiscountType.AssignedToSkus,
+                Name = "Discount 2",
+                UsePercentage = false,
+                DiscountPercentage = 0,
+                DiscountAmount = 5,
+                RequiresCouponCode = true,
+                CouponCode = "CouponCode 1",
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+            };
 
-			var customer = new Customer
-			{
-				CustomerGuid = Guid.NewGuid(),
-				AdminComment = "",
-				Active = true,
-				Deleted = false,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				LastActivityDateUtc = new DateTime(2010, 01, 02)
-			};
+            var customer = new Customer
+            {
+                CustomerGuid = Guid.NewGuid(),
+                AdminComment = "",
+                Active = true,
+                Deleted = false,
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                LastActivityDateUtc = new DateTime(2010, 01, 02)
+            };
 
             _genericAttributeService.Expect(x => x.GetAttribute<string>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.DiscountCouponCode, 0))
                 .Return("CouponCode 2");
 
             var result2 = _discountService.IsDiscountValid(discount, customer);
-			result2.ShouldEqual(false);
-		}
+            result2.ShouldEqual(false);
+        }
 
         [Test]
         public void Can_validate_discount_dateRange()
@@ -187,10 +187,10 @@ namespace SmartStore.Services.Tests.Discounts
             _cartRuleProvider.Expect(x => x.RuleMatches(discount1)).Return(true);
 
             var result1 = _discountService.IsDiscountValid(discount1, customer);
-			result1.ShouldEqual(true);
+            result1.ShouldEqual(true);
 
-			var result2 = _discountService.IsDiscountValid(discount2, customer);
-			result2.ShouldEqual(false);
+            var result2 = _discountService.IsDiscountValid(discount2, customer);
+            result2.ShouldEqual(false);
         }
     }
 }

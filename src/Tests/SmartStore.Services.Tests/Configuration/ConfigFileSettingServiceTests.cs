@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Services.Configuration;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Configuration
 {
@@ -18,7 +18,7 @@ namespace SmartStore.Services.Tests.Configuration
         [SetUp]
         public new void SetUp()
         {
-			config = new ConfigFileSettingService(null, null);
+            config = new ConfigFileSettingService(null, null);
         }
 
         [Test]

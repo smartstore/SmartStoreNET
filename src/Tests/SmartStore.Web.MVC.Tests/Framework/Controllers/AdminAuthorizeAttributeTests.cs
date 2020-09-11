@@ -1,9 +1,8 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Core.Fakes;
-using SmartStore.Web.Framework.Controllers;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Fakes;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.MVC.Tests.Framework.Controllers
@@ -49,7 +48,7 @@ namespace SmartStore.Web.MVC.Tests.Framework.Controllers
             Assert.That(authorizationContext.Result, Is.Null);
         }
 
-        
+
         [Test]
         public void Normal_with_attribute_request_should_require_permission()
         {
@@ -76,7 +75,7 @@ namespace SmartStore.Web.MVC.Tests.Framework.Controllers
             return View();
         }
     }
-    
+
     [AdminAuthorize]
     public class NormalWithAttribController : Controller
     {

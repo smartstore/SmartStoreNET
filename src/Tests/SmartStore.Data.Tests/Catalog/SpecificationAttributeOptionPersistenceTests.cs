@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {

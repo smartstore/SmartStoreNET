@@ -1,6 +1,6 @@
-﻿using SmartStore.Tests;
+﻿using NUnit.Framework;
+using SmartStore.Tests;
 using SmartStore.Web.Models.Polls;
-using NUnit.Framework;
 
 namespace SmartStore.Web.MVC.Tests.Public.Models.Polls
 {
@@ -9,7 +9,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.Polls
     {
         [Test]
         public void Can_clone()
-        {	    
+        {
             //create
             var model1 = new PollModel()
             {

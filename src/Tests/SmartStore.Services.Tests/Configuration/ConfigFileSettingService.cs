@@ -14,47 +14,47 @@ namespace SmartStore.Services.Tests.Configuration
 {
     public class ConfigFileSettingService : SettingService
     {
-		public ConfigFileSettingService(
-			ICacheManager cacheManager,
-			IRepository<Setting> settingRepository) :
-			base(cacheManager, settingRepository)
-		{
-		}
+        public ConfigFileSettingService(
+            ICacheManager cacheManager,
+            IRepository<Setting> settingRepository) :
+            base(cacheManager, settingRepository)
+        {
+        }
 
-		public override Setting GetSettingById(int settingId)
+        public override Setting GetSettingById(int settingId)
         {
             throw new InvalidOperationException("Get setting by id is not supported.");
         }
 
-		public override T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false)
+        public override T GetSettingByKey<T>(string key, T defaultValue = default(T), int storeId = 0, bool loadSharedValueIfNotFound = false)
         {
             if (string.IsNullOrEmpty(key))
             {
                 return defaultValue;
             }
 
-			var settings = GetAllSettings();
-			key = key.Trim().ToLowerInvariant();
+            var settings = GetAllSettings();
+            key = key.Trim().ToLowerInvariant();
 
-			var setting = settings.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase) &&
-				x.StoreId == storeId);
+            var setting = settings.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase) &&
+                x.StoreId == storeId);
 
-			// Load shared value?
-			if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
-			{
-				setting = settings.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase) &&
-					x.StoreId == 0);
-			}
+            // Load shared value?
+            if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
+            {
+                setting = settings.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase) &&
+                    x.StoreId == 0);
+            }
 
             if (setting != null)
             {
                 return setting.Value.Convert<T>();
             }
 
-			return defaultValue;
+            return defaultValue;
         }
 
-		public override void DeleteSetting(Setting setting)
+        public override void DeleteSetting(Setting setting)
         {
             throw new InvalidOperationException("Deleting settings is not supported.");
         }
@@ -89,23 +89,23 @@ namespace SmartStore.Services.Tests.Configuration
 
         public override IList<Setting> GetAllSettings()
         {
-			var settings = new List<Setting>();
-			var appSettings = ConfigurationManager.AppSettings;
-			foreach (var setting in appSettings.AllKeys)
-			{
-				settings.Add(new Setting
-				{
-					Name = setting.ToLowerInvariant(),
-					Value = appSettings[setting]
-				});
-			}
+            var settings = new List<Setting>();
+            var appSettings = ConfigurationManager.AppSettings;
+            foreach (var setting in appSettings.AllKeys)
+            {
+                settings.Add(new Setting
+                {
+                    Name = setting.ToLowerInvariant(),
+                    Value = appSettings[setting]
+                });
+            }
 
             return settings;
         }
 
-		protected override void OnClearCache()
-		{
-			throw new NotImplementedException();
-		}
-	}
+        protected override void OnClearCache()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

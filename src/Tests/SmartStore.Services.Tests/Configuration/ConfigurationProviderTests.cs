@@ -8,19 +8,19 @@ namespace SmartStore.Services.Tests.Configuration
     [TestFixture]
     public class ConfigurationProviderTests : ServiceTest
     {
-		ISettingService _settingService;
+        ISettingService _settingService;
 
         [SetUp]
         public new void SetUp()
         {
-			_settingService = new ConfigFileSettingService(null, null);
+            _settingService = new ConfigFileSettingService(null, null);
         }
 
         [Test]
         public void Can_get_settings()
         {
             // Requires settings to be set in app.config in format TestSettings.[PropertyName].
-			var settings = _settingService.LoadSetting<TestSettings>();
+            var settings = _settingService.LoadSetting<TestSettings>();
             settings.ServerName.ShouldEqual("Ruby");
             settings.Ip.ShouldEqual("192.168.0.1");
             settings.PortNumber.ShouldEqual(21);

@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Directory;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Directory
 {
@@ -17,17 +17,17 @@ namespace SmartStore.Data.Tests.Directory
                 Published = true,
                 DisplayOrder = 1,
                 Country = new Country()
-                               {
-                                   Name = "United States",
-                                   AllowsBilling = true,
-                                   AllowsShipping = true,
-                                   TwoLetterIsoCode = "US",
-                                   ThreeLetterIsoCode = "USA",
-                                   NumericIsoCode = 1,
-                                   SubjectToVat = true,
-                                   Published = true,
-                                   DisplayOrder = 1,
-                               }
+                {
+                    Name = "United States",
+                    AllowsBilling = true,
+                    AllowsShipping = true,
+                    TwoLetterIsoCode = "US",
+                    ThreeLetterIsoCode = "USA",
+                    NumericIsoCode = 1,
+                    SubjectToVat = true,
+                    Published = true,
+                    DisplayOrder = 1,
+                }
             };
 
             var fromDb = SaveAndLoadEntity(stateProvince);

@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Tax;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Tax
 {
@@ -11,10 +11,10 @@ namespace SmartStore.Data.Tests.Tax
         public void Can_save_and_load_taxCategory()
         {
             var taxCategory = new TaxCategory
-                               {
-                                   Name = "Books",
-                                   DisplayOrder = 1
-                               };
+            {
+                Name = "Books",
+                DisplayOrder = 1
+            };
 
             var fromDb = SaveAndLoadEntity(taxCategory);
             fromDb.ShouldNotBeNull();

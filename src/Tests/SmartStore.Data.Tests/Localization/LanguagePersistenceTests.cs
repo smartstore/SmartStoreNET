@@ -1,7 +1,7 @@
 ﻿using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Localization
 {
@@ -19,7 +19,7 @@ namespace SmartStore.Data.Tests.Localization
                 FlagImageFileName = "us.png",
                 Rtl = true,
                 Published = true,
-				LimitedToStores = true,
+                LimitedToStores = true,
                 DisplayOrder = 1
             };
 
@@ -31,7 +31,7 @@ namespace SmartStore.Data.Tests.Localization
             fromDb.FlagImageFileName.ShouldEqual("us.png");
             fromDb.Rtl.ShouldEqual(true);
             fromDb.Published.ShouldEqual(true);
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.DisplayOrder.ShouldEqual(1);
         }
 
@@ -39,13 +39,13 @@ namespace SmartStore.Data.Tests.Localization
         public void Can_save_and_load_language_with_localeStringResources()
         {
             var lang = new Language
-                           {
-                               Name = "English",
-                               LanguageCulture = "en-Us",
-                               FlagImageFileName = "us.png",
-                               Published = true,
-                               DisplayOrder = 1
-                           };
+            {
+                Name = "English",
+                LanguageCulture = "en-Us",
+                FlagImageFileName = "us.png",
+                Published = true,
+                DisplayOrder = 1
+            };
             lang.LocaleStringResources.Add
                 (
                     new LocaleStringResource()

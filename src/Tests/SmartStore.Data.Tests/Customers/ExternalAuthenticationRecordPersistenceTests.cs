@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Customers
 {
@@ -33,7 +33,7 @@ namespace SmartStore.Data.Tests.Customers
 
             fromDb.Customer.ShouldNotBeNull();
         }
-        
+
         protected Customer GetTestCustomer()
         {
             return new Customer

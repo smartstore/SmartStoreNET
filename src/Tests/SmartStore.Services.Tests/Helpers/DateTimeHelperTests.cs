@@ -32,14 +32,14 @@ namespace SmartStore.Services.Tests.Helpers
         IGenericAttributeService _genericAttributeService;
         IEventPublisher _eventPublisher;
         IWorkContext _workContext;
-		IStoreContext _storeContext;
+        IStoreContext _storeContext;
         ISettingService _settingService;
         ICustomerService _customerService;
         ICommonServices _services;
         DateTimeSettings _dateTimeSettings;
         Lazy<RewardPointsSettings> _rewardPointsSettings;
         IDateTimeHelper _dateTimeHelper;
-		Store _store;
+        Store _store;
         IUserAgent _userAgent;
         Lazy<IGdprTool> _gdprTool;
 
@@ -49,9 +49,9 @@ namespace SmartStore.Services.Tests.Helpers
             _settingService = MockRepository.GenerateMock<ISettingService>();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
 
-			_store = new Store { Id = 1 };
-			_storeContext = MockRepository.GenerateMock<IStoreContext>();
-			_storeContext.Expect(x => x.CurrentStore).Return(_store);
+            _store = new Store { Id = 1 };
+            _storeContext = MockRepository.GenerateMock<IStoreContext>();
+            _storeContext.Expect(x => x.CurrentStore).Return(_store);
 
             _dateTimeSettings = new DateTimeSettings
             {
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Tests.Helpers
             _dateTimeSettings.DefaultStoreTimeZoneId = "E. Europe Standard Time"; // (GMT+02:00) Minsk;
 
             var customer = _customerService.GetCustomerById(1);
-            
+
             var timeZone = _dateTimeHelper.GetCustomerTimeZone(customer);
             timeZone.ShouldNotBeNull();
             timeZone.Id.ShouldEqual("Russian Standard Time");
@@ -154,26 +154,26 @@ namespace SmartStore.Services.Tests.Helpers
         [Test]
         public void Can_convert_dateTime_to_userTime()
         {
-			var sourceDateTime = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"); // (GMT+01:00) Berlin;
+            var sourceDateTime = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"); // (GMT+01:00) Berlin;
             sourceDateTime.ShouldNotBeNull();
 
-			var destinationDateTime = TimeZoneInfo.FindSystemTimeZoneById("GTB Standard Time"); // (GMT+02:00) Istanbul;
+            var destinationDateTime = TimeZoneInfo.FindSystemTimeZoneById("GTB Standard Time"); // (GMT+02:00) Istanbul;
             destinationDateTime.ShouldNotBeNull();
 
             // Berlin > Istanbul
             _dateTimeHelper
-				.ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), sourceDateTime, destinationDateTime)
+                .ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), sourceDateTime, destinationDateTime)
                 .ShouldEqual(new DateTime(2015, 06, 1, 1, 0, 0));
 
-			// UTC > Istanbul (summer)
-			_dateTimeHelper
-				.ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
-				.ShouldEqual(new DateTime(2015, 06, 1, 3, 0, 0));
+            // UTC > Istanbul (summer)
+            _dateTimeHelper
+                .ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
+                .ShouldEqual(new DateTime(2015, 06, 1, 3, 0, 0));
 
-			// UTC > Istanbul (winter)
-			_dateTimeHelper
-				.ConvertToUserTime(new DateTime(2015, 01, 01, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
-				.ShouldEqual(new DateTime(2015, 01, 1, 2, 0, 0));
+            // UTC > Istanbul (winter)
+            _dateTimeHelper
+                .ConvertToUserTime(new DateTime(2015, 01, 01, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
+                .ShouldEqual(new DateTime(2015, 01, 1, 2, 0, 0));
         }
 
         [Test]

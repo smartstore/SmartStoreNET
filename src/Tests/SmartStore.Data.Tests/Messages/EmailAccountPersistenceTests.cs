@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Messages;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Messages
 {

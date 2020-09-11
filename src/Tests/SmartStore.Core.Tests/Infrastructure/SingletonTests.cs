@@ -1,6 +1,6 @@
 ﻿using System;
-using SmartStore.Core.Infrastructure;
 using NUnit.Framework;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Core.Tests.Infrastructure
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Affiliates;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -8,7 +9,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Customers
 {
@@ -95,7 +95,7 @@ namespace SmartStore.Data.Tests.Customers
         public void Can_save_customer_with_rewardPointsHistoryEntry()
         {
             var customer = GetTestCustomer();
-            
+
             customer.AddRewardPointsHistoryEntry(1, "Points for registration");
 
             var fromDb = SaveAndLoadEntity(customer);
@@ -109,8 +109,8 @@ namespace SmartStore.Data.Tests.Customers
         {
             var customer = GetTestCustomer();
 
-            var address = new Address 
-            { 
+            var address = new Address
+            {
                 FirstName = "Test",
                 Country = GetTestCountry(),
                 CreatedOnUtc = new DateTime(2010, 01, 01),
@@ -164,22 +164,22 @@ namespace SmartStore.Data.Tests.Customers
             fromDb.Addresses.Count.ShouldEqual(1);
             fromDb.BillingAddress.ShouldNotBeNull();
 
-			Assert.AreEqual(true, fromDb.Addresses.Contains(address));
-			fromDb.RemoveAddress(address);
-			Assert.AreEqual(false, fromDb.Addresses.Contains(address));
+            Assert.AreEqual(true, fromDb.Addresses.Contains(address));
+            fromDb.RemoveAddress(address);
+            Assert.AreEqual(false, fromDb.Addresses.Contains(address));
 
-			context.SaveChanges();
+            context.SaveChanges();
 
-			fromDb.Addresses.Count.ShouldEqual(0);
-			fromDb.BillingAddress.ShouldBeNull();
+            fromDb.Addresses.Count.ShouldEqual(0);
+            fromDb.BillingAddress.ShouldBeNull();
         }
-        
+
         [Test]
         public void Can_save_and_load_customer_with_shopping_cart()
         {
             var customer = GetTestCustomer();
-			var product = GetTestProduct();
-			var store = GetTestStore();
+            var product = GetTestProduct();
+            var store = GetTestStore();
 
             customer.ShoppingCartItems.Add
             (
@@ -191,7 +191,7 @@ namespace SmartStore.Data.Tests.Customers
                     Quantity = 2,
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                     UpdatedOnUtc = new DateTime(2010, 01, 02),
-					Product = product
+                    Product = product
                 }
             );
 
@@ -225,7 +225,7 @@ namespace SmartStore.Data.Tests.Customers
                         },
                         Deleted = true,
                         CreatedOnUtc = new DateTime(2010, 01, 01),
-						UpdatedOnUtc = new DateTime(2010, 01, 01)
+                        UpdatedOnUtc = new DateTime(2010, 01, 01)
                     }
                );
 
@@ -295,15 +295,15 @@ namespace SmartStore.Data.Tests.Customers
             };
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
-			};
-		}
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+            };
+        }
 
         protected Country GetTestCountry()
         {
@@ -321,14 +321,14 @@ namespace SmartStore.Data.Tests.Customers
             };
         }
 
-		protected Store GetTestStore()
-		{
-			return new Store
-			{
-				Name = "Store 1",
-				DisplayOrder = 1
-			};
-		}
+        protected Store GetTestStore()
+        {
+            return new Store
+            {
+                Name = "Store 1",
+                DisplayOrder = 1
+            };
+        }
 
     }
 }

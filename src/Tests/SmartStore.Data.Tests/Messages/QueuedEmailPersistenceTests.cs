@@ -55,59 +55,59 @@ namespace SmartStore.Data.Tests.Messages
             fromDb.EmailAccount.DisplayName.ShouldEqual("Administrator");
         }
 
-		[Test]
-		public void Can_cascade_delete_attachment()
-		{
-			var account = new EmailAccount
-			{
-				Email = "admin@yourstore.com",
-				Host = "127.0.0.1",
-				Username = "John",
-				Password = "111"
-			};
+        [Test]
+        public void Can_cascade_delete_attachment()
+        {
+            var account = new EmailAccount
+            {
+                Email = "admin@yourstore.com",
+                Host = "127.0.0.1",
+                Username = "John",
+                Password = "111"
+            };
 
-			var file = new MediaFile
-			{
+            var file = new MediaFile
+            {
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 Extension = "txt",
-				Name = "file.txt",
-				MimeType = "text/plain",
+                Name = "file.txt",
+                MimeType = "text/plain",
                 MediaType = "image",
                 Version = 1,
                 MediaStorage = new MediaStorage { Data = new byte[10] }
-			};
+            };
 
-			// Add attachment.
-			var attach = new QueuedEmailAttachment
-			{
-				StorageLocation = EmailAttachmentStorageLocation.FileReference,
-				Name = "file.txt",
-				MimeType = "text/plain",
-				MediaFile = file
-			};
-			
-			var qe = new QueuedEmail
-			{
-				Priority = 1,
-				From = "From",
-				To = "To",
-				Subject = "Subject",
-				CreatedOnUtc = DateTime.UtcNow,
-				EmailAccount = account
-			};
+            // Add attachment.
+            var attach = new QueuedEmailAttachment
+            {
+                StorageLocation = EmailAttachmentStorageLocation.FileReference,
+                Name = "file.txt",
+                MimeType = "text/plain",
+                MediaFile = file
+            };
 
-			qe.Attachments.Add(attach);
+            var qe = new QueuedEmail
+            {
+                Priority = 1,
+                From = "From",
+                To = "To",
+                Subject = "Subject",
+                CreatedOnUtc = DateTime.UtcNow,
+                EmailAccount = account
+            };
 
-			var fromDb = SaveAndLoadEntity(qe);
-			fromDb.ShouldNotBeNull();
+            qe.Attachments.Add(attach);
 
-			Assert.AreEqual(fromDb.Attachments.Count, 1);
-			attach = fromDb.Attachments.FirstOrDefault();
-			attach.ShouldNotBeNull();
+            var fromDb = SaveAndLoadEntity(qe);
+            fromDb.ShouldNotBeNull();
 
-			file = attach.MediaFile;
-			file.ShouldNotBeNull();
+            Assert.AreEqual(fromDb.Attachments.Count, 1);
+            attach = fromDb.Attachments.FirstOrDefault();
+            attach.ShouldNotBeNull();
+
+            file = attach.MediaFile;
+            file.ShouldNotBeNull();
 
             // Delete Attachment.Download. Commented out because foreign key has no cascade delete anymore.
             // var attachId = attach.Id;
@@ -136,11 +136,11 @@ namespace SmartStore.Data.Tests.Messages
 
             // Delete QueuedEmail.
             context.Set<QueuedEmail>().Remove(fromDb);
-			context.SaveChanges();
+            context.SaveChanges();
 
             // Attachment should also be gone now.
             attach = context.Set<QueuedEmailAttachment>().FirstOrDefault();
-			attach.ShouldBeNull();
-		}
+            attach.ShouldBeNull();
+        }
     }
 }

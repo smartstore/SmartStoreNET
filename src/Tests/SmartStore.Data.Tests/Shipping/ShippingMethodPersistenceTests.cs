@@ -5,18 +5,18 @@ using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Shipping
 {
-	[TestFixture]
+    [TestFixture]
     public class ShippingMethodPersistenceTests : PersistenceTest
     {
         [Test]
         public void Can_save_and_load_shippingMethod()
         {
             var shippingMethod = new ShippingMethod
-                               {
-                                   Name = "Name 1",
-                                   Description = "Description 1",
-                                   DisplayOrder = 1
-                               };
+            {
+                Name = "Name 1",
+                Description = "Description 1",
+                DisplayOrder = 1
+            };
 
             var fromDb = SaveAndLoadEntity(shippingMethod);
             fromDb.ShouldNotBeNull();
@@ -28,11 +28,11 @@ namespace SmartStore.Data.Tests.Shipping
         protected Country GetTestCountry()
         {
             return new Country
-                {
-                    Name = "United States",
-                    TwoLetterIsoCode = "US",
-                    ThreeLetterIsoCode = "USA",
-                };
+            {
+                Name = "United States",
+                TwoLetterIsoCode = "US",
+                ThreeLetterIsoCode = "USA",
+            };
         }
     }
 }

@@ -23,7 +23,7 @@ using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class CategoryService : ICategoryService, IXmlSitemapPublisher
+	public partial class CategoryService : ICategoryService, IXmlSitemapPublisher 
 	{
 		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
 

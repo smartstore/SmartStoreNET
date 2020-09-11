@@ -37,20 +37,20 @@ namespace SmartStore.Services.Catalog
 		private const string CATEGORIES_PATTERN_KEY = "category:*";
 		private const string PRODUCTCATEGORIES_PATTERN_KEY = "productcategory:*";
 
-        private readonly IRepository<Category> _categoryRepository;
-        private readonly IRepository<ProductCategory> _productCategoryRepository;
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<AclRecord> _aclRepository;
+		private readonly IRepository<Category> _categoryRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<AclRecord> _aclRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly IWorkContext _workContext;
+		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _requestCache;
+		private readonly IEventPublisher _eventPublisher;
+		private readonly IRequestCache _requestCache;
 		private readonly ICacheManager _cache;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
-        private readonly ICustomerService _customerService;
-        private readonly IStoreService _storeService;
+		private readonly ICustomerService _customerService;
+		private readonly IStoreService _storeService;
 		private readonly ICatalogSearchService _catalogSearchService;
 
 		public CategoryService(IRequestCache requestCache,

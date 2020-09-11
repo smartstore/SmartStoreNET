@@ -349,6 +349,18 @@ namespace SmartStore.Admin.Controllers
 
 			var model = shippingSettings.ToModel();
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+			model.TodayShipmentHours = new List<SelectListItem>();
+
+			for (var i = 1; i <= 24; ++i)
+			{
+				var hourStr = i.ToString();
+				model.TodayShipmentHours.Add(new SelectListItem
+				{
+					Text = hourStr,
+					Value = hourStr,
+					Selected = shippingSettings.TodayShipmentHour == i
+				});
+			}
 
 			StoreDependingSettings.GetOverrideKeys(shippingSettings, model, storeScope, Services.Settings);
 

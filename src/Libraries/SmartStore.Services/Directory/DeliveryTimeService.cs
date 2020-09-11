@@ -182,8 +182,7 @@ namespace SmartStore.Services.Directory
             var daysToAdd = 0;
             var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
 
-            // TODO: at the moment the server's local time is used as shop time but the server can be anywhere.
-            // What we actually need is the actual time\timezone of the physical location of the business because only the merchant knows this.
+            // TODO: server's local time is inaccurate (server can be anywhere). Use time at shipping origin address instead (ShippingSettings.ShippingOriginAddressId)?
             var now = DateTime.Now;
 
             try
@@ -195,8 +194,8 @@ namespace SmartStore.Services.Directory
                 ci = CultureInfo.CurrentCulture;
             }
 
-            // shopDate.Hour: 0-23. TodayDeliveryHour: 1-24.
-            if (_shippingSettings.TodayDeliveryHour.HasValue && now.Hour < _shippingSettings.TodayDeliveryHour)
+            // now.Hour: 0-23. TodayDeliveryHour: 1-24.
+            if (_shippingSettings.TodayShipmentHour.HasValue && now.Hour < _shippingSettings.TodayShipmentHour)
             {
                 daysToAdd -= 1;
             }

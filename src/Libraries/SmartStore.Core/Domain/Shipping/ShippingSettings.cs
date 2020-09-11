@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Shipping
 			ActiveShippingRateComputationMethodSystemNames = new List<string> { "Shipping.FixedRate" };
 			EstimateShippingEnabled = true;
 			ReturnValidOptionsIfThereAreAny = true;
-            TodayDeliveryHour = 14;
+            TodayShipmentHour = 14;
             DeliveryOnWorkweekDaysOnly = true;
         }
 
@@ -73,9 +73,9 @@ namespace SmartStore.Core.Domain.Shipping
         public string DeliveryTimesDateFormat { get; set; }
 
         /// <summary>
-        /// Specifies the hour (value between 1 and 24) up to which the delivery will be shipped today.
+        /// Specifies the hour (value between 1 and 24) by which the order will be shipped the same day.
         /// </summary>
-        public int? TodayDeliveryHour { get; set; }
+        public int? TodayShipmentHour { get; set; }
 
         /// <summary>
         /// Specifies whether delivery takes place only on workweek days.

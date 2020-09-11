@@ -1,9 +1,11 @@
-﻿using SmartStore.Admin.Models.Common;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Admin.Models.Common;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class ShippingSettingsModel
+    public class ShippingSettingsModel
     {
 		public string PrimaryStoreCurrencyCode { get; set; }
 
@@ -30,5 +32,16 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge")]
         public bool ChargeOnlyHighestProductShippingSurcharge { get; set; }
-    }
+
+		#region Delivery Time
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.DeliveryOnWorkweekDaysOnly")]
+		public bool DeliveryOnWorkweekDaysOnly { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.TodayShipmentHour")]
+		public int? TodayShipmentHour { get; set; }
+		public List<SelectListItem> TodayShipmentHours { get; set; }
+
+		#endregion
+	}
 }

@@ -397,6 +397,18 @@
 				"Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Tabellenansicht kein Datum zur Lieferzeit angezeigt.");
 
 			builder.AddOrUpdate("Time.Tomorrow", "Tomorrow", "Morgen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.TodayShipmentHour",
+				"Order before x o'clock for same day shipment",
+				"Bis x Uhr bestellt, heute verschickt",
+				"Specifies the hour by which the order will be shipped the same day.",
+				"Legt die Stunde fest, bis zu der die Bestellung noch am selben Tag verschickt wird.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.DeliveryOnWorkweekDaysOnly",
+				"Delivery on workweek days only",
+				"Lieferungen nur an Werktagen",
+				"Specifies whether delivery takes place only on workweek days.",
+				"Legt fest, ob Lieferungen nur an Werktagen stattfinden.");
 		}
 	}
 }

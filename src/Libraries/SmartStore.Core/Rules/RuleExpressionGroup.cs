@@ -29,10 +29,7 @@ namespace SmartStore.Rules
         public bool IsSubGroup { get; set; }
         public IRuleProvider Provider { get; set; }
 
-        public IEnumerable<IRuleExpression> Expressions
-        {
-            get => _expressions;
-        }
+        public IEnumerable<IRuleExpression> Expressions => _expressions;
 
         public virtual void AddExpressions(params IRuleExpression[] expressions)
         {

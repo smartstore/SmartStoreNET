@@ -57,20 +57,20 @@ namespace SmartStore.Core.Domain.Polls
         /// </summary>
         public DateTime? EndDateUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-		/// </summary>
-		public bool LimitedToStores { get; set; }
-        
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        public bool LimitedToStores { get; set; }
+
         /// <summary>
         /// Gets or sets the news comments
         /// </summary>
         public virtual ICollection<PollAnswer> PollAnswers
         {
-			get { return _pollAnswers ?? (_pollAnswers = new HashSet<PollAnswer>()); }
-            protected set { _pollAnswers = value; }
+            get => _pollAnswers ?? (_pollAnswers = new HashSet<PollAnswer>());
+            protected set => _pollAnswers = value;
         }
-        
+
         /// <summary>
         /// Gets or sets the language
         /// </summary>

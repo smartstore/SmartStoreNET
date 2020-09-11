@@ -58,8 +58,8 @@ namespace SmartStore.Core.Domain.Forums
         /// </summary>
         public virtual ICollection<Forum> Forums
         {
-			get { return _forums ?? (_forums = new HashSet<Forum>()); }
-            protected set { _forums = value; }
+            get => _forums ?? (_forums = new HashSet<Forum>());
+            protected set => _forums = value;
         }
     }
 }

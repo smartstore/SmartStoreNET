@@ -19,7 +19,7 @@ namespace SmartStore.Core.Infrastructure
         /// </summary>
         public static T Instance
         {
-            get { return instance; }
+            get => instance;
             set
             {
                 instance = value;
@@ -40,10 +40,7 @@ namespace SmartStore.Core.Infrastructure
         }
 
         /// <summary>The singleton instance for the specified type T. Only one instance (at the time) of this list for each type of T.</summary>
-        public new static IList<T> Instance
-        {
-            get { return Singleton<IList<T>>.Instance; }
-        }
+        public new static IList<T> Instance => Singleton<IList<T>>.Instance;
     }
 
     /// <summary>
@@ -59,10 +56,7 @@ namespace SmartStore.Core.Infrastructure
         }
 
         /// <summary>The singleton instance for the specified type T. Only one instance (at the time) of this dictionary for each type of T.</summary>
-        public new static IDictionary<TKey, TValue> Instance
-        {
-            get { return Singleton<Dictionary<TKey, TValue>>.Instance; }
-        }
+        public new static IDictionary<TKey, TValue> Instance => Singleton<Dictionary<TKey, TValue>>.Instance;
     }
 
     /// <summary>
@@ -78,9 +72,6 @@ namespace SmartStore.Core.Infrastructure
         static readonly IDictionary<Type, object> allSingletons;
 
         /// <summary>Dictionary of type to singleton instances.</summary>
-        public static IDictionary<Type, object> AllSingletons
-        {
-            get { return allSingletons; }
-        }
+        public static IDictionary<Type, object> AllSingletons => allSingletons;
     }
 }

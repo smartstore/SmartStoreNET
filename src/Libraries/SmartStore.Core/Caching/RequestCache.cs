@@ -8,127 +8,127 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
-	public class RequestCache : DisposableObject, IRequestCache
-	{
-		const string RegionName = "SmartStoreNET:";
+    public class RequestCache : DisposableObject, IRequestCache
+    {
+        const string RegionName = "SmartStoreNET:";
 
-		private IDictionary _emptyDictionary = new Dictionary<string, object>();
+        private readonly IDictionary _emptyDictionary = new Dictionary<string, object>();
 
-		private readonly HttpContextBase _context;
+        private readonly HttpContextBase _context;
 
-		public RequestCache(HttpContextBase context)
-		{
-			_context = context;
-		}
+        public RequestCache(HttpContextBase context)
+        {
+            _context = context;
+        }
 
-		public T Get<T>(string key)
-		{
-			return Get<T>(key, null);
-		}
+        public T Get<T>(string key)
+        {
+            return Get<T>(key, null);
+        }
 
-		public T Get<T>(string key, Func<T> acquirer)
-		{
-			var items = GetItems();
+        public T Get<T>(string key, Func<T> acquirer)
+        {
+            var items = GetItems();
 
-			key = BuildKey(key);
+            key = BuildKey(key);
 
-			if (items.Contains(key))
-			{
-				return (T)items[key];
-			}
+            if (items.Contains(key))
+            {
+                return (T)items[key];
+            }
 
-			if (acquirer != null)
-			{
-				var value = acquirer();
-				items.Add(key, value);
-				return value;
-			}
+            if (acquirer != null)
+            {
+                var value = acquirer();
+                items.Add(key, value);
+                return value;
+            }
 
-			return default(T);
-		}
+            return default(T);
+        }
 
-		public void Put(string key, object value)
-		{
-			var items = GetItems();
+        public void Put(string key, object value)
+        {
+            var items = GetItems();
 
-			key = BuildKey(key);
-			
-			if (items.Contains(key))
-				items[key] = value;
-			else
-				items.Add(key, value);
-		}
+            key = BuildKey(key);
 
-		public void Clear()
-		{
-			RemoveByPattern("*");
-		}
+            if (items.Contains(key))
+                items[key] = value;
+            else
+                items.Add(key, value);
+        }
 
-		public bool Contains(string key)
-		{
-			return GetItems().Contains(BuildKey(key));
-		}
+        public void Clear()
+        {
+            RemoveByPattern("*");
+        }
 
-		public void Remove(string key)
-		{
-			GetItems().Remove(BuildKey(key));
-		}
+        public bool Contains(string key)
+        {
+            return GetItems().Contains(BuildKey(key));
+        }
 
-		public void RemoveByPattern(string pattern)
-		{
-			var items = GetItems();
+        public void Remove(string key)
+        {
+            GetItems().Remove(BuildKey(key));
+        }
 
-			var keysToRemove = Keys(pattern).ToArray();
+        public void RemoveByPattern(string pattern)
+        {
+            var items = GetItems();
 
-			foreach (string key in keysToRemove)
-			{
-				items.Remove(BuildKey(key));
-			}
-		}
+            var keysToRemove = Keys(pattern).ToArray();
 
-		protected IDictionary GetItems()
-		{
-			return _context.Items ?? _emptyDictionary;
-		}
+            foreach (string key in keysToRemove)
+            {
+                items.Remove(BuildKey(key));
+            }
+        }
 
-		public IEnumerable<string> Keys(string pattern)
-		{
-			var items = GetItems();
+        protected IDictionary GetItems()
+        {
+            return _context.Items ?? _emptyDictionary;
+        }
 
-			if (items.Count == 0)
-				yield break;
+        public IEnumerable<string> Keys(string pattern)
+        {
+            var items = GetItems();
 
-			var prefixLen = RegionName.Length;
+            if (items.Count == 0)
+                yield break;
 
-			pattern = pattern.NullEmpty() ?? "*";
-			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
+            var prefixLen = RegionName.Length;
 
-			var enumerator = items.GetEnumerator();
-			while (enumerator.MoveNext())
-			{
-				if (enumerator.Key is string key)
-				{
-					if (key.StartsWith(RegionName))
-					{
-						key = key.Substring(prefixLen);
-						if (pattern == "*" || wildcard.IsMatch(key))
-						{
-							yield return key;
-						}
-					}
-				}
-			}
-		}
+            pattern = pattern.NullEmpty() ?? "*";
+            var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
 
-		private string BuildKey(string key)
-		{
-			return RegionName + key.EmptyNull();
-		}
+            var enumerator = items.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Key is string key)
+                {
+                    if (key.StartsWith(RegionName))
+                    {
+                        key = key.Substring(prefixLen);
+                        if (pattern == "*" || wildcard.IsMatch(key))
+                        {
+                            yield return key;
+                        }
+                    }
+                }
+            }
+        }
 
-		protected override void OnDispose(bool disposing)
-		{
-			if (disposing)
-				Clear();
-		}
-	}
+        private string BuildKey(string key)
+        {
+            return RegionName + key.EmptyNull();
+        }
+
+        protected override void OnDispose(bool disposing)
+        {
+            if (disposing)
+                Clear();
+        }
+    }
 }

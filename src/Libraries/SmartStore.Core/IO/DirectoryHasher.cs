@@ -12,7 +12,7 @@ namespace SmartStore.Core.IO
     {
         private static readonly string _appRootPath;
         private static readonly string _defaultStoragePath;
-        
+
         private readonly string _path;
         private readonly string _searchPattern;
         private readonly bool _deep;
@@ -49,10 +49,7 @@ namespace SmartStore.Core.IO
             _storagePath = storagePath ?? _defaultStoragePath;
         }
 
-        public bool HasChanged
-        {
-            get => LastHash != CurrentHash;
-        }
+        public bool HasChanged => LastHash != CurrentHash;
 
         public int? LastHash
         {
@@ -67,15 +64,9 @@ namespace SmartStore.Core.IO
             }
         }
 
-        public int CurrentHash
-        {
-            get => (_currentHash ?? (_currentHash = ComputeHash())).Value;
-        }
+        public int CurrentHash => (_currentHash ?? (_currentHash = ComputeHash())).Value;
 
-        public string LookupKey
-        {
-            get => _lookupKey ?? (_lookupKey = BuildLookupKey());
-        }
+        public string LookupKey => _lookupKey ?? (_lookupKey = BuildLookupKey());
 
         public void Refresh()
         {
@@ -85,7 +76,7 @@ namespace SmartStore.Core.IO
         //public void Reset()
         //{
         //    _lastHash = -1;
-            
+
         //    var path = Path.Combine(_storagePath, LookupKey + ".hash");
         //    if (File.Exists(path))
         //    {

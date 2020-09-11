@@ -5,15 +5,15 @@ using SmartStore.Core.Domain.Forums;
 namespace SmartStore.Core.Search
 {
     public class ForumSearchSettings : ISettings
-	{
-		public ForumSearchSettings()
-		{
-			SearchMode = SearchMode.Contains;
-			SearchFields = new List<string> { "username", "text" };
+    {
+        public ForumSearchSettings()
+        {
+            SearchMode = SearchMode.Contains;
+            SearchFields = new List<string> { "username", "text" };
             DefaultSortOrder = ForumTopicSorting.Relevance;
             InstantSearchEnabled = true;
-			InstantSearchNumberOfHits = 10;
-			InstantSearchTermMinLength = 2;
+            InstantSearchNumberOfHits = 10;
+            InstantSearchTermMinLength = 2;
             FilterMinHitCount = 1;
             FilterMaxChoicesCount = 20;
 
@@ -22,15 +22,15 @@ namespace SmartStore.Core.Search
             DateDisplayOrder = 3;
         }
 
-		/// <summary>
-		/// Gets or sets the search mode.
-		/// </summary>
-		public SearchMode SearchMode { get; set; }
+        /// <summary>
+        /// Gets or sets the search mode.
+        /// </summary>
+        public SearchMode SearchMode { get; set; }
 
-		/// <summary>
-		/// Gets or sets name of fields to be searched. The name field is always searched.
-		/// </summary>
-		public List<string> SearchFields { get; set; }
+        /// <summary>
+        /// Gets or sets name of fields to be searched. The name field is always searched.
+        /// </summary>
+        public List<string> SearchFields { get; set; }
 
         /// <summary>
         /// Gets or sets the default sort order in search results.
@@ -42,15 +42,15 @@ namespace SmartStore.Core.Search
         /// </summary>
         public bool InstantSearchEnabled { get; set; }
 
-		/// <summary>
-		/// Gets or sets the number of hits to return when using "instant-search" feature.
-		/// </summary>
-		public int InstantSearchNumberOfHits { get; set; }
+        /// <summary>
+        /// Gets or sets the number of hits to return when using "instant-search" feature.
+        /// </summary>
+        public int InstantSearchNumberOfHits { get; set; }
 
-		/// <summary>
-		/// Gets or sets a minimum instant-search term length.
-		/// </summary>
-		public int InstantSearchTermMinLength { get; set; }
+        /// <summary>
+        /// Gets or sets a minimum instant-search term length.
+        /// </summary>
+        public int InstantSearchTermMinLength { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum hit count for a filter value. Values with a lower hit count are not displayed.

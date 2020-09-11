@@ -30,10 +30,10 @@ namespace SmartStore.Core.Domain.Blogs
         /// </summary>
         public int NumberOfTags { get; set; } = 15;
 
-		/// <summary>
-		/// The maximum age of blog items (in days) for RSS feed
-		/// </summary>
-		public int MaxAgeInDays { get; set; } = 180;
+        /// <summary>
+        /// The maximum age of blog items (in days) for RSS feed
+        /// </summary>
+        public int MaxAgeInDays { get; set; } = 180;
 
         /// <summary>
         /// Enable the blog RSS feed link in customers browser address bar

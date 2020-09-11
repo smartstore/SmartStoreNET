@@ -1,70 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Logging
 {
-	public interface INotifier
-	{
-		void Add(NotifyType type, LocalizedString message, bool durable = true);
-		ICollection<NotifyEntry> Entries { get; }
-	}
-	
-	public class Notifier : INotifier
-	{
-		private readonly HashSet<NotifyEntry> _entries = new HashSet<NotifyEntry>();
+    public interface INotifier
+    {
+        void Add(NotifyType type, LocalizedString message, bool durable = true);
+        ICollection<NotifyEntry> Entries { get; }
+    }
 
-		public void Add(NotifyType type, LocalizedString message, bool durable = true)
-		{
-			_entries.Add(new NotifyEntry { Type = type, Message = message, Durable = durable });
-		}
+    public class Notifier : INotifier
+    {
+        private readonly HashSet<NotifyEntry> _entries = new HashSet<NotifyEntry>();
 
-		public ICollection<NotifyEntry> Entries
-		{
-			get { return _entries; }
-		}
-	}
+        public void Add(NotifyType type, LocalizedString message, bool durable = true)
+        {
+            _entries.Add(new NotifyEntry { Type = type, Message = message, Durable = durable });
+        }
 
-	public static class INotifierExtension
-	{
+        public ICollection<NotifyEntry> Entries => _entries;
+    }
+
+    public static class INotifierExtension
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Information(this INotifier notifier, LocalizedString message, bool durable = true)
-		{
-			notifier.Add(NotifyType.Info, message, durable);
-		}
+        {
+            notifier.Add(NotifyType.Info, message, durable);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Success(this INotifier notifier, LocalizedString message, bool durable = true)
-		{
-			notifier.Add(NotifyType.Success, message, durable);
-		}
+        {
+            notifier.Add(NotifyType.Success, message, durable);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warning(this INotifier notifier, LocalizedString message, bool durable = true)
-		{
-			notifier.Add(NotifyType.Warning, message, durable);
-		}
+        {
+            notifier.Add(NotifyType.Warning, message, durable);
+        }
 
-		public static void Error(this INotifier notifier, Exception exception, bool durable = true)
-		{
-			if (exception == null)
-				return;
+        public static void Error(this INotifier notifier, Exception exception, bool durable = true)
+        {
+            if (exception == null)
+                return;
 
-			while (exception.InnerException != null)
+            while (exception.InnerException != null)
             {
-				exception = exception.InnerException;
+                exception = exception.InnerException;
             }
 
-			notifier.Add(NotifyType.Error, exception.Message, durable);
-		}
+            notifier.Add(NotifyType.Error, exception.Message, durable);
+        }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(this INotifier notifier, LocalizedString message, bool durable = true)
-		{
-			notifier.Add(NotifyType.Error, message, durable);
-		}
-	}
+        {
+            notifier.Add(NotifyType.Error, message, durable);
+        }
+    }
 }

@@ -4,7 +4,7 @@ namespace SmartStore.Core.Domain.Common
 {
     public class CommonSettings : ISettings
     {
-		public bool UseSystemEmailForContactUsForm { get; set; }
+        public bool UseSystemEmailForContactUsForm { get; set; }
 
         public bool UseStoredProceduresIfSupported { get; set; } = true;
 

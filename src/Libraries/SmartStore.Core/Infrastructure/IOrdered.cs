@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore
+﻿namespace SmartStore
 {
     public interface IOrdered
     {

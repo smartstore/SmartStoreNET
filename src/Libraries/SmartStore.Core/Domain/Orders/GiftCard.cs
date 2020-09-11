@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Orders
     public partial class GiftCard : BaseEntity
     {
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
-        
+
         /// <summary>
         /// Gets or sets the associated order item identifier
         /// </summary>
@@ -70,31 +70,25 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the date and time of instance creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the gift card usage history
         /// </summary>
         public virtual ICollection<GiftCardUsageHistory> GiftCardUsageHistory
         {
-			get { return _giftCardUsageHistory ?? (_giftCardUsageHistory = new HashSet<GiftCardUsageHistory>()); }
-            protected set { _giftCardUsageHistory = value; }
+            get => _giftCardUsageHistory ?? (_giftCardUsageHistory = new HashSet<GiftCardUsageHistory>());
+            protected set => _giftCardUsageHistory = value;
         }
-        
+
         /// <summary>
         /// Gets or sets the gift card type
         /// </summary>
-        public  GiftCardType GiftCardType
+        public GiftCardType GiftCardType
         {
-            get
-            {
-                return (GiftCardType)this.GiftCardTypeId;
-            }
-            set
-            {
-                this.GiftCardTypeId = (int)value;
-            }
+            get => (GiftCardType)this.GiftCardTypeId;
+            set => this.GiftCardTypeId = (int)value;
         }
-        
+
         /// <summary>
         /// Gets or sets the associated order item
         /// </summary>
@@ -129,15 +123,15 @@ namespace SmartStore.Core.Domain.Orders
             if (!this.IsGiftCardActivated)
                 return false;
 
-			if (storeId != 0 && 
-				PurchasedWithOrderItemId.HasValue && PurchasedWithOrderItem != null &&
-				PurchasedWithOrderItem.Order != null)
-			{
-				if (PurchasedWithOrderItem.Order.StoreId != storeId)
-					return false;
-			}
+            if (storeId != 0 &&
+                PurchasedWithOrderItemId.HasValue && PurchasedWithOrderItem != null &&
+                PurchasedWithOrderItem.Order != null)
+            {
+                if (PurchasedWithOrderItem.Order.StoreId != storeId)
+                    return false;
+            }
 
-			decimal remainingAmount = GetGiftCardRemainingAmount();
+            decimal remainingAmount = GetGiftCardRemainingAmount();
             if (remainingAmount > decimal.Zero)
                 return true;
 

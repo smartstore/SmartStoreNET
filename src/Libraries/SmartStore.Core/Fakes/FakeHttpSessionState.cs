@@ -14,20 +14,14 @@ namespace SmartStore.Core.Fakes
             _sessionItems = sessionItems;
         }
 
-        public override int Count
-        {
-            get { return _sessionItems.Count; }
-        }
+        public override int Count => _sessionItems.Count;
 
-        public override NameObjectCollectionBase.KeysCollection Keys
-        {
-            get { return _sessionItems.Keys; }
-        }
+        public override NameObjectCollectionBase.KeysCollection Keys => _sessionItems.Keys;
 
         public override object this[string name]
         {
-            get { return _sessionItems[name]; }
-            set { _sessionItems[name] = value; }
+            get => _sessionItems[name];
+            set => _sessionItems[name] = value;
         }
 
         public bool Exists(string key)
@@ -37,8 +31,8 @@ namespace SmartStore.Core.Fakes
 
         public override object this[int index]
         {
-            get { return _sessionItems[index]; }
-            set { _sessionItems[index] = value; }
+            get => _sessionItems[index];
+            set => _sessionItems[index] = value;
         }
 
         public override void Add(string name, object value)

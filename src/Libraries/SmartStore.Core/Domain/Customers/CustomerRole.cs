@@ -79,8 +79,8 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<PermissionRoleMapping> PermissionRoleMappings
         {
-            get { return _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>()); }
-            protected set { _permissionRoleMappings = value; }
+            get => _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>());
+            protected set => _permissionRoleMappings = value;
         }
 
         /// <summary>
@@ -88,8 +88,8 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<RuleSetEntity> RuleSets
         {
-            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
-            protected set { _ruleSets = value; }
+            get => _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>());
+            protected set => _ruleSets = value;
         }
     }
 }

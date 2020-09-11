@@ -41,11 +41,20 @@ namespace SmartStore.Rules
 
         public string Operator { get; set; }
 
-        public override string ToString() => Operator;
+        public override string ToString()
+        {
+            return Operator;
+        }
 
-        public static implicit operator string(RuleOperator obj) => obj.Operator;
+        public static implicit operator string(RuleOperator obj)
+        {
+            return obj.Operator;
+        }
 
-        public static implicit operator RuleOperator(string obj) => GetOperator(obj);
+        public static implicit operator RuleOperator(string obj)
+        {
+            return GetOperator(obj);
+        }
 
         public static RuleOperator GetOperator(string op)
         {
@@ -57,7 +66,7 @@ namespace SmartStore.Rules
             if (_map.TryGetValue(op, out var instance))
             {
                 return instance;
-            } 
+            }
 
             throw new InvalidCastException("No rule operator has been registered for '{0}'.".FormatInvariant(op));
         }
@@ -91,8 +100,8 @@ namespace SmartStore.Rules
         public virtual bool Match<TLeft>(TLeft left, object right)
         {
             var body = GetExpression(
-                ExpressionHelper.CreateConstantExpression(left, typeof(TLeft)), 
-                ExpressionHelper.CreateConstantExpression(right), 
+                ExpressionHelper.CreateConstantExpression(left, typeof(TLeft)),
+                ExpressionHelper.CreateConstantExpression(right),
                 true);
 
             var lambda = Expression.Lambda<Func<bool>>(body);
@@ -185,7 +194,7 @@ namespace SmartStore.Rules
                     if (!handled)
                     {
                         right = Expression.Constant(value, targetType);
-                    }   
+                    }
                 }
                 catch
                 {

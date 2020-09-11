@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 
 namespace SmartStore
-{ 
+{
     public static class HtmlTextWriterExtensions
     {
         public static void AddAttributes(this HtmlTextWriter writer, IDictionary<string, object> attributes)

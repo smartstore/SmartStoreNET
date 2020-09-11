@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace SmartStore.Rules.Operators
 {
     internal sealed class LessThanOperator : RuleOperator
     {
-        internal LessThanOperator() 
+        internal LessThanOperator()
             : base("<") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
@@ -16,7 +15,7 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class LessThanOrEqualOperator : RuleOperator
     {
-        internal LessThanOrEqualOperator() 
+        internal LessThanOrEqualOperator()
             : base("<=") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
@@ -27,7 +26,7 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class GreaterThanOperator : RuleOperator
     {
-        internal GreaterThanOperator() 
+        internal GreaterThanOperator()
             : base(">") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
@@ -38,7 +37,7 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class GreaterThanOrEqualOperator : RuleOperator
     {
-        internal GreaterThanOrEqualOperator() 
+        internal GreaterThanOrEqualOperator()
             : base(">=") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)

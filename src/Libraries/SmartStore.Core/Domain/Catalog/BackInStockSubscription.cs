@@ -8,10 +8,10 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     public partial class BackInStockSubscription : BaseEntity
     {
-		/// <summary>
-		/// Gets or sets the store identifier
-		/// </summary>
-		public int StoreId { get; set; }
+        /// <summary>
+        /// Gets or sets the store identifier
+        /// </summary>
+        public int StoreId { get; set; }
 
         /// <summary>
 		/// Gets or sets the product identifier

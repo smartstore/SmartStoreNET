@@ -15,9 +15,9 @@ namespace SmartStore.Linq
     {
         private Expression<Func<T, bool>> _predicate;
 
-        internal ExpressionStarter() 
-            : this(false) 
-        { 
+        internal ExpressionStarter()
+            : this(false)
+        {
         }
 
         internal ExpressionStarter(bool defaultExpression)
@@ -107,19 +107,19 @@ namespace SmartStore.Linq
 
         #region Implement Expression<TDelagate> methods and properties
 
-        public Func<T, bool> Compile() 
-        { 
-            return Predicate.Compile(); 
+        public Func<T, bool> Compile()
+        {
+            return Predicate.Compile();
         }
 
-        public Func<T, bool> Compile(DebugInfoGenerator debugInfoGenerator) 
-        { 
-            return Predicate.Compile(debugInfoGenerator); 
+        public Func<T, bool> Compile(DebugInfoGenerator debugInfoGenerator)
+        {
+            return Predicate.Compile(debugInfoGenerator);
         }
 
-        public Expression<Func<T, bool>> Update(Expression body, IEnumerable<ParameterExpression> parameters) 
-        { 
-            return Predicate.Update(body, parameters); 
+        public Expression<Func<T, bool>> Update(Expression body, IEnumerable<ParameterExpression> parameters)
+        {
+            return Predicate.Update(body, parameters);
         }
 
         #endregion
@@ -140,14 +140,14 @@ namespace SmartStore.Linq
 
         public bool TailCall => Predicate.TailCall;
 
-        public void CompileToMethod(MethodBuilder method) 
-        { 
-            Predicate.CompileToMethod(method); 
+        public void CompileToMethod(MethodBuilder method)
+        {
+            Predicate.CompileToMethod(method);
         }
 
-        public void CompileToMethod(MethodBuilder method, DebugInfoGenerator debugInfoGenerator) 
-        { 
-            Predicate.CompileToMethod(method, debugInfoGenerator); 
+        public void CompileToMethod(MethodBuilder method, DebugInfoGenerator debugInfoGenerator)
+        {
+            Predicate.CompileToMethod(method, debugInfoGenerator);
         }
 
         #endregion

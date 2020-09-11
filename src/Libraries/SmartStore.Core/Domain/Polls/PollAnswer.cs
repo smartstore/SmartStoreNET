@@ -28,7 +28,7 @@ namespace SmartStore.Core.Domain.Polls
         /// Gets or sets the display order
         /// </summary>
         public int DisplayOrder { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the poll
         /// </summary>
@@ -39,8 +39,8 @@ namespace SmartStore.Core.Domain.Polls
         /// </summary>
         public virtual ICollection<PollVotingRecord> PollVotingRecords
         {
-			get { return _pollVotingRecords ?? (_pollVotingRecords = new HashSet<PollVotingRecord>()); }
-            protected set { _pollVotingRecords = value; }
+            get => _pollVotingRecords ?? (_pollVotingRecords = new HashSet<PollVotingRecord>());
+            protected set => _pollVotingRecords = value;
         }
     }
 }

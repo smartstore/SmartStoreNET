@@ -13,19 +13,19 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the product identifier
         /// </summary>
 		[DataMember]
-		public int ProductId { get; set; }
+        public int ProductId { get; set; }
 
         /// <summary>
         /// Gets or sets the category identifier
         /// </summary>
 		[DataMember]
-		public int CategoryId { get; set; }
+        public int CategoryId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the product is featured
         /// </summary>
         [DataMember]
-		[Index]
+        [Index]
         public bool IsFeaturedProduct { get; set; }
 
         /// <summary>

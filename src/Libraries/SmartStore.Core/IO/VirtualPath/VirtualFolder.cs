@@ -7,231 +7,225 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.IO
 {
-	public class VirtualFolder : IVirtualFolder
-	{
-		private readonly IVirtualPathProvider _vpp;
-		private readonly ILogger _logger;
-		private readonly string _root;
+    public class VirtualFolder : IVirtualFolder
+    {
+        private readonly IVirtualPathProvider _vpp;
+        private readonly ILogger _logger;
+        private readonly string _root;
 
-		public VirtualFolder(string root, IVirtualPathProvider vpp)
-			: this(root, vpp, NullLogger.Instance)
-		{
-		}
+        public VirtualFolder(string root, IVirtualPathProvider vpp)
+            : this(root, vpp, NullLogger.Instance)
+        {
+        }
 
-		public VirtualFolder(string root, IVirtualPathProvider vpp, ILogger logger)
-		{
-			Guard.NotEmpty(root, nameof(root));
-			Guard.NotNull(vpp, nameof(vpp));
-			Guard.NotNull(logger, nameof(logger));
+        public VirtualFolder(string root, IVirtualPathProvider vpp, ILogger logger)
+        {
+            Guard.NotEmpty(root, nameof(root));
+            Guard.NotNull(vpp, nameof(vpp));
+            Guard.NotNull(logger, nameof(logger));
 
-			if (!root.StartsWith("~/"))
-			{
-				throw new ArgumentException("Root path must be a valid application relative path starting with '~/'", nameof(root));
-			}
+            if (!root.StartsWith("~/"))
+            {
+                throw new ArgumentException("Root path must be a valid application relative path starting with '~/'", nameof(root));
+            }
 
-			_root = root.Replace(Path.DirectorySeparatorChar, '/').EnsureEndsWith("/");
-			_vpp = vpp;
-			_logger = logger;
-		}
+            _root = root.Replace(Path.DirectorySeparatorChar, '/').EnsureEndsWith("/");
+            _vpp = vpp;
+            _logger = logger;
+        }
 
-		public IVirtualPathProvider VirtualPathProvider
-		{
-			get { return _vpp; }
-		}
+        public IVirtualPathProvider VirtualPathProvider => _vpp;
 
-		public string RootPath
-		{
-			get { return _root; }
-		}
+        public string RootPath => _root;
 
-		public virtual string MapPath(string relativePath)
-		{
-			return _vpp.MapPath(GetVirtualPath(relativePath));
-		}
+        public virtual string MapPath(string relativePath)
+        {
+            return _vpp.MapPath(GetVirtualPath(relativePath));
+        }
 
-		public virtual string Combine(params string[] paths)
-		{
-			return _vpp.Combine(paths);
-		}
+        public virtual string Combine(params string[] paths)
+        {
+            return _vpp.Combine(paths);
+        }
 
-		public virtual bool DirectoryExists(string relativePath)
-		{
-			return _vpp.DirectoryExists(GetVirtualPath(relativePath));
-		}
+        public virtual bool DirectoryExists(string relativePath)
+        {
+            return _vpp.DirectoryExists(GetVirtualPath(relativePath));
+        }
 
-		public virtual bool FileExists(string relativePath)
-		{
-			return _vpp.FileExists(GetVirtualPath(relativePath));
-		}
+        public virtual bool FileExists(string relativePath)
+        {
+            return _vpp.FileExists(GetVirtualPath(relativePath));
+        }
 
-		public virtual IEnumerable<string> ListDirectories(string relativePath)
-		{
-			var path = GetVirtualPath(relativePath);
+        public virtual IEnumerable<string> ListDirectories(string relativePath)
+        {
+            var path = GetVirtualPath(relativePath);
 
-			if (!_vpp.DirectoryExists(path))
-			{
-				return Enumerable.Empty<string>();
-			}
+            if (!_vpp.DirectoryExists(path))
+            {
+                return Enumerable.Empty<string>();
+            }
 
-			return _vpp.ListDirectories(path).Select(x => x.Substring(_root.Length));
-		}
+            return _vpp.ListDirectories(path).Select(x => x.Substring(_root.Length));
+        }
 
-		public virtual IEnumerable<string> ListFiles(string relativePath, bool deep = false)
-		{
-			var path = GetVirtualPath(relativePath);
+        public virtual IEnumerable<string> ListFiles(string relativePath, bool deep = false)
+        {
+            var path = GetVirtualPath(relativePath);
 
-			if (!_vpp.DirectoryExists(path))
-			{
-				return Enumerable.Empty<string>();
-			}
+            if (!_vpp.DirectoryExists(path))
+            {
+                return Enumerable.Empty<string>();
+            }
 
-			var files = _vpp.ListFiles(path).Select(x => x.Substring(_root.Length));
+            var files = _vpp.ListFiles(path).Select(x => x.Substring(_root.Length));
 
-			if (deep)
-			{
-				return files.Concat(ListDirectories(path).SelectMany(d => ListFiles(d, true)));
-			}
+            if (deep)
+            {
+                return files.Concat(ListDirectories(path).SelectMany(d => ListFiles(d, true)));
+            }
 
-			return files;
-		}
+            return files;
+        }
 
-		public virtual string GetDirectoryName(string relativePath)
-		{
-			return Path.GetDirectoryName(relativePath).Replace(Path.DirectorySeparatorChar, '/');
-		}
+        public virtual string GetDirectoryName(string relativePath)
+        {
+            return Path.GetDirectoryName(relativePath).Replace(Path.DirectorySeparatorChar, '/');
+        }
 
-		public virtual Stream OpenFile(string relativePath)
-		{
-			return _vpp.OpenFile(GetVirtualPath(relativePath));
-		}
+        public virtual Stream OpenFile(string relativePath)
+        {
+            return _vpp.OpenFile(GetVirtualPath(relativePath));
+        }
 
-		public void CreateTextFile(string relativePath, string content)
-		{
-			Guard.NotEmpty(relativePath, nameof(relativePath));
+        public void CreateTextFile(string relativePath, string content)
+        {
+            Guard.NotEmpty(relativePath, nameof(relativePath));
 
-			using (var stream = CreateFile(relativePath))
-			{
-				using (var tw = new StreamWriter(stream))
-				{
-					tw.Write(content);
-				}
-			}
-		}
+            using (var stream = CreateFile(relativePath))
+            {
+                using (var tw = new StreamWriter(stream))
+                {
+                    tw.Write(content);
+                }
+            }
+        }
 
-		public async Task CreateTextFileAsync(string relativePath, string content)
-		{
-			Guard.NotEmpty(relativePath, nameof(relativePath));
+        public async Task CreateTextFileAsync(string relativePath, string content)
+        {
+            Guard.NotEmpty(relativePath, nameof(relativePath));
 
-			using (var stream = CreateFile(relativePath))
-			{
-				using (var tw = new StreamWriter(stream))
-				{
-					await tw.WriteAsync(content);
-				}
-			}
-		}
+            using (var stream = CreateFile(relativePath))
+            {
+                using (var tw = new StreamWriter(stream))
+                {
+                    await tw.WriteAsync(content);
+                }
+            }
+        }
 
-		public virtual Stream CreateFile(string relativePath)
-		{
-			var filePath = MapPath(relativePath);
-			var folderPath = Path.GetDirectoryName(filePath);
+        public virtual Stream CreateFile(string relativePath)
+        {
+            var filePath = MapPath(relativePath);
+            var folderPath = Path.GetDirectoryName(filePath);
 
-			if (!Directory.Exists(folderPath))
-			{
-				Directory.CreateDirectory(folderPath);
-			}
-				
-			return File.Create(filePath);
-		}
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
 
-		public virtual DateTime GetFileLastWriteTimeUtc(string relativePath)
-		{
-			return File.GetLastWriteTimeUtc(MapPath(relativePath));
-		}
+            return File.Create(filePath);
+        }
 
-		public virtual void DeleteFile(string relativePath)
-		{
-			File.Delete(MapPath(relativePath));
-		}
+        public virtual DateTime GetFileLastWriteTimeUtc(string relativePath)
+        {
+            return File.GetLastWriteTimeUtc(MapPath(relativePath));
+        }
 
-		public virtual void CreateDirectory(string relativePath)
-		{
-			Directory.CreateDirectory(MapPath(relativePath));
-		}
+        public virtual void DeleteFile(string relativePath)
+        {
+            File.Delete(MapPath(relativePath));
+        }
 
-		public virtual void DeleteDirectory(string relativePath)
-		{
-			Directory.Delete(MapPath(relativePath), true);
-		}
+        public virtual void CreateDirectory(string relativePath)
+        {
+            Directory.CreateDirectory(MapPath(relativePath));
+        }
 
-		public virtual string ReadFile(string relativePath)
-		{
-			Guard.NotEmpty(relativePath, nameof(relativePath));
+        public virtual void DeleteDirectory(string relativePath)
+        {
+            Directory.Delete(MapPath(relativePath), true);
+        }
 
-			var path = GetVirtualPath(relativePath);
+        public virtual string ReadFile(string relativePath)
+        {
+            Guard.NotEmpty(relativePath, nameof(relativePath));
 
-			if (!_vpp.FileExists(path))
-			{
-				return null;
-			}
+            var path = GetVirtualPath(relativePath);
 
-			using (var stream = _vpp.OpenFile(path))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					return reader.ReadToEnd();
-				}
-			}
-		}
+            if (!_vpp.FileExists(path))
+            {
+                return null;
+            }
 
-		public virtual async Task<string> ReadFileAsync(string relativePath)
-		{
-			Guard.NotEmpty(relativePath, nameof(relativePath));
+            using (var stream = _vpp.OpenFile(path))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
 
-			var path = GetVirtualPath(relativePath);
+        public virtual async Task<string> ReadFileAsync(string relativePath)
+        {
+            Guard.NotEmpty(relativePath, nameof(relativePath));
 
-			if (!_vpp.FileExists(path))
-			{
-				return null;
-			}
+            var path = GetVirtualPath(relativePath);
 
-			using (var stream = _vpp.OpenFile(path))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					return await reader.ReadToEndAsync();
-				}
-			}
-		}
+            if (!_vpp.FileExists(path))
+            {
+                return null;
+            }
 
-		public virtual void CopyFile(string relativePath, Stream destination)
-		{
-			Guard.NotEmpty(relativePath, nameof(relativePath));
-			Guard.NotNull(destination, nameof(destination));
+            using (var stream = _vpp.OpenFile(path))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+        }
 
-			var path = GetVirtualPath(relativePath);
+        public virtual void CopyFile(string relativePath, Stream destination)
+        {
+            Guard.NotEmpty(relativePath, nameof(relativePath));
+            Guard.NotNull(destination, nameof(destination));
 
-			if (!_vpp.FileExists(path))
-			{
-				throw Error.InvalidOperation("File '{0}' does not exist".FormatInvariant(path));
-			}
+            var path = GetVirtualPath(relativePath);
 
-			using (var stream = _vpp.OpenFile(path))
-			{
-				stream.CopyTo(destination);
-			}
-		}
+            if (!_vpp.FileExists(path))
+            {
+                throw Error.InvalidOperation("File '{0}' does not exist".FormatInvariant(path));
+            }
 
-		public string GetVirtualPath(string relativePath)
-		{
-			Guard.NotNull(relativePath, nameof(relativePath));
+            using (var stream = _vpp.OpenFile(path))
+            {
+                stream.CopyTo(destination);
+            }
+        }
 
-			if (relativePath.StartsWith("~/"))
-			{
-				return relativePath;
-			}
+        public string GetVirtualPath(string relativePath)
+        {
+            Guard.NotNull(relativePath, nameof(relativePath));
 
-			return _root + relativePath.EmptyNull().Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
-		}
-	}
+            if (relativePath.StartsWith("~/"))
+            {
+                return relativePath;
+            }
+
+            return _root + relativePath.EmptyNull().Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
+        }
+    }
 }

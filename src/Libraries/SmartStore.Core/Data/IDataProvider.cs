@@ -18,9 +18,9 @@ namespace SmartStore.Core.Data
         /// <returns>Parameter</returns>
         DbParameter GetParameter();
 
-		/// <summary>
-		/// Gets the db provider invariant name (e.g. <c>System.Data.SqlClient</c>)
-		/// </summary>
-		string ProviderInvariantName { get; }
+        /// <summary>
+        /// Gets the db provider invariant name (e.g. <c>System.Data.SqlClient</c>)
+        /// </summary>
+        string ProviderInvariantName { get; }
     }
 }

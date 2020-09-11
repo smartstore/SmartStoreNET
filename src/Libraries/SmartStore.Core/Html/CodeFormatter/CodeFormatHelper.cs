@@ -4,9 +4,9 @@ using System.Web;
 
 namespace SmartStore.Core.Html.CodeFormatter
 {
-	/// <summary>
-	/// Represents a code format helper
-	/// </summary>
+    /// <summary>
+    /// Represents a code format helper
+    /// </summary>
     public partial class CodeFormatHelper
     {
         #region Fields
@@ -32,8 +32,8 @@ namespace SmartStore.Core.Html.CodeFormatter
             options.Language = "c#";
             options.Code = match.Groups["inner"].Value;
             options.DisplayLineNumbers = false;
-            options.Title =string.Empty;
-            options.AlternateLineNumbers =false;
+            options.Title = string.Empty;
+            options.AlternateLineNumbers = false;
 
             string result = match.Value;
             result = Highlight(options, result);

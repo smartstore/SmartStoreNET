@@ -22,10 +22,10 @@ namespace SmartStore.Core.Data
         /// </summary>
         IQueryable<T> TableUntracked { get; }
 
-		/// <summary>
-		/// Provides access to the entities currently being tracked by the context and have not been marked as deleted
-		/// </summary>
-		ICollection<T> Local { get; }
+        /// <summary>
+        /// Provides access to the entities currently being tracked by the context and have not been marked as deleted
+        /// </summary>
+        ICollection<T> Local { get; }
 
         /// <summary>
         /// Creates a new instance of an entity of type {T}
@@ -141,7 +141,7 @@ namespace SmartStore.Core.Data
         [Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand(IQueryable<T> query, string path);
 
-		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
+        [Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path);
 
         /// <summary>

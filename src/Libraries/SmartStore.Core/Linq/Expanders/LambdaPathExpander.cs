@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.Utilities;
@@ -16,13 +15,7 @@ namespace SmartStore.Linq
             _expands = new List<LambdaExpression>();
         }
 
-        public IList<LambdaExpression> Expands
-        {
-            get
-            {
-                return _expands;
-            }
-        }
+        public IList<LambdaExpression> Expands => _expands;
 
         public virtual void Expand<T>(Expression<Func<T, object>> path)
         {
@@ -61,7 +54,7 @@ namespace SmartStore.Linq
                 if (prop == null)
                     throw new ArgumentException("The property or member '{0}' does not exist in type '{1}'.".FormatInvariant(member, t.FullName));
 
-				Type memberType = prop.PropertyType;
+                Type memberType = prop.PropertyType;
 
                 DoExpand(t, member);
 

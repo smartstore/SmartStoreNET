@@ -8,7 +8,7 @@ namespace SmartStore.Core.Domain.Forums
     /// Represents a forum topic
     /// </summary>
     public partial class ForumTopic : BaseEntity, IAuditable
-	{
+    {
         /// <summary>
         /// Gets or sets the forum identifier
         /// </summary>
@@ -87,14 +87,8 @@ namespace SmartStore.Core.Domain.Forums
         /// </summary>
         public ForumTopicType ForumTopicType
         {
-            get
-            {
-                return (ForumTopicType)this.TopicTypeId;
-            }
-            set
-            {
-                this.TopicTypeId = (int)value;
-            }
+            get => (ForumTopicType)this.TopicTypeId;
+            set => this.TopicTypeId = (int)value;
         }
 
         /// <summary>

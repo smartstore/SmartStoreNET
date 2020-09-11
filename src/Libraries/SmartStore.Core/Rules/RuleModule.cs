@@ -4,9 +4,9 @@ using Autofac;
 namespace SmartStore.Rules
 {
     public class RuleModule : Autofac.Module
-	{
-		protected override void Load(ContainerBuilder builder)
-		{
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
             builder.RegisterType<RuleStorage>().As<IRuleStorage>().InstancePerRequest();
             builder.RegisterType<RuleFactory>().As<IRuleFactory>().InstancePerRequest();
 
@@ -21,5 +21,5 @@ namespace SmartStore.Rules
                 return key => cc.ResolveKeyed<IRuleProvider>(key);
             });
         }
-	}
+    }
 }

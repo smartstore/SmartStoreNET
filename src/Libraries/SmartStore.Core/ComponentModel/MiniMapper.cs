@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.Globalization;
-using SmartStore.Utilities;
+using System.Linq;
 using SmartStore.Core;
+using SmartStore.Utilities;
 
 namespace SmartStore.ComponentModel
 {
-	/// <summary>
-	/// A very simple object mapper utility which tries to map properties of the same name between two objects.
-	/// If matched properties has different types, the mapper tries to convert them.
-	/// If conversion fails, the property is skipped (no exception is thrown).
-	/// MiniMapper cannot handle sequence and predefined types.
-	/// </summary>
-	public static class MiniMapper
-	{
-		public static TTo Map<TFrom, TTo>(TFrom from, CultureInfo culture = null)
-			where TFrom : class
-			where TTo : class, new()
-		{
+    /// <summary>
+    /// A very simple object mapper utility which tries to map properties of the same name between two objects.
+    /// If matched properties has different types, the mapper tries to convert them.
+    /// If conversion fails, the property is skipped (no exception is thrown).
+    /// MiniMapper cannot handle sequence and predefined types.
+    /// </summary>
+    public static class MiniMapper
+    {
+        public static TTo Map<TFrom, TTo>(TFrom from, CultureInfo culture = null)
+            where TFrom : class
+            where TTo : class, new()
+        {
             Guard.NotNull(from, nameof(from));
 
             if (TryMap(from, from.GetType(), typeof(TTo), culture, out var result))
@@ -30,29 +26,29 @@ namespace SmartStore.ComponentModel
             }
 
             return default(TTo);
-		}
+        }
 
-		public static object Map<TFrom>(TFrom from, Type toType, CultureInfo culture = null)
-			where TFrom : class
-		{
+        public static object Map<TFrom>(TFrom from, Type toType, CultureInfo culture = null)
+            where TFrom : class
+        {
             Guard.NotNull(from, nameof(from));
             Guard.NotNull(toType, nameof(toType));
-			Guard.HasDefaultConstructor(toType);
+            Guard.HasDefaultConstructor(toType);
 
             TryMap(from, from.GetType(), toType, culture, out var result);
 
             return result;
-		}
+        }
 
-		public static void Map<TFrom, TTo>(TFrom from, TTo to, CultureInfo culture = null)
-			where TFrom : class
-			where TTo : class
-		{
-			Guard.NotNull(from, nameof(from));
-			Guard.NotNull(to, nameof(to));
+        public static void Map<TFrom, TTo>(TFrom from, TTo to, CultureInfo culture = null)
+            where TFrom : class
+            where TTo : class
+        {
+            Guard.NotNull(from, nameof(from));
+            Guard.NotNull(to, nameof(to));
 
             MapComplex(from, to, from.GetType(), culture ?? CultureInfo.CurrentCulture);
-		}
+        }
 
         private static bool TryMap(object from, Type fromType, Type toType, CultureInfo culture, out object result)
         {
@@ -111,12 +107,12 @@ namespace SmartStore.ComponentModel
             }
         }
 
-		private static FastProperty[] GetFastPropertiesFor(Type type)
-		{
+        private static FastProperty[] GetFastPropertiesFor(Type type)
+        {
             return FastProperty.GetProperties(type, PropertyCachingStrategy.Uncached)
                 .Values
                 .Where(pi => pi.IsPublicSettable)
                 .ToArray();
-		}
-	}
+        }
+    }
 }

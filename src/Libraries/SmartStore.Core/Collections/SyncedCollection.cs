@@ -5,218 +5,218 @@ using System.Linq;
 
 namespace SmartStore.Collections
 {
-	public sealed class SyncedCollection<T> : ICollection<T>
-	{
-		// INFO: Don't call it SynchronizedCollection because of framework dupe.
-		private readonly ICollection<T> _col;
+    public sealed class SyncedCollection<T> : ICollection<T>
+    {
+        // INFO: Don't call it SynchronizedCollection because of framework dupe.
+        private readonly ICollection<T> _col;
 
-		public SyncedCollection(ICollection<T> wrappedCollection)
-			: this(wrappedCollection, new object())
-		{
-		}
+        public SyncedCollection(ICollection<T> wrappedCollection)
+            : this(wrappedCollection, new object())
+        {
+        }
 
-		public SyncedCollection(ICollection<T> wrappedCollection, object syncRoot)
-		{
-			Guard.NotNull(wrappedCollection, nameof(wrappedCollection));
-			Guard.NotNull(syncRoot, nameof(syncRoot));
-	
-			_col = wrappedCollection;
-			SyncRoot = syncRoot;
-		}
+        public SyncedCollection(ICollection<T> wrappedCollection, object syncRoot)
+        {
+            Guard.NotNull(wrappedCollection, nameof(wrappedCollection));
+            Guard.NotNull(syncRoot, nameof(syncRoot));
 
-		public object SyncRoot { get; }
+            _col = wrappedCollection;
+            SyncRoot = syncRoot;
+        }
 
-		public bool ReadLockFree { get; set; }
+        public object SyncRoot { get; }
 
-		public void AddRange(IEnumerable<T> collection)
-		{
-			lock (SyncRoot)
-			{
-				_col.AddRange(collection);
-			}
-		}
+        public bool ReadLockFree { get; set; }
 
-		public void Insert(int index, T item)
-		{
-			if (_col is List<T> list)
-			{
-				lock (SyncRoot)
-				{
-					list.Insert(index, item);
-				}	
-			}
+        public void AddRange(IEnumerable<T> collection)
+        {
+            lock (SyncRoot)
+            {
+                _col.AddRange(collection);
+            }
+        }
 
-			throw new NotSupportedException();
-		}
+        public void Insert(int index, T item)
+        {
+            if (_col is List<T> list)
+            {
+                lock (SyncRoot)
+                {
+                    list.Insert(index, item);
+                }
+            }
 
-		public void InsertRange(int index, IEnumerable<T> values)
-		{
-			if (_col is List<T> list)
-			{
-				lock (SyncRoot)
-				{
-					list.InsertRange(index, values);
-				}
-			}
+            throw new NotSupportedException();
+        }
 
-			throw new NotSupportedException();
-		}
+        public void InsertRange(int index, IEnumerable<T> values)
+        {
+            if (_col is List<T> list)
+            {
+                lock (SyncRoot)
+                {
+                    list.InsertRange(index, values);
+                }
+            }
 
-		public int RemoveRange(IEnumerable<T> values)
-		{
-			int numRemoved = 0;
-			
-			lock (SyncRoot)
-			{
-				foreach (var value in values)
-				{
-					if (_col.Remove(value))
-						numRemoved++;
-				}
-			}
+            throw new NotSupportedException();
+        }
 
-			return numRemoved;
-		}
+        public int RemoveRange(IEnumerable<T> values)
+        {
+            int numRemoved = 0;
 
-		public void RemoveRange(int index, int count)
-		{
-			if (_col is List<T> list)
-			{
-				lock (SyncRoot)
-				{
-					list.RemoveRange(index, count);
-				}
-			}
+            lock (SyncRoot)
+            {
+                foreach (var value in values)
+                {
+                    if (_col.Remove(value))
+                        numRemoved++;
+                }
+            }
 
-			throw new NotSupportedException();
-		}
+            return numRemoved;
+        }
 
-		public void RemoveAt(int index)
-		{
-			lock (SyncRoot)
-			{
-				if (_col is List<T> list)
-				{
-					list.RemoveAt(index);
-				}
-				else
-				{
-					var item = _col.ElementAtOrDefault(index);
-					if (item != null)
-					{
-						_col.Remove(item);
-					}
-				}
-			}
-		}
+        public void RemoveRange(int index, int count)
+        {
+            if (_col is List<T> list)
+            {
+                lock (SyncRoot)
+                {
+                    list.RemoveRange(index, count);
+                }
+            }
 
-		public T this[int index]
-		{
-			get
-			{
-				if (ReadLockFree)
-				{
-					return _col.ElementAt(index);
-				}
-				else
-				{
-					lock (SyncRoot)
-					{
-						return _col.ElementAt(index);
-					}
-				}
-			}
-		}
+            throw new NotSupportedException();
+        }
 
-		#region ICollection<T>
+        public void RemoveAt(int index)
+        {
+            lock (SyncRoot)
+            {
+                if (_col is List<T> list)
+                {
+                    list.RemoveAt(index);
+                }
+                else
+                {
+                    var item = _col.ElementAtOrDefault(index);
+                    if (item != null)
+                    {
+                        _col.Remove(item);
+                    }
+                }
+            }
+        }
 
-		public int Count
-		{
-			get
-			{
-				if (ReadLockFree)
-				{
-					return _col.Count();
-				}
-				else
-				{
-					lock (SyncRoot)
-					{
-						return _col.Count();
-					}
-				}
-			}
-		}
+        public T this[int index]
+        {
+            get
+            {
+                if (ReadLockFree)
+                {
+                    return _col.ElementAt(index);
+                }
+                else
+                {
+                    lock (SyncRoot)
+                    {
+                        return _col.ElementAt(index);
+                    }
+                }
+            }
+        }
 
-		public bool IsReadOnly => _col.IsReadOnly;
+        #region ICollection<T>
 
-		public void Add(T item)
-		{
-			lock (SyncRoot)
-			{
-				_col.Add(item);
-			}
-		}
+        public int Count
+        {
+            get
+            {
+                if (ReadLockFree)
+                {
+                    return _col.Count();
+                }
+                else
+                {
+                    lock (SyncRoot)
+                    {
+                        return _col.Count();
+                    }
+                }
+            }
+        }
 
-		public void Clear()
-		{
-			lock (SyncRoot)
-			{
-				_col.Clear();
-			}
-		}
+        public bool IsReadOnly => _col.IsReadOnly;
 
-		public bool Contains(T item)
-		{
-			if (ReadLockFree)
-			{
-				return _col.Contains(item);
-			}
-			else
-			{
-				lock (SyncRoot)
-				{
-					return _col.Contains(item);
-				}
-			}
-		}
+        public void Add(T item)
+        {
+            lock (SyncRoot)
+            {
+                _col.Add(item);
+            }
+        }
 
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			lock (SyncRoot)
-			{
-				_col.CopyTo(array, arrayIndex);
-			}
-		}
+        public void Clear()
+        {
+            lock (SyncRoot)
+            {
+                _col.Clear();
+            }
+        }
 
-		public bool Remove(T item)
-		{
-			lock (SyncRoot)
-			{
-				return _col.Remove(item);
-			}
-		}
+        public bool Contains(T item)
+        {
+            if (ReadLockFree)
+            {
+                return _col.Contains(item);
+            }
+            else
+            {
+                lock (SyncRoot)
+                {
+                    return _col.Contains(item);
+                }
+            }
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this.GetEnumerator();
-		}
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            lock (SyncRoot)
+            {
+                _col.CopyTo(array, arrayIndex);
+            }
+        }
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			if (ReadLockFree)
-			{
-				return _col.GetEnumerator();
-			}
-			else
-			{
-				lock (SyncRoot)
-				{
-					return _col.GetEnumerator();
-				}
-			}
-		}
+        public bool Remove(T item)
+        {
+            lock (SyncRoot)
+            {
+                return _col.Remove(item);
+            }
+        }
 
-		#endregion
-	}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (ReadLockFree)
+            {
+                return _col.GetEnumerator();
+            }
+            else
+            {
+                lock (SyncRoot)
+                {
+                    return _col.GetEnumerator();
+                }
+            }
+        }
+
+        #endregion
+    }
 }

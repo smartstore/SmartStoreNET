@@ -151,7 +151,7 @@ namespace SmartStore.Rules.Filters
         public static LambdaExpression CreateLambdaExpression(ParameterExpression p, Expression body)
         {
             return Expression.Lambda(
-                new FilterExpressionVisitor(p).Visit(body), 
+                new FilterExpressionVisitor(p).Visit(body),
                 new[] { p });
         }
     }

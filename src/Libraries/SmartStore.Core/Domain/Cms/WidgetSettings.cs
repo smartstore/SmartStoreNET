@@ -1,6 +1,6 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
-	
+
 namespace SmartStore.Core.Domain.Cms
 {
     public class WidgetSettings : ISettings

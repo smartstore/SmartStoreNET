@@ -2,7 +2,7 @@
 
 namespace SmartStore.Core.Fakes
 {
-	public class FakeController : Controller
-	{
-	}
+    public class FakeController : Controller
+    {
+    }
 }

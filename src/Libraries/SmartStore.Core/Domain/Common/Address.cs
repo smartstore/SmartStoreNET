@@ -1,11 +1,11 @@
 ﻿using System;
-using SmartStore.Core.Domain.Directory;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Core.Domain.Common
 {
-	[DataContract]
-	public class Address : BaseEntity, ICloneable
+    [DataContract]
+    public class Address : BaseEntity, ICloneable
     {
         /// <summary>
         /// Gets or sets the first name
@@ -23,91 +23,91 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the first name
         /// </summary>
 		[DataMember]
-		public string FirstName { get; set; }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or sets the last name
         /// </summary>
 		[DataMember]
-		public string LastName { get; set; }
+        public string LastName { get; set; }
 
         /// <summary>
         /// Gets or sets the email
         /// </summary>
 		[DataMember]
-		public string Email { get; set; }
+        public string Email { get; set; }
 
         /// <summary>
         /// Gets or sets the company
         /// </summary>
 		[DataMember]
-		public string Company { get; set; }
+        public string Company { get; set; }
 
         /// <summary>
         /// Gets or sets the country identifier
         /// </summary>
 		[DataMember]
-		public int? CountryId { get; set; }
+        public int? CountryId { get; set; }
 
         /// <summary>
         /// Gets or sets the state/province identifier
         /// </summary>
 		[DataMember]
-		public int? StateProvinceId { get; set; }
-        
+        public int? StateProvinceId { get; set; }
+
         /// <summary>
         /// Gets or sets the city
         /// </summary>
-		[DataMember]
-		public string City { get; set; }
+        [DataMember]
+        public string City { get; set; }
 
         /// <summary>
         /// Gets or sets the address 1
         /// </summary>
 		[DataMember]
-		public string Address1 { get; set; }
+        public string Address1 { get; set; }
 
         /// <summary>
         /// Gets or sets the address 2
         /// </summary>
 		[DataMember]
-		public string Address2 { get; set; }
+        public string Address2 { get; set; }
 
         /// <summary>
         /// Gets or sets the zip/postal code
         /// </summary>
 		[DataMember]
-		public string ZipPostalCode { get; set; }
+        public string ZipPostalCode { get; set; }
 
         /// <summary>
         /// Gets or sets the phone number
         /// </summary>
 		[DataMember]
-		public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the fax number
         /// </summary>
 		[DataMember]
-		public string FaxNumber { get; set; }
+        public string FaxNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of instance creation
         /// </summary>
 		[DataMember]
-		public DateTime CreatedOnUtc { get; set; }
-        
+        public DateTime CreatedOnUtc { get; set; }
+
         /// <summary>
         /// Gets or sets the country
         /// </summary>
-		[DataMember]
-		public virtual Country Country { get; set; }
+        [DataMember]
+        public virtual Country Country { get; set; }
 
         /// <summary>
         /// Gets or sets the state/province
         /// </summary>
 		[DataMember]
-		public virtual StateProvince StateProvince { get; set; }
+        public virtual StateProvince StateProvince { get; set; }
 
         public object Clone()
         {
@@ -134,17 +134,11 @@ namespace SmartStore.Core.Domain.Common
             return addr;
         }
 
-		public static string DefaultAddressFormat
-		{
-			get
-			{
-				return @"{{ Salutation }} {{ Title }} {{ FirstName }} {{ LastName }}
+        public static string DefaultAddressFormat => @"{{ Salutation }} {{ Title }} {{ FirstName }} {{ LastName }}
 {{ Company }}
 {{ Street1 }}
 {{ Street2 }}
 {{ ZipCode }} {{ City }}
 {{ Country | Upcase }}";
-			}
-		}
     }
 }

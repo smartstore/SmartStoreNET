@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace SmartStore.Rules.Filters
 {
@@ -18,7 +15,7 @@ namespace SmartStore.Rules.Filters
         {
             return this.Descriptor.GetExpression(
                 this.Operator,
-                ExpressionHelper.CreateValueExpression(Descriptor.MemberExpression.Body.Type, this.Value), 
+                ExpressionHelper.CreateValueExpression(Descriptor.MemberExpression.Body.Type, this.Value),
                 liftToNull);
         }
     }

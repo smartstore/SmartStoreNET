@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
-
 namespace SmartStore.Core.Domain.Shipping
 {
     /// <summary>
@@ -13,10 +5,10 @@ namespace SmartStore.Core.Domain.Shipping
     /// </summary>
     public partial class ShippingOption
     {
-		/// <summary>
-		/// Shipping method identifier
-		/// </summary>
-		public int ShippingMethodId { get; set; }
+        /// <summary>
+        /// Shipping method identifier
+        /// </summary>
+        public int ShippingMethodId { get; set; }
 
         /// <summary>
         /// Gets or sets the system name of shipping rate computation method

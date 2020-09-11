@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SmartStore.Rules
+﻿namespace SmartStore.Rules
 {
     public class RuleTemplateSelector : IRuleTemplateSelector
     {
@@ -19,8 +16,8 @@ namespace SmartStore.Rules
 
         protected virtual string GetValueTemplateName(RuleDescriptor descriptor)
         {
-            if (descriptor.Metadata.TryGetValue("ValueTemplateName", out var val) && 
-                val is string name && 
+            if (descriptor.Metadata.TryGetValue("ValueTemplateName", out var val) &&
+                val is string name &&
                 name.HasValue())
             {
                 return name;

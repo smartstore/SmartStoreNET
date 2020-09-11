@@ -8,10 +8,10 @@ namespace SmartStore.Core.Domain.Forums
     /// </summary>
     public partial class PrivateMessage : BaseEntity
     {
-		/// <summary>
-		/// Gets or sets the store identifier
-		/// </summary>
-		public int StoreId { get; set; }
+        /// <summary>
+        /// Gets or sets the store identifier
+        /// </summary>
+        public int StoreId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer identifier who sent the message

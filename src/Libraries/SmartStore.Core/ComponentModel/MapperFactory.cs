@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.ComponentModel
@@ -12,7 +10,7 @@ namespace SmartStore.ComponentModel
     {
         private static IDictionary<TypePair, Type> _mapperTypes = null;
         private readonly static object _lock = new object();
-        
+
         private static void EnsureInitialized()
         {
             if (_mapperTypes == null)
@@ -31,7 +29,7 @@ namespace SmartStore.ComponentModel
                 }
             }
         }
-        
+
         /// <summary>
         /// For testing purposes
         /// </summary>
@@ -95,8 +93,8 @@ namespace SmartStore.ComponentModel
             {
             }
 
-            public Type FromType { get => base.Item1; }
-            public Type ToType { get => base.Item2; }
+            public Type FromType => base.Item1;
+            public Type ToType => base.Item2;
         }
 
         class GenericMapper<TFrom, TTo> : IMapper<TFrom, TTo>

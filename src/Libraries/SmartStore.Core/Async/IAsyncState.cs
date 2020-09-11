@@ -4,12 +4,12 @@ using System.Threading;
 
 namespace SmartStore.Core.Async
 {
-	/// <summary>
+    /// <summary>
     /// Stores status information about long-running processes.
     /// </summary>
     public interface IAsyncState
-	{
-		/// <summary>
+    {
+        /// <summary>
         /// Checks whether a status object exists.
         /// </summary>
         /// <typeparam name="T">The type of status to check for.</typeparam>
@@ -73,5 +73,5 @@ namespace SmartStore.Core.Async
 
         bool Cancel<T>(string name = null);
 
-	}
+    }
 }

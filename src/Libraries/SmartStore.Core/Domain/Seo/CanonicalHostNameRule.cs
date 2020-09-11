@@ -1,13 +1,13 @@
 ﻿namespace SmartStore.Core.Domain.Seo
 {
 
-	public enum CanonicalHostNameRule
+    public enum CanonicalHostNameRule
     {
         /// <summary>
         /// Doesn't matter (as requested)
         /// </summary>
         NoRule,
-		/// <summary>
+        /// <summary>
         /// The www prefix is required (www.myshop.com is default host)
         /// </summary>
         RequireWww,

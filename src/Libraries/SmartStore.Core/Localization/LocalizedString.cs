@@ -3,8 +3,8 @@ using System.Web;
 
 namespace SmartStore.Core.Localization
 {
-	[Serializable]
-	public class LocalizedString : IHtmlString
+    [Serializable]
+    public class LocalizedString : IHtmlString
     {
         private readonly string _localized;
         private readonly string _textHint;
@@ -30,48 +30,33 @@ namespace SmartStore.Core.Localization
             return new LocalizedString(text);
         }
 
-        public string TextHint
-        {
-            get { return _textHint; }
-        }
+        public string TextHint => _textHint;
 
-        public object[] Args
-        {
-            get { return _args; }
-        }
+        public object[] Args => _args;
 
-        public string Text
-        {
-            get { return _localized; }
-        }
+        public string Text => _localized;
 
-		/// <summary>
-		/// Returns a js encoded string which already contains delimiters.
-		/// </summary>
-		public IHtmlString JsText
-		{
-			get
-			{
-				return System.Web.Mvc.MvcHtmlString.Create(_localized.EncodeJsString());
-			}
-		}
+        /// <summary>
+        /// Returns a js encoded string which already contains delimiters.
+        /// </summary>
+        public IHtmlString JsText => System.Web.Mvc.MvcHtmlString.Create(_localized.EncodeJsString());
 
-		public static implicit operator string(LocalizedString obj)
+        public static implicit operator string(LocalizedString obj)
         {
             return obj.Text;
         }
 
-		public static implicit operator LocalizedString(string obj)
-		{
-			return new LocalizedString(obj);
-		}
+        public static implicit operator LocalizedString(string obj)
+        {
+            return new LocalizedString(obj);
+        }
 
         public override string ToString()
         {
             return _localized;
         }
 
-		public string ToHtmlString()
+        public string ToHtmlString()
         {
             return _localized;
         }

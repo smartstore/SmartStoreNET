@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
-using SmartStore.Core.Domain.Directory;
-using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -16,42 +16,42 @@ namespace SmartStore.Core.Domain.Catalog
             this.IsActive = true;
         }
 
-		[DataMember]
+        [DataMember]
         public string Sku { get; set; }
 
-		[DataMember]
+        [DataMember]
         [Index]
-		public string Gtin { get; set; }
+        public string Gtin { get; set; }
 
-		[DataMember]
+        [DataMember]
         [Index]
         public string ManufacturerPartNumber { get; set; }
 
-		[DataMember]
-		public decimal? Price { get; set; }
+        [DataMember]
+        public decimal? Price { get; set; }
 
-		[DataMember]
-		public decimal? Length { get; set; }
+        [DataMember]
+        public decimal? Length { get; set; }
 
-		[DataMember]
-		public decimal? Width { get; set; }
+        [DataMember]
+        public decimal? Width { get; set; }
 
-		[DataMember]
-		public decimal? Height { get; set; }
+        [DataMember]
+        public decimal? Height { get; set; }
 
-		[DataMember]
-		public decimal? BasePriceAmount { get; set; }
+        [DataMember]
+        public decimal? BasePriceAmount { get; set; }
 
-		[DataMember]
-		public int? BasePriceBaseAmount { get; set; }
+        [DataMember]
+        public int? BasePriceBaseAmount { get; set; }
 
-		[DataMember]
+        [DataMember]
         public string AssignedMediaFileIds { get; set; }
 
-		[DataMember]
+        [DataMember]
         public int? DeliveryTimeId { get; set; }
 
-		[DataMember]
+        [DataMember]
         public virtual DeliveryTime DeliveryTime { get; set; }
 
         [DataMember]
@@ -60,10 +60,10 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public virtual QuantityUnit QuantityUnit { get; set; }
 
-		[DataMember]
+        [DataMember]
         [Index]
         public bool IsActive { get; set; }
-		//public bool IsDefaultCombination { get; set; }
+        //public bool IsDefaultCombination { get; set; }
 
         public int[] GetAssignedMediaIds()
         {

@@ -2,9 +2,9 @@
 
 namespace SmartStore.Core.Data
 {
-	public interface ITransaction : IDisposable
-	{
-		void Commit();
-		void Rollback();
-	}
+    public interface ITransaction : IDisposable
+    {
+        void Commit();
+        void Rollback();
+    }
 }

@@ -11,14 +11,14 @@ namespace SmartStore.Utilities
     // TODO: Inflector ist leider Englisch! Irgend 'ne Chance das zu lokalisieren??!!
     public static class Inflector
     {
-		#region fields
+        #region fields
 
-		private static readonly Regex HtmlCaseRegex = new Regex(
-			"(?<!^)((?<=[a-zA-Z0-9])[A-Z][a-z])|((?<=[a-z])[A-Z])",
-			RegexOptions.None,
-			TimeSpan.FromMilliseconds(500));
+        private static readonly Regex HtmlCaseRegex = new Regex(
+            "(?<!^)((?<=[a-zA-Z0-9])[A-Z][a-z])|((?<=[a-z])[A-Z])",
+            RegexOptions.None,
+            TimeSpan.FromMilliseconds(500));
 
-		private static readonly List<Rule> _plurals = new List<Rule>();
+        private static readonly List<Rule> _plurals = new List<Rule>();
         private static readonly List<Rule> _singulars = new List<Rule>();
         private static readonly List<string> _uncountables = new List<string>();
 
@@ -185,7 +185,7 @@ namespace SmartStore.Utilities
         public static string Titleize(string word)
         {
             return Regex.Replace(Humanize(Underscore(word)), @"\b([a-z])",
-                                 delegate(Match match)
+                                 delegate (Match match)
                                  {
                                      return match.Captures[0].Value.ToUpper();
                                  });
@@ -210,7 +210,7 @@ namespace SmartStore.Utilities
         public static string Pascalize(string lowercaseAndUnderscoredWord)
         {
             return Regex.Replace(lowercaseAndUnderscoredWord, "(?:^|_)(.)",
-                                 delegate(Match match)
+                                 delegate (Match match)
                                  {
                                      return match.Groups[1].Value.ToUpper();
                                  });
@@ -226,17 +226,17 @@ namespace SmartStore.Utilities
             return Uncapitalize(Pascalize(lowercaseAndUnderscoredWord));
         }
 
-		public static string Handleize(string input)
-		{
-			return HtmlCaseRegex.Replace(input, "-$1$2").ToLowerInvariant();
-		}
+        public static string Handleize(string input)
+        {
+            return HtmlCaseRegex.Replace(input, "-$1$2").ToLowerInvariant();
+        }
 
-		/// <summary>
-		/// Makes an underscored form from the expression in the string. 
-		/// </summary>
-		/// <param name="pascalCasedWord">string. The word to underscore.</param>
-		/// <returns>string. The word with underscore seperators.</returns>
-		public static string Underscore(string pascalCasedWord)
+        /// <summary>
+        /// Makes an underscored form from the expression in the string. 
+        /// </summary>
+        /// <param name="pascalCasedWord">string. The word to underscore.</param>
+        /// <returns>string. The word with underscore seperators.</returns>
+        public static string Underscore(string pascalCasedWord)
         {
             return Regex.Replace(
               Regex.Replace(

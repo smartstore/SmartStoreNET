@@ -7,7 +7,7 @@ using SmartStore.Linq.Expressions;
 
 namespace SmartStore.Linq
 {
-    
+
     public class StringPathExpander : IPathExpander
     {
         private readonly IList<string> _expands;
@@ -17,13 +17,7 @@ namespace SmartStore.Linq
             _expands = new List<string>();
         }
 
-        public IList<string> Expands
-        {
-            get
-            {
-                return _expands;
-            }
-        }
+        public IList<string> Expands => _expands;
 
         public virtual void Expand<T>(Expression<Func<T, object>> path)
         {

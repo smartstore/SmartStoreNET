@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Core.Infrastructure
@@ -14,17 +12,17 @@ namespace SmartStore.Core.Infrastructure
     public interface IEngine
     {
         ContainerManager ContainerManager { get; }
-        
+
         /// <summary>
         /// Initialize components and plugins in the SmartStore environment.
         /// </summary>
         void Initialize();
 
-		/// <summary>
-		/// Determines whether the app has been installed, successfully bootstrapped
-		/// AND the very first HTTP request has been issued.
-		/// </summary>
-		bool IsFullyInitialized { get; set; }
+        /// <summary>
+        /// Determines whether the app has been installed, successfully bootstrapped
+        /// AND the very first HTTP request has been issued.
+        /// </summary>
+        bool IsFullyInitialized { get; set; }
 
         T Resolve<T>(string name = null) where T : class;
 

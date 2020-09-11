@@ -17,12 +17,12 @@ namespace SmartStore.Core.Plugins
         {
             public override int Compare(string x, string y)
             {
-                return Array.FindIndex( KnownGroups, s => s == x) - Array.FindIndex(KnownGroups, s => s == y);
+                return Array.FindIndex(KnownGroups, s => s == x) - Array.FindIndex(KnownGroups, s => s == y);
             }
         }
-        
-        internal readonly static string[] KnownGroups = new string[] 
-        { 
+
+        internal readonly static string[] KnownGroups = new string[]
+        {
             "Admin",
             "Marketing",
             "Payment",
@@ -30,47 +30,47 @@ namespace SmartStore.Core.Plugins
             "Tax",
             "Analytics",
             "CMS",
-			"Media",
+            "Media",
             "SEO",
             "Data",
             "Globalization",
             "Api",
-            "Mobile", 
+            "Mobile",
             "Social",
-            "Security", 
+            "Security",
             "Developer",
-			"Sales",
-			"Design",
-			"Performance",
-			"B2B",
-			"Storefront",
-			"Law"
+            "Sales",
+            "Design",
+            "Performance",
+            "B2B",
+            "Storefront",
+            "Law"
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
 
-		public readonly static string InstalledPluginsFilePath;
+        public readonly static string InstalledPluginsFilePath;
 
-		static PluginFileParser()
-		{
-			InstalledPluginsFilePath = Path.Combine(CommonHelper.MapPath(DataSettings.Current.TenantPath), "InstalledPlugins.txt");
-		}
-
-		public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
+        static PluginFileParser()
         {
-			filePath = filePath ?? InstalledPluginsFilePath;
+            InstalledPluginsFilePath = Path.Combine(CommonHelper.MapPath(DataSettings.Current.TenantPath), "InstalledPlugins.txt");
+        }
 
-			var lines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
+        {
+            filePath = filePath ?? InstalledPluginsFilePath;
 
-			// Read and parse the file
+            var lines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            // Read and parse the file
             if (!File.Exists(filePath))
-				return lines;
+                return lines;
 
             var text = File.ReadAllText(filePath);
             if (text.IsEmpty())
-			{
-				return lines;
-			}		
-            
+            {
+                return lines;
+            }
+
             using (var reader = new StringReader(text))
             {
                 string str;
@@ -91,7 +91,7 @@ namespace SmartStore.Core.Plugins
             if (pluginSystemNames == null || pluginSystemNames.Count == 0)
                 return;
 
-			filePath = filePath ?? InstalledPluginsFilePath;
+            filePath = filePath ?? InstalledPluginsFilePath;
 
             string result = "";
             foreach (var sn in pluginSystemNames)
@@ -108,9 +108,9 @@ namespace SmartStore.Core.Plugins
             if (String.IsNullOrEmpty(text))
                 return descriptor;
 
-			string dirName = Path.GetDirectoryName(filePath);
-			descriptor.PhysicalPath = dirName;
-			descriptor.FolderName = new DirectoryInfo(dirName).Name;
+            string dirName = Path.GetDirectoryName(filePath);
+            descriptor.PhysicalPath = dirName;
+            descriptor.FolderName = new DirectoryInfo(dirName).Name;
 
             var settings = new List<string>();
             using (var reader = new StringReader(text))
@@ -171,9 +171,9 @@ namespace SmartStore.Core.Plugins
                     case "Author":
                         descriptor.Author = value;
                         break;
-					case "Url":
-						descriptor.Url = value;
-						break;
+                    case "Url":
+                        descriptor.Url = value;
+                        break;
                     case "DisplayOrder":
                         {
                             int displayOrder;
@@ -184,31 +184,31 @@ namespace SmartStore.Core.Plugins
                     case "FileName":
                         descriptor.PluginFileName = value;
                         break;
-					case "ResourceRootKey":
-						descriptor.ResourceRootKey = value;
-						break;
+                    case "ResourceRootKey":
+                        descriptor.ResourceRootKey = value;
+                        break;
                 }
             }
 
-			if (IsKnownGroup(group))
-			{
-				descriptor.Group = group;
-			}
-			else
-			{
-				descriptor.Group = "Misc";
-			}
+            if (IsKnownGroup(group))
+            {
+                descriptor.Group = group;
+            }
+            else
+            {
+                descriptor.Group = "Misc";
+            }
 
             return descriptor;
         }
 
-		private static bool IsKnownGroup(string group)
-		{
-			if (group.IsEmpty())
-				return false;
-			return KnownGroups.Contains(group, StringComparer.OrdinalIgnoreCase);
-		}
-        
+        private static bool IsKnownGroup(string group)
+        {
+            if (group.IsEmpty())
+                return false;
+            return KnownGroups.Contains(group, StringComparer.OrdinalIgnoreCase);
+        }
+
         public static void SavePluginDescriptionFile(PluginDescriptor plugin)
         {
             if (plugin == null)
@@ -232,10 +232,10 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("Version", plugin.Version.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("MinAppVersion", string.Join(",", plugin.MinAppVersion)));
             keyValues.Add(new KeyValuePair<string, string>("Author", plugin.Author));
-			keyValues.Add(new KeyValuePair<string, string>("Url", plugin.Url));
+            keyValues.Add(new KeyValuePair<string, string>("Url", plugin.Url));
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));
-			keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));
+            keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));
 
             var sb = new StringBuilder();
             for (int i = 0; i < keyValues.Count; i++)
@@ -243,7 +243,7 @@ namespace SmartStore.Core.Plugins
                 var key = keyValues[i].Key;
                 var value = keyValues[i].Value;
                 sb.AppendFormat("{0}: {1}", key, value);
-                if (i != keyValues.Count -1)
+                if (i != keyValues.Count - 1)
                     sb.Append(Environment.NewLine);
             }
 

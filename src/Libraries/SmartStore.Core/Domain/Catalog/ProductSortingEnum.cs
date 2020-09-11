@@ -10,10 +10,10 @@
         /// </summary>
         Initial = 0,
 
-		/// <summary>
-		/// Relevance
-		/// </summary>
-		Relevance = 1,
+        /// <summary>
+        /// Relevance
+        /// </summary>
+        Relevance = 1,
 
         /// <summary>
         /// Name: A to Z

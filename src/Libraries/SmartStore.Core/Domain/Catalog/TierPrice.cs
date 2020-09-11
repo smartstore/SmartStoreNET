@@ -7,37 +7,37 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a tier price
     /// </summary>
     [DataContract]
-	public partial class TierPrice : BaseEntity
+    public partial class TierPrice : BaseEntity
     {
         /// <summary>
         /// Gets or sets the product identifier
         /// </summary>
 		[DataMember]
-		public int ProductId { get; set; }
+        public int ProductId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the store identifier (0 - all stores)
-		/// </summary>
-		[DataMember]
-		public int StoreId { get; set; }
+        /// <summary>
+        /// Gets or sets the store identifier (0 - all stores)
+        /// </summary>
+        [DataMember]
+        public int StoreId { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role identifier
         /// </summary>
 		[DataMember]
-		public int? CustomerRoleId { get; set; }
+        public int? CustomerRoleId { get; set; }
 
         /// <summary>
         /// Gets or sets the quantity
         /// </summary>
 		[DataMember]
-		public int Quantity { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the price
         /// </summary>
 		[DataMember]
-		public decimal Price { get; set; }
+        public decimal Price { get; set; }
 
         /// <summary>
         /// Gets or sets the product

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
@@ -107,10 +106,10 @@ namespace SmartStore.Core.Domain.News
         /// </summary>
         public int NotApprovedCommentCount { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-		/// </summary>
-		public bool LimitedToStores { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of entity creation
@@ -137,10 +136,10 @@ namespace SmartStore.Core.Domain.News
         /// </summary>
         public virtual ICollection<NewsComment> NewsComments
         {
-			get { return _newsComments ?? (_newsComments = new HashSet<NewsComment>()); }
-            protected set { _newsComments = value; }
+            get => _newsComments ?? (_newsComments = new HashSet<NewsComment>());
+            protected set => _newsComments = value;
         }
-        
+
         /// <summary>
         /// Gets or sets the language
         /// </summary>

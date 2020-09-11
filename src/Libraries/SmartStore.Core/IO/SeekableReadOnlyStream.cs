@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SmartStore.Core.IO
@@ -20,8 +19,8 @@ namespace SmartStore.Core.IO
             _seekBackBuffer = new byte[seekBackBufferSize];
         }
 
-        public override bool CanRead { get { return true; } }
-        public override bool CanSeek { get { return true; } }
+        public override bool CanRead => true;
+        public override bool CanSeek => true;
 
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -208,8 +207,8 @@ namespace SmartStore.Core.IO
 
         public override long Position
         {
-            get { return _underlyingPosition - (_seekBackBufferCount - _seekBackBufferIndex); }
-            set { Seek(value, SeekOrigin.Begin); }
+            get => _underlyingPosition - (_seekBackBufferCount - _seekBackBufferIndex);
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         protected override void Dispose(bool disposing)
@@ -219,9 +218,9 @@ namespace SmartStore.Core.IO
             base.Dispose(disposing);
         }
 
-        public override bool CanTimeout { get { return _underlyingStream.CanTimeout; } }
-        public override bool CanWrite { get { return _underlyingStream.CanWrite; } }
-        public override long Length { get { return _underlyingStream.Length; } }
+        public override bool CanTimeout => _underlyingStream.CanTimeout;
+        public override bool CanWrite => _underlyingStream.CanWrite;
+        public override long Length => _underlyingStream.Length;
         public override void SetLength(long value) { _underlyingStream.SetLength(value); }
         public override void Write(byte[] buffer, int offset, int count) { _underlyingStream.Write(buffer, offset, count); }
         public override void Flush() { _underlyingStream.Flush(); }

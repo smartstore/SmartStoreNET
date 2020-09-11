@@ -11,110 +11,98 @@ namespace SmartStore.Core.Domain.Discounts
     /// Represents a discount
     /// </summary>
     [DataContract]
-	[DebuggerDisplay("{Name} - {DiscountType}")]
-	public partial class Discount : BaseEntity, IRulesContainer
+    [DebuggerDisplay("{Name} - {DiscountType}")]
+    public partial class Discount : BaseEntity, IRulesContainer
     {
         private ICollection<RuleSetEntity> _ruleSets;
         private ICollection<Category> _appliedToCategories;
-		private ICollection<Manufacturer> _appliedToManufacturers;
-		private ICollection<Product> _appliedToProducts;
+        private ICollection<Manufacturer> _appliedToManufacturers;
+        private ICollection<Product> _appliedToProducts;
 
         /// <summary>
         /// Gets or sets the name
         /// </summary>
 		[DataMember]
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the discount type identifier
         /// </summary>
 		[DataMember]
-		public int DiscountTypeId { get; set; }
+        public int DiscountTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use percentage
         /// </summary>
 		[DataMember]
-		public bool UsePercentage { get; set; }
+        public bool UsePercentage { get; set; }
 
         /// <summary>
         /// Gets or sets the discount percentage
         /// </summary>
 		[DataMember]
-		public decimal DiscountPercentage { get; set; }
+        public decimal DiscountPercentage { get; set; }
 
         /// <summary>
         /// Gets or sets the discount amount
         /// </summary>
 		[DataMember]
-		public decimal DiscountAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
 
         /// <summary>
         /// Gets or sets the discount start date and time
         /// </summary>
 		[DataMember]
-		public DateTime? StartDateUtc { get; set; }
+        public DateTime? StartDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the discount end date and time
         /// </summary>
 		[DataMember]
-		public DateTime? EndDateUtc { get; set; }
+        public DateTime? EndDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether discount requires coupon code
         /// </summary>
 		[DataMember]
-		public bool RequiresCouponCode { get; set; }
+        public bool RequiresCouponCode { get; set; }
 
         /// <summary>
         /// Gets or sets the coupon code
         /// </summary>
 		[DataMember]
-		public string CouponCode { get; set; }
+        public string CouponCode { get; set; }
 
         /// <summary>
         /// Gets or sets the discount limitation identifier
         /// </summary>
 		[DataMember]
-		public int DiscountLimitationId { get; set; }
+        public int DiscountLimitationId { get; set; }
 
         /// <summary>
         /// Gets or sets the discount limitation times (used when Limitation is set to "N Times Only" or "N Times Per Customer")
         /// </summary>
 		[DataMember]
-		public int LimitationTimes { get; set; }
+        public int LimitationTimes { get; set; }
 
         /// <summary>
         /// Gets or sets the discount type
         /// </summary>
 		[DataMember]
-		public DiscountType DiscountType
+        public DiscountType DiscountType
         {
-            get
-            {
-                return (DiscountType)this.DiscountTypeId;
-            }
-            set
-            {
-                this.DiscountTypeId = (int)value;
-            }
+            get => (DiscountType)this.DiscountTypeId;
+            set => this.DiscountTypeId = (int)value;
         }
 
         /// <summary>
         /// Gets or sets the discount limitation
         /// </summary>
 		[DataMember]
-		public DiscountLimitationType DiscountLimitation
+        public DiscountLimitationType DiscountLimitation
         {
-            get
-            {
-                return (DiscountLimitationType)this.DiscountLimitationId;
-            }
-            set
-            {
-                this.DiscountLimitationId = (int)value;
-            }
+            get => (DiscountLimitationType)this.DiscountLimitationId;
+            set => this.DiscountLimitationId = (int)value;
         }
 
         /// <summary>
@@ -122,8 +110,8 @@ namespace SmartStore.Core.Domain.Discounts
         /// </summary>
         public virtual ICollection<RuleSetEntity> RuleSets
         {
-            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
-            protected set { _ruleSets = value; }
+            get => _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>());
+            protected set => _ruleSets = value;
         }
 
         /// <summary>
@@ -132,27 +120,27 @@ namespace SmartStore.Core.Domain.Discounts
 		[DataMember]
         public virtual ICollection<Category> AppliedToCategories
         {
-			get { return _appliedToCategories ?? (_appliedToCategories = new HashSet<Category>()); }
-            protected set { _appliedToCategories = value; }
+            get => _appliedToCategories ?? (_appliedToCategories = new HashSet<Category>());
+            protected set => _appliedToCategories = value;
         }
 
-		/// <summary>
-		/// Gets or sets the manufacturers
-		/// </summary>
-		[DataMember]
-		public virtual ICollection<Manufacturer> AppliedToManufacturers
-		{
-			get { return _appliedToManufacturers ?? (_appliedToManufacturers = new HashSet<Manufacturer>()); }
-			protected set { _appliedToManufacturers = value; }
-		}
+        /// <summary>
+        /// Gets or sets the manufacturers
+        /// </summary>
+        [DataMember]
+        public virtual ICollection<Manufacturer> AppliedToManufacturers
+        {
+            get => _appliedToManufacturers ?? (_appliedToManufacturers = new HashSet<Manufacturer>());
+            protected set => _appliedToManufacturers = value;
+        }
 
-		/// <summary>
-		/// Gets or sets the products 
-		/// </summary>
-		public virtual ICollection<Product> AppliedToProducts
-		{
-			get { return _appliedToProducts ?? (_appliedToProducts = new HashSet<Product>()); }
-			protected set { _appliedToProducts = value; }
-		}
+        /// <summary>
+        /// Gets or sets the products 
+        /// </summary>
+        public virtual ICollection<Product> AppliedToProducts
+        {
+            get => _appliedToProducts ?? (_appliedToProducts = new HashSet<Product>());
+            protected set => _appliedToProducts = value;
+        }
     }
 }

@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace SmartStore.Core.Domain.Logging
+﻿namespace SmartStore.Core.Domain.Logging
 {
     /// <summary>
     /// Represents an activity log type record
     /// </summary>
     public partial class ActivityLogType : BaseEntity
     {
-       
+
         /// <summary>
         /// Gets or sets the system keyword
         /// </summary>

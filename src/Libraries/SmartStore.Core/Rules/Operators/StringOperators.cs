@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using SmartStore.Rules.Filters;
 
 namespace SmartStore.Rules.Operators
@@ -66,28 +65,28 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class StartsWithOperator : RuleOperator
     {
-        internal StartsWithOperator() 
+        internal StartsWithOperator()
             : base("StartsWith") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             var methodInfo = ExpressionHelper.StringStartsWithMethod;
             return Expression.Equal(
-                methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), 
+                methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull),
                 ExpressionHelper.TrueLiteral);
         }
     }
 
     internal sealed class EndsWithOperator : RuleOperator
     {
-        internal EndsWithOperator() 
+        internal EndsWithOperator()
             : base("EndsWith") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             var methodInfo = ExpressionHelper.StringEndsWithMethod;
             return Expression.Equal(
-                methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), 
+                methodInfo.ToCaseInsensitiveStringMethodCall(left, right, liftToNull),
                 ExpressionHelper.TrueLiteral);
         }
     }
@@ -100,7 +99,7 @@ namespace SmartStore.Rules.Operators
 
     internal class ContainsOperator : RuleOperator
     {
-        internal ContainsOperator() 
+        internal ContainsOperator()
             : this("Contains", false) { }
 
         protected ContainsOperator(string op, bool negate)
@@ -114,7 +113,7 @@ namespace SmartStore.Rules.Operators
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.Equal(
-                ExpressionHelper.StringContainsMethod.ToCaseInsensitiveStringMethodCall(left, right, liftToNull), 
+                ExpressionHelper.StringContainsMethod.ToCaseInsensitiveStringMethodCall(left, right, liftToNull),
                 Negate ? ExpressionHelper.FalseLiteral : ExpressionHelper.TrueLiteral);
         }
     }

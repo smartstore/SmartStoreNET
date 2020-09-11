@@ -17,13 +17,13 @@ namespace SmartStore
 {
     public static class StringExtensions
     {
-		public const string CarriageReturnLineFeed = "\r\n";
+        public const string CarriageReturnLineFeed = "\r\n";
         public const string Empty = "";
         public const char CarriageReturn = '\r';
         public const char LineFeed = '\n';
         public const char Tab = '\t';
 
-		private delegate void ActionLine(TextWriter textWriter, string line);
+        private delegate void ActionLine(TextWriter textWriter, string line);
 
         #region Char extensions
 
@@ -73,22 +73,22 @@ namespace SmartStore
             writer.Write(h4);
         }
 
-		public static char TryRemoveDiacritic(this char c)
-		{
-			var normalized = c.ToString().Normalize(NormalizationForm.FormD);
-			if (normalized.Length > 1)
-			{
-				return normalized[0];
-			}
+        public static char TryRemoveDiacritic(this char c)
+        {
+            var normalized = c.ToString().Normalize(NormalizationForm.FormD);
+            if (normalized.Length > 1)
+            {
+                return normalized[0];
+            }
 
-			return c;
-		}
+            return c;
+        }
 
-		#endregion
+        #endregion
 
-		#region String extensions
+        #region String extensions
 
-		[DebuggerStepThrough]
+        [DebuggerStepThrough]
         public static T ToEnum<T>(this string value, T defaultValue)
         {
             if (!value.HasValue())
@@ -130,39 +130,39 @@ namespace SmartStore
             return (string.IsNullOrEmpty(value)) ? null : value;
         }
 
-		/// <summary>
-		/// Formats a string to an invariant culture
-		/// </summary>
-		/// <param name="format">The format string.</param>
-		/// <param name="objects">The objects.</param>
-		/// <returns></returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Formats a string to an invariant culture
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="objects">The objects.</param>
+        /// <returns></returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.InvariantCulture, format, objects);
         }
 
-		/// <summary>
-		/// Formats a string to the current culture.
-		/// </summary>
-		/// <param name="format">The format string.</param>
-		/// <param name="objects">The objects.</param>
-		/// <returns></returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Formats a string to the current culture.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="objects">The objects.</param>
+        /// <returns></returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatCurrent(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.CurrentCulture, format, objects);
         }
 
-		/// <summary>
-		/// Formats a string to the current UI culture.
-		/// </summary>
-		/// <param name="format">The format string.</param>
-		/// <param name="objects">The objects.</param>
-		/// <returns></returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Formats a string to the current UI culture.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="objects">The objects.</param>
+        /// <returns></returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatCurrentUI(this string format, params object[] objects)
         {
@@ -182,30 +182,30 @@ namespace SmartStore
             return string.Format(provider, format, args);
         }
 
-		/// <summary>
-		/// Determines whether this instance and another specified System.String object have the same value.
-		/// </summary>
-		/// <param name="value">The string to check equality.</param>
-		/// <param name="comparing">The comparing with string.</param>
-		/// <returns>
-		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
-		/// </returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Determines whether this instance and another specified System.String object have the same value.
+        /// </summary>
+        /// <param name="value">The string to check equality.</param>
+        /// <param name="comparing">The comparing with string.</param>
+        /// <returns>
+        /// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
+        /// </returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCaseSensitiveEqual(this string value, string comparing)
         {
             return string.CompareOrdinal(value, comparing) == 0;
         }
 
-		/// <summary>
-		/// Determines whether this instance and another specified System.String object have the same value.
-		/// </summary>
-		/// <param name="value">The string to check equality.</param>
-		/// <param name="comparing">The comparing with string.</param>
-		/// <returns>
-		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
-		/// </returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Determines whether this instance and another specified System.String object have the same value.
+        /// </summary>
+        /// <param name="value">The string to check equality.</param>
+        /// <param name="comparing">The comparing with string.</param>
+        /// <returns>
+        /// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
+        /// </returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCaseInsensitiveEqual(this string value, string comparing)
         {
@@ -219,23 +219,23 @@ namespace SmartStore
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty(this string value)
         {
-			return string.IsNullOrWhiteSpace(value);
+            return string.IsNullOrWhiteSpace(value);
         }
 
-		/// <summary>
-		/// Determines whether the string is all white space. Empty string will return false.
-		/// </summary>
-		/// <param name="value">The string to test whether it is all white space.</param>
-		/// <returns>
-		/// 	<c>true</c> if the string is all white space; otherwise, <c>false</c>.
-		/// </returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Determines whether the string is all white space. Empty string will return false.
+        /// </summary>
+        /// <param name="value">The string to test whether it is all white space.</param>
+        /// <returns>
+        /// 	<c>true</c> if the string is all white space; otherwise, <c>false</c>.
+        /// </returns>
+        [DebuggerStepThrough]
         public static bool IsWhiteSpace(this string value)
         {
-			if (value == null)
-				throw new ArgumentNullException(nameof(value));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
-			if (value.Length == 0)
+            if (value.Length == 0)
                 return false;
 
             for (int i = 0; i < value.Length; i++)
@@ -254,73 +254,73 @@ namespace SmartStore
             return !string.IsNullOrWhiteSpace(value);
         }
 
-		/// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", Encoding.ASCII, false).</remarks>
+        /// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", Encoding.ASCII, false).</remarks>
         [DebuggerStepThrough]
-		public static string Hash(this string value, Encoding encoding, bool toBase64 = false)
+        public static string Hash(this string value, Encoding encoding, bool toBase64 = false)
         {
-			if (value.IsEmpty())
-				return value;
+            if (value.IsEmpty())
+                return value;
 
             using (var md5 = MD5.Create())
             {
-				byte[] data = encoding.GetBytes(value);
+                byte[] data = encoding.GetBytes(value);
 
-				if (toBase64) 
+                if (toBase64)
                 {
-					byte[] hash = md5.ComputeHash(data);
-					return Convert.ToBase64String(hash);
-				}
-				else 
+                    byte[] hash = md5.ComputeHash(data);
+                    return Convert.ToBase64String(hash);
+                }
+                else
                 {
-					return md5.ComputeHash(data).ToHexString().ToLower();
-				}
+                    return md5.ComputeHash(data).ToHexString().ToLower();
+                }
             }
         }
 
-		/// <summary>
-		/// Mask by replacing characters with asterisks.
-		/// </summary>
-		/// <param name="value">The string</param>
-		/// <param name="length">Number of characters to leave untouched.</param>
-		/// <returns>The mask string</returns>
-		[DebuggerStepThrough]
-		public static string Mask(this string value, int length)
-		{
-			if (value.HasValue())
-				return value.Substring(0, length) + new String('*', value.Length - length);
+        /// <summary>
+        /// Mask by replacing characters with asterisks.
+        /// </summary>
+        /// <param name="value">The string</param>
+        /// <param name="length">Number of characters to leave untouched.</param>
+        /// <returns>The mask string</returns>
+        [DebuggerStepThrough]
+        public static string Mask(this string value, int length)
+        {
+            if (value.HasValue())
+                return value.Substring(0, length) + new String('*', value.Length - length);
 
-			return value;
-		}
+            return value;
+        }
 
         private static bool IsWebUrlInternal(string value, bool schemeIsOptional)
         {
-			if (String.IsNullOrEmpty(value))
-				return false;
+            if (String.IsNullOrEmpty(value))
+                return false;
 
-			value = value.Trim().ToLowerInvariant();
+            value = value.Trim().ToLowerInvariant();
 
-			if (schemeIsOptional && value.StartsWith("//"))
-			{
-				value = "http:" + value;
-			}
+            if (schemeIsOptional && value.StartsWith("//"))
+            {
+                value = "http:" + value;
+            }
 
-			return Uri.IsWellFormedUriString(value, UriKind.Absolute) &&
-				(value.StartsWith("http://") || value.StartsWith("https://") || value.StartsWith("ftp://"));
-		}
+            return Uri.IsWellFormedUriString(value, UriKind.Absolute) &&
+                (value.StartsWith("http://") || value.StartsWith("https://") || value.StartsWith("ftp://"));
+        }
 
-		[DebuggerStepThrough]
-		public static bool IsWebUrl(this string value)
-		{
-			return IsWebUrlInternal(value, false);
-		}
+        [DebuggerStepThrough]
+        public static bool IsWebUrl(this string value)
+        {
+            return IsWebUrlInternal(value, false);
+        }
 
-		[DebuggerStepThrough]
-		public static bool IsWebUrl(this string value, bool schemeIsOptional)
-		{
-			return IsWebUrlInternal(value, schemeIsOptional);
-		}
+        [DebuggerStepThrough]
+        public static bool IsWebUrl(this string value, bool schemeIsOptional)
+        {
+            return IsWebUrlInternal(value, schemeIsOptional);
+        }
 
-		[DebuggerStepThrough]
+        [DebuggerStepThrough]
         public static bool IsEmail(this string value)
         {
             return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value.Trim());
@@ -338,19 +338,19 @@ namespace SmartStore
                    RegularExpressions.IsNumeric.IsMatch(value);
         }
 
-		/// <summary>
-		/// Ensures that a string only contains numeric values
-		/// </summary>
-		/// <param name="str">Input string</param>
-		/// <returns>Input string with only numeric values, empty string if input is null or empty</returns>
-		[DebuggerStepThrough]
-		public static string EnsureNumericOnly(this string str)
-		{
-			if (String.IsNullOrEmpty(str))
-				return string.Empty;
+        /// <summary>
+        /// Ensures that a string only contains numeric values
+        /// </summary>
+        /// <param name="str">Input string</param>
+        /// <returns>Input string with only numeric values, empty string if input is null or empty</returns>
+        [DebuggerStepThrough]
+        public static string EnsureNumericOnly(this string str)
+        {
+            if (String.IsNullOrEmpty(str))
+                return string.Empty;
 
-			return new String(str.Where(c => Char.IsDigit(c)).ToArray());
-		}
+            return new String(str.Where(c => Char.IsDigit(c)).ToArray());
+        }
 
         [DebuggerStepThrough]
         public static bool IsAlpha(this string value)
@@ -367,12 +367,12 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string Truncate(this string value, int maxLength, string suffix = "")
         {
-			if (suffix == null)
-				throw new ArgumentNullException(nameof(suffix));
+            if (suffix == null)
+                throw new ArgumentNullException(nameof(suffix));
 
             Guard.IsPositive(maxLength, nameof(maxLength));
 
-			int subStringLength = maxLength - suffix.Length;
+            int subStringLength = maxLength - suffix.Length;
 
             if (subStringLength <= 0)
                 throw Error.Argument(nameof(maxLength), "Length of suffix string is greater or equal to maximumLength");
@@ -392,142 +392,142 @@ namespace SmartStore
             }
         }
 
-		/// <summary>
-		/// Removes all redundant whitespace (empty lines, double space etc.).
-		/// Use ~! literal to keep whitespace wherever necessary.
-		/// </summary>
-		/// <param name="input">Input</param>
-		/// <returns>The compacted string</returns>
-		public static string Compact(this string input, bool removeEmptyLines = false)
-		{
-			Guard.NotNull(input, nameof(input));
+        /// <summary>
+        /// Removes all redundant whitespace (empty lines, double space etc.).
+        /// Use ~! literal to keep whitespace wherever necessary.
+        /// </summary>
+        /// <param name="input">Input</param>
+        /// <returns>The compacted string</returns>
+        public static string Compact(this string input, bool removeEmptyLines = false)
+        {
+            Guard.NotNull(input, nameof(input));
 
             var psb = PooledStringBuilder.Rent();
             var sb = (StringBuilder)psb;
             var lines = GetLines(input.Trim(), true, removeEmptyLines).ToArray();
 
-			foreach (var line in lines)
-			{
-				var len = line.Length;
+            foreach (var line in lines)
+            {
+                var len = line.Length;
                 var psbLine = PooledStringBuilder.Rent();
                 var sbLine = (StringBuilder)psbLine;
-				var isChar = false;
-				var isLiteral = false; // When we detect the ~! literal
-				int i = 0;
-				var eof = false;
-				
-				for (i = 0; i < len; i++)
-				{
-					var c = line[i];
+                var isChar = false;
+                var isLiteral = false; // When we detect the ~! literal
+                int i = 0;
+                var eof = false;
 
-					eof = i == len - 1;
+                for (i = 0; i < len; i++)
+                {
+                    var c = line[i];
 
-					if (Char.IsWhiteSpace(c))
-					{
-						// Space, Tab etc.
-						if (isChar)
-						{
-							// If last char not empty, append the space.
-							sbLine.Append(' ');
-						}
+                    eof = i == len - 1;
 
-						isLiteral = false;
-						isChar = false;
-					}
-					else
-					{
-						// Char or Literal (~!)
+                    if (Char.IsWhiteSpace(c))
+                    {
+                        // Space, Tab etc.
+                        if (isChar)
+                        {
+                            // If last char not empty, append the space.
+                            sbLine.Append(' ');
+                        }
 
-						isLiteral = c == '~' && !eof && line[i + 1] == '!';
-						isChar = true;
+                        isLiteral = false;
+                        isChar = false;
+                    }
+                    else
+                    {
+                        // Char or Literal (~!)
 
-						if (isLiteral)
-						{
-							sbLine.Append(' ');
-							i++; // skip next "!" char
-						}
-						else
-						{
-							sbLine.Append(c);
-						}
-					}
-				}
+                        isLiteral = c == '~' && !eof && line[i + 1] == '!';
+                        isChar = true;
 
-				// Append the compacted and trimmed line
-				sb.AppendLine(sbLine.ToString().Trim().Trim(','));
+                        if (isLiteral)
+                        {
+                            sbLine.Append(' ');
+                            i++; // skip next "!" char
+                        }
+                        else
+                        {
+                            sbLine.Append(c);
+                        }
+                    }
+                }
+
+                // Append the compacted and trimmed line
+                sb.AppendLine(sbLine.ToString().Trim().Trim(','));
                 psbLine.Return();
             }
 
-			return psb.ToStringAndReturn().Trim();
-		}
+            return psb.ToStringAndReturn().Trim();
+        }
 
-		/// <summary>
-		/// Splits the input string by carriage return.
-		/// </summary>
-		/// <param name="input">The string to split</param>
-		/// <returns>A sequence with string items per line</returns>
-		public static IEnumerable<string> GetLines(this string input, bool trimLines = false, bool removeEmptyLines = false)
-		{
-			if (input.IsEmpty())
-			{
-				yield break;
-			}
-			
-			using (var sr = new StringReader(input))
-			{
-				string line;
-				while ((line = sr.ReadLine()) != null)
-				{
-					if (trimLines)
-					{
-						line = line.Trim();
-					}
+        /// <summary>
+        /// Splits the input string by carriage return.
+        /// </summary>
+        /// <param name="input">The string to split</param>
+        /// <returns>A sequence with string items per line</returns>
+        public static IEnumerable<string> GetLines(this string input, bool trimLines = false, bool removeEmptyLines = false)
+        {
+            if (input.IsEmpty())
+            {
+                yield break;
+            }
 
-					if (removeEmptyLines && IsEmpty(line))
-					{
-						continue;
-					}
+            using (var sr = new StringReader(input))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (trimLines)
+                    {
+                        line = line.Trim();
+                    }
 
-					yield return line;
-				}
-			}
-		}
+                    if (removeEmptyLines && IsEmpty(line))
+                    {
+                        continue;
+                    }
 
-		/// <summary>
-		/// Ensure that a string starts with a string.
-		/// </summary>
-		/// <param name="value">The target string</param>
-		/// <param name="startsWith">The string the target string should start with</param>
-		/// <returns>The resulting string</returns>
-		[DebuggerStepThrough]
+                    yield return line;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ensure that a string starts with a string.
+        /// </summary>
+        /// <param name="value">The target string</param>
+        /// <param name="startsWith">The string the target string should start with</param>
+        /// <returns>The resulting string</returns>
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string EnsureStartsWith(this string value, string startsWith)
-		{
+        {
             if (value == null)
-				throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(value));
 
-			if (startsWith == null)
-				throw new ArgumentNullException(nameof(startsWith));
+            if (startsWith == null)
+                throw new ArgumentNullException(nameof(startsWith));
 
-			return value.StartsWith(startsWith) ? value : (startsWith + value);
-		}
+            return value.StartsWith(startsWith) ? value : (startsWith + value);
+        }
 
-		/// <summary>
-		/// Ensures the target string ends with the specified string.
-		/// </summary>
-		/// <param name="endWith">The target.</param>
-		/// <param name="value">The value.</param>
-		/// <returns>The target string with the value string at the end.</returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Ensures the target string ends with the specified string.
+        /// </summary>
+        /// <param name="endWith">The target.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The target string with the value string at the end.</returns>
+        [DebuggerStepThrough]
         public static string EnsureEndsWith(this string value, string endWith)
         {
-			if (value == null)
-				throw new ArgumentNullException(nameof(value));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
 
-			if (endWith == null)
-				throw new ArgumentNullException(nameof(endWith));
+            if (endWith == null)
+                throw new ArgumentNullException(nameof(endWith));
 
-			if (value.Length >= endWith.Length)
+            if (value.Length >= endWith.Length)
             {
                 if (string.Compare(value, value.Length - endWith.Length, endWith, 0, endWith.Length, StringComparison.OrdinalIgnoreCase) == 0)
                     return value;
@@ -576,25 +576,25 @@ namespace SmartStore
             return HttpUtility.HtmlDecode(value);
         }
 
-		[Obsolete("The 'removeTags' parameter is not supported anymore. Use the parameterless method instead.")]
-		public static string RemoveHtml(this string source, ICollection<string> removeTags)
-		{
-			return RemoveHtml(source);
-		}
+        [Obsolete("The 'removeTags' parameter is not supported anymore. Use the parameterless method instead.")]
+        public static string RemoveHtml(this string source, ICollection<string> removeTags)
+        {
+            return RemoveHtml(source);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string RemoveHtml(this string source)
-		{
-			return HtmlUtils.StripTags(source).Trim().HtmlDecode();
-		}
+        {
+            return HtmlUtils.StripTags(source).Trim().HtmlDecode();
+        }
 
-		/// <summary>
-		/// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".
-		/// Strings that already contain spaces are ignored.
-		/// </summary>
-		/// <param name="value">String to split</param>
-		/// <returns>The string after being split</returns>
-		[DebuggerStepThrough]
+        /// <summary>
+        /// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".
+        /// Strings that already contain spaces are ignored.
+        /// </summary>
+        /// <param name="value">String to split</param>
+        /// <returns>The string after being split</returns>
+        [DebuggerStepThrough]
         public static string SplitPascalCase(this string value)
         {
             var psb = PooledStringBuilder.Rent();
@@ -621,71 +621,71 @@ namespace SmartStore
             return psb.ToStringAndReturn();
         }
 
-		/// <summary>
-		/// Splits a string into a string array
-		/// </summary>
-		/// <param name="value">String value to split</param>
-		/// <param name="separator">If <c>null</c> then value is searched for a common delimiter like pipe, semicolon or comma</param>
-		/// <returns>String array</returns>
-		[DebuggerStepThrough]
-		public static string[] SplitSafe(this string value, string separator) 
+        /// <summary>
+        /// Splits a string into a string array
+        /// </summary>
+        /// <param name="value">String value to split</param>
+        /// <param name="separator">If <c>null</c> then value is searched for a common delimiter like pipe, semicolon or comma</param>
+        /// <returns>String array</returns>
+        [DebuggerStepThrough]
+        public static string[] SplitSafe(this string value, string separator)
         {
-			if (string.IsNullOrEmpty(value))
-				return new string[0];
+            if (string.IsNullOrEmpty(value))
+                return new string[0];
 
-			// Do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
-			// an empty separator "" returns array with value.
-			if (separator == null)
-			{
-				for (var i = 0; i < value.Length; i++)
-				{
-					var c = value[i];
-					if (c == ';' || c == ',' || c == '|')
-					{
-						return value.Split(new char[] { c }, StringSplitOptions.RemoveEmptyEntries);
-					}
-					if (c == '\r' && (i + 1) < value.Length & value[i + 1] == '\n')
-					{
-						return value.GetLines(false, true).ToArray();
-					}
-				}
+            // Do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
+            // an empty separator "" returns array with value.
+            if (separator == null)
+            {
+                for (var i = 0; i < value.Length; i++)
+                {
+                    var c = value[i];
+                    if (c == ';' || c == ',' || c == '|')
+                    {
+                        return value.Split(new char[] { c }, StringSplitOptions.RemoveEmptyEntries);
+                    }
+                    if (c == '\r' && (i + 1) < value.Length & value[i + 1] == '\n')
+                    {
+                        return value.GetLines(false, true).ToArray();
+                    }
+                }
 
-				return new string[] { value };
-			}
-			else
-			{
-				return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
-			}
-		}
+                return new string[] { value };
+            }
+            else
+            {
+                return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
 
-		/// <summary>Splits a string into two strings</summary>
-		/// <returns>true: success, false: failure</returns>
-		[DebuggerStepThrough]
+        /// <summary>Splits a string into two strings</summary>
+        /// <returns>true: success, false: failure</returns>
+        [DebuggerStepThrough]
         [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
-		public static bool SplitToPair(this string value, out string leftPart, out string rightPart, string delimiter, bool splitAfterLast = false)
-		{
-			leftPart = value;
-			rightPart = "";
+        public static bool SplitToPair(this string value, out string leftPart, out string rightPart, string delimiter, bool splitAfterLast = false)
+        {
+            leftPart = value;
+            rightPart = "";
 
-			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter))
-			{
-				return false;
-			}
+            if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter))
+            {
+                return false;
+            }
 
-			var idx = splitAfterLast
-				? value.LastIndexOf(delimiter)
-				: value.IndexOf(delimiter);
+            var idx = splitAfterLast
+                ? value.LastIndexOf(delimiter)
+                : value.IndexOf(delimiter);
 
-			if (idx == -1)
-			{
-				return false;
-			}
+            if (idx == -1)
+            {
+                return false;
+            }
 
-			leftPart = value.Substring(0, idx);
-			rightPart = value.Substring(idx + delimiter.Length);
+            leftPart = value.Substring(0, idx);
+            rightPart = value.Substring(idx + delimiter.Length);
 
-			return true;
-		}
+            return true;
+        }
 
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value)
@@ -785,58 +785,58 @@ namespace SmartStore
             return value;
         }
 
-		/// <summary>Debug.WriteLine</summary>
+        /// <summary>Debug.WriteLine</summary>
         [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Dump(this string value, bool appendMarks = false) 
+        public static void Dump(this string value, bool appendMarks = false)
         {
-			Debug.WriteLine(value);
-			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
-		}
+            Debug.WriteLine(value);
+            Debug.WriteLineIf(appendMarks, "------------------------------------------------");
+        }
 
-	    /// <summary>Smart way to create a HTML attribute with a leading space.</summary>
-	    /// <param name="value">Name of the attribute.</param>
-	    /// <param name="name"></param>
-	    /// <param name="htmlEncode"></param>
-	    [SuppressMessage("ReSharper", "StringCompareIsCultureSpecific.3")]
-		public static string ToAttribute(this string value, string name, bool htmlEncode = true) 
+        /// <summary>Smart way to create a HTML attribute with a leading space.</summary>
+        /// <param name="value">Name of the attribute.</param>
+        /// <param name="name"></param>
+        /// <param name="htmlEncode"></param>
+        [SuppressMessage("ReSharper", "StringCompareIsCultureSpecific.3")]
+        public static string ToAttribute(this string value, string name, bool htmlEncode = true)
         {
-			if (name.IsEmpty())
-				return "";
+            if (name.IsEmpty())
+                return "";
 
-			if (value == "" && name != "value" && !name.StartsWith("data"))
-				return "";
+            if (value == "" && name != "value" && !name.StartsWith("data"))
+                return "";
 
-			if (name == "maxlength" && (value == "" || value == "0"))
-				return "";
+            if (name == "maxlength" && (value == "" || value == "0"))
+                return "";
 
-			if (name == "checked" || name == "disabled" || name == "multiple") 
+            if (name == "checked" || name == "disabled" || name == "multiple")
             {
-				if (value == "" || string.Compare(value, "false", true) == 0)
-					return "";
-				value = (string.Compare(value, "true", true) == 0 ? name : value);
-			}
+                if (value == "" || string.Compare(value, "false", true) == 0)
+                    return "";
+                value = (string.Compare(value, "true", true) == 0 ? name : value);
+            }
 
-			if (name.StartsWith("data"))
-				name = name.Insert(4, "-");
+            if (name.StartsWith("data"))
+                name = name.Insert(4, "-");
 
-			return string.Format(" {0}=\"{1}\"", name, htmlEncode ? HttpUtility.HtmlEncode(value) : value);
-		}
-		
-		/// <summary>
-		/// Appends grow and uses delimiter if the string is not empty.
-		/// </summary>
+            return string.Format(" {0}=\"{1}\"", name, htmlEncode ? HttpUtility.HtmlEncode(value) : value);
+        }
+
+        /// <summary>
+        /// Appends grow and uses delimiter if the string is not empty.
+        /// </summary>
         [DebuggerStepThrough]
-		public static string Grow(this string value, string grow, string delimiter) 
+        public static string Grow(this string value, string grow, string delimiter)
         {
-			if (string.IsNullOrEmpty(value))
-				return (string.IsNullOrEmpty(grow) ? "" : grow);
+            if (string.IsNullOrEmpty(value))
+                return (string.IsNullOrEmpty(grow) ? "" : grow);
 
-			if (string.IsNullOrEmpty(grow))
-				return (string.IsNullOrEmpty(value) ? "" : value);
+            if (string.IsNullOrEmpty(grow))
+                return (string.IsNullOrEmpty(value) ? "" : value);
 
-			return value + delimiter + grow;
-		}
+            return value + delimiter + grow;
+        }
 
         /// <summary>
         /// Left-pads a string. Always returns empty string if source is null or empty.
@@ -868,171 +868,171 @@ namespace SmartStore
         /// </summary>
         [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NaIfEmpty(this string value) 
+        public static string NaIfEmpty(this string value)
         {
-			return (string.IsNullOrWhiteSpace(value) ? "n/a" : value);
-		}
+            return (string.IsNullOrWhiteSpace(value) ? "n/a" : value);
+        }
 
-		/// <summary>
-		/// Replaces substring with position x1 to x2 by replaceBy.
-		/// </summary>
+        /// <summary>
+        /// Replaces substring with position x1 to x2 by replaceBy.
+        /// </summary>
         [DebuggerStepThrough]
-		public static string Replace(this string value, int x1, int x2, string replaceBy = null) 
+        public static string Replace(this string value, int x1, int x2, string replaceBy = null)
         {
-			if (!string.IsNullOrWhiteSpace(value) && x1 > 0 && x2 > x1 && x2 < value.Length) 
+            if (!string.IsNullOrWhiteSpace(value) && x1 > 0 && x2 > x1 && x2 < value.Length)
             {
-				return value.Substring(0, x1) + (replaceBy.EmptyNull()) + value.Substring(x2 + 1);
-			}
+                return value.Substring(0, x1) + (replaceBy.EmptyNull()) + value.Substring(x2 + 1);
+            }
 
-			return value;
-		}
-
-		[DebuggerStepThrough]
-		public static string Replace(this string value, string oldValue, string newValue, StringComparison comparisonType)
-		{
-			try
-			{
-				int startIndex = 0;
-				while (true)
-				{
-					startIndex = value.IndexOf(oldValue, startIndex, comparisonType);
-					if (startIndex == -1)
-						break;
-
-					value = value.Substring(0, startIndex) + newValue + value.Substring(startIndex + oldValue.Length);
-
-					startIndex += newValue.Length;
-				}
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
-			}
-
-			return value;
-		}
-
-		/// <summary>
-		/// Replaces digits in a string with culture native digits (if digit substitution for culture is required)
-		/// </summary>
-		[DebuggerStepThrough]
-		public static string ReplaceNativeDigits(this string value, IFormatProvider provider = null)
-		{
-			if (value == null)
-				throw new ArgumentNullException(nameof(value));
-			
-			provider = provider ?? NumberFormatInfo.CurrentInfo;
-			var nfi = NumberFormatInfo.GetInstance(provider);
-
-			if (nfi.DigitSubstitution == DigitShapes.None)
-			{
-				return value;
-			}
-
-			var nativeDigits = nfi.NativeDigits;
-			var rg = new Regex(@"\d");
-
-			var result = rg.Replace(value, m => nativeDigits[m.Value.ToInt()]);
-			return result;
-		}
-
-		[DebuggerStepThrough]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string TrimSafe(this string value) 
-        {
-			return (value.HasValue() ? value.Trim() : value);
-		}
+            return value;
+        }
 
         [DebuggerStepThrough]
-		public static string Slugify(this string value, bool allowSpace = false, char[] allowChars = null) 
+        public static string Replace(this string value, string oldValue, string newValue, StringComparison comparisonType)
         {
-			string res = string.Empty;
+            try
+            {
+                int startIndex = 0;
+                while (true)
+                {
+                    startIndex = value.IndexOf(oldValue, startIndex, comparisonType);
+                    if (startIndex == -1)
+                        break;
+
+                    value = value.Substring(0, startIndex) + newValue + value.Substring(startIndex + oldValue.Length);
+
+                    startIndex += newValue.Length;
+                }
+            }
+            catch (Exception exc)
+            {
+                exc.Dump();
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Replaces digits in a string with culture native digits (if digit substitution for culture is required)
+        /// </summary>
+        [DebuggerStepThrough]
+        public static string ReplaceNativeDigits(this string value, IFormatProvider provider = null)
+        {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            provider = provider ?? NumberFormatInfo.CurrentInfo;
+            var nfi = NumberFormatInfo.GetInstance(provider);
+
+            if (nfi.DigitSubstitution == DigitShapes.None)
+            {
+                return value;
+            }
+
+            var nativeDigits = nfi.NativeDigits;
+            var rg = new Regex(@"\d");
+
+            var result = rg.Replace(value, m => nativeDigits[m.Value.ToInt()]);
+            return result;
+        }
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string TrimSafe(this string value)
+        {
+            return (value.HasValue() ? value.Trim() : value);
+        }
+
+        [DebuggerStepThrough]
+        public static string Slugify(this string value, bool allowSpace = false, char[] allowChars = null)
+        {
+            string res = string.Empty;
             var psb = PooledStringBuilder.Rent();
 
-            try 
+            try
             {
-				if (!string.IsNullOrWhiteSpace(value)) 
+                if (!string.IsNullOrWhiteSpace(value))
                 {
                     var sb = (StringBuilder)psb;
                     bool space = false;
-					char ch;
+                    char ch;
 
-					for (int i = 0; i < value.Length; ++i) 
+                    for (int i = 0; i < value.Length; ++i)
                     {
-						ch = value[i];
+                        ch = value[i];
 
-						if (ch == ' ' || ch == '-') 
+                        if (ch == ' ' || ch == '-')
                         {
-							if (allowSpace && ch == ' ')
-								sb.Append(' ');
-							else if (!space)
-								sb.Append('-');
-							space = true;
-							continue;
-						}
+                            if (allowSpace && ch == ' ')
+                                sb.Append(' ');
+                            else if (!space)
+                                sb.Append('-');
+                            space = true;
+                            continue;
+                        }
 
-						space = false;
+                        space = false;
 
-						if ((ch >= 48 && ch <= 57) || (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122) || ch == '_')
-						{
-							sb.Append(ch);
-							continue;
-						}
-
-						if (allowChars != null && allowChars.Contains(ch)) 
+                        if ((ch >= 48 && ch <= 57) || (ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122) || ch == '_')
                         {
-							sb.Append(ch);
-							continue;
-						}
+                            sb.Append(ch);
+                            continue;
+                        }
 
-						if ((int)ch >= 128)
-						{
-							switch (ch)
-							{
-								case 'ä': sb.Append("ae"); break;
-								case 'ö': sb.Append("oe"); break;
-								case 'ü': sb.Append("ue"); break;
-								case 'ß': sb.Append("ss"); break;
-								case 'Ä': sb.Append("AE"); break;
-								case 'Ö': sb.Append("OE"); break;
-								case 'Ü': sb.Append("UE"); break;
-								default:
-									var c2 = ch.TryRemoveDiacritic();
-									if ((c2 >= 'a' && c2 <= 'z') || (c2 >= 'A' && c2 <= 'Z'))
-									{
-										sb.Append(c2);
-									}
-									break;
-							} 
-						}
-					}	// for
+                        if (allowChars != null && allowChars.Contains(ch))
+                        {
+                            sb.Append(ch);
+                            continue;
+                        }
 
-					if (sb.Length > 0) 
+                        if ((int)ch >= 128)
+                        {
+                            switch (ch)
+                            {
+                                case 'ä': sb.Append("ae"); break;
+                                case 'ö': sb.Append("oe"); break;
+                                case 'ü': sb.Append("ue"); break;
+                                case 'ß': sb.Append("ss"); break;
+                                case 'Ä': sb.Append("AE"); break;
+                                case 'Ö': sb.Append("OE"); break;
+                                case 'Ü': sb.Append("UE"); break;
+                                default:
+                                    var c2 = ch.TryRemoveDiacritic();
+                                    if ((c2 >= 'a' && c2 <= 'z') || (c2 >= 'A' && c2 <= 'Z'))
+                                    {
+                                        sb.Append(c2);
+                                    }
+                                    break;
+                            }
+                        }
+                    }   // for
+
+                    if (sb.Length > 0)
                     {
-						res = sb.ToString().Trim(new char[] { ' ', '-' });
+                        res = sb.ToString().Trim(new char[] { ' ', '-' });
 
-						Regex pat = new Regex(@"(-{2,})"); // remove double SpaceChar
-						res = pat.Replace(res, "-");
-						res = res.Replace("__", "_");
-					}
-				}
-			}
-			catch (Exception ex) 
+                        Regex pat = new Regex(@"(-{2,})"); // remove double SpaceChar
+                        res = pat.Replace(res, "-");
+                        res = res.Replace("__", "_");
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-				ex.Dump();
-			}
+                ex.Dump();
+            }
             finally
             {
                 psb.Return();
             }
 
-			return (res.Length > 0 ? res : "null");
-		}
+            return (res.Length > 0 ? res : "null");
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string SanitizeHtmlId(this string value)
         {
-			return System.Web.Mvc.TagBuilder.CreateSanitizedId(value);
+            return System.Web.Mvc.TagBuilder.CreateSanitizedId(value);
         }
 
         [DebuggerStepThrough]
@@ -1062,96 +1062,96 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static string ToValidFileName(this string input, string replacement = "-")
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToValidFileName(this string input, string replacement = "-")
         {
-			return string.Join(
-				replacement ?? "-",
-				input.ToSafe().Split(Path.GetInvalidFileNameChars()));
-		}
+            return string.Join(
+                replacement ?? "-",
+                input.ToSafe().Split(Path.GetInvalidFileNameChars()));
+        }
 
         [DebuggerStepThrough]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static string ToValidPath(this string input, string replacement = "-")
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToValidPath(this string input, string replacement = "-")
         {
-			return string.Join(
-				replacement ?? "-",
-				input.ToSafe().Split(Path.GetInvalidPathChars()));
-		}
+            return string.Join(
+                replacement ?? "-",
+                input.ToSafe().Split(Path.GetInvalidPathChars()));
+        }
 
-		[DebuggerStepThrough]
+        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int[] ToIntArray(this string s)
-		{
-			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v.Trim()));
-		}
+        {
+            return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v.Trim()));
+        }
 
-		[DebuggerStepThrough]
-		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
-		{
-			if (s == null)
-				return defaultValue;
-			var arr = s.ToIntArray();
-			if (arr == null || arr.Count() <= 0)
-				return defaultValue;
+        [DebuggerStepThrough]
+        public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
+        {
+            if (s == null)
+                return defaultValue;
+            var arr = s.ToIntArray();
+            if (arr == null || arr.Count() <= 0)
+                return defaultValue;
 
-			return arr.Contains(value);
-		}
+            return arr.Contains(value);
+        }
 
-		[DebuggerStepThrough]
-		public static string RemoveInvalidXmlChars(this string s)
-		{
-			if (s.IsEmpty())
-				return s;
+        [DebuggerStepThrough]
+        public static string RemoveInvalidXmlChars(this string s)
+        {
+            if (s.IsEmpty())
+                return s;
 
-			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);
-		}
+            return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);
+        }
 
-		[DebuggerStepThrough]
-		public static string ReplaceCsvChars(this string s)
-		{
-			if (s.IsEmpty())
-			{
-				return "";
-			}
+        [DebuggerStepThrough]
+        public static string ReplaceCsvChars(this string s)
+        {
+            if (s.IsEmpty())
+            {
+                return "";
+            }
 
-			s = s.Replace(';', ',');
-			s = s.Replace('\r', ' ');
-			s = s.Replace('\n', ' ');
-			return s.Replace("'", "");
-		}
+            s = s.Replace(';', ',');
+            s = s.Replace('\r', ' ');
+            s = s.Replace('\n', ' ');
+            return s.Replace("'", "");
+        }
 
-		[DebuggerStepThrough]
-		public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
-		{
+        [DebuggerStepThrough]
+        public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
+        {
             Guard.NotNull(preMatch, nameof(preMatch));
             Guard.NotNull(postMatch, nameof(postMatch));
 
-			if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(keywords))
-			{
-				return input;
-			}
+            if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(keywords))
+            {
+                return input;
+            }
 
-			var pattern = String.Join("|", keywords.Trim().Split(' ', '-')
-				.Select(x => x.Trim())
-				.Where(x => !string.IsNullOrWhiteSpace(x))
-				.Select(x => Regex.Escape(x))
-				.Distinct());
+            var pattern = String.Join("|", keywords.Trim().Split(' ', '-')
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => Regex.Escape(x))
+                .Distinct());
 
-			if (!string.IsNullOrWhiteSpace(pattern))
-			{
-				var rg = new Regex(pattern, RegexOptions.IgnoreCase);
-				input = rg.Replace(input, m => preMatch + m.Value.EmptyNull().HtmlEncode() + postMatch);
-			}
+            if (!string.IsNullOrWhiteSpace(pattern))
+            {
+                var rg = new Regex(pattern, RegexOptions.IgnoreCase);
+                input = rg.Replace(input, m => preMatch + m.Value.EmptyNull().HtmlEncode() + postMatch);
+            }
 
-			return input;
-		}
+            return input;
+        }
 
-		#endregion
+        #endregion
 
-		#region Helper
+        #region Helper
 
-		private static void EncodeJsChar(TextWriter writer, char c, char delimiter)
+        private static void EncodeJsChar(TextWriter writer, char c, char delimiter)
         {
             switch (c)
             {

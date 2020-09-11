@@ -7,9 +7,9 @@ namespace SmartStore.Core.Domain.Shipping
     {
         public ShippingSettings()
         {
-			ActiveShippingRateComputationMethodSystemNames = new List<string> { "Shipping.FixedRate" };
-			EstimateShippingEnabled = true;
-			ReturnValidOptionsIfThereAreAny = true;
+            ActiveShippingRateComputationMethodSystemNames = new List<string> { "Shipping.FixedRate" };
+            EstimateShippingEnabled = true;
+            ReturnValidOptionsIfThereAreAny = true;
             TodayShipmentHour = 14;
             DeliveryOnWorkweekDaysOnly = true;
         }

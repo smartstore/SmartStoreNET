@@ -8,7 +8,7 @@ namespace SmartStore.Core.Domain.Messages
     /// </summary>
     public partial class QueuedEmail : BaseEntity
     {
-		private ICollection<QueuedEmailAttachment> _attachments;
+        private ICollection<QueuedEmailAttachment> _attachments;
 
         /// <summary>
         /// Gets or sets the priority
@@ -25,10 +25,10 @@ namespace SmartStore.Core.Domain.Messages
         /// </summary>
         public string To { get; set; }
 
-		/// <summary>
-		/// Gets or sets the ReplyTo property
-		/// </summary>
-		public string ReplyTo { get; set; }
+        /// <summary>
+        /// Gets or sets the ReplyTo property
+        /// </summary>
+        public string ReplyTo { get; set; }
 
         /// <summary>
         /// Gets or sets the CC
@@ -70,23 +70,23 @@ namespace SmartStore.Core.Domain.Messages
         /// </summary>
         public int EmailAccountId { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether emails are only send manually
-		/// </summary>
-		public bool SendManually { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether emails are only send manually
+        /// </summary>
+        public bool SendManually { get; set; }
 
         /// <summary>
         /// Gets the email account
         /// </summary>
         public virtual EmailAccount EmailAccount { get; set; }
 
-		/// <summary>
-		/// Gets or sets the collection of attachments
-		/// </summary>
-		public virtual ICollection<QueuedEmailAttachment> Attachments
-		{
-			get { return _attachments ?? (_attachments = new HashSet<QueuedEmailAttachment>()); }
-			protected set { _attachments = value; }
-		}
+        /// <summary>
+        /// Gets or sets the collection of attachments
+        /// </summary>
+        public virtual ICollection<QueuedEmailAttachment> Attachments
+        {
+            get => _attachments ?? (_attachments = new HashSet<QueuedEmailAttachment>());
+            protected set => _attachments = value;
+        }
     }
 }

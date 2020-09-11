@@ -12,20 +12,11 @@ namespace SmartStore.Core.Fakes
             _name = userName;
         }
 
-        public string AuthenticationType
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public string AuthenticationType => throw new NotImplementedException();
 
-        public bool IsAuthenticated
-        {
-            get { return !String.IsNullOrEmpty(_name); }
-        }
+        public bool IsAuthenticated => !String.IsNullOrEmpty(_name);
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
     }
 }

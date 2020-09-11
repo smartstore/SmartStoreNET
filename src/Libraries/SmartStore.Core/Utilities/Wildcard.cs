@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using SmartStore.Utilities.ObjectPools;
@@ -20,18 +20,18 @@ namespace SmartStore.Utilities
         /// </summary>
         private static bool m_isForward;
 
-		private readonly string _pattern;
+        private readonly string _pattern;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Wildcard"/> class.
-		/// </summary>
-		/// <param name="pattern">The wildcard pattern.</param>
-		/// <param name="parseNumberRanges">
-		/// Specifies whether number ranges (e.g. 1234-5678) should
-		/// be converted to a regular expression pattern.
-		/// </param>
-		public Wildcard(string pattern, bool parseNumberRanges = false) 
-			: this(pattern, RegexOptions.None, parseNumberRanges)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Wildcard"/> class.
+        /// </summary>
+        /// <param name="pattern">The wildcard pattern.</param>
+        /// <param name="parseNumberRanges">
+        /// Specifies whether number ranges (e.g. 1234-5678) should
+        /// be converted to a regular expression pattern.
+        /// </param>
+        public Wildcard(string pattern, bool parseNumberRanges = false)
+            : this(pattern, RegexOptions.None, parseNumberRanges)
         {
         }
 
@@ -44,25 +44,19 @@ namespace SmartStore.Utilities
 		/// be converted to a regular expression pattern.
 		/// </param>
         /// <param name="options">The regular expression options.</param>
-        public Wildcard(string pattern, RegexOptions options, bool parseNumberRanges = false) 
-			: this(WildcardToRegex(pattern, parseNumberRanges), options, Timeout.InfiniteTimeSpan)
+        public Wildcard(string pattern, RegexOptions options, bool parseNumberRanges = false)
+            : this(WildcardToRegex(pattern, parseNumberRanges), options, Timeout.InfiniteTimeSpan)
         {
-			
+
         }
 
-		internal Wildcard(string parsedPattern, RegexOptions options, TimeSpan matchTimeout)
-			: base(parsedPattern, options, matchTimeout)
-		{
-			_pattern = parsedPattern;
-		}
+        internal Wildcard(string parsedPattern, RegexOptions options, TimeSpan matchTimeout)
+            : base(parsedPattern, options, matchTimeout)
+        {
+            _pattern = parsedPattern;
+        }
 
-		public string Pattern 
-		{
-			get
-			{
-				return _pattern;
-			}
-		}
+        public string Pattern => _pattern;
 
         /// <summary>
         /// Searches all number range terms and converts them
@@ -74,26 +68,26 @@ namespace SmartStore.Utilities
         {
             m_isForward = true;
 
-			// Replace ? with . and * with .*
-			// Prepend ^, append $
-			// Escape all chars except []^ 
-			pattern = ToGlobPattern(pattern);
+            // Replace ? with . and * with .*
+            // Prepend ^, append $
+            // Escape all chars except []^ 
+            pattern = ToGlobPattern(pattern);
 
-			// convert the number ranges into regular expression
-			if (parseNumberRanges)
-			{
-				var re = new Regex("[0-9]+-[0-9]+");
-				MatchCollection collection = re.Matches(pattern);
-				foreach (Match match in collection)
-				{
-					string[] split = match.Value.Split(new char[] { '-' });
-					int leadingZeroesCount = split[0].TakeWhile(x => x == '0').Count();
-					int min = Int32.Parse(split[0]);
-					int max = Int32.Parse(split[1]);
+            // convert the number ranges into regular expression
+            if (parseNumberRanges)
+            {
+                var re = new Regex("[0-9]+-[0-9]+");
+                MatchCollection collection = re.Matches(pattern);
+                foreach (Match match in collection)
+                {
+                    string[] split = match.Value.Split(new char[] { '-' });
+                    int leadingZeroesCount = split[0].TakeWhile(x => x == '0').Count();
+                    int min = Int32.Parse(split[0]);
+                    int max = Int32.Parse(split[1]);
 
-					pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max, leadingZeroesCount));
-				}
-			}
+                    pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max, leadingZeroesCount));
+                }
+            }
 
             return pattern;
         }
@@ -114,42 +108,42 @@ namespace SmartStore.Utilities
             string prefix = new String('0', leadingZeroesCount); // for leading zeroes
             string pattern = string.Empty;
 
-			if (min > -1 && max - min < 10)
-			{
-				// special treatment: the below function has issues with too small ranges
-				for (var i = min; i <= max; i++)
-				{
-					pattern += prefix + i.ToString() + (i < max ? "|" : "");
-				}
-			}
-			else
-			{
+            if (min > -1 && max - min < 10)
+            {
+                // special treatment: the below function has issues with too small ranges
+                for (var i = min; i <= max; i++)
+                {
+                    pattern += prefix + i.ToString() + (i < max ? "|" : "");
+                }
+            }
+            else
+            {
 
-				int currentValue = min;
+                int currentValue = min;
                 int radix = 1;
 
-				while (m_isForward || radix != 0)
-				{
+                while (m_isForward || radix != 0)
+                {
                     int tempMax = GetNextMaximum(currentValue, max, radix);
 
                     if (tempMax >= currentValue)
-					{
-						pattern += prefix + ParseRange(currentValue, tempMax, radix);
-						if (!(!m_isForward && radix == 1))
-						{
-							pattern += "|";
-						}
-					}
-					radix += (m_isForward ? 1 : -1);
-					currentValue = tempMax + 1;
-				}
-			}
+                    {
+                        pattern += prefix + ParseRange(currentValue, tempMax, radix);
+                        if (!(!m_isForward && radix == 1))
+                        {
+                            pattern += "|";
+                        }
+                    }
+                    radix += (m_isForward ? 1 : -1);
+                    currentValue = tempMax + 1;
+                }
+            }
 
             //add a negative look behind and a negative look ahead in order
             //to avoid that 122-321 is found in 2308.
             return @"((?<!\d)(" + pattern + @")(?!\d))";
         }
-		
+
         /// <summary>
         /// Gets the next maximum value in condition to the current value.
         /// </summary>
@@ -161,7 +155,7 @@ namespace SmartStore.Utilities
         /// </returns>
         private static int GetNextMaximum(int currentValue, int maximum, int radix)
         {
-			//backward
+            //backward
             if (!m_isForward)
             {
                 if (radix != 1)
@@ -179,7 +173,7 @@ namespace SmartStore.Utilities
                 radix--;
                 tempMax = ((maximum / (int)Math.Pow(10, radix))) * (int)Math.Pow(10, radix) - 1;
             }
-			
+
             return tempMax;
         }
 
@@ -216,12 +210,12 @@ namespace SmartStore.Utilities
         {
             if (count == 0)
             {
-				return string.Empty;
+                return string.Empty;
             }
 
             if (beginDigit == endDigit)
             {
-				return beginDigit.ToString();
+                return beginDigit.ToString();
             }
 
             string pattern = string.Format("[{0}-{1}]", beginDigit, endDigit);
@@ -244,27 +238,27 @@ namespace SmartStore.Utilities
             return Int32.Parse(value.ToString()[digit].ToString());
         }
 
-		#region Escaping
+        #region Escaping
 
-		/* --------------------------------------------------------------
+        /* --------------------------------------------------------------
 		Stuff here partly copied over from .NET's internal RegexParser 
 		class and modified for performance reasons: we don't want to escape 
 		'[^]' chars, but Regex.Escape() does. Besides, wen need 
 		'*' and '?' as wildcard chars.
 		-------------------------------------------------------------- */
 
-		const byte W = 6;    // wildcard char
-		const byte Q = 5;    // quantifier
-		const byte S = 4;    // ordinary stopper
-		const byte Z = 3;    // ScanBlank stopper
-		const byte X = 2;    // whitespace
-		const byte E = 1;    // should be escaped
+        const byte W = 6;    // wildcard char
+        const byte Q = 5;    // quantifier
+        const byte S = 4;    // ordinary stopper
+        const byte Z = 3;    // ScanBlank stopper
+        const byte X = 2;    // whitespace
+        const byte E = 1;    // should be escaped
 
-		/*
+        /*
          * For categorizing ASCII characters.
         */
-		private static readonly byte[] _category = new byte[] 
-		{
+        private static readonly byte[] _category = new byte[]
+        {
             // 0 1 2 3 4 5 6 7 8 9 A B C D E F 0 1 2 3 4 5 6 7 8 9 A B C D E F
                0,0,0,0,0,0,0,0,0,X,X,0,X,X,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             //   ! " # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ?
@@ -273,85 +267,85 @@ namespace SmartStore.Utilities
                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,S,0,0,0,
             // ' a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~
                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Q,S,0,0,0
-		};
+        };
 
-		private static bool IsMetachar(char ch)
-		{
-			return (ch <= '|' && _category[ch] >= E);
-		}
+        private static bool IsMetachar(char ch)
+        {
+            return (ch <= '|' && _category[ch] >= E);
+        }
 
-		private static bool IsGlob(char ch)
-		{
-			return (ch <= '|' && _category[ch] >= W);
-		}
+        private static bool IsGlob(char ch)
+        {
+            return (ch <= '|' && _category[ch] >= W);
+        }
 
-		private static string ToGlobPattern(string input)
-		{
-			Guard.NotNull(input, nameof(input));
+        private static string ToGlobPattern(string input)
+        {
+            Guard.NotNull(input, nameof(input));
 
-			for (int i = 0; i < input.Length; i++)
-			{
-				if (IsMetachar(input[i]))
-				{
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (IsMetachar(input[i]))
+                {
                     var psb = PooledStringBuilder.Rent("^");
                     var sb = (StringBuilder)psb;
 
-					char ch = input[i];
-					int lastpos;
+                    char ch = input[i];
+                    int lastpos;
 
-					sb.Append(input, 0, i);
-					do
-					{
-						if (IsGlob(ch))
-						{
-							sb.Append('.'); // '?' > '.'
-							if (ch == '*') sb.Append('*'); // '*' > '.*'
-						}
-						else
-						{
-							sb.Append('\\');
-							switch (ch)
-							{
-								case '\n':
-									ch = 'n';
-									break;
-								case '\r':
-									ch = 'r';
-									break;
-								case '\t':
-									ch = 't';
-									break;
-								case '\f':
-									ch = 'f';
-									break;
-							}
-							sb.Append(ch);
-						}
+                    sb.Append(input, 0, i);
+                    do
+                    {
+                        if (IsGlob(ch))
+                        {
+                            sb.Append('.'); // '?' > '.'
+                            if (ch == '*') sb.Append('*'); // '*' > '.*'
+                        }
+                        else
+                        {
+                            sb.Append('\\');
+                            switch (ch)
+                            {
+                                case '\n':
+                                    ch = 'n';
+                                    break;
+                                case '\r':
+                                    ch = 'r';
+                                    break;
+                                case '\t':
+                                    ch = 't';
+                                    break;
+                                case '\f':
+                                    ch = 'f';
+                                    break;
+                            }
+                            sb.Append(ch);
+                        }
 
-						i++;
-						lastpos = i;
+                        i++;
+                        lastpos = i;
 
-						while (i < input.Length)
-						{
-							ch = input[i];
-							if (IsMetachar(ch))
-								break;
+                        while (i < input.Length)
+                        {
+                            ch = input[i];
+                            if (IsMetachar(ch))
+                                break;
 
-							i++;
-						}
+                            i++;
+                        }
 
-						sb.Append(input, lastpos, i - lastpos);
-					} while (i < input.Length);
+                        sb.Append(input, lastpos, i - lastpos);
+                    } while (i < input.Length);
 
-					sb.Append('$');
-					return psb.ToStringAndReturn();
-				}
-			}
+                    sb.Append('$');
+                    return psb.ToStringAndReturn();
+                }
+            }
 
-			return '^' + input + '$';
-		}
+            return '^' + input + '$';
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
 }

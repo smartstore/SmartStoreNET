@@ -39,7 +39,7 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets the provider
         /// </summary>
         public string ProviderSystemName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the customer
         /// </summary>

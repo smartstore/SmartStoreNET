@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
@@ -140,7 +140,7 @@ namespace SmartStore.Utilities
             {
                 foreach (var fastProp in FastProperty.GetProperties(t).Values)
                 {
-					var pi = fastProp.Property;
+                    var pi = fastProp.Property;
 
                     if (!pi.PropertyType.IsPredefinedSimpleType() && source.TryGetValue(pi.Name, out var value) && value is IDictionary<string, object>)
                     {
@@ -197,7 +197,7 @@ namespace SmartStore.Utilities
 
                         if (curElement == null)
                         {
-							curElement = Activator.CreateInstance(elemType);
+                            curElement = Activator.CreateInstance(elemType);
                             elements.Add(curElement);
                         }
 
@@ -222,9 +222,9 @@ namespace SmartStore.Utilities
 
         private static void WriteToProperty(object item, FastProperty prop, object value, ICollection<ConvertProblem> problems)
         {
-			var pi = prop.Property;
+            var pi = prop.Property;
 
-			if (!pi.CanWrite)
+            if (!pi.CanWrite)
                 return;
 
             try

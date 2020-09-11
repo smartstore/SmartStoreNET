@@ -7,31 +7,31 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a delivery time
     /// </summary>
 	[DataContract]
-	public partial class DeliveryTime : BaseEntity, ILocalizedEntity
+    public partial class DeliveryTime : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the name
         /// </summary>
 		[DataMember]
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the hex value
         /// </summary>
 		[DataMember]
-		public string ColorHexValue { get; set; }
+        public string ColorHexValue { get; set; }
 
         /// <summary>
         /// Gets or sets the display locale
         /// </summary>
 		[DataMember]
-		public string DisplayLocale { get; set; }
+        public string DisplayLocale { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
 		[DataMember]
-		public int DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the display order

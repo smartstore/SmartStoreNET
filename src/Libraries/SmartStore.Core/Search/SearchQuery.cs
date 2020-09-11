@@ -10,164 +10,155 @@ using SmartStore.Utilities.ObjectPools;
 namespace SmartStore.Core.Search
 {
     public enum SearchResultFlags
-	{
-		WithHits = 1 << 0,
-		WithFacets = 1 << 1,
-		WithSuggestions = 1 << 2,
-		Full = WithHits | WithFacets | WithSuggestions
-	}
+    {
+        WithHits = 1 << 0,
+        WithFacets = 1 << 1,
+        WithSuggestions = 1 << 2,
+        Full = WithHits | WithFacets | WithSuggestions
+    }
 
-	public class SearchQuery : SearchQuery<SearchQuery>
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SearchQuery"/> class without a search term being set
-		/// </summary>
-		public SearchQuery()
-			: base((string[])null, null)
-		{
-		}
+    public class SearchQuery : SearchQuery<SearchQuery>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SearchQuery"/> class without a search term being set
+        /// </summary>
+        public SearchQuery()
+            : base((string[])null, null)
+        {
+        }
 
-		public SearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
-			: base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
-		{
-		}
+        public SearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
+            : base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
+        {
+        }
 
-		public SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
-			: base(fields, term, mode, escape, isFuzzySearch)
-		{
-		}
-	}
+        public SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
+            : base(fields, term, mode, escape, isFuzzySearch)
+        {
+        }
+    }
 
-	public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
-	{
-		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
-		private Dictionary<string, object> _customData;
+    public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
+    {
+        private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
+        private Dictionary<string, object> _customData;
 
-		protected SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
-		{
-			Fields = fields;
-			Term = term;
-			Mode = mode;
-			EscapeTerm = escape;
-			IsFuzzySearch = isFuzzySearch;
+        protected SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = false, bool isFuzzySearch = false)
+        {
+            Fields = fields;
+            Term = term;
+            Mode = mode;
+            EscapeTerm = escape;
+            IsFuzzySearch = isFuzzySearch;
 
-			Filters = new List<ISearchFilter>();
-			Sorting = new List<SearchSort>();
-			_facetDescriptors = new Dictionary<string, FacetDescriptor>(StringComparer.OrdinalIgnoreCase);
+            Filters = new List<ISearchFilter>();
+            Sorting = new List<SearchSort>();
+            _facetDescriptors = new Dictionary<string, FacetDescriptor>(StringComparer.OrdinalIgnoreCase);
 
-			Take = int.MaxValue;
+            Take = int.MaxValue;
 
-			SpellCheckerMinQueryLength = 4;
-			SpellCheckerMaxHitCount = 3;
+            SpellCheckerMinQueryLength = 4;
+            SpellCheckerMaxHitCount = 3;
 
-			ResultFlags = SearchResultFlags.WithHits;
-		}
+            ResultFlags = SearchResultFlags.WithHits;
+        }
 
-		// Language, Currency & Store
-		public int? LanguageId { get; protected set; }
-		public string LanguageCulture { get; protected set; }
-		public string CurrencyCode { get; protected set; }
+        // Language, Currency & Store
+        public int? LanguageId { get; protected set; }
+        public string LanguageCulture { get; protected set; }
+        public string CurrencyCode { get; protected set; }
         public int? StoreId { get; protected set; }
 
         // Search term
         public string[] Fields { get; set; }
-		public string Term { get; set; }
-		public bool EscapeTerm { get; protected set; }
-		public SearchMode Mode { get; protected set; }
-		public bool IsFuzzySearch { get; protected set; }
+        public string Term { get; set; }
+        public bool EscapeTerm { get; protected set; }
+        public SearchMode Mode { get; protected set; }
+        public bool IsFuzzySearch { get; protected set; }
 
-		// Filtering
-		public ICollection<ISearchFilter> Filters { get; }
+        // Filtering
+        public ICollection<ISearchFilter> Filters { get; }
 
-		// Facets
-		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
-		{
-			get { return _facetDescriptors; }
-		}
+        // Facets
+        public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors => _facetDescriptors;
 
-		// Paging
-		public int Skip { get; protected set; }
-		public int Take { get; protected set; }
-		public int PageIndex
-		{
-			get
-			{
-				if (Take == 0)
-					return 0;
+        // Paging
+        public int Skip { get; protected set; }
+        public int Take { get; protected set; }
+        public int PageIndex
+        {
+            get
+            {
+                if (Take == 0)
+                    return 0;
 
-				return Math.Max(Skip / Take, 0);
-			}
-		}
+                return Math.Max(Skip / Take, 0);
+            }
+        }
 
-		// Sorting
-		public ICollection<SearchSort> Sorting { get; }
+        // Sorting
+        public ICollection<SearchSort> Sorting { get; }
 
-		// Spell checker
-		public int SpellCheckerMaxSuggestions { get; protected set; }
-		public int SpellCheckerMinQueryLength { get; protected set; }
-		public int SpellCheckerMaxHitCount { get; protected set; }
+        // Spell checker
+        public int SpellCheckerMaxSuggestions { get; protected set; }
+        public int SpellCheckerMinQueryLength { get; protected set; }
+        public int SpellCheckerMaxHitCount { get; protected set; }
 
-		// Result control
-		public SearchResultFlags ResultFlags { get; protected set; }
+        // Result control
+        public SearchResultFlags ResultFlags { get; protected set; }
 
-		// Misc
-		public string Origin { get; protected set; }
+        // Misc
+        public string Origin { get; protected set; }
 
-		public IDictionary<string, object> CustomData
-		{
-			get
-			{
-				return _customData ?? (_customData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
-			}
-		}
+        public IDictionary<string, object> CustomData => _customData ?? (_customData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
 
-		#region Fluent builder
+        #region Fluent builder
 
-		public virtual TQuery HasStoreId(int id)
-		{
-			Guard.NotNegative(id, nameof(id));
+        public virtual TQuery HasStoreId(int id)
+        {
+            Guard.NotNegative(id, nameof(id));
 
-			StoreId = id;
+            StoreId = id;
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery WithLanguage(Language language)
-		{
-			Guard.NotNull(language, nameof(language));
-			Guard.NotEmpty(language.LanguageCulture, nameof(language.LanguageCulture));
+        public TQuery WithLanguage(Language language)
+        {
+            Guard.NotNull(language, nameof(language));
+            Guard.NotEmpty(language.LanguageCulture, nameof(language.LanguageCulture));
 
-			LanguageId = language.Id;
-			LanguageCulture = language.LanguageCulture;
+            LanguageId = language.Id;
+            LanguageCulture = language.LanguageCulture;
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery WithCurrency(Currency currency)
-		{
-			Guard.NotNull(currency, nameof(currency));
-			Guard.NotEmpty(currency.CurrencyCode, nameof(currency.CurrencyCode));
+        public TQuery WithCurrency(Currency currency)
+        {
+            Guard.NotNull(currency, nameof(currency));
+            Guard.NotEmpty(currency.CurrencyCode, nameof(currency.CurrencyCode));
 
-			CurrencyCode = currency.CurrencyCode;
+            CurrencyCode = currency.CurrencyCode;
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery Slice(int skip, int take)
-		{
-			Guard.NotNegative(skip, nameof(skip));
-			Guard.NotNegative(take, nameof(take));
+        public TQuery Slice(int skip, int take)
+        {
+            Guard.NotNegative(skip, nameof(skip));
+            Guard.NotNegative(take, nameof(take));
 
-			Skip = skip;
-			Take = take;
+            Skip = skip;
+            Take = take;
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
-		{
-			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
-			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
+        public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
+        {
+            Guard.IsPositive(minQueryLength, nameof(minQueryLength));
+            Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 
             if (maxSuggestions > 0)
             {
@@ -178,117 +169,117 @@ namespace SmartStore.Core.Search
                 ResultFlags &= ~SearchResultFlags.WithSuggestions;
             }
 
-			SpellCheckerMaxSuggestions = Math.Max(maxSuggestions, 0);
-			SpellCheckerMinQueryLength = minQueryLength;
-			SpellCheckerMaxHitCount = maxHitCount;
+            SpellCheckerMaxSuggestions = Math.Max(maxSuggestions, 0);
+            SpellCheckerMinQueryLength = minQueryLength;
+            SpellCheckerMaxHitCount = maxHitCount;
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery WithFilter(ISearchFilter filter)
-		{
-			Guard.NotNull(filter, nameof(filter));
+        public TQuery WithFilter(ISearchFilter filter)
+        {
+            Guard.NotNull(filter, nameof(filter));
 
-			Filters.Add(filter);
+            Filters.Add(filter);
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery SortBy(SearchSort sort)
-		{
-			Guard.NotNull(sort, nameof(sort));
+        public TQuery SortBy(SearchSort sort)
+        {
+            Guard.NotNull(sort, nameof(sort));
 
-			Sorting.Add(sort);
+            Sorting.Add(sort);
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery BuildHits(bool build)
-		{
-			if (build)
-			{
-				ResultFlags = ResultFlags | SearchResultFlags.WithHits;
-			}
-			else
-			{
-				ResultFlags &= ~SearchResultFlags.WithHits;
-			}
+        public TQuery BuildHits(bool build)
+        {
+            if (build)
+            {
+                ResultFlags = ResultFlags | SearchResultFlags.WithHits;
+            }
+            else
+            {
+                ResultFlags &= ~SearchResultFlags.WithHits;
+            }
 
 
-			return (this as TQuery);
-		}
+            return (this as TQuery);
+        }
 
-		public TQuery BuildFacetMap(bool build)
-		{
-			if (build)
-			{
-				ResultFlags = ResultFlags | SearchResultFlags.WithFacets;
-			}
-			else
-			{
-				ResultFlags &= ~SearchResultFlags.WithFacets;
-			}
-			
+        public TQuery BuildFacetMap(bool build)
+        {
+            if (build)
+            {
+                ResultFlags = ResultFlags | SearchResultFlags.WithFacets;
+            }
+            else
+            {
+                ResultFlags &= ~SearchResultFlags.WithFacets;
+            }
 
-			return (this as TQuery);
-		}
 
-		public TQuery WithFacet(FacetDescriptor facetDescription)
-		{
-			Guard.NotNull(facetDescription, nameof(facetDescription));
+            return (this as TQuery);
+        }
 
-			if (_facetDescriptors.ContainsKey(facetDescription.Key))
-			{
-				throw new InvalidOperationException("A facet description object with the same key has already been added. Key: {0}".FormatInvariant(facetDescription.Key));
-			}
+        public TQuery WithFacet(FacetDescriptor facetDescription)
+        {
+            Guard.NotNull(facetDescription, nameof(facetDescription));
 
-			_facetDescriptors.Add(facetDescription.Key, facetDescription);
+            if (_facetDescriptors.ContainsKey(facetDescription.Key))
+            {
+                throw new InvalidOperationException("A facet description object with the same key has already been added. Key: {0}".FormatInvariant(facetDescription.Key));
+            }
 
-			return (this as TQuery);
-		}
+            _facetDescriptors.Add(facetDescription.Key, facetDescription);
 
-		public TQuery OriginatesFrom(string origin)
-		{
-			Guard.NotEmpty(origin, nameof(origin));
+            return (this as TQuery);
+        }
 
-			Origin = origin;
+        public TQuery OriginatesFrom(string origin)
+        {
+            Guard.NotEmpty(origin, nameof(origin));
 
-			return (this as TQuery);
-		}
+            Origin = origin;
 
-		#endregion
+            return (this as TQuery);
+        }
 
-		public override string ToString()
-		{
+        #endregion
+
+        public override string ToString()
+        {
             var psb = PooledStringBuilder.Rent();
             var sb = (StringBuilder)psb;
 
             if (Term.HasValue())
-			{
-				var fields = (Fields != null && Fields.Length > 0 ? string.Join(", ", Fields) : "".NaIfEmpty());
+            {
+                var fields = (Fields != null && Fields.Length > 0 ? string.Join(", ", Fields) : "".NaIfEmpty());
 
-				sb.AppendFormat("'{0}' in {1}", Term, fields);
+                sb.AppendFormat("'{0}' in {1}", Term, fields);
 
-				var parameters = string.Join(" ", EscapeTerm ? "escape" : "", IsFuzzySearch ? "fuzzy" : Mode.ToString()).TrimSafe();
+                var parameters = string.Join(" ", EscapeTerm ? "escape" : "", IsFuzzySearch ? "fuzzy" : Mode.ToString()).TrimSafe();
 
-				if (parameters.HasValue())
-				{
-					sb.AppendFormat(" ({0})", parameters);
-				}
-			}
+                if (parameters.HasValue())
+                {
+                    sb.AppendFormat(" ({0})", parameters);
+                }
+            }
 
-			foreach (var filter in Filters)
-			{
-				if (sb.Length > 0)
-				{
-					sb.Append(" ");
-				}
+            foreach (var filter in Filters)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append(" ");
+                }
 
-				sb.Append(filter.ToString());
-			}
+                sb.Append(filter.ToString());
+            }
 
-			return psb.ToStringAndReturn();
-		}
+            return psb.ToStringAndReturn();
+        }
 
         #region Utilities
 

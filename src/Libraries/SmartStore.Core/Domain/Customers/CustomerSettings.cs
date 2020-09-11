@@ -2,29 +2,29 @@
 
 namespace SmartStore.Core.Domain.Customers
 {
-	public class CustomerSettings : ISettings
+    public class CustomerSettings : ISettings
     {
-		public CustomerSettings()
-		{
-			CustomerLoginType = CustomerLoginType.UsernameOrEmail;
+        public CustomerSettings()
+        {
+            CustomerLoginType = CustomerLoginType.UsernameOrEmail;
             CustomerNumberMethod = CustomerNumberMethod.Disabled;
             CustomerNumberVisibility = CustomerNumberVisibility.None;
-			DefaultPasswordFormat = PasswordFormat.Hashed;
-			HashedPasswordFormat = "SHA1";
-			PasswordMinLength = 6;
-			UserRegistrationType = UserRegistrationType.Standard;
-			AvatarMaximumSizeBytes = 512000;
-			CustomerNameFormat = CustomerNameFormat.ShowFirstName;
-			CustomerNameFormatMaxLength = 64;
-			GenderEnabled = true;
-			DateOfBirthEnabled = true;
-			CompanyEnabled = true;
-			NewsletterEnabled = true;
-			OnlineCustomerMinutes = 20;
-			StoreLastVisitedPage = true;
-			FirstNameRequired = false;
-			LastNameRequired = false;
-		}
+            DefaultPasswordFormat = PasswordFormat.Hashed;
+            HashedPasswordFormat = "SHA1";
+            PasswordMinLength = 6;
+            UserRegistrationType = UserRegistrationType.Standard;
+            AvatarMaximumSizeBytes = 512000;
+            CustomerNameFormat = CustomerNameFormat.ShowFirstName;
+            CustomerNameFormatMaxLength = 64;
+            GenderEnabled = true;
+            DateOfBirthEnabled = true;
+            CompanyEnabled = true;
+            NewsletterEnabled = true;
+            OnlineCustomerMinutes = 20;
+            StoreLastVisitedPage = true;
+            FirstNameRequired = false;
+            LastNameRequired = false;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating the customer login type
@@ -115,7 +115,7 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating whether 'New customer' notification message should be sent to a store owner
         /// </summary>
         public bool NotifyNewCustomerRegistration { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether to hide 'Downloable products' tab on 'My account' page
         /// </summary>
@@ -136,10 +136,10 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public CustomerNameFormat CustomerNameFormat { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating the maximum length of a formatted customer name
-		/// </summary>
-		public int CustomerNameFormatMaxLength { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating the maximum length of a formatted customer name
+        /// </summary>
+        public int CustomerNameFormatMaxLength { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Newsletter' form field is enabled
@@ -160,7 +160,7 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating we should store last visited page URL for each customer
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
-        
+
         #region Form fields
 
         /// <summary>
@@ -173,27 +173,27 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool TitleEnabled { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether 'FirstName' is required
-		/// </summary>
-		public bool FirstNameRequired { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether 'FirstName' is required
+        /// </summary>
+        public bool FirstNameRequired { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether 'LastName' is required
-		/// </summary>
-		public bool LastNameRequired { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether 'LastName' is required
+        /// </summary>
+        public bool LastNameRequired { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether 'Date of Birth' is enabled
-		/// </summary>
-		public bool DateOfBirthEnabled { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Date of Birth' is enabled
+        /// </summary>
+        public bool DateOfBirthEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled
         /// </summary>
         public bool CompanyEnabled { get; set; }
 
-         /// <summary>
+        /// <summary>
         /// Gets or sets a value indicating whether 'Company' is required
         /// </summary>
         public bool CompanyRequired { get; set; }
@@ -202,7 +202,7 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating whether 'Street address' is enabled
         /// </summary>
         public bool StreetAddressEnabled { get; set; }
-	
+
         /// <summary>
         /// Gets or sets a value indicating whether 'Street address' is required
         /// </summary>
@@ -270,9 +270,9 @@ namespace SmartStore.Core.Domain.Customers
 
         #endregion
 
-		/// <summary>
-		/// Identifier of a customer role that new registered customers will be assigned to
-		/// </summary>
-		public int RegisterCustomerRoleId { get; set; }
-	}
+        /// <summary>
+        /// Identifier of a customer role that new registered customers will be assigned to
+        /// </summary>
+        public int RegisterCustomerRoleId { get; set; }
+    }
 }

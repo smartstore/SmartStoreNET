@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace SmartStore.Core.Themes
-{   
+﻿namespace SmartStore.Core.Themes
+{
     /// <summary>
     /// Represents deserialized metadata for a theme variable
     /// </summary>

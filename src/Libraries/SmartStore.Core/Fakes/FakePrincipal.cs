@@ -15,10 +15,7 @@ namespace SmartStore.Core.Fakes
         }
 
 
-        public IIdentity Identity
-        {
-            get { return _identity; }
-        }
+        public IIdentity Identity => _identity;
 
         public bool IsInRole(string role)
         {

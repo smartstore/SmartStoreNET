@@ -11,7 +11,7 @@ namespace SmartStore.Core.Html
         private static readonly Regex regexUnderLine = new Regex(@"\[u\](.+?)\[/u\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl1 = new Regex(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl2 = new Regex(@"\[url\](.+?)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private static readonly Regex regexQuote = new Regex(@"\[quote(=.+?)?\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex regexQuote = new Regex(@"\[quote(=.+?)?\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Formats the text
@@ -25,13 +25,13 @@ namespace SmartStore.Core.Html
         /// <param name="replaceQuote">A value indicating whether to replace Quote</param>
         /// <returns>Formatted text</returns>
         public static string ToHtml(
-			string text, 
-			bool replaceBold = true, 
-			bool replaceItalic = true,
+            string text,
+            bool replaceBold = true,
+            bool replaceItalic = true,
             bool replaceUnderline = true,
-			bool replaceUrl = true, 
-			bool replaceCode = true, 
-			bool replaceQuote = true)
+            bool replaceUrl = true,
+            bool replaceCode = true,
+            bool replaceQuote = true)
         {
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
@@ -70,29 +70,29 @@ namespace SmartStore.Core.Html
 
             if (replaceQuote)
             {
-				while (regexQuote.IsMatch(text))
-				{
-					text = regexQuote.Replace(text, (m) =>
-					{
-						var from = m.Groups[1].Value;
-						var quote = m.Groups[2].Value;
+                while (regexQuote.IsMatch(text))
+                {
+                    text = regexQuote.Replace(text, (m) =>
+                    {
+                        var from = m.Groups[1].Value;
+                        var quote = m.Groups[2].Value;
 
-						if (quote.IsEmpty())
-						{
-							return "";
-						}
+                        if (quote.IsEmpty())
+                        {
+                            return "";
+                        }
 
-						string result = "";
-						if (from.HasValue())
-						{
-							result += "<span class='quotefrom'>{0}:</span>".FormatCurrent(from.Substring(1));
-						}
+                        string result = "";
+                        if (from.HasValue())
+                        {
+                            result += "<span class='quotefrom'>{0}:</span>".FormatCurrent(from.Substring(1));
+                        }
 
-						result += "<blockquote class='muted'>{0}</blockquote>".FormatCurrent(quote);
+                        result += "<blockquote class='muted'>{0}</blockquote>".FormatCurrent(quote);
 
-						return result;
-					});
-				}
+                        return result;
+                    });
+                }
 
             }
 

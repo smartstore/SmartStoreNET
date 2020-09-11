@@ -6,10 +6,10 @@ using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Collections
 {
-	/// <summary>
-	/// http://weblogs.asp.net/bradvincent/archive/2008/10/27/helper-class-querystring-builder-chainable.aspx
-	/// </summary>
-	public class QueryString : NameValueCollection
+    /// <summary>
+    /// http://weblogs.asp.net/bradvincent/archive/2008/10/27/helper-class-querystring-builder-chainable.aspx
+    /// </summary>
+    public class QueryString : NameValueCollection
     {
         public QueryString()
         {
@@ -20,27 +20,21 @@ namespace SmartStore.Collections
             FillFromString(queryString);
         }
 
-		public QueryString(NameValueCollection queryString)
-			: base(queryString)
-		{
-		}
-
-		public static QueryString Current
+        public QueryString(NameValueCollection queryString)
+            : base(queryString)
         {
-            get { return new QueryString().FromCurrent(); }
         }
 
-		public static QueryString CurrentUnvalidated
-		{
-			get { return new QueryString().FromCurrent(true); }
-		}
+        public static QueryString Current => new QueryString().FromCurrent();
 
-		/// <summary>
-		/// Extracts a querystring from a full URL
-		/// </summary>
-		/// <param name="s">the string to extract the querystring from</param>
-		/// <returns>a string representing only the querystring</returns>
-		[SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
+        public static QueryString CurrentUnvalidated => new QueryString().FromCurrent(true);
+
+        /// <summary>
+        /// Extracts a querystring from a full URL
+        /// </summary>
+        /// <param name="s">the string to extract the querystring from</param>
+        /// <returns>a string representing only the querystring</returns>
+        [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
         public static string ExtractQuerystring(string s)
         {
             if (!string.IsNullOrEmpty(s))
@@ -90,14 +84,14 @@ namespace SmartStore.Collections
         {
             if (HttpContext.Current != null)
             {
-				if (unvalidated)
-				{
-					return FillFromString(HttpContext.Current.Request.Unvalidated.QueryString.ToString(), true);
-				}
-				else
-				{
-					return FillFromString(HttpContext.Current.Request.QueryString.ToString(), true);
-				}
+                if (unvalidated)
+                {
+                    return FillFromString(HttpContext.Current.Request.Unvalidated.QueryString.ToString(), true);
+                }
+                else
+                {
+                    return FillFromString(HttpContext.Current.Request.QueryString.ToString(), true);
+                }
             }
             base.Clear();
             return this;
@@ -140,12 +134,12 @@ namespace SmartStore.Collections
             return this;
         }
 
-		/// <summary>
-		/// Removes a name value pair from the querystring collection
-		/// </summary>
-		/// <param name="name">name of the querystring value to remove</param>
-		/// <returns>the QueryString object</returns>
-		public new QueryString Remove(string name)
+        /// <summary>
+        /// Removes a name value pair from the querystring collection
+        /// </summary>
+        /// <param name="name">name of the querystring value to remove</param>
+        /// <returns>the QueryString object</returns>
+        public new QueryString Remove(string name)
         {
             string existingValue = base[name];
             if (!string.IsNullOrEmpty(existingValue))
@@ -170,20 +164,14 @@ namespace SmartStore.Collections
         /// </summary>
         /// <param name="name"></param>
         /// <returns>the associated decoded value for the specified name</returns>
-        public new string this[string name]
-        {
-            get { return HttpUtility.UrlDecode(base[name]); }
-        }
+        public new string this[string name] => HttpUtility.UrlDecode(base[name]);
 
         /// <summary>
         /// overrides the default indexer
         /// </summary>
         /// <param name="index"></param>
         /// <returns>the associated decoded value for the specified index</returns>
-        public new string this[int index]
-        {
-            get { return HttpUtility.UrlDecode(base[index]); }
-        }
+        public new string this[int index] => HttpUtility.UrlDecode(base[index]);
 
         /// <summary>
         /// checks if a name already exists within the query string collection
@@ -202,16 +190,16 @@ namespace SmartStore.Collections
         /// <returns>the encoded querystring as it would appear in a browser</returns>
         public override string ToString()
         {
-			return ToString(true);
+            return ToString(true);
         }
 
-		/// <summary>
-		/// Outputs the querystring object to a string
-		/// </summary>
-		/// <param name="splitValues">Whether to create entries for each comma-separated value</param>
-		/// <returns>the encoded querystring as it would appear in a browser</returns>
-		public string ToString(bool splitValues)
-		{
+        /// <summary>
+        /// Outputs the querystring object to a string
+        /// </summary>
+        /// <param name="splitValues">Whether to create entries for each comma-separated value</param>
+        /// <returns>the encoded querystring as it would appear in a browser</returns>
+        public string ToString(bool splitValues)
+        {
             var psb = PooledStringBuilder.Rent();
             var builder = (StringBuilder)psb;
 
@@ -239,6 +227,6 @@ namespace SmartStore.Collections
             }
 
             return psb.ToStringAndReturn();
-		}
-	}
+        }
+    }
 }

@@ -4,14 +4,14 @@ namespace SmartStore.Core.Domain.Localization
 {
     public class LocalizationSettings : ISettings
     {
-		public LocalizationSettings()
-		{					
-			UseImagesForLanguageSelection = true;
-			DefaultLanguageRedirectBehaviour = DefaultLanguageRedirectBehaviour.StripSeoCode;
-			InvalidLanguageRedirectBehaviour = InvalidLanguageRedirectBehaviour.ReturnHttp404;
-		}
-		
-		/// <summary>
+        public LocalizationSettings()
+        {
+            UseImagesForLanguageSelection = true;
+            DefaultLanguageRedirectBehaviour = DefaultLanguageRedirectBehaviour.StripSeoCode;
+            InvalidLanguageRedirectBehaviour = InvalidLanguageRedirectBehaviour.ReturnHttp404;
+        }
+
+        /// <summary>
         /// Default admin area language identifier
         /// </summary>
         public int DefaultAdminLanguageId { get; set; }

@@ -16,12 +16,12 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the recurring payment identifier
         /// </summary>
         public int OrderId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-        
+
         /// <summary>
         /// Gets the recurring payment
         /// </summary>

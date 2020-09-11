@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;

@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace SmartStore.Core
-{   
+{
     /// <summary>
     /// A collection of objects that has been split into pages.
     /// </summary>
@@ -77,43 +77,43 @@ namespace SmartStore.Core
     }
 
 
-	/// <summary>
-	/// Paged list interface
-	/// </summary>
-	public interface IPagedList<T> : IPageable, IList<T>
-	{
-		/// <summary>
-		/// Gets underlying query without any paging applied
-		/// </summary>
-		IQueryable<T> SourceQuery { get; }
+    /// <summary>
+    /// Paged list interface
+    /// </summary>
+    public interface IPagedList<T> : IPageable, IList<T>
+    {
+        /// <summary>
+        /// Gets underlying query without any paging applied
+        /// </summary>
+        IQueryable<T> SourceQuery { get; }
 
-		/// <summary>
-		/// Allows modification of the underlying query before it is executed.
-		/// </summary>
-		/// <param name="alterer">The alteration function. The underlying query is passed, the modified query should be returned.</param>
-		/// <returns>The current instance for chaining</returns>
-		IPagedList<T> AlterQuery(Func<IQueryable<T>, IQueryable<T>> alterer);
+        /// <summary>
+        /// Allows modification of the underlying query before it is executed.
+        /// </summary>
+        /// <param name="alterer">The alteration function. The underlying query is passed, the modified query should be returned.</param>
+        /// <returns>The current instance for chaining</returns>
+        IPagedList<T> AlterQuery(Func<IQueryable<T>, IQueryable<T>> alterer);
 
-		/// <summary>
-		/// Applies the initial paging arguments to the passed query
-		/// </summary>
-		/// <param name="query">The query</param>
-		/// <returns>A query with applied paging args</returns>
-		IQueryable<T> ApplyPaging(IQueryable<T> query);
+        /// <summary>
+        /// Applies the initial paging arguments to the passed query
+        /// </summary>
+        /// <param name="query">The query</param>
+        /// <returns>A query with applied paging args</returns>
+        IQueryable<T> ApplyPaging(IQueryable<T> query);
 
-		/// <summary>
-		/// Loads the data synchronously.
-		/// </summary>
-		/// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
-		/// <returns>Returns itself for chaining.</returns>
-		IPagedList<T> Load(bool force = false);
+        /// <summary>
+        /// Loads the data synchronously.
+        /// </summary>
+        /// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
+        /// <returns>Returns itself for chaining.</returns>
+        IPagedList<T> Load(bool force = false);
 
-		/// <summary>
-		/// Loads the data asynchronously.
-		/// </summary>
-		/// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
-		/// <returns>Returns itself for chaining.</returns>
-		Task<IPagedList<T>> LoadAsync(bool force = false);
+        /// <summary>
+        /// Loads the data asynchronously.
+        /// </summary>
+        /// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
+        /// <returns>Returns itself for chaining.</returns>
+        Task<IPagedList<T>> LoadAsync(bool force = false);
 
         /// <summary>
         /// The total number of items asynchronously.

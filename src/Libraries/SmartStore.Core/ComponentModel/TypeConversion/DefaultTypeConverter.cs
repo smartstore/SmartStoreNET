@@ -5,37 +5,37 @@ using System.Globalization;
 namespace SmartStore.ComponentModel
 {
     public class DefaultTypeConverter : ITypeConverter
-	{
-		private readonly Lazy<TypeConverter> _systemConverter;
-		private readonly Type _type;
+    {
+        private readonly Lazy<TypeConverter> _systemConverter;
+        private readonly Type _type;
         private readonly bool _typeIsConvertible;
         private readonly bool _typeIsEnum;
 
         public DefaultTypeConverter(Type type)
-		{
-			Guard.NotNull(type, nameof(type));
+        {
+            Guard.NotNull(type, nameof(type));
 
-			_type = type;
+            _type = type;
             _typeIsConvertible = typeof(IConvertible).IsAssignableFrom(type);
             _typeIsEnum = type.IsEnum;
             _systemConverter = new Lazy<TypeConverter>(() => TypeDescriptor.GetConverter(type), true);
-		}
+        }
 
-		public TypeConverter SystemConverter
-		{
-			get
-			{
-				if (_type == typeof(object))
-				{
-					return null;
-				}
+        public TypeConverter SystemConverter
+        {
+            get
+            {
+                if (_type == typeof(object))
+                {
+                    return null;
+                }
 
-				return _systemConverter.Value;
-			}
-		}
+                return _systemConverter.Value;
+            }
+        }
 
-		public virtual bool CanConvertFrom(Type type)
-		{
+        public virtual bool CanConvertFrom(Type type)
+        {
             // Use Convert.ChangeType if both types are IConvertible
             if (_typeIsConvertible && typeof(IConvertible).IsAssignableFrom(type))
             {
@@ -48,10 +48,10 @@ namespace SmartStore.ComponentModel
             }
 
             return false;
-		}
+        }
 
-		public virtual bool CanConvertTo(Type type)
-		{
+        public virtual bool CanConvertTo(Type type)
+        {
             // Use Convert.ChangeType if both types are IConvertible
             if (_typeIsConvertible && typeof(IConvertible).IsAssignableFrom(type))
             {
@@ -71,8 +71,8 @@ namespace SmartStore.ComponentModel
             return false;
         }
 
-		public virtual object ConvertFrom(CultureInfo culture, object value)
-		{
+        public virtual object ConvertFrom(CultureInfo culture, object value)
+        {
             // Use Convert.ChangeType if both types are IConvertible
             if (!_typeIsEnum && _typeIsConvertible && value is IConvertible)
             {
@@ -80,15 +80,15 @@ namespace SmartStore.ComponentModel
             }
 
             if (SystemConverter != null)
-			{
-				return SystemConverter.ConvertFrom(null, culture, value);
-			}
+            {
+                return SystemConverter.ConvertFrom(null, culture, value);
+            }
 
             throw Error.InvalidCast(value.GetType(), _type);
-		}
+        }
 
-		public virtual object ConvertTo(CultureInfo culture, string format, object value, Type to)
-		{
+        public virtual object ConvertTo(CultureInfo culture, string format, object value, Type to)
+        {
             // Use Convert.ChangeType if both types are IConvertible
             if (!_typeIsEnum && _typeIsConvertible && value != null && typeof(IConvertible).IsAssignableFrom(to))
             {
@@ -96,16 +96,16 @@ namespace SmartStore.ComponentModel
             }
 
             if (SystemConverter != null)
-			{
-				return SystemConverter.ConvertTo(null, culture, value, to);
-			}
+            {
+                return SystemConverter.ConvertTo(null, culture, value, to);
+            }
 
             if (value == null)
-			{
-				return string.Empty;
-			}
+            {
+                return string.Empty;
+            }
 
-			return value.ToString();
-		}
-	}
+            return value.ToString();
+        }
+    }
 }

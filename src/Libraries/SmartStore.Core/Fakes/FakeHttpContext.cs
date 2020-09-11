@@ -26,35 +26,35 @@ namespace SmartStore.Core.Fakes
             return new FakeHttpContext("~/");
         }
 
-		public FakeHttpContext(string relativeUrl)
-			: this(relativeUrl, null, null, null, null, null, null)
-		{
-		}
+        public FakeHttpContext(string relativeUrl)
+            : this(relativeUrl, null, null, null, null, null, null)
+        {
+        }
 
         public FakeHttpContext(string relativeUrl, string method)
             : this(relativeUrl, method, null, null, null, null, null, null)
         {
         }
 
-        public FakeHttpContext(string relativeUrl, 
-            IPrincipal principal, 
-			NameValueCollection formParams,
-            NameValueCollection queryStringParams, 
-			HttpCookieCollection cookies,
-            SessionStateItemCollection sessionItems, 
-			NameValueCollection serverVariables)
+        public FakeHttpContext(string relativeUrl,
+            IPrincipal principal,
+            NameValueCollection formParams,
+            NameValueCollection queryStringParams,
+            HttpCookieCollection cookies,
+            SessionStateItemCollection sessionItems,
+            NameValueCollection serverVariables)
             : this(relativeUrl, null, principal, formParams, queryStringParams, cookies, sessionItems, serverVariables)
         {
         }
 
-        public FakeHttpContext(string relativeUrl, 
-			string method,
-            IPrincipal principal, 
-			NameValueCollection formParams,
-            NameValueCollection queryStringParams, 
-			HttpCookieCollection cookies,
-            SessionStateItemCollection sessionItems, 
-			NameValueCollection serverVariables)
+        public FakeHttpContext(string relativeUrl,
+            string method,
+            IPrincipal principal,
+            NameValueCollection formParams,
+            NameValueCollection queryStringParams,
+            HttpCookieCollection cookies,
+            SessionStateItemCollection sessionItems,
+            NameValueCollection serverVariables)
         {
             _relativeUrl = relativeUrl;
             _method = method;
@@ -70,28 +70,16 @@ namespace SmartStore.Core.Fakes
             Handler = new FakeHttpHandler();
         }
 
-		public override IHttpHandler Handler { get; set; }
+        public override IHttpHandler Handler { get; set; }
 
-        public override HttpRequestBase Request
-        {
-            get
-            {
-                return _request ?? new FakeHttpRequest(_relativeUrl, _method, _formParams, _queryStringParams, _cookies, _serverVariables);
-            }
-        }
+        public override HttpRequestBase Request => _request ?? new FakeHttpRequest(_relativeUrl, _method, _formParams, _queryStringParams, _cookies, _serverVariables);
 
         public void SetRequest(HttpRequestBase request)
         {
             _request = request;
         }
 
-        public override HttpResponseBase Response
-        {
-            get
-            {
-                return _response ?? new FakeHttpResponse();
-            }
-        }
+        public override HttpResponseBase Response => _response ?? new FakeHttpResponse();
 
         public void SetResponse(HttpResponseBase response)
         {
@@ -100,22 +88,13 @@ namespace SmartStore.Core.Fakes
 
         public override IPrincipal User
         {
-            get { return _principal; }
-            set { _principal = value; }
+            get => _principal;
+            set => _principal = value;
         }
 
-        public override HttpSessionStateBase Session
-        {
-            get { return new FakeHttpSessionState(_sessionItems ?? new SessionStateItemCollection()); }
-        }
+        public override HttpSessionStateBase Session => new FakeHttpSessionState(_sessionItems ?? new SessionStateItemCollection());
 
-        public override System.Collections.IDictionary Items
-        {
-            get
-            {
-                return _items;
-            }
-        }
+        public override System.Collections.IDictionary Items => _items;
 
         public override bool SkipAuthorization { get; set; }
 

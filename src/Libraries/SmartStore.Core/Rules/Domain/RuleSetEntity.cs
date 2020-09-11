@@ -53,8 +53,8 @@ namespace SmartStore.Rules.Domain
 
         public virtual ICollection<RuleEntity> Rules
         {
-            get { return _rules ?? (_rules = new HashSet<RuleEntity>()); }
-            protected internal set { _rules = value; }
+            get => _rules ?? (_rules = new HashSet<RuleEntity>());
+            protected internal set => _rules = value;
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace SmartStore.Rules.Domain
         /// </summary>
         public virtual ICollection<Discount> Discounts
         {
-            get { return _discounts ?? (_discounts = new HashSet<Discount>()); }
-            protected set { _discounts = value; }
+            get => _discounts ?? (_discounts = new HashSet<Discount>());
+            protected set => _discounts = value;
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace SmartStore.Rules.Domain
         /// </summary>
         public virtual ICollection<ShippingMethod> ShippingMethods
         {
-            get { return _shippingMethods ?? (_shippingMethods = new HashSet<ShippingMethod>()); }
-            protected set { _shippingMethods = value; }
+            get => _shippingMethods ?? (_shippingMethods = new HashSet<ShippingMethod>());
+            protected set => _shippingMethods = value;
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace SmartStore.Rules.Domain
         /// </summary>
         public virtual ICollection<PaymentMethod> PaymentMethods
         {
-            get { return _paymentMethods ?? (_paymentMethods = new HashSet<PaymentMethod>()); }
-            protected set { _paymentMethods = value; }
+            get => _paymentMethods ?? (_paymentMethods = new HashSet<PaymentMethod>());
+            protected set => _paymentMethods = value;
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace SmartStore.Rules.Domain
         /// </summary>
         public virtual ICollection<CustomerRole> CustomerRoles
         {
-            get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
-            protected set { _customerRoles = value; }
+            get => _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>());
+            protected set => _customerRoles = value;
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace SmartStore.Rules.Domain
         /// </summary>
         public virtual ICollection<Category> Categories
         {
-            get { return _categories ?? (_categories = new HashSet<Category>()); }
-            protected set { _categories = value; }
+            get => _categories ?? (_categories = new HashSet<Category>());
+            protected set => _categories = value;
         }
     }
 }

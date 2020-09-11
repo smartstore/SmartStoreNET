@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace SmartStore.Core.Themes
+﻿namespace SmartStore.Core.Themes
 {
-	public interface IThemeFileResolver
-	{
-		InheritedThemeFileResult Resolve(string virtualPath);
-	}
+    public interface IThemeFileResolver
+    {
+        InheritedThemeFileResult Resolve(string virtualPath);
+    }
 }

@@ -7,32 +7,32 @@ using SmartStore.Core.Domain.Customers;
 namespace SmartStore.Core
 {
     public class SmartStoreIdentity : ClaimsIdentity
-	{
-		[SecuritySafeCritical]
-		public SmartStoreIdentity(int customerId, string name, string type) 
-			: base(new GenericIdentity(name, type))
-		{
-			CustomerId = customerId;
-		}
+    {
+        [SecuritySafeCritical]
+        public SmartStoreIdentity(int customerId, string name, string type)
+            : base(new GenericIdentity(name, type))
+        {
+            CustomerId = customerId;
+        }
 
-		public int CustomerId { get; private set; }
+        public int CustomerId { get; private set; }
 
-		public override bool IsAuthenticated { get { return CustomerId != 0; } }
-	}
+        public override bool IsAuthenticated => CustomerId != 0;
+    }
 
 
-	public class SmartStorePrincipal : IPrincipal
-	{
-		public SmartStorePrincipal(Customer customer, string type)
-		{
-			Identity = new SmartStoreIdentity(customer.Id, customer.Username.NullEmpty() ?? customer.Email, type);
-		}
+    public class SmartStorePrincipal : IPrincipal
+    {
+        public SmartStorePrincipal(Customer customer, string type)
+        {
+            Identity = new SmartStoreIdentity(customer.Id, customer.Username.NullEmpty() ?? customer.Email, type);
+        }
 
-		public bool IsInRole(string role)
-		{
-			return Identity != null && Identity.IsAuthenticated && role.HasValue() && Roles.IsUserInRole(Identity.Name, role);
-		}
+        public bool IsInRole(string role)
+        {
+            return Identity != null && Identity.IsAuthenticated && role.HasValue() && Roles.IsUserInRole(Identity.Name, role);
+        }
 
-		public IIdentity Identity { get; private set; }
-	}
+        public IIdentity Identity { get; private set; }
+    }
 }

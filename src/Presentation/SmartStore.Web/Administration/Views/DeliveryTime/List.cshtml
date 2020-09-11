@@ -20,7 +20,7 @@
             columns.Bound(x => x.Name)
                 .ClientTemplate(
                     "<div><a href=\"javascript:void(0)\" class=\"edit-delivery-time\" title=\"" + T("Admin.Common.Edit").Text + "\"><#= Name #></a></div>" +
-                    "<# if(FormattedDate){ #><div class='muted'><#= FormattedDate #></div><# } #>");
+                    "<# if(DeliveryInfo){ #><div class='muted'><#= DeliveryInfo #></div><# } #>");
             columns.Bound(x => x.ColorHexValue)
                 .ClientTemplate("<span class='color-container'><span class='color' style='background:<#= ColorHexValue #>'>&nbsp;</span></span><span><#= ColorHexValue #></span>");
             columns.Bound(x => x.DisplayOrder)

@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
-        public string FormattedDate { get; set; }
+        public string DeliveryInfo { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayLocale")]
         [AllowHtml]

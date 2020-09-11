@@ -71,8 +71,12 @@ namespace SmartStore.Services.Directory
         /// Gets the formatted date of a delivery time.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
-        /// <param name="language">Language.</param>
+        /// <param name="language">Language. <c>null</c> to use current working language.</param>
+        /// <param name="prependLabel">Indicates whether to prepend delivery label.</param>
         /// <returns>Formatted date.</returns>
-        string GetFormattedDate(DeliveryTime deliveryTime, Language language);
+        string GetFormattedDate(
+            DeliveryTime deliveryTime,
+            Language language = null,
+            bool prependLabel = true);
     }
 }

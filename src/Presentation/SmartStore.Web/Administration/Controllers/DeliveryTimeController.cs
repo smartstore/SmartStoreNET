@@ -60,7 +60,7 @@ namespace SmartStore.Admin.Controllers
                 .Select(x =>
                 {
                     var model = x.ToModel();
-                    model.FormattedDate = _deliveryTimeService.GetFormattedDate(x, Services.WorkContext.WorkingLanguage);
+                    model.DeliveryInfo = _deliveryTimeService.GetFormattedDate(x);
 
                     return model;
                 })

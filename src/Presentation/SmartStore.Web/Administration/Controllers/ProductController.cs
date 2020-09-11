@@ -546,6 +546,11 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
 				model.OriginalStockQuantity = product.StockQuantity;
 
+				if (product.DeliveryTimeId.HasValue)
+				{
+					model.DeliveryInfo = _deliveryTimesService.GetFormattedDate(product.DeliveryTime);
+				}
+
                 if (product.LimitedToStores)
 				{
 					var storeMappings = _storeMappingService.GetStoreMappings(product);
@@ -908,11 +913,29 @@ namespace SmartStore.Admin.Controllers
 			return Json(new { Result = true, BasePrice = basePrice });
 		}
 
+		[HttpGet]
+		public JsonResult GetDeliveryInfo(int? deliveryTimeId)
+		{
+			string info = null;
+
+			if ((deliveryTimeId ?? 0) != 0)
+			{
+				var deliveryTime = _deliveryTimesService.GetDeliveryTimeById(deliveryTimeId ?? 0);
+				info = _deliveryTimesService.GetFormattedDate(deliveryTime);
+			}
+
+			return new JsonResult
+			{
+				Data = new { Info = info.EmptyNull() },
+				JsonRequestBehavior = JsonRequestBehavior.AllowGet
+			};
+		}
+
 		#endregion
 
 		#region Product list / create / edit / delete
 
-        public ActionResult Index()
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }

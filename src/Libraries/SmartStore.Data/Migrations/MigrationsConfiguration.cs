@@ -368,10 +368,12 @@
 				"Specifies the maximum number of days for the delivery.",
 				"Legt den spätesten Zeitpunkt der Lieferung in Tagen fest.");
 
-			builder.AddOrUpdate("DeliveryTimes.Date.NotBefore", "Not before {0}.", "Frühestens am {0}.");
-			builder.AddOrUpdate("DeliveryTimes.Date.NotLaterThan", "Not later than {0}.", "Spätestens am {0}.");
-			builder.AddOrUpdate("DeliveryTimes.Date.Between", "Between {0} and {1}.", "Zwischen {0} und {1}.");
-			builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "On {0}.", "Am {0}.");
+			builder.AddOrUpdate("DeliveryTimes.Date.NotBefore", "Not before {0}", "Frühestens am {0}");
+			builder.AddOrUpdate("DeliveryTimes.Date.NotLaterThan", "Not later than {0}", "Spätestens am {0}");
+			builder.AddOrUpdate("DeliveryTimes.Date.Between", "Between {0} and {1}", "Zwischen {0} und {1}");
+			builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "On {0}", "Am {0}");
+
+			builder.AddOrUpdate("DeliveryTimes.Date.DeliveryInfo", "Delivery: {0}.", "Lieferung: {0}.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "None", "Keine");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly", "Date only (if possible)", "Nur Datum (sofern möglich)");

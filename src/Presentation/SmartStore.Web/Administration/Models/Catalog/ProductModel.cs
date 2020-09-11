@@ -418,6 +418,7 @@ namespace SmartStore.Admin.Models.Catalog
         
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
 		public int? DeliveryTimeId { get; set; }
+		public string DeliveryInfo { get; set; }
 		public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityUnit")]

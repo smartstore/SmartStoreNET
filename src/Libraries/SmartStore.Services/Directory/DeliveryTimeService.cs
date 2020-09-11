@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -21,6 +22,7 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IWorkContext _workContext;
         private readonly CatalogSettings _catalogSettings;
         private readonly ShippingSettings _shippingSettings;
 
@@ -29,6 +31,7 @@ namespace SmartStore.Services.Directory
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             IDateTimeHelper dateTimeHelper,
+            IWorkContext workContext,
             CatalogSettings catalogSettings,
             ShippingSettings shippingSettings)
         {
@@ -36,6 +39,7 @@ namespace SmartStore.Services.Directory
             _productRepository = productRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
             _dateTimeHelper = dateTimeHelper;
+            _workContext = workContext;
 			_catalogSettings = catalogSettings;
             _shippingSettings = shippingSettings;
 		}
@@ -165,10 +169,11 @@ namespace SmartStore.Services.Directory
             return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();
         }
 
-        public virtual string GetFormattedDate(DeliveryTime deliveryTime, Language language)
+        public virtual string GetFormattedDate(
+            DeliveryTime deliveryTime,
+            Language language = null,
+            bool prependLabel = true)
         {
-            Guard.NotNull(language, nameof(language));
-
             if (deliveryTime == null)
             {
                 return null;
@@ -178,7 +183,13 @@ namespace SmartStore.Services.Directory
                 return null;
             }
 
+            if (language == null)
+            {
+                language = _workContext.WorkingLanguage;
+            }
+
             CultureInfo ci;
+            string result = null;
             var daysToAdd = 0;
             var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
 
@@ -214,13 +225,13 @@ namespace SmartStore.Services.Directory
                 if (minDate == maxDate)
                 {
                     if (IsTomorrow(minDate.Value))
-                        return T("Time.Tomorrow");
+                        result = T("Time.Tomorrow");
                     else
-                        return T("DeliveryTimes.Date.DeliveredOn", Format(minDate.Value));
+                        result = T("DeliveryTimes.Date.DeliveredOn", Format(minDate.Value));
                 }
                 else if (minDate < maxDate)
                 {
-                    return T("DeliveryTimes.Date.Between",
+                    result = T("DeliveryTimes.Date.Between",
                         IsTomorrow(minDate.Value) ? T("Time.Tomorrow").Text : Format(minDate.Value),
                         Format(maxDate.Value));
                 }
@@ -228,19 +239,24 @@ namespace SmartStore.Services.Directory
             else if (minDate.HasValue)
             {
                 if (IsTomorrow(minDate.Value))
-                    return T("Time.Tomorrow");
+                    result = T("Time.Tomorrow");
                 else
-                    return T("DeliveryTimes.Date.NotBefore", Format(minDate.Value));
+                    result = T("DeliveryTimes.Date.NotBefore", Format(minDate.Value));
             }
             else if (maxDate.HasValue)
             {
                 if (IsTomorrow(maxDate.Value))
-                    return T("Time.Tomorrow");
+                    result = T("Time.Tomorrow");
                 else
-                    return T("DeliveryTimes.Date.NotLaterThan", Format(maxDate.Value));
+                    result = T("DeliveryTimes.Date.NotLaterThan", Format(maxDate.Value));
             }
 
-            return null;
+            if (result != null && prependLabel)
+            {
+                result = T("DeliveryTimes.Date.DeliveryInfo", result);
+            }
+
+            return result;
 
             bool IsTomorrow(DateTime date)
             {

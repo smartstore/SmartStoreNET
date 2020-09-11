@@ -75,7 +75,7 @@
             var isMainPic = file.MediaFileId == Model.MainFileId;
             var entityMediaId = 0;
 
-            if (Model.EntityType.HasValue() && Model.EntityType == "Product")
+            if (Model.EntityType == "Product")
             {
                 var entityMediaFile = file as ProductMediaFile;
                 entityMediaId = entityMediaFile.Id;

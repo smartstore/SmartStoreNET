@@ -4,7 +4,6 @@
 
 @{ 
     var random = CommonHelper.GenerateRandomDigitCode(5);
-    var hasSeoSlug = Model is IUrlAlias;
 
     var metaTitleResKey = GetResKey("MetaTitle");
     var metaDescriptionResKey = GetResKey("MetaDescription");
@@ -29,14 +28,8 @@
             <td class="adminData">
 				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
 				@Html.HiddenFor(model => model.Locales[item].LanguageId)
-                @if (hasSeoSlug)
-                {
-                    @Html.EditorFor(model => Model.Locales[item].MetaTitle)
-                }
-                else
-                {
-                    @Html.SettingEditorFor(model => Model.Locales[item].MetaTitle)
-                }
+
+                @Html.SettingEditorFor(model => Model.Locales[item].MetaTitle)
                 @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
             </td>
         </tr>
@@ -45,14 +38,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].MetaDescription, metaDescriptionResKey)
 			</td>
 			<td class="adminData">
-                @if (hasSeoSlug)
-                {
-				    @Html.EditorFor(model => Model.Locales[item].MetaDescription)
-                }
-                else
-                {
-                    @Html.SettingEditorFor(model => model.Locales[item].MetaDescription)
-                }
+				@Html.EditorFor(model => Model.Locales[item].MetaDescription)
 				@Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
 			</td>
 		</tr>
@@ -61,14 +47,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords, metaKeywordsResKey)
             </td>
             <td class="adminData wide">
-                @if (hasSeoSlug)
-                {
-                    @Html.EditorFor(model => model.Locales[item].MetaKeywords)
-                }
-                else 
-                { 
-                    @Html.SettingEditorFor(model => model.Locales[item].MetaKeywords)
-                }
+                @Html.EditorFor(model => model.Locales[item].MetaKeywords)
                 @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
             </td>
         </tr>
@@ -80,14 +59,7 @@
                 @Html.SmartLabelFor(model => model.MetaTitle, metaTitleResKey)
             </td>
             <td class="adminData">
-                @if (hasSeoSlug)
-                {
-                    @Html.EditorFor(model => model.MetaTitle)
-                }
-                else
-                {
-                    @Html.SettingEditorFor(model => model.MetaTitle)
-                }
+                @Html.SettingEditorFor(model => model.MetaTitle)
                 @Html.ValidationMessageFor(model => model.MetaTitle)
             </td>
         </tr>
@@ -96,14 +68,7 @@
                 @Html.SmartLabelFor(model => model.MetaDescription, metaDescriptionResKey)
             </td>
             <td class="adminData">
-                @if (hasSeoSlug)
-                {
-                    @Html.EditorFor(model => model.MetaDescription)
-                } 
-                else
-                {
-                    @Html.SettingEditorFor(model => model.MetaDescription)
-                }
+                @Html.EditorFor(model => model.MetaDescription)
                 @Html.ValidationMessageFor(model => model.MetaDescription)
             </td>
         </tr>
@@ -112,14 +77,7 @@
                 @Html.SmartLabelFor(model => model.MetaKeywords, metaKeywordsResKey)
             </td>
             <td class="adminData wide">
-                @if (hasSeoSlug)
-                {
-                    @Html.EditorFor(x => x.MetaKeywords)
-                }
-                else
-                {
-                    @Html.SettingEditorFor(x => x.MetaKeywords)
-                }
+                @Html.EditorFor(x => x.MetaKeywords)
                 @Html.ValidationMessageFor(model => model.MetaKeywords)
             </td>
         </tr>

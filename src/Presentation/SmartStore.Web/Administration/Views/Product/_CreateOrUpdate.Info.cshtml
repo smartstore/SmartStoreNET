@@ -12,21 +12,6 @@
 			e.preventDefault();
 			$("#@Html.FieldIdFor(model => model.RequiredProductIds)").val("");
 		});
-
-		// Update delivery info.
-		$('#@Html.FieldIdFor(model => model.DeliveryTimeId)').on('change', function () {
-			var deliveryTimeId = $(this).val();
-
-			$.ajax({
-				cache: false,
-				global: false,
-				type: 'GET',
-				url: '@(Url.Action("GetDeliveryInfo", "Product"))?deliveryTimeId=' + deliveryTimeId,
-				success: function (response) {
-					$('#delivery-info').text(response.Info || '');
-				}
-			});	
-		});
 	});
 
     function toggleProductType() {
@@ -506,9 +491,8 @@
 					@Html.SmartLabelFor(model => model.DeliveryTimeId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(model => model.DeliveryTimeId, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+					@Html.EditorFor(model => model.DeliveryTimeId)
 					@Html.ValidationMessageFor(model => model.DeliveryTimeId)
-					<span id="delivery-info" class="d-inline-block text-muted pt-2">@Model.DeliveryInfo</span>
 				</td>
 			</tr>
 			<tr>

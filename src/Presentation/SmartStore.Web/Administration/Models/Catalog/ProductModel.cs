@@ -26,7 +26,6 @@ namespace SmartStore.Admin.Models.Catalog
             CopyProductModel = new CopyProductModel();
             AvailableProductTemplates = new List<SelectListItem>();
             AvailableTaxCategories = new List<SelectListItem>();
-            AvailableDeliveryTimes = new List<SelectListItem>();
             AvailableMeasureUnits = new List<SelectListItem>();
             AvailableQuantityUnits = new List<SelectListItem>();
             AvailableMeasureWeights = new List<SelectListItem>();
@@ -40,7 +39,6 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]
         public override int Id { get; set; }
 
-        //picture thumbnail
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.PictureThumbnailUrl")]
         public string PictureThumbnailUrl { get; set; }
         public bool NoThumb { get; set; }
@@ -416,10 +414,9 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<SelectListItem> AvailableMeasureWeights { get; set; }
         public IList<SelectListItem> AvailableMeasureUnits { get; set; }
 
+        [UIHint("DeliveryTimes")]
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
         public int? DeliveryTimeId { get; set; }
-        public string DeliveryInfo { get; set; }
-        public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityUnit")]
         public int? QuantityUnitId { get; set; }

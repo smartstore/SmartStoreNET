@@ -73,7 +73,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
-        private readonly IDeliveryTimeService _deliveryTimesService;
         private readonly IProviderManager _providerManager;
         private readonly PluginMediator _pluginMediator;
         private readonly IPluginFinder _pluginFinder;
@@ -104,7 +103,6 @@ namespace SmartStore.Admin.Controllers
             IGenericAttributeService genericAttributeService,
             ILocalizedEntityService localizedEntityService,
             ILanguageService languageService,
-            IDeliveryTimeService deliveryTimesService,
             IProviderManager providerManager,
             PluginMediator pluginMediator,
             IPluginFinder pluginFinder,
@@ -128,7 +126,6 @@ namespace SmartStore.Admin.Controllers
             _genericAttributeService = genericAttributeService;
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
-            _deliveryTimesService = deliveryTimesService;
             _providerManager = providerManager;
             _pluginMediator = pluginMediator;
             _pluginFinder = pluginFinder;
@@ -610,17 +607,6 @@ namespace SmartStore.Admin.Controllers
             model.AvailableDefaultViewModes.Add(
                 new SelectListItem { Value = "list", Text = T("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
             );
-
-            var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
-            foreach (var dt in deliveryTimes)
-            {
-                model.AvailableDeliveryTimes.Add(new SelectListItem
-                {
-                    Text = dt.Name,
-                    Value = dt.Id.ToString(),
-                    Selected = dt.Id == catalogSettings.DeliveryTimeIdForEmptyStock
-                });
-            }
 
             return View(model);
         }

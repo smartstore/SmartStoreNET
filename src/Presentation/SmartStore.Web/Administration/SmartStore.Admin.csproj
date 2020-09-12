@@ -662,6 +662,7 @@
     <Content Include="Views\Setting\CookieInfoCreatePopup.cshtml" />
     <Content Include="Views\Setting\CookieInfoEditPopup.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SeoModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DeliveryTimes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

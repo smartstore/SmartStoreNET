@@ -545,11 +545,6 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
                 model.OriginalStockQuantity = product.StockQuantity;
 
-                if (product.DeliveryTimeId.HasValue)
-                {
-                    model.DeliveryInfo = _deliveryTimesService.GetFormattedDate(product.DeliveryTime);
-                }
-
                 if (product.LimitedToStores)
                 {
                     var storeMappings = _storeMappingService.GetStoreMappings(product);
@@ -659,26 +654,10 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Delivery times.
-            var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
-            var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
-            foreach (var dt in deliveryTimes)
+            if (setPredefinedValues)
             {
-                var isSelected = false;
-                if (setPredefinedValues)
-                {
-                    isSelected = defaultDeliveryTime != null && dt.Id == defaultDeliveryTime.Id;
-                }
-                else
-                {
-                    isSelected = product != null && dt.Id == product.DeliveryTimeId.GetValueOrDefault();
-                }
-
-                model.AvailableDeliveryTimes.Add(new SelectListItem
-                {
-                    Text = dt.Name,
-                    Value = dt.Id.ToString(),
-                    Selected = isSelected
-                });
+                var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
+                model.DeliveryTimeId = defaultDeliveryTime?.Id;
             }
 
             // Quantity units.
@@ -910,24 +889,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             return Json(new { Result = true, BasePrice = basePrice });
-        }
-
-        [HttpGet]
-        public JsonResult GetDeliveryInfo(int? deliveryTimeId)
-        {
-            string info = null;
-
-            if ((deliveryTimeId ?? 0) != 0)
-            {
-                var deliveryTime = _deliveryTimesService.GetDeliveryTimeById(deliveryTimeId ?? 0);
-                info = _deliveryTimesService.GetFormattedDate(deliveryTime);
-            }
-
-            return new JsonResult
-            {
-                Data = new { Info = info.EmptyNull() },
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
         }
 
         #endregion
@@ -3400,20 +3361,6 @@ namespace SmartStore.Admin.Controllers
             ViewBag.RefreshPage = refreshPage;
             ViewBag.IsEdit = isEdit;
         }
-        private void PrepareDeliveryTimes(ProductVariantAttributeCombinationModel model, int? selectId = null)
-        {
-            var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
-
-            foreach (var dt in deliveryTimes)
-            {
-                model.AvailableDeliveryTimes.Add(new SelectListItem()
-                {
-                    Text = dt.Name,
-                    Value = dt.Id.ToString(),
-                    Selected = (selectId == dt.Id)
-                });
-            }
-        }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Product.Read)]
@@ -3488,7 +3435,6 @@ namespace SmartStore.Admin.Controllers
             PrepareProductAttributeCombinationModel(model, null, product);
             PrepareVariantCombinationAttributes(model, product);
             PrepareVariantCombinationPictures(model, product);
-            PrepareDeliveryTimes(model);
             PrepareViewBag(btnId, formId, false, false);
 
             return View(model);
@@ -3536,7 +3482,6 @@ namespace SmartStore.Admin.Controllers
             PrepareProductAttributeCombinationModel(model, null, product);
             PrepareVariantCombinationAttributes(model, product);
             PrepareVariantCombinationPictures(model, product);
-            PrepareDeliveryTimes(model);
             PrepareViewBag(btnId, formId, warnings.Count == 0, false);
 
             if (warnings.Count > 0)
@@ -3567,7 +3512,6 @@ namespace SmartStore.Admin.Controllers
             PrepareProductAttributeCombinationModel(model, combination, product, true);
             PrepareVariantCombinationAttributes(model, product);
             PrepareVariantCombinationPictures(model, product);
-            PrepareDeliveryTimes(model, model.DeliveryTimeId);
             PrepareViewBag(btnId, formId);
 
             return View(model);

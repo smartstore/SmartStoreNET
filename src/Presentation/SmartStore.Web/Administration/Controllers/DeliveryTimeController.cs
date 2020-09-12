@@ -39,6 +39,25 @@ namespace SmartStore.Admin.Controllers
 
         #region Delivery time
 
+        // Ajax.
+        public ActionResult AllDeliveryTimes(string selectedIds)
+        {
+            var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
+            var selectedArr = selectedIds.ToIntArray();
+
+            var data = deliveryTimes
+                .Select(x => new
+                {
+                    id = x.Id.ToString(),
+                    text = x.GetLocalized(y => y.Name).Value,
+                    description = _deliveryTimeService.GetFormattedDate(x),
+                    selected = selectedArr.Contains(x.Id)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -72,30 +91,6 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult
             {
                 Data = gridModel
-            };
-        }
-
-        // Ajax.
-        public ActionResult AllDeliveryTimes(string label, int selectedId)
-        {
-            var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
-            if (label.HasValue())
-            {
-                deliveryTimes.Insert(0, new DeliveryTime { Name = label, Id = 0 });
-            }
-
-            var list = from m in deliveryTimes
-                       select new
-                       {
-                           id = m.Id.ToString(),
-                           text = m.GetLocalized(x => x.Name).Value,
-                           selected = m.Id == selectedId
-                       };
-
-            return new JsonResult
-            {
-                Data = list.ToList(),
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
 

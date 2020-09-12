@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -14,7 +15,6 @@ namespace SmartStore.Admin.Models.Settings
         public CatalogSettingsModel()
         {
             AvailableDefaultViewModes = new List<SelectListItem>();
-            AvailableDeliveryTimes = new List<SelectListItem>();
         }
 
         #region General
@@ -294,9 +294,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail")]
         public DeliveryTimesPresentation DeliveryTimesInProductDetail { get; set; }
 
+        [UIHint("DeliveryTimes")]
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock")]
         public int? DeliveryTimeIdForEmptyStock { get; set; }
-        public IList<SelectListItem> AvailableDeliveryTimes { get; private set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate")]
         public bool EnableDynamicPriceUpdate { get; set; }

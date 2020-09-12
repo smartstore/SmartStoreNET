@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
@@ -15,7 +16,6 @@ namespace SmartStore.Admin.Models.Catalog
             ProductVariantAttributes = new List<ProductVariantAttributeModel>();
             AssignedPictureIds = new int[0];
             AssignablePictures = new List<PictureSelectItemModel>();
-            AvailableDeliveryTimes = new List<SelectListItem>();
             Warnings = new List<string>();
         }
 
@@ -37,10 +37,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Price")]
         public decimal? Price { get; set; }
 
+        [UIHint("DeliveryTimes")]
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
         public int? DeliveryTimeId { get; set; }
-
-        public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Pictures")]
         public int[] AssignedPictureIds { get; set; }

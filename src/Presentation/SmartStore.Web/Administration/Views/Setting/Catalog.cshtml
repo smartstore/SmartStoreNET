@@ -159,7 +159,7 @@
 				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.DeliveryTimeIdForEmptyStock, @Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified")))
+                @Html.SettingEditorFor(model => model.DeliveryTimeIdForEmptyStock)
 				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 		</tr>

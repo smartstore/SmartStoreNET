@@ -76,24 +76,24 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 // --------------------------------------------------
 // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L115
 @mixin bootstrap-input-defaults {
-	@include box-shadow($s2bs-form-control-default-box-shadow);
-	background-color: $s2bs-input-bg;
-	border: 1px solid $s2bs-input-border;
-	border-radius: $s2bs-input-border-radius;
-	color: $s2bs-input-color;
-	font-size: $s2bs-font-size-base;
+    @include box-shadow($s2bs-form-control-default-box-shadow);
+    background-color: $s2bs-input-bg;
+    border: 1px solid $s2bs-input-border;
+    border-radius: $s2bs-input-border-radius;
+    color: $s2bs-input-color;
+    font-size: $s2bs-font-size-base;
 }
 
 // @see http://getbootstrap.com/css/#forms-control-validation
 // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L388
 @mixin validation-state-focus($color) {
-	$shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px lighten($color, 20%);
+    $shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px lighten($color, 20%);
 
-	.select2-dropdown,
-	.select2-selection {
-		border-color: $color;
-	}
-	/*.select2-container--focus .select2-selection,
+    .select2-dropdown,
+    .select2-selection {
+        border-color: $color;
+    }
+    /*.select2-container--focus .select2-selection,
   .select2-container--open .select2-selection {
     box-shadow: $shadow;
     border-color: darken($color, 10%);
@@ -110,15 +110,15 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 // dropdown arrow when dropdown is open
 @mixin dropdown-arrow {
-	.select2-selection--single {
-		/**
+    .select2-selection--single {
+        /**
      * Make the dropdown arrow point up while the dropdown is visible.
      */
-		.select2-selection__arrow b {
-			border-color: transparent transparent $s2bs-dropdown-arrow-color transparent;
-			border-width: 0 $s2bs-caret-width-large $s2bs-caret-width-large $s2bs-caret-width-large;
-		}
-	}
+        .select2-selection__arrow b {
+            border-color: transparent transparent $s2bs-dropdown-arrow-color transparent;
+            border-width: 0 $s2bs-caret-width-large $s2bs-caret-width-large $s2bs-caret-width-large;
+        }
+    }
 }
 
 .select2-container--bootstrap {
@@ -795,7 +795,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 }*/
 
 select.is-invalid + .select2:not(.select2-container--open) {
-	@include validation-state-focus($form-feedback-invalid-color);
+    @include validation-state-focus($form-feedback-invalid-color);
 }
 
 
@@ -823,29 +823,29 @@ select.is-invalid + .select2:not(.select2-container--open) {
 .input-group .select2-container--bootstrap {
     flex: 1 1 auto;
     width: 1%;
-	z-index: 2;
-	margin-bottom: 0;
-	/**
+    z-index: 2;
+    margin-bottom: 0;
+    /**
    * Adjust z-index like Bootstrap does to show the focus-box-shadow
    * above appended buttons in .input-group and .form-group.
    */
-	&.select2-container--open,
-	/* .form-group */
-	&.select2-container--focus /* .input-group */ {
-		z-index: 3;
-	}
+    &.select2-container--open,
+    /* .form-group */
+    &.select2-container--focus /* .input-group */ {
+        z-index: 3;
+    }
 }
 
 .input-group.select2-bootstrap-prepend .select2-container--bootstrap {
-	.select2-selection {
-		@include border-left-radius(0);
-	}
+    .select2-selection {
+        @include border-left-radius(0);
+    }
 }
 
 .input-group.select2-bootstrap-append .select2-container--bootstrap {
-	.select2-selection {
-		@include border-right-radius(0);
-	}
+    .select2-selection {
+        @include border-right-radius(0);
+    }
 }
 
 
@@ -859,11 +859,11 @@ select.is-invalid + .select2:not(.select2-container--open) {
 
 .select2-bootstrap-append,
 .select2-bootstrap-prepend {
-	.select2-container--bootstrap,
-	.input-group-btn,
-	.input-group-btn .btn {
-		vertical-align: top;
-	}
+    .select2-container--bootstrap,
+    .input-group-btn,
+    .input-group-btn .btn {
+        vertical-align: top;
+    }
 }
 
 
@@ -878,8 +878,8 @@ select.is-invalid + .select2:not(.select2-container--open) {
  */
 
 .form-control.select2-hidden-accessible {
-	position: absolute !important;
-	width: 1px !important;
+    position: absolute !important;
+    width: 1px !important;
 }
 
 
@@ -888,5 +888,5 @@ select.is-invalid + .select2:not(.select2-container--open) {
  */
 
 .form-inline .select2-container--bootstrap {
-	display: inline-block;
+    display: inline-block;
 }

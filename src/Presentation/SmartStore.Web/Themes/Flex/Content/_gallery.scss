@@ -19,7 +19,7 @@
 
 .gal-item {
 	position: relative;
-	overflow: hidden;
+	//overflow: hidden;
     margin: 0;
 }
 
@@ -30,6 +30,7 @@
 	height: 0;
 	padding-top: 100%;
 	text-align: center;
+	overflow: hidden;
 	outline: none !important;
 }
 
@@ -80,7 +81,7 @@
 
 .gal-nav .gal-list {
     position: relative;
-    overflow: hidden;
+    overflow-y: hidden;
 }
 
 .gal-nav .gal-track {
@@ -89,7 +90,7 @@
 }
 
 .gal-nav .gal-item {
-	padding: 4px 1px;
+	padding: 4px 2px;
 
 	.file-icon {
 		font-size: 2rem;
@@ -102,8 +103,8 @@
 	border-color: rgba(0,0,0, 0.35);
 }
 .gal-nav .gal-current .gal-item-viewport {
-	border-color: rgba(0,0,0, 0.6);
-    outline: 1px solid rgba(0,0,0, 0.6) !important;
+	border-color: rgba(#000, 0.4);
+	box-shadow: 0 0 0 1px rgba(#000, 0.6);
 }
 
 .gal-nav .gal-item-content {
@@ -113,7 +114,7 @@
 .gal-nav-cell {
 	display: table-cell; 
 	vertical-align: top; 
-	padding-right: 1.2rem; 
+	padding-right: 1rem; 
 	max-height: 100%; 
 	overflow: hidden;
 	width: 4.5rem;

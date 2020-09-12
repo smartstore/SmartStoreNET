@@ -285,14 +285,14 @@
                 this.nav.data('current-page', page);
 
                 var hasArrows = !!(this.navPrevArrow) && !!(this.navNextArrow);
-
                 if (page === 0 && hasArrows) {
                     this.navPrevArrow.addClass('gal-disabled');
                     this.navNextArrow.removeClass('gal-disabled');
                 }
                 else if (page > 0 && hasArrows) {
                     this.navPrevArrow.removeClass('gal-disabled');
-                    var isLastPage = page >= Math.floor(this.navItemsCount / this.options.thumbsToShow);
+                    var totalPages = Math.ceil(this.navItemsCount / this.options.thumbsToShow);
+                    var isLastPage = page >= totalPages - 1;
                     this.navNextArrow.toggleClass('gal-disabled', isLastPage);
                 }
 
@@ -449,6 +449,12 @@
                 }
             }
 
+            function pauseVideos() {
+                pswpContainer.find('.video-item').each((i, el) => {
+                    el.pause();
+                });
+            }
+
             $(pswpEl).on('keydown.gal', function (e) {
                 // Handle arrow left/right press
                 setTransition(e);
@@ -500,14 +506,13 @@
                             }
                         }
                         else {
-                            var html = [
-                                '<div class="d-flex w-100 h-100 align-items-center justify-content-center">',
-                                '<div class="embed-responsive embed-responsive-16by9 xw-100 file-preview-container" style="max-width: 50%;">',
-                                '<video class="file-preview" src="{0}" controls preload="metadata" />'.format(a.attr('href')),
-                                '</div>',
-                                '</div>'
-                            ].join();
-                            items.push({ html: html, el: $this, width: '800px' });
+                            var src = a.attr('href');
+                            var html = `
+                                <div class="video-container d-flex align-items-center justify-content-center">
+                                    <video class="video-item" src="${src}" controls preload="metadata" />
+                                </div>
+                            `;
+                            items.push({ html: html, el: $this });
                         }
                     });
 
@@ -528,6 +533,8 @@
 
                         var pswp = new PhotoSwipe(pswpEl, PhotoSwipeUI_Default, items, options);
 
+                        pswp.listen('destroy', pauseVideos);
+                        pswp.listen('beforeChange', pauseVideos);
                         pswp.listen('afterChange', function () {
                             pswpContainer.one(Prefixer.event.transitionEnd, function (e) {
                                 pswpContainer.removeClass('sliding');

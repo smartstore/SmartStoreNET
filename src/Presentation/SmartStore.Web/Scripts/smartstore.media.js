@@ -52,7 +52,7 @@ SmartStore.media = (function () {
                         var src = img.data('src');
                         if (src) {
                             img.one('load', function () {
-                                img.parent().addClass('show').prev().removeClass('show');
+                                img.parent().addClass('show loaded').prev().removeClass('show');
                             });
                             img.prop('src', src);
                         }

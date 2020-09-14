@@ -76,14 +76,14 @@
 @if (Model.Items.Count > 0)
 {
     <div class="offcanvas-cart-footer">
-        <div class="offcanvas-cart-footer-row sm-gutters">
-            <div class="col">
+        <div class="offcanvas-cart-footer-row no-gutters">
+            <div class="col pr-2">
                 <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("CompareProducts")">
                     <i class="fa fa-check"></i>
                     <span>@T("Products.Compare.CompareNow")</span>
                 </a>
             </div>
-            <div class="col">
+            <div class="col pl-2">
                 <a class="btn btn-clear btn-block btn-action ajax-cart-link" href="#" data-href="@Url.Action("ClearCompareList")" rel="nofollow" data-type="compare" data-action="remove">
                     <i class="fal fa-trash-alt"></i>
                     <span>@T("Products.Compare.Clear")</span>

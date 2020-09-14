@@ -82,11 +82,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowDeliveryTimes)
+                @Html.SmartLabelFor(model => model.DeliveryTimesInShoppingCart)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowDeliveryTimes)
-                @Html.ValidationMessageFor(model => model.ShowDeliveryTimes)
+                @Html.EnumSettingEditorFor(model => model.DeliveryTimesInShoppingCart)
+                @Html.ValidationMessageFor(model => model.DeliveryTimesInShoppingCart)
             </td>
         </tr>
         <tr>

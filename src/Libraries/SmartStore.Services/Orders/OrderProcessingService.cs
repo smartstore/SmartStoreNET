@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
@@ -1221,7 +1222,7 @@ namespace SmartStore.Services.Orders
                                 var attributeDescription = _productAttributeFormatter.FormatAttributes(sc.Item.Product, sc.Item.AttributesXml, customer);
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
                                 var displayDeliveryTime =
-                                    _shoppingCartSettings.ShowDeliveryTimes &&
+                                    _shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None &&
                                     sc.Item.Product.DeliveryTimeId.HasValue &&
                                     sc.Item.Product.IsShipEnabled &&
                                     sc.Item.Product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);

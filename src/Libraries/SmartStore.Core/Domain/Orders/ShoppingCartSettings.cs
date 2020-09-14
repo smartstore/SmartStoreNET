@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Core.Domain.Orders
 {
@@ -23,7 +24,7 @@ namespace SmartStore.Core.Domain.Orders
             MiniShoppingCartEnabled = true;
             ShowProductImagesInMiniShoppingCart = true;
             ShowBasePrice = true;
-            ShowDeliveryTimes = true;
+            DeliveryTimesInShoppingCart = DeliveryTimesPresentation.DateOnly;
             ShowShortDesc = true;
             AllowAnonymousUsersToEmailWishlist = false;
         }
@@ -148,9 +149,9 @@ namespace SmartStore.Core.Domain.Orders
         public bool ShowConfirmOrderLegalHint { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to show delivery times in the order summary
+        /// Specifies the presentation of delivery times in shopping cart.
         /// </summary>
-        public bool ShowDeliveryTimes { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesInShoppingCart { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the product short description in the order summary

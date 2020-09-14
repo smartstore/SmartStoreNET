@@ -677,11 +677,8 @@ namespace SmartStore.Web.Controllers
             bool setEstimateShippingDefaultAddress = true,
             bool prepareAndDisplayOrderReviewData = false)
         {
-            if (cart == null)
-                throw new ArgumentNullException("cart");
-
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(cart, nameof(cart));
+            Guard.NotNull(model, nameof(model));
 
             if (cart.Count == 0)
                 return;
@@ -690,7 +687,7 @@ namespace SmartStore.Web.Controllers
 
             model.MediaDimensions = _mediaSettings.CartThumbPictureSize;
             model.BundleThumbSize = _mediaSettings.CartThumbBundleItemPictureSize;
-            model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
+            model.DisplayDeliveryTime = _shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None;
             model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
             model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
             model.DisplayWeight = _shoppingCartSettings.ShowWeight;

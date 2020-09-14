@@ -572,7 +572,7 @@ namespace SmartStore.Services.Messages
                 { "QtyUnit", null }
             };
 
-            if (shoppingCartSettings.ShowDeliveryTimes && part.IsShipEnabled)
+            if (part.IsShipEnabled && shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None)
             {
                 if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
                 {

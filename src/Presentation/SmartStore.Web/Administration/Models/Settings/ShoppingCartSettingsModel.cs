@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -64,8 +66,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes")]
-        public bool ShowDeliveryTimes { get; set; }
+        [UIHint("DeliveryTimes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart")]
+        public DeliveryTimesPresentation DeliveryTimesInShoppingCart { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowShortDesc")]
         public bool ShowShortDesc { get; set; }

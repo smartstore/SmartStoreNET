@@ -2054,7 +2054,7 @@ namespace SmartStore.Admin.Controllers
             {
                 var attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
                 var displayDeliveryTime =
-                    _shoppingCartSettings.ShowDeliveryTimes &&
+                    _shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None &&
                     product.DeliveryTimeId.HasValue &&
                     product.IsShipEnabled &&
                     product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);

@@ -391,7 +391,9 @@
                 "Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists",
                 "Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists.Hint",
                 "Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail",
-                "Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint");
+                "Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint",
+                "Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes",
+                "Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes.Hint");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail",
                 "Presentation of delivery times",
@@ -404,6 +406,12 @@
                 "Darstellung von Lieferzeiten",
                 "Specifies the way delivery times are displayed in product lists. Due to lack of space, the grid view does not show a date for the delivery time.",
                 "Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Tabellenansicht kein Datum zur Lieferzeit angezeigt.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart",
+                "Presentation of delivery times",
+                "Darstellung von Lieferzeiten",
+                "Specifies the way delivery times are displayed in shopping cart.",
+                "Legt die Darstellungsart von Lieferzeiten im Warenkorb fest.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.TodayShipmentHour",
                 "Order before x o'clock for same day shipment",

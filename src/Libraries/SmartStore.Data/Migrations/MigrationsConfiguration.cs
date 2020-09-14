@@ -517,6 +517,11 @@
                 "Defines the default meta keywords for pages in your store. You can override these for individual categories, products, manufacturer and topic pages.",
                 "Legt die Meta Keywords für Seiten im Shop fest. Für Warengruppen, Produkte, Hersteller und Seiten können diese individuell angegeben werden.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDiscountSign",
+                "Show discount sign",
+                "Rabattzeichen anzeigen",
+                "Specifies whether a discount sign should be displayed on product pictures when discounts were applied",
+                "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden");
         }
     }
 }

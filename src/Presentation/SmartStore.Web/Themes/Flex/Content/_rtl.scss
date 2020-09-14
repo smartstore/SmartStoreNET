@@ -222,13 +222,13 @@
 	}
 
 	.instasearch-term {
-		padding-left: 60px;
-		padding-right: 1rem;
+		padding-right: 60px;
+		padding-left: 1rem;
 	}
 
 	.instasearch-button {
-		left: 0;
-		right: auto;
+		left: auto;
+		right: 0;
 		border-right-width: 0;
 		border-left-width: $btn-border-width;
 		border-radius: $btn-border-radius 0 0 $btn-border-radius;

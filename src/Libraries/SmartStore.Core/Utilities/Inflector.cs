@@ -115,7 +115,7 @@ namespace SmartStore.Utilities
         }
         #endregion
 
-        #region private rule buolder methods
+        #region private rule builder methods
         private static void AddIrregular(string singular, string plural)
         {
             AddPlural("(" + singular[0] + ")" + singular.Substring(1) + "$", "$1" + plural.Substring(1));

@@ -25,7 +25,7 @@
         deliveryPresentation == DeliveryTimesPresentation.LabelAndDate ||
         !Model.DeliveryTimeDate.HasValue();
 
-    var showDate =
+    var showDeliveryDate =
         (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate) &&
         Model.DeliveryTimeDate.HasValue();
 
@@ -55,7 +55,7 @@
 				</span>
 			</div>
         }
-        if (showDate)
+        if (showDeliveryDate)
         {
 			<div class="deliverytime-group d-flex">
 				@if (!showStatusLabel)

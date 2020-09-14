@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -48,7 +49,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public int MediaDimensions { get; set; }
         public int BundleThumbSize { get; set; }
-        public bool DisplayDeliveryTime { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
         public bool DisplayShortDesc { get; set; }
         public bool DisplayWeight { get; set; }
         public bool DisplayBasePrice { get; set; }
@@ -121,8 +122,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool IsShipEnabled { get; set; }
 
             public LocalizedValue<string> DeliveryTimeName { get; set; }
-
             public string DeliveryTimeHexValue { get; set; }
+            public string DeliveryTimeDate { get; set; }
 
             public LocalizedValue<string> ShortDesc { get; set; }
 

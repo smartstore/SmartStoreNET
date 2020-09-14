@@ -337,6 +337,12 @@ namespace SmartStore.Web.Controllers
                 {
                     model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
                     model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+
+                    if (_shoppingCartSettings.DeliveryTimesInShoppingCart == DeliveryTimesPresentation.DateOnly ||
+                        _shoppingCartSettings.DeliveryTimesInShoppingCart == DeliveryTimesPresentation.LabelAndDate)
+                    {
+                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                    }
                 }
             }
 
@@ -681,7 +687,7 @@ namespace SmartStore.Web.Controllers
 
             model.MediaDimensions = _mediaSettings.CartThumbPictureSize;
             model.BundleThumbSize = _mediaSettings.CartThumbBundleItemPictureSize;
-            model.DisplayDeliveryTime = _shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None;
+            model.DeliveryTimesPresentation = _shoppingCartSettings.DeliveryTimesInShoppingCart;
             model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
             model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
             model.DisplayWeight = _shoppingCartSettings.ShowWeight;

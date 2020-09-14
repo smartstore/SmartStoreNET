@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
@@ -85,13 +86,8 @@ namespace SmartStore.Web.Models.Catalog
         public string Width { get; set; }
         public string Height { get; set; }
         public int ThumbDimensions { get; set; }
-        public string DeliveryTimeName { get; set; }
-        public string DeliveryTimeHexValue { get; set; }
-        public bool DisplayDeliveryTime { get; set; }
         public LocalizedValue<string> QuantityUnitName { get; set; }
         public bool DisplayProductReviews { get; set; }
-        public bool IsShipEnabled { get; set; }
-        public bool DisplayDeliveryTimeAccordingToStock { get; set; }
         public bool IsBasePriceEnabled { get; set; }
         public string BasePriceInfo { get; set; }
         public string BundleTitleText { get; set; }
@@ -100,6 +96,13 @@ namespace SmartStore.Web.Models.Catalog
         public bool BundlePerItemShoppingCart { get; set; }
         public bool DisplayTextForZeroPrices { get; set; }
         public PriceDisplayStyle PriceDisplayStyle { get; set; }
+
+        public bool IsShipEnabled { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
+        public bool DisplayDeliveryTimeAccordingToStock { get; set; }
+        public string DeliveryTimeName { get; set; }
+        public string DeliveryTimeHexValue { get; set; }
+        public string DeliveryTimeDate { get; set; }
 
         public ProductVariantAttributeCombination SelectedCombination { get; set; }
 

@@ -407,7 +407,7 @@ namespace SmartStore.Web.Controllers
                         var bundledProductModel = PrepareProductDetailsPageModel(item.Product, query, false, itemData, null);
 
                         bundledProductModel.ShowLegalInfo = false;
-                        bundledProductModel.DisplayDeliveryTime = false;
+                        bundledProductModel.DeliveryTimesPresentation = DeliveryTimesPresentation.None;
 
                         bundledProductModel.BundleItem.Id = item.Id;
                         bundledProductModel.BundleItem.Quantity = item.Quantity;
@@ -1135,7 +1135,9 @@ namespace SmartStore.Web.Controllers
                 if (selectedAttributeValues != null)
                 {
                     foreach (var attributeValue in selectedAttributeValues)
+                    {
                         model.WeightValue = decimal.Add(model.WeightValue, attributeValue.WeightAdjustment);
+                    }
                 }
                 else
                 {
@@ -1149,9 +1151,16 @@ namespace SmartStore.Web.Controllers
             model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("N2"), dimension) : "";
 
             if (productBundleItem != null)
+            {
                 model.ThumbDimensions = _mediaSettings.BundledProductPictureSize;
+            }
             else if (isAssociatedProduct)
+            {
                 model.ThumbDimensions = _mediaSettings.AssociatedProductPictureSize;
+            }
+
+            // Delivery Time.
+            var deliveryPresentation = _catalogSettings.DeliveryTimesInProductDetail;
 
             if (model.IsAvailable)
             {
@@ -1160,14 +1169,19 @@ namespace SmartStore.Web.Controllers
                 {
                     model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
                     model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+
+                    if (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate)
+                    {
+                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                    }
                 }
             }
 
-            model.DisplayDeliveryTime = _catalogSettings.DeliveryTimesInProductDetail != DeliveryTimesPresentation.None;
             model.IsShipEnabled = product.IsShipEnabled;
+            model.DeliveryTimesPresentation = deliveryPresentation;
             model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
-            if (model.DeliveryTimeName.IsEmpty() && model.DisplayDeliveryTime)
+            if (model.DeliveryTimeName.IsEmpty() && deliveryPresentation != DeliveryTimesPresentation.None)
             {
                 model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
             }
@@ -1178,13 +1192,13 @@ namespace SmartStore.Web.Controllers
                 model.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
             }
 
-            //back in stock subscriptions)
+            // Back in stock subscriptions.
             if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
                 product.BackorderMode == BackorderMode.NoBackorders &&
                 product.AllowBackInStockSubscriptions &&
                 product.StockQuantity <= 0)
             {
-                //out of stock
+                // Out of stock.
                 model.DisplayBackInStockSubscription = true;
                 model.BackInStockAlreadySubscribed = _backInStockSubscriptionService.FindSubscription(customer.Id, product.Id, store.Id) != null;
             }

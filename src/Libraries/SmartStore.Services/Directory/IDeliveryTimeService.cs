@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -68,15 +69,25 @@ namespace SmartStore.Services.Directory
         DeliveryTime GetDefaultDeliveryTime();
 
         /// <summary>
+        /// Calculates the delivery time dates.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <param name="fromDate">The date from which the delivery time date should be calculated.</param>
+        /// <param name="minDate">Calculated minimum date.</param>
+        /// <param name="maxDate">Calculated maximum date.</param>
+        /// <returns><c>True</c>Dates were calculated otherwise <c>False</c>.</returns>
+        bool GetDeliveryTimeDates(
+            DeliveryTime deliveryTime,
+            DateTime fromDate,
+            out DateTime? minDate,
+            out DateTime? maxDate);
+
+        /// <summary>
         /// Gets the formatted date of a delivery time.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
         /// <param name="language">Language. <c>null</c> to use current working language.</param>
-        /// <param name="prependLabel">Indicates whether to prepend delivery label.</param>
         /// <returns>Formatted date.</returns>
-        string GetFormattedDate(
-            DeliveryTime deliveryTime,
-            Language language = null,
-            bool prependLabel = true);
+        string GetFormattedDate(DeliveryTime deliveryTime, Language language = null);
     }
 }

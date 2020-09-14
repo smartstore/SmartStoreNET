@@ -405,7 +405,8 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 	padding-left: 0.4rem;
 }
 
-.delivery-time {
+.delivery-time,
+.delivery-time-date {
     display: inline-block;
     vertical-align: middle;
     max-width: 100%;

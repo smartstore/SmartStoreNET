@@ -374,12 +374,13 @@
                 "Specifies the maximum number of days for the delivery.",
                 "Legt den spätesten Zeitpunkt der Lieferung in Tagen fest.");
 
-            builder.AddOrUpdate("DeliveryTimes.Date.NotBefore", "Not before {0}", "Frühestens am {0}");
-            builder.AddOrUpdate("DeliveryTimes.Date.NotLaterThan", "Not later than {0}", "Spätestens am {0}");
-            builder.AddOrUpdate("DeliveryTimes.Date.Between", "Between {0} and {1}", "Zwischen {0} und {1}");
-            builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "On {0}", "Am {0}");
+            builder.AddOrUpdate("DeliveryTimes.Date.NotBefore", "Not before {0}.", "Frühestens am {0}.");
+            builder.AddOrUpdate("DeliveryTimes.Date.NotLaterThan", "Not later than {0}.", "Spätestens am {0}.");
+            builder.AddOrUpdate("DeliveryTimes.Date.Between", "Between {0} and {1}.", "Zwischen {0} und {1}.");
+            builder.AddOrUpdate("DeliveryTimes.Date.DeliveredOn", "On {0}.", "Am {0}.");
+            builder.AddOrUpdate("DeliveryTimes.Date.Tomorrow", "Tomorrow.", "Morgen.");
 
-            builder.AddOrUpdate("DeliveryTimes.Date.DeliveryInfo", "Delivery: {0}.", "Lieferung: {0}.");
+            builder.AddOrUpdate("Products.DeliveryDate", "Delivery:", "Lieferung:");
 
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "None", "Keine");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly", "Date only (if possible)", "Nur Datum (sofern möglich)");
@@ -403,8 +404,6 @@
                 "Darstellung von Lieferzeiten",
                 "Specifies the way delivery times are displayed in product lists. Due to lack of space, the grid view does not show a date for the delivery time.",
                 "Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Tabellenansicht kein Datum zur Lieferzeit angezeigt.");
-
-            builder.AddOrUpdate("Time.Tomorrow", "Tomorrow", "Morgen");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.TodayShipmentHour",
                 "Order before x o'clock for same day shipment",

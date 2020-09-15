@@ -932,7 +932,7 @@ namespace SmartStore.Services.Catalog.Importer
                                         sourceFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename)?.File;
                                     }
 
-                                    if ((sourceFile?.Id ?? 0) != 0)
+                                    if (sourceFile?.Id > 0)
                                     {
                                         var productMediaFile = new ProductMediaFile
                                         {

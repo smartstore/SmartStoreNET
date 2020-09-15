@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,6 +8,7 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.DataExchange.Import.Events;
@@ -21,6 +23,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<Category> _categoryRepository;
         private readonly ICategoryTemplateService _categoryTemplateService;
         private readonly IMediaService _mediaService;
+        private readonly IFolderService _folderService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly FileDownloadManager _fileDownloadManager;
 
@@ -39,12 +42,14 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<Category> categoryRepository,
             ICategoryTemplateService categoryTemplateService,
             IMediaService mediaService,
+            IFolderService folderService,
             ILocalizedEntityService localizedEntityService,
             FileDownloadManager fileDownloadManager)
         {
             _categoryRepository = categoryRepository;
             _categoryTemplateService = categoryTemplateService;
             _mediaService = mediaService;
+            _folderService = folderService;
             _localizedEntityService = localizedEntityService;
             _fileDownloadManager = fileDownloadManager;
         }
@@ -172,15 +177,21 @@ namespace SmartStore.Services.Catalog.Importer
             }
         }
 
-        protected virtual int ProcessPictures(
-            ImportExecuteContext context,
-            IEnumerable<ImportRow<Category>> batch)
+        protected virtual int ProcessPictures(ImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
         {
+            var allFileIds = batch
+                .Where(row => row.HasDataValue("ImageUrl") && row.Entity.MediaFileId > 0)
+                .Select(row => row.Entity.MediaFileId.Value)
+                .Distinct()
+                .ToArray();
+
+            var allFiles = _mediaService.GetFilesByIds(allFileIds).ToDictionary(x => x.Id, x => x.File);
+            var catalogAlbumId = _folderService.GetNodeByPath(SystemAlbumProvider.Catalog).Value.Id;
+
             foreach (var row in batch)
             {
                 try
                 {
-                    var srcId = row.GetDataValue<int>("Id");
                     var imageUrl = row.GetDataValue<string>("ImageUrl");
                     if (imageUrl.IsEmpty())
                     {
@@ -200,26 +211,27 @@ namespace SmartStore.Services.Catalog.Importer
                         {
                             if ((stream?.Length ?? 0) > 0)
                             {
-                                var currentFiles = new List<MediaFileInfo>();
-                                var file = _mediaService.GetFileById(row.Entity.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
-                                if (file != null)
-                                {
-                                    currentFiles.Add(file);
-                                }
+                                var assignedFile = allFiles.Get(row.Entity.MediaFileId ?? 0);
+                                MediaFile sourceFile = null;
 
-                                if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
+                                if (assignedFile != null && _mediaService.FindEqualFile(stream, new[] { assignedFile }, true, out var _))
                                 {
-                                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
-                                    var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
-                                    if ((newFile?.Id ?? 0) != 0)
-                                    {
-                                        row.Entity.MediaFileId = newFile.Id;
-                                        _categoryRepository.Update(row.Entity);
-                                    }
+                                    context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrl");
+                                }
+                                else if (_mediaService.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out sourceFile))
+                                {
+                                    context.Result.AddInfo("Found equal image in catalog album. Assigning existing image instead.", row.GetRowInfo(), "ImageUrl");
                                 }
                                 else
                                 {
-                                    context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+                                    var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
+                                    sourceFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename)?.File;
+                                }
+
+                                if ((sourceFile?.Id ?? 0) != 0)
+                                {
+                                    row.Entity.MediaFileId = sourceFile.Id;
+                                    _categoryRepository.Update(row.Entity);
                                 }
                             }
                         }

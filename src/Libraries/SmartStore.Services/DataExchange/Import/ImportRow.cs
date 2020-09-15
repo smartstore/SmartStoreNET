@@ -169,8 +169,7 @@ namespace SmartStore.Services.DataExchange.Import
                 return false;
             }
 
-            object rawValue;
-            if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value && !rawValue.ToString().IsCaseInsensitiveEqual(ExplicitIgnore))
+            if (_row.TryGetValue(mapping.MappedName, out var rawValue) && rawValue != null && rawValue != DBNull.Value && !rawValue.ToString().IsCaseInsensitiveEqual(ExplicitIgnore))
             {
                 value = rawValue.ToString().IsCaseInsensitiveEqual(ExplicitNull)
                     ? default(TProp)

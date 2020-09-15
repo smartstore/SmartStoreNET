@@ -298,7 +298,7 @@ namespace SmartStore.Utilities
         public string Path { get; set; }
 
         /// <summary>
-        /// File name without file extension
+        /// Name of downloaded file (including extension)
         /// </summary>
         public string FileName { get; set; }
 

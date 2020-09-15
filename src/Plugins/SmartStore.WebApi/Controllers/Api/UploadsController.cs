@@ -168,9 +168,9 @@ namespace SmartStore.WebApi.Controllers.Api
                             }
                             else
                             {
-                                if (!_mediaService.Value.FindEqualFile(stream, files, true, out var equalPictureId))
+                                if (!_mediaService.Value.FindEqualFile(stream, files, true, out var equalFile))
                                 {
-                                    var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName.ToValidFileName());
+                                    var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
                                     var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
 
                                     if ((newFile?.Id ?? 0) != 0)
@@ -189,7 +189,7 @@ namespace SmartStore.WebApi.Controllers.Api
                                 else
                                 {
                                     image.Exists = true;
-                                    image.Picture = files.FirstOrDefault(x => x.Id == equalPictureId);
+                                    image.Picture = equalFile;
                                 }
                             }
 

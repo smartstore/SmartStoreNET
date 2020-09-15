@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace SmartStore.Services.DataExchange.Import
@@ -52,6 +53,7 @@ namespace SmartStore.Services.DataExchange.Import
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddMapping(string sourceName, string mappedName, string defaultValue = null)
         {
             AddMapping(sourceName, null, mappedName, defaultValue);
@@ -78,6 +80,7 @@ namespace SmartStore.Services.DataExchange.Import
         /// <param name="sourceName">The name of the column to get a mapped value for.</param>
         /// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
         /// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceName"/>[<paramref name="index"/>]</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ColumnMappingItem GetMapping(string sourceName, string index)
         {
             return GetMapping(CreateSourceName(sourceName, index));

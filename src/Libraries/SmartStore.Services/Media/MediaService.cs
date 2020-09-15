@@ -308,12 +308,12 @@ namespace SmartStore.Services.Media
             return FolderService.NormalizePath(Path.Combine(paths), false);
         }
 
-        public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId)
+        public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out MediaFile equalFile)
         {
             Guard.NotNull(source, nameof(source));
             Guard.NotNull(files, nameof(files));
 
-            equalFileId = 0;
+            equalFile = null;
 
             try
             {
@@ -325,7 +325,7 @@ namespace SmartStore.Services.Media
                     {
                         if (source.ContentsEqual(other, true))
                         {
-                            equalFileId = file.Id;
+                            equalFile = file;
                             return true;
                         }
                     }

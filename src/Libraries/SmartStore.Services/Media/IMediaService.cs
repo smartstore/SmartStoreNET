@@ -171,9 +171,9 @@ namespace SmartStore.Services.Media
         /// <param name="source">The source stream to find a match for.</param>
         /// <param name="files">The sequence of files to seek within for duplicates.</param>
         /// <param name="leaveOpen">Whether to leave the <paramref name="source"/>source stream</param> open.
-        /// <param name="equalFileId">Id of equal file if any.</param>
+        /// <param name="equalFile">A file from the <paramref name="files"/> collection whose content is equal to <paramref name="source"/>.</param>
         /// <returns><c>true</c> when a duplicate file was found, <c>false</c> otherwise.</returns>
-        bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId);
+        bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out MediaFile equalFile);
 
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);

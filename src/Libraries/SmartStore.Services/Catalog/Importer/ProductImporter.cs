@@ -33,6 +33,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<ProductVariantAttributeValue> _attributeValueRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly IMediaService _mediaService;
+        private readonly IFolderService _folderService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
@@ -60,6 +61,7 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<ProductVariantAttributeValue> attributeValueRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             IMediaService mediaService,
+            IFolderService folderService,
             IManufacturerService manufacturerService,
             ICategoryService categoryService,
             IProductService productService,
@@ -75,6 +77,7 @@ namespace SmartStore.Services.Catalog.Importer
             _attributeValueRepository = attributeValueRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
             _mediaService = mediaService;
+            _folderService = folderService;
             _manufacturerService = manufacturerService;
             _categoryService = categoryService;
             _productService = productService;
@@ -870,6 +873,7 @@ namespace SmartStore.Services.Catalog.Importer
                 var imageNumber = 0;
                 var displayOrder = -1;
                 var imageFiles = new List<FileDownloadManagerItem>();
+                var catalogAlbumId = _folderService.GetNodeByPath(SystemAlbumProvider.Catalog).Value.Id;
 
                 // Collect required image file infos.
                 foreach (var urlOrPath in imageUrls)
@@ -904,6 +908,7 @@ namespace SmartStore.Services.Catalog.Importer
                             {
                                 if ((stream?.Length ?? 0) > 0)
                                 {
+                                    MediaFile sourceFile = null;
                                     var currentFiles = tmpFileMap.ContainsKey(productId)
                                         ? tmpFileMap[productId]
                                         : Enumerable.Empty<ProductMediaFile>();
@@ -913,31 +918,36 @@ namespace SmartStore.Services.Catalog.Importer
                                         displayOrder = currentFiles.Any() ? currentFiles.Select(x => x.DisplayOrder).Max() : 0;
                                     }
 
-                                    if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.MediaFile), true, out var _))
+                                    if (_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.MediaFile), true, out var _))
                                     {
-                                        var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
-                                        var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename);
-                                        if ((newFile?.Id ?? 0) != 0)
-                                        {
-                                            var productMediaFile = new ProductMediaFile
-                                            {
-                                                ProductId = productId,
-                                                MediaFileId = newFile.Id,
-                                                DisplayOrder = ++displayOrder
-                                            };
-
-                                            _productService.InsertProductPicture(productMediaFile);
-
-                                            tmpFileMap.Add(productId, productMediaFile);
-                                            // Update for FixProductMainPictureIds.
-                                            row.Entity.UpdatedOnUtc = DateTime.UtcNow;
-
-                                            //_productRepository.Update(row.Entity);
-                                        }
+                                        context.Result.AddInfo($"Found equal image in product data for {image.FileName}. Skipping file.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                    }
+                                    else if (_mediaService.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out sourceFile))
+                                    {
+                                        context.Result.AddInfo("Found equal file in catalog album. Assigning existing file instead.", row.GetRowInfo(), "ImageUrls");
                                     }
                                     else
                                     {
-                                        context.Result.AddInfo($"Found equal image in product data for {image.FileName}. Skipping file.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                        var path = _mediaService.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
+                                        sourceFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename)?.File;
+                                    }
+
+                                    if ((sourceFile?.Id ?? 0) != 0)
+                                    {
+                                        var productMediaFile = new ProductMediaFile
+                                        {
+                                            ProductId = productId,
+                                            MediaFileId = sourceFile.Id,
+                                            DisplayOrder = ++displayOrder
+                                        };
+
+                                        _productService.InsertProductPicture(productMediaFile);
+
+                                        tmpFileMap.Add(productId, productMediaFile);
+                                        // Update for FixProductMainPictureIds.
+                                        row.Entity.UpdatedOnUtc = DateTime.UtcNow;
+
+                                        //_productRepository.Update(row.Entity);
                                     }
                                 }
                             }

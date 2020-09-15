@@ -483,6 +483,7 @@
                                         .attr("data-media-id", value.MediaFileId)
                                         .attr("data-media-name", value.Name)
                                         .attr("data-entity-media-id", value.ProductMediaFileId)
+                                        .addClass("dz-success dz-complete")
                                         .removeClass("d-none dz-processing");
 
                                     elPreview.find(".fu-file-info-name").html(value.Name);

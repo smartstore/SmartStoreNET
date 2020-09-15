@@ -8,8 +8,8 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.IO;
 using SmartStore.Core.Security;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
@@ -616,37 +616,40 @@ namespace SmartStore.Services.Customers.Importer
                     Succeeded(image);
                     using (var stream = File.OpenRead(image.Path))
                     {
-                        if ((stream?.Length ?? 0) > 0)
+                        if (stream?.Length > 0)
                         {
+                            MediaFile sourceFile = null;
                             var currentFiles = new List<MediaFileInfo>();
                             var fileId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
                             var file = _mediaService.GetFileById(fileId, MediaLoadFlags.AsNoTracking);
+
                             if (file != null)
                             {
                                 currentFiles.Add(file);
                             }
 
-                            if (!_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
+                            if (_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.File), true, out var _))
                             {
-                                // Don't manage avatar files. Just overwrite existing file.
-                                var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName);
-
-                                var newFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Overwrite);
-                                if ((newFile?.Id ?? 0) != 0)
-                                {
-                                    SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, newFile.Id);
-                                }
+                                context.Result.AddInfo($"Found equal image in customer data for {image.FileName}. Skipping file.", row.GetRowInfo(), "AvatarPictureUrl");
                             }
                             else
                             {
-                                context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+                                // An avatar may not be assigned to several customers. A customer could otherwise delete the avatar of another.
+                                // Overwriting is probably too dangerous here, because we could overwrite the avatar of another customer, so better rename.
+                                var path = _mediaService.CombinePaths(SystemAlbumProvider.Customers, image.FileName);
+                                sourceFile = _mediaService.SaveFile(path, stream, false, DuplicateFileHandling.Rename)?.File;
+                            }
+
+                            if (sourceFile?.Id > 0)
+                            {
+                                SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, sourceFile.Id);
                             }
                         }
                     }
                 }
                 else
                 {
-                    context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "AvatarPictureUrl");
+                    context.Result.AddInfo("Download of avatar failed.", row.GetRowInfo(), "AvatarPictureUrl");
                 }
             }
 

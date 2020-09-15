@@ -37,6 +37,7 @@ namespace SmartStore.WebApi.Controllers.Api
 
         private readonly Lazy<IProductService> _productService;
         private readonly Lazy<IMediaService> _mediaService;
+        private readonly Lazy<IFolderService> _folderService;
         private readonly Lazy<IImportProfileService> _importProfileService;
         private readonly Lazy<IStoreService> _storeService;
         private readonly Lazy<IPermissionService> _permissionService;
@@ -48,6 +49,7 @@ namespace SmartStore.WebApi.Controllers.Api
         public UploadsController(
             Lazy<IProductService> productService,
             Lazy<IMediaService> mediaService,
+            Lazy<IFolderService> folderService,
             Lazy<IImportProfileService> importProfileService,
             Lazy<IStoreService> storeService,
             Lazy<IPermissionService> permissionService,
@@ -58,6 +60,7 @@ namespace SmartStore.WebApi.Controllers.Api
         {
             _productService = productService;
             _mediaService = mediaService;
+            _folderService = folderService;
             _importProfileService = importProfileService;
             _storeService = storeService;
             _permissionService = permissionService;
@@ -168,28 +171,40 @@ namespace SmartStore.WebApi.Controllers.Api
                             }
                             else
                             {
-                                if (!_mediaService.Value.FindEqualFile(stream, files, true, out var equalFile))
-                                {
-                                    var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
-                                    var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
-
-                                    if ((newFile?.Id ?? 0) != 0)
-                                    {
-                                        _productService.Value.InsertProductPicture(new ProductMediaFile
-                                        {
-                                            MediaFileId = newFile.Id,
-                                            ProductId = entity.Id,
-                                            DisplayOrder = ++displayOrder
-                                        });
-
-                                        image.Inserted = true;
-                                        image.Picture = newFile.File;
-                                    }
-                                }
-                                else
+                                // If TinyImage compresses the image, FindEqualFile will never find an equal image here.
+                                // We have to live with that. There is no ad-hoc solution for it.
+                                if (_mediaService.Value.FindEqualFile(stream, files, true, out var equalFile))
                                 {
                                     image.Exists = true;
                                     image.Picture = equalFile;
+                                }
+                                else
+                                {
+                                    var catalogAlbumId = _folderService.Value.GetNodeByPath(SystemAlbumProvider.Catalog).Value.Id;
+
+                                    if (_mediaService.Value.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out equalFile))
+                                    {
+                                        image.Exists = true;
+                                        image.Picture = equalFile;
+                                    }
+                                    else
+                                    {
+                                        var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
+                                        var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
+
+                                        if (newFile?.Id > 0)
+                                        {
+                                            _productService.Value.InsertProductPicture(new ProductMediaFile
+                                            {
+                                                MediaFileId = newFile.Id,
+                                                ProductId = entity.Id,
+                                                DisplayOrder = ++displayOrder
+                                            });
+
+                                            image.Inserted = true;
+                                            image.Picture = newFile.File;
+                                        }
+                                    }
                                 }
                             }
 

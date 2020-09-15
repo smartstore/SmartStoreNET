@@ -142,7 +142,7 @@ namespace SmartStore.Services.Media
                 return false;
             }
 
-            return service.FindEqualFile(source, matches.Cast<MediaFile>(), true, out equalFile);
+            return service.FindEqualFile(source, matches.Select(x => x.File).ToList(), true, out equalFile);
         }
     }
 }

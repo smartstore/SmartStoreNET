@@ -522,6 +522,18 @@
                 "Rabattzeichen anzeigen",
                 "Specifies whether a discount sign should be displayed on product pictures when discounts were applied",
                 "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode.Hint")
+                .Value("de", "Legt die Standardsortierreihenfolge für Produkte fest. \"Beste Ergebnisse\" (empfohlen) zeigt Produkte in der für die jeweilige Warengruppe festgelegten Reihenfolge an.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode.Hint")
+                .Value("en", "Specifies the default sort order for products. \"Relevance\" (recommended) displays products in the order specified for the given category.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.DefaultSortOrder.Hint")
+                .Value("de", "Legt die Standardsortierreihenfolge in den Suchergebnissen fest. \"Beste Ergebnisse\" (empfohlen) bewirkt eine Sortierung nach Relevanz, d.h. eine Gewichtung der Treffer anhand des Suchbegriffes.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.DefaultSortOrder.Hint")
+                .Value("en", "Specifies the default sort order in search results. \"Relevance\" (recommended) causes a sorting by relevance, a weighting of the hits according to the search term.");
         }
     }
 }

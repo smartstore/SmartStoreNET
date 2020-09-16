@@ -617,14 +617,6 @@ namespace SmartStore.Services.Search
                     {
                         query = OrderBy(ref ordered, query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
                     }
-                    else if (FindFilter(searchQuery.Filters, "parentid") != null)
-                    {
-                        query = OrderBy(ref ordered, query, x => x.DisplayOrder);
-                    }
-                    else
-                    {
-                        query = OrderBy(ref ordered, query, x => x.Name);
-                    }
                 }
                 else if (sort.FieldName == "createdon")
                 {
@@ -637,10 +629,6 @@ namespace SmartStore.Services.Search
                 else if (sort.FieldName == "price")
                 {
                     query = OrderBy(ref ordered, query, x => x.Price, sort.Descending);
-                }
-                else
-                {
-                    query = OrderBy(ref ordered, query, x => x.Name);
                 }
             }
 

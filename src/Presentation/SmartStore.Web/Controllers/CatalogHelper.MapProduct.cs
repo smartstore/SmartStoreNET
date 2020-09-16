@@ -110,7 +110,7 @@ namespace SmartStore.Web.Controllers
                 settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
                 settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
                 settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-                settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
+                settings.DeliveryTimesPresentation = _catalogSettings.DeliveryTimesInLists;
             }
             else if (viewMode == ProductSummaryViewMode.List)
             {
@@ -121,7 +121,7 @@ namespace SmartStore.Web.Controllers
                 settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
                 //settings.MapSpecificationAttributes = true; // TODO: (mc) What about SpecAttrs in List-Mode (?) Option?
                 settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-                settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
+                settings.DeliveryTimesPresentation = _catalogSettings.DeliveryTimesInLists;
                 settings.MapDimensions = _catalogSettings.ShowDimensions;
             }
             else if (viewMode == ProductSummaryViewMode.Compare)
@@ -133,7 +133,7 @@ namespace SmartStore.Web.Controllers
                 settings.MapAttributes = true;
                 settings.MapSpecificationAttributes = true;
                 settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-                settings.MapDeliveryTimes = _catalogSettings.DeliveryTimesInLists != DeliveryTimesPresentation.None;
+                settings.DeliveryTimesPresentation = _catalogSettings.DeliveryTimesInLists;
                 settings.MapDimensions = _catalogSettings.ShowDimensions;
             }
 
@@ -171,7 +171,6 @@ namespace SmartStore.Web.Controllers
                     ShowDescription = settings.MapShortDescription,
                     ShowFullDescription = settings.MapFullDescription,
                     ShowRatings = settings.MapReviews,
-                    ShowDeliveryTimes = settings.MapDeliveryTimes,
                     ShowPrice = settings.MapPrices,
                     ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists && settings.ViewMode != ProductSummaryViewMode.Mini,
                     ShowShippingSurcharge = settings.MapPrices && settings.ViewMode != ProductSummaryViewMode.Mini,
@@ -183,7 +182,8 @@ namespace SmartStore.Web.Controllers
                     BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
                     ThumbSize = settings.ThumbnailSize,
                     ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
-                    ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
+                    ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue,
+                    DeliveryTimesPresentation = settings.DeliveryTimesPresentation,
                 };
 
                 if (products.Count == 0)
@@ -498,9 +498,9 @@ namespace SmartStore.Web.Controllers
                 item.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).SystemKeyword;
             }
 
-            // Delivery Times
-            item.HideDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
-            if (model.ShowDeliveryTimes && !item.HideDeliveryTime)
+            // Delivery Times.
+            item.HideDeliveryTime = product.ProductType == ProductType.GroupedProduct;
+            if (!item.HideDeliveryTime && model.DeliveryTimesPresentation != DeliveryTimesPresentation.None)
             {
                 // We cannot include ManageInventoryMethod.ManageStockByAttributes because it's only functional with MergeWithCombination.
                 //item.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
@@ -524,6 +524,13 @@ namespace SmartStore.Web.Controllers
                 {
                     item.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
                     item.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+
+                    // Due to lack of space, the grid view does not show a date for the delivery time.
+                    if (settings.ViewMode >= ProductSummaryViewMode.List &&
+                        (model.DeliveryTimesPresentation == DeliveryTimesPresentation.DateOnly || model.DeliveryTimesPresentation == DeliveryTimesPresentation.LabelAndDate))
+                    {
+                        item.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                    }
                 }
 
                 item.DisplayDeliveryTimeAccordingToStock = product.ManageInventoryMethod == ManageInventoryMethod.ManageStock
@@ -830,7 +837,7 @@ namespace SmartStore.Web.Controllers
         public bool MapFullDescription { get; set; }
         public bool MapLegalInfo { get; set; }
         public bool MapReviews { get; set; }
-        public bool MapDeliveryTimes { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
 
         public bool ForceRedirectionAfterAddingToCart { get; set; }
         public int? ThumbnailSize { get; set; }

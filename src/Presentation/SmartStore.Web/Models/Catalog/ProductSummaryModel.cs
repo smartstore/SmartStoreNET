@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
@@ -32,7 +33,6 @@ namespace SmartStore.Web.Models.Catalog
         public bool ShowDimensions { get; set; }
         public bool ShowLegalInfo { get; set; }
         public bool ShowRatings { get; set; }
-        public bool ShowDeliveryTimes { get; set; }
         public bool ShowPrice { get; set; }
         public bool ShowBasePrice { get; set; }
         public bool ShowShippingSurcharge { get; set; }
@@ -43,6 +43,7 @@ namespace SmartStore.Web.Models.Catalog
         public bool WishlistEnabled { get; set; }
         public bool CompareEnabled { get; set; }
         public bool ForceRedirectionAfterAddingToCart { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
 
         public IList<SummaryItem> Items { get; set; }
 
@@ -112,15 +113,17 @@ namespace SmartStore.Web.Models.Catalog
             public string TransportSurcharge { get; set; }
             public int RatingSum { get; set; }
             public int TotalReviews { get; set; }
-            public bool HideDeliveryTime { get; set; }
-            public LocalizedValue<string> DeliveryTimeName { get; set; }
-            public string DeliveryTimeHexValue { get; set; }
-            public bool IsShippingEnabled { get; set; }
-            public bool DisplayDeliveryTimeAccordingToStock { get; set; }
-            public string StockAvailablity { get; set; }
             public string BasePriceInfo { get; set; }
             public PriceDisplayStyle PriceDisplayStyle { get; set; }
             public bool DisplayTextForZeroPrices { get; set; }
+
+            public bool IsShippingEnabled { get; set; }
+            public bool HideDeliveryTime { get; set; }
+            public string DeliveryTimeDate { get; set; }
+            public LocalizedValue<string> DeliveryTimeName { get; set; }
+            public string DeliveryTimeHexValue { get; set; }
+            public bool DisplayDeliveryTimeAccordingToStock { get; set; }
+            public string StockAvailablity { get; set; }
 
             public int MinPriceProductId { get; set; } // Internal
 

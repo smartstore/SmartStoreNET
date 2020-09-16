@@ -58,12 +58,12 @@
         if (showDeliveryDate)
         {
 			<div class="deliverytime-group d-flex">
-				@if (!showStatusLabel)
-                {
-					<span class="pr-1">@T("Products.DeliveryDate")</span>
-                }
 				<span class="delivery-time-date font-weight-medium" title="@T("Products.DeliveryDate") @Model.DeliveryTimeDate">
-					@Model.DeliveryTimeDate
+					@if (!showStatusLabel)
+					{
+						<span>@T("Products.DeliveryDate")</span>
+					}
+					<span>@Model.DeliveryTimeDate</span>
 				</span>
 			</div>
         }

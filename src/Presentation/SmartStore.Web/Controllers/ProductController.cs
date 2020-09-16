@@ -6,6 +6,7 @@ using System.Web.Routing;
 using SmartStore;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
@@ -281,7 +282,7 @@ namespace SmartStore.Web.Controllers
             var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid, x =>
             {
                 x.ThumbnailSize = productThumbPictureSize;
-                x.MapDeliveryTimes = false;
+                x.DeliveryTimesPresentation = DeliveryTimesPresentation.None;
             });
 
             var model = _helper.MapProductSummaryModel(products, settings);

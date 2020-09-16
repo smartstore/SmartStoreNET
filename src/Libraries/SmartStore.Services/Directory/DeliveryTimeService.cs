@@ -245,9 +245,7 @@ namespace SmartStore.Services.Directory
                 }
                 else if (minDate < maxDate)
                 {
-                    result = T("DeliveryTimes.Date.Between",
-                        IsTomorrow(minDate.Value) ? T("DeliveryTimes.Date.Tomorrow").Text : Format(minDate.Value),
-                        Format(maxDate.Value));
+                    result = T("DeliveryTimes.Date.Between", Format(minDate.Value), Format(maxDate.Value));
                 }
             }
             else if (minDate.HasValue)

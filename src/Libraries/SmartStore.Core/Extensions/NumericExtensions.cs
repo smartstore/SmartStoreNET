@@ -9,14 +9,13 @@ namespace SmartStore
     {
         #region int
 
-        public static int GetRange(this int id, int size, out int lower)
+        public static (int lower, int upper) GetRange(this int id, int size = 500)
         {
-            // max 1000 values per cache item
-            var range = (int)Math.Ceiling((decimal)id / size) * size;
+            // Max [size] values per cache item
+            var lower = (int)Math.Floor((decimal)id / size) * size;
+            var upper = lower + (size - 1);
 
-            lower = range - (size - 1);
-
-            return range;
+            return (lower, upper);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

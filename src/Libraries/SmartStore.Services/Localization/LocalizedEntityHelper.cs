@@ -34,7 +34,7 @@ namespace SmartStore.Services.Localization
         }
 
         public LocalizedValue<TProp> GetLocalizedValue<T, TProp>(T obj,
-            int id,
+            int id, // T is BaseEntity = EntityId, T is ISetting = StoreId
             string localeKeyGroup,
             string localeKey,
             Func<T, TProp> fallback,
@@ -87,7 +87,7 @@ namespace SmartStore.Services.Localization
                     str = string.Empty;
                 }
 
-                if (str.HasValue())
+                if (!string.IsNullOrEmpty(str))
                 {
                     currentLanguage = requestLanguage;
                     result = str.Convert<TProp>(CultureInfo.InvariantCulture);
@@ -95,7 +95,7 @@ namespace SmartStore.Services.Localization
             }
 
             // Set default value if required
-            if (returnDefaultValue && str.IsEmpty())
+            if (returnDefaultValue && string.IsNullOrEmpty(str))
             {
                 currentLanguage = _defaultLanguage;
                 result = fallback(obj);

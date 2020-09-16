@@ -240,15 +240,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Read)]
         [LoadSetting]
-        public ActionResult Blog(BlogSettings blogSettings)
+        public ActionResult Blog(BlogSettings blogSettings, int storeId)
         {
             var model = blogSettings.ToModel();
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = blogSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
-                locale.MetaDescription = blogSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
-                locale.MetaKeywords = blogSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaTitle = blogSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, storeId, false, false);
+                locale.MetaDescription = blogSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, storeId, false, false);
+                locale.MetaKeywords = blogSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, storeId, false, false);
             });
 
             return View(model);
@@ -256,15 +256,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost, SaveSetting]
-        public ActionResult Blog(BlogSettings blogSettings, BlogSettingsModel model)
+        public ActionResult Blog(BlogSettings blogSettings, BlogSettingsModel model, int storeId)
         {
             _ = model.ToEntity(blogSettings);
 
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(blogSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeId);
             }
 
             return NotifyAndRedirect("Blog");
@@ -272,15 +272,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Read)]
         [LoadSetting]
-        public ActionResult Forum(ForumSettings forumSettings)
+        public ActionResult Forum(ForumSettings forumSettings, int storeId)
         {
             var model = forumSettings.ToModel();
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = forumSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
-                locale.MetaDescription = forumSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
-                locale.MetaKeywords = forumSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaTitle = forumSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, storeId, false, false);
+                locale.MetaDescription = forumSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, storeId, false, false);
+                locale.MetaKeywords = forumSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, storeId, false, false);
             });
 
             return View(model);
@@ -288,15 +288,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost, SaveSetting]
-        public ActionResult Forum(ForumSettings forumSettings, ForumSettingsModel model)
+        public ActionResult Forum(ForumSettings forumSettings, ForumSettingsModel model, int storeId)
         {
             _ = model.ToEntity(forumSettings);
 
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(forumSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeId);
             }
 
             return NotifyAndRedirect("Forum");
@@ -305,15 +305,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Read)]
         [LoadSetting]
-        public ActionResult News(NewsSettings newsSettings)
+        public ActionResult News(NewsSettings newsSettings, int storeId)
         {
             var model = newsSettings.ToModel();
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = newsSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, false, false);
-                locale.MetaDescription = newsSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, false, false);
-                locale.MetaKeywords = newsSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaTitle = newsSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, storeId, false, false);
+                locale.MetaDescription = newsSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, storeId, false, false);
+                locale.MetaKeywords = newsSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, storeId, false, false);
             });
 
             return View(model);
@@ -321,15 +321,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost, SaveSetting]
-        public ActionResult News(NewsSettings newsSettings, NewsSettingsModel model)
+        public ActionResult News(NewsSettings newsSettings, NewsSettingsModel model, int storeId)
         {
             _ = model.ToEntity(newsSettings);
 
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId, storeId);
+                _localizedEntityService.SaveLocalizedSetting(newsSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeId);
             }
 
             return NotifyAndRedirect("News");
@@ -417,7 +417,7 @@ namespace SmartStore.Admin.Controllers
 
             using (Services.Settings.BeginScope())
             {
-                StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, Services.Settings, null, propertyName =>
+                StoreDependingSettings.UpdateSettings(shippingSettings, form, storeScope, Services.Settings, propertyName =>
                 {
                     // Skip to prevent the address from being recreated every time you save.
                     if (propertyName.IsCaseInsensitiveEqual("ShippingOriginAddressId"))
@@ -546,7 +546,7 @@ namespace SmartStore.Admin.Controllers
 
             using (Services.Settings.BeginScope())
             {
-                StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, Services.Settings, null, propertyName =>
+                StoreDependingSettings.UpdateSettings(taxSettings, form, storeScope, Services.Settings, propertyName =>
                 {
                     // Skip to prevent the address from being recreated every time you save.
                     if (propertyName.IsCaseInsensitiveEqual("DefaultTaxAddressId"))
@@ -703,8 +703,8 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.ReturnRequestActions = orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, languageId, false, false);
-                locale.ReturnRequestReasons = orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, languageId, false, false);
+                locale.ReturnRequestActions = orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, languageId, store?.Id, false, false);
+                locale.ReturnRequestReasons = orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, languageId, store?.Id, false, false);
             });
 
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
@@ -736,13 +736,13 @@ namespace SmartStore.Admin.Controllers
             // Scope because order settings are updated.
             using (Services.Settings.BeginScope())
             {
-                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);
-                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
+                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, storeScope, false);
+                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, storeScope, false);
 
                 foreach (var localized in model.Locales)
                 {
-                    _localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
-                    _localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
+                    _localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId, storeScope);
+                    _localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId, storeScope);
                 }
 
                 if (model.GiftCards_Activated_OrderStatusId.HasValue)
@@ -796,7 +796,7 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, languageId, false, false);
+                locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, languageId, storeScope, false, false);
             });
 
             return View(model);
@@ -826,12 +826,12 @@ namespace SmartStore.Admin.Controllers
             // Scope because shopping cart settings are updated.
             using (Services.Settings.BeginScope())
             {
-                Services.Settings.SaveSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, 0, false);
+                Services.Settings.SaveSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, storeScope, false);
             }
 
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId, storeScope);
             }
 
             return NotifyAndRedirect("ShoppingCart");
@@ -981,7 +981,7 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Salutations = addressSettings.GetLocalizedSetting(x => x.Salutations, languageId, false, false);
+                locale.Salutations = addressSettings.GetLocalizedSetting(x => x.Salutations, languageId, storeScope, false, false);
             });
 
             return View(model);
@@ -1036,12 +1036,12 @@ namespace SmartStore.Admin.Controllers
             // Scope because customer settings are updated.
             using (Services.Settings.BeginScope())
             {
-                Services.Settings.SaveSetting(customerSettings, x => x.DefaultPasswordFormat, 0, false);
+                Services.Settings.SaveSetting(customerSettings, x => x.DefaultPasswordFormat, storeScope, false);
             }
 
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId, storeScope);
             }
 
             return NotifyAndRedirect("CustomerUser");
@@ -1282,9 +1282,9 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.SeoSettings.DefaultSeoModel.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.DefaultTitle, languageId, false, false);
-                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription, languageId, false, false);
-                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords, languageId, false, false);
+                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.DefaultTitle, languageId, storeScope, false, false);
+                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription, languageId, storeScope, false, false);
+                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords, languageId, storeScope, false, false);
             });
 
             model.SeoSettings.HomepageSeoModel.MetaTitle = seoSettings.HomepageMetaTitle;
@@ -1293,9 +1293,9 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.SeoSettings.HomepageSeoModel.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.HomepageMetaTitle, languageId, false, false);
-                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.HomepageMetaDescription, languageId, false, false);
-                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.HomepageMetaKeywords, languageId, false, false);
+                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.HomepageMetaTitle, languageId, storeScope, false, false);
+                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.HomepageMetaDescription, languageId, storeScope, false, false);
+                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.HomepageMetaKeywords, languageId, storeScope, false, false);
             });
 
             StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, Services.Settings, false);
@@ -1412,9 +1412,9 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var localized in model.SeoSettings.DefaultSeoModel.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultTitle, localized.MetaTitle, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaDescription, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultTitle, localized.MetaTitle, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaDescription, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaKeywords, localized.LanguageId, storeScope);
             }
 
             seoSettings.HomepageMetaTitle = model.SeoSettings.HomepageSeoModel.MetaTitle;
@@ -1423,9 +1423,9 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var localized in model.SeoSettings.HomepageSeoModel.Locales)
             {
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaTitle, localized.MetaTitle, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaDescription, localized.MetaDescription, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaTitle, localized.MetaTitle, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
             }
 
             // Security.

@@ -390,7 +390,7 @@ namespace SmartStore.Web.Controllers
 
             if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
             {
-                model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, true, false);
+                model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, _storeContext.CurrentStore.Id, true, false);
 
                 if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
                     model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");

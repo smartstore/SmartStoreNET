@@ -41,9 +41,10 @@ namespace SmartStore.Web.Controllers
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
-            ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle);
-            ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription);
-            ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords);
+            var storeId = Services.StoreContext.CurrentStore.Id;
+            ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle, storeId);
+            ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription, storeId);
+            ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords, storeId);
 
             return View();
         }

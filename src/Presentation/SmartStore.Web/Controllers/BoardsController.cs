@@ -334,9 +334,9 @@ namespace SmartStore.Web.Controllers
                 model.ForumGroups.Add(groupModel);
             }
 
-            model.MetaTitle = _forumSettings.GetLocalizedSetting(x => x.MetaTitle);
-            model.MetaDescription = _forumSettings.GetLocalizedSetting(x => x.MetaDescription);
-            model.MetaKeywords = _forumSettings.GetLocalizedSetting(x => x.MetaKeywords);
+            model.MetaTitle = _forumSettings.GetLocalizedSetting(x => x.MetaTitle, store.Id);
+            model.MetaDescription = _forumSettings.GetLocalizedSetting(x => x.MetaDescription, store.Id);
+            model.MetaKeywords = _forumSettings.GetLocalizedSetting(x => x.MetaKeywords, store.Id);
 
             if (!model.MetaTitle.HasValue())
                 model.MetaTitle = T("Forum.PageTitle.Default").Text;

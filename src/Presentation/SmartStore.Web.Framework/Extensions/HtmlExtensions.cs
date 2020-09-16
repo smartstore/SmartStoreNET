@@ -753,7 +753,7 @@ namespace SmartStore.Web.Framework
 
             var sb = PooledStringBuilder.Rent("<div class='form-row flex-nowrap multi-store-setting-group'>");
             sb.Append("<div class='col-auto'>");
-            sb.Append(helper.SettingOverrideCheckboxInternal(expression, data, parentSelector)); // CHECK
+            sb.Append(SettingOverrideCheckboxInternal(helper, expression, data, parentSelector)); // CHECK
             sb.Append("</div>");
             sb.Append("<div class='col multi-store-setting-control'>");
             sb.Append(editor.ToHtmlString()); // CONTROL
@@ -763,7 +763,7 @@ namespace SmartStore.Web.Framework
         }
 
         private static MvcHtmlString SettingOverrideCheckboxInternal<TModel, TValue>(
-            this HtmlHelper<TModel> helper,
+            HtmlHelper<TModel> helper,
             Expression<Func<TModel, TValue>> expression,
             StoreDependingSettingData data,
             string parentSelector = null)
@@ -773,12 +773,16 @@ namespace SmartStore.Web.Framework
             var localizeService = EngineContext.Current.Resolve<ILocalizationService>();
 
             if (fieldPrefix.HasValue())
-                settingKey = string.Concat(fieldPrefix, ".", settingKey);
-            else if (!settingKey.Contains("."))
-                settingKey = string.Concat(data.RootSettingClass, ".", settingKey);
+            {
+                settingKey = fieldPrefix + "." + settingKey;
+            }
+            else if (data.RootSettingClass.HasValue() && !settingKey.StartsWith(data.RootSettingClass + ".", StringComparison.OrdinalIgnoreCase))
+            {
+                settingKey = data.RootSettingClass + "." + settingKey;
+            }    
 
-            var overrideForStore = (data.OverrideSettingKeys.FirstOrDefault(x => x.IsCaseInsensitiveEqual(settingKey)) != null);
-            var fieldId = settingKey + (settingKey.EndsWith("_OverrideForStore") ? "" : "_OverrideForStore");
+            var overrideForStore = data.OverrideSettingKeys.Contains(settingKey);
+            var fieldId = settingKey.EnsureEndsWith("_OverrideForStore");
 
             var sb = PooledStringBuilder.Rent();
             sb.Append("<label class='switch switch-blue multi-store-override-switch'>");

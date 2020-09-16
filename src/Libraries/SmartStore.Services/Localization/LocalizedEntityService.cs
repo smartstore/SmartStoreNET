@@ -96,7 +96,7 @@ namespace SmartStore.Services.Localization
 
                 foreach (var prop in properties)
                 {
-                    dict[prop.EntityId] = prop.LocaleValue.EmptyNull();
+                    dict[prop.EntityId] = prop.LocaleValue ?? string.Empty;
                 }
 
                 return dict;
@@ -339,14 +339,16 @@ namespace SmartStore.Services.Localization
             TSetting settings,
             Expression<Func<TSetting, TPropType>> keySelector,
             TPropType value,
-            int languageId) where TSetting : class, ISettings
+            int languageId,
+            int storeId = 0) where TSetting : class, ISettings
         {
-            SaveLocalizedValue(settings, 0, typeof(TSetting).Name, keySelector, value, languageId);
+            // INFO: unfortunately we have to misuse the "EntityId" prop and store StoreId instead.
+            SaveLocalizedValue(settings, storeId, typeof(TSetting).Name, keySelector, value, languageId);
         }
 
         protected virtual void SaveLocalizedValue<T, TPropType>(
             T obj,
-            int id,
+            int id, // T is BaseEntity = EntityId, T is ISetting = StoreId
             string keyGroup,
             Expression<Func<T, TPropType>> keySelector,
             TPropType value,
@@ -374,7 +376,7 @@ namespace SmartStore.Services.Localization
 
             if (prop != null)
             {
-                if (valueStr.IsEmpty())
+                if (string.IsNullOrEmpty(valueStr))
                 {
                     // Delete
                     DeleteLocalizedProperty(prop);
@@ -391,7 +393,7 @@ namespace SmartStore.Services.Localization
             }
             else
             {
-                if (valueStr.HasValue())
+                if (!string.IsNullOrEmpty(valueStr))
                 {
                     // insert
                     prop = new LocalizedProperty
@@ -414,13 +416,13 @@ namespace SmartStore.Services.Localization
 
         private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId)
         {
-            return GetSegmentKeyPart(localeKeyGroup, localeKey, entityId, out var minId, out var maxId);
+            return GetSegmentKeyPart(localeKeyGroup, localeKey, entityId, out _, out _);
         }
 
         private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
         {
-            maxId = entityId.GetRange(_performanceSettings.CacheSegmentSize, out minId);
-            return (localeKeyGroup + "." + localeKey + "." + maxId.ToString()).ToLowerInvariant();
+            (minId, maxId) = entityId.GetRange(_performanceSettings.CacheSegmentSize);
+            return (localeKeyGroup + "." + localeKey + "." + minId.ToString()).ToLowerInvariant();
         }
     }
 }

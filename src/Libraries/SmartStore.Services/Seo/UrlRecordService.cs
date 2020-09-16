@@ -567,7 +567,7 @@ namespace SmartStore.Services.Seo
 
         private string BuildCacheSegmentKey(string segment, int languageId)
         {
-            return String.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
+            return string.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
         }
 
         private string GetSegmentKeyPart(string entityName, int entityId)
@@ -577,8 +577,8 @@ namespace SmartStore.Services.Seo
 
         private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
         {
-            maxId = entityId.GetRange(_performanceSettings.CacheSegmentSize, out minId);
-            return (entityName + "." + maxId.ToString()).ToLowerInvariant();
+            (minId, maxId) = entityId.GetRange(_performanceSettings.CacheSegmentSize);
+            return (entityName + "." + minId.ToString()).ToLowerInvariant();
         }
     }
 }

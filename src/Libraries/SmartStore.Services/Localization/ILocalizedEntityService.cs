@@ -127,10 +127,12 @@ namespace SmartStore.Services.Localization
         /// <param name="keySelector">Key selector</param>
         /// <param name="value">Locale value</param>
         /// <param name="languageId">Language ID</param>
+        /// <param name="storeId">Store ID</param>
         void SaveLocalizedSetting<TSetting, TPropType>(
            TSetting settings,
            Expression<Func<TSetting, TPropType>> keySelector,
            TPropType value,
-           int languageId) where TSetting : class, ISettings;
+           int languageId,
+           int storeId = 0) where TSetting : class, ISettings;
     }
 }

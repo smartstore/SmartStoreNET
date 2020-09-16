@@ -60,10 +60,10 @@ namespace SmartStore.Web.Controllers
                 throw new ArgumentNullException("model");
 
             model.OrderId = order.Id;
-
+            
             var language = Services.WorkContext.WorkingLanguage;
-            string returnRequestReasons = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
-            string returnRequestActions = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
+            string returnRequestReasons = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, order.CustomerLanguageId, order.StoreId, true, false);
+            string returnRequestActions = _orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, order.CustomerLanguageId, order.StoreId, true, false);
 
             // Return reasons.
             foreach (var rrr in returnRequestReasons.SplitSafe(","))

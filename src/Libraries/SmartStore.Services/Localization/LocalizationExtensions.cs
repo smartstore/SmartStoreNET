@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
@@ -220,7 +221,7 @@ namespace SmartStore.Services.Localization
                 "Category",
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
-                EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage);
+                null);
         }
 
         /// <summary>
@@ -271,24 +272,16 @@ namespace SmartStore.Services.Localization
         /// <param name="settings">The settings instance</param>
         /// <param name="keySelector">Key selector</param>
         /// <returns>Localized property</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings,
             Expression<Func<TSetting, string>> keySelector,
+            int? storeId = null,
             bool returnDefaultValue = true,
             bool ensureTwoPublishedLanguages = true,
             bool detectEmptyHtml = false)
             where TSetting : class, ISettings
         {
-            var invoker = keySelector.CompileFast();
-            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-                settings,
-                0,
-                typeof(TSetting).Name,
-                invoker.Property.Name,
-                (Func<TSetting, string>)invoker,
-                EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage,
-                returnDefaultValue,
-                ensureTwoPublishedLanguages,
-                detectEmptyHtml);
+            return GetLocalizedSetting(settings, keySelector, null, storeId, returnDefaultValue, ensureTwoPublishedLanguages, detectEmptyHtml);
         }
 
         /// <summary>
@@ -296,55 +289,47 @@ namespace SmartStore.Services.Localization
         /// </summary>
         /// <param name="settings">The settings instance</param>
         /// <param name="keySelector">Key selector</param>
-        /// <param name="languageId">Language identifier</param>
+        /// <param name="requestLanguageIdOrObj">Language id, <see cref="Language"/> object instance or <c>null</c></param>
         /// <returns>Localized property</returns>
         public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings,
             Expression<Func<TSetting, string>> keySelector,
-            int languageId,
+            object requestLanguageIdOrObj, // Id or Language
+            int? storeId = null,
             bool returnDefaultValue = true,
             bool ensureTwoPublishedLanguages = true,
             bool detectEmptyHtml = false)
             where TSetting : class, ISettings
         {
+            var helper = EngineContext.Current.Resolve<LocalizedEntityHelper>();
             var invoker = keySelector.CompileFast();
-            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-                settings,
-                0,
-                typeof(TSetting).Name,
-                invoker.Property.Name,
-                (Func<TSetting, string>)invoker,
-                languageId,
-                returnDefaultValue,
-                ensureTwoPublishedLanguages,
-                detectEmptyHtml);
-        }
 
-        /// <summary>
-        /// Get localized property of an <see cref="ISettings"/> implementation
-        /// </summary>
-        /// <param name="settings">The settings instance</param>
-        /// <param name="keySelector">Key selector</param>
-        /// <param name="language">Language</param>
-        /// <returns>Localized property</returns>
-        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings,
-            Expression<Func<TSetting, string>> keySelector,
-            Language language,
-            bool returnDefaultValue = true,
-            bool ensureTwoPublishedLanguages = true,
-            bool detectEmptyHtml = false)
-            where TSetting : class, ISettings
-        {
-            var invoker = keySelector.CompileFast();
-            return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-                settings,
-                0,
-                typeof(TSetting).Name,
-                invoker.Property.Name,
-                (Func<TSetting, string>)invoker,
-                language,
-                returnDefaultValue,
-                ensureTwoPublishedLanguages,
-                detectEmptyHtml);
+            if (storeId == null)
+            {
+                storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+            }
+
+            var localizedValue = GetValue(storeId.Value, storeId == 0);
+
+            if (storeId > 0 && string.IsNullOrEmpty(localizedValue.Value))
+            {
+                localizedValue = GetValue(0, returnDefaultValue);
+            }
+
+            return localizedValue;
+
+            LocalizedValue<string> GetValue(int id /* storeId */, bool doFallback)
+            {
+                return helper.GetLocalizedValue(
+                    settings,
+                    id,
+                    typeof(TSetting).Name,
+                    invoker.Property.Name,
+                    (Func<TSetting, string>)invoker,
+                    requestLanguageIdOrObj,
+                    doFallback,
+                    ensureTwoPublishedLanguages,
+                    detectEmptyHtml);
+            }
         }
 
         #endregion

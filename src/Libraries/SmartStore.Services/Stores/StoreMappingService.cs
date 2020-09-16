@@ -238,8 +238,8 @@ namespace SmartStore.Services.Stores
 
         private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
         {
-            maxId = entityId.GetRange(1000, out minId);
-            return (entityName + "." + maxId.ToString()).ToLowerInvariant();
+            (minId, maxId) = entityId.GetRange(1000);
+            return (entityName + "." + minId.ToString()).ToLowerInvariant();
         }
 
         #endregion

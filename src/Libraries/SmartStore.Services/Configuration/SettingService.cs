@@ -276,27 +276,6 @@ namespace SmartStore.Services.Configuration
                     }
                     else
                     {
-                        #region Obsolete ('EnumerableConverter' can handle this case now)
-                        //if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
-                        //{
-                        //	// convenience: don't return null for simple list types
-                        //	var listArg = prop.PropertyType.GetGenericArguments()[0];
-                        //	object list = null;
-
-                        //	if (listArg == typeof(int))
-                        //		list = new List<int>();
-                        //	else if (listArg == typeof(decimal))
-                        //		list = new List<decimal>();
-                        //	else if (listArg == typeof(string))
-                        //		list = new List<string>();
-
-                        //	if (list != null)
-                        //	{
-                        //		fastProp.SetValue(settings, list);
-                        //	}
-                        //}
-                        #endregion
-
                         continue;
                     }
 

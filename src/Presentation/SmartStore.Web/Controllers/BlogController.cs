@@ -237,9 +237,9 @@ namespace SmartStore.Web.Controllers
 
             if (parsedMonth == null && tag == null)
             {
-                model.MetaTitle = _blogSettings.GetLocalizedSetting(x => x.MetaTitle);
-                model.MetaDescription = _blogSettings.GetLocalizedSetting(x => x.MetaDescription);
-                model.MetaKeywords = _blogSettings.GetLocalizedSetting(x => x.MetaKeywords);
+                model.MetaTitle = _blogSettings.GetLocalizedSetting(x => x.MetaTitle, storeId);
+                model.MetaDescription = _blogSettings.GetLocalizedSetting(x => x.MetaDescription, storeId);
+                model.MetaKeywords = _blogSettings.GetLocalizedSetting(x => x.MetaKeywords, storeId);
             }
             else
             {

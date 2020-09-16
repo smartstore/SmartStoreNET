@@ -200,6 +200,7 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
 
             var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
+            var storeId = _services.StoreContext.CurrentStore.Id;
             var model = new NewsItemListModel();
             model.WorkingLanguageId = workingLanguageId;
 
@@ -220,9 +221,9 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
-            model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle);
-            model.MetaDescription = _newsSettings.GetLocalizedSetting(x => x.MetaDescription);
-            model.MetaKeywords = _newsSettings.GetLocalizedSetting(x => x.MetaKeywords);
+            model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle, storeId);
+            model.MetaDescription = _newsSettings.GetLocalizedSetting(x => x.MetaDescription, storeId);
+            model.MetaKeywords = _newsSettings.GetLocalizedSetting(x => x.MetaKeywords, storeId);
 
             if (!model.MetaTitle.HasValue())
                 model.MetaTitle = T("PageTitle.NewsArchive").Text;

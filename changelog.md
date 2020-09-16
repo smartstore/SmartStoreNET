@@ -14,6 +14,7 @@
 * #1697 Added picture and color options to checkout attribute values.
 * #1788 Added setting to restrict order amount in general and for customer roles in specific.
 * #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
+* (DEV) Full localization support for properties of setting classes.
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies

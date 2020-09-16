@@ -405,7 +405,7 @@
                 "Presentation of delivery times",
                 "Darstellung von Lieferzeiten",
                 "Specifies the way delivery times are displayed in product lists. Due to lack of space, the grid view does not show a date for the delivery time.",
-                "Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Tabellenansicht kein Datum zur Lieferzeit angezeigt.");
+                "Legt die Darstellungsart von Lieferzeiten in Produktlisten fest. Aus Platzgründen wird in der Rasteransicht kein Datum zur Lieferzeit angezeigt.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart",
                 "Presentation of delivery times",

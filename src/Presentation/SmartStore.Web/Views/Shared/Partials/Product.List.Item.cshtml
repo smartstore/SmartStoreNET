@@ -2,16 +2,19 @@
 
 @using System.Globalization;
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Directory;
 
 @{ 
     var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
     var list = Model.Parent;
     var picture = Model.Picture;
+    var deliveryPresentation = list.DeliveryTimesPresentation;
 
     var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
     var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
     var showDrop = showButtons || showVariants;
-    var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+    var showDeliveryInfo = deliveryPresentation != DeliveryTimesPresentation.None && Model.IsShippingEnabled && !Model.HideDeliveryTime;
+    var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (showDeliveryInfo || list.ShowSku || list.ShowWeight || list.ShowDimensions);
     var addPictureClass = picture.PictureId == 0 ? " no-picture" : "";
     if (!picture.ImageUrl.HasValue())
     {
@@ -79,6 +82,46 @@
     @if (showAttrs)
     {
         <table class="art-attrs">
+            @if (showDeliveryInfo)
+            {
+                var showStatusLabel =
+                    deliveryPresentation == DeliveryTimesPresentation.LabelOnly ||
+                    deliveryPresentation == DeliveryTimesPresentation.LabelAndDate ||
+                    !Model.DeliveryTimeDate.HasValue();
+
+                var showDeliveryDate =
+                    (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate) &&
+                    Model.DeliveryTimeDate.HasValue();
+
+                var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
+
+                if (showStatusLabel)
+                {
+                    <tr>
+                        <td>@T("Products.DeliveryTime")</td>
+                        <td>
+				            <span class="delivery-time" title="@statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+					            <i class="fa fa-circle delivery-time-status"></i>
+					            <span>@statusLabel</span>
+				            </span>
+                        </td>
+                    </tr>
+                }
+                if (showDeliveryDate)
+                {
+                    <tr>
+                        <td>
+					        @if (!showStatusLabel)
+					        {
+						        @T("Products.DeliveryDate")
+					        }
+                        </td>
+                        <td>
+                            @Model.DeliveryTimeDate
+                        </td>
+                    </tr>
+                }
+            }
             @if (list.ShowSku && Model.Sku.HasValue())
             {
                 <tr>

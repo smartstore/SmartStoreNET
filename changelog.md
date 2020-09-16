@@ -13,6 +13,7 @@
 * #1678 Determine initial working currency based on IP/country.
 * #1697 Added picture and color options to checkout attribute values.
 * #1788 Added setting to restrict order amount in general and for customer roles in specific.
+* #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies
@@ -39,8 +40,7 @@
 
 ## Smartstore 4.0.1
 ### New Features
-
-- Check on app startup whether any plugin has changed and refresh all plugin locale resources.
+* Check on app startup whether any plugin has changed and refresh all plugin locale resources.
 
 ### Improvements
 * Theming: minimal but effective tweaks (rounding, shadows, typo)

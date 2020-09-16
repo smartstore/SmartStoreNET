@@ -220,8 +220,12 @@ namespace SmartStore.Admin.Controllers
                 {
                     var to = new EmailAddress(model.SendTestEmailTo);
                     var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
-                    var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"));
                     var body = T("Admin.Common.EmailSuccessfullySent");
+
+                    // Avoid System.ArgumentException: "The specified string is not in the form required for a subject" when testing mails.
+                    var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"))
+                        .RegexReplace(@"\p{C}+", " ")
+                        .TrimSafe();
 
                     var msg = new EmailMessage(to, subject, body, from);
 

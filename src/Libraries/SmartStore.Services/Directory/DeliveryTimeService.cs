@@ -206,7 +206,11 @@ namespace SmartStore.Services.Directory
             return true;
         }
 
-        public virtual string GetFormattedDate(DeliveryTime deliveryTime, Language language = null)
+        public virtual string GetFormattedDate(
+            DeliveryTime deliveryTime,
+            Language language = null,
+            string prepend = "<span class='delivery-date'>",
+            string append = "</span>")
         {
             // TODO: server's local time is inaccurate (server can be anywhere). Use time at shipping origin address instead (ShippingSettings.ShippingOriginAddressId)?
             var now = DateTime.Now;
@@ -214,6 +218,15 @@ namespace SmartStore.Services.Directory
             if (!GetDeliveryTimeDates(deliveryTime, now, out var minDate, out var maxDate))
             {
                 return null;
+            }
+
+            if (minDate.HasValue)
+            {
+                minDate = _dateTimeHelper.ConvertToUserTime(minDate.Value);
+            }
+            if (maxDate.HasValue)
+            {
+                maxDate = _dateTimeHelper.ConvertToUserTime(maxDate.Value);
             }
 
             if (language == null)
@@ -238,41 +251,38 @@ namespace SmartStore.Services.Directory
             {
                 if (minDate == maxDate)
                 {
-                    if (IsTomorrow(minDate.Value))
-                        result = T("DeliveryTimes.Date.Tomorrow");
-                    else
-                        result = T("DeliveryTimes.Date.DeliveredOn", Format(minDate.Value));
+                    result = T("DeliveryTimes.Dates.DeliveryOn", Format(minDate.Value, "DeliveryTimes.Dates.OnTomorrow"));
                 }
                 else if (minDate < maxDate)
                 {
-                    result = T("DeliveryTimes.Date.Between", Format(minDate.Value), Format(maxDate.Value));
+                    result = T("DeliveryTimes.Dates.Between", Format(minDate.Value, null), Format(maxDate.Value, null));
                 }
             }
             else if (minDate.HasValue)
             {
-                if (IsTomorrow(minDate.Value))
-                    result = T("DeliveryTimes.Date.Tomorrow");
-                else
-                    result = T("DeliveryTimes.Date.NotBefore", Format(minDate.Value));
+                result = T("DeliveryTimes.Dates.NotBefore", Format(minDate.Value));
             }
             else if (maxDate.HasValue)
             {
-                if (IsTomorrow(maxDate.Value))
-                    result = T("DeliveryTimes.Date.Tomorrow");
-                else
-                    result = T("DeliveryTimes.Date.NotLaterThan", Format(maxDate.Value));
+                result = T("DeliveryTimes.Dates.Until", Format(maxDate.Value));
             }
 
             return result;
 
-            bool IsTomorrow(DateTime date)
+            string Format(DateTime date, string tomorrowKey = "DeliveryTimes.Dates.Tomorrow")
             {
-                return (date - now).TotalDays == 1;
-            }
+                var str = string.Empty;
 
-            string Format(DateTime date)
-            {
-                return _dateTimeHelper.ConvertToUserTime(date).ToString(dateFormat, ci);
+                if (tomorrowKey != null && (date - now).TotalDays == 1)
+                {
+                    str = T(tomorrowKey);
+                }
+                else
+                {
+                    str = date.ToString(dateFormat, ci);
+                }
+
+                return string.Concat(prepend, str.EmptyNull(), append);
             }
         }
 

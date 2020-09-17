@@ -87,7 +87,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
         /// <param name="language">Language. <c>null</c> to use current working language.</param>
+        /// <param name="prepend">String to prepend to date value.</param>
+        /// <param name="append">String to append to date value.</param>
         /// <returns>Formatted date.</returns>
-        string GetFormattedDate(DeliveryTime deliveryTime, Language language = null);
+        string GetFormattedDate(
+            DeliveryTime deliveryTime,
+            Language language = null,
+            string prepend = "<span class='delivery-date'>",
+            string append = "</span>");
     }
 }

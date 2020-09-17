@@ -91,16 +91,6 @@ namespace SmartStore.GoogleAnalytics
 			return cookieInfo;
 		}
 
-		public override void Install()
-		{
-			var settings = new GoogleAnalyticsSettings
-			{
-				GoogleId = "UA-0000000-0",
-				TrackingScript = TRACKING_SCRIPT,
-				EcommerceScript = ECOMMERCE_SCRIPT,
-				EcommerceDetailScript = ECOMMERCE_DETAIL_SCRIPT
-			};
-
         public override void Install()
         {
             var settings = new GoogleAnalyticsSettings
@@ -110,6 +100,9 @@ namespace SmartStore.GoogleAnalytics
                 EcommerceScript = GoogleAnalyticsScriptHelper.GetEcommerceScript(),
                 EcommerceDetailScript = GoogleAnalyticsScriptHelper.GetEcommerceDetailScript()
             };
+
+			_settingService.SaveSetting(settings);
+			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
 			base.Install();
 		}

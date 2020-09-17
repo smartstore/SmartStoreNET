@@ -3,6 +3,7 @@
 ## Smartstore 4.1.0
 ### Highlights
 * **Web API**: now supports the widely extended Version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
+* **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
 
 ### New Features
 * Theming: responsive font-sizing and spacing

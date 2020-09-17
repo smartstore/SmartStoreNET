@@ -50,7 +50,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     id = x.Id.ToString(),
                     text = x.GetLocalized(y => y.Name).Value,
-                    description = _deliveryTimeService.GetFormattedDate(x),
+                    description = _deliveryTimeService.GetFormattedDeliveryDate(x),
                     selected = selectedArr.Contains(x.Id)
                 })
                 .ToList();
@@ -79,7 +79,7 @@ namespace SmartStore.Admin.Controllers
                 .Select(x =>
                 {
                     var model = x.ToModel();
-                    model.DeliveryInfo = _deliveryTimeService.GetFormattedDate(x);
+                    model.DeliveryInfo = _deliveryTimeService.GetFormattedDeliveryDate(x);
 
                     return model;
                 })

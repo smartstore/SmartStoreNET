@@ -1172,7 +1172,7 @@ namespace SmartStore.Web.Controllers
 
                     if (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate)
                     {
-                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDeliveryDate(deliveryTime);
                     }
                 }
             }

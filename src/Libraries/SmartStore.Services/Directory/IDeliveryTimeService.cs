@@ -69,31 +69,19 @@ namespace SmartStore.Services.Directory
         DeliveryTime GetDefaultDeliveryTime();
 
         /// <summary>
-        /// Calculates the delivery time dates.
+        /// Calculates the delivery date.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
         /// <param name="fromDate">The date from which the delivery time date should be calculated.</param>
-        /// <param name="minDate">Calculated minimum date.</param>
-        /// <param name="maxDate">Calculated maximum date.</param>
-        /// <returns><c>True</c>Dates were calculated otherwise <c>False</c>.</returns>
-        bool GetDeliveryTimeDates(
-            DeliveryTime deliveryTime,
-            DateTime fromDate,
-            out DateTime? minDate,
-            out DateTime? maxDate);
+        /// <returns>Calculated minimum and maximum date.</returns>
+        (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate);
 
         /// <summary>
-        /// Gets the formatted date of a delivery time.
+        /// Gets the formatted delivery date.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
         /// <param name="language">Language. <c>null</c> to use current working language.</param>
-        /// <param name="prepend">String to prepend to date value.</param>
-        /// <param name="append">String to append to date value.</param>
         /// <returns>Formatted date.</returns>
-        string GetFormattedDate(
-            DeliveryTime deliveryTime,
-            Language language = null,
-            string prepend = "<span class='delivery-date'>",
-            string append = "</span>");
+        string GetFormattedDeliveryDate(DeliveryTime deliveryTime, Language language = null);
     }
 }

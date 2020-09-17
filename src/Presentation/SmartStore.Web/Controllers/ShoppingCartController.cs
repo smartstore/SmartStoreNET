@@ -341,7 +341,7 @@ namespace SmartStore.Web.Controllers
                     if (_shoppingCartSettings.DeliveryTimesInShoppingCart == DeliveryTimesPresentation.DateOnly ||
                         _shoppingCartSettings.DeliveryTimesInShoppingCart == DeliveryTimesPresentation.LabelAndDate)
                     {
-                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                        model.DeliveryTimeDate = _deliveryTimeService.GetFormattedDeliveryDate(deliveryTime);
                     }
                 }
             }

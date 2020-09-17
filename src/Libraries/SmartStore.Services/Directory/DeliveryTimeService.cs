@@ -169,21 +169,11 @@ namespace SmartStore.Services.Directory
             return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();
         }
 
-        public virtual bool GetDeliveryTimeDates(
-            DeliveryTime deliveryTime,
-            DateTime fromDate,
-            out DateTime? minDate,
-            out DateTime? maxDate)
+        public virtual (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate)
         {
-            minDate = maxDate = null;
-
-            if (deliveryTime == null)
+            if (deliveryTime == null || (!deliveryTime.MinDays.HasValue && !deliveryTime.MaxDays.HasValue))
             {
-                return false;
-            }
-            if (!deliveryTime.MinDays.HasValue && !deliveryTime.MaxDays.HasValue)
-            {
-                return false;
+                return (null, null);
             }
 
             var daysToAdd = 0;
@@ -195,27 +185,24 @@ namespace SmartStore.Services.Directory
             }
 
             // Normalization. "Today" is not supported\allowed.
-            minDate = deliveryTime.MinDays.HasValue
+            var minDate = deliveryTime.MinDays.HasValue
                 ? AddDays(fromDate, Math.Max(deliveryTime.MinDays.Value + daysToAdd, 1))
                 : (DateTime?)null;
 
-            maxDate = deliveryTime.MaxDays.HasValue
+            var maxDate = deliveryTime.MaxDays.HasValue
                 ? AddDays(fromDate, Math.Max(deliveryTime.MaxDays.Value + daysToAdd, 1))
                 : (DateTime?)null;
 
-            return true;
+            return (minDate, maxDate);
         }
 
-        public virtual string GetFormattedDate(
-            DeliveryTime deliveryTime,
-            Language language = null,
-            string prepend = "<span class='delivery-date'>",
-            string append = "</span>")
+        public virtual string GetFormattedDeliveryDate(DeliveryTime deliveryTime, Language language = null)
         {
             // TODO: server's local time is inaccurate (server can be anywhere). Use time at shipping origin address instead (ShippingSettings.ShippingOriginAddressId)?
             var now = DateTime.Now;
 
-            if (!GetDeliveryTimeDates(deliveryTime, now, out var minDate, out var maxDate))
+            var (minDate, maxDate) = GetDeliveryDate(deliveryTime, now);
+            if (minDate == null && maxDate == null)
             {
                 return null;
             }
@@ -271,7 +258,7 @@ namespace SmartStore.Services.Directory
 
             string Format(DateTime date, string tomorrowKey = "DeliveryTimes.Dates.Tomorrow")
             {
-                var str = string.Empty;
+                string str = null;
 
                 if (tomorrowKey != null && (date - now).TotalDays == 1)
                 {
@@ -282,7 +269,7 @@ namespace SmartStore.Services.Directory
                     str = date.ToString(dateFormat, ci);
                 }
 
-                return string.Concat(prepend, str.EmptyNull(), append);
+                return str ?? string.Empty;
             }
         }
 

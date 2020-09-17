@@ -529,7 +529,7 @@ namespace SmartStore.Web.Controllers
                     if (settings.ViewMode >= ProductSummaryViewMode.List &&
                         (model.DeliveryTimesPresentation == DeliveryTimesPresentation.DateOnly || model.DeliveryTimesPresentation == DeliveryTimesPresentation.LabelAndDate))
                     {
-                        item.DeliveryTimeDate = _deliveryTimeService.GetFormattedDate(deliveryTime);
+                        item.DeliveryTimeDate = _deliveryTimeService.GetFormattedDeliveryDate(deliveryTime);
                     }
                 }
 

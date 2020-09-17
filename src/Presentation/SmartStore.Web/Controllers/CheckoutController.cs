@@ -468,6 +468,7 @@ namespace SmartStore.Web.Controllers
 
                 if (sciWarnings.Any())
                 {
+                    NotifyError(string.Join(Environment.NewLine, sciWarnings));
                     return RedirectToRoute("ShoppingCart");
                 }
             }

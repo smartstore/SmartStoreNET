@@ -117,7 +117,7 @@
 					<div class="dropdown-menu dropdown-menu-right">
 						<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
 							<i class="fa fa-fw fa-user"></i>
-							@T("Admin.Header.Account")
+							<span>@T("Admin.Header.Account")</span> <small class="muted">(@currentCustomer.Username.Truncate(40, "…"))</small>
 						</a>
 						<a class="dropdown-item" href="@Url.Action("Logout", "Customer", new { area = "" })">
 							<i class="fal fa-fw fa-sign-out-alt"></i>

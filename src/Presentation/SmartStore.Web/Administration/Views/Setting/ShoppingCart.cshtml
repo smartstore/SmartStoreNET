@@ -320,25 +320,25 @@
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
-				<td class="adminData">
-					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+                <td class="adminData">
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel)
-					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
-				</td>
+                    @Html.SettingEditorFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel, Html.TextAreaFor(x => Model.Locales[item].ThirdPartyEmailHandOverLabel))
+                    @Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
+                </td>
 			</tr>
 		</table>
-			,
+		,
 		@<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOverLabel)
 				</td>
-				<td class="adminData">
-					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel)
-					@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
-				</td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ThirdPartyEmailHandOverLabel, Html.TextAreaFor(x => x.ThirdPartyEmailHandOverLabel))
+                    @Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
+                </td>
 			</tr>
 		</table>
 		))

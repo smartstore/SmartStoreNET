@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Plugins;
+using SmartStore.GoogleAnalytics.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -13,51 +14,6 @@ namespace SmartStore.GoogleAnalytics
     /// </summary>
     public class GoogleAnalyticPlugin : BasePlugin, IWidget, IConfigurable, ICookiePublisher
     {
-        #region Scripts
-
-        private const string TRACKING_SCRIPT = @"<!-- Google code for Analytics tracking -->
-<script>
-	{OPTOUTCOOKIE}
-
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', '{GOOGLEID}', 'auto');
-	ga('set', 'anonymizeIp', true); 
-    ga('send', 'pageview');
-
-	{STORAGETYPE}
-
-    {ECOMMERCE}
-</script>";
-
-        private const string ECOMMERCE_SCRIPT = @"ga('require', 'ecommerce');
-ga('ecommerce:addTransaction', {
-    'id': '{ORDERID}',
-    'affiliation': '{SITE}',
-    'revenue': '{TOTAL}',
-    'shipping': '{SHIP}',
-    'tax': '{TAX}',
-    'currency': '{CURRENCY}'
-});
-
-{DETAILS}
-
-ga('ecommerce:send');";
-
-        private const string ECOMMERCE_DETAIL_SCRIPT = @"ga('ecommerce:addItem', {
-    'id': '{ORDERID}',
-    'name': '{PRODUCTNAME}',
-    'sku': '{PRODUCTSKU}',
-    'category': '{CATEGORYNAME}',
-    'price': '{UNITPRICE}',
-    'quantity': '{QUANTITY}'
-});";
-
-        #endregion
-
         private readonly ISettingService _settingService;
         private readonly GoogleAnalyticsSettings _googleAnalyticsSettings;
         private readonly ILocalizationService _localizationService;
@@ -151,9 +107,9 @@ ga('ecommerce:send');";
             var settings = new GoogleAnalyticsSettings
             {
                 GoogleId = "UA-0000000-0",
-                TrackingScript = TRACKING_SCRIPT,
-                EcommerceScript = ECOMMERCE_SCRIPT,
-                EcommerceDetailScript = ECOMMERCE_DETAIL_SCRIPT
+                TrackingScript = GoogleAnalyticsScriptHelper.GetTrackingScript(),
+                EcommerceScript = GoogleAnalyticsScriptHelper.GetEcommerceScript(),
+                EcommerceDetailScript = GoogleAnalyticsScriptHelper.GetEcommerceDetailScript()
             };
 
             _settingService.SaveSetting(settings);

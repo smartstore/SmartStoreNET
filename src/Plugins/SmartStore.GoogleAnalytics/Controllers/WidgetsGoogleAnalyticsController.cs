@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleAnalytics.Models;
+using SmartStore.GoogleAnalytics.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
@@ -58,7 +59,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             return View(model);
         }
 
-        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
+        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false), FormValueRequired("save")]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
@@ -81,6 +82,23 @@ namespace SmartStore.GoogleAnalytics.Controllers
 			}
 
 			return RedirectToConfiguration("SmartStore.GoogleAnalytics");
+        }
+
+        [AdminAuthorize, HttpPost]
+        [ActionName("Configure"), FormValueRequired("restore-scripts")]
+        public ActionResult RestoreScripts()
+        {
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<GoogleAnalyticsSettings>(storeScope);
+
+            settings.TrackingScript = GoogleAnalyticsScriptHelper.GetTrackingScript();
+            settings.EcommerceScript = GoogleAnalyticsScriptHelper.GetEcommerceScript();
+            settings.EcommerceDetailScript = GoogleAnalyticsScriptHelper.GetEcommerceDetailScript();
+
+            _settingService.SaveSetting(settings, storeScope);
+
+            return RedirectToConfiguration("SmartStore.GoogleAnalytics", true);
         }
 
         [ChildActionOnly]
@@ -147,13 +165,15 @@ namespace SmartStore.GoogleAnalytics.Controllers
         {
             // If no consent to analytical cookies was given, set storage to none.
             var script = @"
-				ga('set', 'storage', 'none'); 
-	            ga('set', 'clientId', '{0}'); 
+                , {
+                  'storage': 'none',
+                  'clientId': '" + _workContext.CurrentCustomer.CustomerGuid + @"',
+                  storeGac: false
+                }
 			";
 
             script = script + "\n";
-            script = script.FormatWith(_workContext.CurrentCustomer.CustomerGuid);
-
+            
             return script;
         }
 

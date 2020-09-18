@@ -106,7 +106,7 @@ namespace SmartStore.Services.DataExchange.Import
         public ILogger Log
         {
             get;
-            internal set;
+            set;
         }
 
         /// <summary>

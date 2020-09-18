@@ -576,7 +576,7 @@ namespace SmartStore.Web.Controllers
             model.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnProductReviewPage;
         }
 
-        public MediaFileInfo PrepareMediaFileInfo(MediaFileInfo file, MediaGalleryModel model)
+        private MediaFileInfo PrepareMediaFileInfo(MediaFileInfo file, MediaGalleryModel model)
         {
             file.Alt = file.File.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? model.DefaultAlt;
             file.TitleAttribute = file.File.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? model.ModelName;

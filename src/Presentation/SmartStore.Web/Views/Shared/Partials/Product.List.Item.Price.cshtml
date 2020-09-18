@@ -22,7 +22,7 @@
         }
     }
 
-    if (Model.DisplayTextForZeroPrices && Model.Price.PriceValue == 0)
+    if (Model.DisplayTextForZeroPrices && Model.Price.PriceValue == 0 && !Model.Price.CallForPrice)
     {
         Model.Price.Price = T("Products.Free").Text;
     }

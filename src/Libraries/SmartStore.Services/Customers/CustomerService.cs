@@ -751,6 +751,8 @@ DELETE TOP(20000) [c]
                 query = query.Where(x => x.IsSystemMapping == isSystemMapping.Value);
             }
 
+            query = query.Where(x => !x.Customer.Deleted);
+
             if (withCustomers)
             {
                 query = query

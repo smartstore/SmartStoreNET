@@ -449,7 +449,7 @@ namespace SmartStore.Web.Controllers
             var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
             if (scWarnings.Any())
             {
-                NotifyError(string.Join(Environment.NewLine, scWarnings));
+                NotifyWarning(string.Join(Environment.NewLine, scWarnings.Take(3)));
                 return RedirectToRoute("ShoppingCart");
             }
 
@@ -468,7 +468,7 @@ namespace SmartStore.Web.Controllers
 
                 if (sciWarnings.Any())
                 {
-                    NotifyError(string.Join(Environment.NewLine, sciWarnings));
+                    NotifyWarning(string.Join(Environment.NewLine, sciWarnings.Take(3)));
                     return RedirectToRoute("ShoppingCart");
                 }
             }

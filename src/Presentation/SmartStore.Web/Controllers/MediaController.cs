@@ -186,6 +186,15 @@ namespace SmartStore.Web.Controllers
                 };
             }
 
+            var q = CreateImageQuery(pathData.MimeType, pathData.Extension);
+
+            // Security: check allowed thumnail sizes and return 404 if disallowed.
+            var thumbSizeAllowed = IsThumbnailSizeAllowed(q.MaxWidth) && (q.MaxHeight == q.MaxWidth || IsThumbnailSizeAllowed(q.MaxHeight));
+            if (!thumbSizeAllowed)
+            {
+                return NotFound(pathData.MimeType);
+            }
+
             var handlerContext = new MediaHandlerContext
             {
                 HttpContext = HttpContext,
@@ -196,7 +205,7 @@ namespace SmartStore.Web.Controllers
                 MediaService = _mediaService,
                 PathData = pathData,
                 SourceFile = mediaFile,
-                ImageQuery = CreateImageQuery(pathData.MimeType, pathData.Extension)
+                ImageQuery = q
             };
 
             var handlers = _mediaHandlers.Value.OrderBy(x => x.Order).ToArray();
@@ -246,6 +255,13 @@ namespace SmartStore.Web.Controllers
             }
         }
 
+        private bool IsThumbnailSizeAllowed(int? size)
+        {
+            return size.GetValueOrDefault() == 0
+                || _mediaSettings.IsAllowedThumbnailSize(size.Value)
+                || _permissionService.Authorize(Permissions.Media.Update, _workContext.CurrentCustomer);
+        }
+
         private ActionResult NotFound(string mime)
         {
             Response.ContentType = mime.NullEmpty() ?? "text/html";
@@ -269,6 +285,7 @@ namespace SmartStore.Web.Controllers
             //}
 
             var query = new ProcessImageQuery(null, qs);
+
             if (query.Quality == null)
             {
                 query.Quality = _mediaSettings.DefaultImageQuality;

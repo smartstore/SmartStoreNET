@@ -34,13 +34,58 @@
 				@Html.ValidationMessageFor(model => model.AutoGenerateAbsoluteUrls)
 			</td>
 		</tr>
-		<tr>
+        <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvatarPictureSize)
+                @Html.SmartLabelFor(model => model.MakeFilesTransientWhenOrphaned)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AvatarPictureSize, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.AvatarPictureSize)
+                @Html.SettingEditorFor(model => model.MakeFilesTransientWhenOrphaned)
+                @Html.ValidationMessageFor(model => model.MakeFilesTransientWhenOrphaned)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
+                @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
+                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaximumImageSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaximumImageSize, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.MaximumImageSize)
+            </td>
+        </tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@T("Admin.Configuration.Settings.Media.ImageSizes")
+					</div>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
         </tr>
         <tr>
@@ -54,38 +99,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
-				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ProductDetailsPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ProductDetailsPictureSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DefaultPictureZoomEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
-                @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
             </td>
         </tr>
         <tr>
@@ -106,6 +124,15 @@
                 @Html.ValidationMessageFor(model => model.BundledProductPictureSize)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
+				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CategoryThumbPictureSize)
@@ -151,31 +178,13 @@
                 @Html.ValidationMessageFor(model => model.MiniCartThumbPictureSize)
             </td>
         </tr>
-        <tr>
+		<tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaximumImageSize)
+                @Html.SmartLabelFor(model => model.AvatarPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaximumImageSize, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.MaximumImageSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
-                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MakeFilesTransientWhenOrphaned)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MakeFilesTransientWhenOrphaned)
-                @Html.ValidationMessageFor(model => model.MakeFilesTransientWhenOrphaned)
+                @Html.SettingEditorFor(model => model.AvatarPictureSize, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.AvatarPictureSize)
             </td>
         </tr>
 		<tr>

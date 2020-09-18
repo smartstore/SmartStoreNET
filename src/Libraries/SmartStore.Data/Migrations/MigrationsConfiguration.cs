@@ -306,7 +306,7 @@
 					<b>Admin > Configuration > Regional Settings > Languages</b>.
 				</p>",
                 @"<p>
-					Wenn Sie Scripte von Drittanbietern in Ihren Shop eingebunden haben, die Cookies nutzen und die nicht über ein Plugin in Smartstore integriert sind,
+					Wenn Sie Skripte von Drittanbietern in Ihren Shop eingebunden haben, die Cookies nutzen und die nicht über ein Plugin in Smartstore integriert sind,
 					können Sie in folgender Tabelle eigene Informationen über diese Cookies für den Cookie-Manager bereitstellen.
 					Die zugefügten Informationen werden, dem Typ entsprechend, im Cookie-Manager des Frontends angezeigt.
 					Cookie-Informationen, die dem Cookie-Manager von aktiven Plugins zur Verfügung gestellt werden, werden in dieser Tabelle angezeigt,
@@ -548,6 +548,47 @@
                 "Akkumulierte Verzögerung",
                 "Accumulates the value, multiplied by the index of the element, to the total delay.",
                 "Akkumuliert den Wert, multipliziert mit dem Index des Elements, zur Gesamtverzögerung.");
+
+            #region Media
+
+            var mediaRoot = "Admin.Configuration.Settings.Media.";
+
+            builder.AddOrUpdate(mediaRoot + "ImageSizes", "Image/thumbnail sizes", "Bild-/Thumbnailgrößen");
+
+            builder.AddOrUpdate(mediaRoot + "DefaultPictureZoomEnabled",
+                "Enable image zoom",
+                "Bildzoom aktivieren",
+                "Adds 'zoom on hover' functionality to product detail images.",
+                "Aktiviert 'Zoom bei Hover'-Funktion für Produktdetail-Bilder.");
+
+            builder.AddOrUpdate(mediaRoot + "AssociatedProductPictureSize", "Associated (grouped) product", "Verknüpftes (Gruppen)-Produkt");
+            builder.AddOrUpdate(mediaRoot + "AvatarPictureSize", "Customer avatar", "Kundenavatar");
+            builder.AddOrUpdate(mediaRoot + "BundledProductPictureSize", "Bundle items", "Bundle Stückliste");
+            builder.AddOrUpdate(mediaRoot + "CartThumbBundleItemPictureSize", "Bundle items in cart", "Bundle Stückliste im Warenkorb");
+            builder.AddOrUpdate(mediaRoot + "CartThumbPictureSize", "Cart", "Warenkorb");
+            builder.AddOrUpdate(mediaRoot + "CategoryThumbPictureSize", "Categories", "Warengruppen");
+            builder.AddOrUpdate(mediaRoot + "ManufacturerThumbPictureSize", "Brands", "Marken");
+            builder.AddOrUpdate(mediaRoot + "MessageProductThumbPictureSize", "Products in e-mails", "Produkte in E-Mails");
+            builder.AddOrUpdate(mediaRoot + "MiniCartThumbPictureSize", "Mini cart", "Mini-Warenkorb");
+            builder.AddOrUpdate(mediaRoot + "ProductDetailsPictureSize", "Product detail", "Produktdetail");
+            builder.AddOrUpdate(mediaRoot + "ProductThumbPictureSize", "Product list", "Produktliste");
+            builder.AddOrUpdate(mediaRoot + "ProductThumbPictureSizeOnProductDetailsPage", "Gallery thumbnail", "Gallerie-Thumbnail");
+
+            builder.Delete(
+                mediaRoot + "AssociatedProductPictureSize.Hint",
+                mediaRoot + "AvatarPictureSize.Hint",
+                mediaRoot + "BundledProductPictureSize.Hint",
+                mediaRoot + "CartThumbBundleItemPictureSize.Hint",
+                mediaRoot + "CartThumbPictureSize.Hint",
+                mediaRoot + "CategoryThumbPictureSize.Hint",
+                mediaRoot + "ManufacturerThumbPictureSize.Hint",
+                mediaRoot + "MessageProductThumbPictureSize.Hint",
+                mediaRoot + "MiniCartThumbPictureSize.Hint",
+                mediaRoot + "ProductDetailsPictureSize.Hint",
+                mediaRoot + "ProductThumbPictureSize.Hint",
+                mediaRoot + "ProductThumbPictureSizeOnProductDetailsPage.Hint");
+
+            #endregion
         }
     }
 }

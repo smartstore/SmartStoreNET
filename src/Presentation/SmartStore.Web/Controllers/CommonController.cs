@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
@@ -660,10 +661,10 @@ namespace SmartStore.Web.Controllers
                     new XElement
                     (
                         "tile",
-                        new XElement("square70x70logo", new XAttribute("src", mediaService.GetUrl(msTileImage, 70, host: string.Empty))),
-                        new XElement("square150x150logo", new XAttribute("src", mediaService.GetUrl(msTileImage, 150, host: string.Empty))),
-                        new XElement("square310x310logo", new XAttribute("src", mediaService.GetUrl(msTileImage, 310, host: string.Empty))),
-                        new XElement("wide310x150logo", new XAttribute("src", mediaService.GetUrl(msTileImage, 150, host: string.Empty))),
+                        new XElement("square70x70logo", new XAttribute("src", mediaService.GetUrl(msTileImage, MediaSettings.ThumbnailSizeSm, host: string.Empty))),
+                        new XElement("square150x150logo", new XAttribute("src", mediaService.GetUrl(msTileImage, MediaSettings.ThumbnailSizeMd, host: string.Empty))),
+                        new XElement("square310x310logo", new XAttribute("src", mediaService.GetUrl(msTileImage, MediaSettings.ThumbnailSizeLg, host: string.Empty))),
+                        new XElement("wide310x150logo", new XAttribute("src", mediaService.GetUrl(msTileImage, MediaSettings.ThumbnailSizeMd, host: string.Empty))),
                         new XElement("TileColor", store.MsTileColor)
                     )
                 )

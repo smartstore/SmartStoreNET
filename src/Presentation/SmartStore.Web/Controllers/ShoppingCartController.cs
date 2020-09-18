@@ -1143,7 +1143,7 @@ namespace SmartStore.Web.Controllers
                             var file = _productService.GetProductPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
                             if (file != null)
                             {
-                                bundleItemModel.PictureUrl = _mediaService.GetUrl(file.MediaFile, 32);
+                                bundleItemModel.PictureUrl = _mediaService.GetUrl(file.MediaFile, MediaSettings.ThumbnailSizeXxs);
                             }
 
                             cartItemModel.BundleItems.Add(bundleItemModel);

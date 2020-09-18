@@ -871,24 +871,28 @@ namespace SmartStore.Admin.Controllers
         {
             var model = mediaSettings.ToModel();
 
-            model.AvailablePictureZoomTypes.Add(new SelectListItem
-            {
-                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Window"),
-                Value = "window",
-                Selected = model.PictureZoomType.Equals("window")
-            });
-            model.AvailablePictureZoomTypes.Add(new SelectListItem
-            {
-                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Inner"),
-                Value = "inner",
-                Selected = model.PictureZoomType.Equals("inner")
-            });
-            model.AvailablePictureZoomTypes.Add(new SelectListItem
-            {
-                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Lens"),
-                Value = "lens",
-                Selected = model.PictureZoomType.Equals("lens")
-            });
+            model.CurrentlyAllowedThumbnailSizes = mediaSettings.GetAllowedThumbnailSizes();
+
+            #region Obsolete
+            //model.AvailablePictureZoomTypes.Add(new SelectListItem
+            //{
+            //    Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Window"),
+            //    Value = "window",
+            //    Selected = model.PictureZoomType == "window"
+            //});
+            //model.AvailablePictureZoomTypes.Add(new SelectListItem
+            //{
+            //    Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Inner"),
+            //    Value = "inner",
+            //    Selected = model.PictureZoomType == "inner"
+            //});
+            //model.AvailablePictureZoomTypes.Add(new SelectListItem
+            //{
+            //    Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Lens"),
+            //    Value = "lens",
+            //    Selected = model.PictureZoomType == "lens"
+            //});
+            #endregion
 
             // Media storage provider.
             var currentStorageProvider = Services.Settings.GetSettingByKey<string>("Media.Storage.Provider");
@@ -906,14 +910,15 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost, SaveSetting, FormValueRequired("save")]
-        public ActionResult Media(MediaSettings mediaSettings, MediaSettingsModel model)
+        public ActionResult Media(MediaSettings settings, MediaSettingsModel model)
         {
             if (!ModelState.IsValid)
             {
-                return Media(mediaSettings);
+                return Media(settings);
             }
 
-            mediaSettings = model.ToEntity(mediaSettings);
+            ModelState.Clear();
+            MiniMapper.Map(model, settings);
 
             return NotifyAndRedirect("Media");
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
 using SmartStore.Services.Media.Imaging;

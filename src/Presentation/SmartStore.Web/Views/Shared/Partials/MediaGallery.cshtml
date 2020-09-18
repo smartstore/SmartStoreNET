@@ -5,12 +5,12 @@
 
 @{
     Html.AddScriptParts("~/bundles/smart-gallery");
-    var defaultFile = Model.Files?[Model.GalleryStartIndex];
+    var defaultFile = Model.Files?.ElementAtOrDefault(Model.GalleryStartIndex);
 }
 
 <div class="gal-box">
     <!-- Thumbnail navigation -->
-    <div class="gal-nav-cell@(Model.Files.Count == 0 ? " gal-nav-hidden" : "")">
+    <div class="gal-nav-cell@(Model.Files.Count <= 1 ? " gal-nav-hidden" : "")">
         <div class="gal-nav">
             <div class="gal-list">
                 <div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
@@ -21,12 +21,12 @@
                         var picTitle = linkTitle;
                         var picAlt = T("Product.ThumbAlternateText", Model.ModelName, (i + 1).ToString()).Text;
 
-                        if (file.Alt != null && file.Alt.Equals(Model.ModelName) == false)
+                        if (file.Alt != null && file.Alt != Model.ModelName)
                         {
                             picAlt = file.Alt;
                         }
 
-                        if (file.Title != null && file.Title.Equals(Model.ModelName) == false)
+                        if (file.Title != null && file.TitleAttribute != Model.ModelName)
                         {
                             picTitle = file.Title;
                         }

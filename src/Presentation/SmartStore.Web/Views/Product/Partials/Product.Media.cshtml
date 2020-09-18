@@ -5,7 +5,7 @@
 
 @{
     // FB OpenGraph og:image & Twitter meta
-    var oImg = Model.Files?[Model.GalleryStartIndex];
+    var oImg = Model.Files?.ElementAtOrDefault(Model.GalleryStartIndex);
     var url = oImg?.GetUrl();
     if (oImg != null && url.HasValue())
     {

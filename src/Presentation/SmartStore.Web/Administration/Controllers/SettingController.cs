@@ -948,7 +948,6 @@ namespace SmartStore.Admin.Controllers
 
             var customerSettings = Services.Settings.LoadSetting<CustomerSettings>(storeScope);
             var addressSettings = Services.Settings.LoadSetting<AddressSettings>(storeScope);
-            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
             var externalAuthenticationSettings = Services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             var privacySettings = Services.Settings.LoadSetting<PrivacySettings>(storeScope);
 
@@ -960,21 +959,6 @@ namespace SmartStore.Admin.Controllers
             model.AddressSettings = addressSettings.ToModel();
 
             StoreDependingSettings.GetOverrideKeys(addressSettings, model.AddressSettings, storeScope, Services.Settings, false);
-
-            model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
-            model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
-
-            foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
-            {
-                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
-                {
-                    Text = timeZone.DisplayName,
-                    Value = timeZone.Id,
-                    Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
-                });
-            }
-
-            StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, Services.Settings, false);
 
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
@@ -1018,10 +1002,6 @@ namespace SmartStore.Admin.Controllers
             var addressSettings = Services.Settings.LoadSetting<AddressSettings>(storeScope);
             addressSettings = model.AddressSettings.ToEntity(addressSettings);
 
-            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
-            dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
-            dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
-
             var authSettings = Services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             authSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
 
@@ -1033,7 +1013,6 @@ namespace SmartStore.Admin.Controllers
             {
                 StoreDependingSettings.UpdateSettings(customerSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(addressSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(authSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(privacySettings, form, storeScope, Services.Settings);
             }
@@ -1275,6 +1254,23 @@ namespace SmartStore.Admin.Controllers
 
             StoreDependingSettings.GetOverrideKeys(storeInformationSettings, model.StoreInformationSettings, storeScope, Services.Settings, false);
 
+            // Date and time.
+            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
+            model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
+            model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
+
+            foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
+            {
+                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
+                {
+                    Text = timeZone.DisplayName,
+                    Value = timeZone.Id,
+                    Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
+                });
+            }
+
+            StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, Services.Settings, false);
+
             // SEO.
             var seoSettings = Services.Settings.LoadSetting<SeoSettings>(storeScope);
             MiniMapper.Map(seoSettings, model.SeoSettings);
@@ -1334,13 +1330,12 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var c in _countryService.GetAllCountries(true))
             {
-                model.CompanyInformationSettings.AvailableCountries.Add(
-                    new SelectListItem
-                    {
-                        Text = c.Name,
-                        Value = c.Id.ToString(),
-                        Selected = (c.Id == model.CompanyInformationSettings.CountryId)
-                    });
+                model.CompanyInformationSettings.AvailableCountries.Add(new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString(),
+                    Selected = c.Id == model.CompanyInformationSettings.CountryId
+                });
             }
 
             model.CompanyInformationSettings.Salutations.Add(ResToSelectListItem("Admin.Address.Salutation.Mr"));
@@ -1405,6 +1400,11 @@ namespace SmartStore.Admin.Controllers
             // Store information.
             var storeInformationSettings = Services.Settings.LoadSetting<StoreInformationSettings>(storeScope);
             MiniMapper.Map(model.StoreInformationSettings, storeInformationSettings);
+
+            // Date and time.
+            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
+            dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
+            dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
 
             // SEO.
             var seoSettings = Services.Settings.LoadSetting<SeoSettings>(storeScope);
@@ -1472,6 +1472,7 @@ namespace SmartStore.Admin.Controllers
             using (Services.Settings.BeginScope())
             {
                 StoreDependingSettings.UpdateSettings(storeInformationSettings, form, storeScope, Services.Settings);
+                StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(captchaSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(pdfSettings, form, storeScope, Services.Settings);

@@ -18,6 +18,7 @@ namespace SmartStore.Admin.Models.Settings
         public GeneralCommonSettingsModel()
         {
             StoreInformationSettings = new StoreInformationSettingsModel();
+            DateTimeSettings = new DateTimeSettingsModel();
             SeoSettings = new SeoSettingsModel();
             SecuritySettings = new SecuritySettingsModel();
             CaptchaSettings = new CaptchaSettingsModel();
@@ -30,6 +31,7 @@ namespace SmartStore.Admin.Models.Settings
         }
 
         public StoreInformationSettingsModel StoreInformationSettings { get; set; }
+        public DateTimeSettingsModel DateTimeSettings { get; set; }
         public SeoSettingsModel SeoSettings { get; set; }
         public SecuritySettingsModel SecuritySettings { get; set; }
         public CaptchaSettingsModel CaptchaSettings { get; set; }
@@ -53,6 +55,23 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosedAllowForAdmins")]
             public bool StoreClosedAllowForAdmins { get; set; }
+        }
+
+        public partial class DateTimeSettingsModel
+        {
+            public DateTimeSettingsModel()
+            {
+                AvailableTimeZones = new List<SelectListItem>();
+            }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToSetTimeZone")]
+            public bool AllowCustomersToSetTimeZone { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultStoreTimeZone")]
+            public string DefaultStoreTimeZoneId { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultStoreTimeZone")]
+            public IList<SelectListItem> AvailableTimeZones { get; set; }
         }
 
         public partial class SeoSettingsModel

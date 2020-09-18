@@ -18,7 +18,6 @@ namespace SmartStore.Admin.Models.Settings
         {
             CustomerSettings = new CustomerSettingsModel();
             AddressSettings = new AddressSettingsModel();
-            DateTimeSettings = new DateTimeSettingsModel();
             ExternalAuthenticationSettings = new ExternalAuthenticationSettingsModel();
             PrivacySettings = new PrivacySettingsModel();
             Locales = new List<CustomerUserSettingsLocalizedModel>();
@@ -27,7 +26,6 @@ namespace SmartStore.Admin.Models.Settings
 
         public CustomerSettingsModel CustomerSettings { get; set; }
         public AddressSettingsModel AddressSettings { get; set; }
-        public DateTimeSettingsModel DateTimeSettings { get; set; }
         public ExternalAuthenticationSettingsModel ExternalAuthenticationSettings { get; set; }
         public PrivacySettingsModel PrivacySettings { get; set; }
         public IList<CustomerUserSettingsLocalizedModel> Locales { get; set; }
@@ -229,23 +227,6 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress")]
             public bool ValidateEmailAddress { get; set; }
-        }
-
-        public partial class DateTimeSettingsModel
-        {
-            public DateTimeSettingsModel()
-            {
-                AvailableTimeZones = new List<SelectListItem>();
-            }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToSetTimeZone")]
-            public bool AllowCustomersToSetTimeZone { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultStoreTimeZone")]
-            public string DefaultStoreTimeZoneId { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultStoreTimeZone")]
-            public IList<SelectListItem> AvailableTimeZones { get; set; }
         }
 
         public partial class ExternalAuthenticationSettingsModel

@@ -79,6 +79,32 @@
                 @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreClosedAllowForAdmins)
             </td>
         </tr>
+        <tr>
+		    <td colspan="2">
+			    <div class="admin-config-group">
+				    <div class="title">@T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings")</div>
+			    </div>
+		    </td>
+	    </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
+                @Html.ValidationMessageFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId,
+                    Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones))
+                @Html.ValidationMessageFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
+            </td>
+        </tr>
     </table>
 }
 

@@ -35,7 +35,14 @@
                 ratio = el.width() / range,
                 n = parseFloat(slider.val()) - min;
 
-            bubble.css('left', (n * ratio) + 'px').attr('data-placement', n > range / 2 ? 'left' : 'right');
+
+            if (SmartStore.globalization.culture.isRTL) {
+                bubble.css('right', (n * ratio) + 'px').attr('data-placement', n > range / 2 ? 'right' : 'left');
+            }
+            else {
+                bubble.css('left', (n * ratio) + 'px').attr('data-placement', n > range / 2 ? 'left' : 'right');
+            }
+
         }
 
         function updateSlider(e) {

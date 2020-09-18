@@ -117,10 +117,11 @@ namespace SmartStore.Web.Models.Catalog
         public ProductBundleItemModel BundleItem { get; set; }
         public bool IsBundlePart { get; set; }
 
-        public bool CompareEnabled { get; set; }
-        public bool TellAFriendEnabled { get; set; }
-        public bool AskQuestionEnabled { get; set; }
-        public string ProductShareCode { get; set; }
+		public bool CompareEnabled { get; set; }
+		public bool TellAFriendEnabled { get; set; }
+		public bool AskQuestionEnabled { get; set; }
+		public string HotlineTelephoneNumber { get; set; }
+		public string ProductShareCode { get; set; }
 
         public IDictionary<string, ActionItemModel> ActionItems { get; set; }
 

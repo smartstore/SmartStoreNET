@@ -199,6 +199,24 @@
                 "Determines whether multiple order total restrictions are cumulated by customer group assignments.",
                 "Bestimmt, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen kumuliert werden.");
 
+			builder.Delete("Products.AskQuestion.Question.Text");
+
+            builder.AddOrUpdate("Products.AskQuestion.Sent",
+                "Thank you. Your inquiry has been sent successfully.",
+                "Vielen Dank. Ihre Anfrage wurde erfolgreich gesendet.");
+
+            builder.AddOrUpdate("Products.AskQuestion.Question.GeneralInquiry",
+				"I have following questions concerning the product {0}:",
+				"Ich habe folgende Fragen zum Artikel {0}:");
+
+			builder.AddOrUpdate("Products.AskQuestion.Question.QuoteRequest",
+				"I would like to request price information on the following article: {0}",
+				"Ich bitte um Preisinformationen zu folgendem Artikel: {0}");
+
+			builder.AddOrUpdate("Products.AskQuestion.CallHotline", "or call directly", "oder rufen Sie direkt an");
+
+			builder.AddOrUpdate("Products.AskQuestion.TitleQuoteRequest", "Request for quotation", "Angebotsanfrage");
+
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",
                 "Manage form fields that are displayed during registration.<br>" +
                 "In order to ensure the address transfer from the registration form, " +

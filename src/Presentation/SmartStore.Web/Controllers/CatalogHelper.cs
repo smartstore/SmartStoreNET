@@ -1212,20 +1212,21 @@ namespace SmartStore.Web.Controllers
             model.ProductPrice.ShowLoginNote = !displayPrices && productBundleItem == null && _catalogSettings.ShowLoginForPriceNote;
 
             if (displayPrices)
-            {
-                if (product.CustomerEntersPrice && !isBundleItemPricing)
-                {
-                    model.ProductPrice.CustomerEntersPrice = true;
-                }
-                else
-                {
-                    if (product.CallForPrice && !isBundleItemPricing)
-                    {
-                        model.ProductPrice.CallForPrice = true;
+			{
+				if (product.CustomerEntersPrice && !isBundleItemPricing)
+				{
+					model.ProductPrice.CustomerEntersPrice = true;
+				}
+				else
+				{
+					if (product.CallForPrice && !isBundleItemPricing)
+					{
+						model.ProductPrice.CallForPrice = true;
+                        model.HotlineTelephoneNumber = _services.Settings.LoadSetting<ContactDataSettings>().HotlineTelephoneNumber.NullEmpty();
                     }
                     else
-                    {
-                        var taxRate = decimal.Zero;
+					{
+						var taxRate = decimal.Zero;
                         var oldPrice = decimal.Zero;
                         var finalPriceWithoutDiscountBase = decimal.Zero;
                         var finalPriceWithDiscountBase = decimal.Zero;

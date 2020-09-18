@@ -28,19 +28,23 @@ namespace SmartStore.Services.Catalog
             return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ShareProduct, languageId, customer: customer), true, product, model);
         }
 
-        public static CreateMessageResult SendProductQuestionMessage(this IMessageFactory factory, Customer customer, Product product,
-            string senderEmail, string senderName, string senderPhone, string question, int languageId = 0)
-        {
-            Guard.NotNull(customer, nameof(customer));
-            Guard.NotNull(product, nameof(product));
+		public static CreateMessageResult SendProductQuestionMessage(this IMessageFactory factory, Customer customer, Product product,
+			string senderEmail, string senderName, string senderPhone, string question, 
+            string attributes, string productUrl, bool isQuoteRequest, int languageId = 0)
+		{
+			Guard.NotNull(customer, nameof(customer));
+			Guard.NotNull(product, nameof(product));
 
-            var model = new NamedModelPart("Message")
-            {
-                ["Message"] = question.NullEmpty(),
-                ["SenderEmail"] = senderEmail.NullEmpty(),
-                ["SenderName"] = senderName.NullEmpty(),
-                ["SenderPhone"] = senderPhone.NullEmpty()
-            };
+			var model = new NamedModelPart("Message")
+			{
+				["ProductUrl"] = productUrl.NullEmpty(),
+				["IsQuoteRequest"] = isQuoteRequest,
+				["ProductAttributes"] = attributes.NullEmpty(),
+				["Message"] = question.NullEmpty(),
+				["SenderEmail"] = senderEmail.NullEmpty(),
+				["SenderName"] = senderName.NullEmpty(),
+				["SenderPhone"] = senderPhone.NullEmpty()
+			};
 
             return factory.CreateMessage(MessageContext.Create(MessageTemplateNames.ProductQuestion, languageId, customer: customer), true, product, model);
         }

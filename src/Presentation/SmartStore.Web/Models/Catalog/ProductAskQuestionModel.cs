@@ -29,6 +29,10 @@ namespace SmartStore.Web.Models.Catalog
         [SmartResourceDisplayName("Common.Question")]
         public string Question { get; set; }
 
+        public string SelectedAttributes { get; set; }
+        public string ProductUrl { get; set; }
+        public bool IsQuoteRequest { get; set; }
+
         public bool DisplayCaptcha { get; set; }
     }
 

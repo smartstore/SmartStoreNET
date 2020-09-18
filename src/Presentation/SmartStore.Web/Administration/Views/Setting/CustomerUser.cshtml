@@ -534,7 +534,7 @@
                         @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
                         @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                        @Html.TextBoxFor(model => Model.Locales[item].Salutations)
+                        @Html.SettingEditorFor(model => Model.Locales[item].Salutations)
                         @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
                     </td>
                 </tr>
@@ -546,7 +546,7 @@
                         @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
                     </td>
                     <td class="adminData">
-                        @Html.TextBoxFor(model => model.AddressSettings.Salutations)
+                        @Html.SettingEditorFor(model => model.AddressSettings.Salutations)
                         @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
                     </td>
                 </tr>

@@ -6,12 +6,21 @@ using System.Collections.Specialized;
 using SmartStore.Collections;
 using System.Drawing;
 using ImageProcessor.Imaging.Formats;
+using System.Windows.Input;
 
 namespace SmartStore.Services.Media.Imaging
 {
     public class ProcessImageQuery : QueryString
     {
-        private readonly static HashSet<string> _supportedTokens = new HashSet<string> { "w", "h", "q", "m", "size" };
+        // Key = Supported token name, Value = Validator
+        private readonly static Dictionary<string, Func<string, string, bool>> _supportedTokens = new Dictionary<string, Func<string, string, bool>> 
+        { 
+            ["w"] = (k, v) => ValidateSizeToken(k, v),
+            ["h"] = (k, v) => ValidateSizeToken(k, v),
+            ["size"] = (k, v) => ValidateSizeToken(k, v),
+            ["q"] = (k, v) => ValidateQualityToken(k, v),
+            ["m"] = (k, v) => ValidateScaleModeToken(k, v)
+        };
 
         public ProcessImageQuery()
             : this(null, new NameValueCollection())
@@ -39,44 +48,25 @@ namespace SmartStore.Services.Media.Imaging
         }
 
         public ProcessImageQuery(object source, NameValueCollection query)
-            : base(SanitizeCollection(query))
         {
             Guard.NotNull(query, nameof(query));
 
             Source = source;
             DisposeSource = true;
             Notify = true;
+
+            // Add tokens sanitized
+            query.AllKeys.Each(key => Add(key, query[key], false));
         }
 
         public ProcessImageQuery(ProcessImageQuery query)
-            : base(SanitizeCollection(query))
+            : base(query)
         {
             Guard.NotNull(query, nameof(query));
 
             Source = query.Source;
             Format = query.Format;
             DisposeSource = query.DisposeSource;
-        }
-
-        private static NameValueCollection SanitizeCollection(NameValueCollection query)
-        {
-            // We just need the supported flags
-            var sanitizable = query.AllKeys.Any(x => !_supportedTokens.Contains(x));
-            if (sanitizable)
-            {
-                var copy = new NameValueCollection(query);
-                foreach (var key in copy.AllKeys)
-                {
-                    if (!_supportedTokens.Contains(key))
-                    {
-                        copy.Remove(key);
-                    }
-                }
-
-                return copy;
-            }
-
-            return query;
         }
 
         /// <summary>
@@ -157,23 +147,34 @@ namespace SmartStore.Services.Media.Imaging
 
         public bool Notify { get; set; }
 
+        public override QueryString Add(string name, string value, bool isUnique)
+        {
+            // Keep away invalid tokens from underlying query
+            if (_supportedTokens.TryGetValue(name, out var validator) && validator(name, value))
+            {
+                return base.Add(name, value, isUnique);
+            }
+
+            return this;
+        }
+
         private T Get<T>(string name)
         {
-            return base[name].Convert<T>();
+            return this[name].Convert<T>();
         }
 
         private void Set<T>(string name, T val)
         {
             if (val == null)
-                base.Remove(name);
+                Remove(name);
             else
-                base.Add(name, val.Convert<string>(), true);
+                Add(name, val.Convert<string>(), true);
         }
 
 
         public bool NeedsProcessing(bool ignoreQualityFlag = false)
         {
-            if (base.Count == 0)
+            if (this.Count == 0)
                 return false;
 
             if (object.Equals(Format, "svg"))
@@ -182,13 +183,13 @@ namespace SmartStore.Services.Media.Imaging
                 return false;
             }
 
-            if (ignoreQualityFlag && base.Count == 1 && base["q"] != null)
+            if (ignoreQualityFlag && this.Count == 1 && this["q"] != null)
             {
                 // Return false if ignoreQualityFlag is true and "q" is the only flag.
                 return false;
             }
 
-            if (base.Count == 1 && Quality >= 90)
+            if (this.Count == 1 && Quality >= 90)
             {
                 // If "q" is the only flag and its value is >= 90, we don't need to process
                 return false;
@@ -201,12 +202,12 @@ namespace SmartStore.Services.Media.Imaging
         {
             var hash = string.Empty;
 
-            foreach (var key in base.AllKeys)
+            foreach (var key in this.AllKeys)
             {
-                if (key == "m" && base["m"] == "max")
+                if (key == "m" && this["m"] == "max")
                     continue; // Mode 'max' is default and can be omitted
 
-                hash += "-" + key + base[key];
+                hash += "-" + key + this[key];
 
             }
 
@@ -275,6 +276,21 @@ namespace SmartStore.Services.Media.Imaging
                 default:
                     return SmartStore.Services.Media.Imaging.AnchorPosition.Center;
             }
+        }
+
+        private static bool ValidateSizeToken(string key, string value)
+        {
+            return uint.TryParse(value, out var size) && size < 10000;
+        }
+
+        private static bool ValidateQualityToken(string key, string value)
+        {
+            return uint.TryParse(value, out var q) && q <= 100;
+        }
+
+        private static bool ValidateScaleModeToken(string key, string value)
+        {
+            return (new[] { "max", "boxpad", "crop", "min", "pad", "stretch" }).Contains(value);
         }
 
         #endregion

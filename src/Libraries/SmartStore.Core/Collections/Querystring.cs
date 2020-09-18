@@ -98,7 +98,7 @@ namespace SmartStore.Collections
         }
 
         /// <summary>
-        /// add a name value pair to the collection
+        /// Add a name value pair to the collection
         /// </summary>
         /// <param name="name">the name</param>
         /// <param name="value">the value associated to the name</param>
@@ -115,7 +115,7 @@ namespace SmartStore.Collections
         /// <param name="value">the value associated to the name</param>
         /// <param name="isUnique">true if the name is unique within the querystring. This allows us to override existing values</param>
         /// <returns>the QueryString object </returns>
-        public QueryString Add(string name, string value, bool isUnique)
+        public virtual QueryString Add(string name, string value, bool isUnique)
         {
             string existingValue = base[name];
             if (string.IsNullOrEmpty(existingValue))
@@ -160,7 +160,7 @@ namespace SmartStore.Collections
         }
 
         /// <summary>
-        /// overrides the default
+        /// Overrides the default indexer
         /// </summary>
         /// <param name="name"></param>
         /// <returns>the associated decoded value for the specified name</returns>

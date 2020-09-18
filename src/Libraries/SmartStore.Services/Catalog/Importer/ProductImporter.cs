@@ -943,6 +943,8 @@ namespace SmartStore.Services.Catalog.Importer
 
                                         _productService.InsertProductPicture(productMediaFile);
 
+                                        productMediaFile.MediaFile = sourceFile;
+
                                         tmpFileMap.Add(productId, productMediaFile);
                                         // Update for FixProductMainPictureIds.
                                         row.Entity.UpdatedOnUtc = DateTime.UtcNow;

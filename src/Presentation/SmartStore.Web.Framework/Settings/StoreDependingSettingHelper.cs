@@ -70,7 +70,19 @@ namespace SmartStore.Web.Framework.Settings
             int storeId,
             ISettingService settingService,
             bool isRootModel = true,
-            int? localeIndex = null)
+            Func<string, string> propertyNameMapper = null)
+        {
+            GetOverrideKeysInternal(settings, model, storeId, settingService, isRootModel, propertyNameMapper, null);
+        }
+
+        private void GetOverrideKeysInternal(
+            object settings, 
+            object model, 
+            int storeId, 
+            ISettingService settingService, 
+            bool isRootModel,
+            Func<string, string> propertyNameMapper,
+            int? localeIndex)
         {
             if (storeId <= 0)
             {
@@ -88,7 +100,8 @@ namespace SmartStore.Web.Framework.Settings
 
             foreach (var prop in modelProperties)
             {
-                var name = prop.Name;
+                var name = propertyNameMapper?.Invoke(prop.Name) ?? prop.Name;
+
                 var settingProperty = settingType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
 
                 if (settingProperty == null)
@@ -140,7 +153,7 @@ namespace SmartStore.Web.Framework.Settings
                         int i = 0;
                         foreach (var locale in locales)
                         {
-                            GetOverrideKeys(settings, locale, storeId, settingService, false, i);
+                            GetOverrideKeysInternal(settings, locale, storeId, settingService, false, propertyNameMapper, i);
                             i++;
                         }
                     }
@@ -186,9 +199,9 @@ namespace SmartStore.Web.Framework.Settings
         {
             var settingType = settings.GetType();
             var settingName = settingType.Name;
-            var properties = FastProperty.GetProperties(settingType).Values;
+            var settingProperties = FastProperty.GetProperties(settingType).Values;
 
-            foreach (var prop in properties)
+            foreach (var prop in settingProperties)
             {
                 var name = propertyNameMapper?.Invoke(prop.Name) ?? prop.Name;
 

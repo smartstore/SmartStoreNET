@@ -49,6 +49,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc;
@@ -258,7 +259,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting]
         public ActionResult Blog(BlogSettings blogSettings, BlogSettingsModel model, int storeId)
         {
-            _ = model.ToEntity(blogSettings);
+            model.ToEntity(blogSettings);
 
             foreach (var localized in model.Locales)
             {
@@ -290,7 +291,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting]
         public ActionResult Forum(ForumSettings forumSettings, ForumSettingsModel model, int storeId)
         {
-            _ = model.ToEntity(forumSettings);
+            model.ToEntity(forumSettings);
 
             foreach (var localized in model.Locales)
             {
@@ -323,7 +324,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, SaveSetting]
         public ActionResult News(NewsSettings newsSettings, NewsSettingsModel model, int storeId)
         {
-            _ = model.ToEntity(newsSettings);
+            model.ToEntity(newsSettings);
 
             foreach (var localized in model.Locales)
             {
@@ -692,8 +693,6 @@ namespace SmartStore.Admin.Controllers
 
             var model = orderSettings.ToModel();
 
-            StoreDependingSettings.GetOverrideKeys(orderSettings, model, storeScope, Services.Settings);
-
             model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
             model.StoreCount = allStores.Count;
 
@@ -708,6 +707,8 @@ namespace SmartStore.Admin.Controllers
             });
 
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
+
+            StoreDependingSettings.GetOverrideKeys(orderSettings, model, storeScope, Services.Settings);
 
             return View(model);
         }
@@ -736,9 +737,6 @@ namespace SmartStore.Admin.Controllers
             // Scope because order settings are updated.
             using (Services.Settings.BeginScope())
             {
-                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, storeScope, false);
-                Services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, storeScope, false);
-
                 foreach (var localized in model.Locales)
                 {
                     _localizedEntityService.SaveLocalizedSetting(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId, storeScope);
@@ -792,12 +790,12 @@ namespace SmartStore.Admin.Controllers
             model.AvailableNewsLetterSubscriptions = shoppingCartSettings.NewsLetterSubscription.ToSelectList();
             model.AvailableThirdPartyEmailHandOver = shoppingCartSettings.ThirdPartyEmailHandOver.ToSelectList();
 
-            StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, Services.Settings);
-
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, languageId, storeScope, false, false);
             });
+
+            StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, Services.Settings);
 
             return View(model);
         }
@@ -821,12 +819,6 @@ namespace SmartStore.Admin.Controllers
             using (Services.Settings.BeginScope())
             {
                 StoreDependingSettings.UpdateSettings(shoppingCartSettings, form, storeScope, Services.Settings);
-            }
-
-            // Scope because shopping cart settings are updated.
-            using (Services.Settings.BeginScope())
-            {
-                Services.Settings.SaveSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, storeScope, false);
             }
 
             foreach (var localized in model.Locales)
@@ -948,30 +940,39 @@ namespace SmartStore.Admin.Controllers
 
             var customerSettings = Services.Settings.LoadSetting<CustomerSettings>(storeScope);
             var addressSettings = Services.Settings.LoadSetting<AddressSettings>(storeScope);
+            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
             var externalAuthenticationSettings = Services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             var privacySettings = Services.Settings.LoadSetting<PrivacySettings>(storeScope);
 
             var model = new CustomerUserSettingsModel();
             model.CustomerSettings = customerSettings.ToModel();
-
-            StoreDependingSettings.GetOverrideKeys(customerSettings, model.CustomerSettings, storeScope, Services.Settings, false);
-
             model.AddressSettings = addressSettings.ToModel();
+            model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
+            model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
 
-            StoreDependingSettings.GetOverrideKeys(addressSettings, model.AddressSettings, storeScope, Services.Settings, false);
+            foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
+            {
+                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
+                {
+                    Text = timeZone.DisplayName,
+                    Value = timeZone.Id,
+                    Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
+                });
+            }
 
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
-
-            StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, Services.Settings, false);
-
             model.PrivacySettings = privacySettings.ToModel();
-
-            StoreDependingSettings.GetOverrideKeys(privacySettings, model.PrivacySettings, storeScope, Services.Settings, false);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Salutations = addressSettings.GetLocalizedSetting(x => x.Salutations, languageId, storeScope, false, false);
             });
+
+            StoreDependingSettings.GetOverrideKeys(addressSettings, model.AddressSettings, storeScope, Services.Settings, false);
+            StoreDependingSettings.GetOverrideKeys(privacySettings, model.PrivacySettings, storeScope, Services.Settings, false);
+            StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, Services.Settings, false);
+            StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, Services.Settings, false);
+            StoreDependingSettings.GetOverrideKeys(customerSettings, model.CustomerSettings, storeScope, Services.Settings, false);
 
             return View(model);
         }
@@ -1002,6 +1003,10 @@ namespace SmartStore.Admin.Controllers
             var addressSettings = Services.Settings.LoadSetting<AddressSettings>(storeScope);
             addressSettings = model.AddressSettings.ToEntity(addressSettings);
 
+            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
+            dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
+            dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
+
             var authSettings = Services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             authSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
 
@@ -1013,6 +1018,7 @@ namespace SmartStore.Admin.Controllers
             {
                 StoreDependingSettings.UpdateSettings(customerSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(addressSettings, form, storeScope, Services.Settings);
+                StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(authSettings, form, storeScope, Services.Settings);
                 StoreDependingSettings.UpdateSettings(privacySettings, form, storeScope, Services.Settings);
             }
@@ -1239,41 +1245,38 @@ namespace SmartStore.Admin.Controllers
 
 
         [Permission(Permissions.Configuration.Setting.Read)]
-        public ActionResult GeneralCommon()
+        [LoadSetting(IsRootedModel = true)]
+        public ActionResult GeneralCommon(int storeScope,
+            StoreInformationSettings storeInformationSettings,
+            SeoSettings seoSettings,
+            SecuritySettings securitySettings,
+            CaptchaSettings captchaSettings,
+            PdfSettings pdfSettings,
+            LocalizationSettings localizationSettings,
+            CompanyInformationSettings companySettings,
+            ContactDataSettings contactDataSettings,
+            BankConnectionSettings bankConnectionSettings,
+            SocialSettings socialSettings)
         {
             // Set page timeout to 5 minutes.
             Server.ScriptTimeout = 300;
 
             var model = new GeneralCommonSettingsModel();
-            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-            StoreDependingSettings.CreateViewDataObject(storeScope);
 
-            // Store information.
-            var storeInformationSettings = Services.Settings.LoadSetting<StoreInformationSettings>(storeScope);
+            // Map entities to model
             MiniMapper.Map(storeInformationSettings, model.StoreInformationSettings);
-
-            StoreDependingSettings.GetOverrideKeys(storeInformationSettings, model.StoreInformationSettings, storeScope, Services.Settings, false);
-
-            // Date and time.
-            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
-            model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
-            model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
-
-            foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
-            {
-                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
-                {
-                    Text = timeZone.DisplayName,
-                    Value = timeZone.Id,
-                    Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
-                });
-            }
-
-            StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, Services.Settings, false);
-
-            // SEO.
-            var seoSettings = Services.Settings.LoadSetting<SeoSettings>(storeScope);
             MiniMapper.Map(seoSettings, model.SeoSettings);
+            MiniMapper.Map(securitySettings, model.SecuritySettings);
+            MiniMapper.Map(captchaSettings, model.CaptchaSettings);
+            MiniMapper.Map(pdfSettings, model.PdfSettings);
+            MiniMapper.Map(localizationSettings, model.LocalizationSettings);
+            MiniMapper.Map(companySettings, model.CompanyInformationSettings);
+            MiniMapper.Map(contactDataSettings, model.ContactDataSettings);
+            MiniMapper.Map(bankConnectionSettings, model.BankConnectionSettings);
+            MiniMapper.Map(socialSettings, model.SocialSettings);
+
+            #region SEO custom mapping
+
             // Fix Disallows joined with comma in MiniMapper (we need NewLine).
             model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
@@ -1299,117 +1302,116 @@ namespace SmartStore.Admin.Controllers
                 locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.HomepageMetaKeywords, languageId, storeScope, false, false);
             });
 
-            StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, Services.Settings, false);
+            #endregion
 
-            // Security.
-            var securitySettings = Services.Settings.LoadSetting<SecuritySettings>(storeScope);
-            MiniMapper.Map(securitySettings, model.SecuritySettings);
-
-            var captchaSettings = Services.Settings.LoadSetting<CaptchaSettings>(storeScope);
-            MiniMapper.Map(captchaSettings, model.CaptchaSettings);
-
-            StoreDependingSettings.GetOverrideKeys(captchaSettings, model.CaptchaSettings, storeScope, Services.Settings, false);
-
-            // PDF.
-            var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeScope);
-            MiniMapper.Map(pdfSettings, model.PdfSettings);
-
-            StoreDependingSettings.GetOverrideKeys(pdfSettings, model.PdfSettings, storeScope, Services.Settings, false);
-
-            // Localization.
-            var localizationSettings = Services.Settings.LoadSetting<LocalizationSettings>(storeScope);
-            MiniMapper.Map(localizationSettings, model.LocalizationSettings);
-
-            StoreDependingSettings.GetOverrideKeys(localizationSettings, model.LocalizationSettings, storeScope, Services.Settings, false);
-
-            // Company information.
-            var companySettings = Services.Settings.LoadSetting<CompanyInformationSettings>(storeScope);
-            MiniMapper.Map(companySettings, model.CompanyInformationSettings);
-
-            StoreDependingSettings.GetOverrideKeys(companySettings, model.CompanyInformationSettings, storeScope, Services.Settings, false);
+            #region CompanyInfo custom mapping
 
             foreach (var c in _countryService.GetAllCountries(true))
             {
-                model.CompanyInformationSettings.AvailableCountries.Add(new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString(),
-                    Selected = c.Id == model.CompanyInformationSettings.CountryId
-                });
+                model.CompanyInformationSettings.AvailableCountries.Add(
+                    new SelectListItem
+                    {
+                        Text = c.Name,
+                        Value = c.Id.ToString(),
+                        Selected = (c.Id == model.CompanyInformationSettings.CountryId)
+                    });
             }
 
-            model.CompanyInformationSettings.Salutations.Add(ResToSelectListItem("Admin.Address.Salutation.Mr"));
-            model.CompanyInformationSettings.Salutations.Add(ResToSelectListItem("Admin.Address.Salutation.Mrs"));
+            model.CompanyInformationSettings.Salutations.AddRange(new[] 
+            { 
+                ResToSelectListItem("Admin.Address.Salutation.Mr"),
+                ResToSelectListItem("Admin.Address.Salutation.Mrs")
+            });
 
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Manager"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shopkeeper"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Procurator"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Shareholder"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.AuthorizedPartner"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.Director"));
-            model.CompanyInformationSettings.ManagementDescriptions.Add(
-                ResToSelectListItem("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.ManagingPartner"));
+            var resRoot = "Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings.ManagementDescriptions.";
+            model.CompanyInformationSettings.ManagementDescriptions.AddRange(new[] 
+            { 
+                ResToSelectListItem(resRoot + "Manager"),
+                ResToSelectListItem(resRoot + "Shopkeeper"),
+                ResToSelectListItem(resRoot + "Procurator"),
+                ResToSelectListItem(resRoot + "Shareholder"),
+                ResToSelectListItem(resRoot + "AuthorizedPartner"),
+                ResToSelectListItem(resRoot + "Director"),
+                ResToSelectListItem(resRoot + "ManagingPartner")
+            });
 
-            // Contact data.
-            var contactDataSettings = Services.Settings.LoadSetting<ContactDataSettings>(storeScope);
-            MiniMapper.Map(contactDataSettings, model.ContactDataSettings);
-
-            StoreDependingSettings.GetOverrideKeys(contactDataSettings, model.ContactDataSettings, storeScope, Services.Settings, false);
-
-            // Bank connection.
-            var bankConnectionSettings = Services.Settings.LoadSetting<BankConnectionSettings>(storeScope);
-            MiniMapper.Map(bankConnectionSettings, model.BankConnectionSettings);
-
-            StoreDependingSettings.GetOverrideKeys(bankConnectionSettings, model.BankConnectionSettings, storeScope, Services.Settings, false);
-
-            // Social.
-            var socialSettings = Services.Settings.LoadSetting<SocialSettings>(storeScope);
-            MiniMapper.Map(socialSettings, model.SocialSettings);
-
-            StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, Services.Settings, false);
+            #endregion
 
             return View(model);
+
+            #region Property name mappers
+
+            //string MapDefaultSeoModelPropertyName(string name)
+            //{
+            //    if (name == nameof(SeoModel.MetaTitle))
+            //        return "DefaultTitle";
+            //    if (name == nameof(SeoModel.MetaDescription))
+            //        return "DefaultMetaDescription";
+            //    if (name == nameof(SeoModel.MetaKeywords))
+            //        return "DefaultMetaKeywords";
+
+            //    return name;
+            //}
+
+            //string MapHomepageSeoModelPropertyName(string name)
+            //{
+            //    if (name == nameof(SeoModel.MetaTitle))
+            //        return "HomepageMetaTitle";
+            //    if (name == nameof(SeoModel.MetaDescription))
+            //        return "HomepageMetaDescription";
+            //    if (name == nameof(SeoModel.MetaKeywords))
+            //        return "HomepageMetaKeywords";
+
+            //    return name;
+            //}
+
+            #endregion
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
-        [HttpPost, FormValueRequired("save")]
-        public ActionResult GeneralCommon(GeneralCommonSettingsModel model, FormCollection form)
+        [HttpPost, SaveSetting(IsRootedModel = true), FormValueRequired("save")]
+        public ActionResult GeneralCommon(
+            GeneralCommonSettingsModel model,
+            int storeScope,
+            StoreInformationSettings storeInformationSettings,
+            SeoSettings seoSettings,
+            SecuritySettings securitySettings,
+            CaptchaSettings captchaSettings,
+            PdfSettings pdfSettings,
+            LocalizationSettings localizationSettings,
+            CompanyInformationSettings companySettings,
+            ContactDataSettings contactDataSettings,
+            BankConnectionSettings bankConnectionSettings,
+            SocialSettings socialSettings)
         {
             if (!ModelState.IsValid)
             {
-                foreach (var kvp in ModelState)
-                {
-                    if (kvp.Value.Errors.Count > 0)
-                    {
-                        var key = kvp.Key;
-                    }
-                }
-
-                return GeneralCommon();
+                return RedirectToAction("GeneralCommon");
             }
 
             ModelState.Clear();
-            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 
-            // Store information.
-            var storeInformationSettings = Services.Settings.LoadSetting<StoreInformationSettings>(storeScope);
-            MiniMapper.Map(model.StoreInformationSettings, storeInformationSettings);
-
-            // Date and time.
-            var dateTimeSettings = Services.Settings.LoadSetting<DateTimeSettings>(storeScope);
-            dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
-            dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
-
-            // SEO.
-            var seoSettings = Services.Settings.LoadSetting<SeoSettings>(storeScope);
+            // Necessary before mapping
             var resetUserSeoCharacterTable = (seoSettings.SeoNameCharConversion != model.SeoSettings.SeoNameCharConversion);
+            var clearSeoFriendlyUrls = localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
+            var prevPdfLogoId = pdfSettings.LogoPictureId;
+
+            // Map model to entities
+            MiniMapper.Map(model.StoreInformationSettings, storeInformationSettings);
             MiniMapper.Map(model.SeoSettings, seoSettings);
+            MiniMapper.Map(model.SecuritySettings, securitySettings);
+            MiniMapper.Map(model.CaptchaSettings, captchaSettings);
+            MiniMapper.Map(model.PdfSettings, pdfSettings);
+            MiniMapper.Map(model.LocalizationSettings, localizationSettings);
+            MiniMapper.Map(model.CompanyInformationSettings, companySettings);
+            MiniMapper.Map(model.ContactDataSettings, contactDataSettings);
+            MiniMapper.Map(model.BankConnectionSettings, bankConnectionSettings);
+            MiniMapper.Map(model.SocialSettings, socialSettings);
+
+            #region POST mapping
+
+            // (Un)track PDF logo id
+            _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);
 
             seoSettings.DefaultTitle = model.SeoSettings.DefaultSeoModel.MetaTitle;
             seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultSeoModel.MetaDescription;
@@ -1418,8 +1420,8 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.SeoSettings.DefaultSeoModel.Locales)
             {
                 _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultTitle, localized.MetaTitle, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaDescription, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaKeywords, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
             }
 
             seoSettings.HomepageMetaTitle = model.SeoSettings.HomepageSeoModel.MetaTitle;
@@ -1433,57 +1435,7 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
             }
 
-            // Security.
-            var securitySettings = Services.Settings.LoadSetting<SecuritySettings>(storeScope);
-            MiniMapper.Map(model.SecuritySettings, securitySettings);
-
-            // Captcha.
-            var captchaSettings = Services.Settings.LoadSetting<CaptchaSettings>(storeScope);
-            MiniMapper.Map(model.CaptchaSettings, captchaSettings);
-
-            // PDF.
-            var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeScope);
-            var prevLogoId = pdfSettings.LogoPictureId;
-            MiniMapper.Map(model.PdfSettings, pdfSettings);
-            _mediaTracker.Value.Track(pdfSettings, prevLogoId, x => x.LogoPictureId);
-
-            // Localization.
-            var localizationSettings = Services.Settings.LoadSetting<LocalizationSettings>(storeScope);
-            var clearSeoFriendlyUrls = localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
-            MiniMapper.Map(model.LocalizationSettings, localizationSettings);
-
-            // Company information.
-            var companySettings = Services.Settings.LoadSetting<CompanyInformationSettings>(storeScope);
-            MiniMapper.Map(model.CompanyInformationSettings, companySettings);
             companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId ?? 0)?.Name;
-
-            // Contact data.
-            var contactDataSettings = Services.Settings.LoadSetting<ContactDataSettings>(storeScope);
-            MiniMapper.Map(model.ContactDataSettings, contactDataSettings);
-
-            // Bank connection.
-            var bankConnectionSettings = Services.Settings.LoadSetting<BankConnectionSettings>(storeScope);
-            MiniMapper.Map(model.BankConnectionSettings, bankConnectionSettings);
-
-            // Social.
-            var socialSettings = Services.Settings.LoadSetting<SocialSettings>(storeScope);
-            MiniMapper.Map(model.SocialSettings, socialSettings);
-
-            using (Services.Settings.BeginScope())
-            {
-                StoreDependingSettings.UpdateSettings(storeInformationSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(captchaSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(pdfSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(localizationSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(companySettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(contactDataSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(bankConnectionSettings, form, storeScope, Services.Settings);
-                StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, Services.Settings);
-
-                Services.Settings.SaveSetting(securitySettings);
-            }
 
             if (resetUserSeoCharacterTable)
             {
@@ -1494,6 +1446,11 @@ namespace SmartStore.Admin.Controllers
             {
                 LocalizedRoute.ClearSeoFriendlyUrlsCachedValue();
             }
+
+            #endregion
+
+            // Does not contain any store specific settings
+            Services.Settings.SaveSetting(securitySettings);
 
             return NotifyAndRedirect("GeneralCommon");
         }

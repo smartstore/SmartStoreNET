@@ -208,7 +208,6 @@ namespace SmartStore.Services.Media.Imaging
                     continue; // Mode 'max' is default and can be omitted
 
                 hash += "-" + key + this[key];
-
             }
 
             return hash;

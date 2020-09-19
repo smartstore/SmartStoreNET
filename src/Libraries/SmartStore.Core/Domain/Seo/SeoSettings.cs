@@ -58,8 +58,8 @@ namespace SmartStore.Core.Domain.Seo
         public PageTitleSeoAdjustment PageTitleSeoAdjustment { get; set; } = PageTitleSeoAdjustment.PagenameAfterStorename;
 
         public string DefaultTitle { get; set; } = "Shop";
-        public string DefaultMetaKeywords { get; set; } = string.Empty;
         public string DefaultMetaDescription { get; set; } = string.Empty;
+        public string DefaultMetaKeywords { get; set; } = string.Empty;
 
         public string HomepageMetaTitle { get; set; }
         public string HomepageMetaDescription { get; set; }

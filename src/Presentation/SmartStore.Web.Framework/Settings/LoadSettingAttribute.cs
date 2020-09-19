@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web.Mvc;
 using SmartStore.Core.Configuration;
 using SmartStore.Services;
@@ -31,6 +32,7 @@ namespace SmartStore.Web.Framework.Settings
         }
 
         public bool UpdateParameterFromStore { get; set; }
+        public bool IsRootedModel { get; set; }
         public ICommonServices Services { get; set; }
 
         public virtual void OnActionExecuting(ActionExecutingContext filterContext)
@@ -88,11 +90,28 @@ namespace SmartStore.Web.Framework.Settings
                     return;
                 }
 
+                var modelType = model.GetType();
                 var settingsHelper = new StoreDependingSettingHelper(filterContext.Controller.ViewData);
+                if (IsRootedModel)
+                {
+                    settingsHelper.CreateViewDataObject(_storeId);
+                }
 
                 foreach (var param in _settingParams)
                 {
-                    settingsHelper.GetOverrideKeys(param.Instance, model, _storeId, Services.Settings);
+                    var settingInstance = param.Instance;
+                    var modelInstance = model;
+                    
+                    if (IsRootedModel)
+                    {
+                        modelInstance = modelType.GetProperty(settingInstance.GetType().Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)?.GetValue(model);
+                        if (modelInstance == null)
+                        {
+                            continue;
+                        }
+                    }
+
+                    settingsHelper.GetOverrideKeys(settingInstance, modelInstance, _storeId, Services.Settings, !IsRootedModel);
                 }
             }
         }

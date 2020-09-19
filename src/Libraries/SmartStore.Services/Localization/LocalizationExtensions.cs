@@ -308,7 +308,8 @@ namespace SmartStore.Services.Localization
                 storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
             }
 
-            var localizedValue = GetValue(storeId.Value, storeId == 0);
+            // Make fallback only when storeId is 0 and the paramter says so.
+            var localizedValue = GetValue(storeId.Value, storeId == 0 && returnDefaultValue);
 
             if (storeId > 0 && string.IsNullOrEmpty(localizedValue.Value))
             {

@@ -119,8 +119,8 @@ Smartstore V4.0.0 has been released on 25 June, 2020. The highlights are:
 
 We have set up a live online demo for you so you are able to test Smartstore without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
 
-* [**Frontend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
-* [**Backend**](http://backend.smartstore.net/en/login) (User: demo, PWD: 1234)
+* [**Frontend**](https://demo.smartstore.com/frontend/en) (User: demo, PWD: 1234)
+* [**Backend**](https://demo.smartstore.com/backend/en/login) (User: demo, PWD: 1234)
 
 
 

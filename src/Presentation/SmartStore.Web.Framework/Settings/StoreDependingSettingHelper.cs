@@ -76,10 +76,10 @@ namespace SmartStore.Web.Framework.Settings
         }
 
         private void GetOverrideKeysInternal(
-            object settings, 
-            object model, 
-            int storeId, 
-            ISettingService settingService, 
+            object settings,
+            object model,
+            int storeId,
+            ISettingService settingService,
             bool isRootModel,
             Func<string, string> propertyNameMapper,
             int? localeIndex)

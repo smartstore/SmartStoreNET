@@ -170,13 +170,13 @@
                 "Minimum order total",
                 "Mindestbestellwert",
                 "Defines the default minimum order total for the shop. Overridden by customer group restrictions.",
-                "Legt den standardmäßigen Mindestbestellwert für den Shop fest. Wird von Kundengruppenbeschränkungen überschrieben.");
+                "Legt den standardmäßigen Mindestbestellwert für den Shop fest. Wird von Beschränkungen in Kundengruppen überschrieben.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MaxOrderTotal",
                 "Maximum order total",
                 "Höchstbestellwert",
                 "Defines the default maximum order total for the shop. Overridden by customer group restrictions.",
-                "Legt den standardmäßigen Höchstbestellwert für den Shop fest. Wird von Kundengruppenbeschränkungen überschrieben.");
+                "Legt den standardmäßigen Höchstbestellwert für den Shop fest. Wird von Beschränkungen in Kundengruppen überschrieben.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.ApplyToSubtotal",
                 "Order total restriction in relation to subtotal",

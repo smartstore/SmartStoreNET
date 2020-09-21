@@ -68,7 +68,7 @@ namespace SmartStore.Core.Domain.Shipping
         #region Delivery Time
 
         /// <summary>
-        /// Specifies the format string for delivery time dates.
+        /// Specifies a custom formatting pattern for delivery time dates (e.g. "M").
         /// </summary>
         public string DeliveryTimesDateFormat { get; set; }
 

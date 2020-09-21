@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Localization;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Directory
 {
@@ -72,7 +73,7 @@ namespace SmartStore.Services.Directory
         /// Calculates the delivery date.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
-        /// <param name="fromDate">The date from which the delivery time date should be calculated.</param>
+        /// <param name="fromDate">The date from which the delivery date should be calculated.</param>
         /// <returns>Calculated minimum and maximum date.</returns>
         (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate);
 
@@ -80,8 +81,10 @@ namespace SmartStore.Services.Directory
         /// Gets the formatted delivery date.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>
-        /// <param name="language">Language. <c>null</c> to use current working language.</param>
-        /// <returns>Formatted date.</returns>
-        string GetFormattedDeliveryDate(DeliveryTime deliveryTime, Language language = null);
+        /// <param name="fromDate">The date from which the delivery date should be calculated.
+        /// <c>null</c> to use store's local time <see cref="DateTimeHelper.DefaultStoreTimeZone"/>.</param>
+        /// <param name="culture">Culture to use for formatting. <c>null</c> to use UI culture of current thread.</param>
+        /// <returns>Formatted delivery date.</returns>
+        string GetFormattedDeliveryDate(DeliveryTime deliveryTime, DateTime? fromDate = null, CultureInfo culture = null);
     }
 }

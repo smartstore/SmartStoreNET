@@ -17,6 +17,9 @@ namespace SmartStore.Web.Framework.Localization
     /// </summary>
     public class SetWorkingCultureAttribute : FilterAttribute, IAuthorizationFilter, IActionFilter
     {
+        // DIN 5008.
+        private static string[] _deMonthAbbreviations = new[] { "Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sept.", "Okt.", "Nov.", "Dez.", "" };
+
         public Lazy<IWorkContext> WorkContext { get; set; }
         public Lazy<IPageAssetsBuilder> AssetBuilder { get; set; }
 
@@ -33,10 +36,16 @@ namespace SmartStore.Web.Framework.Localization
                 return;
 
             var workContext = WorkContext.Value;
+            var language = workContext.WorkingLanguage;
 
-            CultureInfo culture = workContext.CurrentCustomer != null && workContext.WorkingLanguage != null
-                ? new CultureInfo(workContext.WorkingLanguage.LanguageCulture)
+            var culture = workContext.CurrentCustomer != null && language != null
+                ? new CultureInfo(language.LanguageCulture)
                 : new CultureInfo("en-US");
+
+            if (language?.UniqueSeoCode?.IsCaseInsensitiveEqual("de") ?? false)
+            {
+                culture.DateTimeFormat.AbbreviatedMonthNames = culture.DateTimeFormat.AbbreviatedMonthGenitiveNames = _deMonthAbbreviations;
+            }
 
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;

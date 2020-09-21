@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using SmartStore.Core;
+using System.Threading;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
@@ -18,11 +18,13 @@ namespace SmartStore.Services.Directory
 {
     public partial class DeliveryTimeService : IDeliveryTimeService
     {
+        // Two letter ISO code to shortest month-day format pattern.
+        private readonly static ConcurrentDictionary<string, string> _monthDayFormats = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IWorkContext _workContext;
         private readonly CatalogSettings _catalogSettings;
         private readonly ShippingSettings _shippingSettings;
 
@@ -31,7 +33,6 @@ namespace SmartStore.Services.Directory
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             IDateTimeHelper dateTimeHelper,
-            IWorkContext workContext,
             CatalogSettings catalogSettings,
             ShippingSettings shippingSettings)
         {
@@ -39,7 +40,6 @@ namespace SmartStore.Services.Directory
             _productRepository = productRepository;
             _attributeCombinationRepository = attributeCombinationRepository;
             _dateTimeHelper = dateTimeHelper;
-            _workContext = workContext;
             _catalogSettings = catalogSettings;
             _shippingSettings = shippingSettings;
         }
@@ -171,105 +171,99 @@ namespace SmartStore.Services.Directory
 
         public virtual (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate)
         {
-            if (deliveryTime == null || (!deliveryTime.MinDays.HasValue && !deliveryTime.MaxDays.HasValue))
-            {
-                return (null, null);
-            }
-
-            var daysToAdd = 0;
-            
-            // now.Hour: 0-23. TodayDeliveryHour: 1-24.
-            if (_shippingSettings.TodayShipmentHour.HasValue && fromDate.Hour < _shippingSettings.TodayShipmentHour)
-            {
-                daysToAdd -= 1;
-            }
-
-            // Normalization. "Today" is not supported\allowed.
-            var minDate = deliveryTime.MinDays.HasValue
-                ? AddDays(fromDate, Math.Max(deliveryTime.MinDays.Value + daysToAdd, 1))
+            var minDate = deliveryTime?.MinDays != null
+                ? AddDays(fromDate, deliveryTime.MinDays.Value)
                 : (DateTime?)null;
 
-            var maxDate = deliveryTime.MaxDays.HasValue
-                ? AddDays(fromDate, Math.Max(deliveryTime.MaxDays.Value + daysToAdd, 1))
+            var maxDate = deliveryTime?.MaxDays != null
+                ? AddDays(fromDate, deliveryTime.MaxDays.Value)
                 : (DateTime?)null;
 
             return (minDate, maxDate);
         }
 
-        public virtual string GetFormattedDeliveryDate(DeliveryTime deliveryTime, Language language = null)
+        public virtual string GetFormattedDeliveryDate(DeliveryTime deliveryTime, DateTime? fromDate = null, CultureInfo culture = null)
         {
-            // TODO: server's local time is inaccurate (server can be anywhere). Use time at shipping origin address instead (ShippingSettings.ShippingOriginAddressId)?
-            var now = DateTime.Now;
-
-            var (minDate, maxDate) = GetDeliveryDate(deliveryTime, now);
-            if (minDate == null && maxDate == null)
+            if (deliveryTime == null || (!deliveryTime.MinDays.HasValue && !deliveryTime.MaxDays.HasValue))
             {
                 return null;
             }
 
-            if (minDate.HasValue)
+            if (culture == null)
             {
-                minDate = _dateTimeHelper.ConvertToUserTime(minDate.Value);
-            }
-            if (maxDate.HasValue)
-            {
-                maxDate = _dateTimeHelper.ConvertToUserTime(maxDate.Value);
+                culture = Thread.CurrentThread.CurrentUICulture;
             }
 
-            if (language == null)
+            var currentDate = fromDate ?? TimeZoneInfo.ConvertTime(DateTime.UtcNow, _dateTimeHelper.DefaultStoreTimeZone);
+            var (min, max) = GetDeliveryDate(deliveryTime, currentDate);
+
+            if (min.HasValue)
             {
-                language = _workContext.WorkingLanguage;
+                min = _dateTimeHelper.ConvertToUserTime(min.Value);
+            }
+            if (max.HasValue)
+            {
+                max = _dateTimeHelper.ConvertToUserTime(max.Value);
             }
 
-            CultureInfo ci;
-            string result = null;
-            var dateFormat = _shippingSettings.DeliveryTimesDateFormat.NullEmpty() ?? "M";
-
-            try
+            // Convention: always separate weekday with comma and format month in shortest form.
+            if (min.HasValue && max.HasValue)
             {
-                ci = new CultureInfo(language.LanguageCulture);
-            }
-            catch
-            {
-                ci = CultureInfo.CurrentCulture;
-            }
-
-            if (minDate.HasValue && maxDate.HasValue)
-            {
-                if (minDate == maxDate)
+                if (min == max)
                 {
-                    result = T("DeliveryTimes.Dates.DeliveryOn", Format(minDate.Value, "DeliveryTimes.Dates.OnTomorrow"));
+                    return T("DeliveryTimes.Dates.DeliveryOn", Format(min.Value, "dddd, ", false, "DeliveryTimes.Dates.OnTomorrow"));
                 }
-                else if (minDate < maxDate)
+                else if (min < max)
                 {
-                    result = T("DeliveryTimes.Dates.Between", Format(minDate.Value, null), Format(maxDate.Value, null));
+                    return T("DeliveryTimes.Dates.Between", 
+                        Format(min.Value, "ddd, ", min.Value.Month == max.Value.Month && min.Value.Year == max.Value.Year, null),
+                        Format(max.Value, "ddd, ", false, null));
                 }
             }
-            else if (minDate.HasValue)
+            else if (min.HasValue)
             {
-                result = T("DeliveryTimes.Dates.NotBefore", Format(minDate.Value));
+                return T("DeliveryTimes.Dates.NotBefore", Format(min.Value, "dddd, "));
             }
-            else if (maxDate.HasValue)
+            else if (max.HasValue)
             {
-                result = T("DeliveryTimes.Dates.Until", Format(maxDate.Value));
+                return T("DeliveryTimes.Dates.Until", Format(max.Value, "dddd, "));
             }
 
-            return result;
+            return null;
 
-            string Format(DateTime date, string tomorrowKey = "DeliveryTimes.Dates.Tomorrow")
+            string Format(DateTime date, string patternPrefix, bool noMonth = false, string tomorrowKey = "DeliveryTimes.Dates.Tomorrow")
             {
-                string str = null;
-
-                if (tomorrowKey != null && (date - now).TotalDays == 1)
+                // Offer some way to skip our formatting and to force a custom formatting.
+                if (!string.IsNullOrEmpty(_shippingSettings.DeliveryTimesDateFormat))
                 {
-                    str = T(tomorrowKey);
+                    return date.ToString(_shippingSettings.DeliveryTimesDateFormat, culture) ?? "-";
+                }
+
+                if (tomorrowKey != null && (date - currentDate).TotalDays == 1)
+                {
+                    return T(tomorrowKey);
+                }
+
+                string patternSuffix = null;
+
+                if (noMonth)
+                {
+                    // MonthDayPattern can contain non-interpreted text like "de", "mh" or even "'d'" (e.g. 21 de septiembre).
+                    patternSuffix = _monthDayFormats.GetOrAdd(culture.TwoLetterISOLanguageName + "-nomonth", _ =>
+                    {
+                        var mdp = culture.DateTimeFormat.MonthDayPattern;
+                        return mdp.Contains("d. ") || mdp.Contains("dd. ") ? "d." : "d";
+                    });
                 }
                 else
                 {
-                    str = date.ToString(dateFormat, ci);
+                    patternSuffix = _monthDayFormats.GetOrAdd(culture.TwoLetterISOLanguageName, _ =>
+                    {
+                        return culture.DateTimeFormat.MonthDayPattern.Replace("MMMM", "MMM").TrimSafe();
+                    });
                 }
 
-                return str ?? string.Empty;
+                return date.ToString(patternPrefix + patternSuffix, culture) ?? "-";
             }
         }
 
@@ -277,13 +271,23 @@ namespace SmartStore.Services.Directory
 
         /// <see cref="https://stackoverflow.com/questions/1044688/addbusinessdays-and-getbusinessdays"/>
         /// <seealso cref="https://en.wikipedia.org/wiki/Workweek_and_weekend"/>
-        private DateTime AddDays(DateTime date, int days)
+        protected virtual DateTime AddDays(DateTime date, int days)
         {
             Guard.NotNegative(days, nameof(days));
 
-            if (days == 0)
+            // now.Hour: 0-23. TodayDeliveryHour: 1-24.
+            if (_shippingSettings.TodayShipmentHour.HasValue && date.Hour < _shippingSettings.TodayShipmentHour)
             {
-                return date;
+                if ((date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday) || !_shippingSettings.DeliveryOnWorkweekDaysOnly)
+                {
+                    days -= 1;
+                }
+            }
+
+            // Normalization. Do not support today delivery.
+            if (days < 1)
+            {
+                days = 1;
             }
 
             if (!_shippingSettings.DeliveryOnWorkweekDaysOnly)
@@ -313,23 +317,6 @@ namespace SmartStore.Services.Directory
 
             return date.AddDays(extraDays);
         }
-
-        //private DateTime AddWorkweekDays(DateTime date, int days, DayOfWeek[] nonWorkweekDays)
-        //{
-        //    var sign = Math.Sign(days);
-        //    var unsignedDays = Math.Abs(days);
-
-        //    for (var i = 0; i < unsignedDays; ++i)
-        //    {
-        //        do
-        //        {
-        //            date = date.AddDays(sign);
-        //        }
-        //        while (nonWorkweekDays.Contains(date.DayOfWeek));
-        //    }
-
-        //    return date;
-        //}
 
         #endregion
     }

@@ -63,7 +63,7 @@
             }
 			if (showDeliveryDate)
             {
-				<span class="delivery-date-block align-top" title="@T("Products.DeliveryDate") @Model.DeliveryTimeDate">
+				<span class="delivery-date-block align-top" title="@T("Products.DeliveryDate") @Model.DeliveryTimeDate.RemoveHtml()">
 					@if (!showStatusLabel)
 					{
 						<span>@T("Products.DeliveryDate")</span>

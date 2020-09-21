@@ -15,6 +15,7 @@
 * #1697 Added picture and color options to checkout attribute values.
 * #1788 Added setting to restrict order amount in general and for customer roles in specific.
 * #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
+* #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
 
 ### Improvements
@@ -24,12 +25,14 @@
 * #1778 Back button closes offcanvas menu/cart.
 * #2069 MegaSearch: product order is applied to all categories in which a product appears.
 * #2052 When editing a product, the stock quantity is only updated if it has not changed since the page was loaded.
+* #213 Added options for special title and meta tags on home page.
 
 ### Bugfixes
 * **Media Manager**
 	* The file date should be displayed in local time and not in UTC.
 * **Page Builder**
 	* Reveal effect on story block conflicted with nested block reveal effects.
+	* #2068 Fixed RTL display issues with dropdown menus and slider.
 * **Export**
 	* An empty export file was created at the end of an export when using the batch-size option.
 	* The offset option skipped one record too much.
@@ -39,6 +42,7 @@
 * EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
 * #2076 Attributes were not pre-selected for all associated products of a grouped product.
 * Customer tab on customer role edit page showed deleted customers.
+* #2041 Product with call for price did show as free in product list and grid view.
 
 
 ## Smartstore 4.0.1

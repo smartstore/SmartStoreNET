@@ -803,6 +803,7 @@ namespace SmartStore.Services.Catalog.Importer
                 }
                 else
                 {
+                    product.UpdatedOnUtc = DateTime.UtcNow;
                     //_productRepository.Update(product); // unnecessary: we use DetectChanges()
                 }
             }

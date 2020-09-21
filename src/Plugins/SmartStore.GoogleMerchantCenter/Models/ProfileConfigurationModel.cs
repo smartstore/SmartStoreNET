@@ -5,19 +5,15 @@ using System.Xml.Serialization;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.GoogleMerchantCenter.Models
 {
+    [CustomModelPart]
     [Serializable]
     [Validator(typeof(ProfileConfigurationValidator))]
     public class ProfileConfigurationModel
     {
-        public ProfileConfigurationModel()
-        {
-            AdditionalImages = true;
-            SpecialPrice = true;
-        }
-
         [XmlIgnore]
         public string LanguageSeoCode { get; set; }
 
@@ -28,13 +24,13 @@ namespace SmartStore.GoogleMerchantCenter.Models
         public string DefaultGoogleCategory { get; set; }
 
         [SmartResourceDisplayName("Plugins.Feed.Froogle.AdditionalImages")]
-        public bool AdditionalImages { get; set; }
+        public bool AdditionalImages { get; set; } = true;
 
         [SmartResourceDisplayName("Plugins.Feed.Froogle.Availability")]
         public string Availability { get; set; }
 
         [SmartResourceDisplayName("Plugins.Feed.Froogle.SpecialPrice")]
-        public bool SpecialPrice { get; set; }
+        public bool SpecialPrice { get; set; } = true;
 
         [SmartResourceDisplayName("Plugins.Feed.Froogle.Gender")]
         public string Gender { get; set; }

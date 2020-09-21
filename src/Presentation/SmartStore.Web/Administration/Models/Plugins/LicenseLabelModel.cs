@@ -11,21 +11,5 @@ namespace SmartStore.Admin.Models.Plugins
         public LicensingState LicenseState { get; set; }
         public string TruncatedLicenseKey { get; set; }
         public int? RemainingDemoUsageDays { get; set; }
-
-        public string RemainingDemoUsageDaysLabel
-        {
-            get
-            {
-                if (RemainingDemoUsageDays.HasValue)
-                {
-                    if (RemainingDemoUsageDays <= 3)
-                        return "badge-dark";
-
-                    if (RemainingDemoUsageDays <= 6)
-                        return "badge-warning";
-                }
-                return "badge-success";
-            }
-        }
     }
 }

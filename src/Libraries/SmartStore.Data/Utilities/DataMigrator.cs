@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -145,6 +146,7 @@ namespace SmartStore.Data.Utilities
         /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
         /// <param name="ifModifiedSinceUtc">Minimum modified or created date of products to process. Pass <c>null</c> to fix all products.</param>
         /// <returns>The total count of fixed and updated product entities</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
         {
             return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);

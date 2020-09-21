@@ -95,6 +95,7 @@ namespace SmartStore.WebApi
             m.EntitySet<SyncMapping>("SyncMappings");
 
             // Register OData actions and functions.
+            Controllers.OData.DeliveryTimesController.Init(configData);
             Controllers.OData.OrdersController.Init(configData);
             Controllers.OData.OrderItemsController.Init(configData);
             Controllers.OData.ProductsController.Init(configData);

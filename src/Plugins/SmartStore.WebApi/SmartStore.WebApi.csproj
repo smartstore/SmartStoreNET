@@ -296,6 +296,7 @@
     <Compile Include="Models\OData\Media\MediaFolderOperationResult.cs" />
     <Compile Include="Models\OData\OrderInfo.cs" />
     <Compile Include="Models\OData\OrderItemInfo.cs" />
+    <Compile Include="Models\OData\SimpleRange.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />
     <Compile Include="Models\WebApiUserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

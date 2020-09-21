@@ -1,11 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
+using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
+using SmartStore.WebApi.Models.OData;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
@@ -61,5 +64,41 @@ namespace SmartStore.WebApi.Controllers.OData
             var result = await DeleteAsync(key, entity => Service.DeleteDeliveryTime(entity));
             return result;
         }
+
+        #region Actions and functions
+
+        public static void Init(WebApiConfigurationBroadcaster configData)
+        {
+            var entityConfig = configData.ModelBuilder.EntityType<DeliveryTime>();
+
+            entityConfig.Collection
+                .Function("GetDeliveryDate")
+                .Returns<SimpleRange<DateTime?>>()
+                .Parameter<int>("Id");
+        }
+
+        /// GET /DeliveryTimes/GetDeliveryDate(Id=123)
+        [HttpGet]
+        [WebApiAuthenticate]
+        public IHttpActionResult GetDeliveryDate(int id)
+        {
+            var deliveryTime = Service.GetDeliveryTimeById(id);
+            if (deliveryTime == null)
+            {
+                return NotFound();
+            }
+
+            var (min, max) = Service.GetDeliveryDate(deliveryTime);
+
+            var result = new SimpleRange<DateTime?>
+            {
+                Minimum = min,
+                Maximum = max
+            };
+
+            return Ok(result);
+        }
+
+        #endregion
     }
 }

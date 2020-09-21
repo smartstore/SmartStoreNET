@@ -169,6 +169,12 @@ namespace SmartStore.Services.Directory
             return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();
         }
 
+        public virtual (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime)
+        {
+            var currentDate = TimeZoneInfo.ConvertTime(DateTime.UtcNow, _dateTimeHelper.DefaultStoreTimeZone);
+            return GetDeliveryDate(deliveryTime, currentDate);
+        }
+
         public virtual (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate)
         {
             var minDate = deliveryTime?.MinDays != null

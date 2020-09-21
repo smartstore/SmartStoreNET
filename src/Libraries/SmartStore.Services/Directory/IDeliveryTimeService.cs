@@ -70,6 +70,13 @@ namespace SmartStore.Services.Directory
         DeliveryTime GetDefaultDeliveryTime();
 
         /// <summary>
+        /// Calculates the delivery date based on current shop date.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <returns>Calculated minimum and maximum date.</returns>
+        (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime);
+
+        /// <summary>
         /// Calculates the delivery date.
         /// </summary>
         /// <param name="deliveryTime">Delivery time.</param>

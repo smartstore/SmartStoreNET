@@ -648,6 +648,9 @@ namespace SmartStore.Data.Setup
                 },
                 new ThemeSettings
                 {
+                },
+                new HomePageSettings
+                {
                 }
             };
 

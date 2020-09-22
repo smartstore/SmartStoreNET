@@ -1238,7 +1238,8 @@ namespace SmartStore.Admin.Controllers
             CompanyInformationSettings companySettings,
             ContactDataSettings contactDataSettings,
             BankConnectionSettings bankConnectionSettings,
-            SocialSettings socialSettings)
+            SocialSettings socialSettings,
+            HomePageSettings homePageSettings)
         {
             // Set page timeout to 5 minutes.
             Server.ScriptTimeout = 300;
@@ -1257,38 +1258,136 @@ namespace SmartStore.Admin.Controllers
             MiniMapper.Map(contactDataSettings, model.ContactDataSettings);
             MiniMapper.Map(bankConnectionSettings, model.BankConnectionSettings);
             MiniMapper.Map(socialSettings, model.SocialSettings);
+            MiniMapper.Map(homePageSettings, model.HomepageSettings);
 
             #region SEO custom mapping
 
             // Fix Disallows joined with comma in MiniMapper (we need NewLine).
             model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
-            model.SeoSettings.DefaultSeoModel.MetaTitle = seoSettings.DefaultTitle;
-            model.SeoSettings.DefaultSeoModel.MetaDescription = seoSettings.DefaultMetaDescription;
-            model.SeoSettings.DefaultSeoModel.MetaKeywords = seoSettings.DefaultMetaKeywords;
+            model.SeoSettings.MetaTitle = seoSettings.MetaTitle;
+            model.SeoSettings.MetaDescription = seoSettings.MetaDescription;
+            model.SeoSettings.MetaKeywords = seoSettings.MetaKeywords;
 
-            AddLocales(_languageService, model.SeoSettings.DefaultSeoModel.Locales, (locale, languageId) =>
+            AddLocales(_languageService, model.SeoSettings.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.DefaultTitle, languageId, storeScope, false, false);
-                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription, languageId, storeScope, false, false);
-                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords, languageId, storeScope, false, false);
+                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, storeScope, false, false);
+                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, storeScope, false, false);
+                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, storeScope, false, false);
             });
 
-            model.SeoSettings.HomepageSeoModel.MetaTitle = seoSettings.HomepageMetaTitle;
-            model.SeoSettings.HomepageSeoModel.MetaDescription = seoSettings.HomepageMetaDescription;
-            model.SeoSettings.HomepageSeoModel.MetaKeywords = seoSettings.HomepageMetaKeywords;
+            model.HomepageSettings.MetaTitle = homePageSettings.MetaTitle;
+            model.HomepageSettings.MetaDescription = homePageSettings.MetaDescription;
+            model.HomepageSettings.MetaKeywords = homePageSettings.MetaKeywords;
 
-            AddLocales(_languageService, model.SeoSettings.HomepageSeoModel.Locales, (locale, languageId) =>
+            AddLocales(_languageService, model.HomepageSettings.Locales, (locale, languageId) =>
             {
-                locale.MetaTitle = seoSettings.GetLocalizedSetting(x => x.HomepageMetaTitle, languageId, storeScope, false, false);
-                locale.MetaDescription = seoSettings.GetLocalizedSetting(x => x.HomepageMetaDescription, languageId, storeScope, false, false);
-                locale.MetaKeywords = seoSettings.GetLocalizedSetting(x => x.HomepageMetaKeywords, languageId, storeScope, false, false);
+                locale.MetaTitle = homePageSettings.GetLocalizedSetting(x => x.MetaTitle, languageId, storeScope, false, false);
+                locale.MetaDescription = homePageSettings.GetLocalizedSetting(x => x.MetaDescription, languageId, storeScope, false, false);
+                locale.MetaKeywords = homePageSettings.GetLocalizedSetting(x => x.MetaKeywords, languageId, storeScope, false, false);
             });
 
             #endregion
 
-            #region DateTime custom mapping
+            PrepareConfigurationModel(model);
 
+            return View(model);
+        }
+
+        [Permission(Permissions.Configuration.Setting.Update)]
+        [HttpPost, SaveSetting(IsRootedModel = true), FormValueRequired("save")]
+        public ActionResult GeneralCommon(
+            GeneralCommonSettingsModel model,
+            int storeScope,
+            StoreInformationSettings storeInformationSettings,
+            SeoSettings seoSettings,
+            DateTimeSettings dateTimeSettings,
+            SecuritySettings securitySettings,
+            CaptchaSettings captchaSettings,
+            PdfSettings pdfSettings,
+            LocalizationSettings localizationSettings,
+            CompanyInformationSettings companySettings,
+            ContactDataSettings contactDataSettings,
+            BankConnectionSettings bankConnectionSettings,
+            SocialSettings socialSettings,
+            HomePageSettings homePageSeoSettings)
+        {
+            if (!ModelState.IsValid)
+            {
+                PrepareConfigurationModel(model);
+                return View(model);
+            }
+
+            ModelState.Clear();
+
+            // Necessary before mapping
+            var resetUserSeoCharacterTable = (seoSettings.SeoNameCharConversion != model.SeoSettings.SeoNameCharConversion);
+            var clearSeoFriendlyUrls = localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
+            var prevPdfLogoId = pdfSettings.LogoPictureId;
+
+            // Map model to entities
+            MiniMapper.Map(model.StoreInformationSettings, storeInformationSettings);
+            MiniMapper.Map(model.SeoSettings, seoSettings);
+            MiniMapper.Map(model.DateTimeSettings, dateTimeSettings);
+            MiniMapper.Map(model.SecuritySettings, securitySettings);
+            MiniMapper.Map(model.CaptchaSettings, captchaSettings);
+            MiniMapper.Map(model.PdfSettings, pdfSettings);
+            MiniMapper.Map(model.LocalizationSettings, localizationSettings);
+            MiniMapper.Map(model.CompanyInformationSettings, companySettings);
+            MiniMapper.Map(model.ContactDataSettings, contactDataSettings);
+            MiniMapper.Map(model.BankConnectionSettings, bankConnectionSettings);
+            MiniMapper.Map(model.SocialSettings, socialSettings);
+            MiniMapper.Map(model.HomepageSettings, homePageSeoSettings);
+
+            #region POST mapping
+
+            // (Un)track PDF logo id
+            _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);
+
+            seoSettings.MetaTitle = model.SeoSettings.MetaTitle;
+            seoSettings.MetaDescription = model.SeoSettings.MetaDescription;
+            seoSettings.MetaKeywords = model.SeoSettings.MetaKeywords;
+
+            foreach (var localized in model.SeoSettings.Locales)
+            {
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
+            }
+
+            homePageSeoSettings.MetaTitle = model.HomepageSettings.MetaTitle;
+            homePageSeoSettings.MetaDescription = model.HomepageSettings.MetaDescription;
+            homePageSeoSettings.MetaKeywords = model.HomepageSettings.MetaKeywords;
+
+            foreach (var localized in model.HomepageSettings.Locales)
+            {
+                _localizedEntityService.SaveLocalizedSetting(homePageSeoSettings, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(homePageSeoSettings, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
+                _localizedEntityService.SaveLocalizedSetting(homePageSeoSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
+            }
+
+            companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId ?? 0)?.Name;
+
+            if (resetUserSeoCharacterTable)
+            {
+                SeoHelper.ResetUserSeoCharacterTable();
+            }
+
+            if (clearSeoFriendlyUrls)
+            {
+                LocalizedRoute.ClearSeoFriendlyUrlsCachedValue();
+            }
+
+            #endregion
+
+            // Does not contain any store specific settings
+            Services.Settings.SaveSetting(securitySettings);
+
+            return NotifyAndRedirect("GeneralCommon");
+        }
+
+        private void PrepareConfigurationModel(GeneralCommonSettingsModel model)
+        {
             foreach (var timeZone in _dateTimeHelper.GetSystemTimeZones())
             {
                 model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
@@ -1298,8 +1397,6 @@ namespace SmartStore.Admin.Controllers
                     Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
                 });
             }
-
-            #endregion
 
             #region CompanyInfo custom mapping
 
@@ -1332,125 +1429,6 @@ namespace SmartStore.Admin.Controllers
             });
 
             #endregion
-
-            return View(model);
-
-            #region Property name mappers
-
-            //string MapDefaultSeoModelPropertyName(string name)
-            //{
-            //    if (name == nameof(SeoModel.MetaTitle))
-            //        return "DefaultTitle";
-            //    if (name == nameof(SeoModel.MetaDescription))
-            //        return "DefaultMetaDescription";
-            //    if (name == nameof(SeoModel.MetaKeywords))
-            //        return "DefaultMetaKeywords";
-
-            //    return name;
-            //}
-
-            //string MapHomepageSeoModelPropertyName(string name)
-            //{
-            //    if (name == nameof(SeoModel.MetaTitle))
-            //        return "HomepageMetaTitle";
-            //    if (name == nameof(SeoModel.MetaDescription))
-            //        return "HomepageMetaDescription";
-            //    if (name == nameof(SeoModel.MetaKeywords))
-            //        return "HomepageMetaKeywords";
-
-            //    return name;
-            //}
-
-            #endregion
-        }
-
-        [Permission(Permissions.Configuration.Setting.Update)]
-        [HttpPost, SaveSetting(IsRootedModel = true), FormValueRequired("save")]
-        public ActionResult GeneralCommon(
-            GeneralCommonSettingsModel model,
-            int storeScope,
-            StoreInformationSettings storeInformationSettings,
-            SeoSettings seoSettings,
-            DateTimeSettings dateTimeSettings,
-            SecuritySettings securitySettings,
-            CaptchaSettings captchaSettings,
-            PdfSettings pdfSettings,
-            LocalizationSettings localizationSettings,
-            CompanyInformationSettings companySettings,
-            ContactDataSettings contactDataSettings,
-            BankConnectionSettings bankConnectionSettings,
-            SocialSettings socialSettings)
-        {
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("GeneralCommon");
-            }
-
-            ModelState.Clear();
-
-            // Necessary before mapping
-            var resetUserSeoCharacterTable = (seoSettings.SeoNameCharConversion != model.SeoSettings.SeoNameCharConversion);
-            var clearSeoFriendlyUrls = localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
-            var prevPdfLogoId = pdfSettings.LogoPictureId;
-
-            // Map model to entities
-            MiniMapper.Map(model.StoreInformationSettings, storeInformationSettings);
-            MiniMapper.Map(model.SeoSettings, seoSettings);
-            MiniMapper.Map(model.DateTimeSettings, dateTimeSettings);
-            MiniMapper.Map(model.SecuritySettings, securitySettings);
-            MiniMapper.Map(model.CaptchaSettings, captchaSettings);
-            MiniMapper.Map(model.PdfSettings, pdfSettings);
-            MiniMapper.Map(model.LocalizationSettings, localizationSettings);
-            MiniMapper.Map(model.CompanyInformationSettings, companySettings);
-            MiniMapper.Map(model.ContactDataSettings, contactDataSettings);
-            MiniMapper.Map(model.BankConnectionSettings, bankConnectionSettings);
-            MiniMapper.Map(model.SocialSettings, socialSettings);
-
-            #region POST mapping
-
-            // (Un)track PDF logo id
-            _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);
-
-            seoSettings.DefaultTitle = model.SeoSettings.DefaultSeoModel.MetaTitle;
-            seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultSeoModel.MetaDescription;
-            seoSettings.DefaultMetaKeywords = model.SeoSettings.DefaultSeoModel.MetaKeywords;
-
-            foreach (var localized in model.SeoSettings.DefaultSeoModel.Locales)
-            {
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultTitle, localized.MetaTitle, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.DefaultMetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
-            }
-
-            seoSettings.HomepageMetaTitle = model.SeoSettings.HomepageSeoModel.MetaTitle;
-            seoSettings.HomepageMetaDescription = model.SeoSettings.HomepageSeoModel.MetaDescription;
-            seoSettings.HomepageMetaKeywords = model.SeoSettings.HomepageSeoModel.MetaKeywords;
-
-            foreach (var localized in model.SeoSettings.HomepageSeoModel.Locales)
-            {
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaTitle, localized.MetaTitle, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaDescription, localized.MetaDescription, localized.LanguageId, storeScope);
-                _localizedEntityService.SaveLocalizedSetting(seoSettings, x => x.HomepageMetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
-            }
-
-            companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId ?? 0)?.Name;
-
-            if (resetUserSeoCharacterTable)
-            {
-                SeoHelper.ResetUserSeoCharacterTable();
-            }
-
-            if (clearSeoFriendlyUrls)
-            {
-                LocalizedRoute.ClearSeoFriendlyUrlsCachedValue();
-            }
-
-            #endregion
-
-            // Does not contain any store specific settings
-            Services.Settings.SaveSetting(securitySettings);
-
-            return NotifyAndRedirect("GeneralCommon");
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]

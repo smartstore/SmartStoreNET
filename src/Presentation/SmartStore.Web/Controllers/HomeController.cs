@@ -22,29 +22,29 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<CaptchaSettings> _captchaSettings;
         private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<PrivacySettings> _privacySettings;
-        private readonly Lazy<SeoSettings> _seoSettings;
+        private readonly Lazy<HomePageSettings> _homePageSettings;
 
         public HomeController(
             Lazy<ITopicService> topicService,
             Lazy<CaptchaSettings> captchaSettings,
             Lazy<CommonSettings> commonSettings,
             Lazy<PrivacySettings> privacySettings,
-            Lazy<SeoSettings> seoSettings)
+            Lazy<HomePageSettings> homePageSettings)
         {
             _topicService = topicService;
             _captchaSettings = captchaSettings;
             _commonSettings = commonSettings;
             _privacySettings = privacySettings;
-            _seoSettings = seoSettings;
+            _homePageSettings = homePageSettings;
         }
 
         [RewriteUrl(SslRequirement.No)]
         public ActionResult Index()
         {
             var storeId = Services.StoreContext.CurrentStore.Id;
-            ViewBag.MetaTitle = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaTitle, storeId);
-            ViewBag.MetaDescription = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaDescription, storeId);
-            ViewBag.MetaKeywords = _seoSettings.Value.GetLocalizedSetting(x => x.HomepageMetaKeywords, storeId);
+            ViewBag.MetaTitle = _homePageSettings.Value.GetLocalizedSetting(x => x.MetaTitle, storeId);
+            ViewBag.MetaDescription = _homePageSettings.Value.GetLocalizedSetting(x => x.MetaDescription, storeId);
+            ViewBag.MetaKeywords = _homePageSettings.Value.GetLocalizedSetting(x => x.MetaKeywords, storeId);
 
             return View();
         }

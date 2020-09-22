@@ -147,13 +147,13 @@ namespace SmartStore.Web.Framework.UI
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value, specificTitle);
+                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value, specificTitle);
                             }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value);
+                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value);
                             }
                             break;
                     }
@@ -167,7 +167,7 @@ namespace SmartStore.Web.Framework.UI
             else
             {
                 // Store name only
-                result = _seoSettings.GetLocalizedSetting(x => x.DefaultTitle).Value;
+                result = _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value;
             }
 
             return result;
@@ -181,7 +181,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaDescription()
         {
-            var result = _seoSettings.GetLocalizedSetting(x => x.DefaultMetaDescription).Value;
+            var result = _seoSettings.GetLocalizedSetting(x => x.MetaDescription).Value;
 
             if (_metaDescriptionParts == null)
                 return result;
@@ -203,7 +203,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaKeywords()
         {
-            var result = _seoSettings.GetLocalizedSetting(x => x.DefaultMetaKeywords).Value;
+            var result = _seoSettings.GetLocalizedSetting(x => x.MetaKeywords).Value;
 
             if (_metaKeywordParts == null)
                 return result;

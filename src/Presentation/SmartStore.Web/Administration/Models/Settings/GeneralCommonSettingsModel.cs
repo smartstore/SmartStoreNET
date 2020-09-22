@@ -28,6 +28,7 @@ namespace SmartStore.Admin.Models.Settings
             ContactDataSettings = new ContactDataSettingsModel();
             BankConnectionSettings = new BankConnectionSettingsModel();
             SocialSettings = new SocialSettingsModel();
+            HomepageSettings = new HomepageSettingsModel();
         }
 
         public StoreInformationSettingsModel StoreInformationSettings { get; set; }
@@ -41,8 +42,28 @@ namespace SmartStore.Admin.Models.Settings
         public ContactDataSettingsModel ContactDataSettings { get; set; }
         public BankConnectionSettingsModel BankConnectionSettings { get; set; }
         public SocialSettingsModel SocialSettings { get; set; }
+        public HomepageSettingsModel HomepageSettings { get; set; }
 
         #region Nested classes
+
+        [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageTitle")]
+        [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription")]
+        [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords")]
+        public partial class HomepageSettingsModel : ISeoModel
+        {
+            public HomepageSettingsModel()
+            {
+                Locales = new List<SeoModelLocal>();
+            }
+
+            public string MetaTitle { get; set; }
+
+            public string MetaDescription { get; set; }
+
+            public string MetaKeywords { get; set; }
+
+            public IList<SeoModelLocal> Locales { get; set; }
+        }
 
         public partial class StoreInformationSettingsModel
         {
@@ -74,12 +95,14 @@ namespace SmartStore.Admin.Models.Settings
             public IList<SelectListItem> AvailableTimeZones { get; set; }
         }
 
-        public partial class SeoSettingsModel
+        [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultTitle")]
+        [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription")]
+        [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords")]
+        public partial class SeoSettingsModel : ISeoModel
         {
             public SeoSettingsModel()
             {
-                DefaultSeoModel = new SeoModel();
-                HomepageSeoModel = new SeoModel();
+                Locales = new List<SeoModelLocal>();
             }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator")]
@@ -89,15 +112,13 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment")]
             public PageTitleSeoAdjustment PageTitleSeoAdjustment { get; set; }
 
-            [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultTitle")]
-            [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription")]
-            [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords")]
-            public SeoModel DefaultSeoModel { get; set; }
+            public string MetaTitle { get; set; }
 
-            [AdditionalMetadata("MetaTitleResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageTitle")]
-            [AdditionalMetadata("MetaDescriptionResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription")]
-            [AdditionalMetadata("MetaKeywordsResKey", "Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords")]
-            public SeoModel HomepageSeoModel { get; set; }
+            public string MetaDescription { get; set; }
+
+            public string MetaKeywords { get; set; }
+
+            public IList<SeoModelLocal> Locales { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent")]
             public string MetaRobotsContent { get; set; }

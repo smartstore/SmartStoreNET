@@ -57,13 +57,12 @@ namespace SmartStore.Core.Domain.Seo
         public string PageTitleSeparator { get; set; } = ". ";
         public PageTitleSeoAdjustment PageTitleSeoAdjustment { get; set; } = PageTitleSeoAdjustment.PagenameAfterStorename;
 
-        public string DefaultTitle { get; set; } = "Shop";
-        public string DefaultMetaDescription { get; set; } = string.Empty;
-        public string DefaultMetaKeywords { get; set; } = string.Empty;
-
-        public string HomepageMetaTitle { get; set; }
-        public string HomepageMetaDescription { get; set; }
-        public string HomepageMetaKeywords { get; set; }
+        /// <summary>
+        /// Gets or sets the default meta title for the shop.
+        /// </summary>
+        public string MetaTitle { get; set; } = "Shop";
+        public string MetaDescription { get; set; } = string.Empty;
+        public string MetaKeywords { get; set; } = string.Empty;
 
         public string MetaRobotsContent { get; set; }
 

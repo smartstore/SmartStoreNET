@@ -1951,7 +1951,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter<SeoSettings>(x =>
                 {
-                    x.DefaultTitle = "Mein Shop";
+                    x.MetaTitle = "Mein Shop";
                 })
                 .Alter<OrderSettings>(x =>
                 {

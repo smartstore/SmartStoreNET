@@ -50,6 +50,28 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
         [DataMember]
         public int? MaxDays { get; set; }
+
+        #region Utils
+
+        public int? GetDays()
+        {   
+            if (MinDays != null && MinDays > 0 && MaxDays != null && MaxDays > 0)
+            {
+                return ((int)MinDays + (int)MaxDays) / 2;
+            }
+            else if (MinDays != null && MinDays > 0)
+            {
+                return (int)MinDays;
+            }
+            else if (MaxDays != null && MaxDays > 0)
+            {
+                return (int)MaxDays;
+            }
+                
+            return null;
+        }
+
+        #endregion
     }
 
 

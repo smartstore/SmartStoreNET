@@ -71,3 +71,24 @@
 	
 	@{ Html.RenderPartial("Product.Offer.Actions.Misc", Model);	}
 </div>
+
+<script>
+    // Ask question
+    $('.action-ask-question').on('click', function (e) {
+        e.preventDefault();
+        const el = $(this);
+        const form = el.data('form-selector');
+        if (form) {
+            const href = el.data('href') || el.attr('href');
+            const data = $(form).serialize();
+            $.ajax({
+            cache: false,
+                url: href,
+                data: data,
+				success: function (result) {
+					//$('#content-wrapper').html(result);
+				}
+            });
+        }
+    });
+</script>

@@ -14,10 +14,9 @@
         if (Model.ProductPrice.CallForPrice)
         {
             <div class="quote-request">
-                <a href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })" rel="nofollow"
-                   class="btn btn-secondary btn-lg btn-block action-ask-question"
-                   @*data-href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })"*@
-                   data-form-selector="#pd-form">
+                <a class="btn btn-secondary btn-lg btn-block action-ask-question" href="javascript:void(0)" 
+                   data-href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })" 
+                   data-form-selector="#pd-form" rel="nofollow">
                     <i class="fa fa-envelope"></i>
                     <span>@T("Products.CallForPrice.GoToForm")</span>
                 </a>                
@@ -54,25 +53,3 @@
         }
     }
 </div>
-<script>    
-    // Ask question
-    $('.action-ask-question').on('click', function (e) {
-        e.preventDefault();
-        const el = $(this);
-        const form = el.data('form-selector');
-        if (form) {
-            const href = el.data('href') || el.attr('href');
-            const data = $(form).serialize();
-            $.ajax({
-            cache: false,
-                url: href,
-                data: data,
-                success: function (result) {
-                    //console.log(result);
-                    //$('#content-center').html(result.partial);                    
-                    $('body').html(result);
-                }
-            });
-        }
-    });
-</script>

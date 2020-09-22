@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Html;
 using SmartStore.Core.Security;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -62,11 +63,11 @@ namespace SmartStore.Web.Controllers
         private readonly IBreadcrumb _breadcrumb;
         private readonly Lazy<PrivacySettings> _privacySettings;
         private readonly Lazy<TaxSettings> _taxSettings;
-		private readonly ILocalizationService _localizationService;
-		private readonly IProductAttributeParser _productAttributeParser;
-		private readonly IDownloadService _downloadService;
-		private readonly ProductUrlHelper _productUrlHelper;
-		private readonly IProductAttributeFormatter _productAttributeFormatter;
+        private readonly ILocalizationService _localizationService;
+        private readonly IProductAttributeParser _productAttributeParser;
+        private readonly IDownloadService _downloadService;
+        private readonly ProductUrlHelper _productUrlHelper;
+        private readonly IProductAttributeFormatter _productAttributeFormatter;
 
         public ProductController(
             ICommonServices services,
@@ -92,41 +93,41 @@ namespace SmartStore.Web.Controllers
             IBreadcrumb breadcrumb,
             Lazy<PrivacySettings> privacySettings,
             Lazy<TaxSettings> taxSettings,
-			ILocalizationService localizationService,
-			IProductAttributeParser productAttributeParser,
-			IDownloadService downloadService,
-			ProductUrlHelper productUrlHelper,
-			IProductAttributeFormatter productAttributeFormatter)
+            ILocalizationService localizationService,
+            IProductAttributeParser productAttributeParser,
+            IDownloadService downloadService,
+            ProductUrlHelper productUrlHelper,
+            IProductAttributeFormatter productAttributeFormatter)
         {
             _services = services;
             _productService = productService;
             _productAttributeService = productAttributeService;
             _taxService = taxService;
             _mediaService = mediaService;
-			_customerContentService = customerContentService;
-			_customerService = customerService;
-			_recentlyViewedProductsService = recentlyViewedProductsService;
-			_productTagService = productTagService;
-			_orderReportService = orderReportService;
-			_backInStockSubscriptionService = backInStockSubscriptionService;
-			_aclService = aclService;
-			_storeMappingService = storeMappingService;
-			_mediaSettings = mediaSettings;
-			_seoSettings = seoSettings;
-			_catalogSettings = catalogSettings;
-			_shoppingCartSettings = shoppingCartSettings;
-			_localizationSettings = localizationSettings;
-			_captchaSettings = captchaSettings;
-			_helper = helper;
-			_breadcrumb = breadcrumb;
-			_privacySettings = privacySettings;
-			_taxSettings = taxSettings;
-			_localizationService = localizationService;
-			_downloadService = downloadService;
-			_productAttributeParser = productAttributeParser;
-			_productUrlHelper = productUrlHelper;
-			_productAttributeFormatter = productAttributeFormatter;
-		}
+            _customerContentService = customerContentService;
+            _customerService = customerService;
+            _recentlyViewedProductsService = recentlyViewedProductsService;
+            _productTagService = productTagService;
+            _orderReportService = orderReportService;
+            _backInStockSubscriptionService = backInStockSubscriptionService;
+            _aclService = aclService;
+            _storeMappingService = storeMappingService;
+            _mediaSettings = mediaSettings;
+            _seoSettings = seoSettings;
+            _catalogSettings = catalogSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+            _localizationSettings = localizationSettings;
+            _captchaSettings = captchaSettings;
+            _helper = helper;
+            _breadcrumb = breadcrumb;
+            _privacySettings = privacySettings;
+            _taxSettings = taxSettings;
+            _localizationService = localizationService;
+            _downloadService = downloadService;
+            _productAttributeParser = productAttributeParser;
+            _productUrlHelper = productUrlHelper;
+            _productAttributeFormatter = productAttributeFormatter;
+        }
 
         #region Products
 
@@ -177,7 +178,7 @@ namespace SmartStore.Web.Controllers
             // Some cargo data
             model.PictureSize = _mediaSettings.ProductDetailsPictureSize;
             model.CanonicalUrlsEnabled = _seoSettings.CanonicalUrlsEnabled;
-			model.HotlineTelephoneNumber = _services.Settings.LoadSetting<ContactDataSettings>().HotlineTelephoneNumber.NullEmpty();
+            model.HotlineTelephoneNumber = _services.Settings.LoadSetting<ContactDataSettings>().HotlineTelephoneNumber.NullEmpty();
 
             // Save as recently viewed
             _recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -855,70 +856,61 @@ namespace SmartStore.Web.Controllers
 
 
         #region Ask product question
-		//[HttpPost]
-		//public JsonResult AskQuestion(int id, ProductVariantQuery query)
-  //      {
-		//	totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-
-
-		//	return Json
-  //      }
 
         [GdprConsent]
-		public ActionResult AskQuestion(int id, ProductVariantQuery query)
-		{
-			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
-				return HttpNotFound();
+        public ActionResult AskQuestion(int id, ProductVariantQuery query)
+        {
+            var product = _productService.GetProductById(id);
+            if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
+                return HttpNotFound();
 
-			var attributesXML = "";
-			if (query != null)
-			{
-				var attributes = _productAttributeService.GetProductVariantAttributesByProductId(id);
-				var warnings = new List<string>();
-				attributesXML = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
-				   _localizationService, _downloadService, _catalogSettings, null, warnings);
-			}
+            var attributesXML = "";
+            if (query != null)
+            {
+                var attributes = _productAttributeService.GetProductVariantAttributesByProductId(id);
+                var warnings = new List<string>();
+                var x = Request.Form;
+                attributesXML = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
+                   _localizationService, _downloadService, _catalogSettings, null, warnings);
+            }
 
-			var attributeInfo = _productAttributeFormatter.FormatAttributes(
-						  product,
-						  attributesXML,
-						  null,
-						  separator: ", ",
-						  renderPrices: false,
-						  renderGiftCardAttributes: false,
-						  allowHyperlinks: false);
+            var attributeInfo = _productAttributeFormatter.FormatAttributes(
+                          product,
+                          attributesXML,
+                          null,
+                          separator: ", ",
+                          renderPrices: false,
+                          renderGiftCardAttributes: false,
+                          allowHyperlinks: false);
 
-			var customer = _services.WorkContext.CurrentCustomer;
-			var model = new ProductAskQuestionModel
-			{
-				Id = product.Id,
-				ProductName = product.GetLocalized(x => x.Name),
-				ProductSeName = product.GetSeName(),
-				SenderEmail = customer.Email,
-				SenderName = customer.GetFullName(),
-				SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired,
-				SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
-				DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage,
-				SelectedAttributes = attributeInfo,
-				ProductUrl = _productUrlHelper.GetProductUrl(id, product.GetSeName(), attributesXML),
-				IsQuoteRequest = product.CallForPrice				
-			};
-			var questionTitle = model.IsQuoteRequest
-				? T("Products.AskQuestion.Question.QuoteRequest")
-				: T("Products.AskQuestion.Question.GeneralInquiry");
+            var customer = _services.WorkContext.CurrentCustomer;
+            var model = new ProductAskQuestionModel
+            {
+                Id = product.Id,
+                ProductName = product.GetLocalized(x => x.Name),
+                ProductSeName = product.GetSeName(),
+                SenderEmail = customer.Email,
+                SenderName = customer.GetFullName(),
+                SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired,
+                SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
+                DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage,
+                SelectedAttributes = attributeInfo,
+                ProductUrl = _productUrlHelper.GetProductUrl(id, product.GetSeName(), attributesXML),
+                IsQuoteRequest = product.CallForPrice
+            };
 
-			model.Question = questionTitle.Text.FormatCurrentUI(model.ProductName);
+            var questionTitle = model.IsQuoteRequest
+                ? T("Products.AskQuestion.Question.QuoteRequest")
+                : T("Products.AskQuestion.Question.GeneralInquiry");
 
-			return View(model);
+            model.Question = questionTitle.Text.FormatCurrentUI(model.ProductName);
 
-			object data = new
-			{
-				partial = this.RenderPartialViewToString("AskQuestion", model)
-			};
-
-			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-		}
+            return new JsonResult 
+            { 
+                Data = this.RenderPartialViewToString("AskQuestion", model),
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet 
+            };
+        }
 
         [HttpPost, ActionName("AskQuestion")]
         [ValidateCaptcha, ValidateHoneypot]
@@ -934,20 +926,20 @@ namespace SmartStore.Web.Controllers
                 ModelState.AddModelError("", captchaError);
             }
 
-			model.ProductUrl = _services.StoreContext.CurrentStore.Url + model.ProductUrl.Substring(1);
+            model.ProductUrl = _services.StoreContext.CurrentStore.Url + model.ProductUrl.Substring(1);
 
-			if (ModelState.IsValid)
-			{
-				var msg = Services.MessageFactory.SendProductQuestionMessage(
-					_services.WorkContext.CurrentCustomer,
-					product, 
-					model.SenderEmail, 
-					model.SenderName, 
-					model.SenderPhone, 
-					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Question.HtmlEncode()),
-					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.SelectedAttributes.HtmlEncode()),
-					model.ProductUrl,
-					model.IsQuoteRequest);
+            if (ModelState.IsValid)
+            {
+                var msg = Services.MessageFactory.SendProductQuestionMessage(
+                    _services.WorkContext.CurrentCustomer,
+                    product,
+                    model.SenderEmail,
+                    model.SenderName,
+                    model.SenderPhone,
+                    HtmlUtils.ConvertPlainTextToHtml(model.Question.HtmlEncode()),
+                    HtmlUtils.ConvertPlainTextToHtml(model.SelectedAttributes.HtmlEncode()),
+                    model.ProductUrl,
+                    model.IsQuoteRequest);
 
                 if (msg?.Email?.Id != null)
                 {

@@ -41,7 +41,7 @@
 	}
 	else
 	{
-		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id }, { "area", "" } })"
+		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id}, { "area", "" } })"
 			class="btn @(blockStyle ? "btn-secondary" : "btn-gray") add-to-cart-button @cssClasses"
 			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"

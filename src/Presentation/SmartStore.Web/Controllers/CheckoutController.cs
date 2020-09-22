@@ -915,7 +915,7 @@ namespace SmartStore.Web.Controllers
 
             if (placeOrderResult == null || !placeOrderResult.Success || model.Warnings.Any())
             {
-                return RedirectToAction("Confirm");
+                return View(model);
             }
 
             try

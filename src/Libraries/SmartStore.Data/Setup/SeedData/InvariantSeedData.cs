@@ -903,19 +903,25 @@ namespace SmartStore.Data.Setup
                     {
                         Name = "available and ready to ship",
                         DisplayOrder = 0,
-                        ColorHexValue = "#008000"
+                        ColorHexValue = "#008000",
+                        MinDays = 1,
+                        MaxDays = 3
                     },
                 new DeliveryTime
                     {
                         Name = "2-5 woking days",
                         DisplayOrder = 1,
-                        ColorHexValue = "#FFFF00"
+                        ColorHexValue = "#FFFF00",
+                        MinDays = 2,
+                        MaxDays = 5
                     },
                 new DeliveryTime
                     {
                         Name = "7 working days",
                         DisplayOrder = 2,
-                        ColorHexValue = "#FF9900"
+                        ColorHexValue = "#FF9900",
+                        MinDays = 7,
+                        MaxDays = 14
                     },
             };
             this.Alter(entities);

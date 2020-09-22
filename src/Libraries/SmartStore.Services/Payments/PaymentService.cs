@@ -140,7 +140,8 @@ namespace SmartStore.Services.Payments
                 var fallbackMethod = allProviders.FirstOrDefault(x => x.IsPaymentMethodActive(_paymentSettings));
                 if (fallbackMethod == null)
                 {
-                    fallbackMethod = allProviders.FirstOrDefault();
+                    fallbackMethod = allProviders.FirstOrDefault(x => x.Metadata?.PluginDescriptor?.SystemName?.IsCaseInsensitiveEqual("SmartStore.OfflinePayment") ?? false)
+                        ?? allProviders.FirstOrDefault();
                 }
 
                 if (fallbackMethod != null)

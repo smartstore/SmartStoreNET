@@ -727,14 +727,18 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult PaymentMethod()
         {
-            //validation
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-            if (cart.Count == 0)
+            if (!cart.Any())
+            {
                 return RedirectToRoute("ShoppingCart");
-
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            }
+            if (!_orderSettings.AnonymousCheckoutAllowed && customer.IsGuest())
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             // Check whether payment workflow is required. We ignore reward points during cart total calculation.
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, true);
@@ -744,23 +748,14 @@ namespace SmartStore.Web.Controllers
             var onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
 
             var checkoutState = _httpContext.GetCheckoutState();
-            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActivePaymentMethod"))
-                checkoutState.CustomProperties["HasOnlyOneActivePaymentMethod"] = model.PaymentMethods.Count == 1;
-            else
-                checkoutState.CustomProperties.Add("HasOnlyOneActivePaymentMethod", model.PaymentMethods.Count == 1);
+            checkoutState.CustomProperties["HasOnlyOneActivePaymentMethod"] = model.PaymentMethods.Count == 1;
+            checkoutState.IsPaymentSelectionSkipped = !isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod);
 
-            if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod))
+            if (checkoutState.IsPaymentSelectionSkipped)
             {
                 // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
                 // or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
-
-                _genericAttributeService.SaveAttribute<string>(
-                    _workContext.CurrentCustomer,
-                    SystemCustomerAttributeNames.SelectedPaymentMethod,
-                    !model.PaymentMethods.Any() ? null : model.PaymentMethods[0].PaymentMethodSystemName,
-                    _storeContext.CurrentStore.Id);
-
-                checkoutState.IsPaymentSelectionSkipped = true;
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, model.PaymentMethods?.FirstOrDefault()?.PaymentMethodSystemName, store.Id);
 
                 var referrer = Services.WebHelper.GetUrlReferrer();
                 if (referrer.EndsWith("/Confirm"))
@@ -770,8 +765,6 @@ namespace SmartStore.Web.Controllers
 
                 return RedirectToAction("Confirm");
             }
-
-            checkoutState.IsPaymentSelectionSkipped = false;
 
             return View(model);
         }

@@ -10,6 +10,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Topics;
 
@@ -25,6 +26,8 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
         private readonly SeoSettings _seoSettings;
+        private readonly IBreadcrumb _breadcrumb;
+        private readonly CatalogHelper _helper;
 
         public TopicController(
             ITopicService topicService,
@@ -34,7 +37,9 @@ namespace SmartStore.Web.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICacheManager cacheManager,
-            SeoSettings seoSettings)
+            SeoSettings seoSettings,
+            IBreadcrumb breadcrumb,
+            CatalogHelper helper)
         {
             _topicService = topicService;
             _workContext = workContext;
@@ -44,6 +49,8 @@ namespace SmartStore.Web.Controllers
             _localizationService = localizationService;
             _cacheManager = cacheManager;
             _seoSettings = seoSettings;
+            _breadcrumb = breadcrumb;
+            _helper = helper;
         }
 
         [NonAction]
@@ -104,6 +111,8 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult TopicDetails(int topicId, bool popup = false)
         {
+            _helper.GetBreadcrumb(_breadcrumb, ControllerContext);
+
             var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, _workContext.CurrentCustomer.GetRolesIdent());
             var cacheModel = _cacheManager.Get(cacheKey, () =>
             {

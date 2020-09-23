@@ -189,7 +189,7 @@ namespace SmartStore.Web.Controllers
             // Breadcrumb
             if (_catalogSettings.CategoryBreadcrumbEnabled)
             {
-                _helper.GetCategoryBreadcrumb(_breadcrumb, ControllerContext, product);
+                _helper.GetBreadcrumb(_breadcrumb, ControllerContext, product);
 
                 _breadcrumb.Track(new MenuItem
                 {

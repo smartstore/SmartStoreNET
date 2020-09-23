@@ -238,7 +238,7 @@ namespace SmartStore.Web.Controllers
             return Enumerable.Empty<int>();
         }
 
-        public void GetCategoryBreadcrumb(IBreadcrumb breadcrumb, ControllerContext context, Product product = null)
+        public void GetBreadcrumb(IBreadcrumb breadcrumb, ControllerContext context, Product product = null)
         {
             var menu = _menuService.GetMenu("Main");
             var currentNode = menu.ResolveCurrentNode(context);

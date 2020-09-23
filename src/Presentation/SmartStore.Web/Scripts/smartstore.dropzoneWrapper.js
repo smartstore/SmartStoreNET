@@ -819,7 +819,6 @@
 
             // Do nothing on skip.
             if (resolutionType === 3) {
-                //dropzone.removeFile(firstFile);
                 firstFile.media.dupe = false;
 
                 if (dupeFiles[1]) {
@@ -829,7 +828,7 @@
                     dropzone.emit("queuecomplete");
                     dialog.close();
                 }
-
+                fuContainer.data("resolution-type", "");
                 return;
             }
 
@@ -853,6 +852,7 @@
 
             // Do nothing on skip.
             if (resolutionType === 3) {
+                fuContainer.data("resolution-type", "");
                 dropzone.emit("queuecomplete");
                 dialog.close();
                 return;

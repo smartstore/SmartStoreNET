@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Caching
 {
-    /// <summary>
-    /// Represents a null cache
-    /// </summary>
     public partial class NullCache : ICacheManager
     {
         private static readonly ICacheManager s_instance = new NullCache();

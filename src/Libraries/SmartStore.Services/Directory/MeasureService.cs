@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Events;
@@ -15,18 +13,15 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
         private readonly MeasureSettings _measureSettings;
-        private readonly IEventPublisher _eventPublisher;
 
         public MeasureService(
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
-            MeasureSettings measureSettings,
-            IEventPublisher eventPublisher)
+            MeasureSettings measureSettings)
         {
             _measureDimensionRepository = measureDimensionRepository;
             _measureWeightRepository = measureWeightRepository;
             _measureSettings = measureSettings;
-            _eventPublisher = eventPublisher;
         }
 
         #region Dimensions
@@ -84,8 +79,7 @@ namespace SmartStore.Services.Directory
             _measureDimensionRepository.Update(measure);
         }
 
-        public virtual decimal ConvertDimension(decimal quantity,
-            MeasureDimension sourceMeasureDimension, MeasureDimension targetMeasureDimension, bool round = true)
+        public virtual decimal ConvertDimension(decimal quantity, MeasureDimension sourceMeasureDimension, MeasureDimension targetMeasureDimension, bool round = true)
         {
             decimal result = quantity;
             if (result != decimal.Zero && sourceMeasureDimension.Id != targetMeasureDimension.Id)
@@ -98,8 +92,7 @@ namespace SmartStore.Services.Directory
             return result;
         }
 
-        public virtual decimal ConvertToPrimaryMeasureDimension(decimal quantity,
-            MeasureDimension sourceMeasureDimension)
+        public virtual decimal ConvertToPrimaryMeasureDimension(decimal quantity, MeasureDimension sourceMeasureDimension)
         {
             decimal result = quantity;
             var baseDimensionIn = GetMeasureDimensionById(_measureSettings.BaseDimensionId);
@@ -113,8 +106,7 @@ namespace SmartStore.Services.Directory
             return result;
         }
 
-        public virtual decimal ConvertFromPrimaryMeasureDimension(decimal quantity,
-            MeasureDimension targetMeasureDimension)
+        public virtual decimal ConvertFromPrimaryMeasureDimension(decimal quantity, MeasureDimension targetMeasureDimension)
         {
             decimal result = quantity;
             var baseDimensionIn = GetMeasureDimensionById(_measureSettings.BaseDimensionId);

@@ -53,17 +53,21 @@ namespace SmartStore.Core.Domain.Directory
 
         #region Utils
 
-        public int? GetDays()
+        /// <summary>
+        /// Intended to be used for submission to third parties which require the delivery days as integer e.g. price comparison portals or after sales services.
+        /// </summary>
+        /// <returns>Days as integer or null if no days are set for the current delivery time.</returns>
+        public int? GetMinOrMaxOrAverageDays()
         {   
-            if (MinDays != null && MinDays > 0 && MaxDays != null && MaxDays > 0)
+            if (MinDays > 0 && MaxDays > 0)
             {
                 return ((int)MinDays + (int)MaxDays) / 2;
             }
-            else if (MinDays != null && MinDays > 0)
+            else if (MinDays > 0)
             {
                 return (int)MinDays;
             }
-            else if (MaxDays != null && MaxDays > 0)
+            else if (MaxDays > 0)
             {
                 return (int)MaxDays;
             }

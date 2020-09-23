@@ -29,6 +29,10 @@
     {
         cssClass.Add("has-image");
     }
+    if (!item.IsPublished)
+    {
+        cssClass.Add("unpublished");
+    }
 
     <article class="@string.Join(" ", cssClass)" itemscope itemtype="http://schema.org/BlogPosting">
         <div class="bloglist-item d-flex flex-row flex-nowrap d-md-block">

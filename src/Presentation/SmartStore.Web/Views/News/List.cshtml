@@ -32,7 +32,7 @@
                 var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
                 var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
 
-                <article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column" itemscope itemtype="http://schema.org/NewsArticle">
+                <article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column@(item.Published ? "" : " unpublished")" itemscope itemtype="http://schema.org/NewsArticle">
                     @if (imageUrl.HasValue())
                     {
                         <figure style="--img-aspect-ratio: 0.5;">

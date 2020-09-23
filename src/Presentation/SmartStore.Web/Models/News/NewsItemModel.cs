@@ -32,6 +32,8 @@ namespace SmartStore.Web.Models.News
 
         public bool DisplayAdminLink { get; set; }
 
+        public bool Published { get; set; }
+
         public AddNewsCommentModel AddNewComment { get; set; }
         public CommentListModel Comments { get; set; }
     }

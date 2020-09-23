@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Customers;
@@ -102,14 +103,9 @@ namespace SmartStore.Web.Controllers
 
             Services.DisplayControl.Announce(newsItem);
 
-            model.Id = newsItem.Id;
-            model.MetaTitle = newsItem.MetaTitle;
-            model.MetaDescription = newsItem.MetaDescription;
-            model.MetaKeywords = newsItem.MetaKeywords;
+            MiniMapper.Map(newsItem, model);
+
             model.SeName = newsItem.GetSeName(newsItem.LanguageId, ensureTwoPublishedLanguages: false);
-            model.Title = newsItem.Title;
-            model.Short = newsItem.Short;
-            model.Full = newsItem.Full;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);

@@ -46,6 +46,8 @@ namespace SmartStore.Web.Models.Blogs
 
         public bool DisplayTagsInPreview { get; set; }
 
+        public bool IsPublished { get; set; }
+
         public PreviewDisplayType PreviewDisplayType { get; set; }
 
         public AddBlogCommentModel AddNewComment { get; set; }

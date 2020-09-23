@@ -55,10 +55,14 @@
 	}
 
 	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
-	{
-		var dataDictVariants = new ViewDataDictionary();
-		dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-		Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
+    {
+		<div class="pd-variants-container" data-partial="Variants">
+		@{
+            var dataDictVariants = new ViewDataDictionary();
+            dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+            Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
+        }
+		</div>
 	}
 
 	<div class="pd-offer-actions-container" data-partial="OfferActions">

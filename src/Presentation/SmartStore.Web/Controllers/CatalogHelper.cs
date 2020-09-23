@@ -642,6 +642,15 @@ namespace SmartStore.Web.Controllers
                 ImageSize = _mediaSettings.ProductDetailsPictureSize
             };
 
+            if (isAssociatedProduct)
+            {
+                model.ThumbSize = _mediaSettings.AssociatedProductPictureSize;
+            }
+            else if (bundleItem != null)
+            {
+                model.ThumbSize = _mediaSettings.BundledProductPictureSize;
+            }
+
             MediaFileInfo defaultFile = null;
             var combiAssignedImages = combination?.GetAssignedMediaIds();
 

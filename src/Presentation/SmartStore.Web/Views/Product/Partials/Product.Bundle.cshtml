@@ -12,7 +12,6 @@
 	<div class="alert alert-warning">
 		@T("Products.NoBundledItems")
 	</div>
-
 	return;
 }
 
@@ -25,11 +24,13 @@
 	<ul class="pd-bundle-summary list-unstyled mb-3">
 		@foreach (var item in items)
 		{
-			var hasThumbnail = item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue();
+			var gallery = item.MediaGalleryModel;
+			var img = gallery.Files?.FirstOrDefault();
+
 			<li class="pd-bundle-summary-item">
 				@if (item.BundleItem.Quantity > 1)
 				{
-					if (hasThumbnail)
+					if (img != null)
 					{
 						<span class="pd-bundle-summary-item-qty badge badge-pill badge-success">@(item.BundleItem.Quantity)&#215;</span>
 					}
@@ -40,11 +41,11 @@
 				}
 				@if (item.VisibleIndividually)
 				{
-					if (hasThumbnail)
+					if (img != null)
 					{
 						<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
-							<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" />
-						</a>@* img and a in same line cause of hover underlines *@
+							<img src="@img.GetUrl(gallery.ThumbSize)" alt="@(img?.Alt)" title="@(img?.TitleAttribute)" />
+						</a>
 					}
 					else
 					{
@@ -53,9 +54,9 @@
 				}
 				else
 				{
-					if (hasThumbnail)
+					if (img != null)
 					{
-						<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" />
+						<img src="@img.GetUrl(gallery.ThumbSize)" alt="@(img?.Alt)" title="@(img?.TitleAttribute)" />
 					}
 					else
 					{

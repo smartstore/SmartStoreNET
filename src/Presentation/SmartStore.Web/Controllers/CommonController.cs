@@ -533,10 +533,10 @@ namespace SmartStore.Web.Controllers
 
             var model = new FaviconModel
             {
-                FavIcon = mediaService.GetFileById(store.FavIconMediaFileId, MediaLoadFlags.AsNoTracking),
-                PngIcon = mediaService.GetFileById(store.PngIconMediaFileId, MediaLoadFlags.AsNoTracking),
-                AppleTouchIcon = mediaService.GetFileById(store.AppleTouchIconMediaFileId, MediaLoadFlags.AsNoTracking),
-                MsTileIcon = mediaService.GetFileById(store.MsTileImageMediaFileId, MediaLoadFlags.AsNoTracking),
+                FavIcon = mediaService.GetFileById(Convert.ToInt32(store.FavIconMediaFileId), MediaLoadFlags.AsNoTracking),
+                PngIcon = mediaService.GetFileById(Convert.ToInt32(store.PngIconMediaFileId), MediaLoadFlags.AsNoTracking),
+                AppleTouchIcon = mediaService.GetFileById(Convert.ToInt32(store.AppleTouchIconMediaFileId), MediaLoadFlags.AsNoTracking),
+                MsTileIcon = mediaService.GetFileById(Convert.ToInt32(store.MsTileImageMediaFileId), MediaLoadFlags.AsNoTracking),
                 MsTileColor = store.MsTileColor
             };
 
@@ -648,7 +648,7 @@ namespace SmartStore.Web.Controllers
                 return new EmptyResult();
 
             var mediaService = _mediaService.Value;
-            var msTileImage = mediaService.GetFileById(store.MsTileImageMediaFileId, MediaLoadFlags.AsNoTracking);
+            var msTileImage = mediaService.GetFileById(Convert.ToInt32(store.MsTileImageMediaFileId), MediaLoadFlags.AsNoTracking);
             if (msTileImage == null)
                 return new EmptyResult();
 

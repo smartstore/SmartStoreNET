@@ -8,10 +8,10 @@
     {
         public override void Up()
         {
-            AddColumn("dbo.Store", "FavIconMediaFileId", c => c.Int(nullable: false));
-            AddColumn("dbo.Store", "PngIconMediaFileId", c => c.Int(nullable: false));
-            AddColumn("dbo.Store", "AppleTouchIconMediaFileId", c => c.Int(nullable: false));
-            AddColumn("dbo.Store", "MsTileImageMediaFileId", c => c.Int(nullable: false));
+            AddColumn("dbo.Store", "FavIconMediaFileId", c => c.Int());
+            AddColumn("dbo.Store", "PngIconMediaFileId", c => c.Int());
+            AddColumn("dbo.Store", "AppleTouchIconMediaFileId", c => c.Int());
+            AddColumn("dbo.Store", "MsTileImageMediaFileId", c => c.Int());
             AddColumn("dbo.Store", "MsTileColor", c => c.String());
         }
 

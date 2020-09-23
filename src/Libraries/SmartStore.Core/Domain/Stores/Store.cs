@@ -55,33 +55,31 @@ namespace SmartStore.Core.Domain.Stores
         /// Gets or sets the png icon media file id 
         /// </summary>
         [DataMember]
-        public int FavIconMediaFileId { get; set; }
+        public int? FavIconMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the png icon media file id 
         /// </summary>
         [DataMember]
-        public int PngIconMediaFileId { get; set; }
+        public int? PngIconMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the apple touch icon media file id
         /// </summary>
         [DataMember]
-        public int AppleTouchIconMediaFileId { get; set; }
+        public int? AppleTouchIconMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the ms tile image media file id
         /// </summary>
         [DataMember]
-        public int MsTileImageMediaFileId { get; set; }
+        public int? MsTileImageMediaFileId { get; set; }
 
         /// <summary>
         /// Gets or sets the ms tile color
         /// </summary>
         [DataMember]
         public string MsTileColor { get; set; }
-
-
 
         /// <summary>
         /// Gets or sets the display order

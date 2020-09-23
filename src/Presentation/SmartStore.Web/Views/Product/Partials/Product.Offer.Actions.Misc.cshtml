@@ -60,7 +60,7 @@
                 else if(key == "ask")
                 {
                     <a class="pd-action-link @(action.CssClass) action-ask-question" href="javascript:void(0)"
-                       data-href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })"
+                       data-href="@Url.Action("AskQuestionAjax", "Product", new { id = Model.Id })"
                        data-form-selector="#pd-form" rel="nofollow" title="@action.Tooltip">
                         <i class="pd-action-icon @action.IconCssClass"></i>
                         @if (actions.Count < 7)

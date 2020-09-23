@@ -1,7 +1,7 @@
 ﻿@model ProductAskQuestionModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    //Layout = "_Layout";
+    Layout = "_Layout";
     Html.AddTitleParts(Model.ProductName);
     var title = Model.IsQuoteRequest ? T("Products.AskQuestion.TitleQuoteRequest") : T("Products.AskQuestion.Title");
     Html.AddTitleParts(title.Text);

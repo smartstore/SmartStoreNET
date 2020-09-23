@@ -2,7 +2,7 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
-	<Subject>{{ Store.Name }} - {% if Message.IsQuoteRequest %}Preisanfrage für {% else %} Frage zu {% endif %}'{{ Product.Name | Truncate:30 }}' von {{ Message.SenderName }}</Subject>
+	<Subject>{{ Store.Name }} - {% if Message.IsQuoteRequest %} Preisanfrage für {% else %} Frage zu {% endif %}'{{ Product.Name | Truncate:30 }}' von {{ Message.SenderName }}</Subject>
 	<ModelTypes>Customer, Product</ModelTypes>
 	<Body>
 	  <![CDATA[{% extends 'master' %}

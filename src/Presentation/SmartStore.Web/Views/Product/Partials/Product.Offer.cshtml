@@ -78,19 +78,23 @@
 
 <script>
     // Ask question
-    $('.action-ask-question').on('click', function (e) {
+    $(document).on('click', '.action-ask-question', function (e) {
+		console.log("hier");
+
         e.preventDefault();
         const el = $(this);
-        const form = el.data('form-selector');
-        if (form) {
-            const href = el.data('href') || el.attr('href');
-            const data = $(form).serialize();
+		const form = el.data('form-selector');
+		console.log(form);
+		if (form) {  
+			const href = el.data('href');
             $.ajax({
             cache: false,
                 url: href,
-                data: data,
-				success: function (result) {
-					//$('#content-wrapper').html(result);
+                data: $(form).serialize(),
+				success: function (response) {
+					// Redirect to ask question get action
+					if (response.redirect)
+						location.href = response.redirect;
 				}
             });
         }

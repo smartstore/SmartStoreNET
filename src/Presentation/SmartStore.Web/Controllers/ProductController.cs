@@ -858,31 +858,62 @@ namespace SmartStore.Web.Controllers
 
         #region Ask product question
 
+        public ActionResult AskQuestionAjax(int id, ProductVariantQuery query)
+        {
+            // Get attributeXml from product variant query
+            var attributesXml = "";
+            if (query != null)
+            {
+                var attributes = _productAttributeService.GetProductVariantAttributesByProductId(id);
+                var warnings = new List<string>();
+                attributesXml = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
+                   _localizationService, _downloadService, _catalogSettings, null, warnings);
+            }
+
+            // Save attributeXml with product id in TempData
+            if (id > 0 && attributesXml.HasValue())
+            {
+                TempData["AskQuestionAttributesXml"] = (id, attributesXml);
+            }
+
+            return new JsonResult
+            {
+                Data = new { redirect = Url.Action("AskQuestion", new { id }) },
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
+
         [GdprConsent]
-        public ActionResult AskQuestion(int id, ProductVariantQuery query)
+        public ActionResult AskQuestion(int id)
         {
             var product = _productService.GetProductById(id);
             if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
                 return HttpNotFound();
 
-            var attributesXML = "";
-            if (query != null)
+            // Try to get value of AskQuestionAttributesXml as productId and attributeXml
+            var (productId, attributesXml) = (0, "");
+            if (TempData.TryGetValue("AskQuestionAttributesXml", out var obj))
             {
-                var attributes = _productAttributeService.GetProductVariantAttributesByProductId(id);
-                var warnings = new List<string>();
-                var x = Request.Form;
-                attributesXML = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
-                   _localizationService, _downloadService, _catalogSettings, null, warnings);
+                try
+                {
+                    (productId, attributesXml) = ((int, string))obj;
+                }
+                catch (Exception e) { }
             }
 
-            var attributeInfo = _productAttributeFormatter.FormatAttributes(
+            // Check if saved attributeXml belongs to product id
+            var attributeInfo = "";
+            if (attributesXml.HasValue() && productId == id)
+            {
+                attributeInfo = _productAttributeFormatter.FormatAttributes(
                           product,
-                          attributesXML,
+                          attributesXml,
                           null,
                           separator: ", ",
                           renderPrices: false,
                           renderGiftCardAttributes: false,
                           allowHyperlinks: false);
+            }
 
             var customer = _services.WorkContext.CurrentCustomer;
             var model = new ProductAskQuestionModel
@@ -896,7 +927,7 @@ namespace SmartStore.Web.Controllers
                 SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnAskQuestionPage,
                 SelectedAttributes = attributeInfo,
-                ProductUrl = _productUrlHelper.GetProductUrl(id, product.GetSeName(), attributesXML),
+                ProductUrl = _productUrlHelper.GetProductUrl(id, product.GetSeName(), attributesXml),
                 IsQuoteRequest = product.CallForPrice
             };
 
@@ -906,11 +937,7 @@ namespace SmartStore.Web.Controllers
 
             model.Question = questionTitle.Text.FormatCurrentUI(model.ProductName);
 
-            return new JsonResult 
-            { 
-                Data = this.RenderPartialViewToString("AskQuestion", model),
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet 
-            };
+            return View(model);
         }
 
         [HttpPost, ActionName("AskQuestion")]

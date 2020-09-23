@@ -702,8 +702,8 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.ReturnRequestActions = orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, languageId, store?.Id, false, false);
-                locale.ReturnRequestReasons = orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, languageId, store?.Id, false, false);
+                locale.ReturnRequestActions = orderSettings.GetLocalizedSetting(x => x.ReturnRequestActions, languageId, storeScope, false, false);
+                locale.ReturnRequestReasons = orderSettings.GetLocalizedSetting(x => x.ReturnRequestReasons, languageId, storeScope, false, false);
             });
 
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();

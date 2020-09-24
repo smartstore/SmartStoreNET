@@ -55,10 +55,18 @@
         if (this.options.toggle) {
             this.toggle();
         }
-
-        // Close offcanvas menu/cart on back button
+                
         $(window).on('popstate', function (event) {
-            self.hide();
+            if (event.originalEvent.state) {
+                if (event.originalEvent.state.offcanvasHide) {
+                    // Hide offcanvas menu/cart when back button is pressed
+                    self.hide();
+                }
+                else if (event.originalEvent.state.offcanvasShow) {
+                    // Show offcanvas menu/cart when forward button is pressed
+                    self.show();
+                }                
+            }
         });
 
         // Set up events to properly handle (touch) gestures
@@ -226,8 +234,12 @@
             self.state = 'slid';
             self.el.trigger('shown.sm.offcanvas');
         });
-
-        history.pushState({ 'offcanvas': true }, "offcanvas", "");
+        
+        // Add history states for offcanvas browser navigation button handling (back / forward)
+        if (!history.state || !history.state.offcanvasShow) {
+            history.replaceState({ offcanvasHide: true }, "offcanvas");
+            history.pushState({ offcanvasShow: true }, "offcanvas");
+        }
     };
 
     OffCanvas.prototype.hide = function (fn) {
@@ -255,7 +267,9 @@
             self.el.trigger('hidden.sm.offcanvas');
         });
 
-        if (history.state && history.state.offcanvas) {
+        // If current state is offcanvasShow, pop current history backwards, 
+        // so that the history state (offcanvasHide) matches with offcanvas display (hide)
+        if (history.state && history.state.offcanvasShow) {
             history.back();
         }
     };

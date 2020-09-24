@@ -861,19 +861,17 @@ namespace SmartStore.Web.Controllers
         public ActionResult AskQuestionAjax(int id, ProductVariantQuery query)
         {
             // Get attributeXml from product variant query
-            var attributesXml = "";
-            if (query != null)
+            if (query != null && id > 0)
             {
                 var attributes = _productAttributeService.GetProductVariantAttributesByProductId(id);
                 var warnings = new List<string>();
-                attributesXml = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
+                var attributesXml = query.CreateSelectedAttributesXml(id, 0, attributes, _productAttributeParser,
                    _localizationService, _downloadService, _catalogSettings, null, warnings);
-            }
 
-            // Save attributeXml with product id in TempData
-            if (id > 0 && attributesXml.HasValue())
-            {
-                TempData["AskQuestionAttributesXml"] = (id, attributesXml);
+                if (attributesXml.HasValue())
+                {
+                    TempData.Add("AskQuestionAttributesXml-" + id, attributesXml);
+                }
             }
 
             return new JsonResult
@@ -890,29 +888,24 @@ namespace SmartStore.Web.Controllers
             if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
                 return HttpNotFound();
 
-            // Try to get value of AskQuestionAttributesXml as productId and attributeXml
-            var (productId, attributesXml) = (0, "");
-            if (TempData.TryGetValue("AskQuestionAttributesXml", out var obj))
+            var attributesXml = "";
+            if (TempData.TryGetValue("AskQuestionAttributesXml-" + id, out var obj))
             {
-                try
-                {
-                    (productId, attributesXml) = ((int, string))obj;
-                }
-                catch (Exception e) { }
+                attributesXml = obj as string;
             }
 
-            // Check if saved attributeXml belongs to product id
+            // Check if saved attributeXml belongs to current product id
             var attributeInfo = "";
-            if (attributesXml.HasValue() && productId == id)
+            if (attributesXml.HasValue())
             {
                 attributeInfo = _productAttributeFormatter.FormatAttributes(
-                          product,
-                          attributesXml,
-                          null,
-                          separator: ", ",
-                          renderPrices: false,
-                          renderGiftCardAttributes: false,
-                          allowHyperlinks: false);
+                            product,
+                            attributesXml,
+                            null,
+                            separator: ", ",
+                            renderPrices: false,
+                            renderGiftCardAttributes: false,
+                            allowHyperlinks: false);
             }
 
             var customer = _services.WorkContext.CurrentCustomer;

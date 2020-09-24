@@ -118,7 +118,7 @@ namespace SmartStore.Services.Tests.Directory
             _measureService = new MeasureService(
                 _measureDimensionRepository,
                 _measureWeightRepository,
-                _measureSettings, _eventPublisher);
+                _measureSettings);
         }
 
         [Test]

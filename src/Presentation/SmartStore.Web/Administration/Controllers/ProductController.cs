@@ -3350,7 +3350,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     Id = file.Id,
                     IsAssigned = model.AssignedPictureIds.Contains(file.Id),
-                    PictureUrl = _mediaService.GetUrl(file, MediaSettings.ThumbnailSizeSm, null, false)
+                    Media = _mediaService.ConvertMediaFile(file)
                 });
             }
         }

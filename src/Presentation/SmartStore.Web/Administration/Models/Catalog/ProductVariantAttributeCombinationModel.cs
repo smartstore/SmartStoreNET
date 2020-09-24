@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -85,8 +86,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         public class PictureSelectItemModel : EntityModelBase
         {
-            public string PictureUrl { get; set; }
             public bool IsAssigned { get; set; }
+
+            public MediaFileInfo Media { get; set; }
         }
 
         public class ProductVariantAttributeModel : EntityModelBase

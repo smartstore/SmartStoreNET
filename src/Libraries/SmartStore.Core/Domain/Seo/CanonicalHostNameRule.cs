@@ -1,6 +1,5 @@
 ﻿namespace SmartStore.Core.Domain.Seo
 {
-
     public enum CanonicalHostNameRule
     {
         /// <summary>
@@ -16,5 +15,4 @@
         /// </summary>
         OmitWww
     }
-
 }

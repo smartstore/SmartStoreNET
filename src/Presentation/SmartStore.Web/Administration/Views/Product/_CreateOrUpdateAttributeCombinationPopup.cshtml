@@ -55,7 +55,7 @@
                 <ul class="choice-box-group choice-box-group-xl mb-1" id="assigned-pictures">
                     @foreach (var x in Model.AssignablePictures)
                     {
-                        <li class="choice-box">
+                        <li class="choice-box choice-box-mediafile">
                             <label class="choice-box-label">
                                 <input type="checkbox" class="choice-box-control-native" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned)>
                                 <span class="choice-box-content">
@@ -191,7 +191,7 @@
 
         container.find('select').selectWrapper();
 
-        SmartStore.media.lazyLoadThumbnails($(".choice-box"));
+        SmartStore.media.lazyLoadThumbnails($("#assigned-pictures"));
 
 		container.change(function() {
 			note.empty();

@@ -137,6 +137,15 @@
         }
 	}
 
+    .choice-box-mediafile .choice-box-content {
+        max-width: $choice-box-size-xl !important;
+
+        .file-img {
+            object-fit: contain;
+            max-width: 100%
+        }
+    }
+
 	.choice-box-control-native:checked + .choice-box-content {
         .choice-box-element {
             border-color: rgba(0,0,0, 0.7);

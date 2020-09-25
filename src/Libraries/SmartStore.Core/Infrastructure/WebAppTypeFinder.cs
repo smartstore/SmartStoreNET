@@ -16,14 +16,12 @@ namespace SmartStore.Core.Infrastructure
     /// </summary>
     public class WebAppTypeFinder : AppDomainTypeFinder
     {
-        private bool _ensureBinFolderAssembliesLoaded;
-
         private readonly Lazy<IEnumerable<Assembly>> _allAssembliesResolver;
         private readonly Lazy<IEnumerable<Assembly>> _activeAssembliesResolver;
 
         public WebAppTypeFinder()
         {
-            _ensureBinFolderAssembliesLoaded = CommonHelper.GetAppSetting<bool>("sm:EnableDynamicDiscovery", true);
+            EnsureBinFolderAssembliesLoaded = CommonHelper.GetAppSetting<bool>("sm:EnableDynamicDiscovery", true);
             _allAssembliesResolver = new Lazy<IEnumerable<Assembly>>(() => this.GetAssembliesInternal(false));
             _activeAssembliesResolver = new Lazy<IEnumerable<Assembly>>(() => this.GetAssembliesInternal(true));
         }
@@ -32,11 +30,7 @@ namespace SmartStore.Core.Infrastructure
         /// Gets or sets wether assemblies in the bin folder of the web application should be explicitly checked for being loaded on application load. 
         /// This is needed in situations where plugins need to be loaded into the AppDomain after the application has been reloaded.
         /// </summary>
-        public bool EnsureBinFolderAssembliesLoaded
-        {
-            get => _ensureBinFolderAssembliesLoaded;
-            set => _ensureBinFolderAssembliesLoaded = value;
-        }
+        public bool EnsureBinFolderAssembliesLoaded { get; set; }
 
         /// <summary>
         /// Gets a physical disk path of \Bin directory

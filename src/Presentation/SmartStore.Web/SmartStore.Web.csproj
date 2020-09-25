@@ -1887,6 +1887,7 @@
     <Content Include="Views\Shared\Partials\PhotoSwipe.cshtml" />
     <Content Include="Views\Product\Partials\Product.Media.cshtml" />
     <Content Include="Views\Shared\Partials\MediaGallery.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Layout.Off.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

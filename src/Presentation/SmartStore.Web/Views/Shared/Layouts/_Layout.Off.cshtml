@@ -1,0 +1,57 @@
+﻿@{
+	Layout = "_Document";
+
+	Html.RenderWidget("body_start_html_tag_after");
+
+	Html.AddBodyCssClass("lyt-cols-1");
+
+	if (GetThemeVariable<bool>("boxed"))
+	{
+		Html.AddBodyCssClass("boxed");
+	}
+}
+
+<div id="page">
+    <div class="page-main">
+        <header id="header">        
+            <div class="container text-center p-5">
+				@{
+					Html.RenderAction("Logo", "Common", new { area = "" });
+				}
+            </div>
+		</header>
+        
+        <div id="content-wrapper">
+			@{ 
+				Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+				Html.RenderWidget("content_before");
+			}
+            <section id="content" class="container">
+                <div id="content-body" class="row">
+					<div id="content-center" class="col-12 text-center">
+						@{ 
+							Html.RenderWidget("main_column_before");
+							@RenderBody();
+							Html.RenderWidget("main_column_after");
+						}
+					</div>
+
+                    @{ Html.RenderWidget("content_after"); }
+                </div>
+            </section>
+        </div>
+
+		@{ Html.RenderWidget("footer_before"); }
+
+		<footer id="footer" class="p-5 text-center @(GetThemeVariable<bool>("inverse-footer") ? "footer-inverse" : "footer-light")">
+			@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), CommonServices.StoreContext.CurrentStore.Name)
+		</footer>
+
+		@{ Html.RenderZone("page-end"); }
+    </div>
+</div>
+
+@{ Html.RenderPartial("_Notifications"); } 
+@{ Html.RenderWidget("body_end_html_tag_before"); }
+
+

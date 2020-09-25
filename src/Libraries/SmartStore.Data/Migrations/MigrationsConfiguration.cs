@@ -7,6 +7,7 @@
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Configuration;
     using SmartStore.Core.Domain.Media;
+    using SmartStore.Core.Domain.Seo;
     using SmartStore.Utilities;
 
     public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
@@ -46,9 +47,11 @@
 
         public void MigrateSettings(SmartObjectContext context)
         {
+            var settings = context.Set<Setting>();
+
             // Add .ico extension to MediaSettings.ImageTypes
             var name = TypeHelper.NameOf<MediaSettings>(y => y.ImageTypes, true);
-            var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == name);
+            var setting = settings.FirstOrDefault(x => x.Name == name);
             if (setting != null)
             {
                 var arr = setting.Value.EmptyNull()
@@ -61,6 +64,24 @@
                     setting.Value += " ico";
                 }
             }
+
+            // Migrate old 'defaultSeoSettings' into new SeoSettings
+            // Old settings.
+            var defaultTitle = settings.FirstOrDefault(x => x.Name == "SeoSettings.DefaultTitle");
+            var defaultMetaKeywords = settings.FirstOrDefault(x => x.Name == "SeoSettings.DefaultMetaKeywords");
+            var defaultMetaDescription = settings.FirstOrDefault(x => x.Name == "SeoSettings.DefaultMetaDescription");
+
+            // New settings.
+            context.MigrateSettings(x =>
+            {
+                x.Add(TypeHelper.NameOf<SeoSettings>(y => y.MetaTitle, true), defaultTitle != null && defaultTitle.Value.HasValue() ? defaultTitle.Value : "");
+                x.Add(TypeHelper.NameOf<SeoSettings>(y => y.MetaDescription, true), defaultMetaDescription != null && defaultMetaDescription.Value.HasValue() ? defaultMetaDescription.Value : "");
+                x.Add(TypeHelper.NameOf<SeoSettings>(y => y.MetaKeywords, true), defaultMetaKeywords != null && defaultMetaKeywords.Value.HasValue() ? defaultMetaKeywords.Value : "");
+            });
+
+            if (defaultTitle != null) settings.Remove(defaultTitle);
+            if (defaultMetaDescription != null) settings.Remove(defaultMetaDescription);
+            if (defaultMetaKeywords != null) settings.Remove(defaultMetaKeywords);
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

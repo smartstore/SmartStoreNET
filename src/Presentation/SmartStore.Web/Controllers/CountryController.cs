@@ -41,11 +41,13 @@ namespace SmartStore.Web.Controllers
 
         #region States / provinces
 
+        /// <summary>
+        /// This action method gets called via an ajax request.
+        /// </summary>
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult GetStatesByCountryId(string countryId, bool addEmptyStateIfRequired)
         {
-            //this action method gets called via an ajax request
-            if (String.IsNullOrEmpty(countryId))
+            if (!countryId.HasValue())
                 throw new ArgumentNullException("countryId");
 
             string cacheKey = string.Format(ModelCacheEventConsumer.STATEPROVINCES_BY_COUNTRY_MODEL_KEY, countryId, addEmptyStateIfRequired, _workContext.WorkingLanguage.Id);
@@ -59,8 +61,8 @@ namespace SmartStore.Web.Controllers
 
                 if (addEmptyStateIfRequired && result.Count == 0)
                     result.Insert(0, new { id = 0, name = _localizationService.GetResource("Address.OtherNonUS") });
-                return result;
 
+                return result;
             });
 
             return Json(cacheModel, JsonRequestBehavior.AllowGet);

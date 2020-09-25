@@ -567,6 +567,12 @@
                 "Accumulates the value, multiplied by the index of the element, to the total delay.",
                 "Akkumuliert den Wert, multipliziert mit dem Index des Elements, zur Gesamtverzögerung.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StateProvinceRequired",
+                "'State/province' required",
+                "'Bundesland' erferderlich",
+                "Check the box if 'State/province' is required.",
+                "Legt fest, ob Angaben im Eingabefeld 'Adressszusatz' erforderlich sind.");
+            
             #region Media
 
             var mediaRoot = "Admin.Configuration.Settings.Media.";

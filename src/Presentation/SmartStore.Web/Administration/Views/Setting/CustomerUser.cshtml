@@ -439,8 +439,18 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StateProvinceEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceEnabled)
+                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.StateProvinceEnabled, new { data_toggler_for = "#pnlStateProvinceRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StateProvinceEnabled)
+            </td>
+        </tr>
+        <tr id="pnlStateProvinceRequired">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.StateProvinceRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceRequired)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.StateProvinceRequired)
             </td>
         </tr>
         <tr>

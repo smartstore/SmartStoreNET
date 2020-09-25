@@ -644,6 +644,7 @@
             var el = $(this);
             var selectedItem = el.val();
             var ddlStates = $(el.data("region-control-selector"));
+
             var ajaxUrl = el.data("states-ajax-url");
             var addEmptyStateIfRequired = el.data("addemptystateifrequired");
             var addAsterisk = el.data("addasterisk");
@@ -661,6 +662,7 @@
                     $.each(data, function (id, option) {
                         ddlStates.append($('<option></option>').val(option.id).html(option.name));
                     });
+                    ddlStates.val("");
                     ddlStates.trigger("change");
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

@@ -27,6 +27,7 @@ namespace SmartStore.Web.Models.Customer
         public string Email { get; set; }
 
         public bool UsernamesEnabled { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Username")]
         public string Username { get; set; }
 
@@ -42,6 +43,7 @@ namespace SmartStore.Web.Models.Customer
 
         // Form fields & properties.
         public bool GenderEnabled { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
@@ -73,47 +75,58 @@ namespace SmartStore.Web.Models.Customer
 
         public bool StreetAddressEnabled { get; set; }
         public bool StreetAddressRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.StreetAddress")]
         public string StreetAddress { get; set; }
 
         public bool StreetAddress2Enabled { get; set; }
         public bool StreetAddress2Required { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.StreetAddress2")]
         public string StreetAddress2 { get; set; }
 
         public bool ZipPostalCodeEnabled { get; set; }
         public bool ZipPostalCodeRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.ZipPostalCode")]
         public string ZipPostalCode { get; set; }
 
         public bool CityEnabled { get; set; }
         public bool CityRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.City")]
         public string City { get; set; }
 
         public bool CountryEnabled { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Country")]
         public int CountryId { get; set; }
         public IList<SelectListItem> AvailableCountries { get; set; }
 
         public bool StateProvinceEnabled { get; set; }
+
+        public bool StateProvinceRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.StateProvince")]
-        public int StateProvinceId { get; set; }
+        public int? StateProvinceId { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
 
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Phone")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Fax")]
         [DataType(DataType.PhoneNumber)]
         public string Fax { get; set; }
 
         public bool NewsletterEnabled { get; set; }
+
         [SmartResourceDisplayName("Account.Fields.Newsletter")]
         public bool Newsletter { get; set; }
 
@@ -173,6 +186,13 @@ namespace SmartStore.Web.Models.Customer
             if (customerSettings.CityRequired && customerSettings.CityEnabled)
             {
                 RuleFor(x => x.City).NotEmpty();
+            }
+            if (customerSettings.StateProvinceRequired && customerSettings.StateProvinceEnabled && customerSettings.CountryEnabled)
+            {
+                RuleFor(x => x.StateProvinceId)
+                    .NotNull()
+                    .NotEqual(0)
+                    .WithMessage(T("Address.Fields.StateProvince.Required"));
             }
             if (customerSettings.PhoneRequired && customerSettings.PhoneEnabled)
             {

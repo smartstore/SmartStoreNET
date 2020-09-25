@@ -110,26 +110,31 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CompanyEnabled")]
             public bool CompanyEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CompanyRequired")]
             public bool CompanyRequired { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled")]
             public bool StreetAddressEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddressRequired")]
             public bool StreetAddressRequired { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled")]
             public bool StreetAddress2Enabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddress2Required")]
             public bool StreetAddress2Required { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeEnabled")]
             public bool ZipPostalCodeEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired")]
             public bool ZipPostalCodeRequired { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CityEnabled")]
             public bool CityEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CityRequired")]
             public bool CityRequired { get; set; }
 
@@ -138,6 +143,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled")]
             public bool StateProvinceEnabled { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceRequired")]
+            public bool StateProvinceRequired { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneEnabled")]
             public bool PhoneEnabled { get; set; }

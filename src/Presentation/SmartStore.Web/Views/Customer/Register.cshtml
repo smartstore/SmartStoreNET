@@ -189,9 +189,10 @@
 						@if (Model.CountryEnabled && Model.StateProvinceEnabled)
 						{
 							<div class="form-group row">
-								@Html.LabelFor(model => model.StateProvinceId, new { @class = "col-md-3 col-form-label", @for = "StateProvinceId" })
+								@Html.LabelFor(model => model.StateProvinceId, new { @class = "col-md-3 col-form-label"  + (Model.StateProvinceRequired ? " required" : ""), @for = "StateProvinceId" })
 								<div class="col-md-9">
-									@Html.DropDownList("StateProvinceId", Model.AvailableStates, new { @class = "form-control remember" })
+									@Html.DropDownList("StateProvinceId", Model.AvailableStates, T("Common.PleaseSelect"), new { @class = "form-control remember" })
+									@Html.ValidationMessageFor(model => model.StateProvinceId)
 								</div>
 							</div>
 						}
@@ -271,6 +272,10 @@
 <script>
 	$(function () {
         setRememberedFormFields("registerVals");
+
+		_.delay(function () {
+			$(".country-selector").trigger("change");
+		}, 50);
     });
 
     const form = document.getElementById('register-form');

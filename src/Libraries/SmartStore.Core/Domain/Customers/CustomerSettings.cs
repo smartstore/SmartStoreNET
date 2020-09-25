@@ -249,6 +249,11 @@ namespace SmartStore.Core.Domain.Customers
         public bool StateProvinceEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether 'StateProvince' is required
+        /// </summary>
+        public bool StateProvinceRequired { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether 'Phone number' is enabled
         /// </summary>
         public bool PhoneEnabled { get; set; }

@@ -771,6 +771,7 @@ namespace SmartStore.Web.Controllers
                         ProductId = attribute.ProductId,
                         BundleItemId = bundleItemId,
                         ProductAttributeId = attribute.ProductAttributeId,
+                        ProductAttribute = attribute,
                         Alias = attribute.ProductAttribute.Alias,
                         Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
                         Description = attribute.ProductAttribute.GetLocalized(x => x.Description),
@@ -852,6 +853,7 @@ namespace SmartStore.Web.Controllers
                         var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel
                         {
                             Id = pvaValue.Id,
+                            ProductAttributeValue = pvaValue,
                             PriceAdjustment = string.Empty,
                             Name = pvaValue.GetLocalized(x => x.Name),
                             Alias = pvaValue.Alias,
@@ -913,8 +915,8 @@ namespace SmartStore.Web.Controllers
                         pvaModel.Values.Add(pvaValueModel);
                     }
 
-                    // We need selected attributes to get initially displayed combination images.
-                    if (!hasSelectedAttributes && query.VariantCombinationId == 0)
+                    // We need selected attributes for initially displayed combination images and multiple selected checkbox values.
+                    if (query.VariantCombinationId == 0)
                     {
                         ProductDetailsModel.ProductVariantAttributeValueModel defaultValue = null;
 
@@ -1014,6 +1016,7 @@ namespace SmartStore.Web.Controllers
                         model.StockAvailability = T("Products.Availability.IsNotActive");
                     }
 
+                    // Required for later product.IsAvailableByStock().
                     product.MergeWithCombination(model.SelectedCombination);
 
                     // Explicitly selected values always discards values pre-selected by merchant.
@@ -1023,7 +1026,7 @@ namespace SmartStore.Web.Controllers
                     {
                         var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
 
-                        foreach (var value in attribute.Values)
+                        foreach (ProductDetailsModel.ProductVariantAttributeValueModel value in attribute.Values)
                         {
                             if (updatePreSelection)
                             {
@@ -1034,6 +1037,11 @@ namespace SmartStore.Web.Controllers
                             {
                                 value.PriceAdjustment = string.Empty;
                             }
+
+                            var isCombinationAvailable = _productAttributeParser.IsCombinationAvailable(product, value.ProductAttributeValue, selectedAttributeValues);
+                            value.IsDisabled = !isCombinationAvailable;
+                            // TODO: add title attribute for disabled options.
+                            // TODO: missing UI disabled indication for choice-box.
                         }
                     }
                 }

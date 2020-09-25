@@ -92,6 +92,11 @@ namespace SmartStore.Services.Catalog
         /// <returns>Found product variant attribute combination</returns>
         ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
+        bool IsCombinationAvailable(
+            Product product,
+            ProductVariantAttributeValue value,
+            IEnumerable<ProductVariantAttributeValue> selectedValues);
+
         #endregion
 
         #region Gift card attributes

@@ -26,7 +26,18 @@ namespace SmartStore.Services.Catalog.Modelling
 
         public void AddVariant(ProductVariantQueryItem item)
         {
-            _variants.Add(item);
+            var exists = _variants.Any(x =>
+                x.ProductId == item.ProductId &&
+                x.BundleItemId == item.BundleItemId &&
+                x.AttributeId == item.AttributeId &&
+                x.VariantAttributeId == item.VariantAttributeId &&
+                x.Value == item.Value
+            );
+
+            if (!exists)
+            {
+                _variants.Add(item);
+            }
         }
 
         public void AddGiftCard(GiftCardQueryItem item)

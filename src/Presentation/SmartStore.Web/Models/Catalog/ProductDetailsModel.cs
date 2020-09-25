@@ -233,6 +233,7 @@ namespace SmartStore.Web.Models.Catalog
             public int ProductId { get; set; }
             public int BundleItemId { get; set; }
             public int ProductAttributeId { get; set; }
+            public ProductVariantAttribute ProductAttribute { get; set; }
 
             public override string BuildControlId()
             {
@@ -247,6 +248,8 @@ namespace SmartStore.Web.Models.Catalog
 
         public partial class ProductVariantAttributeValueModel : ChoiceItemModel
         {
+            public ProductVariantAttributeValue ProductAttributeValue { get; set; }
+
             public override string GetItemLabel()
             {
                 var label = Name;

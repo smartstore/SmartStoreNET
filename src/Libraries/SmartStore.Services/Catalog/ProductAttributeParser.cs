@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using SmartStore.Collections;
@@ -9,6 +8,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Services.Catalog
 {
@@ -379,6 +379,101 @@ namespace SmartStore.Services.Catalog
 
                 return null;
             });
+
+            return result;
+        }
+
+        public virtual bool IsCombinationAvailable(
+            Product product,
+            ProductVariantAttributeValue value,
+            IEnumerable<ProductVariantAttributeValue> selectedValues)
+        {
+            // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
+            // and not necessarily required for an order.
+            if (product == null || value == null || !(selectedValues?.Any() ?? false))
+            {
+                return true;
+            }
+
+            // TODO: caching, limit according to number of combinations.
+
+            // Get all unavailable combinations.
+            var unavailableCombinations = new HashSet<string>();
+            var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
+            if (!allCombinations.Any())
+            {
+                return true;
+            }
+
+            foreach (var combination in allCombinations)
+            {
+                var isAvailable = combination.IsActive;
+                if (isAvailable && product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+                {
+                    isAvailable = combination.StockQuantity > 0 || combination.AllowOutOfStockOrders;
+                }
+
+                if (!isAvailable)
+                {
+                    var map = DeserializeProductVariantAttributes(combination.AttributesXml);
+                    if (map.Any())
+                    {
+                        // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
+                        var valuesKey = map
+                            .OrderBy(x => x.Key)
+                            .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
+
+                        unavailableCombinations.Add(string.Join("-", valuesKey));
+                    }
+                }
+            }
+
+            if (!unavailableCombinations.Any())
+            {
+                return true;
+            }
+
+            // Create key for the attribute value to be checked.
+            var psb = PooledStringBuilder.Rent();
+            var selectedValuesMap = selectedValues.ToMultimap(x => x.ProductVariantAttributeId, x => x);
+
+            foreach (var item in selectedValuesMap.OrderBy(x => x.Key))
+            {
+                IEnumerable<int> valueIds;
+
+                // Always take the value of the attribute to be checked. For all other attributes take the currently selected value.
+                if (item.Key == value.ProductVariantAttributeId)
+                {
+                    if (value.ProductVariantAttribute.AttributeControlType == AttributeControlType.Checkboxes)
+                    {
+                        // Selection of multiple values supported.
+                        valueIds = item.Value
+                            .Select(x => x.Id)
+                            .Append(value.Id)
+                            .Distinct();
+                    }
+                    else
+                    {
+                        valueIds = new[] { value.Id };
+                    }
+                }
+                else
+                {
+                    valueIds = item.Value.Select(x => x.Id);
+                }
+
+                var valueIdsStr = string.Join(",", valueIds.OrderBy(x => x));
+
+                if (psb.Length > 0)
+                {
+                    psb.Append("-");
+                }
+                psb.Append($"{item.Key}:{valueIdsStr}");
+            }
+
+            var key = psb.ToStringAndReturn();
+            var result = !unavailableCombinations.Contains(key);
+            //$"{result, -5} {value.ProductVariantAttributeId}:{value.Id}: {key}".Dump();
 
             return result;
         }

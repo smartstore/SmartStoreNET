@@ -634,6 +634,213 @@
                 mediaRoot + "ProductThumbPictureSizeOnProductDetailsPage.Hint");
 
             #endregion
+
+            #region Customer settings
+
+            builder.Delete("Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled",
+                "Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Enabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Enabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.StreetAddress2Required",
+                "Admin.Configuration.Settings.CustomerUser.StreetAddress2Required.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled.Hint",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations",
+                "Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations.Hint");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.GenderEnabled",
+                "'Gender' enabled",
+                "\"Geschlecht\" aktiv",
+                "Defines whether the input of 'Gender' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Geschlecht\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.TitleEnabled",
+                "'Title' enabled",
+                "\"Titel\" aktiv",
+                "Defines whether the input of 'Title' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Titel\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CompanyEnabled",
+                "'Company' enabled",
+                "\"Firma\" aktiv",
+                "Defines whether the input of 'Company' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Firma\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CompanyRequired",
+                "'Company' required",
+                "\"Firma\" ist erforderlich",
+                "Defines whether the input of 'Company' is required.",
+                "Legt fest, ob die Eingabe von \"Firma\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled",
+                "'Street address' enabled",
+                "\"Straße\" aktiv",
+                "Defines whether the input of 'Street adress' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Straße\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StreetAddressRequired",
+                "'Street address' required",
+                "\"Straße\" ist erforderlich",
+                "Defines whether the input of 'Street adress' is required.",
+                "Legt fest, ob die Eingabe von \"Straße\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled",
+                "'Street address addition' enabled",
+                "\"Adressszusatz\" aktiv",
+                "Defines whether the input of 'street address addition' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Adressszusatz\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StreetAddress2Required",
+                "'Street address addition' required",
+                "\"Adressszusatz\" ist erforderlich",
+                "Defines whether the input of 'street address addition' is required.",
+                "Legt fest, ob die Eingabe von \"Adressszusatz\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeEnabled",
+                "'Zip / postal code' enabled",
+                "\"Postleitzahl\" aktiv",
+                "Defines whether the input of 'Zip / postal code' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Postleitzahl\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired",
+                "'Zip / postal code' required",
+                "\"Postleitzahl\" ist erforderlich",
+                "Defines whether the input of 'Zip / postal code' is required.",
+                "Legt fest, ob die Eingabe von \"Postleitzahl\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CityEnabled",
+                "'City' enabled",
+                "\"Stadt\" aktiv",
+                "Defines whether the input of 'City' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Stadt\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CityRequired",
+                "'City' required",
+                "\"Stadt\" ist erforderlich",
+                "Defines whether the input of 'City' is required.",
+                "Legt fest, ob die Eingabe von \"Stadt\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CountryEnabled",
+                "'Country' enabled",
+                "\"Land\" aktiv",
+                "Defines whether the input of 'Country' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Land\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CountryRequired",
+                "'Country' required",
+                "\"Land\" ist erforderlich",
+                "Defines whether the input of 'Country' is required.",
+                "Legt fest, ob die Eingabe von \"Land\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled",
+                "'State / province' enabled",
+                "\"Bundesland\" aktiv",
+                "Defines whether the input of 'State / province' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Bundesland\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StateProvinceRequired",
+                "'State / province' required",
+                "\"Bundesland\" ist erforderlich",
+                "Defines whether the input of 'State / province' is required.",
+                "Legt fest, ob die Eingabe von \"Bundesland\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.PhoneEnabled",
+                "'Phone number' enabled",
+                "\"Telefon\" aktiv",
+                "Defines whether the input of 'Phone number' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Telefon\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.PhoneRequired",
+                "'Phone number' required",
+                "\"Telefon\" ist erforderlich",
+                "Defines whether the input of 'Phone number' is required.",
+                "Legt fest, ob die Eingabe von \"Telefon\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.FaxEnabled",
+                "'Fax number' enabled",
+                "\"Fax\" aktiv",
+                "Defines whether the input of 'Fax number' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Fax\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.FaxRequired",
+                "'Fax number' required",
+                "\"Fax\" ist erforderlich",
+                "Defines whether the input of 'Fax number' is required.",
+                "Legt fest, ob die Eingabe von \"Fax\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.NewsletterEnabled",
+                "'Newsletter' enabled",
+                "\"Newsletter\" aktiv",
+                "Displays the newsletter registration form.",
+                "Zeigt das Newsletter Anmeldeformular an.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.SalutationEnabled",
+               "'Salutation' enabled",
+                "\"Anrede\" aktiv",
+                "Defines whether the input of 'Salutation' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Anrede\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Salutations",
+                "Salutations",
+                "Anreden",
+                "Comma separated list of salutations (e.g. Mr., Mrs). Define the entries which will populate the dropdown list for salutation when entering addresses.",
+                "Komma getrennte Liste (z.B. Herr, Frau). Bestimmen Sie die Einträge für die Auswahl der Anrede, bei der Adresserfassung.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled",
+                "'Date of birth' enabled",
+                "\"Geburtsdatum\" aktiv",
+                "Defines whether the input of 'Date of birth' is enabled.",
+                "Legt fest, ob das Eingabefeld \"Geburtsdatum\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.LastNameRequired",
+                "'Last name' required",
+                "\"Nachname\" ist erforderlich",
+                "Defines whether the input of 'Last name' is required.",
+                "Legt fest, ob die Eingabe von \"Nachname\" erforderlich ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.FirstNameRequired",
+                "'First name' required",
+                "\"Vorname\" ist erforderlich",
+                "Defines whether the input of 'First name' is required.",
+                "Legt fest, ob die Eingabe von \"Vorname\" erforderlich ist.");
+
+            #endregion Customer settings
         }
     }
 }

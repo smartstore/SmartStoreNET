@@ -179,58 +179,58 @@ namespace SmartStore.Admin.Models.Settings
 
         public partial class AddressSettingsModel
         {
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.SalutationEnabled")]
             public bool SalutationEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Salutations")]
             public string Salutations { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.TitleEnabled")]
             public bool TitleEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CompanyEnabled")]
             public bool CompanyEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CompanyRequired")]
             public bool CompanyRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled")]
             public bool StreetAddressEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddressRequired")]
             public bool StreetAddressRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Enabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled")]
             public bool StreetAddress2Enabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StreetAddress2Required")]
             public bool StreetAddress2Required { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeEnabled")]
             public bool ZipPostalCodeEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired")]
             public bool ZipPostalCodeRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CityEnabled")]
             public bool CityEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CityRequired")]
             public bool CityRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CountryEnabled")]
             public bool CountryEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CountryRequired")]
             public bool CountryRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled")]
             public bool StateProvinceEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceRequired")]
             public bool StateProvinceRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneEnabled")]
             public bool PhoneEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneRequired")]
             public bool PhoneRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.FaxEnabled")]
             public bool FaxEnabled { get; set; }
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.FaxRequired")]
             public bool FaxRequired { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress")]
@@ -284,7 +284,7 @@ namespace SmartStore.Admin.Models.Settings
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Salutations")]
         public string Salutations { get; set; }
     }
 

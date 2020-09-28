@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
@@ -43,6 +44,7 @@ namespace SmartStore.Services.Tests.Catalog
         IProductAttributeFormatter _productAttributeFormatter;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
+        PerformanceSettings _performanceSettings;
 
         ProductAttribute pa1, pa2, pa3;
         ProductVariantAttribute pva1_1, pva2_1, pva3_1;
@@ -174,6 +176,8 @@ namespace SmartStore.Services.Tests.Catalog
             _productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
             _localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
 
+            _performanceSettings = MockRepository.GenerateMock<PerformanceSettings>();
+
             _productAttributeService = new ProductAttributeService(
                 NullRequestCache.Instance,
                 _productAttributeRepo,
@@ -186,7 +190,7 @@ namespace SmartStore.Services.Tests.Catalog
                 _localizedEntityService);
 
             _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(),
-                NullRequestCache.Instance, NullCache.Instance);
+                NullRequestCache.Instance, NullCache.Instance, _performanceSettings);
 
             var workingLanguage = new Language();
             _workContext = MockRepository.GenerateMock<IWorkContext>();

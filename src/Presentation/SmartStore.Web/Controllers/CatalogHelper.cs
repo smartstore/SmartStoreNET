@@ -1053,8 +1053,6 @@ namespace SmartStore.Web.Controllers
                                 {
                                     value.Title = T("Products.Availability.IsNotActive");
                                 }
-
-                                // TODO choice-box: missing title attribute and UI disabled indication.
                             }
                         }
                     }

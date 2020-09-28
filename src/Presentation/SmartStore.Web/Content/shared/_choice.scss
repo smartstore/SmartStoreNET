@@ -81,6 +81,10 @@
         margin: 0;
     }
 
+    .choice-box-disabled {
+        opacity: .5;
+    }
+
 	.choice-box-content {
         position: relative;
 		display: block;

@@ -9,7 +9,9 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
+using SmartStore.Data.Utilities;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Services.Catalog
@@ -25,22 +27,26 @@ namespace SmartStore.Services.Catalog
 
         // 0 = ProductId
         private const string UNAVAILABLE_COMBINATIONS_KEY = "attributecombination:unavailable-{0}";
+        private const string UNAVAILABLE_COMBINATIONS_COUNT_KEY = "attributecombination:unavailable-count-{0}";
 
         private readonly IProductAttributeService _productAttributeService;
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
         private readonly IRequestCache _requestCache;
         private readonly ICacheManager _cache;
+        private readonly PerformanceSettings _performanceSettings;
 
         public ProductAttributeParser(
             IProductAttributeService productAttributeService,
             IRepository<ProductVariantAttributeCombination> pvacRepository,
             IRequestCache requestCache,
-            ICacheManager cache)
+            ICacheManager cache,
+            PerformanceSettings performanceSettings)
         {
             _productAttributeService = productAttributeService;
             _pvacRepository = pvacRepository;
             _requestCache = requestCache;
             _cache = cache;
+            _performanceSettings = performanceSettings;
         }
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -518,39 +524,41 @@ namespace SmartStore.Services.Catalog
                 return (true, false);
             }
 
-            // TODO: limit according to number of combinations.
+            // Do not proceed if there are too many unavailable combinations.
+            var unavailableCombinationsCount = _requestCache.Get(UNAVAILABLE_COMBINATIONS_COUNT_KEY.FormatInvariant(product.Id), () =>
+            {
+                var query = GetUnavailableCombinationsQuery(product);
+                return query.Count();
+            });
 
-            // Get all unavailable combinations.
+            if (unavailableCombinationsCount > _performanceSettings.UnavailableAttributeCombinationsCount)
+            {
+                return (true, false);
+            }
+
+            // Get unavailable combinations.
             var unavailableCombinations = _cache.Get(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(product.Id), () =>
             {
                 // Ids key -> bool that indicates combination is active but out of stock.
                 var data = new Dictionary<string, bool>();
-                var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
+                var query = GetUnavailableCombinationsQuery(product);
+                var pager = new FastPager<ProductVariantAttributeCombination>(query);
 
-                if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+                while (pager.ReadNextPage(out var combinations))
                 {
-                    // TODO: compound index of StockQuantity and AllowOutOfStockOrders
-                    query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
-                }
-                else
-                {
-                    query = query.Where(x => !x.IsActive);
-                }
-
-                // TODO: chunk loading
-                var combinations = query.ToList();
-                foreach (var combination in combinations)
-                {
-                    var map = DeserializeProductVariantAttributes(combination.AttributesXml);
-                    if (map.Any())
+                    foreach (var combination in combinations)
                     {
-                        // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
-                        var valuesKeys = map
-                            .OrderBy(x => x.Key)
-                            .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
+                        var map = DeserializeProductVariantAttributes(combination.AttributesXml);
+                        if (map.Any())
+                        {
+                            // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
+                            var valuesKeys = map
+                                .OrderBy(x => x.Key)
+                                .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
 
-                        // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
-                        data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                            // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
+                            data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                        }
                     }
                 }
 
@@ -610,6 +618,23 @@ namespace SmartStore.Services.Catalog
             return (true, false);
         }
 
+        protected virtual IQueryable<ProductVariantAttributeCombination> GetUnavailableCombinationsQuery(Product product)
+        {
+            var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
+
+            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+            {
+                // TODO: compound index of StockQuantity and AllowOutOfStockOrders
+                query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
+            }
+            else
+            {
+                query = query.Where(x => !x.IsActive);
+            }
+
+            return query;
+        }
+
         private static readonly HashSet<Type> _combinationsInvalidationTypes = new HashSet<Type>(new[]
         {
             typeof(Product),
@@ -639,6 +664,7 @@ namespace SmartStore.Services.Catalog
             if (productId != 0)
             {
                 _cache.Remove(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(productId));
+                _requestCache.Remove(UNAVAILABLE_COMBINATIONS_COUNT_KEY.FormatInvariant(productId));
             }
         }
 

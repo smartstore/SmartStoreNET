@@ -4,15 +4,17 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Services.Catalog
 {
-    public partial class ProductAttributeParser : IProductAttributeParser
+    public partial class ProductAttributeParser : DbSaveHook<BaseEntity>, IProductAttributeParser
     {
         // 0 = ProductId, 1 = AttributeXml
         private const string ATTRIBUTECOMBINATION_BY_IDXML_KEY = "parsedattributecombination.id-{0}-{1}";
@@ -21,23 +23,27 @@ namespace SmartStore.Services.Catalog
         private const string ATTRIBUTEVALUES_BY_XML_KEY = "parsedattributevalues-{0}";
         private const string ATTRIBUTEVALUES_PATTERN_KEY = "parsedattributevalues-*";
 
+        // 0 = ProductId
+        private const string UNAVAILABLE_COMBINATIONS_KEY = "attributecombination:unavailable-{0}";
+
         private readonly IProductAttributeService _productAttributeService;
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
         private readonly IRequestCache _requestCache;
+        private readonly ICacheManager _cache;
 
         public ProductAttributeParser(
             IProductAttributeService productAttributeService,
             IRepository<ProductVariantAttributeCombination> pvacRepository,
-            IRequestCache requestCache)
+            IRequestCache requestCache,
+            ICacheManager cache)
         {
             _productAttributeService = productAttributeService;
             _pvacRepository = pvacRepository;
             _requestCache = requestCache;
-
-            Logger = NullLogger.Instance;
+            _cache = cache;
         }
 
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         #region Product attributes
 
@@ -383,101 +389,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-        public virtual bool IsCombinationAvailable(
-            Product product,
-            ProductVariantAttributeValue value,
-            IEnumerable<ProductVariantAttributeValue> selectedValues)
-        {
-            // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
-            // and not necessarily required for an order.
-            if (product == null || value == null || !(selectedValues?.Any() ?? false))
-            {
-                return true;
-            }
-
-            // TODO: caching, limit according to number of combinations.
-
-            // Get all unavailable combinations.
-            var unavailableCombinations = new HashSet<string>();
-            var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
-            if (!allCombinations.Any())
-            {
-                return true;
-            }
-
-            foreach (var combination in allCombinations)
-            {
-                var isAvailable = combination.IsActive;
-                if (isAvailable && product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
-                {
-                    isAvailable = combination.StockQuantity > 0 || combination.AllowOutOfStockOrders;
-                }
-
-                if (!isAvailable)
-                {
-                    var map = DeserializeProductVariantAttributes(combination.AttributesXml);
-                    if (map.Any())
-                    {
-                        // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
-                        var valuesKey = map
-                            .OrderBy(x => x.Key)
-                            .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
-
-                        unavailableCombinations.Add(string.Join("-", valuesKey));
-                    }
-                }
-            }
-
-            if (!unavailableCombinations.Any())
-            {
-                return true;
-            }
-
-            // Create key for the attribute value to be checked.
-            var psb = PooledStringBuilder.Rent();
-            var selectedValuesMap = selectedValues.ToMultimap(x => x.ProductVariantAttributeId, x => x);
-
-            foreach (var item in selectedValuesMap.OrderBy(x => x.Key))
-            {
-                IEnumerable<int> valueIds;
-
-                // Always take the value of the attribute to be checked. For all other attributes take the currently selected value.
-                if (item.Key == value.ProductVariantAttributeId)
-                {
-                    if (value.ProductVariantAttribute.AttributeControlType == AttributeControlType.Checkboxes)
-                    {
-                        // Selection of multiple values supported.
-                        valueIds = item.Value
-                            .Select(x => x.Id)
-                            .Append(value.Id)
-                            .Distinct();
-                    }
-                    else
-                    {
-                        valueIds = new[] { value.Id };
-                    }
-                }
-                else
-                {
-                    valueIds = item.Value.Select(x => x.Id);
-                }
-
-                var valueIdsStr = string.Join(",", valueIds.OrderBy(x => x));
-
-                if (psb.Length > 0)
-                {
-                    psb.Append("-");
-                }
-                psb.Append($"{item.Key}:{valueIdsStr}");
-            }
-
-            var key = psb.ToStringAndReturn();
-            var result = !unavailableCombinations.Contains(key);
-            //$"{result, -5} {value.ProductVariantAttributeId}:{value.Id}: {key}".Dump();
-
-            return result;
-        }
-
         #endregion
 
         #region Gift card attributes
@@ -592,6 +503,161 @@ namespace SmartStore.Services.Catalog
         }
 
         #endregion
+
+        #region Unavailable attribute combinations
+
+        public virtual (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
+            Product product,
+            ProductVariantAttributeValue value,
+            IEnumerable<ProductVariantAttributeValue> selectedValues)
+        {
+            // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
+            // and not necessarily required for an order.
+            if (product == null || product.Deleted || value == null || !(selectedValues?.Any() ?? false))
+            {
+                return (true, false);
+            }
+
+            // TODO: limit according to number of combinations.
+
+            // Get all unavailable combinations.
+            var unavailableCombinations = _cache.Get(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(product.Id), () =>
+            {
+                // Ids key -> bool that indicates combination is active but out of stock.
+                var data = new Dictionary<string, bool>();
+                var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
+
+                if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+                {
+                    // TODO: compound index of StockQuantity and AllowOutOfStockOrders
+                    query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
+                }
+                else
+                {
+                    query = query.Where(x => !x.IsActive);
+                }
+
+                // TODO: chunk loading
+                var combinations = query.ToList();
+                foreach (var combination in combinations)
+                {
+                    var map = DeserializeProductVariantAttributes(combination.AttributesXml);
+                    if (map.Any())
+                    {
+                        // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
+                        var valuesKeys = map
+                            .OrderBy(x => x.Key)
+                            .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
+
+                        // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
+                        data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                    }
+                }
+
+                return data;
+            }, TimeSpan.FromMinutes(10));
+
+            if (!unavailableCombinations.Any())
+            {
+                return (true, false);
+            }
+
+            // Create key for the attribute value to be checked.
+            var psb = PooledStringBuilder.Rent();
+            var selectedValuesMap = selectedValues.ToMultimap(x => x.ProductVariantAttributeId, x => x);
+
+            foreach (var item in selectedValuesMap.OrderBy(x => x.Key))
+            {
+                IEnumerable<int> valueIds;
+
+                // Always take the value of the attribute to be checked. For all other attributes take the currently selected value.
+                if (item.Key == value.ProductVariantAttributeId)
+                {
+                    if (value.ProductVariantAttribute.IsMultipleValuesSelectionSupported())
+                    {
+                        valueIds = item.Value
+                            .Select(x => x.Id)
+                            .Append(value.Id)
+                            .Distinct();
+                    }
+                    else
+                    {
+                        valueIds = new[] { value.Id };
+                    }
+                }
+                else
+                {
+                    valueIds = item.Value.Select(x => x.Id);
+                }
+
+                var valueIdsStr = string.Join(",", valueIds.OrderBy(x => x));
+
+                if (psb.Length > 0)
+                {
+                    psb.Append("-");
+                }
+                psb.Append($"{item.Key}:{valueIdsStr}");
+            }
+
+            var key = psb.ToStringAndReturn();
+            //$"{!unavailableCombinations.ContainsKey(key),-5} {value.ProductVariantAttributeId}:{value.Id}: {key}".Dump();
+
+            if (unavailableCombinations.TryGetValue(key, out var outOfStock))
+            {
+                return (false, outOfStock);
+            }
+
+            return (true, false);
+        }
+
+        private static readonly HashSet<Type> _combinationsInvalidationTypes = new HashSet<Type>(new[]
+        {
+            typeof(Product),
+            typeof(ProductVariantAttributeCombination)
+        });
+
+        private void InvalidateUnavailableCombinations(BaseEntity entity, IHookedEntity entry)
+        {
+            var type = entry.EntityType;
+
+            if (!_combinationsInvalidationTypes.Contains(type))
+            {
+                throw new NotSupportedException();
+            }
+
+            var productId = 0;
+
+            if (type == typeof(Product))
+            {
+                productId = entity.Id;
+            }
+            else if (type == typeof(ProductVariantAttributeCombination))
+            {
+                productId = ((ProductVariantAttributeCombination)entity).ProductId;
+            }
+
+            if (productId != 0)
+            {
+                _cache.Remove(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(productId));
+            }
+        }
+
+        #endregion
+
+        protected override void OnUpdated(BaseEntity entity, IHookedEntity entry)
+        {
+            InvalidateUnavailableCombinations(entity, entry);
+        }
+
+        protected override void OnInserted(BaseEntity entity, IHookedEntity entry)
+        {
+            InvalidateUnavailableCombinations(entity, entry);
+        }
+
+        protected override void OnDeleted(BaseEntity entity, IHookedEntity entry)
+        {
+            InvalidateUnavailableCombinations(entity, entry);
+        }
 
         class AttributeMapInfo
         {

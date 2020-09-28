@@ -1038,10 +1038,24 @@ namespace SmartStore.Web.Controllers
                                 value.PriceAdjustment = string.Empty;
                             }
 
-                            var isCombinationAvailable = _productAttributeParser.IsCombinationAvailable(product, value.ProductAttributeValue, selectedAttributeValues);
+                            (bool isCombinationAvailable, bool isCombinationOutOfStock) = _productAttributeParser.IsCombinationAvailable(product, value.ProductAttributeValue, selectedAttributeValues);
                             value.IsDisabled = !isCombinationAvailable;
-                            // TODO: add title attribute for disabled options.
-                            // TODO: missing UI disabled indication for choice-box.
+
+                            if (value.IsDisabled)
+                            {
+                                if (isCombinationOutOfStock && product.DisplayStockAvailability)
+                                {
+                                    value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
+                                        ? T("Products.Availability.OutOfStock")
+                                        : T("Products.Availability.Backordering");
+                                }
+                                else
+                                {
+                                    value.Title = T("Products.Availability.IsNotActive");
+                                }
+
+                                // TODO choice-box: missing title attribute and UI disabled indication.
+                            }
                         }
                     }
                 }

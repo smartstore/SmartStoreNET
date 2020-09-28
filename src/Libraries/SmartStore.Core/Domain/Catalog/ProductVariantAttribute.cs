@@ -62,6 +62,9 @@ namespace SmartStore.Core.Domain.Catalog
             set => this.AttributeControlTypeId = (int)value;
         }
 
+        /// <summary>
+        /// Returns a value whether the attribute has a list of values.
+        /// </summary>
         public bool IsListTypeAttribute()
         {
             switch (AttributeControlType)
@@ -74,6 +77,14 @@ namespace SmartStore.Core.Domain.Catalog
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// Returns a value whether the selection of multiple values is supported.
+        /// </summary>
+        public bool IsMultipleValuesSelectionSupported()
+        {
+            return AttributeControlType == AttributeControlType.Checkboxes;
         }
 
         /// <summary>

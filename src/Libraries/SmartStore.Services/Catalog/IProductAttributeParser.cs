@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
@@ -92,7 +93,14 @@ namespace SmartStore.Services.Catalog
         /// <returns>Found product variant attribute combination</returns>
         ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
-        bool IsCombinationAvailable(
+        /// <summary>
+        /// Returns a value whether the attribute combination is available for a given attribute value.
+        /// </summary>
+        /// <param name="product">Product.</param>
+        /// <param name="value">Attribute value.</param>
+        /// <param name="selectedValues">The attribute values of the currently selected attribute combination.</param>
+        /// <returns>Whether the attribute combination is available.</returns>
+        (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
             Product product,
             ProductVariantAttributeValue value,
             IEnumerable<ProductVariantAttributeValue> selectedValues);
@@ -110,6 +118,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="senderName">Sender name</param>
         /// <param name="senderEmail">Sender email</param>
         /// <param name="giftCardMessage">Message</param>
+        /// <returns>Attributes</returns>
         /// <returns>Attributes</returns>
         string AddGiftCardAttribute(string attributesXml, string recipientName,
             string recipientEmail, string senderName, string senderEmail, string giftCardMessage);

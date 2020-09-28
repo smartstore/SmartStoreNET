@@ -174,8 +174,6 @@ namespace SmartStore.Services.Tests.Catalog
             _productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
             _localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
 
-            var cacheManager = new NullCache();
-
             _productAttributeService = new ProductAttributeService(
                 NullRequestCache.Instance,
                 _productAttributeRepo,
@@ -187,9 +185,8 @@ namespace SmartStore.Services.Tests.Catalog
                 _productBundleItemAttributeFilter,
                 _localizedEntityService);
 
-            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullRequestCache.Instance);
-
-
+            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(),
+                NullRequestCache.Instance, NullCache.Instance);
 
             var workingLanguage = new Language();
             _workContext = MockRepository.GenerateMock<IWorkContext>();

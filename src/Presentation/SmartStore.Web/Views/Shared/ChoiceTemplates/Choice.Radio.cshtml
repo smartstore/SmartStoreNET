@@ -13,7 +13,7 @@
 {
 	var checkId = controlId + "_" + item.Id;
 	var hasColor = item.Color.HasValue() && item.Color != "transparent";
-	<div class="radio">
+	<div class="radio" @Html.Attr("title", item.Title, item.Title.HasValue())>
 		<label class="form-radio-label choice-item">
 			<input class="form-radio-input" type="radio" id="@checkId" name="@controlId" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
 

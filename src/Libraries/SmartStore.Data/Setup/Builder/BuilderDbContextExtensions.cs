@@ -2,7 +2,6 @@
 
 namespace SmartStore.Data.Setup
 {
-
     public static class BuilderDbContextExtensions
     {
         #region Resource building
@@ -39,5 +38,4 @@ namespace SmartStore.Data.Setup
 
         #endregion
     }
-
 }

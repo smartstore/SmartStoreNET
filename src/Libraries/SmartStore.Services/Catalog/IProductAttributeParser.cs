@@ -97,13 +97,15 @@ namespace SmartStore.Services.Catalog
         /// Returns a value whether the attribute combination is available for a given attribute value.
         /// </summary>
         /// <param name="product">Product.</param>
-        /// <param name="value">Attribute value.</param>
+        /// <param name="attributes">All product attributes of the specified product.</param>
         /// <param name="selectedValues">The attribute values of the currently selected attribute combination.</param>
+        /// <param name="currentValue">The current attribute value.</param>
         /// <returns>Whether the attribute combination is available.</returns>
         (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
             Product product,
-            ProductVariantAttributeValue value,
-            IEnumerable<ProductVariantAttributeValue> selectedValues);
+            IEnumerable<ProductVariantAttribute> attributes,
+            IEnumerable<ProductVariantAttributeValue> selectedValues,
+            ProductVariantAttributeValue currentValue);
 
         #endregion
 

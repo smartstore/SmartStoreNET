@@ -1039,7 +1039,12 @@ namespace SmartStore.Web.Controllers
                             }
 
                             // Disable unavailable options.
-                            (bool isCombinationAvailable, bool isCombinationOutOfStock) = _productAttributeParser.IsCombinationAvailable(product, value.ProductAttributeValue, selectedAttributeValues);
+                            (bool isCombinationAvailable, bool isCombinationOutOfStock) = _productAttributeParser.IsCombinationAvailable(
+                                product,
+                                variantAttributes,
+                                selectedAttributeValues,
+                                value.ProductAttributeValue);
+
                             value.IsDisabled = !isCombinationAvailable;
 
                             if (value.IsDisabled)
@@ -1068,7 +1073,7 @@ namespace SmartStore.Web.Controllers
             if ((productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemShoppingCart) ||
                 (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes && !hasSelectedAttributesValues))
             {
-                // Cases where stock inventory is not functional. Determined by what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory is not handling.
+                // Cases where stock inventory is not functional (what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory does not handle).
                 model.IsAvailable = true;
                 var hasAttributeCombinations = _services.DbContext.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Any();
                 model.StockAvailability = !hasAttributeCombinations ? product.FormatStockMessage(_localizationService) : "";

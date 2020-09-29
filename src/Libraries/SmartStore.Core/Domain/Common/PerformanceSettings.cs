@@ -34,6 +34,6 @@ namespace SmartStore.Core.Domain.Common
         /// Maximum number of attribute combinations to be loaded and parsed
         /// to make them unavailable for selection on the product detail page.
         /// </summary>
-        public int UnavailableAttributeCombinationsCount { get; set; } = 10000;
+        public int MaxUnavailableAttributeCombinations { get; set; } = 10000;
     }
 }

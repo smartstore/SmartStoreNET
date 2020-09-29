@@ -10,6 +10,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Logging;
 using SmartStore.Data.Utilities;
 using SmartStore.Utilities.ObjectPools;
@@ -27,7 +28,7 @@ namespace SmartStore.Services.Catalog
 
         // 0 = ProductId
         private const string UNAVAILABLE_COMBINATIONS_KEY = "attributecombination:unavailable-{0}";
-        private const string UNAVAILABLE_COMBINATIONS_COUNT_KEY = "attributecombination:unavailable-count-{0}";
+        private const string UNAVAILABLE_COMBINATIONS_PATTERN_KEY = "attributecombination:unavailable-*";
 
         private readonly IProductAttributeService _productAttributeService;
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
@@ -514,24 +515,17 @@ namespace SmartStore.Services.Catalog
 
         public virtual (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
             Product product,
-            ProductVariantAttributeValue value,
-            IEnumerable<ProductVariantAttributeValue> selectedValues)
+            IEnumerable<ProductVariantAttribute> attributes,
+            IEnumerable<ProductVariantAttributeValue> selectedValues,
+            ProductVariantAttributeValue currentValue)
         {
             // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
             // and not necessarily required for an order.
-            if (product == null || product.Deleted || value == null || !(selectedValues?.Any() ?? false) || _performanceSettings.UnavailableAttributeCombinationsCount <= 0)
-            {
-                return (true, false);
-            }
-
-            // Do not proceed if there are too many unavailable combinations.
-            var unavailableCombinationsCount = _requestCache.Get(UNAVAILABLE_COMBINATIONS_COUNT_KEY.FormatInvariant(product.Id), () =>
-            {
-                var query = GetUnavailableCombinationsQuery(product);
-                return query.Count();
-            });
-
-            if (unavailableCombinationsCount > _performanceSettings.UnavailableAttributeCombinationsCount)
+            if (product == null ||
+                _performanceSettings.MaxUnavailableAttributeCombinations <= 0 ||
+                currentValue == null || 
+                !(attributes?.Any() ?? false) ||
+                !(selectedValues?.Any() ?? false))
             {
                 return (true, false);
             }
@@ -539,25 +533,42 @@ namespace SmartStore.Services.Catalog
             // Get unavailable combinations.
             var unavailableCombinations = _cache.Get(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(product.Id), () =>
             {
-                // Ids key -> bool that indicates combination is active but out of stock.
+                // Ids key -> boolean that indicates combination is active but out of stock.
                 var data = new Dictionary<string, bool>();
-                var query = GetUnavailableCombinationsQuery(product);
-                var pager = new FastPager<ProductVariantAttributeCombination>(query);
+                var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
 
-                while (pager.ReadNextPage(out var combinations))
+                if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
                 {
-                    foreach (var combination in combinations)
-                    {
-                        var map = DeserializeProductVariantAttributes(combination.AttributesXml);
-                        if (map.Any())
-                        {
-                            // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
-                            var valuesKeys = map
-                                .OrderBy(x => x.Key)
-                                .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
+                    // TODO: compound index of StockQuantity and AllowOutOfStockOrders
+                    query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
+                }
+                else
+                {
+                    query = query.Where(x => !x.IsActive);
+                }
 
-                            // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
-                            data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                // Do not proceed if there are too many unavailable combinations.
+                var unavailableCombinationsCount = query.Count();
+
+                if (unavailableCombinationsCount <= _performanceSettings.MaxUnavailableAttributeCombinations)
+                {
+                    var pager = new FastPager<ProductVariantAttributeCombination>(query);
+
+                    while (pager.ReadNextPage(out var combinations))
+                    {
+                        foreach (var combination in combinations)
+                        {
+                            var map = DeserializeProductVariantAttributes(combination.AttributesXml);
+                            if (map.Any())
+                            {
+                                // <ProductVariantAttribute.Id>:<ProductVariantAttributeValue.Id>[,...]
+                                var valuesKeys = map
+                                    .OrderBy(x => x.Key)
+                                    .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
+
+                                // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
+                                data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                            }
                         }
                     }
                 }
@@ -570,33 +581,45 @@ namespace SmartStore.Services.Catalog
                 return (true, false);
             }
 
-            // Create key for the attribute value to be checked.
+            // Create key to test currentValue.
             var psb = PooledStringBuilder.Rent();
             var selectedValuesMap = selectedValues.ToMultimap(x => x.ProductVariantAttributeId, x => x);
 
-            foreach (var item in selectedValuesMap.OrderBy(x => x.Key))
+            foreach (var attribute in attributes.OrderBy(x => x.Id))
             {
                 IEnumerable<int> valueIds;
 
-                if (item.Key == value.ProductVariantAttributeId)
+                var selectedIds = selectedValuesMap.ContainsKey(attribute.Id)
+                    ? selectedValuesMap[attribute.Id].Select(x => x.Id)
+                    : null;
+
+                if (attribute.Id == currentValue.ProductVariantAttributeId)
                 {
-                    // Attribute to be checked -> take its value.
-                    if (value.ProductVariantAttribute.IsMultipleValuesSelectionSupported())
+                    // Attribute to be tested.
+                    if (selectedIds != null && attribute.IsMultipleValuesSelectionSupported())
                     {
-                        valueIds = item.Value
-                            .Select(x => x.Id)
-                            .Append(value.Id)
-                            .Distinct();
+                        // Take selected values and append current value.
+                        valueIds = selectedIds.Append(currentValue.Id).Distinct();
                     }
                     else
                     {
-                        valueIds = new[] { value.Id };
+                        // Single selection attribute -> take current value.
+                        valueIds = new[] { currentValue.Id };
                     }
                 }
                 else
                 {
-                    // Other attribute -> take currently selected value.
-                    valueIds = item.Value.Select(x => x.Id);
+                    // Other attribute.
+                    if (selectedIds != null)
+                    {
+                        // Take selected value(s).
+                        valueIds = selectedIds;
+                    }
+                    else
+                    {
+                        // No selected value -> no unavailable combination.
+                        return (true, false);
+                    }
                 }
 
                 var valueIdsStr = string.Join(",", valueIds.OrderBy(x => x));
@@ -605,11 +628,11 @@ namespace SmartStore.Services.Catalog
                 {
                     psb.Append("-");
                 }
-                psb.Append($"{item.Key}:{valueIdsStr}");
+                psb.Append($"{attribute.Id}:{valueIdsStr}");
             }
 
             var key = psb.ToStringAndReturn();
-            //$"{!unavailableCombinations.ContainsKey(key),-5} {value.ProductVariantAttributeId}:{value.Id} -> {key}".Dump();
+            //$"{!unavailableCombinations.ContainsKey(key),-5} {currentValue.ProductVariantAttributeId}:{currentValue.Id} -> {key}".Dump();
 
             if (unavailableCombinations.TryGetValue(key, out var outOfStock))
             {
@@ -619,25 +642,9 @@ namespace SmartStore.Services.Catalog
             return (true, false);
         }
 
-        protected virtual IQueryable<ProductVariantAttributeCombination> GetUnavailableCombinationsQuery(Product product)
-        {
-            var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
-
-            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
-            {
-                // TODO: compound index of StockQuantity and AllowOutOfStockOrders
-                query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
-            }
-            else
-            {
-                query = query.Where(x => !x.IsActive);
-            }
-
-            return query;
-        }
-
         private static readonly HashSet<Type> _combinationsInvalidationTypes = new HashSet<Type>(new[]
         {
+            typeof(Setting),
             typeof(Product),
             typeof(ProductVariantAttributeCombination)
         });
@@ -653,7 +660,14 @@ namespace SmartStore.Services.Catalog
 
             var productId = 0;
 
-            if (type == typeof(Product))
+            if (type == typeof(Setting))
+            {
+                if (((Setting)entity).Name.IsCaseInsensitiveEqual("PerformanceSettings.MaxUnavailableAttributeCombinations"))
+                {
+                    _cache.RemoveByPattern(UNAVAILABLE_COMBINATIONS_PATTERN_KEY);
+                }
+            }
+            else if (type == typeof(Product))
             {
                 productId = entity.Id;
             }
@@ -665,7 +679,6 @@ namespace SmartStore.Services.Catalog
             if (productId != 0)
             {
                 _cache.Remove(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(productId));
-                _requestCache.Remove(UNAVAILABLE_COMBINATIONS_COUNT_KEY.FormatInvariant(productId));
             }
         }
 

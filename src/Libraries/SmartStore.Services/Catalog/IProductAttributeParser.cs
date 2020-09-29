@@ -94,7 +94,7 @@ namespace SmartStore.Services.Catalog
         ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
         /// <summary>
-        /// Returns a value whether the attribute combination is available for a given attribute value.
+        /// Returns a value indicating whether the attribute combination is available for a given attribute value.
         /// </summary>
         /// <param name="product">Product.</param>
         /// <param name="value">Attribute value.</param>

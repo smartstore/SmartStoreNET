@@ -105,6 +105,11 @@
         .Icon("fa fa-download fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Downloads" })
         .Content(Html.Partial("_CreateOrUpdate.Downloads", Model).ToHtmlString());
+    x.Add().Text(T("Admin.Orders").Text)
+        .Icon("fa fa-chart-bar fa-lg fa-fw")
+        .LinkHtmlAttributes(new { data_tab_name = "Orders" })
+        .Action("LoadEditTab", "Product", new {id = Model.Id, tabName = "Orders" })
+        .Ajax();
 
     // generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));

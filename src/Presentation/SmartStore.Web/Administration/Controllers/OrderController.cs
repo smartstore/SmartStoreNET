@@ -926,12 +926,24 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [ChildActionOnly]
+        public ActionResult OrderGrid(OrderListModel model, int productId = 0, bool hideProfitReport = false)
+        {
+            if (productId != 0)
+            {
+                model.ProductId = productId;
+            }
+
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.HideProfitReport = hideProfitReport;
+
+            return PartialView(model);
+        }
+
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Order.Read)]
         public ActionResult OrderList(GridCommand command, OrderListModel model)
         {
-            var gridModel = new GridModel<OrderModel>();
-
             DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
             DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
@@ -943,90 +955,143 @@ namespace SmartStore.Admin.Controllers
             var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
             var paymentMethods = new Dictionary<string, Provider<IPaymentMethod>>(StringComparer.OrdinalIgnoreCase);
             Provider<IPaymentMethod> paymentMethod = null;
+            IPagedList<Order> orders;
 
-            var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
-                model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName, model.PaymentMethods.SplitSafe(","));
-
-            gridModel.Data = orders.Select(x =>
+            // Try get product by Id, when product is found, OrderList is used for product details orders
+            var product = _productService.GetProductById(model.ProductId);
+            if (product == null)
             {
-                var store = Services.StoreService.GetStoreById(x.StoreId);
-
-                var orderModel = new OrderModel
-                {
-                    Id = x.Id,
-                    OrderNumber = x.GetOrderNumber(),
-                    StoreName = store != null ? store.Name : "".NaIfEmpty(),
-                    OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                    OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    StatusOrder = x.OrderStatus,
-                    PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    StatusPayment = x.PaymentStatus,
-                    IsShippable = x.ShippingStatus != ShippingStatus.ShippingNotRequired,
-                    ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    StatusShipping = x.ShippingStatus,
-                    ShippingMethod = x.ShippingMethod.NullEmpty() ?? "".NaIfEmpty(),
-                    CustomerName = x.BillingAddress.GetFullName(),
-                    CustomerEmail = x.BillingAddress.Email,
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
-                    HasNewPaymentNotification = x.HasNewPaymentNotification
-                };
-
-                orderModel.CreatedOnString = orderModel.CreatedOn.ToString("g");
-
-                if (x.PaymentMethodSystemName.HasValue())
-                {
-                    if (!paymentMethods.TryGetValue(x.PaymentMethodSystemName, out paymentMethod))
+                orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds,
+                    paymentStatusIds, shippingStatusIds, model.CustomerEmail, model.OrderGuid, model.OrderNumber,
+                    command.Page - 1, command.PageSize, model.CustomerName, model.PaymentMethods.SplitSafe(","));
+            }
+            else
+            {
+                orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, command.Page - 1, command.PageSize)
+                    .AlterQuery(q =>
                     {
-                        paymentMethod = _paymentService.LoadPaymentMethodBySystemName(x.PaymentMethodSystemName);
-                        paymentMethods[x.PaymentMethodSystemName] = paymentMethod;
-                    }
-                    if (paymentMethod != null)
+                        return q.Where(x => x.OrderItems.Any(p => p.ProductId == model.ProductId));
+                    })
+                    .AlterQuery(q =>
                     {
-                        orderModel.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata);
-                    }
-                }
+                        return q
+                            .SelectMany(x => x.OrderItems)
+                            .Where(x => x.ProductId == model.ProductId)
+                            .Select(x => x.Order)
+                            .OrderByDescending(x => x.Id);
+                    }).Load();
+                    // (ms) Fix this
+                    // Note: order 15 (example product > all-court basketball) - error: other products not removed....
+                    // Seems like this is no longer working as needed
+            }
 
-                if (orderModel.PaymentMethod.IsEmpty())
+            var gridModel = new GridModel<OrderModel>
+            {
+                Data = orders.Select(x =>
                 {
-                    orderModel.PaymentMethod = x.PaymentMethodSystemName;
-                }
+                    var store = Services.StoreService.GetStoreById(x.StoreId);
 
-                orderModel.HasPaymentMethod = orderModel.PaymentMethod.HasValue();
-
-                if (x.ShippingAddress != null && orderModel.IsShippable)
-                {
-                    orderModel.ShippingAddressString = string.Concat(
-                        x.ShippingAddress.Address1,
-                        ", ",
-                        x.ShippingAddress.ZipPostalCode,
-                        " ",
-                        x.ShippingAddress.City);
-
-                    if (x.ShippingAddress.CountryId > 0)
+                    var orderModel = new OrderModel
                     {
-                        orderModel.ShippingAddressString += ", " + x.ShippingAddress.Country.TwoLetterIsoCode;
+                        Id = x.Id,
+                        OrderNumber = x.GetOrderNumber(),
+                        StoreName = store != null ? store.Name : "".NaIfEmpty(),
+                        OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+                        StatusOrder = x.OrderStatus,
+                        PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        StatusPayment = x.PaymentStatus,
+                        IsShippable = x.ShippingStatus != ShippingStatus.ShippingNotRequired,
+                        ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+                        StatusShipping = x.ShippingStatus,
+                        ShippingMethod = x.ShippingMethod.NullEmpty() ?? "".NaIfEmpty(),
+                        CustomerName = x.BillingAddress.GetFullName(),
+                        CustomerEmail = x.BillingAddress.Email,
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+                        HasNewPaymentNotification = x.HasNewPaymentNotification
+                    };
+
+                    if (product != null)
+                    {
+                        orderModel.Quantity = x.OrderItems.Select(y => y.Quantity).Sum();
+
+                        var orderTotal = x.OrderItems.Select(p => p.UnitPriceInclTax * p.Quantity).Sum();
+                        orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotal, true, false);
                     }
-                }
 
-                orderModel.ViaShippingMethod = viaShippingMethodString.FormatInvariant(orderModel.ShippingMethod);
-                orderModel.WithPaymentMethod = withPaymentMethodString.FormatInvariant(orderModel.PaymentMethod);
-                orderModel.FromStore = fromStoreString.FormatInvariant(orderModel.StoreName);
+                    orderModel.CreatedOnString = orderModel.CreatedOn.ToString("g");
 
-                return orderModel;
-            });
+                    if (x.PaymentMethodSystemName.HasValue())
+                    {
+                        if (!paymentMethods.TryGetValue(x.PaymentMethodSystemName, out paymentMethod))
+                        {
+                            paymentMethod = _paymentService.LoadPaymentMethodBySystemName(x.PaymentMethodSystemName);
+                            paymentMethods[x.PaymentMethodSystemName] = paymentMethod;
+                        }
+                        if (paymentMethod != null)
+                        {
+                            orderModel.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata);
+                        }
+                    }
 
-            gridModel.Total = orders.TotalCount;
+                    if (orderModel.PaymentMethod.IsEmpty())
+                    {
+                        orderModel.PaymentMethod = x.PaymentMethodSystemName;
+                    }
+
+                    orderModel.HasPaymentMethod = orderModel.PaymentMethod.HasValue();
+
+                    if (x.ShippingAddress != null && orderModel.IsShippable)
+                    {
+                        orderModel.ShippingAddressString = string.Concat(
+                            x.ShippingAddress.Address1,
+                            ", ",
+                            x.ShippingAddress.ZipPostalCode,
+                            " ",
+                            x.ShippingAddress.City);
+
+                        if (x.ShippingAddress.CountryId > 0)
+                        {
+                            orderModel.ShippingAddressString += ", " + x.ShippingAddress.Country.TwoLetterIsoCode;
+                        }
+                    }
+
+                    orderModel.ViaShippingMethod = viaShippingMethodString.FormatInvariant(orderModel.ShippingMethod);
+                    orderModel.WithPaymentMethod = withPaymentMethodString.FormatInvariant(orderModel.PaymentMethod);
+                    orderModel.FromStore = fromStoreString.FormatInvariant(orderModel.StoreName);
+
+                    return orderModel;
+                }),
+
+                Total = orders.TotalCount
+            };
 
             // Summary report.
             // Implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx.
-            var summary = _orderReportService.GetOrderAverageReportLine(orders.SourceQuery);
-            var profit = _orderReportService.GetProfit(orders.SourceQuery);
+            decimal sumProfit, sumTax, sumTotals;
+            if (product != null)
+            {
+                sumTotals = orders.SelectMany(x => x.OrderItems).Select(p => p.UnitPriceInclTax).Sum();
+
+                var totalsWithoutTax = orders.SelectMany(o => o.OrderItems).Select(p => p.UnitPriceExclTax).Sum();
+                sumTax = sumTotals - totalsWithoutTax;
+
+                var productCost = orders.SelectMany(o => o.OrderItems).Select(p => p.ProductCost).Sum();
+                sumProfit = totalsWithoutTax - productCost;
+            }
+            else
+            {
+                var summary = _orderReportService.GetOrderAverageReportLine(orders.SourceQuery);
+                sumTax = summary.SumTax;
+                sumTotals = summary.SumOrders;
+                sumProfit = _orderReportService.GetProfit(orders.SourceQuery);
+            }
 
             gridModel.Aggregates = new OrderModel
             {
-                AggregatorProfit = _priceFormatter.FormatPrice(profit, true, false),
-                AggregatorTax = _priceFormatter.FormatPrice(summary.SumTax, true, false),
-                AggregatorTotal = _priceFormatter.FormatPrice(summary.SumOrders, true, false)
+                AggregatorProfit = _priceFormatter.FormatPrice(sumProfit, true, false),
+                AggregatorTax = _priceFormatter.FormatPrice(sumTax, true, false),
+                AggregatorTotal = _priceFormatter.FormatPrice(sumTotals, true, false)
             };
 
             return new JsonResult

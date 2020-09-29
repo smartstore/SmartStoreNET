@@ -59,6 +59,10 @@ namespace SmartStore.Admin.Models.Orders
 
         public int GridPageSize { get; set; }
 
+        public int ProductId { get; set; }
+
+        public bool HideProfitReport { get; set; }
+
         public IList<SelectListItem> AvailableOrderStatuses { get; set; }
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }
         public IList<SelectListItem> AvailableShippingStatuses { get; set; }

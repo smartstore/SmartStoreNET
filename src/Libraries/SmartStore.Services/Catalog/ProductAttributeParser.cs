@@ -596,7 +596,7 @@ namespace SmartStore.Services.Catalog
                 if (attribute.Id == currentValue.ProductVariantAttributeId)
                 {
                     // Attribute to be tested.
-                    if (selectedIds != null && attribute.IsMultipleValuesSelectionSupported())
+                    if (selectedIds != null && attribute.IsMultipleChoice)
                     {
                         // Take selected values and append current value.
                         valueIds = selectedIds.Append(currentValue.Id).Distinct();

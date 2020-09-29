@@ -82,9 +82,10 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Returns a value whether the selection of multiple values is supported.
         /// </summary>
-        public bool IsMultipleValuesSelectionSupported()
+        [NotMapped]
+        public bool IsMultipleChoice
         {
-            return AttributeControlType == AttributeControlType.Checkboxes;
+            get => AttributeControlType == AttributeControlType.Checkboxes;
         }
 
         /// <summary>

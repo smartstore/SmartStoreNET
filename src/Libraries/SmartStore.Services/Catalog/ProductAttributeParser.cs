@@ -581,7 +581,7 @@ namespace SmartStore.Services.Catalog
                 if (item.Key == value.ProductVariantAttributeId)
                 {
                     // Attribute to be checked -> take its value.
-                    if (value.ProductVariantAttribute.IsMultipleValuesSelectionSupported())
+                    if (value.ProductVariantAttribute.IsMultipleChoice)
                     {
                         valueIds = item.Value
                             .Select(x => x.Id)

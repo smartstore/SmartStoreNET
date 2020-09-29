@@ -20,12 +20,11 @@
 	{
 		var hasColor = item.Color.HasValue() && item.Color != "transparent";
 		var hasImage = item.ImageUrl.HasValue();
-		<option value="@item.Id" 
+		<option value="@item.Id" title="@item.Title.NullEmpty()" 
 				@Html.Attr("selected", "selected", item.IsPreSelected) 
 				@Html.Attr("data-imageurl", item.ImageUrl, hasImage) 
 				@Html.Attr("data-color", item.Color, hasColor && !hasImage)
-				@Html.Attr("disabled", "disabled", item.IsDisabled)
-				@Html.Attr("title", item.Title, item.Title.HasValue())>
+				@Html.Attr("disabled", "disabled", item.IsDisabled)>
 			@item.GetItemLabel()
 		</option>
 	}

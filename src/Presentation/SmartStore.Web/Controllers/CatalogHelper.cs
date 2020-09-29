@@ -1016,7 +1016,7 @@ namespace SmartStore.Web.Controllers
                         model.StockAvailability = T("Products.Availability.IsNotActive");
                     }
 
-                    // Required for later product.IsAvailableByStock().
+                    // Required for below product.IsAvailableByStock().
                     product.MergeWithCombination(model.SelectedCombination);
 
                     // Explicitly selected values always discards values pre-selected by merchant.
@@ -1038,11 +1038,13 @@ namespace SmartStore.Web.Controllers
                                 value.PriceAdjustment = string.Empty;
                             }
 
+                            // Disable unavailable options.
                             (bool isCombinationAvailable, bool isCombinationOutOfStock) = _productAttributeParser.IsCombinationAvailable(product, value.ProductAttributeValue, selectedAttributeValues);
                             value.IsDisabled = !isCombinationAvailable;
 
                             if (value.IsDisabled)
                             {
+                                // Set title attribute for disabled options.
                                 if (isCombinationOutOfStock && product.DisplayStockAvailability)
                                 {
                                     value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0

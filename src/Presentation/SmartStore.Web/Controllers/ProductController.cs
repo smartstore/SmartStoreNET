@@ -585,7 +585,8 @@ namespace SmartStore.Web.Controllers
                 partials = new
                 {
                     BundleItemPrice = this.RenderPartialViewToString("Product.Offer.Price", m),
-                    BundleItemStock = this.RenderPartialViewToString("Product.StockInfo", m)
+                    BundleItemStock = this.RenderPartialViewToString("Product.StockInfo", m),
+                    BundleItemVariants = this.RenderPartialViewToString("Product.Variants", m.ProductVariantAttributes)
                 };
             }
             else

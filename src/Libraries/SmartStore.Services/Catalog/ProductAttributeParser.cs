@@ -519,7 +519,7 @@ namespace SmartStore.Services.Catalog
         {
             // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
             // and not necessarily required for an order.
-            if (product == null || product.Deleted || value == null || !(selectedValues?.Any() ?? false))
+            if (product == null || product.Deleted || value == null || !(selectedValues?.Any() ?? false) || _performanceSettings.UnavailableAttributeCombinationsCount <= 0)
             {
                 return (true, false);
             }
@@ -578,9 +578,9 @@ namespace SmartStore.Services.Catalog
             {
                 IEnumerable<int> valueIds;
 
-                // Always take the value of the attribute to be checked. For all other attributes take the currently selected value.
                 if (item.Key == value.ProductVariantAttributeId)
                 {
+                    // Attribute to be checked -> take its value.
                     if (value.ProductVariantAttribute.IsMultipleValuesSelectionSupported())
                     {
                         valueIds = item.Value
@@ -595,6 +595,7 @@ namespace SmartStore.Services.Catalog
                 }
                 else
                 {
+                    // Other attribute -> take currently selected value.
                     valueIds = item.Value.Select(x => x.Id);
                 }
 
@@ -608,7 +609,7 @@ namespace SmartStore.Services.Catalog
             }
 
             var key = psb.ToStringAndReturn();
-            //$"{!unavailableCombinations.ContainsKey(key),-5} {value.ProductVariantAttributeId}:{value.Id}: {key}".Dump();
+            //$"{!unavailableCombinations.ContainsKey(key),-5} {value.ProductVariantAttributeId}:{value.Id} -> {key}".Dump();
 
             if (unavailableCombinations.TryGetValue(key, out var outOfStock))
             {

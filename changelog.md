@@ -4,6 +4,7 @@
 ### Highlights
 * **Web API**: now supports the widely extended Version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
 * **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
+* **Variant combinations:** Unavailable product variants are disabled (no longer selectable).
 
 ### New Features
 * Theming: responsive font-sizing and spacing
@@ -17,6 +18,7 @@
 * #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
 * #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
+* #1644 Unavailable variant combinations are disabled (no longer selectable).
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies

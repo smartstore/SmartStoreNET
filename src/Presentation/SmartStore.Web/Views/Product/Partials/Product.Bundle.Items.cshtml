@@ -64,7 +64,7 @@
 
 			@if (item.ProductVariantAttributes.ShouldBeRendered())
 			{
-				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3">
+				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3" data-partial="BundleItemVariants">
 					@{ Html.RenderPartial("Product.Variants", item.ProductVariantAttributes, new ViewDataDictionary()); }
 				</div>
 			}

@@ -168,7 +168,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
                 , {
                   'storage': 'none',
                   'clientId': '" + _workContext.CurrentCustomer.CustomerGuid + @"',
-                  storeGac: false
+                  'storeGac': false
                 }
 			";
 
@@ -184,7 +184,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             script = script.Replace("{GOOGLEID}", settings.GoogleId);
             script = script.Replace("{ECOMMERCE}", "");
 			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
-            script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
+            script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "'auto'" : GetStorageScript());
 
             return script;
         }

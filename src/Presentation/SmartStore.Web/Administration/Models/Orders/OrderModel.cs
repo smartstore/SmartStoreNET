@@ -96,8 +96,10 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
         public string RefundedAmount { get; set; }
 
+        // Quantity is only filled in context of product details (orders) to display an additional column
+        // It is empty (null) in orders list
         [SmartResourceDisplayName("Admin.Orders.Products.Quantity")]
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         //edit totals
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]

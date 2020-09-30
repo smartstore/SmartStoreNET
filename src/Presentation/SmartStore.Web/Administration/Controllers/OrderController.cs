@@ -921,15 +921,13 @@ namespace SmartStore.Admin.Controllers
                 })
                 .ToList();
 
-            model.GridPageSize = _adminAreaSettings.GridPageSize;
-
             return View(model);
         }
 
         [ChildActionOnly]
-        public ActionResult OrderGrid(OrderListModel model, int productId = 0, bool hideProfitReport = false)
+        public ActionResult OrderGrid(OrderListModel model, int? productId, bool hideProfitReport = false)
         {
-            if (productId != 0)
+            if (productId.GetValueOrDefault() > 0)
             {
                 model.ProductId = productId;
             }
@@ -957,8 +955,9 @@ namespace SmartStore.Admin.Controllers
             Provider<IPaymentMethod> paymentMethod = null;
             IPagedList<Order> orders;
 
-            // Try get product by Id, when product is found, OrderList is used for product details orders
-            var product = _productService.GetProductById(model.ProductId);
+            // Product Id is only used and filled in context of product details (orders)           
+            // When no product Id is assigned, OrderList is used to prepare orders for order list
+            var product = _productService.GetProductById(model.ProductId.GetValueOrDefault());
             if (product == null)
             {
                 orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds,
@@ -972,17 +971,15 @@ namespace SmartStore.Admin.Controllers
                     {
                         return q.Where(x => x.OrderItems.Any(p => p.ProductId == model.ProductId));
                     })
-                    .AlterQuery(q =>
-                    {
-                        return q
-                            .SelectMany(x => x.OrderItems)
-                            .Where(x => x.ProductId == model.ProductId)
-                            .Select(x => x.Order)
-                            .OrderByDescending(x => x.Id);
-                    }).Load();
-                    // (ms) Fix this
-                    // Note: order 15 (example product > all-court basketball) - error: other products not removed....
-                    // Seems like this is no longer working as needed
+                    //.AlterQuery(q =>
+                    //{
+                    //    return q
+                    //        .SelectMany(x => x.OrderItems.Where(y => y.ProductId == model.ProductId))
+                    //        .Select(x => { x.Order.OrderItems = x; return x.Order; })
+                    //        .OrderByDescending(x => x.Id);
+                    //})
+                    .Load();
+
             }
 
             var gridModel = new GridModel<OrderModel>
@@ -1013,10 +1010,10 @@ namespace SmartStore.Admin.Controllers
 
                     if (product != null)
                     {
-                        orderModel.Quantity = x.OrderItems.Select(y => y.Quantity).Sum();
-
-                        var orderTotal = x.OrderItems.Select(p => p.UnitPriceInclTax * p.Quantity).Sum();
+                        var productOrders = x.OrderItems.Where(y => y.ProductId == model.ProductId);
+                        var orderTotal = productOrders.Select(p => p.PriceInclTax).Sum();
                         orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotal, true, false);
+                        orderModel.Quantity = productOrders.Select(y => y.Quantity).Sum();
                     }
 
                     orderModel.CreatedOnString = orderModel.CreatedOn.ToString("g");
@@ -1071,12 +1068,14 @@ namespace SmartStore.Admin.Controllers
             decimal sumProfit, sumTax, sumTotals;
             if (product != null)
             {
-                sumTotals = orders.SelectMany(x => x.OrderItems).Select(p => p.UnitPriceInclTax).Sum();
+                var productOrders = orders
+                    .SelectMany(x => x.OrderItems)
+                    .Where(y => y.ProductId == model.ProductId && y.Order.OrderStatusId != (int)OrderStatus.Cancelled);
 
-                var totalsWithoutTax = orders.SelectMany(o => o.OrderItems).Select(p => p.UnitPriceExclTax).Sum();
+                var totalsWithoutTax = productOrders.Select(p => p.PriceExclTax).Sum();
+                var productCost = productOrders.Select(p => p.ProductCost).Sum();
+                sumTotals = productOrders.Select(p => p.PriceInclTax).Sum();
                 sumTax = sumTotals - totalsWithoutTax;
-
-                var productCost = orders.SelectMany(o => o.OrderItems).Select(p => p.ProductCost).Sum();
                 sumProfit = totalsWithoutTax - productCost;
             }
             else

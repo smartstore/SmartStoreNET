@@ -7,7 +7,7 @@
         .TableHtmlAttributes(new { @class = "multiline-grid" })
         .ClientEvents(events =>
         {
-            if(Model.ProductId == 0)
+            if(Model.ProductId.HasValue)
             {
                 events
                     .OnDataBinding("onDataBinding")
@@ -23,7 +23,7 @@
         })
         .Columns(columns =>
         {
-            if (Model.ProductId == 0)
+            if (Model.ProductId.HasValue)
             {
                 columns.Bound(x => x.Id)
                     .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
@@ -37,7 +37,7 @@
                 .Title(T("Admin.Order"))
                 .ClientTemplate(@Html.LabeledOrderNumber());
 
-            if (Model.ProductId > 0)
+            if (Model.ProductId.HasValue)
             {
                 columns.Bound(x => x.Quantity)
                     .Width(100)

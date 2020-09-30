@@ -16,6 +16,10 @@
         <Value>Nur Text</Value>
     </LocaleResource>
 
+    <LocaleResource Name="CookieInfo">
+      <Value>PayPal nutzt Cookies zur Darstellung und Abwicklung des Zahlungsvorgangs über PayPal.</Value>
+    </LocaleResource>
+
     <LocaleResource Name="AccessData">
         <Value>Zugangsdaten</Value>
     </LocaleResource>

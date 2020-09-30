@@ -213,29 +213,6 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
 
             var model = PrepareNewsItemListModel(command);
-
-
-
-            //var storeId = _services.StoreContext.CurrentStore.Id;
-            //var model = new NewsItemListModel();
-            //model.WorkingLanguageId = workingLanguageId;
-
-            //if (command.PageSize <= 0)
-            //    command.PageSize = _newsSettings.NewsArchivePageSize;
-            //if (command.PageNumber <= 0)
-            //    command.PageNumber = 1;
-
-            //var newsItems = _newsService.GetAllNews(workingLanguageId, _services.StoreContext.CurrentStore.Id, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
-            //model.PagingFilteringContext.LoadPagedList(newsItems);
-
-            //model.NewsItems = newsItems
-            //    .Select(x =>
-            //    {
-            //        var newsModel = new NewsItemModel();
-            //        PrepareNewsItemModel(newsModel, x, false);
-            //        return newsModel;
-            //    })
-            //    .ToList();
             var storeId = _services.StoreContext.CurrentStore.Id;
 
             model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle, storeId);

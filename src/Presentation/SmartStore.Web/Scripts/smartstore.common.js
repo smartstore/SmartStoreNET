@@ -1,14 +1,4 @@
 ﻿(function ($, window, document) {
-    var viewport = ResponsiveBootstrapToolkit;
-
-    // TODO: (mc) ABS4 > delete viewport specific stuff from ~/Scripts/public.common.js, it's shared now.'
-    window.getPageWidth = function () {
-        return parseFloat($("#page").css("width"));
-    };
-
-    window.getViewport = function () {
-        return viewport;
-    };
 
     window.setLocation = function (url) {
         window.location.href = url;
@@ -99,7 +89,7 @@
                 type: type,
                 delay: delay || (type === "success" ? 2500 : 5000),
                 hide: !sticky
-            })
+            });
         };
 
         if (_.isArray(message)) {

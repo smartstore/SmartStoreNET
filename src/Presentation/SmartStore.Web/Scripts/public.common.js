@@ -12,15 +12,15 @@
         else {
             $.throbber.hide();
         }
-    }
+    };
 
     window.getPageWidth = function () {
         return parseFloat($("#page").css("width"));
-    }
+    };
 
     window.getViewport = function () {
         return viewport;
-    }
+    };
 
     var _commonPluginFactories = [
         // select2
@@ -67,7 +67,7 @@
                     var email = $("#newsletter-email").val();
                     var subscribe = 'true';
                     var resultDisplay = $("#newsletter-result-block");
-                    var elemGdprConsent = $(".footer-newsletter #GdprConsent")
+                    var elemGdprConsent = $(".footer-newsletter #GdprConsent");
                     var gdprConsent = elemGdprConsent.length == 0 ? null : elemGdprConsent.is(':checked');
 
                     if ($('#newsletter-unsubscribe').is(':checked')) {
@@ -200,7 +200,7 @@
         $.each(_commonPluginFactories, function (i, val) {
             val.call(this, $(context));
         });
-    }
+    };
 
     // on document ready
     // TODO: reorganize > public.globalinit.js

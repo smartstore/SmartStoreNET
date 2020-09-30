@@ -81,7 +81,7 @@ namespace SmartStore.Services.Customers
                 var typedInstance = plugin as ICookiePublisher;
                 var cookieInfo = typedInstance.GetCookieInfo();
                 if (cookieInfo != null)
-                    cookieInfos.Add(cookieInfo);
+                    cookieInfos.AddRange(cookieInfo);
             }
 
             // Add user defined cookies from privacy settings.

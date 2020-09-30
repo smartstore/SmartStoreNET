@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Plugins
@@ -11,7 +12,7 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets the cookie info of the cookie publisher (e.g. plugin or other module).
         /// </summary>
-        CookieInfo GetCookieInfo();
+        List<CookieInfo> GetCookieInfo();
     }
 
     /// <summary>

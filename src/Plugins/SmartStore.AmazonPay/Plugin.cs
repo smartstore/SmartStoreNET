@@ -55,7 +55,7 @@ namespace SmartStore.AmazonPay
         /// Gets CookieInfos for display in CookieManager dialog.
         /// </summary>
         /// <returns>CookieInfo containing plugin name, cookie purpose description & cookie type</returns>
-        public CookieInfo GetCookieInfo()
+        public List<CookieInfo> GetCookieInfo()
         {
             var widget = _widgetService.LoadWidgetBySystemName("Widgets.AmazonPay");
             if (!widget.IsWidgetActive(_widgetSettings))
@@ -68,7 +68,7 @@ namespace SmartStore.AmazonPay
                 CookieType = CookieType.Required
             };
 
-            return cookieInfo;
+            return new List<CookieInfo> { cookieInfo };
         }
 
         public override void Install()

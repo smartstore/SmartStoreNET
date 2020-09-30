@@ -1702,7 +1702,7 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            int orderId = oi.Order.Id;
+            var orderId = oi.Order.Id;
 
             if (model.NewQuantity.HasValue)
             {
@@ -1711,6 +1711,8 @@ namespace SmartStore.Admin.Controllers
                     OrderItem = oi,
                     QuantityOld = oi.Quantity,
                     QuantityNew = model.NewQuantity.Value,
+                    PriceInclTaxOld = oi.PriceInclTax,
+                    PriceExclTaxOld = oi.PriceExclTax,
                     AdjustInventory = model.AdjustInventory,
                     UpdateRewardPoints = model.UpdateRewardPoints,
                     UpdateTotals = model.UpdateTotals
@@ -1729,7 +1731,7 @@ namespace SmartStore.Admin.Controllers
 
                 _orderProcessingService.AutoUpdateOrderDetails(context);
 
-                // we do not delete order item automatically anymore.
+                // We do not delete an order item automatically anymore.
                 //if (oi.Quantity <= 0)
                 //{
                 //	_orderService.DeleteOrderItem(oi);

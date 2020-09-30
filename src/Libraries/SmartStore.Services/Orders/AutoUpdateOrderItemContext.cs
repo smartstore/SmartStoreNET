@@ -4,6 +4,9 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
 {
+    /// <summary>
+    /// Contains data that is used to recalculated details of an order.
+    /// </summary>
     public class AutoUpdateOrderItemContext
     {
         /// <summary>
@@ -40,6 +43,16 @@ namespace SmartStore.Services.Orders
         /// [IN] Quantity new
         /// </summary>
         public int QuantityNew { get; set; }
+
+        /// <summary>
+        /// [IN] Old price incl. tax.
+        /// </summary>
+        public decimal? PriceInclTaxOld { get; set; }
+
+        /// <summary>
+        /// [IN] Old price excl. tax.
+        /// </summary>
+        public decimal? PriceExclTaxOld { get; set; }
 
         /// <summary>
         /// [OUT] Inventory changes

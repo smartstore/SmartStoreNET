@@ -1907,8 +1907,13 @@ namespace SmartStore.Services.Orders
                 decimal priceInclTax = (context.QuantityNew * oi.UnitPriceInclTax).RoundIfEnabledFor(currency);
                 decimal priceExclTax = (context.QuantityNew * oi.UnitPriceExclTax).RoundIfEnabledFor(currency);
 
-                decimal deltaPriceInclTax = priceInclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceInclTax);
-                decimal deltaPriceExclTax = priceExclTax - (context.IsNewOrderItem ? decimal.Zero : oi.PriceExclTax);
+                decimal deltaPriceInclTax = context.IsNewOrderItem
+                    ? priceInclTax
+                    : priceInclTax - (context.PriceInclTaxOld ?? oi.PriceInclTax);
+
+                decimal deltaPriceExclTax = context.IsNewOrderItem
+                    ? priceExclTax
+                    : priceExclTax - (context.PriceExclTaxOld ?? oi.PriceExclTax);
 
                 oi.Quantity = context.QuantityNew;
                 oi.PriceInclTax = priceInclTax.RoundIfEnabledFor(currency);
@@ -1923,8 +1928,8 @@ namespace SmartStore.Services.Orders
                 decimal discountInclTax = oi.DiscountAmountInclTax * context.QuantityChangeFactor;
                 decimal discountExclTax = oi.DiscountAmountExclTax * context.QuantityChangeFactor;
 
-                decimal deltaDiscountInclTax = discountInclTax - oi.DiscountAmountInclTax;
-                decimal deltaDiscountExclTax = discountExclTax - oi.DiscountAmountExclTax;
+                //decimal deltaDiscountInclTax = discountInclTax - oi.DiscountAmountInclTax;
+                //decimal deltaDiscountExclTax = discountExclTax - oi.DiscountAmountExclTax;
 
                 oi.DiscountAmountInclTax = discountInclTax.RoundIfEnabledFor(currency);
                 oi.DiscountAmountExclTax = discountExclTax.RoundIfEnabledFor(currency);
@@ -1958,9 +1963,9 @@ namespace SmartStore.Services.Orders
 
             if (context.UpdateRewardPoints && context.QuantityDelta < 0)
             {
-                // we reduce but we do not award points subsequently. they can be awarded once per order anyway (see Order.RewardPointsWereAdded).
+                // We reduce but we do not award points subsequently. They can be awarded once per order anyway (see Order.RewardPointsWereAdded).
                 // UpdateRewardPoints only visible for unpending orders (see RewardPointsSettingsValidator).
-                // note: reducing can of cource only work if oi.UnitPriceExclTax has not been changed!
+                // Note: reducing can of cource only work if oi.UnitPriceExclTax has not been changed!
                 decimal reduceAmount = Math.Abs(context.QuantityDelta) * oi.UnitPriceInclTax;
                 ReduceRewardPoints(oi.Order, reduceAmount);
                 context.RewardPointsNew = oi.Order.Customer.GetRewardPointsBalance();

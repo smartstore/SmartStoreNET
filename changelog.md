@@ -45,6 +45,7 @@
 * #2076 Attributes were not pre-selected for all associated products of a grouped product.
 * Customer tab on customer role edit page showed deleted customers.
 * #2041 Product with call for price did show as free in product list and grid view.
+* #2079 Order item editing: order total was not updated when both unit and item price were changed.
 
 
 ## Smartstore 4.0.1

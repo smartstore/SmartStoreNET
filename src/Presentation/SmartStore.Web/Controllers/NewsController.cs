@@ -96,6 +96,23 @@ namespace SmartStore.Web.Controllers
         #region Utilities
 
         [NonAction]
+        protected NewsItemListModel PrepareNewsItemListModel(NewsPagingFilteringModel command)
+        {
+            if (command == null)
+                throw new ArgumentNullException("command");
+
+
+            if (command.PageSize <= 0)
+                command.PageSize = _newsSettings.NewsArchivePageSize;
+            if (command.PageNumber <= 0)
+                command.PageNumber = 1;
+
+            var model = PrepareNewsItemListModel(null, true, null, false, command.PageNumber - 1, command.PageSize);
+
+            return model;
+        }
+
+        [NonAction]
         protected void PrepareNewsItemModel(NewsItemModel model, NewsItem newsItem, bool prepareComments)
         {
             Guard.NotNull(newsItem, nameof(newsItem));
@@ -195,27 +212,31 @@ namespace SmartStore.Web.Controllers
             if (!_newsSettings.Enabled)
                 return HttpNotFound();
 
-            var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
+            var model = PrepareNewsItemListModel(command);
+
+
+
+            //var storeId = _services.StoreContext.CurrentStore.Id;
+            //var model = new NewsItemListModel();
+            //model.WorkingLanguageId = workingLanguageId;
+
+            //if (command.PageSize <= 0)
+            //    command.PageSize = _newsSettings.NewsArchivePageSize;
+            //if (command.PageNumber <= 0)
+            //    command.PageNumber = 1;
+
+            //var newsItems = _newsService.GetAllNews(workingLanguageId, _services.StoreContext.CurrentStore.Id, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
+            //model.PagingFilteringContext.LoadPagedList(newsItems);
+
+            //model.NewsItems = newsItems
+            //    .Select(x =>
+            //    {
+            //        var newsModel = new NewsItemModel();
+            //        PrepareNewsItemModel(newsModel, x, false);
+            //        return newsModel;
+            //    })
+            //    .ToList();
             var storeId = _services.StoreContext.CurrentStore.Id;
-            var model = new NewsItemListModel();
-            model.WorkingLanguageId = workingLanguageId;
-
-            if (command.PageSize <= 0)
-                command.PageSize = _newsSettings.NewsArchivePageSize;
-            if (command.PageNumber <= 0)
-                command.PageNumber = 1;
-
-            var newsItems = _newsService.GetAllNews(workingLanguageId, _services.StoreContext.CurrentStore.Id, command.PageNumber - 1, command.PageSize, _services.WorkContext.CurrentCustomer.IsAdmin());
-            model.PagingFilteringContext.LoadPagedList(newsItems);
-
-            model.NewsItems = newsItems
-                .Select(x =>
-                {
-                    var newsModel = new NewsItemModel();
-                    PrepareNewsItemModel(newsModel, x, false);
-                    return newsModel;
-                })
-                .ToList();
 
             model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle, storeId);
             model.MetaDescription = _newsSettings.GetLocalizedSetting(x => x.MetaDescription, storeId);
@@ -224,7 +245,7 @@ namespace SmartStore.Web.Controllers
             if (!model.MetaTitle.HasValue())
                 model.MetaTitle = T("PageTitle.NewsArchive").Text;
 
-            Services.DisplayControl.AnnounceRange(newsItems);
+            //Services.DisplayControl.AnnounceRange(model.NewsItems);
 
             return View(model);
         }
@@ -394,6 +415,45 @@ namespace SmartStore.Web.Controllers
             _services.DisplayControl.Announce(file?.File);
 
             return pictureModel;
+        }
+
+        [ChildActionOnly]
+        public ActionResult NewsSummary(int? maxAgeInDays, bool renderHeading, string newsHeading, bool disableCommentCount, int? maxPostAmount = null)
+        {
+            var model = PrepareNewsItemListModel(maxAgeInDays, renderHeading, newsHeading, disableCommentCount, 0, maxPostAmount);
+            return PartialView(model);
+        }
+
+        [NonAction]
+        protected NewsItemListModel PrepareNewsItemListModel(int? maxAgeInDays, bool renderHeading, string newsHeading, bool disableCommentCount, int? pageIndex = null, int? maxPostAmount = null)
+        {
+            var storeId = _services.StoreContext.CurrentStore.Id;
+            var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
+            var model = new NewsItemListModel
+            {
+                NewsHeading = newsHeading,
+                RenderHeading = renderHeading,
+                RssToLinkButton = renderHeading,
+                DisableCommentCount = disableCommentCount
+            };
+
+            DateTime? maxAge = null;
+            if (maxAgeInDays.HasValue)
+            {
+                maxAge = DateTime.UtcNow.AddDays(-maxAgeInDays.Value);
+            }
+
+           var newsItems = _newsService.GetAllNews(workingLanguageId, storeId, pageIndex ?? 0, maxPostAmount ?? 100, _services.WorkContext.CurrentCustomer.IsAdmin(), maxAge);
+            model.NewsItems = newsItems
+                .Select(x =>
+                {
+                    var newsItemModel = new NewsItemModel();
+                    PrepareNewsItemModel(newsItemModel, x, false);
+                    return newsItemModel;
+                })
+                .ToList();
+
+            return model;
         }
 
         #endregion

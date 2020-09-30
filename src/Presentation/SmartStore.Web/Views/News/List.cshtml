@@ -8,79 +8,18 @@
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 
-<div class="page news-list-page">
-    <div class="row mb-5">
-        <div class="col">
-            <div class="heading">
-                <h1 class="heading-title fs-h1">@T("News")</h1>
+    <div class="page news-list-page">
+        @{ Html.RenderPartial("NewsSummaryHeading", Model); }
+
+        <div class="page-body">
+            @{ Html.RenderWidget("newslist_page_before_items"); }
+
+            <div class="news-items mb-5 row">
+                @{ Html.RenderPartial("NewsSummaryList", Model); }
             </div>
-        </div>
-        <div class="col col-auto">
-            <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">*
-                <i class="fa fa-rss"></i>
-                <span>@T("News.RSS")</span>
-            </a>
+
+            @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")
+
+            @{ Html.RenderWidget("newslist_page_after_items"); }
         </div>
     </div>
-
-    <div class="page-body">
-        @{ Html.RenderWidget("newslist_page_before_items"); }
-
-        <div class="news-items mb-5 row">
-            @foreach (var item in Model.NewsItems)
-            {
-                var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
-                var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
-
-                <article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column@(item.Published ? "" : " unpublished")" itemscope itemtype="http://schema.org/NewsArticle">
-                    @if (imageUrl.HasValue())
-                    {
-                        <figure style="--img-aspect-ratio: 0.5;">
-                            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm shadow-primary">
-                                <img src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
-                            </a>
-                        </figure>
-                    }
-
-                    <h4 class="newsitem-title fs-h5">
-                        <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" itemprop="headline">
-                            @item.Title.Truncate(60, "...")
-                        </a>
-                    </h4>
-
-                    <div class="newsitem-date rfs" itemprop="datePublished">
-                        @item.CreatedOn.ToNativeString("D")
-                    </div>
-                    
-                    <meta itemprop="dateModified" content="@item.CreatedOn.ToNativeString("D")">
-
-                    <p class="newsitem-description rfs my-3 flex-grow-1" itemprop="description">
-                        @Html.Raw(item.Short.Truncate(160, "..."))
-                    </p>
-
-                    <div class="d-flex flex-row">
-                        <div class="flex-grow-1">
-                            <a class="btn btn-outline-gray rfs" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
-                                @T("Common.Cms.ReadMore")
-                            </a>
-                        </div>
-                        
-                        @if (item.Comments.AllowComments)
-                        {
-                            <a class="rfs align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
-                               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
-                               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
-                                <i class="far fa-comment-alt"></i>
-                                <span class="newsitem-comments-count">@item.Comments.NumberOfComments</span>
-                            </a>
-                        }
-                    </div>
-                </article>
-            }
-        </div>
-
-        @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")
-
-        @{ Html.RenderWidget("newslist_page_after_items"); }
-    </div>
-</div>

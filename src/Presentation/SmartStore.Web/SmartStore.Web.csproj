@@ -1888,6 +1888,9 @@
     <Content Include="Views\Product\Partials\Product.Media.cshtml" />
     <Content Include="Views\Shared\Partials\MediaGallery.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.Off.cshtml" />
+    <Content Include="Views\News\Partials\NewsSummary.cshtml" />
+    <Content Include="Views\News\Partials\NewsSummaryHeading.cshtml" />
+    <Content Include="Views\News\Partials\NewsSummaryList.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

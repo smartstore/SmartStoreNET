@@ -352,7 +352,5 @@ namespace SmartStore.Core.Data
         }
 
         #endregion
-
     }
-
 }

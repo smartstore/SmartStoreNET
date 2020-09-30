@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -390,19 +391,6 @@ namespace SmartStore.Web.Framework
             }
 
             return (typeof(SmartObjectContext), typeof(BaseEntity));
-
-            //if (type.IsSubClass(typeof(DbSaveHook<,>), out Type baseType))
-            //{
-            //    var args = baseType.GetGenericArguments();
-            //    return (args[0], args[1]);
-            //}
-            //else if (type.IsSubClass(typeof(IDbSaveHook<>), out baseType))
-            //{
-            //    var args = baseType.GetGenericArguments();
-            //    return (args[0], typeof(BaseEntity));
-            //}
-
-            //return (typeof(SmartObjectContext), typeof(BaseEntity));
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -1271,9 +1259,7 @@ namespace SmartStore.Web.Framework
             "BuildRegistration",
             BindingFlags.Static | BindingFlags.NonPublic);
 
-        public IEnumerable<IComponentRegistration> RegistrationsFor(
-            Service service,
-            Func<Service, IEnumerable<IComponentRegistration>> registrations)
+        public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrations)
         {
             if (service is TypedService ts && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
@@ -1282,6 +1268,7 @@ namespace SmartStore.Web.Framework
             }
         }
 
+        [SuppressMessage("CodeQuality", "IDE0051", Justification = "Called by reflection")]
         static IComponentRegistration BuildRegistration<TSettings>() where TSettings : ISettings, new()
         {
             return RegistrationBuilder
@@ -1345,6 +1332,7 @@ namespace SmartStore.Web.Framework
 
         public bool IsAdapterForIndividualComponents => true;
 
+        [SuppressMessage("CodeQuality", "IDE0051", Justification = "Called by reflection")]
         static IComponentRegistration CreateMetaRegistration<T>(Service providedService, IComponentRegistration valueRegistration) where T : class
         {
             var rb = RegistrationBuilder.ForDelegate(

@@ -177,8 +177,7 @@ namespace SmartStore.Web.Framework
                 if (visitorCookie.Value.HasValue())
                 {
                     // Cookie present. Try to load guest customer by it's value.
-                    Guid customerGuid;
-                    if (Guid.TryParse(visitorCookie.Value, out customerGuid))
+                    if (Guid.TryParse(visitorCookie.Value, out var customerGuid))
                     {
                         customer = _customerService.GetCustomerByGuid(customerGuid);
                     }

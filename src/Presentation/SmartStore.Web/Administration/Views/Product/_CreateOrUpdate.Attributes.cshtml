@@ -128,8 +128,21 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div class="mb-3">
+			<div>
+				<div class="adminContent">
+					<div class="adminRow">
+						<div class="adminTitle">
+							@Html.SmartLabelFor(model => model.HideUnavailableAttributes)
+						</div>
+						<div class="adminData">
+							@Html.EditorFor(model => model.HideUnavailableAttributes)
+							@Html.ValidationMessageFor(model => model.HideUnavailableAttributes)
+						</div>
+					</div>
+				</div>
+			</div>
 
+            <div class="mb-3">
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="d-none" />
                 <script>
                     $(document).ready(function () {

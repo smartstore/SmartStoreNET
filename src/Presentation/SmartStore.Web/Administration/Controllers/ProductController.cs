@@ -432,6 +432,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
+        protected void UpdateProductAttributes(Product product, ProductModel model)
+        {
+            product.HideUnavailableAttributes = model.HideUnavailableAttributes;
+        }
+
+        [NonAction]
         protected void UpdateProductSeo(Product product, ProductModel model)
         {
             var p = product;
@@ -1276,6 +1282,9 @@ namespace SmartStore.Admin.Controllers
                         break;
                     case "price":
                         UpdateProductPrice(product, model);
+                        break;
+                    case "attributes":
+                        UpdateProductAttributes(product, model);
                         break;
                     case "downloads":
                         UpdateProductDownloads(product, model);

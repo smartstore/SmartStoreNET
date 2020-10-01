@@ -19,6 +19,7 @@ using SmartStore.Core.Data;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -43,6 +44,7 @@ namespace SmartStore.Web.Framework.WebApi
 			return new HttpResponseException(response);
 		}
 
+		[WebApiAuthenticate]
 		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
 		{
 			if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
@@ -172,6 +174,7 @@ namespace SmartStore.Web.Framework.WebApi
 			set;
 		}
 
+		[WebApiAuthenticate]
 		public override IQueryable<TEntity> Get()
 		{
 			if (!ModelState.IsValid)
@@ -344,6 +347,7 @@ namespace SmartStore.Web.Framework.WebApi
 			return SingleResult.Create(query);
 		}
 
+		[WebApiAuthenticate]
 		public override HttpResponseMessage Post(TEntity entity)
 		{
 			var response = Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
@@ -380,6 +384,7 @@ namespace SmartStore.Web.Framework.WebApi
 			Repository.Insert(entity);
 		}
 
+		[WebApiAuthenticate]
 		public override HttpResponseMessage Put(int key, TEntity update)
 		{
 			return Request.CreateResponse(HttpStatusCode.OK, UpdateEntity(key, update));
@@ -411,6 +416,7 @@ namespace SmartStore.Web.Framework.WebApi
 			Repository.Update(entity);
 		}
 
+		[WebApiAuthenticate]
 		public override HttpResponseMessage Patch(int key, Delta<TEntity> patch)
 		{
 			return Request.CreateResponse(HttpStatusCode.OK, PatchEntity(key, patch));
@@ -431,6 +437,7 @@ namespace SmartStore.Web.Framework.WebApi
 			return entity;
 		}
 
+		[WebApiAuthenticate]
 		public override void Delete(int key)
 		{
 			if (!ModelState.IsValid)

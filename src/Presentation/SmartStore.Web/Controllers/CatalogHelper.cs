@@ -1032,7 +1032,7 @@ namespace SmartStore.Web.Controllers
                     foreach (var attribute in model.ProductVariantAttributes)
                     {
                         var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
-                        var allCombinationsDeactivated = true;
+                        var hideAttribute = true;
 
                         foreach (ProductDetailsModel.ProductVariantAttributeValueModel value in attribute.Values)
                         {
@@ -1046,23 +1046,19 @@ namespace SmartStore.Web.Controllers
                                 value.PriceAdjustment = string.Empty;
                             }
 
-                            // Disable or hide unavailable options.
                             var availabilityInfo = _productAttributeParser.IsCombinationAvailable(
                                 product,
                                 variantAttributes,
                                 selectedAttributeValues,
                                 value.ProductAttributeValue);
 
-                            if (availabilityInfo == null || availabilityInfo.IsActive)
-                            {
-                                allCombinationsDeactivated = false;
-                            }
-
                             if (availabilityInfo != null)
                             {
+                                // Attribute combination is unavailable.
                                 value.IsDisabled = true;
+                                value.IsHidden = product.HideUnavailableAttributes;
 
-                                // Set title attribute for unavailable options.
+                                // Set title attribute for unavailable option.
                                 if (product.DisplayStockAvailability && availabilityInfo.IsOutOfStock && availabilityInfo.IsActive)
                                 {
                                     value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
@@ -1074,11 +1070,14 @@ namespace SmartStore.Web.Controllers
                                     value.Title = res["Products.Availability.IsNotActive"];
                                 }
                             }
+
+                            if (!value.IsDisabled && !value.IsHidden)
+                            {
+                                hideAttribute = false;
+                            }
                         }
 
-                        // TODO: variable allCombinationsHidden instead of Linq.
-                        // Cases where the attribute is not displayed.
-                        if (allCombinationsDeactivated || attribute.Values.All(x => x.IsHidden))
+                        if (hideAttribute)
                         {
                             attribute.IsHidden = true;
                             attribute.IsRequired = false;

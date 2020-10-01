@@ -593,6 +593,12 @@
                 "'Bundesland' erferderlich",
                 "Check the box if 'State/province' is required.",
                 "Legt fest, ob Angaben im Eingabefeld 'Adressszusatz' erforderlich sind.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.HideUnavailableAttributes",
+                "Hide unavailable attribute combinations",
+                "Nicht verfügbare Attribut-Kombinationen ausblenden",
+                "Specifies whether to hide unavailable attribute combinations on product detail pages. By default, they are disabled.",
+                "Legt fest, ob nicht verfügbare Attribut-Kombinationen auf Produktdetailseiten ausgeblendet werden sollen. Standardmäßig werden sie deaktiviert.");
             
             #region Media
 

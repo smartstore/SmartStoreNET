@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
@@ -31,6 +32,14 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
         public string TextPrompt { get; set; }
+
+        /// <summary>
+        /// Gets or sets any custom data.
+        /// It's not used by Smartstore but is being passed to the choice partial view.
+        /// </summary>
+        [DataMember]
+        [MaxLength]
+        public string CustomData { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is required

@@ -12,7 +12,7 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Gets the cookie info of the cookie publisher (e.g. plugin or other module).
         /// </summary>
-        List<CookieInfo> GetCookieInfo();
+        IEnumerable<CookieInfo> GetCookieInfo();
     }
 
     /// <summary>

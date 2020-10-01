@@ -72,7 +72,7 @@ namespace SmartStore.PayPal
             base.Uninstall();
         }
 
-        public List<CookieInfo> GetCookieInfo()
+        public IEnumerable<CookieInfo> GetCookieInfo()
         {
             var isActive = _paymentService.Value.IsPaymentMethodActive("Payments.PayPalPlus", _services.StoreContext.CurrentStore.Id);
             if (!isActive)

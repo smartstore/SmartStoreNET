@@ -158,26 +158,35 @@
                 </td>
             </tr>
         </tbody>
-		<tbody id="pnlRenderAsWidget">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.WidgetZone)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.WidgetZone, "WidgetZone")
-					@Html.ValidationMessageFor(model => model.WidgetZone)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.WidgetWrapContent)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.WidgetWrapContent, new { data_toggler_for = "#pnlWidgetWrapContent" })
-					@Html.ValidationMessageFor(model => model.WidgetWrapContent)
-				</td>
-			</tr>
-		</tbody>
+        <tbody id="pnlRenderAsWidget">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.WidgetZone)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.WidgetZone, "WidgetZone")
+                    @Html.ValidationMessageFor(model => model.WidgetZone)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CookieType)
+                </td>
+                <td class="adminData">
+                    @Html.DropDownListFor(model => model.CookieType, Model.AvailableCookieTypes, T("Common.Optional"))
+                    @Html.ValidationMessageFor(model => model.CookieType)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.WidgetWrapContent)
+                </td>
+                <td class="adminData">
+                    @Html.CheckBoxFor(model => model.WidgetWrapContent, new { data_toggler_for = "#pnlWidgetWrapContent" })
+                    @Html.ValidationMessageFor(model => model.WidgetWrapContent)
+                </td>
+            </tr>
+        </tbody>
 		<tbody id="pnlWidgetWrapContent">
 			<tr>
 				<td class="adminTitle">

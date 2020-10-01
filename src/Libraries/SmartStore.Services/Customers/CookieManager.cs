@@ -112,7 +112,7 @@ namespace SmartStore.Services.Customers
                 try
                 {
                     var cookieData = JsonConvert.DeserializeObject<ConsentCookie>(cookie.Value);
-                    if ((cookieData.AllowAnalytics && cookieType == CookieType.Analytics) || (cookieData.AllowThirdParty && cookieType == CookieType.ThirdParty))
+                    if ((cookieData.AllowAnalytics && cookieType == CookieType.Analytics) || (cookieData.AllowThirdParty && cookieType == CookieType.ThirdParty) || cookieType == CookieType.Required)
                     {
                         return true;
                     }

@@ -517,6 +517,10 @@
     <Compile Include="Migrations\202009090817220_DeliveryTimeMinMaxDays.designer.cs">
       <DependentUpon>202009090817220_DeliveryTimeMinMaxDays.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010011005387_TopicCookieType.cs" />
+    <Compile Include="Migrations\202010011005387_TopicCookieType.designer.cs">
+      <DependentUpon>202010011005387_TopicCookieType.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -930,6 +934,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202009090817220_DeliveryTimeMinMaxDays.resx">
       <DependentUpon>202009090817220_DeliveryTimeMinMaxDays.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010011005387_TopicCookieType.resx">
+      <DependentUpon>202010011005387_TopicCookieType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

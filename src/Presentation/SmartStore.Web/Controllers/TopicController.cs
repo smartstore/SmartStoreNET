@@ -4,6 +4,8 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -28,6 +30,7 @@ namespace SmartStore.Web.Controllers
         private readonly SeoSettings _seoSettings;
         private readonly IBreadcrumb _breadcrumb;
         private readonly CatalogHelper _helper;
+        private readonly ICookieManager _cookieManager;
 
         public TopicController(
             ITopicService topicService,
@@ -39,7 +42,8 @@ namespace SmartStore.Web.Controllers
             ICacheManager cacheManager,
             SeoSettings seoSettings,
             IBreadcrumb breadcrumb,
-            CatalogHelper helper)
+            CatalogHelper helper,
+            ICookieManager cookieManager)
         {
             _topicService = topicService;
             _workContext = workContext;
@@ -51,6 +55,7 @@ namespace SmartStore.Web.Controllers
             _seoSettings = seoSettings;
             _breadcrumb = breadcrumb;
             _helper = helper;
+            _cookieManager = cookieManager;
         }
 
         [NonAction]
@@ -172,6 +177,14 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult TopicWidget(TopicWidgetModel model)
         {
+            // Check for Cookie Consent
+            if (model.CookieType != null)
+            {
+                var cookiesAllowed = _cookieManager.IsCookieAllowed(this.ControllerContext, (CookieType)model.CookieType);
+                if (!cookiesAllowed)
+                    return new EmptyResult();
+            }
+            
             return PartialView(model);
         }
 

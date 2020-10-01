@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Domain.Topics
 {
@@ -163,6 +164,11 @@ namespace SmartStore.Core.Domain.Topics
         /// </summary>
         [DataMember]
         public bool IsPublished { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the topic set a cookie and the cookie type
+        /// </summary>
+        public CookieType? CookieType { get; set; }
 
         /// <summary>
         /// Helper function which gets the comma-separated <c>WidgetZone</c> property as list of strings

@@ -22,6 +22,7 @@ namespace SmartStore.Admin.Models.Topics
             WidgetWrapContent = true;
             Locales = new List<TopicLocalizedModel>();
             AvailableTitleTags = new List<SelectListItem>();
+            AvailableCookieTypes = new List<SelectListItem>();
             MenuLinks = new Dictionary<string, string>();
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
@@ -50,6 +51,10 @@ namespace SmartStore.Admin.Models.Topics
 
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public bool SubjectToAcl { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.CookieType")]
+        public int? CookieType { get; set; }
+        public IList<SelectListItem> AvailableCookieTypes { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]

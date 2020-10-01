@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
@@ -113,7 +114,8 @@ namespace SmartStore.Web.Infrastructure
                                 BodyRtl = locBody.CurrentLanguage.Rtl,
                                 TitleTag = t.TitleTag,
                                 WidgetZones = t.GetWidgetZones().ToArray(),
-                                Priority = t.Priority
+                                Priority = t.Priority,
+                                CookieType = t.CookieType
                             };
                         })
                         .OrderBy(t => t.Priority)
@@ -157,7 +159,8 @@ namespace SmartStore.Web.Infrastructure
                                             Intro = widget.Intro.NullEmpty(),
                                             Html = widget.Body,
                                             HtmlRtl = widget.BodyRtl,
-                                            TitleRtl = widget.TitleRtl
+                                            TitleRtl = widget.TitleRtl,
+                                            CookieType = widget.CookieType
                                         }
                                     }
                                 }
@@ -221,5 +224,6 @@ namespace SmartStore.Web.Infrastructure
 
         public string TitleTag { get; set; }
         public int Priority { get; set; }
+        public CookieType? CookieType { get; set; }
     }
 }

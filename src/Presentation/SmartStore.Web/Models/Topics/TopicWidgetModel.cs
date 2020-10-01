@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework.Modelling;
+﻿using SmartStore.Core.Plugins;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Topics
 {
@@ -16,5 +17,6 @@ namespace SmartStore.Web.Models.Topics
         public bool WrapContent { get; set; }
         public bool ShowTitle { get; set; }
         public bool IsBordered { get; set; }
+        public CookieType? CookieType { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Security;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
@@ -88,6 +89,28 @@ namespace SmartStore.Admin.Controllers
             {
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
             }
+        }
+
+        private void AddCookieTypes(TopicModel model, int? selectedType = 0)
+        {
+            model.AvailableCookieTypes.Add(new SelectListItem()
+            {
+                Text = "Required",
+                Value = ((int)CookieType.Required).ToString(),
+                Selected = CookieType.Required == (CookieType?)selectedType
+            });
+            model.AvailableCookieTypes.Add(new SelectListItem()
+            {
+                Text = "Analytics",
+                Value = ((int)CookieType.Analytics).ToString(),
+                Selected = CookieType.Analytics == (CookieType?)selectedType
+            });
+            model.AvailableCookieTypes.Add(new SelectListItem()
+            {
+                Text = "ThirdParty",
+                Value = ((int)CookieType.ThirdParty).ToString(),
+                Selected = CookieType.ThirdParty == (CookieType?)selectedType
+            });
         }
 
         private string GetTopicUrl(Topic topic)
@@ -195,6 +218,7 @@ namespace SmartStore.Admin.Controllers
             PrepareStoresMappingModel(model, null, false);
             PrepareAclModel(model, null, false);
             AddLocales(_languageService, model.Locales);
+            AddCookieTypes(model);
 
             model.TitleTag = "h1";
 
@@ -220,6 +244,8 @@ namespace SmartStore.Admin.Controllers
                     topic.WidgetZone = string.Join(",", model.WidgetZone);
                 }
 
+                topic.CookieType = (CookieType?)model.CookieType;
+
                 _topicService.InsertTopic(topic);
 
                 model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
@@ -228,6 +254,7 @@ namespace SmartStore.Admin.Controllers
                 SaveStoreMappings(topic, model.SelectedStoreIds);
                 SaveAclMappings(topic, model.SelectedCustomerRoleIds);
                 UpdateLocales(topic, model);
+                AddCookieTypes(model, model.CookieType);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
@@ -254,9 +281,11 @@ namespace SmartStore.Admin.Controllers
             var model = topic.ToModel();
             model.Url = GetTopicUrl(topic);
             model.WidgetZone = topic.WidgetZone.SplitSafe(",");
+            model.CookieType = (int?)topic.CookieType;
 
             PrepareStoresMappingModel(model, topic, false);
             PrepareAclModel(model, topic, false);
+            AddCookieTypes(model, model.CookieType);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -326,6 +355,8 @@ namespace SmartStore.Admin.Controllers
                 {
                     topic.WidgetZone = string.Join(",", model.WidgetZone);
                 }
+                
+                topic.CookieType = (CookieType?)model.CookieType;
 
                 _topicService.UpdateTopic(topic);
 
@@ -335,6 +366,7 @@ namespace SmartStore.Admin.Controllers
                 SaveStoreMappings(topic, model.SelectedStoreIds);
                 SaveAclMappings(topic, model.SelectedCustomerRoleIds);
                 UpdateLocales(topic, model);
+                AddCookieTypes(model, model.CookieType);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 

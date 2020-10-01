@@ -94,14 +94,14 @@ namespace SmartStore.Services.Catalog
         ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
 
         /// <summary>
-        /// Returns a value indicating whether the attribute combination is available for a given attribute value.
+        /// Returns informations about the availability of an attribute combination.
         /// </summary>
         /// <param name="product">Product.</param>
         /// <param name="attributes">All product attributes of the specified product.</param>
         /// <param name="selectedValues">The attribute values of the currently selected attribute combination.</param>
         /// <param name="currentValue">The current attribute value.</param>
-        /// <returns>Whether the attribute combination is available.</returns>
-        (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
+        /// <returns>Informations about the attribute combination's availability. <c>null</c> if the combination is available.</returns>
+        CombinationAvailabilityInfo IsCombinationAvailable(
             Product product,
             IEnumerable<ProductVariantAttribute> attributes,
             IEnumerable<ProductVariantAttributeValue> selectedValues,
@@ -139,5 +139,13 @@ namespace SmartStore.Services.Catalog
             out string senderEmail, out string giftCardMessage);
 
         #endregion
+    }
+
+
+    [Serializable]
+    public class CombinationAvailabilityInfo
+    {
+        public bool IsActive { get; set; }
+        public bool IsOutOfStock { get; set; }
     }
 }

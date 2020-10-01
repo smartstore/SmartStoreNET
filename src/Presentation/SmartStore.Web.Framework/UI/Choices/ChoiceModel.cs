@@ -9,8 +9,8 @@ namespace SmartStore.Web.Framework.UI.Choices
     {
         protected ChoiceModel()
         {
-            this.AllowedFileExtensions = new List<string>();
-            this.Values = new List<ChoiceItemModel>();
+            AllowedFileExtensions = new List<string>();
+            Values = new List<ChoiceItemModel>();
         }
 
         public AttributeControlType AttributeControlType { get; set; }
@@ -26,6 +26,8 @@ namespace SmartStore.Web.Framework.UI.Choices
         public bool IsRequired { get; set; }
 
         public bool IsDisabled { get; set; }
+
+        public bool IsHidden { get; set; }
 
         /// <summary>
         /// Allowed file extensions for customer uploaded files

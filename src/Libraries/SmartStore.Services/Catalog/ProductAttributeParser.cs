@@ -513,28 +513,25 @@ namespace SmartStore.Services.Catalog
 
         #region Unavailable attribute combinations
 
-        public virtual (bool isAvailable, bool isOutOfStock) IsCombinationAvailable(
+        public virtual CombinationAvailabilityInfo IsCombinationAvailable(
             Product product,
             IEnumerable<ProductVariantAttribute> attributes,
             IEnumerable<ProductVariantAttributeValue> selectedValues,
             ProductVariantAttributeValue currentValue)
         {
-            // The default return value is "True" because from a technical point of view, a combination is only a set of specific values
-            // and not necessarily required for an order.
             if (product == null ||
                 _performanceSettings.MaxUnavailableAttributeCombinations <= 0 ||
                 currentValue == null || 
                 !(attributes?.Any() ?? false) ||
                 !(selectedValues?.Any() ?? false))
             {
-                return (true, false);
+                return null;
             }
 
             // Get unavailable combinations.
             var unavailableCombinations = _cache.Get(UNAVAILABLE_COMBINATIONS_KEY.FormatInvariant(product.Id), () =>
             {
-                // Ids key -> boolean that indicates combination is active but out of stock.
-                var data = new Dictionary<string, bool>();
+                var data = new Dictionary<string, CombinationAvailabilityInfo>();
                 var query = _pvacRepository.TableUntracked.Where(x => x.ProductId == product.Id);
 
                 if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
@@ -566,8 +563,11 @@ namespace SmartStore.Services.Catalog
                                     .OrderBy(x => x.Key)
                                     .Select(x => $"{x.Key}:{string.Join(",", x.Value.OrderBy(y => y))}");
 
-                                // IsActive has priority over out of stock. It's a workaround to get "IsNotActive" rendered if the attribute is both, not active AND out of stock.
-                                data[string.Join("-", valuesKeys)] = combination.IsActive && combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders;
+                                data[string.Join("-", valuesKeys)] = new CombinationAvailabilityInfo
+                                {
+                                    IsActive = combination.IsActive,
+                                    IsOutOfStock = combination.StockQuantity <= 0 && !combination.AllowOutOfStockOrders
+                                };
                             }
                         }
                     }
@@ -578,7 +578,7 @@ namespace SmartStore.Services.Catalog
 
             if (!unavailableCombinations.Any())
             {
-                return (true, false);
+                return null;
             }
 
             // Create key to test currentValue.
@@ -618,7 +618,7 @@ namespace SmartStore.Services.Catalog
                     else
                     {
                         // No selected value -> no unavailable combination.
-                        return (true, false);
+                        return null;
                     }
                 }
 
@@ -634,12 +634,12 @@ namespace SmartStore.Services.Catalog
             var key = psb.ToStringAndReturn();
             //$"{!unavailableCombinations.ContainsKey(key),-5} {currentValue.ProductVariantAttributeId}:{currentValue.Id} -> {key}".Dump();
 
-            if (unavailableCombinations.TryGetValue(key, out var outOfStock))
+            if (unavailableCombinations.TryGetValue(key, out var availability))
             {
-                return (false, outOfStock);
+                return availability;
             }
 
-            return (true, false);
+            return null;
         }
 
         private static readonly HashSet<Type> _combinationsInvalidationTypes = new HashSet<Type>(new[]

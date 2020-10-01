@@ -749,6 +749,13 @@ namespace SmartStore.Web.Controllers
             List<ProductVariantAttributeValue> selectedAttributeValues = null;
             var variantAttributes = isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
+            var res = new Dictionary<string, LocalizedString>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Products.Availability.IsNotActive", T("Products.Availability.IsNotActive") },
+                { "Products.Availability.OutOfStock", T("Products.Availability.OutOfStock") },
+                { "Products.Availability.Backordering", T("Products.Availability.Backordering") },
+            };
+
             model.IsBundlePart = product.ProductType != ProductType.BundledProduct && productBundleItem != null;
             model.ProductPrice.DynamicPriceUpdate = _catalogSettings.EnableDynamicPriceUpdate;
             model.ProductPrice.BundleItemShowBasePrice = _catalogSettings.BundleItemShowBasePrice;
@@ -1013,7 +1020,7 @@ namespace SmartStore.Web.Controllers
                     if (model.SelectedCombination != null && model.SelectedCombination.IsActive == false)
                     {
                         model.IsAvailable = false;
-                        model.StockAvailability = T("Products.Availability.IsNotActive");
+                        model.StockAvailability = res["Products.Availability.IsNotActive"];
                     }
 
                     // Required for below product.IsAvailableByStock().
@@ -1025,6 +1032,7 @@ namespace SmartStore.Web.Controllers
                     foreach (var attribute in model.ProductVariantAttributes)
                     {
                         var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
+                        var allCombinationsDeactivated = true;
 
                         foreach (ProductDetailsModel.ProductVariantAttributeValueModel value in attribute.Values)
                         {
@@ -1038,29 +1046,42 @@ namespace SmartStore.Web.Controllers
                                 value.PriceAdjustment = string.Empty;
                             }
 
-                            // Disable unavailable options.
-                            (bool isCombinationAvailable, bool isCombinationOutOfStock) = _productAttributeParser.IsCombinationAvailable(
+                            // Disable or hide unavailable options.
+                            var availabilityInfo = _productAttributeParser.IsCombinationAvailable(
                                 product,
                                 variantAttributes,
                                 selectedAttributeValues,
                                 value.ProductAttributeValue);
 
-                            value.IsDisabled = !isCombinationAvailable;
-
-                            if (value.IsDisabled)
+                            if (availabilityInfo == null || availabilityInfo.IsActive)
                             {
-                                // Set title attribute for disabled options.
-                                if (isCombinationOutOfStock && product.DisplayStockAvailability)
+                                allCombinationsDeactivated = false;
+                            }
+
+                            if (availabilityInfo != null)
+                            {
+                                value.IsDisabled = true;
+
+                                // Set title attribute for unavailable options.
+                                if (product.DisplayStockAvailability && availabilityInfo.IsOutOfStock && availabilityInfo.IsActive)
                                 {
                                     value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
-                                        ? T("Products.Availability.OutOfStock")
-                                        : T("Products.Availability.Backordering");
+                                        ? res["Products.Availability.OutOfStock"]
+                                        : res["Products.Availability.Backordering"];
                                 }
                                 else
                                 {
-                                    value.Title = T("Products.Availability.IsNotActive");
+                                    value.Title = res["Products.Availability.IsNotActive"];
                                 }
                             }
+                        }
+
+                        // TODO: variable allCombinationsHidden instead of Linq.
+                        // Cases where the attribute is not displayed.
+                        if (allCombinationsDeactivated || attribute.Values.All(x => x.IsHidden))
+                        {
+                            attribute.IsHidden = true;
+                            attribute.IsRequired = false;
                         }
                     }
                 }

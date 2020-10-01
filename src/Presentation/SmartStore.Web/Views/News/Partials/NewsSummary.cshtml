@@ -14,12 +14,6 @@
     </div>
 }
 
-<div class="newsitems news-summary" style="visibility: hidden;">
+<div class="news-items row">
     @{ Html.RenderPartial("NewsSummaryList", Model); }
 </div>
-
-<script>
-    $(function () {
-        $(".newsitems").masonryGrid(".newslist-item");
-    });
-</script>

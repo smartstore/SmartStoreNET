@@ -8,18 +8,18 @@
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 
-    <div class="page news-list-page">
-        @{ Html.RenderPartial("NewsSummaryHeading", Model); }
+<div class="page news-list-page">
+    @{ Html.RenderPartial("NewsSummaryHeading", Model); }
 
-        <div class="page-body">
-            @{ Html.RenderWidget("newslist_page_before_items"); }
+    <div class="page-body">
+        @{ Html.RenderWidget("newslist_page_before_items"); }
 
-            <div class="news-items mb-5 row">
-                @{ Html.RenderPartial("NewsSummaryList", Model); }
-            </div>
-
-            @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")
-
-            @{ Html.RenderWidget("newslist_page_after_items"); }
+        <div class="news-items mb-5 row">
+            @{ Html.RenderPartial("NewsSummaryList", Model); }
         </div>
+
+        @Html.SmartStore().Pager(Model.PagingFilteringContext).Alignment(PagerAlignment.Centered).Size(PagerSize.Large).QueryParam("pagenumber")
+
+        @{ Html.RenderWidget("newslist_page_after_items"); }
     </div>
+</div>

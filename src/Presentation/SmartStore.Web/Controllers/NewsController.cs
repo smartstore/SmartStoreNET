@@ -101,13 +101,12 @@ namespace SmartStore.Web.Controllers
             if (command == null)
                 throw new ArgumentNullException("command");
 
-
             if (command.PageSize <= 0)
                 command.PageSize = _newsSettings.NewsArchivePageSize;
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
-            var model = PrepareNewsItemListModel(null, true, null, false, command.PageNumber - 1, command.PageSize);
+            var model = PrepareNewsItemListModel(true, null, false, command.PageNumber - 1, command.PageSize, true);
 
             return model;
         }
@@ -214,16 +213,14 @@ namespace SmartStore.Web.Controllers
 
             var model = PrepareNewsItemListModel(command);
             var storeId = _services.StoreContext.CurrentStore.Id;
-
+            
             model.MetaTitle = _newsSettings.GetLocalizedSetting(x => x.MetaTitle, storeId);
             model.MetaDescription = _newsSettings.GetLocalizedSetting(x => x.MetaDescription, storeId);
             model.MetaKeywords = _newsSettings.GetLocalizedSetting(x => x.MetaKeywords, storeId);
 
             if (!model.MetaTitle.HasValue())
                 model.MetaTitle = T("PageTitle.NewsArchive").Text;
-
-            //Services.DisplayControl.AnnounceRange(model.NewsItems);
-
+            
             return View(model);
         }
 
@@ -395,14 +392,28 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult NewsSummary(int? maxAgeInDays, bool renderHeading, string newsHeading, bool disableCommentCount, int? maxPostAmount = null)
+        public ActionResult NewsSummary(
+            bool renderHeading, 
+            string newsHeading, 
+            bool disableCommentCount,
+            int? maxPostAmount = null,
+            bool displayPaging = false,
+            int? maxAgeInDays = null)
         {
-            var model = PrepareNewsItemListModel(maxAgeInDays, renderHeading, newsHeading, disableCommentCount, 0, maxPostAmount);
+            var model = PrepareNewsItemListModel(renderHeading, newsHeading, disableCommentCount, 0, maxPostAmount, displayPaging, maxAgeInDays);
+            model.RssToLinkButton = true;
             return PartialView(model);
         }
 
         [NonAction]
-        protected NewsItemListModel PrepareNewsItemListModel(int? maxAgeInDays, bool renderHeading, string newsHeading, bool disableCommentCount, int? pageIndex = null, int? maxPostAmount = null)
+        protected NewsItemListModel PrepareNewsItemListModel(
+            bool renderHeading, 
+            string newsHeading, 
+            bool disableCommentCount, 
+            int? pageIndex = null, 
+            int? maxPostAmount = null,
+            bool displayPaging = false,
+            int? maxAgeInDays = null)
         {
             var storeId = _services.StoreContext.CurrentStore.Id;
             var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
@@ -410,7 +421,6 @@ namespace SmartStore.Web.Controllers
             {
                 NewsHeading = newsHeading,
                 RenderHeading = renderHeading,
-                RssToLinkButton = renderHeading,
                 DisableCommentCount = disableCommentCount
             };
 
@@ -420,7 +430,19 @@ namespace SmartStore.Web.Controllers
                 maxAge = DateTime.UtcNow.AddDays(-maxAgeInDays.Value);
             }
 
-           var newsItems = _newsService.GetAllNews(workingLanguageId, storeId, pageIndex ?? 0, maxPostAmount ?? 100, _services.WorkContext.CurrentCustomer.IsAdmin(), maxAge);
+            var newsItems = _newsService.GetAllNews(
+                workingLanguageId, 
+                storeId, 
+                pageIndex ?? 0, 
+                maxPostAmount ?? _newsSettings.NewsArchivePageSize, 
+                _services.WorkContext.CurrentCustomer.IsAdmin(), 
+                maxAge);
+
+            if (displayPaging)
+            {
+                model.PagingFilteringContext.LoadPagedList(newsItems);
+            }
+
             model.NewsItems = newsItems
                 .Select(x =>
                 {
@@ -429,6 +451,8 @@ namespace SmartStore.Web.Controllers
                     return newsItemModel;
                 })
                 .ToList();
+
+            Services.DisplayControl.AnnounceRange(newsItems);
 
             return model;
         }

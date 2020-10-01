@@ -44,10 +44,10 @@
                 </a>
             </div>
 
-            @if (item.Comments.AllowComments)
+            @if (item.Comments.AllowComments && !Model.DisableCommentCount)
             {
                 <a class="rfs align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
-                   href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+                   href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })"
                    title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
                     <i class="far fa-comment-alt"></i>
                     <span class="newsitem-comments-count">@item.Comments.NumberOfComments</span>

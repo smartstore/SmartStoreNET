@@ -254,6 +254,8 @@ namespace SmartStore.Web.Controllers
                 model.MetaKeywords = parsedMonth != null ? parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year : tag;
             }
 
+            Services.DisplayControl.AnnounceRange(blogPosts);
+
             model.BlogPosts = blogPosts
                 .Select(x =>
                 {
@@ -294,6 +296,8 @@ namespace SmartStore.Web.Controllers
             {
                 blogPosts = _blogService.GetAllBlogPosts(storeId, workingLanguageId, null, null, 0, maxPostAmount ?? 100, _services.WorkContext.CurrentCustomer.IsAdmin(), maxAge);
             }
+
+            Services.DisplayControl.AnnounceRange(blogPosts);
 
             model.BlogPosts = blogPosts
                 .Select(x =>
@@ -395,6 +399,8 @@ namespace SmartStore.Web.Controllers
             }
 
             feed.Items = items;
+
+            Services.DisplayControl.AnnounceRange(blogPosts);
 
             return new RssActionResult { Feed = feed };
         }

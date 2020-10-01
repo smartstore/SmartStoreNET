@@ -246,8 +246,7 @@ namespace SmartStore.Core.Plugins
 
         public T Instance<T>() where T : class, IPlugin
         {
-            object instance;
-            if (!EngineContext.Current.ContainerManager.TryResolve(PluginClrType, null, out instance))
+            if (!EngineContext.Current.ContainerManager.TryResolve(PluginClrType, null, out var instance))
             {
                 // Not registered
                 instance = EngineContext.Current.ContainerManager.ResolveUnregistered(PluginClrType);

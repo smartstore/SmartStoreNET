@@ -8,6 +8,7 @@
 
 ### New Features
 * Theming: responsive font-sizing and spacing
+* Page Builder: #2035 Added block to display news.
 * #2012 Added paging and sorting for bestsellers report.
 * #2014 Added paging and sorting for top customers report.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
@@ -19,6 +20,7 @@
 * #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
 * #1644 Unavailable variant combinations are disabled (no longer selectable).
+* #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies

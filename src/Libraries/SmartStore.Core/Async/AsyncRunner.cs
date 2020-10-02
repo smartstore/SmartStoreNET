@@ -342,7 +342,6 @@ namespace SmartStore.Core.Async
                 return this;
             }
         }
-
     }
 
     internal class BackgroundWorkHost : IRegisteredObject

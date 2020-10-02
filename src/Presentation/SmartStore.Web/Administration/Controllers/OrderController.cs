@@ -956,7 +956,7 @@ namespace SmartStore.Admin.Controllers
             IPagedList<Order> orders;
 
             // Product Id is only used and filled in context of product details (orders)           
-            // When no product Id is assigned, OrderList is used to prepare orders for order list
+            // When no product Id is assigned, OrderList is used to prepare for orders list
             var product = _productService.GetProductById(model.ProductId.GetValueOrDefault());
             if (product == null)
             {
@@ -970,15 +970,7 @@ namespace SmartStore.Admin.Controllers
                     .AlterQuery(q =>
                     {
                         return q.Where(x => x.OrderItems.Any(p => p.ProductId == model.ProductId));
-                    })
-                    //.AlterQuery(q =>
-                    //{
-                    //    return q
-                    //        .SelectMany(x => x.OrderItems.Where(y => y.ProductId == model.ProductId))
-                    //        .Select(x => { x.Order.OrderItems = x; return x.Order; })
-                    //        .OrderByDescending(x => x.Id);
-                    //})
-                    .Load();
+                    }).Load();
 
             }
 
@@ -1635,7 +1627,6 @@ namespace SmartStore.Admin.Controllers
 
             if (order.AllowStoringDirectDebit)
             {
-
                 string accountHolder = model.DirectDebitAccountHolder;
                 string accountNumber = model.DirectDebitAccountNumber;
                 string bankCode = model.DirectDebitBankCode;

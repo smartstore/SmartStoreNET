@@ -212,6 +212,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Security\DevToolsPermissionProvider.cs" />
+    <Compile Include="Services\CustomFacetTemplateSelector.cs" />
     <Compile Include="Services\MiniProfilerChronometer.cs" />
     <Compile Include="Settings\ProfilerSettings.cs" />
     <Compile Include="Starter.cs" />
@@ -287,6 +288,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Story\BlockTemplates\Sample\Public.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\DevTools\MyCustomFacetTemplate.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Security;
 using SmartStore.DevTools.Blocks;
 using SmartStore.DevTools.Models;
@@ -101,6 +102,13 @@ namespace SmartStore.DevTools.Controllers
         public ActionResult MyDemoWidget()
         {
             return Content("Hello world! This is a sample widget created for demonstration purposes by Dev-Tools plugin.");
+        }
+
+        [ChildActionOnly, AllowAnonymous]
+        public ActionResult MyCustomFacetTemplate(FacetGroup facetGroup, string templateName)
+        {
+            /// Just a "proxy" for our <see cref="Services.CustomFacetTemplateSelector" />.
+            return PartialView(templateName, facetGroup);
         }
     }
 }

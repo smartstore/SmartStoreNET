@@ -7,6 +7,7 @@ using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.DevTools.Filters;
 using SmartStore.DevTools.Services;
+using SmartStore.Services.Search.Rendering;
 using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.DevTools
@@ -46,6 +47,9 @@ namespace SmartStore.DevTools
                     //// intercept CheckoutController's Index action (to hijack the checkout or payment workflow)
                     //builder.RegisterType<SampleCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
                 }
+
+                // Register a custom view template for certain search facets. Register it as InstancePerRequest() if your selector has no Autofac dependencies.
+                //builder.RegisterType<CustomFacetTemplateSelector>().As<IFacetTemplateSelector>().InstancePerRequest();
             }
         }
 

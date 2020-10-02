@@ -599,6 +599,12 @@
                 "Nicht verfügbare Attribut-Kombinationen ausblenden",
                 "Specifies whether to hide unavailable attribute combinations on product detail pages. By default, they are disabled.",
                 "Legt fest, ob nicht verfügbare Attribut-Kombinationen auf Produktdetailseiten ausgeblendet werden sollen. Standardmäßig werden sie deaktiviert.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.CustomData",
+                "Custom data",
+                "Benutzerdefinierte Daten",
+                "Specifies user-defined data. For free usage, e.g. for individual shop extensions.",
+                "Legt benutzerdefinierte Daten fest. Zur freien Verwendung, z.B. bei individuellen Shop-Erweiterungen.");
             
             #region Media
 

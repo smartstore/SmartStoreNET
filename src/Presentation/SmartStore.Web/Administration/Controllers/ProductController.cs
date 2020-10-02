@@ -2864,6 +2864,7 @@ namespace SmartStore.Admin.Controllers
                         ProductAttribute = _productAttributeService.GetProductAttributeById(x.ProductAttributeId).Name,
                         ProductAttributeId = x.ProductAttributeId,
                         TextPrompt = x.TextPrompt,
+                        CustomData = x.CustomData,
                         IsRequired = x.IsRequired,
                         AttributeControlType = x.AttributeControlType.GetLocalizedEnum(_localizationService, _workContext),
                         AttributeControlTypeId = x.AttributeControlTypeId,
@@ -2907,6 +2908,7 @@ namespace SmartStore.Admin.Controllers
                 // Use ProductAttribute property (not ProductAttributeId) because appropriate property is stored in it.
                 ProductAttributeId = int.Parse(model.ProductAttribute),
                 TextPrompt = model.TextPrompt,
+                CustomData = model.CustomData,
                 IsRequired = model.IsRequired,
                 // Use AttributeControlType property (not AttributeControlTypeId) because appropriate property is stored in it.
                 AttributeControlTypeId = int.Parse(model.AttributeControlType),
@@ -2934,6 +2936,7 @@ namespace SmartStore.Admin.Controllers
             // Use ProductAttribute property (not ProductAttributeId) because appropriate property is stored in it.
             pva.ProductAttributeId = int.Parse(model.ProductAttribute);
             pva.TextPrompt = model.TextPrompt;
+            pva.CustomData = model.CustomData;
             pva.IsRequired = model.IsRequired;
             // Use AttributeControlType property (not AttributeControlTypeId) because appropriate property is stored in it.
             pva.AttributeControlTypeId = int.Parse(model.AttributeControlType);

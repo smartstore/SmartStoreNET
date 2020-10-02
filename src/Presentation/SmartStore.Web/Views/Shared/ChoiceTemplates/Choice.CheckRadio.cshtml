@@ -5,7 +5,7 @@
 
 @{
 	var controlId = Model.BuildControlId();
-	var items = Model.Values ?? new List<ChoiceItemModel>();
+	var items = Model.Values.Where(x => !x.IsHidden) ?? Enumerable.Empty<ChoiceItemModel>();
 	var type = Model.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio";
 	// TODO: (mc) Replace .checkbox with .form-check
 }

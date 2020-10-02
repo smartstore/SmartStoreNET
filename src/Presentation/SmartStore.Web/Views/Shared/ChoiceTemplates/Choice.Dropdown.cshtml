@@ -4,7 +4,7 @@
 
 @{ 
 	var controlId = Model.BuildControlId();
-	var items = Model.Values ?? new List<ChoiceItemModel>();
+	var items = Model.Values.Where(x => !x.IsHidden) ?? Enumerable.Empty<ChoiceItemModel>();
 }
 
 <select id="@controlId" name="@controlId" class="form-control" @Html.Attr("disabled", "disabled", Model.IsDisabled)>
@@ -12,7 +12,7 @@
 	{
 		<option>@T("Common.Unspecified")</option>
 	}
-	else if (items.Count > 0 && !items.Any(x => x.IsPreSelected))
+	else if (items.Any() && !items.Any(x => x.IsPreSelected))
 	{
 		<option>@T("Common.PleaseSelect")</option>
 	}

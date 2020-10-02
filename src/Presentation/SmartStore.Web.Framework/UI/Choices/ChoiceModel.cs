@@ -23,11 +23,13 @@ namespace SmartStore.Web.Framework.UI.Choices
 
         public string TextPrompt { get; set; }
 
+        public string CustomData { get; set; }
+
         public bool IsRequired { get; set; }
 
         public bool IsDisabled { get; set; }
 
-        public bool IsHidden { get; set; }
+        //public bool IsHidden { get; set; }
 
         /// <summary>
         /// Allowed file extensions for customer uploaded files

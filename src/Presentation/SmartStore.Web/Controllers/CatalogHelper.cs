@@ -783,6 +783,7 @@ namespace SmartStore.Web.Controllers
                         Name = attribute.ProductAttribute.GetLocalized(x => x.Name),
                         Description = attribute.ProductAttribute.GetLocalized(x => x.Description),
                         TextPrompt = attribute.TextPrompt,
+                        CustomData = attribute.CustomData,
                         IsRequired = attribute.IsRequired,
                         AttributeControlType = attribute.AttributeControlType,
                         AllowedFileExtensions = _catalogSettings.FileUploadAllowedExtensions
@@ -1032,7 +1033,7 @@ namespace SmartStore.Web.Controllers
                     foreach (var attribute in model.ProductVariantAttributes)
                     {
                         var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
-                        var hideAttribute = true;
+                        //var hideAttribute = true;
 
                         foreach (ProductDetailsModel.ProductVariantAttributeValueModel value in attribute.Values)
                         {
@@ -1058,30 +1059,33 @@ namespace SmartStore.Web.Controllers
                                 value.IsDisabled = true;
                                 value.IsHidden = product.HideUnavailableAttributes;
 
-                                // Set title attribute for unavailable option.
-                                if (product.DisplayStockAvailability && availabilityInfo.IsOutOfStock && availabilityInfo.IsActive)
+                                if (!value.IsHidden)
                                 {
-                                    value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
-                                        ? res["Products.Availability.OutOfStock"]
-                                        : res["Products.Availability.Backordering"];
-                                }
-                                else
-                                {
-                                    value.Title = res["Products.Availability.IsNotActive"];
+                                    // Set title attribute for unavailable option.
+                                    if (product.DisplayStockAvailability && availabilityInfo.IsOutOfStock && availabilityInfo.IsActive)
+                                    {
+                                        value.Title = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
+                                            ? res["Products.Availability.OutOfStock"]
+                                            : res["Products.Availability.Backordering"];
+                                    }
+                                    else
+                                    {
+                                        value.Title = res["Products.Availability.IsNotActive"];
+                                    }
                                 }
                             }
 
-                            if (!value.IsDisabled && !value.IsHidden)
-                            {
-                                hideAttribute = false;
-                            }
+                            //if (!value.IsDisabled && !value.IsHidden)
+                            //{
+                            //    hideAttribute = false;
+                            //}
                         }
 
-                        if (hideAttribute)
-                        {
-                            attribute.IsHidden = true;
-                            attribute.IsRequired = false;
-                        }
+                        //if (hideAttribute)
+                        //{
+                        //    attribute.IsHidden = true;
+                        //    attribute.IsRequired = false;
+                        //}
                     }
                 }
             }

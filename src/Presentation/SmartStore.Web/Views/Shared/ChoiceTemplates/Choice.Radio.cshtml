@@ -4,7 +4,7 @@
 
 @{
 	var controlId = Model.BuildControlId();
-	var items = Model.Values ?? new List<ChoiceItemModel>();
+	var items = Model.Values.Where(x => !x.IsHidden) ?? Enumerable.Empty<ChoiceItemModel>();
 
 	// TODO: (mc) Replace .radio with .form-radio
 }

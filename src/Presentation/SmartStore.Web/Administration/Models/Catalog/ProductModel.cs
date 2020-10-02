@@ -634,7 +634,6 @@ namespace SmartStore.Admin.Models.Catalog
         public class ProductVariantAttributeModel : EntityModelBase
         {
             public int ProductId { get; set; }
-
             public int ProductAttributeId { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.Attribute")]
@@ -645,6 +644,10 @@ namespace SmartStore.Admin.Models.Catalog
             [AllowHtml]
             public string TextPrompt { get; set; }
 
+            [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.CustomData")]
+            [AllowHtml]
+            public string CustomData { get; set; }
+
             [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.IsRequired")]
             public bool IsRequired { get; set; }
 
@@ -653,9 +656,9 @@ namespace SmartStore.Admin.Models.Catalog
             public string AttributeControlType { get; set; }
             public int AttributeControlTypeId { get; set; }
 
-            //we don't name it DisplayOrder because Telerik has a small bug 
-            //"if we have one more editor with the same name on a page, it doesn't allow editing"
-            //in our case it's category.DisplayOrder
+            // We don't name it DisplayOrder because Telerik has a small bug 
+            // "if we have one more editor with the same name on a page, it doesn't allow editing"
+            // in our case it's category.DisplayOrder.
             [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder1 { get; set; }
 

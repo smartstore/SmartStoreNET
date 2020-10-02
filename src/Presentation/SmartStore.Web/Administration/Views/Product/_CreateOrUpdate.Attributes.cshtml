@@ -66,20 +66,16 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.ProductAttribute)
-						.Width("16%");
-					columns.Bound(x => x.AttributeControlType)
-						.Width("16%");
-					columns.Bound(x => x.TextPrompt)
-						.Width("16%");
+						.Width("15%");
+					columns.Bound(x => x.AttributeControlType);
+					columns.Bound(x => x.TextPrompt);
+					columns.Bound(x => x.CustomData);
 					columns.Bound(x => x.IsRequired)
-						.Width("10%")
-						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
+						.ClientTemplate(Html.SymbolForBool("IsRequired"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
-						.Width("10%")
 						.Centered();
 					columns.Bound(x => x.ViewEditUrl)
-						.Width("16%")
 						.ClientTemplate(
 							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
 							"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
@@ -91,7 +87,7 @@
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
-					.Width("20%")
+					.Width("15%")
 					.HtmlAttributes(new { align = "right" });
 				})
 				.ToolBar(commands => commands.Insert() )

@@ -434,7 +434,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductAttributes(Product product, ProductModel model)
         {
-            product.HideUnavailableAttributes = model.HideUnavailableAttributes;
+            product.AttributeChoiceBehaviour = model.AttributeChoiceBehaviour;
         }
 
         [NonAction]

@@ -7,13 +7,13 @@ namespace SmartStore.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class HideUnavailableAttributes : IMigrationMetadata
+    public sealed partial class AttributeChoiceBehaviour : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(HideUnavailableAttributes));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AttributeChoiceBehaviour));
         
         string IMigrationMetadata.Id
         {
-            get { return "202010011823075_HideUnavailableAttributes"; }
+            get { return "202010030939136_AttributeChoiceBehaviour"; }
         }
         
         string IMigrationMetadata.Source

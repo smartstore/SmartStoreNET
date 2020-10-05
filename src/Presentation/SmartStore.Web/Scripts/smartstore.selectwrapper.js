@@ -268,12 +268,16 @@
                         title = '',
                         preHtml = '',
                         postHtml = '',
-                        classes = '',
+                        classes = option.data('item-class') || '',
                         hint = item.hint || option.attr('data-hint'),
                         description = item.description || option.attr('data-description'),
                         icon = option.data('icon'),
                         truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
                         appendHint = !isResult && hint && hint.length > 0;
+
+                    if (classes.length > 0) {
+                        classes = ' ' + classes;
+                    }
 
                     if (truncateText || appendHint) {
                         title = text;

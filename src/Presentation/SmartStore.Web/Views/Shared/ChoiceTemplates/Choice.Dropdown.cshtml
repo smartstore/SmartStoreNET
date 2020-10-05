@@ -4,7 +4,7 @@
 
 @{ 
 	var controlId = Model.BuildControlId();
-	var items = Model.Values.Where(x => !x.IsHidden) ?? Enumerable.Empty<ChoiceItemModel>();
+	var items = Model.Values ?? new List<ChoiceItemModel>();
 }
 
 <select id="@controlId" name="@controlId" class="form-control" @Html.Attr("disabled", "disabled", Model.IsDisabled)>
@@ -24,6 +24,7 @@
 				@Html.Attr("selected", "selected", item.IsPreSelected) 
 				@Html.Attr("data-imageurl", item.ImageUrl, hasImage) 
 				@Html.Attr("data-color", item.Color, hasColor && !hasImage)
+				@Html.Attr("data-item-class", "choice-item-unavailable", item.IsUnavailable)
 				@Html.Attr("disabled", "disabled", item.IsDisabled)>
 			@item.GetItemLabel()
 		</option>

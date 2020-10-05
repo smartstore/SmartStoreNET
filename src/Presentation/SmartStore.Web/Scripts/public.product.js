@@ -20,22 +20,25 @@
 
             // Update product data and gallery
             $(el).on('change', ':input', function (e) {
-                var ctx = $(this).closest('.update-container');
-                var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
-                var isFileUpload = $(this).data("fileupload");
+                var inputCtrl = $(this);
+                var ctx = inputCtrl.closest('.update-container');
+                var isTouchSpin = inputCtrl.parent(".bootstrap-touchspin").length > 0;
+                var isFileUpload = inputCtrl.data("fileupload");
+                var url = ctx.data('url') + '&currentChoice=' + encodeURIComponent(inputCtrl.attr('name') || '');
 
                 if (ctx.length === 0) {
-                    // associated or bundled item
+                    // It's an associated or bundled item.
                     ctx = el;
                 }
 
                 ctx.doAjax({
+                    url: url,
                     data: ctx.find(':input').serialize(),
                     callbackSuccess: function (response) {
                         self.updateDetailData(response, ctx, isTouchSpin, isFileUpload);
 
                         if (ctx.hasClass('pd-bundle-item')) {
-                            // update bundle price too
+                            // Update bundle price too.
                             $('#main-update-container').doAjax({
                                 data: $('.pd-bundle-items').find(':input').serialize(),
                                 callbackSuccess: function (response2) {

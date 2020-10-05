@@ -593,10 +593,10 @@ namespace SmartStore.Core.Domain.Catalog
         public decimal? LowestAttributeCombinationPrice { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to hide unavailable attribute combinations. By default, they are disabled.
+        /// Gets or sets the behaviour when selecting product attributes.
         /// </summary>
         [DataMember]
-        public bool HideUnavailableAttributes { get; set; }
+        public AttributeChoiceBehaviour AttributeChoiceBehaviour { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this product has discounts applied

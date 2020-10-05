@@ -29,8 +29,6 @@ namespace SmartStore.Web.Framework.UI.Choices
 
         public bool IsDisabled { get; set; }
 
-        //public bool IsHidden { get; set; }
-
         /// <summary>
         /// Allowed file extensions for customer uploaded files
         /// </summary>

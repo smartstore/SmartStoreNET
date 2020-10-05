@@ -14,7 +14,7 @@ namespace SmartStore.Web.Framework.UI.Choices
         public int QuantityInfo { get; set; }
         public bool IsPreSelected { get; set; }
         public bool IsDisabled { get; set; }
-        public bool IsHidden { get; set; }
+        public bool IsUnavailable { get; set; }
         public string ImageUrl { get; set; }
 
         public abstract string GetItemLabel();

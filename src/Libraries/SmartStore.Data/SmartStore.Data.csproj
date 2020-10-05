@@ -521,9 +521,9 @@
     <Compile Include="Migrations\202010011005387_TopicCookieType.designer.cs">
       <DependentUpon>202010011005387_TopicCookieType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202010011823075_HideUnavailableAttributes.cs" />
-    <Compile Include="Migrations\202010011823075_HideUnavailableAttributes.designer.cs">
-      <DependentUpon>202010011823075_HideUnavailableAttributes.cs</DependentUpon>
+    <Compile Include="Migrations\202010030939136_AttributeChoiceBehaviour.cs" />
+    <Compile Include="Migrations\202010030939136_AttributeChoiceBehaviour.designer.cs">
+      <DependentUpon>202010030939136_AttributeChoiceBehaviour.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -942,8 +942,8 @@
     <EmbeddedResource Include="Migrations\202010011005387_TopicCookieType.resx">
       <DependentUpon>202010011005387_TopicCookieType.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202010011823075_HideUnavailableAttributes.resx">
-      <DependentUpon>202010011823075_HideUnavailableAttributes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202010030939136_AttributeChoiceBehaviour.resx">
+      <DependentUpon>202010030939136_AttributeChoiceBehaviour.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

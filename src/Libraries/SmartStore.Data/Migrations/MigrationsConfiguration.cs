@@ -423,7 +423,7 @@
             builder.AddOrUpdate("DeliveryTimes.Dates.Until", "until <b>{0}</b>", "bis <b>{0}</b>");
             builder.AddOrUpdate("DeliveryTimes.Dates.Between", "<b>{0}</b> - <b>{1}</b>", "<b>{0}</b> - <b>{1}</b>");   // allow "{0} till {1}" etc.
 
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "None", "Keine");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "Do not display", "Nicht anzeigen");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly", "Date only (if possible)", "Nur Datum (sofern möglich)");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelOnly", "Label only", "Nur Label");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelAndDate", "Label and date", "Label und Datum");
@@ -561,8 +561,8 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDiscountSign",
                 "Show discount sign",
                 "Rabattzeichen anzeigen",
-                "Specifies whether a discount sign should be displayed on product pictures when discounts were applied",
-                "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden");
+                "Specifies whether a discount sign should be displayed on product pictures when discounts were applied.",
+                "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden.");
 
             builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.ColumnCount",
                 "Number of columns",
@@ -592,13 +592,20 @@
                 "'State/province' required",
                 "'Bundesland' erferderlich",
                 "Check the box if 'State/province' is required.",
-                "Legt fest, ob Angaben im Eingabefeld 'Adressszusatz' erforderlich sind.");
+                "Legt fest, ob Angaben im Eingabefeld 'Adresszusatz' erforderlich sind.");
 
-            builder.AddOrUpdate("Admin.Catalog.Products.Fields.HideUnavailableAttributes",
-                "Hide unavailable attribute combinations",
-                "Nicht verfügbare Attribut-Kombinationen ausblenden",
-                "Specifies whether to hide unavailable attribute combinations on product detail pages. By default, they are disabled.",
-                "Legt fest, ob nicht verfügbare Attribut-Kombinationen auf Produktdetailseiten ausgeblendet werden sollen. Standardmäßig werden sie deaktiviert.");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.AttributeChoiceBehaviour.GrayOutUnavailable",
+                "Gray out unavailable attributes",
+                "Nicht verfügbare Attribute ausgrauen");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.AttributeChoiceBehaviour.None",
+                "None",
+                "Keines");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.AttributeChoiceBehaviour",
+                "Attribute choice behaviour",
+                "Attribut-Auswahlverhalten",
+                "Specifies the behaviour when selecting attributes.",
+                "Legt das Verhalten bei der Auswahl von Attributen fest.");
 
             builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.CustomData",
                 "Custom data",

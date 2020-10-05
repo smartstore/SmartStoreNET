@@ -22,6 +22,10 @@
     align-items: center;
 }
 
+.choice-item-unavailable {
+    color: $text-muted;
+}
+
 .choice-item-img,
 .choice-item-color {
     display: inline-block;
@@ -81,7 +85,8 @@
         margin: 0;
     }
 
-    .choice-box-disabled {
+    .choice-box-disabled,
+    .choice-box-unavailable {
         opacity: .5;
     }
 

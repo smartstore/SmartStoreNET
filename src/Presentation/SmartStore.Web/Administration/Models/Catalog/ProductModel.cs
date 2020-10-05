@@ -353,8 +353,8 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundlePerItemShoppingCart")]
         public bool BundlePerItemShoppingCart { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HideUnavailableAttributes")]
-        public bool HideUnavailableAttributes { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AttributeChoiceBehaviour")]
+        public AttributeChoiceBehaviour AttributeChoiceBehaviour { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
         public string BaseDimensionIn { get; set; }

@@ -521,8 +521,6 @@ namespace SmartStore.Services.Catalog
         {
             if (product == null ||
                 _performanceSettings.MaxUnavailableAttributeCombinations <= 0 ||
-                currentValue == null || 
-                !(attributes?.Any() ?? false) ||
                 !(selectedValues?.Any() ?? false))
             {
                 return null;
@@ -536,7 +534,6 @@ namespace SmartStore.Services.Catalog
 
                 if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
                 {
-                    // TODO: compound index of StockQuantity and AllowOutOfStockOrders
                     query = query.Where(x => !x.IsActive || (x.StockQuantity <= 0 && !x.AllowOutOfStockOrders));
                 }
                 else
@@ -581,57 +578,62 @@ namespace SmartStore.Services.Catalog
                 return null;
             }
 
-            // Create key to test currentValue.
-            var psb = PooledStringBuilder.Rent();
+            var builder = PooledStringBuilder.Rent();
             var selectedValuesMap = selectedValues.ToMultimap(x => x.ProductVariantAttributeId, x => x);
 
-            foreach (var attribute in attributes.OrderBy(x => x.Id))
+            if (attributes == null || currentValue == null)
             {
-                IEnumerable<int> valueIds;
-
-                var selectedIds = selectedValuesMap.ContainsKey(attribute.Id)
-                    ? selectedValuesMap[attribute.Id].Select(x => x.Id)
-                    : null;
-
-                if (attribute.Id == currentValue.ProductVariantAttributeId)
+                // Create key to test selectedValues.
+                foreach (var kvp in selectedValuesMap.OrderBy(x => x.Key))
                 {
-                    // Attribute to be tested.
-                    if (selectedIds != null && attribute.IsMultipleChoice)
+                    Append(builder, kvp.Key, kvp.Value.Select(x => x.Id).Distinct());
+                }
+            }
+            else
+            {
+                // Create key to test currentValue.
+                foreach (var attribute in attributes.OrderBy(x => x.Id))
+                {
+                    IEnumerable<int> valueIds;
+
+                    var selectedIds = selectedValuesMap.ContainsKey(attribute.Id)
+                        ? selectedValuesMap[attribute.Id].Select(x => x.Id)
+                        : null;
+
+                    if (attribute.Id == currentValue.ProductVariantAttributeId)
                     {
-                        // Take selected values and append current value.
-                        valueIds = selectedIds.Append(currentValue.Id).Distinct();
+                        // Attribute to be tested.
+                        if (selectedIds != null && attribute.IsMultipleChoice)
+                        {
+                            // Take selected values and append current value.
+                            valueIds = selectedIds.Append(currentValue.Id).Distinct();
+                        }
+                        else
+                        {
+                            // Single selection attribute -> take current value.
+                            valueIds = new[] { currentValue.Id };
+                        }
                     }
                     else
                     {
-                        // Single selection attribute -> take current value.
-                        valueIds = new[] { currentValue.Id };
+                        // Other attribute.
+                        if (selectedIds != null)
+                        {
+                            // Take selected value(s).
+                            valueIds = selectedIds;
+                        }
+                        else
+                        {
+                            // No selected value -> no unavailable combination.
+                            return null;
+                        }
                     }
-                }
-                else
-                {
-                    // Other attribute.
-                    if (selectedIds != null)
-                    {
-                        // Take selected value(s).
-                        valueIds = selectedIds;
-                    }
-                    else
-                    {
-                        // No selected value -> no unavailable combination.
-                        return null;
-                    }
-                }
 
-                var valueIdsStr = string.Join(",", valueIds.OrderBy(x => x));
-
-                if (psb.Length > 0)
-                {
-                    psb.Append("-");
+                    Append(builder, attribute.Id, valueIds);
                 }
-                psb.Append($"{attribute.Id}:{valueIdsStr}");
             }
 
-            var key = psb.ToStringAndReturn();
+            var key = builder.ToStringAndReturn();
             //$"{!unavailableCombinations.ContainsKey(key),-5} {currentValue.ProductVariantAttributeId}:{currentValue.Id} -> {key}".Dump();
 
             if (unavailableCombinations.TryGetValue(key, out var availability))
@@ -640,6 +642,17 @@ namespace SmartStore.Services.Catalog
             }
 
             return null;
+
+            static void Append(PooledStringBuilder psb, int pvaId, IEnumerable<int> pvavIds)
+            {
+                var idsStr = string.Join(",", pvavIds.OrderBy(x => x));
+
+                if (psb.Length > 0)
+                {
+                    psb.Append("-");
+                }
+                psb.Append($"{pvaId}:{idsStr}");
+            }
         }
 
         private static readonly HashSet<Type> _combinationsInvalidationTypes = new HashSet<Type>(new[]

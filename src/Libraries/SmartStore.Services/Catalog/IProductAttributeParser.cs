@@ -97,9 +97,9 @@ namespace SmartStore.Services.Catalog
         /// Returns informations about the availability of an attribute combination.
         /// </summary>
         /// <param name="product">Product.</param>
-        /// <param name="attributes">All product attributes of the specified product.</param>
+        /// <param name="attributes">All product attributes of the specified product. <c>null</c> to test availability of <paramref name="selectedValues"/>.</param>
         /// <param name="selectedValues">The attribute values of the currently selected attribute combination.</param>
-        /// <param name="currentValue">The current attribute value.</param>
+        /// <param name="currentValue">The current attribute value. <c>null</c> to test availability of <paramref name="selectedValues"/>.</param>
         /// <returns>Informations about the attribute combination's availability. <c>null</c> if the combination is available.</returns>
         CombinationAvailabilityInfo IsCombinationAvailable(
             Product product,

@@ -982,6 +982,7 @@ namespace SmartStore.Web.Controllers
                     // Merge with combination data if there's a match.
                     var warnings = new List<string>();
                     var attributeXml = string.Empty;
+                    var checkAvailability = product.AttributeChoiceBehaviour == AttributeChoiceBehaviour.GrayOutUnavailable;
 
                     if (query.VariantCombinationId != 0)
                     {
@@ -1033,7 +1034,6 @@ namespace SmartStore.Web.Controllers
                     foreach (var attribute in model.ProductVariantAttributes)
                     {
                         var updatePreSelection = selectedValueIds.Any() && selectedValueIds.Intersect(attribute.Values.Select(x => x.Id)).Any();
-                        //var hideAttribute = true;
 
                         foreach (ProductDetailsModel.ProductVariantAttributeValueModel value in attribute.Values)
                         {
@@ -1047,20 +1047,18 @@ namespace SmartStore.Web.Controllers
                                 value.PriceAdjustment = string.Empty;
                             }
 
-                            var availabilityInfo = _productAttributeParser.IsCombinationAvailable(
-                                product,
-                                variantAttributes,
-                                selectedAttributeValues,
-                                value.ProductAttributeValue);
-
-                            if (availabilityInfo != null)
+                            if (checkAvailability)
                             {
-                                // Attribute combination is unavailable.
-                                value.IsDisabled = true;
-                                value.IsHidden = product.HideUnavailableAttributes;
+                                var availabilityInfo = _productAttributeParser.IsCombinationAvailable(
+                                    product,
+                                    variantAttributes,
+                                    selectedAttributeValues,
+                                    value.ProductAttributeValue);
 
-                                if (!value.IsHidden)
+                                if (availabilityInfo != null)
                                 {
+                                    value.IsUnavailable = true;
+
                                     // Set title attribute for unavailable option.
                                     if (product.DisplayStockAvailability && availabilityInfo.IsOutOfStock && availabilityInfo.IsActive)
                                     {
@@ -1074,18 +1072,7 @@ namespace SmartStore.Web.Controllers
                                     }
                                 }
                             }
-
-                            //if (!value.IsDisabled && !value.IsHidden)
-                            //{
-                            //    hideAttribute = false;
-                            //}
                         }
-
-                        //if (hideAttribute)
-                        //{
-                        //    attribute.IsHidden = true;
-                        //    attribute.IsRequired = false;
-                        //}
                     }
                 }
             }

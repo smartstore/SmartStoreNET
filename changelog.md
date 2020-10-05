@@ -7,7 +7,10 @@
 
 ### New Features
 * Theming: responsive font-sizing and spacing
-* Page Builder: #2035 Added block to display news.
+* **Page Builder**
+	* #2035 Added block to display news.
+* **ContentSlider**
+ 	* #2036 Added Page Builder block to display ContentSlider.
 * #2012 Added paging and sorting for bestsellers report.
 * #2014 Added paging and sorting for top customers report.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.

@@ -32,11 +32,6 @@ namespace SmartStore.Services.Catalog.Modelling
         public bool IsFile { get; set; }
         public bool IsText { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this item is the one currently selected by the user.
-        /// </summary>
-        public bool IsCurrentChoice { get; set; }
-
         public string Alias { get; set; }
         public string ValueAlias { get; set; }
 

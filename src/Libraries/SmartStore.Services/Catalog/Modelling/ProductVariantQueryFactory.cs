@@ -167,10 +167,6 @@ namespace SmartStore.Services.Catalog.Modelling
             var isFile = key.EndsWith("-file");
             var isText = key.EndsWith("-text");
 
-            var isCurrentChoice = QueryItems.ContainsKey("currentChoice")
-                ? QueryItems["currentChoice"].FirstOrDefault().IsCaseInsensitiveEqual(key)
-                : false;
-
             if (isDate || isFile || isText)
             {
                 var value = isText ? string.Join(",", values) : values.First();
@@ -181,8 +177,7 @@ namespace SmartStore.Services.Catalog.Modelling
                     AttributeId = ids[2].ToInt(),
                     VariantAttributeId = ids[3].ToInt(),
                     IsFile = isFile,
-                    IsText = isText,
-                    IsCurrentChoice = isCurrentChoice
+                    IsText = isText
                 };
 
                 if (isDate)
@@ -201,8 +196,7 @@ namespace SmartStore.Services.Catalog.Modelling
                         ProductId = ids[0].ToInt(),
                         BundleItemId = ids[1].ToInt(),
                         AttributeId = ids[2].ToInt(),
-                        VariantAttributeId = ids[3].ToInt(),
-                        IsCurrentChoice = isCurrentChoice
+                        VariantAttributeId = ids[3].ToInt()
                     };
 
                     query.AddVariant(variant);

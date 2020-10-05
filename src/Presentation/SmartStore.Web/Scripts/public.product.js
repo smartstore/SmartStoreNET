@@ -24,7 +24,6 @@
                 var ctx = inputCtrl.closest('.update-container');
                 var isTouchSpin = inputCtrl.parent(".bootstrap-touchspin").length > 0;
                 var isFileUpload = inputCtrl.data("fileupload");
-                var url = ctx.data('url') + '&currentChoice=' + encodeURIComponent(inputCtrl.attr('name') || '');
 
                 if (ctx.length === 0) {
                     // It's an associated or bundled item.
@@ -32,7 +31,6 @@
                 }
 
                 ctx.doAjax({
-                    url: url,
                     data: ctx.find(':input').serialize(),
                     callbackSuccess: function (response) {
                         self.updateDetailData(response, ctx, isTouchSpin, isFileUpload);

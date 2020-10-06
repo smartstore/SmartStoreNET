@@ -679,7 +679,8 @@ namespace SmartStore.Core.IO
                     {
                         return new LocalFolder(System.IO.Path.GetDirectoryName(_relativePath), parent);
                     }
-                    throw new ArgumentException("Directory " + _dirInfo.Name + " does not have a parent directory");
+
+                    throw new InvalidOperationException("Directory " + _dirInfo.Name + " does not have a parent directory");
                 }
             }
 

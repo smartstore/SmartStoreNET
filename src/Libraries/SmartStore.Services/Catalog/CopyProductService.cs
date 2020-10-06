@@ -173,6 +173,7 @@ namespace SmartStore.Services.Catalog
                         MinimumCustomerEnteredPrice = product.MinimumCustomerEnteredPrice,
                         MaximumCustomerEnteredPrice = product.MaximumCustomerEnteredPrice,
                         LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice,
+                        AttributeChoiceBehaviour = product.AttributeChoiceBehaviour,
                         Weight = product.Weight,
                         Length = product.Length,
                         Width = product.Width,

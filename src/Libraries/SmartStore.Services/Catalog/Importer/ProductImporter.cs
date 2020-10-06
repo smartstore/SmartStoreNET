@@ -778,6 +778,10 @@ namespace SmartStore.Services.Catalog.Importer
                 {
                     product.QuantiyControlType = (QuantityControlType)qct;
                 }
+                if (row.TryGetDataValue("AttributeChoiceBehaviour", out int attributeChoiceBehaviour))
+                {
+                    product.AttributeChoiceBehaviour = (AttributeChoiceBehaviour)attributeChoiceBehaviour;
+                }
                 if (row.TryGetDataValue("Visibility", out int visibilityValue))
                 {
                     product.Visibility = (ProductVisibility)visibilityValue;

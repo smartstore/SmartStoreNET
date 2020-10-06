@@ -574,6 +574,7 @@ namespace SmartStore.Services.DataExchange.Export
             _writer.Write("BundlePerItemShipping", entity.BundlePerItemShipping.ToString());
             _writer.Write("BundlePerItemShoppingCart", entity.BundlePerItemShoppingCart.ToString());
             _writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
+            _writer.Write("AttributeChoiceBehaviour", ((int)entity.AttributeChoiceBehaviour).ToString());
             _writer.Write("IsEsd", entity.IsEsd.ToString());
             _writer.Write("CustomsTariffNumber", entity.CustomsTariffNumber);
 

@@ -5,6 +5,16 @@ namespace SmartStore.Core.Domain.Common
     public class SocialSettings : ISettings
     {
         /// <summary>
+        /// Gets or sets facebook app id
+        /// </summary>
+        public string FacebookAppId { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets twitter account site name
+        /// </summary>
+        public string TwitterSite { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the value that determines whether social links should be show in the footer
         /// </summary>
         public bool ShowSocialLinksInFooter { get; set; } = true;

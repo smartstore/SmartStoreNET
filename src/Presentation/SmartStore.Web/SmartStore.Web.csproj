@@ -357,6 +357,7 @@
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
     <Compile Include="Models\Common\CookieManagerModel.cs" />
+    <Compile Include="Models\Common\MetaPropertiesModel.cs" />
     <Compile Include="Models\Media\MediaGalleryModel.cs" />
     <Compile Include="Models\Search\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
@@ -1891,6 +1892,7 @@
     <Content Include="Views\News\Partials\NewsSummary.cshtml" />
     <Content Include="Views\News\Partials\NewsSummaryHeading.cshtml" />
     <Content Include="Views\News\Partials\NewsSummaryList.cshtml" />
+    <Content Include="Views\Common\Partials\MetaProperties.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

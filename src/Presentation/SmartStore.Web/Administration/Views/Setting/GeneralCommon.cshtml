@@ -940,63 +940,81 @@
 
 @helper TabSocialSettings()
 {
-    <table id="SocialLinkTable" class="adminContent">
+<table id="SocialLinkTable" class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SocialSettings.FacebookAppId)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.SocialSettings.FacebookAppId)
+            @Html.ValidationMessageFor(model => model.SocialSettings.FacebookAppId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SocialSettings.TwitterSite)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.SocialSettings.TwitterSite)
+            @Html.ValidationMessageFor(model => model.SocialSettings.TwitterSite)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter,
+                Html.CheckBoxFor(model => model.SocialSettings.ShowSocialLinksInFooter, new { data_toggler_for = "#pnlSocialLinks" }))
+            @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
+        </td>
+    </tr>
+    <tbody id="pnlSocialLinks">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
+                @Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter,
-					Html.CheckBoxFor(model => model.SocialSettings.ShowSocialLinksInFooter, new { data_toggler_for = "#pnlSocialLinks" }))
-                @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
+                @Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
             </td>
         </tr>
-		<tbody id="pnlSocialLinks">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.TwitterLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.PinterestLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.YoutubeLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.InstagramLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.InstagramLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.InstagramLink)
-				</td>
-			</tr>
-		</tbody>
-    </table>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.TwitterLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.PinterestLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.YoutubeLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.InstagramLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.InstagramLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.InstagramLink)
+            </td>
+        </tr>
+    </tbody>
+</table>
 }

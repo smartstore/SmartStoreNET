@@ -1,29 +1,31 @@
 ﻿@model CategoryModel
 
 @{
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
-		var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(categoryUrl);
-	}
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(categoryUrl);
+    }
 
-	int firstItemIndex = 0;
-	int lastItemIndex = 0;
-	if (Model.SearchResult.TotalHitsCount > 0) 
-	{
-		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
-		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
-	}
+    int firstItemIndex = 0;
+    int lastItemIndex = 0;
+    if (Model.SearchResult.TotalHitsCount > 0)
+    {
+        firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+        lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+    }
 
-	Layout = "_Layout";
+    Layout = "_Layout";
 
-	ViewBag.HideLeftCol = true; // ...on mobile
+    ViewBag.HideLeftCol = true; // ...on mobile
 }
+
+@{ Html.RenderAction("MetaPropertiesCategory", "Common", new { category = Model }); }
 
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Domain.Seo;
@@ -33,116 +35,116 @@
 
 @helper SubCategoryList()
 {
-	<div class="artlist artlist-grid artlist-4-cols artlist-boxed artlist-sub-categories@(Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList ? " hide-on-active-filter" : "")">
-		@foreach (var item in Model.SubCategories)
-		{
-			var picture = item.PictureModel;
-			var linkTitle = string.Format(T("Media.Category.ImageLinkTitleFormat"), item.Name);
+    <div class="artlist artlist-grid artlist-4-cols artlist-boxed artlist-sub-categories@(Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList ? " hide-on-active-filter" : "")">
+        @foreach (var item in Model.SubCategories)
+        {
+            var picture = item.PictureModel;
+            var linkTitle = string.Format(T("Media.Category.ImageLinkTitleFormat"), item.Name);
 
-			<article class="art" data-id="@item.Id">
-				<div class="art-picture-block">
-					@if (picture != null && picture.ImageUrl.HasValue())
-					{
-						<a class="art-picture img-center-container" href="@item.Url" title="@linkTitle">
-							<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" loading="lazy" />
-						</a>
-					}
-				</div>
-				<div class="art-genericname">
-					<a href="@item.Url" title="@linkTitle">
-						<span @Html.LanguageAttributes(item.Name)>@item.Name</span>
-					</a>
-				</div>
-			</article>
-		}
-	</div>
+            <article class="art" data-id="@item.Id">
+                <div class="art-picture-block">
+                    @if (picture != null && picture.ImageUrl.HasValue())
+                    {
+                        <a class="art-picture img-center-container" href="@item.Url" title="@linkTitle">
+                            <img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" loading="lazy" />
+                        </a>
+                    }
+                </div>
+                <div class="art-genericname">
+                    <a href="@item.Url" title="@linkTitle">
+                        <span @Html.LanguageAttributes(item.Name)>@item.Name</span>
+                    </a>
+                </div>
+            </article>
+        }
+    </div>
 }
 
 @section left {
-	@{
+    @{
         Html.SmartStore().Menu().Name("Main").Template("Categories").Render();
-		Html.RenderAction("Filters", "Search", new { model = Model });
-	}
+        Html.RenderAction("Filters", "Search", new { model = Model });
+    }
 }
 
 <div class="page category-page">
     <div class="page-title">
-		@{ 
-			var categoryName = Model.FullName.Value.HasValue() ? Model.FullName : Model.Name;
-		}
+        @{
+            var categoryName = Model.FullName.Value.HasValue() ? Model.FullName : Model.Name;
+        }
         <h1 @Html.LanguageAttributes(categoryName) class="h3">
-			@categoryName
-		</h1>
-		@if (Model.SearchResult.TotalHitsCount > 0)
-		{
-			var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
-			var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
-			<h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
-		}
+            @categoryName
+        </h1>
+        @if (Model.SearchResult.TotalHitsCount > 0)
+        {
+            var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
+            var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
+            <h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
+        }
     </div>
 
-	<div class="page-body">
-		@{ Html.RenderWidget("categorydetails_top");}
+    <div class="page-body">
+        @{ Html.RenderWidget("categorydetails_top");}
 
-		@* Description *@
-		@if (!string.IsNullOrWhiteSpace(Model.Description.Value))
-		{
-			<div @Html.LanguageAttributes(Model.Description) class="category-description lead hide-on-active-filter html-editor-content">
-				@Html.Raw(Html.CollapsedText(Model.Description))
-			</div>
-		}
+        @* Description *@
+        @if (!string.IsNullOrWhiteSpace(Model.Description.Value))
+        {
+            <div @Html.LanguageAttributes(Model.Description) class="category-description lead hide-on-active-filter html-editor-content">
+                @Html.Raw(Html.CollapsedText(Model.Description))
+            </div>
+        }
 
-		@* Subcategories *@
-		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
-		{
-			Html.RenderWidget("categorydetails_before_subcategories");
-			@SubCategoryList()
-		}
+        @* Subcategories *@
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
+        {
+            Html.RenderWidget("categorydetails_before_subcategories");
+            @SubCategoryList()
+        }
 
-		@* Featured products *@
-		@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
-		{
-			Html.RenderWidget("categorydetails_before_featured_products");
+        @* Featured products *@
+        @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
+        {
+            Html.RenderWidget("categorydetails_before_featured_products");
 
-			<div class="product-grid featured-product-grid block hide-on-active-filter">
-				<div class="heading heading-center">
-					<h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
-				</div>
-				<div class="block-body pt-3 artlist-no-separators">
-					@{
-						Html.RenderPartial("Product.List", Model.FeaturedProducts);
-					}
-				</div>
-			</div>
-		}
+            <div class="product-grid featured-product-grid block hide-on-active-filter">
+                <div class="heading heading-center">
+                    <h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
+                </div>
+                <div class="block-body pt-3 artlist-no-separators">
+                    @{
+                        Html.RenderPartial("Product.List", Model.FeaturedProducts);
+                    }
+                </div>
+            </div>
+        }
 
-		@* Product list *@
-		@{ Html.RenderWidget("categorydetails_before_product_list"); }
+        @* Product list *@
+        @{ Html.RenderWidget("categorydetails_before_product_list"); }
 
-		<div class="product-list-container">
-			@if (Model.Products != null)
-			{
-				Html.RenderPartial("Product.List", Model.Products);
-			}
-		</div>
+        <div class="product-list-container">
+            @if (Model.Products != null)
+            {
+                Html.RenderPartial("Product.List", Model.Products);
+            }
+        </div>
 
-		@if (Model.BottomDescription.Value.HasValue())
-		{
-			<div @Html.LanguageAttributes(Model.BottomDescription) class="category-description lead html-editor-content">
-				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
-			</div>
-		}
+        @if (Model.BottomDescription.Value.HasValue())
+        {
+            <div @Html.LanguageAttributes(Model.BottomDescription) class="category-description lead html-editor-content">
+                @Html.Raw(Html.CollapsedText(Model.BottomDescription))
+            </div>
+        }
 
-		@* Subcategories *@
-		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
-		{
-			Html.RenderWidget("categorydetails_before_subcategories");
-			@SubCategoryList()
-		}
+        @* Subcategories *@
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
+        {
+            Html.RenderWidget("categorydetails_before_subcategories");
+            @SubCategoryList()
+        }
 
-		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
-		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+        @* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+        @{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-		@{ Html.RenderWidget("categorydetails_bottom"); }
-	</div>
+        @{ Html.RenderWidget("categorydetails_bottom"); }
+    </div>
 </div>

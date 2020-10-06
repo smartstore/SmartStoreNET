@@ -387,6 +387,12 @@ namespace SmartStore.Admin.Models.Settings
 
         public partial class SocialSettingsModel
         {
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookAppId")]
+            public string FacebookAppId { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite")]
+            public string TwitterSite { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.ShowSocialLinksInFooter")]
             public bool ShowSocialLinksInFooter { get; set; }
 
@@ -427,6 +433,11 @@ namespace SmartStore.Admin.Models.Settings
                 .NotEmpty()
                 .When(x => x.CaptchaSettings.Enabled)
                 .WithMessage(T("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
+
+            RuleFor(x => x.SocialSettings.TwitterSite)
+                .Must(x => x.StartsWith("@"))
+                .Unless(x => !x.SocialSettings.TwitterSite.HasValue())
+                .WithMessage(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite.Error"));
         }
     }
 }

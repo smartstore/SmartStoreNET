@@ -36,6 +36,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
@@ -255,6 +256,101 @@ namespace SmartStore.Web.Controllers
                 CurrentTaxType = Services.WorkContext.TaxDisplayType
             };
             return model;
+        }
+
+        [ChildActionOnly]
+        public ActionResult MetaPropertiesProduct(ProductDetailsModel product)
+        {
+            var model = new MetaPropertiesModel
+            {
+                Type = product.ProductType == ProductType.SimpleProduct ? "product" : "product.bundle",
+                Url = Url.RouteUrl("Product", new { SeName = product.SeName }, Request.Url.Scheme),
+                Title = product.Name.Value,
+            };
+
+            var shortDescription = product.ShortDescription.Value.HasValue() ? product.ShortDescription : product.MetaDescription;
+            if (shortDescription.Value.HasValue())
+            {
+                model.Description = shortDescription.Value;
+            }
+
+            var fileInfo = product.MediaGalleryModel.Files?.ElementAtOrDefault(product.MediaGalleryModel.GalleryStartIndex);
+            PrepareMetaPropertiesModel(model, fileInfo);
+
+            return PartialView("MetaProperties", model);
+        }
+
+        [ChildActionOnly]
+        public ActionResult MetaPropertiesCategory(CategoryModel category)
+        {
+            var model = new MetaPropertiesModel
+            {
+                Type = "product.bundle",
+                Url = Url.RouteUrl("Category", new { categoryId = category.Id }, Request.Url.Scheme),
+                Title = category.Name.Value,
+            };
+
+            var description = category.Description.Value.HasValue() ? category.Description : category.MetaDescription;
+            if (description.Value.HasValue())
+            {
+                model.Description = description.Value;
+            }
+
+            var fileInfo = category.PictureModel?.File;
+            PrepareMetaPropertiesModel(model, fileInfo);
+
+            return PartialView("MetaProperties", model);
+        }
+
+        [ChildActionOnly]
+        public ActionResult MetaPropertiesManufacturer(ManufacturerModel manufacturer)
+        {
+            var model = new MetaPropertiesModel
+            {
+                Type = "product.bundle",
+                Url = Url.RouteUrl("Manufacturer", new { manufacturerId = manufacturer.Id }, Request.Url.Scheme),
+                Title = manufacturer.Name.Value,
+            };
+
+            var description = manufacturer.Description.Value.HasValue() ? manufacturer.Description : manufacturer.MetaDescription;
+            if (description.Value.HasValue())
+            {
+                model.Description = description.Value;
+            }
+
+            var fileInfo = manufacturer.PictureModel?.File;
+            PrepareMetaPropertiesModel(model, fileInfo);
+
+            return PartialView("MetaProperties", model);
+        }
+
+        [NonAction]
+        private void PrepareMetaPropertiesModel(MetaPropertiesModel model, MediaFileInfo fileInfo)
+        {
+            model.Site = Url.RouteUrl("HomePage", null, Request.Url.Scheme);
+            model.SiteName = Services.StoreContext.CurrentStore.Name;
+
+            var imageUrl = fileInfo?.GetUrl();
+            if (fileInfo != null && imageUrl.HasValue())
+            {
+                imageUrl = WebHelper.GetAbsoluteUrl(imageUrl, Request, true);
+                model.ImageUrl = imageUrl;
+
+                if (fileInfo.Alt.HasValue())
+                {
+                    model.ImageAlt = fileInfo.Alt;
+                }
+
+                if (fileInfo.Dimensions.Width > 0 && fileInfo.Dimensions.Height > 0)
+                {
+                    model.ImageWidth = fileInfo.Dimensions.Width;
+                    model.ImageHeight = fileInfo.Dimensions.Height;
+                }
+            }
+
+            var socialSettings = Services.Settings.LoadSetting<SocialSettings>();
+            model.TwitterSite = socialSettings.TwitterSite;
+            model.FacebookAppId = socialSettings.FacebookAppId;
         }
 
         #endregion

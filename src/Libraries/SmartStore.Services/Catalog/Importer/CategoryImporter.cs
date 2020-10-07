@@ -216,11 +216,11 @@ namespace SmartStore.Services.Catalog.Importer
 
                                 if (assignedFile != null && _mediaService.FindEqualFile(stream, new[] { assignedFile }, true, out var _))
                                 {
-                                    context.Result.AddInfo("Found equal image in data store. Skipping field.", row.GetRowInfo(), "ImageUrl");
+                                    context.Result.AddInfo($"Found equal image in data store for '{image.FileName}'. Skipping file.", row.GetRowInfo(), "ImageUrl");
                                 }
                                 else if (_mediaService.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out sourceFile))
                                 {
-                                    context.Result.AddInfo("Found equal image in catalog album. Assigning existing image instead.", row.GetRowInfo(), "ImageUrl");
+                                    context.Result.AddInfo($"Found equal image in catalog album for '{image.FileName}'. Assigning existing file instead.", row.GetRowInfo(), "ImageUrl");
                                 }
                                 else
                                 {

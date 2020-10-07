@@ -895,10 +895,18 @@ namespace SmartStore.Services.Catalog.Importer
                 // Download images.
                 if (imageFiles.Any(x => x.Url.HasValue()))
                 {
-                    // Async downloading in batch processing is inefficient cause only the image processing benefits from async,
-                    // not the record processing itself. A per record processing may speed up the import.
-
                     AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
+
+                    var hasDuplicateFileNames = imageFiles
+                        .Where(x => x.Url.HasValue())
+                        .Select(x => x.FileName)
+                        .GroupBy(x => x)
+                        .Any(x => x.Count() > 1);
+
+                    if (hasDuplicateFileNames)
+                    {
+                        context.Result.AddWarning($"Found duplicate names (not supported yet). File names in URLs have to be unique!", row.GetRowInfo(), "ImageUrls");
+                    }
                 }
 
                 // Import images.
@@ -925,11 +933,11 @@ namespace SmartStore.Services.Catalog.Importer
 
                                     if (_mediaService.FindEqualFile(stream, currentFiles.Select(x => x.MediaFile), true, out var _))
                                     {
-                                        context.Result.AddInfo($"Found equal image in product data for {image.FileName}. Skipping file.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+                                        context.Result.AddInfo($"Found equal file in product data for '{image.FileName}'. Skipping file.", row.GetRowInfo(), "ImageUrls");
                                     }
                                     else if (_mediaService.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out sourceFile))
                                     {
-                                        context.Result.AddInfo("Found equal file in catalog album. Assigning existing file instead.", row.GetRowInfo(), "ImageUrls");
+                                        context.Result.AddInfo($"Found equal file in catalog album for '{image.FileName}'. Assigning existing file instead.", row.GetRowInfo(), "ImageUrls");
                                     }
                                     else
                                     {

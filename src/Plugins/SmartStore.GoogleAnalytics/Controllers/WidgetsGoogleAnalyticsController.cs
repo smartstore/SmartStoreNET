@@ -165,7 +165,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
         {
             // If no consent to analytical cookies was given, set storage to none.
             var script = @"
-                , {
+                {
                   'storage': 'none',
                   'clientId': '" + _workContext.CurrentCustomer.CustomerGuid + @"',
                   'storeGac': false
@@ -251,7 +251,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
                 script = script.Replace("{ECOMMERCE}", ecScript);
 
                 // If no consent to third party cookies was given, set storage to none.
-                script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
+                script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "'auto'" : GetStorageScript());
             }
 
             return script;

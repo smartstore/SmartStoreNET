@@ -76,6 +76,10 @@
                 if (partial && !(isTouchSpin && partial === 'OfferActions')) {
                     // ...fetch the updated html from the corresponding AJAX result object's properties
                     if (data.Partials && data.Partials.hasOwnProperty(partial)) {
+                        if (partial === 'Variants') {
+                            $el.find('[data-toggle=tooltip], .tooltip-toggle').tooltip('hide');
+                        }
+
                         var updatedHtml = data.Partials[partial] || "";
                         // ...and update the inner html
                         $el.html($(updatedHtml.trim()));

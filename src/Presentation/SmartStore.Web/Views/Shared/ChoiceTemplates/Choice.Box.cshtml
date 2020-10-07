@@ -12,6 +12,7 @@
 		@foreach (var item in items)
         {
             string css = null;
+            string elClass = "choice-box-element";
             string label = item.GetItemLabel();
 
             var hasColor = item.Color.HasValue() && item.Color != "transparent";
@@ -20,21 +21,38 @@
                 css = "background-color: " + item.Color + ";";
             }
 
-            if (item.ImageUrl.HasValue())
+            var hasImage = item.ImageUrl.HasValue();
+            if (hasImage)
             {
                 css += "background-image: url('" + item.ImageUrl + "');";
             }
 
-            if (item.Title.HasValue())
+            if (item.IsDisabled)
             {
-				label += " - " + item.Title;
+                elClass += " choice-box-disabled";
+            }
+            else if (item.IsUnavailable)
+            {
+                if (hasImage)
+                {
+                    elClass += " choice-box-image-unavailable";
+                }
+                else if (hasColor)
+                {
+                    elClass += " choice-box-color-unavailable";
+                }
             }
 
-			<li class="choice-box@(item.IsPreSelected ? " selected" : "")@(item.IsDisabled ? " choice-box-disabled" : "")@(item.IsUnavailable ? " choice-box-unavailable" : "")">
+            if (item.Title.HasValue())
+            {
+                label += " - " + item.Title;
+            }
+
+			<li class="choice-box@(item.IsPreSelected ? " selected" : "")">
 				<label class="choice-box-label">
 					<input type="radio" class="choice-box-control-native" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
 					<span class="choice-box-content tooltip-toggle" title="@label">
-						<span class="choice-box-element" @Html.Attr("style", css, css.HasValue())>
+						<span class="@elClass" @Html.Attr("style", css, css.HasValue())>
 							@if (!css.HasValue())
 							{
 								<span class="choice-box-text">@item.Name</span>

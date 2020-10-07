@@ -85,11 +85,6 @@
         margin: 0;
     }
 
-    .choice-box-disabled,
-    .choice-box-unavailable {
-        opacity: .5;
-    }
-
 	.choice-box-content {
         position: relative;
 		display: block;
@@ -145,6 +140,34 @@
             padding: 0 0.4rem;
         }
 	}
+
+    .choice-box-image-unavailable {
+        opacity: .5;
+        border: 1px dashed rgba(0,0,0, .3);
+    }
+
+    .choice-box-color-unavailable {
+        border: 1px dashed rgba(0,0,0, .7);
+
+/*        &:after {
+            display: block;
+            position: absolute;
+            content: "";
+            background: rgba(0,0,0, 0.3);
+            transform: rotate(-56deg);
+            width: 50px;    //62px;
+            height: 1px;
+            left: -20px;
+            right: -20px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }*/
+    }
+
+    .choice-box-disabled {
+        opacity: .5;
+    }
 
     .choice-box-mediafile .choice-box-content {
         max-width: $choice-box-size-xl !important;

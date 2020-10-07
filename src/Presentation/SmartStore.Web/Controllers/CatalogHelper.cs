@@ -1491,6 +1491,37 @@ namespace SmartStore.Web.Controllers
             }
         }
 
+        public PictureModel PrepareCategoryPictureModel(
+            Category category,
+            string localizedName,
+            IDictionary<int, MediaFileInfo> fileLookup = null)
+        {
+            MediaFileInfo file;
+
+            if (fileLookup != null)
+            {
+                fileLookup.TryGetValue(category.MediaFileId ?? 0, out file);
+            }
+            else
+            {
+                file = _mediaService.GetFileById(category.MediaFileId ?? 0, MediaLoadFlags.AsNoTracking);
+            }
+
+            var model = new PictureModel
+            {
+                PictureId = category.MediaFileId.GetValueOrDefault(),
+                Size = _mediaSettings.CategoryThumbPictureSize,
+                ImageUrl = _mediaService.GetUrl(file, _mediaSettings.CategoryThumbPictureSize, null, !_catalogSettings.HideCategoryDefaultPictures),
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? string.Format(T("Media.Category.ImageLinkTitleFormat"), localizedName),
+                AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? string.Format(T("Media.Category.ImageAlternateTextFormat"), localizedName),
+                File = file
+            };
+
+            _services.DisplayControl.Announce(file?.File);
+
+            return model;
+        }
+
         public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
             ICollection<ProductManufacturer> manufacturers,
             IDictionary<int, ManufacturerOverviewModel> cachedModels = null,

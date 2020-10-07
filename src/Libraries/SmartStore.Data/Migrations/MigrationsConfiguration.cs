@@ -860,6 +860,18 @@
                 "Legt fest, ob die Eingabe von \"Vorname\" erforderlich ist.");
 
             #endregion Customer settings
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookAppId",
+                "Facebook App ID",
+                "Facebook App ID",
+                "A Facebook App ID is a unique number that identifies your application and links it to your Facebook account. It is used when sharing products, category and manufacturer pages on Facebook.",
+                "Eine Facebook App ID ist eine eindeutige Nummer, die Ihre Anwendung identifiziert und mit Ihrem Facebook-Account verknüpft. Wird beim Teilen von Produkten, Warengruppen- und Herstellerseiten auf Facebook genutzt.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite",
+                "Twitter Username",
+                "Twitter-Benutzername",
+                "Twitter Username that gets displayed on Twitter card when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
+                "Twitter-Benutzername, der auf der Twitter-Karte angezeigt wird, wenn ein Produkt, eine Kategorie und eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
         }
     }
 }

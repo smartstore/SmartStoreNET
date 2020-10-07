@@ -12,6 +12,7 @@
 
         public string ImageUrl { get; set; }
         public string ImageAlt { get; set; }
+        public string ImageType { get; set; }
         public int ImageHeight { get; set; }
         public int ImageWidth { get; set; }
 

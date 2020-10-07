@@ -263,7 +263,6 @@ namespace SmartStore.Web.Controllers
         {
             var model = new MetaPropertiesModel
             {
-                Type = product.ProductType == ProductType.SimpleProduct ? "product" : "product.bundle",
                 Url = Url.RouteUrl("Product", new { SeName = product.SeName }, Request.Url.Scheme),
                 Title = product.Name.Value,
             };
@@ -285,15 +284,13 @@ namespace SmartStore.Web.Controllers
         {
             var model = new MetaPropertiesModel
             {
-                Type = "product.bundle",
                 Url = Url.RouteUrl("Category", new { categoryId = category.Id }, Request.Url.Scheme),
                 Title = category.Name.Value,
             };
 
-            var description = category.Description.Value.HasValue() ? category.Description : category.MetaDescription;
-            if (description.Value.HasValue())
+            if (category.MetaDescription.Value.HasValue())
             {
-                model.Description = description.Value;
+                model.Description = category.MetaDescription.Value;
             }
 
             var fileInfo = category.PictureModel?.File;
@@ -307,15 +304,13 @@ namespace SmartStore.Web.Controllers
         {
             var model = new MetaPropertiesModel
             {
-                Type = "product.bundle",
                 Url = Url.RouteUrl("Manufacturer", new { manufacturerId = manufacturer.Id }, Request.Url.Scheme),
                 Title = manufacturer.Name.Value,
             };
 
-            var description = manufacturer.Description.Value.HasValue() ? manufacturer.Description : manufacturer.MetaDescription;
-            if (description.Value.HasValue())
+            if (manufacturer.MetaDescription.Value.HasValue())
             {
-                model.Description = description.Value;
+                model.Description = manufacturer.MetaDescription.Value;
             }
 
             var fileInfo = manufacturer.PictureModel?.File;
@@ -329,12 +324,14 @@ namespace SmartStore.Web.Controllers
         {
             model.Site = Url.RouteUrl("HomePage", null, Request.Url.Scheme);
             model.SiteName = Services.StoreContext.CurrentStore.Name;
+            model.Type = "product";
 
             var imageUrl = fileInfo?.GetUrl();
             if (fileInfo != null && imageUrl.HasValue())
             {
                 imageUrl = WebHelper.GetAbsoluteUrl(imageUrl, Request, true);
                 model.ImageUrl = imageUrl;
+                model.ImageType = fileInfo.MimeType;
 
                 if (fileInfo.Alt.HasValue())
                 {

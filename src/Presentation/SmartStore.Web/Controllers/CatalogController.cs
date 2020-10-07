@@ -123,7 +123,7 @@ namespace SmartStore.Web.Controllers
                 model.BottomDescription.ChangeValue(string.Empty);
             }
 
-            Services.DisplayControl.Announce(category);
+            model.PictureModel = _helper.PrepareCategoryPictureModel(category, model.Name);
 
             // Category breadcrumb.
             if (_catalogSettings.CategoryBreadcrumbEnabled)

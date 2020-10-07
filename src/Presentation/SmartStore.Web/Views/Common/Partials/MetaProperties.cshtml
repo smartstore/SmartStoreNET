@@ -7,19 +7,20 @@
         "<meta property='og:site' content='{0}' />".FormatInvariant(Model.Site),
         "<meta property='og:url' content='{0}' />".FormatInvariant(Model.Url),
         "<meta property='og:type' content='{0}' />".FormatInvariant(Model.Type),
-        "<meta property='og:title' content='{0}' />".FormatInvariant(Model.Title),
+        "<meta property='og:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Title)),
         "<meta property='twitter:card' content='summary' />",
-        "<meta property='twitter:title' content='{0}' />".FormatInvariant(Model.Title));
+        "<meta property='twitter:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Title)));
 
     if (Model.Description.HasValue())
     {
-        Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(Model.Description),
-            "<meta property='twitter:description' content='{0}' />".FormatInvariant(Model.Description));
+        Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(Html.Encode(Model.Description)),
+            "<meta property='twitter:description' content='{0}' />".FormatInvariant(Html.Encode(Model.Description)));
     }
 
     if (Model.ImageUrl.HasValue())
     {
         Html.AddCustomHeadParts("<meta property='og:image' content='{0}' />".FormatInvariant(Model.ImageUrl),
+            "<meta property='og:image:type' content='{0}' />".FormatInvariant(Model.ImageType),
             "<meta property='twitter:image' content='{0}' />".FormatInvariant(Model.ImageUrl));
 
         if (Model.ImageAlt.HasValue())

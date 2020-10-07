@@ -22,6 +22,38 @@
         return viewport;
     };
 
+    window.CookieManager = {
+        getCookie: function (cookieName) {
+            var name = cookieName + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        },
+        isAllowed: function (propName) {
+            var cookie = this.getCookie("CookieConsent");
+            if (cookie !== "") {
+                var obj = JSON.parse(cookie);
+                return obj[propName];
+            }
+            return false;
+        },
+        get AllowsAnalytics() {
+            return this.isAllowed("AllowAnalytics");
+        },
+        get AllowsThirdParty() {
+            return this.isAllowed("AllowThirdParty");
+        }
+    };
+
     var _commonPluginFactories = [
         // select2
         function (ctx) {

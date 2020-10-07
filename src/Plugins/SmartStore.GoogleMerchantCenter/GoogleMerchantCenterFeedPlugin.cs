@@ -55,8 +55,9 @@ namespace SmartStore.GoogleMerchantCenter
             var profiles = _exportProfileService.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName);
             profiles.Each(x => _exportProfileService.DeleteExportProfile(x, true));
 
-            var migrator = new DbMigrator(new Configuration());
-            migrator.Update(DbMigrator.InitialDatabase);
+            // Keep Google product table.
+            //var migrator = new DbMigrator(new Configuration());
+            //migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

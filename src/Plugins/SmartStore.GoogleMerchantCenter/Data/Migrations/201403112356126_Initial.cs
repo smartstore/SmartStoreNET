@@ -30,7 +30,7 @@ namespace SmartStore.GoogleMerchantCenter.Data.Migrations
 
         public override void Down()
         {
-            //DropTable("dbo.GoogleProduct");
+            DropTable("dbo.GoogleProduct");
         }
     }
 }

@@ -46,10 +46,10 @@
             }
             return false;
         },
-        get AllowsAnalytics() {
+        get allowsAnalytics() {
             return this.isAllowed("AllowAnalytics");
         },
-        get AllowsThirdParty() {
+        get allowsThirdParty() {
             return this.isAllowed("AllowThirdParty");
         }
     };

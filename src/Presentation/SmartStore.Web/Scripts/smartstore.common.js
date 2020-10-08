@@ -94,7 +94,7 @@
 
         if (_.isArray(message)) {
             $.each(message, function (i, val) {
-                notify(val)
+                notify(val);
             });
         }
         else {

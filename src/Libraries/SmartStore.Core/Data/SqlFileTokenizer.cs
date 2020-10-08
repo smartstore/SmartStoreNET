@@ -8,10 +8,8 @@ using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Core.Data
 {
-
     public class SqlFileTokenizer
     {
-
         public SqlFileTokenizer(string fileName, Assembly assembly = null, string location = null)
         {
             Guard.NotEmpty(fileName, nameof(fileName));
@@ -115,7 +113,5 @@ namespace SmartStore.Core.Data
 
             return psb.ToStringAndReturn();
         }
-
     }
-
 }

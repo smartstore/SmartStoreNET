@@ -102,6 +102,5 @@ namespace SmartStore.Core.Data
             _ctx.AutoCommitEnabled = _autoCommit;
             _ctx.LazyLoadingEnabled = _lazyLoading;
         }
-
     }
 }

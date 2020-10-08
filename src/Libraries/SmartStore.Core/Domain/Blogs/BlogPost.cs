@@ -12,7 +12,7 @@ namespace SmartStore.Core.Domain.Blogs
     /// Represents a blog post
     /// </summary>
     [DataContract]
-    public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported
+    public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported, ILocalizedEntity
     {
         #region static
 

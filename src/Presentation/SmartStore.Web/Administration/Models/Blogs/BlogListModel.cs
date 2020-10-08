@@ -34,11 +34,7 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.Common.IsPublished")]
         public bool? SearchIsPublished { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
-        public int SearchLanguageId { get; set; }
-
         public bool IsSingleStoreMode { get; set; }
-
-        public bool IsSingleLangMode { get; set; }
+        public int GridPageSize { get; set; }
     }
 }

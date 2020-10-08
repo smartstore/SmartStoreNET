@@ -870,8 +870,8 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite",
                 "Twitter Username",
                 "Twitter-Benutzername",
-                "Twitter Username that gets displayed on Twitter card when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
-                "Twitter-Benutzername, der auf der Twitter-Karte angezeigt wird, wenn ein Produkt, eine Kategorie und eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
+                "Twitter Username that gets displayed on Twitter cards when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
+                "Twitter-Benutzername, der auf Twitter-Karten angezeigt wird, wenn ein Produkt, eine Kategorie oder eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
         }
     }
 }

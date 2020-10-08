@@ -36,8 +36,10 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Models.Blogs;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Models.News;
 
 namespace SmartStore.Web.Controllers
 {
@@ -259,12 +261,55 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
+        public ActionResult MetaPropertiesBlog(BlogPostModel blogPost)
+        {
+            var model = new MetaPropertiesModel
+            {
+                Url = Url.RouteUrl("BlogPost", new { SeName = blogPost.SeName }, Request.Url.Scheme),
+                Title = blogPost.MetaTitle,
+                PublishedTime = blogPost.CreatedOn,
+                Description = blogPost.MetaDescription,
+                Type = "article"
+            };
+
+            if (blogPost.Tags.Count > 0)
+            {
+                model.ArticleTags = blogPost.Tags.Select(x => x.Name);
+                model.ArticleSection = model.ArticleTags.First();
+            }
+
+            var fileInfo = blogPost.PictureModel?.File ?? blogPost.PreviewPictureModel?.File;
+            PrepareMetaPropertiesModel(model, fileInfo);
+
+            return PartialView("MetaProperties", model);
+        }
+
+        [ChildActionOnly]
+        public ActionResult MetaPropertiesNews(NewsItemModel newsItem)
+        {
+            var model = new MetaPropertiesModel
+            {
+                Url = Url.RouteUrl("NewsItem", new { SeName = newsItem.SeName }, Request.Url.Scheme),
+                Title = newsItem.MetaTitle,
+                PublishedTime = newsItem.CreatedOn,
+                Description = newsItem.MetaDescription,
+                Type = "article"
+            };
+
+            var fileInfo = newsItem.PictureModel?.File ?? newsItem.PreviewPictureModel?.File;
+            PrepareMetaPropertiesModel(model, fileInfo);
+
+            return PartialView("MetaProperties", model);
+        }
+
+        [ChildActionOnly]
         public ActionResult MetaPropertiesProduct(ProductDetailsModel product)
         {
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("Product", new { SeName = product.SeName }, Request.Url.Scheme),
                 Title = product.Name.Value,
+                Type = "product"
             };
 
             var shortDescription = product.ShortDescription.Value.HasValue() ? product.ShortDescription : product.MetaDescription;
@@ -284,14 +329,11 @@ namespace SmartStore.Web.Controllers
         {
             var model = new MetaPropertiesModel
             {
-                Url = Url.RouteUrl("Category", new { categoryId = category.Id }, Request.Url.Scheme),
+                Url = Url.RouteUrl("Category", new { SeName = category.SeName }, Request.Url.Scheme),
                 Title = category.Name.Value,
+                Description = category.MetaDescription?.Value,
+                Type = "product"
             };
-
-            if (category.MetaDescription.Value.HasValue())
-            {
-                model.Description = category.MetaDescription.Value;
-            }
 
             var fileInfo = category.PictureModel?.File;
             PrepareMetaPropertiesModel(model, fileInfo);
@@ -304,14 +346,11 @@ namespace SmartStore.Web.Controllers
         {
             var model = new MetaPropertiesModel
             {
-                Url = Url.RouteUrl("Manufacturer", new { manufacturerId = manufacturer.Id }, Request.Url.Scheme),
+                Url = Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName }, Request.Url.Scheme),
                 Title = manufacturer.Name.Value,
+                Description = manufacturer.MetaDescription.Value,
+                Type = "product"
             };
-
-            if (manufacturer.MetaDescription.Value.HasValue())
-            {
-                model.Description = manufacturer.MetaDescription.Value;
-            }
 
             var fileInfo = manufacturer.PictureModel?.File;
             PrepareMetaPropertiesModel(model, fileInfo);
@@ -324,7 +363,6 @@ namespace SmartStore.Web.Controllers
         {
             model.Site = Url.RouteUrl("HomePage", null, Request.Url.Scheme);
             model.SiteName = Services.StoreContext.CurrentStore.Name;
-            model.Type = "product";
 
             var imageUrl = fileInfo?.GetUrl();
             if (fileInfo != null && imageUrl.HasValue())

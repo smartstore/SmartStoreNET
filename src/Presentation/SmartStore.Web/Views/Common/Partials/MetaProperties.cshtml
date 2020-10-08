@@ -36,6 +36,24 @@
         }
     }
 
+    if (Model.ArticleSection.HasValue())
+    {
+        Html.AddCustomHeadParts("<meta property='article:section' content='{0}' />".FormatInvariant(Model.ArticleSection));
+    }
+
+    if (Model.ArticleTags != null && Model.ArticleTags.Count() > 0)
+    {
+        foreach (var articleTag in Model.ArticleTags)
+        {
+            Html.AddCustomHeadParts("<meta property='article:tag' content='{0}' />".FormatInvariant(articleTag));
+        }
+    }
+
+    if (Model.PublishedTime != null)
+    {
+        Html.AddCustomHeadParts("<meta property='article:published_time' content='{0}' />".FormatInvariant(Model.PublishedTime));
+    }
+
     if (Model.TwitterSite.HasValue())
     {
         Html.AddCustomHeadParts("<meta property='twitter:site' content='{0}' />".FormatInvariant(Model.TwitterSite));

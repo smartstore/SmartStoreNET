@@ -23,6 +23,7 @@
 * #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
 * #1644 Graying out unavailable attribute combinations.
+* #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages. 
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies

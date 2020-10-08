@@ -1,4 +1,7 @@
-﻿namespace SmartStore.Web.Models.Common
+﻿using System;
+using System.Collections.Generic;
+
+namespace SmartStore.Web.Models.Common
 {
     public class MetaPropertiesModel
     {
@@ -15,6 +18,10 @@
         public string ImageType { get; set; }
         public int ImageHeight { get; set; }
         public int ImageWidth { get; set; }
+
+        public DateTime PublishedTime { get; set; }
+        public string ArticleSection { get; set; }
+        public IEnumerable<string> ArticleTags { get; set; }
 
         public string TwitterSite { get; set; }
         public string FacebookAppId { get; set; }

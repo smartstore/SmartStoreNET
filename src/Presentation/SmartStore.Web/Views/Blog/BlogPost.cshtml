@@ -8,6 +8,8 @@
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 
+@{ Html.RenderAction("MetaPropertiesBlog", "Common", new { blogPost = Model }); }
+
 @section right {
     @{
         Html.RenderAction("BlogMonths", "Blog");

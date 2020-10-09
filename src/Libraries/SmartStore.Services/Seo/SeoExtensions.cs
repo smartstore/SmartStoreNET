@@ -71,12 +71,13 @@ namespace SmartStore.Services.Seo
         /// Gets news item SE (search engine) name
         /// </summary>
         /// <param name="newsItem">News item</param>
+        /// <param name="languageId">Language identifier</param>
         /// <returns>News item SE (search engine) name</returns>
-        public static string GetSeName(this NewsItem newsItem)
+        public static string GetSeName(this NewsItem newsItem, int languageId)
         {
             Guard.NotNull(newsItem, nameof(newsItem));
 
-            return GetSeName(newsItem.Title);
+            return GetSeName(newsItem.GetLocalized(x => x.Title, languageId));
         }
 
         /// <summary>

@@ -15,29 +15,69 @@ namespace SmartStore.Services.News
         private readonly IRepository<NewsItem> _newsItemRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
 
-        public NewsService(IRepository<NewsItem> newsItemRepository,
+        public NewsService(
+            IRepository<NewsItem> newsItemRepository,
             IRepository<StoreMapping> storeMappingRepository)
         {
             _newsItemRepository = newsItemRepository;
             _storeMappingRepository = storeMappingRepository;
-
-            this.QuerySettings = DbQuerySettings.Default;
         }
 
-        public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; } = DbQuerySettings.Default;
 
-        public virtual void DeleteNews(NewsItem newsItem)
+        public virtual void InsertNews(NewsItem news)
         {
-            if (newsItem == null)
-                throw new ArgumentNullException("newsItem");
+            Guard.NotNull(news, nameof(news));
 
-            _newsItemRepository.Delete(newsItem);
+            _newsItemRepository.Insert(news);
+        }
+
+        public virtual void UpdateNews(NewsItem news)
+        {
+            Guard.NotNull(news, nameof(news));
+
+            _newsItemRepository.Update(news);
+        }
+
+        public virtual void DeleteNews(NewsItem news)
+        {
+            if (news != null)
+            {
+                _newsItemRepository.Delete(news);
+            }
+        }
+
+        public virtual void UpdateCommentTotals(NewsItem news)
+        {
+            Guard.NotNull(news, nameof(news));
+
+            var approvedCommentCount = 0;
+            var notApprovedCommentCount = 0;
+            var newsComments = news.NewsComments;
+
+            foreach (var nc in newsComments)
+            {
+                if (nc.IsApproved)
+                {
+                    approvedCommentCount++;
+                }
+                else
+                {
+                    notApprovedCommentCount++;
+                }
+            }
+
+            news.ApprovedCommentCount = approvedCommentCount;
+            news.NotApprovedCommentCount = notApprovedCommentCount;
+            UpdateNews(news);
         }
 
         public virtual NewsItem GetNewsById(int newsId)
         {
             if (newsId == 0)
+            {
                 return null;
+            }
 
             return _newsItemRepository.GetById(newsId);
         }
@@ -45,7 +85,9 @@ namespace SmartStore.Services.News
         public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
         {
             if (newsIds == null || newsIds.Length == 0)
+            {
                 return null;
+            }
 
             var query =
                 from x in _newsItemRepository.Table
@@ -55,27 +97,34 @@ namespace SmartStore.Services.News
             return query;
         }
 
-        public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null,
-            string title = "", string intro = "", string full = "")
+        public virtual IPagedList<NewsItem> GetAllNews(
+            int storeId,
+            int pageIndex,
+            int pageSize,
+            bool showHidden = false,
+            DateTime? maxAge = null,
+            string title = "", 
+            string intro = "",
+            string full = "")
         {
             var query = _newsItemRepository.Table;
-
-            if (languageId > 0)
-            {
-                query = query.Where(n => languageId == n.LanguageId);
-            }
 
             if (maxAge.HasValue)
             {
                 query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
             }
-
             if (title.HasValue())
+            {
                 query = query.Where(b => b.Title.Contains(title));
+            }
             if (intro.HasValue())
+            {
                 query = query.Where(b => b.Short.Contains(intro));
+            }
             if (full.HasValue())
+            {
                 query = query.Where(b => b.Full.Contains(full));
+            }
 
             if (!showHidden)
             {
@@ -87,7 +136,6 @@ namespace SmartStore.Services.News
 
             query = query.OrderByDescending(n => n.CreatedOnUtc);
 
-            //Store mapping
             if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
             {
                 query = from n in query
@@ -97,7 +145,7 @@ namespace SmartStore.Services.News
                         where !n.LimitedToStores || storeId == sm.StoreId
                         select n;
 
-                //only distinct items (group by ID)
+                // Only distinct items (group by ID).
                 query = from n in query
                         group n by n.Id into nGroup
                         orderby nGroup.Key
@@ -110,51 +158,16 @@ namespace SmartStore.Services.News
             return news;
         }
 
-        public virtual void InsertNews(NewsItem news)
-        {
-            if (news == null)
-                throw new ArgumentNullException("news");
-
-            _newsItemRepository.Insert(news);
-        }
-
-        public virtual void UpdateNews(NewsItem news)
-        {
-            if (news == null)
-                throw new ArgumentNullException("news");
-
-            _newsItemRepository.Update(news);
-        }
-
-        public virtual void UpdateCommentTotals(NewsItem newsItem)
-        {
-            if (newsItem == null)
-                throw new ArgumentNullException("newsItem");
-
-            int approvedCommentCount = 0;
-            int notApprovedCommentCount = 0;
-            var newsComments = newsItem.NewsComments;
-            foreach (var nc in newsComments)
-            {
-                if (nc.IsApproved)
-                    approvedCommentCount++;
-                else
-                    notApprovedCommentCount++;
-            }
-
-            newsItem.ApprovedCommentCount = approvedCommentCount;
-            newsItem.NotApprovedCommentCount = notApprovedCommentCount;
-            UpdateNews(newsItem);
-        }
-
         #region XML Sitemap
 
         public XmlSitemapProvider PublishXmlSitemap(XmlSitemapBuildContext context)
         {
             if (!context.LoadSetting<SeoSettings>().XmlSitemapIncludesNews || !context.LoadSetting<NewsSettings>().Enabled)
+            {
                 return null;
+            }
 
-            var query = GetAllNews(0, context.RequestStoreId, 0, int.MaxValue).SourceQuery;
+            var query = GetAllNews(context.RequestStoreId, 0, int.MaxValue).SourceQuery;
             return new NewsXmlSitemapResult { Query = query };
         }
 
@@ -169,10 +182,10 @@ namespace SmartStore.Services.News
 
             public override IEnumerable<NamedEntity> Enlist()
             {
-                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc, x.LanguageId }).ToList();
+                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc }).ToList();
                 foreach (var x in topics)
                 {
-                    yield return new NamedEntity { EntityName = "NewsItem", Id = x.Id, LastMod = x.CreatedOnUtc, LanguageId = x.LanguageId };
+                    yield return new NamedEntity { EntityName = "NewsItem", Id = x.Id, LastMod = x.CreatedOnUtc };
                 }
             }
 

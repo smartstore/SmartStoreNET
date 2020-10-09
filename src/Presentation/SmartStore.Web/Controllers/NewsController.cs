@@ -47,7 +47,6 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IStoreMappingService _storeMappingService;
-        private readonly ILanguageService _languageService;
         private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly MediaSettings _mediaSettings;
@@ -66,7 +65,6 @@ namespace SmartStore.Web.Controllers
             ICacheManager cacheManager,
             ICustomerActivityService customerActivityService,
             IStoreMappingService storeMappingService,
-            ILanguageService languageService,
             IGenericAttributeService genericAttributeService,
             MediaSettings mediaSettings,
             NewsSettings newsSettings,
@@ -83,7 +81,6 @@ namespace SmartStore.Web.Controllers
             _cacheManager = cacheManager;
             _customerActivityService = customerActivityService;
             _storeMappingService = storeMappingService;
-            _languageService = languageService;
             _genericAttributeService = genericAttributeService;
 
             _mediaSettings = mediaSettings;
@@ -98,8 +95,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected NewsItemListModel PrepareNewsItemListModel(NewsPagingFilteringModel command)
         {
-            if (command == null)
-                throw new ArgumentNullException("command");
+            Guard.NotNull(command, nameof(command));
 
             if (command.PageSize <= 0)
                 command.PageSize = _newsSettings.NewsArchivePageSize;
@@ -107,7 +103,6 @@ namespace SmartStore.Web.Controllers
                 command.PageNumber = 1;
 
             var model = PrepareNewsItemListModel(true, null, false, command.PageNumber - 1, command.PageSize, true);
-
             return model;
         }
 
@@ -121,7 +116,13 @@ namespace SmartStore.Web.Controllers
 
             MiniMapper.Map(newsItem, model);
 
-            model.SeName = newsItem.GetSeName(newsItem.LanguageId, ensureTwoPublishedLanguages: false);
+            model.Title = newsItem.GetLocalized(x => x.Title);
+            model.Short = newsItem.GetLocalized(x => x.Short);
+            model.Full = newsItem.GetLocalized(x => x.Full, true);
+            model.MetaTitle = newsItem.GetLocalized(x => x.MetaTitle);
+            model.MetaDescription = newsItem.GetLocalized(x => x.MetaDescription);
+            model.MetaKeywords = newsItem.GetLocalized(x => x.MetaKeywords);
+            model.SeName = newsItem.GetSeName(ensureTwoPublishedLanguages: false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
@@ -169,28 +170,26 @@ namespace SmartStore.Web.Controllers
                 return new EmptyResult();
             }
 
-            var languageId = _services.WorkContext.WorkingLanguage.Id;
             var storeId = _services.StoreContext.CurrentStore.Id;
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
             var includeHidden = _services.WorkContext.CurrentCustomer.IsAdmin();
             var cacheKey = string.Format(ModelCacheEventConsumer.HOMEPAGE_NEWSMODEL_KEY, languageId, storeId, _newsSettings.MainPageNewsCount, includeHidden);
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-                var newsItems = _newsService.GetAllNews(languageId, storeId, 0, _newsSettings.MainPageNewsCount, includeHidden);
+                var newsItems = _newsService.GetAllNews(storeId, 0, _newsSettings.MainPageNewsCount, includeHidden);
 
                 Services.DisplayControl.AnnounceRange(newsItems);
 
                 return new HomePageNewsItemsModel
                 {
-                    WorkingLanguageId = languageId,
-                    NewsItems = newsItems
-                        .Select(x =>
-                        {
-                            var newsModel = new NewsItemModel();
-                            PrepareNewsItemModel(newsModel, x, false);
-                            return newsModel;
-                        })
-                        .ToList()
+                    NewsItems = newsItems.Select(x =>
+                    {
+                        var newsModel = new NewsItemModel();
+                        PrepareNewsItemModel(newsModel, x, false);
+                        return newsModel;
+                    })
+                    .ToList()
                 };
             });
 
@@ -209,7 +208,9 @@ namespace SmartStore.Web.Controllers
         public ActionResult List(NewsPagingFilteringModel command)
         {
             if (!_newsSettings.Enabled)
+            {
                 return HttpNotFound();
+            }
 
             var model = PrepareNewsItemListModel(command);
             var storeId = _services.StoreContext.CurrentStore.Id;
@@ -219,33 +220,32 @@ namespace SmartStore.Web.Controllers
             model.MetaKeywords = _newsSettings.GetLocalizedSetting(x => x.MetaKeywords, storeId);
 
             if (!model.MetaTitle.HasValue())
+            {
                 model.MetaTitle = T("PageTitle.NewsArchive").Text;
+            }
             
             return View(model);
         }
 
         [ActionName("rss")]
-        public ActionResult ListRss(int? languageId)
+        public ActionResult ListRss()
         {
-            languageId = languageId ?? _services.WorkContext.WorkingLanguage.Id;
-
             DateTime? maxAge = null;
+            var store = _services.StoreContext.CurrentStore;
             var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
-            var selfLink = Url.Action("rss", "News", new { languageId = languageId }, protocol);
+            var selfLink = Url.Action("rss", "News", null, protocol);
             var newsLink = Url.RouteUrl("NewsArchive", null, protocol);
-
-            var title = "{0} - News".FormatInvariant(_services.StoreContext.CurrentStore.Name);
+            var title = "{0} - News".FormatInvariant(store.Name);
 
             if (_newsSettings.MaxAgeInDays > 0)
             {
                 maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
             }
 
-            var language = _languageService.GetLanguageById(languageId.Value);
             var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
 
             feed.AddNamespaces(true);
-            feed.Init(selfLink, language);
+            feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
 
             if (!_newsSettings.Enabled)
             {
@@ -253,13 +253,18 @@ namespace SmartStore.Web.Controllers
             }
 
             var items = new List<SyndicationItem>();
-            var newsItems = _newsService.GetAllNews(languageId.Value, _services.StoreContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
+            var newsItems = _newsService.GetAllNews(store.Id, 0, int.MaxValue, false, maxAge);
 
             foreach (var news in newsItems)
             {
-                var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, protocol);
+                var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(ensureTwoPublishedLanguages: false) }, protocol);
 
-                var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
+                var item = feed.CreateItem(
+                    news.GetLocalized(x => x.Title),
+                    news.GetLocalized(x => x.Short),
+                    newsUrl,
+                    news.CreatedOnUtc,
+                    news.GetLocalized(x => x.Full, true));
 
                 items.Add(item);
             }
@@ -308,11 +313,15 @@ namespace SmartStore.Web.Controllers
         public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, string captchaError)
         {
             if (!_newsSettings.Enabled)
+            {
                 return HttpNotFound();
+            }
 
             var newsItem = _newsService.GetNewsById(newsItemId);
             if (newsItem == null || !newsItem.Published || !newsItem.AllowComments)
+            {
                 return HttpNotFound();
+            }
 
             if (_captchaSettings.ShowOnNewsCommentPage && captchaError.HasValue())
             {
@@ -346,10 +355,9 @@ namespace SmartStore.Web.Controllers
                 }
 
                 _customerActivityService.InsertActivity("PublicStore.AddNewsComment", T("ActivityLog.PublicStore.AddNewsComment"));
-
                 NotifySuccess(T("News.Comments.SuccessfullyAdded"));
 
-                return RedirectToRoute("NewsItem", new { SeName = newsItem.GetSeName(newsItem.LanguageId, ensureTwoPublishedLanguages: false) });
+                return RedirectToRoute("NewsItem", new { SeName = newsItem.GetSeName(ensureTwoPublishedLanguages: false) });
             }
 
             // If we got this far, something failed, redisplay form.
@@ -361,11 +369,12 @@ namespace SmartStore.Web.Controllers
         public ActionResult RssHeaderLink()
         {
             if (!_newsSettings.Enabled || !_newsSettings.ShowHeaderRssUrl)
-                return Content("");
+            {
+                return new EmptyResult();
+            }
 
-            var link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: News\" />",
-                Url.Action("rss", null, new { languageId = _services.WorkContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"),
-                _services.StoreContext.CurrentStore.Name);
+            var url = Url.Action("rss", null, null, _webHelper.IsCurrentConnectionSecured() ? "https" : "http");
+            var link = $"<link href=\"{url}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{_services.StoreContext.CurrentStore.Name}: News\" />";
 
             return Content(link);
         }
@@ -381,8 +390,8 @@ namespace SmartStore.Web.Controllers
                 Size = 512,
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
-                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? newsItem.Title,
-                AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? newsItem.Title,
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? newsItem.GetLocalized(x => x.Title),
+                AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? newsItem.GetLocalized(x => x.Title),
                 File = file
             };
 
@@ -402,6 +411,7 @@ namespace SmartStore.Web.Controllers
         {
             var model = PrepareNewsItemListModel(renderHeading, newsHeading, disableCommentCount, 0, maxPostAmount, displayPaging, maxAgeInDays);
             model.RssToLinkButton = true;
+
             return PartialView(model);
         }
 
@@ -416,7 +426,6 @@ namespace SmartStore.Web.Controllers
             int? maxAgeInDays = null)
         {
             var storeId = _services.StoreContext.CurrentStore.Id;
-            var workingLanguageId = _services.WorkContext.WorkingLanguage.Id;
             var model = new NewsItemListModel
             {
                 NewsHeading = newsHeading,
@@ -431,7 +440,6 @@ namespace SmartStore.Web.Controllers
             }
 
             var newsItems = _newsService.GetAllNews(
-                workingLanguageId, 
                 storeId, 
                 pageIndex ?? 0, 
                 maxPostAmount ?? _newsSettings.NewsArchivePageSize, 

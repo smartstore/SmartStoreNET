@@ -12,13 +12,9 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
         [Test]
         public void Can_clone()
         {
-            //create
-            var model1 = new HomePageNewsItemsModel()
-            {
-                WorkingLanguageId = 1,
-            };
+            var model1 = new HomePageNewsItemsModel();
 
-            var newsItemModel1 = new NewsItemModel()
+            var newsItemModel1 = new NewsItemModel
             {
                 Id = 1,
                 SeName = "SeName 1",
@@ -33,8 +29,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
                     DisplayCaptcha = true
                 }
             };
+
             newsItemModel1.Comments.AllowComments = true;
             newsItemModel1.Comments.NumberOfComments = 2;
+
             newsItemModel1.Comments.Comments.Add(new CommentModel(newsItemModel1.Comments)
             {
                 Id = 3,
@@ -47,11 +45,10 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
             });
             model1.NewsItems.Add(newsItemModel1);
 
-            //clone
             var model2 = (HomePageNewsItemsModel)model1.Clone();
-            model2.WorkingLanguageId.ShouldEqual(1);
             model2.NewsItems.ShouldNotBeNull();
             model2.NewsItems.Count.ShouldEqual(1);
+
             var newsItemModel2 = model2.NewsItems[0];
             newsItemModel2.Id.ShouldEqual(1);
             newsItemModel2.SeName.ShouldEqual("SeName 1");

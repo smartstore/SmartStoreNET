@@ -19,8 +19,7 @@ namespace SmartStore.Core.Domain.News
             nameof(NewsItem.Published),
             nameof(NewsItem.StartDateUtc),
             nameof(NewsItem.EndDateUtc),
-            nameof(NewsItem.LimitedToStores),
-            nameof(NewsItem.LanguageId)
+            nameof(NewsItem.LimitedToStores)
         };
 
         public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()

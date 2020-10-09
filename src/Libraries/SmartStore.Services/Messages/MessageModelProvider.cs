@@ -825,7 +825,7 @@ namespace SmartStore.Services.Messages
             var m = new Dictionary<string, object>
             {
                 {  "PostTitle", part.BlogPost.GetLocalized(x => x.Title, messageContext.Language).Value.NullEmpty() },
-                {  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(ensureTwoPublishedLanguages: false) }, messageContext) },
+                {  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(messageContext.Language.Id) }, messageContext) },
                 {  "Text", part.CommentText.NullEmpty() }
             };
 
@@ -841,7 +841,7 @@ namespace SmartStore.Services.Messages
 
             var m = new Dictionary<string, object>
             {
-                {  "NewsTitle", part.NewsItem.Title.NullEmpty() },
+                {  "NewsTitle", part.NewsItem.GetLocalized(x => x.Title, messageContext.Language).Value.NullEmpty() },
                 {  "Title", part.CommentTitle.NullEmpty() },
                 {  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
                 {  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }

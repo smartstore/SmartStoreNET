@@ -115,7 +115,6 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(GridCommand command, NewsItemListModel model)
         {
             var news = _newsService.GetAllNews(
-                0,
                 model.SearchStoreId,
                 command.Page - 1,
                 command.PageSize,
@@ -357,7 +356,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     Id = newsComment.Id,
                     NewsItemId = newsComment.NewsItemId,
-                    NewsItemTitle = newsComment.NewsItem.Title,
+                    NewsItemTitle = newsComment.NewsItem.GetLocalized(x => x.Title),
                     CustomerId = newsComment.CustomerId,
                     IpAddress = newsComment.IpAddress,
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc),

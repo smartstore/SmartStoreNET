@@ -30,7 +30,7 @@ namespace SmartStore.Data.Tests.News
                 MetaTitle = "MetaTitle 1",
                 MetaDescription = "MetaDescription 1",
                 MetaKeywords = "MetaKeywords 1",
-                Language = new Language()
+                Language = new Language
                 {
                     Name = "English",
                     LanguageCulture = "en-Us",
@@ -53,9 +53,6 @@ namespace SmartStore.Data.Tests.News
             fromDb.MetaTitle.ShouldEqual("MetaTitle 1");
             fromDb.MetaDescription.ShouldEqual("MetaDescription 1");
             fromDb.MetaKeywords.ShouldEqual("MetaKeywords 1");
-
-            fromDb.Language.ShouldNotBeNull();
-            fromDb.Language.Name.ShouldEqual("English");
         }
 
         [Test]
@@ -69,27 +66,25 @@ namespace SmartStore.Data.Tests.News
                 AllowComments = true,
                 Published = true,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
-                Language = new Language()
+                Language = new Language
                 {
                     Name = "English",
                     LanguageCulture = "en-Us",
                 }
             };
-            news.NewsComments.Add
-                (
-                    new NewsComment
-                    {
-                        CommentText = "Comment text 1",
-                        IpAddress = "192.168.1.1",
-                        IsApproved = true,
-                        CreatedOnUtc = new DateTime(2010, 01, 03),
-                        UpdatedOnUtc = new DateTime(2010, 01, 04),
-                        Customer = GetTestCustomer()
-                    }
-                );
+
+            news.NewsComments.Add(new NewsComment
+            {
+                CommentText = "Comment text 1",
+                IpAddress = "192.168.1.1",
+                IsApproved = true,
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+                Customer = GetTestCustomer()
+            });
+
             var fromDb = SaveAndLoadEntity(news);
             fromDb.ShouldNotBeNull();
-
 
             fromDb.NewsComments.ShouldNotBeNull();
             (fromDb.NewsComments.Count == 1).ShouldBeTrue();

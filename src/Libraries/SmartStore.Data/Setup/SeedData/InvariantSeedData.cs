@@ -1377,7 +1377,6 @@ namespace SmartStore.Data.Setup
         public virtual UrlRecord CreateUrlRecordFor<T>(T entity) where T : BaseEntity, ISlugSupported, new()
         {
             var name = "";
-            var languageId = 0;
 
             switch (entity)
             {
@@ -1392,11 +1391,9 @@ namespace SmartStore.Data.Setup
                     break;
                 case BlogPost x:
                     name = x.Title;
-                    languageId = x.LanguageId;
                     break;
                 case NewsItem x:
                     name = x.Title;
-                    languageId = x.LanguageId;
                     break;
                 case Topic x:
                     name = SeoHelper.GetSeName(x.SystemName, true, false, true).Truncate(400);
@@ -1409,7 +1406,7 @@ namespace SmartStore.Data.Setup
                 {
                     EntityId = entity.Id,
                     EntityName = entity.GetUnproxiedType().Name,
-                    LanguageId = languageId,
+                    LanguageId = 0,
                     Slug = name,
                     IsActive = true
                 };

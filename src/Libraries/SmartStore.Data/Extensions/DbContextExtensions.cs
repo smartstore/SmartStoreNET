@@ -21,7 +21,6 @@ namespace SmartStore
 
     public static class DbContextExtensions
     {
-
         public static bool ColumnExists(this DbContext context, string tableName, string columnName)
         {
             if (context != null && tableName.HasValue() && columnName.HasValue())

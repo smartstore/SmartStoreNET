@@ -178,18 +178,16 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// Key for blog tag list model
         /// </summary>
         /// <remarks>
-        /// {0} : language ID
-        /// {1} : store ID
+        /// {0} : store ID
         /// </remarks>
-        public const string BLOG_TAGS_MODEL_KEY = "pres:blog:tags-{0}-{1}";
+        public const string BLOG_TAGS_MODEL_KEY = "pres:blog:tags-{0}";
         /// <summary>
         /// Key for blog archive (years, months) block model
         /// </summary>
         /// <remarks>
-        /// {0} : language ID
-        /// {1} : current store ID
+        /// {0} : current store ID
         /// </remarks>
-        public const string BLOG_MONTHS_MODEL_KEY = "pres:blog:months-{0}-{1}";
+        public const string BLOG_MONTHS_MODEL_KEY = "pres:blog:months-{0}";
         public const string BLOG_PATTERN_KEY = "pres:blog:*";
 
         /// <summary>

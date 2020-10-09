@@ -90,7 +90,7 @@
 
         public void MigrateUrlRecords(SmartObjectContext context)
         {
-            // Migrate URL records of BlogPost and NewsItem that are stored with ID of primary language but without 0 (Standard).
+            // Migrate URL records of BlogPost and NewsItem that are stored with primary language ID. Must be 0 for "Standard" now.
             var defaultLangId = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First().Id;
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
@@ -123,15 +123,7 @@
                         }
 
                         scope.Commit();
-
-                        if (entityName == nameof(BlogPost))
-                        {
-                            context.DetachEntities<BlogPost>();
-                        }
-                        else if (entityName == nameof(NewsItem))
-                        {
-                            context.DetachEntities<NewsItem>();
-                        }
+                        context.DetachEntities<UrlRecord>();
                     }
                 }
             }

@@ -99,13 +99,17 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult List()
         {
-            var model = new BlogListModel();
-            model.GridPageSize = _adminAreaSettings.GridPageSize;
-            model.IsSingleStoreMode = _storeService.IsSingleStoreMode();
-            model.SearchEndDate = DateTime.UtcNow;
+            var allTags = _blogService.GetAllBlogPostTags(0, true)
+                .Select(x => x.Name)
+                .ToList();
 
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
-            model.SearchAvailableTags = new MultiSelectList(allTags);
+            var model = new BlogListModel
+            {
+                GridPageSize = _adminAreaSettings.GridPageSize,
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                SearchEndDate = DateTime.UtcNow,
+                SearchAvailableTags = new MultiSelectList(allTags)
+            };
 
             return View(model);
         }
@@ -116,7 +120,6 @@ namespace SmartStore.Admin.Controllers
         {
             var blogPosts = _blogService.GetAllBlogPosts(
                 model.SearchStoreId, 
-                0, 
                 model.SearchStartDate,
                 model.SearchEndDate, 
                 command.Page - 1, 
@@ -167,7 +170,10 @@ namespace SmartStore.Admin.Controllers
                 AllowComments = true
             };
 
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true)
+                .Select(x => x.Name)
+                .ToList();
+
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
 
             AddLocales(_languageService, model.Locales);
@@ -188,6 +194,8 @@ namespace SmartStore.Admin.Controllers
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
 
+                blogPost.LanguageId = _languageService.GetDefaultLanguageId();
+
                 _blogService.InsertBlogPost(blogPost);
 
                 model.SeName = blogPost.ValidateSeName(model.SeName, blogPost.Title, true);
@@ -203,7 +211,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
 
             PrepareStoresMappingModel(model, null, true);
@@ -237,7 +245,7 @@ namespace SmartStore.Admin.Controllers
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
 
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
             model.Tags = blogPost.Tags.SplitSafe(",");
 
@@ -279,7 +287,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
             model.Tags = blogPost.Tags.SplitSafe(",");
 
@@ -353,7 +361,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     Id = blogComment.Id,
                     BlogPostId = blogComment.BlogPostId,
-                    BlogPostTitle = blogComment.BlogPost.Title,
+                    BlogPostTitle = blogComment.BlogPost.GetLocalized(x => x.Title),
                     CustomerId = blogComment.CustomerId,
                     IpAddress = blogComment.IpAddress,
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc),

@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
+using SmartStore.Data.Tests.Blogs;
 using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Customers
@@ -70,18 +70,7 @@ namespace SmartStore.Data.Tests.Customers
                 IsApproved = true,
                 CreatedOnUtc = new DateTime(2010, 01, 03),
                 UpdatedOnUtc = new DateTime(2010, 01, 04),
-                BlogPost = new BlogPost()
-                {
-                    Title = "Title 1",
-                    Body = "Body 1",
-                    AllowComments = true,
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    Language = new Language()
-                    {
-                        Name = "English",
-                        LanguageCulture = "en-Us",
-                    }
-                }
+                BlogPost = BlogPostPersistenceTests.GetTestBlogPost()
             };
 
             var table = context.Set<CustomerContent>();

@@ -11,7 +11,6 @@ namespace SmartStore.Web.Models.Blogs
             BlogPosts = new List<BlogPostModel>();
         }
 
-        public int WorkingLanguageId { get; set; }
         public bool RenderHeading { get; set; }
         public string BlogHeading { get; set; }
         public bool RssToLinkButton { get; set; }

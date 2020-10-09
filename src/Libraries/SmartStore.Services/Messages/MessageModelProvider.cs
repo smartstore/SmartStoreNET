@@ -824,8 +824,8 @@ namespace SmartStore.Services.Messages
 
             var m = new Dictionary<string, object>
             {
-                {  "PostTitle", part.BlogPost.Title.NullEmpty() },
-                {  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(part.BlogPost.LanguageId, ensureTwoPublishedLanguages: false) }, messageContext) },
+                {  "PostTitle", part.BlogPost.GetLocalized(x => x.Title, messageContext.Language).Value.NullEmpty() },
+                {  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(ensureTwoPublishedLanguages: false) }, messageContext) },
                 {  "Text", part.CommentText.NullEmpty() }
             };
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -7,10 +8,9 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
-using SmartStore.Core.Localization;
-using System.Runtime.CompilerServices;
 
 namespace SmartStore.Services.Seo
 {
@@ -46,12 +46,13 @@ namespace SmartStore.Services.Seo
         /// Gets blog post SE (search engine) name
         /// </summary>
         /// <param name="blogPost">Blog post</param>
+        /// <param name="languageId">Language identifier</param>
         /// <returns>Blog post SE (search engine) name</returns>
-        public static string GetSeName(this BlogPost blogPost)
+        public static string GetSeName(this BlogPost blogPost, int languageId)
         {
             Guard.NotNull(blogPost, nameof(blogPost));
 
-            return GetSeName(blogPost.Title);
+            return GetSeName(blogPost.GetLocalized(x => x.Title, languageId));
         }
 
         /// <summary>

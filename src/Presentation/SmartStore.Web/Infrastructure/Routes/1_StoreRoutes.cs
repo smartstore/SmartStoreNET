@@ -259,8 +259,8 @@ namespace SmartStore.Web.Infrastructure
                 new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("BlogRSS",
-                "blog/rss/{languageId}",
-                new { controller = "Blog", action = "ListRss", languageId = UrlParameter.Optional },
+                "blog/rss",
+                new { controller = "Blog", action = "ListRss" },
                 new[] { "SmartStore.Web.Controllers" });
 
 

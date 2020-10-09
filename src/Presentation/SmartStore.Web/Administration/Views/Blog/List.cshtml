@@ -94,7 +94,7 @@
         })
         .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
-        .ClientEvents(events => events.OnDataBinding("blogPostGrid_onDataBinding"))
+        .ClientEvents(events => events.OnDataBinding("blogPostGrid_onDataBinding").OnRowDataBound("blogPostGrid_onRowDataBound"))
         .PreserveGridState()
         .EnableCustomBinding(true))
 </div>
@@ -136,5 +136,11 @@
 			SearchIsPublished: $('#SearchIsPublished').val()
 		};
 		e.data = searchModel;
-	}
+    }
+
+    function blogPostGrid_onRowDataBound(e) {
+    	if (!e.dataItem.IsPublished) {
+    		$(e.row).find('td').wrapInner('<span class="muted" />');
+    	}
+    }
 </script>  

@@ -29,11 +29,7 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.Common.IsPublished")]
         public bool? SearchIsPublished { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
-        public int SearchLanguageId { get; set; }
-
         public bool IsSingleStoreMode { get; set; }
-
-        public bool IsSingleLangMode { get; set; }
+        public int GridPageSize { get; set; }
     }
 }

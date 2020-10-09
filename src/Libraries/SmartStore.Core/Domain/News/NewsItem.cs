@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.News
     /// <summary>
     /// Represents a news item
     /// </summary>
-	public partial class NewsItem : BaseEntity, ISlugSupported, IStoreMappingSupported
+	public partial class NewsItem : BaseEntity, ISlugSupported, IStoreMappingSupported, ILocalizedEntity
     {
         #region static
 

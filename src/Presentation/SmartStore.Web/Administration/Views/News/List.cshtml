@@ -1,9 +1,6 @@
 ﻿@model NewsItemListModel
 @using Telerik.Web.Mvc.UI
-
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-
     ViewBag.Title = T("Admin.ContentManagement.News.NewsItems").Text;
 }
 
@@ -61,13 +58,6 @@
             @Html.EditorFor(model => model.SearchStoreId)
         </div>
     }
-    @if (!Model.IsSingleLangMode)
-    {
-        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-            @Html.SmartLabelFor(model => model.SearchLanguageId)
-            @Html.DropDownListFor(model => model.SearchLanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"), T("Admin.Common.All"))
-        </div>
-    }
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
         @Html.SmartLabelFor(model => model.SearchIsPublished)
         @Html.EditorFor(model => model.SearchIsPublished)
@@ -91,31 +81,21 @@
                     .HtmlAttributes(new { style = "text-align:center" })
                     .HeaderHtmlAttributes(new { style = "text-align:center" });
                 columns.Bound(x => x.Title)
-                    .Width(450)
-                    .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
                     .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
                 columns.Bound(x => x.Published)
-                    .Template(item => @Html.SymbolForBool(item.Published))
-                    .ClientTemplate(@Html.SymbolForBool("Published"))
+                    .ClientTemplate(Html.SymbolForBool("Published"))
                     .Centered();
-                columns.Bound(x => x.LanguageName);
                 columns.Bound(x => x.Comments)
-                    .Template(
-                    @<div>
-                        @Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
-                    </div>
-                        )
-                        .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+                    .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
                 columns.Bound(x => x.StartDate);
                 columns.Bound(x => x.EndDate);
                 columns.Bound(x => x.LimitedToStores)
-                    .Template(item => @Html.SymbolForBool(item.LimitedToStores))
-                    .ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+                    .ClientTemplate(Html.SymbolForBool("LimitedToStores"))
                     .Hidden(Model.IsSingleStoreMode)
                     .Centered();
                 columns.Bound(x => x.CreatedOn);
             })
-            .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+            .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
             .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
             .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
             .PreserveGridState()
@@ -126,12 +106,12 @@
 	var selectedIds = [];
 
     $(function () {
-        // Filter toggler
+        // Filter toggler.
 		$('.btn-toggle-filter').on('click', function (e) {
 			$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
 		});
 
-        //search button
+        // Search button.
         $('#search-newsitem').click(function () {
             //search
             var grid = $('#newsitem-grid').data('tGrid');
@@ -144,7 +124,7 @@
             return false;
         });
 
-    	//"delete selected" button
+    	// "Delete selected" button
         $('#delete-selected').click(function (e) {
         	e.preventDefault();
 
@@ -158,11 +138,11 @@
         		url: "@(Url.Action("DeleteSelected", "News"))",
         		data: postData,
         		complete: function (data) {
-        			//reload grid
+        			// Reload grid.
         			var grid = $('#newsitem-grid').data('tGrid');
-        			grid.currentPage = 1; //new search. Set page size to 1
+        			grid.currentPage = 1;
         			grid.ajaxRequest();
-        			//clear selected checkboxes
+        			// Clear selected checkboxes.
         			$('.checkboxGroups').attr('checked', false).change();
         			selectedIds = [];
         		},
@@ -178,20 +158,20 @@
     		$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
     	});
 
-    	//wire up checkboxes.
+    	// Wire up checkboxes.
     	$(document).on('change', '#newsitem-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
     		var $check = $(this);
     		if ($check.is(":checked") == true) {
     			var checked = jQuery.inArray($check.val(), selectedIds);
     			if (checked == -1) {
-    				//add id to selectedIds.
+    				// Add id to selectedIds.
     				selectedIds.push($check.val());
     			}
     		}
     		else {
     			var checked = jQuery.inArray($check.val(), selectedIds);
     			if (checked > -1) {
-    				//remove id from selectedIds.
+    				// Remove id from selectedIds.
     				selectedIds = $.grep(selectedIds, function (item, index) {
     					return item != $check.val();
     				});
@@ -210,8 +190,7 @@
             SearchStartDate: $('#SearchStartDate').val(),
 			SearchEndDate: $('#SearchEndDate').val(),
             SearchStoreId: $('#SearchStoreId').val(),
-			SearchIsPublished: $('#SearchIsPublished').val(),
-			SearchLanguageId: $('#SearchLanguageId').val()
+			SearchIsPublished: $('#SearchIsPublished').val()
         };
         e.data = searchModel;
     }
@@ -226,7 +205,7 @@
     	$('#newsitem-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
     		var currentId = $(this).val();
     		var checked = jQuery.inArray(currentId, selectedIds);
-    		//set checked based on if current checkbox's value is in selectedIds.
+    		// Set checked based on if current checkbox's value is in selectedIds.
     		$(this).attr('checked', checked > -1);
     	});
 

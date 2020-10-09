@@ -25,27 +25,23 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class NewsController : AdminControllerBase
     {
-        #region Fields
-
         private readonly INewsService _newsService;
         private readonly ILanguageService _languageService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerContentService _customerContentService;
+        private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IStoreService _storeService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly ICustomerService _customerService;
         private readonly AdminAreaSettings _adminAreaSettings;
 
-        #endregion
-
-        #region Constructors
-
         public NewsController(
             INewsService newsService,
             ILanguageService languageService,
             IDateTimeHelper dateTimeHelper,
             ICustomerContentService customerContentService,
+            ILocalizedEntityService localizedEntityService,
             IUrlRecordService urlRecordService,
             IStoreService storeService,
             IStoreMappingService storeMappingService,
@@ -56,6 +52,7 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
             _dateTimeHelper = dateTimeHelper;
             _customerContentService = customerContentService;
+            _localizedEntityService = localizedEntityService;
             _urlRecordService = urlRecordService;
             _storeService = storeService;
             _storeMappingService = storeMappingService;
@@ -63,11 +60,24 @@ namespace SmartStore.Admin.Controllers
             _adminAreaSettings = adminAreaSettings;
         }
 
-        #endregion
-
         #region Utilities
 
-        [NonAction]
+        private void UpdateLocales(NewsItem newsItem, NewsItemModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.Title, localized.Title, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.Short, localized.Short, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.Full, localized.Full, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(newsItem, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+
+                var seName = newsItem.ValidateSeName(localized.SeName, localized.Title, false, localized.LanguageId);
+                _urlRecordService.SaveSlug(newsItem, seName, localized.LanguageId);
+            }
+        }
+
         private void PrepareStoresMappingModel(NewsItemModel model, NewsItem newsItem, bool excludeProperties)
         {
             Guard.NotNull(model, nameof(model));
@@ -90,16 +100,12 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List()
         {
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
-            var model = new NewsItemListModel();
-
-            // IsSingleStoreMode & IsMultiLangMode
-            model.IsSingleStoreMode = _storeService.IsSingleStoreMode();
-            model.IsSingleLangMode = _languageService.GetAllLanguages(true).Count == 1;
-
-            // Set end date to now.
-            model.SearchEndDate = DateTime.UtcNow;
+            var model = new NewsItemListModel
+            {
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                GridPageSize = _adminAreaSettings.GridPageSize,
+                SearchEndDate = DateTime.UtcNow
+            };
 
             return View(model);
         }
@@ -108,8 +114,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List(GridCommand command, NewsItemListModel model)
         {
-            var news = _newsService.GetAllNews(model.SearchLanguageId, model.SearchStoreId, command.Page - 1, command.PageSize, !model.SearchIsPublished ?? true,
-                title: model.SearchTitle, intro: model.SearchShort, full: model.SearchFull);
+            var news = _newsService.GetAllNews(
+                0,
+                model.SearchStoreId,
+                command.Page - 1,
+                command.PageSize,
+                !model.SearchIsPublished ?? true,
+                null,
+                model.SearchTitle, 
+                model.SearchShort, 
+                model.SearchFull);
 
             var gridModel = new GridModel<NewsItemModel>
             {
@@ -130,7 +144,6 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                m.LanguageName = x.Language.Name;
                 m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
 
                 return m;
@@ -145,17 +158,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Create)]
         public ActionResult Create()
         {
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
             var model = new NewsItemModel
             {
                 Published = true,
                 AllowComments = true
             };
 
+            AddLocales(_languageService, model.Locales);
             PrepareStoresMappingModel(model, null, false);
 
-            //default values
+            // Default values.
             model.Published = true;
             model.AllowComments = true;
             model.CreatedOn = DateTime.UtcNow;
@@ -174,11 +186,15 @@ namespace SmartStore.Admin.Controllers
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
                 newsItem.CreatedOnUtc = model.CreatedOn;
+
+                newsItem.LanguageId = _languageService.GetDefaultLanguageId();
+
                 _newsService.InsertNews(newsItem);
 
-                // Search engine name.
-                var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
-                _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
+                model.SeName = newsItem.ValidateSeName(model.SeName, newsItem.Title, true);
+                _urlRecordService.SaveSlug(newsItem, model.SeName, 0);
+
+                UpdateLocales(newsItem, model);
 
                 SaveStoreMappings(newsItem, model.SelectedStoreIds);
 
@@ -189,8 +205,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
             PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -201,11 +215,23 @@ namespace SmartStore.Admin.Controllers
         {
             var newsItem = _newsService.GetNewsById(id);
             if (newsItem == null)
+            {
                 return RedirectToAction("List");
-
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+            }
 
             var model = newsItem.ToModel();
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Title = newsItem.GetLocalized(x => x.Title, languageId, false, false);
+                locale.Short = newsItem.GetLocalized(x => x.Short, languageId, false, false);
+                locale.Full = newsItem.GetLocalized(x => x.Full, languageId, false, false);
+                locale.MetaKeywords = newsItem.GetLocalized(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaDescription = newsItem.GetLocalized(x => x.MetaDescription, languageId, false, false);
+                locale.MetaTitle = newsItem.GetLocalized(x => x.MetaTitle, languageId, false, false);
+                locale.SeName = newsItem.GetSeName(languageId, false, false);
+            });
+
             model.StartDate = newsItem.StartDateUtc;
             model.EndDate = newsItem.EndDateUtc;
             model.CreatedOn = newsItem.CreatedOnUtc;
@@ -230,23 +256,23 @@ namespace SmartStore.Admin.Controllers
                 newsItem.StartDateUtc = model.StartDate;
                 newsItem.EndDateUtc = model.EndDate;
                 newsItem.CreatedOnUtc = model.CreatedOn;
-                _newsService.UpdateNews(newsItem);
 
-                // Search engine name.
-                var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
-                _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
+                model.SeName = newsItem.ValidateSeName(model.SeName, newsItem.Title, true);
+                _urlRecordService.SaveSlug(newsItem, model.SeName, 0);
+
+                UpdateLocales(newsItem, model);
+
+                _newsService.UpdateNews(newsItem);
 
                 SaveStoreMappings(newsItem, model.SelectedStoreIds);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, newsItem, form));
-
                 NotifySuccess(T("Admin.ContentManagement.News.NewsItems.Updated"));
+
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
             }
 
             // If we got this far, something failed, redisplay form.
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
             PrepareStoresMappingModel(model, newsItem, true);
 
             return View(model);
@@ -258,7 +284,9 @@ namespace SmartStore.Admin.Controllers
         {
             var newsItem = _newsService.GetNewsById(id);
             if (newsItem == null)
+            {
                 return RedirectToAction("List");
+            }
 
             _newsService.DeleteNews(newsItem);
 

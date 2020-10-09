@@ -584,7 +584,8 @@
                 "Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords.Hint",
                 "Admin.ContentManagement.Topics.Fields.MetaKeywords",
                 "Admin.ContentManagement.Topics.Fields.MetaKeywords.Hint",
-                "Admin.ContentManagement.Blog.BlogPosts.Fields.Language");
+                "Admin.ContentManagement.Blog.BlogPosts.Fields.Language",
+                "Admin.ContentManagement.News.NewsItems.Fields.Language");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DefaultTitle",
                 "Default title tag",

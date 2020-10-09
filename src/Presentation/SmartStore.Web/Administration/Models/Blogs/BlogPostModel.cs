@@ -28,6 +28,10 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string Title { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        [AllowHtml]
+        public string SeName { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Intro")]
         [AllowHtml]
         public string Intro { get; set; }
@@ -84,10 +88,6 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
-        [AllowHtml]
-        public string SeName { get; set; }
-
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
@@ -111,6 +111,10 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string Title { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        [AllowHtml]
+        public string SeName { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Intro")]
         [AllowHtml]
         public string Intro { get; set; }
@@ -130,10 +134,6 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
-        [AllowHtml]
-        public string SeName { get; set; }
     }
 
 
@@ -141,8 +141,8 @@ namespace SmartStore.Admin.Models.Blogs
     {
         public BlogPostValidator()
         {
-            RuleFor(x => x.Title).NotNull();
-            RuleFor(x => x.Body).NotNull();
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Body).NotEmpty();
             RuleFor(x => x.PictureId)
                 .NotNull()
                 .When(x => x.PreviewDisplayType == PreviewDisplayType.Default || x.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg);

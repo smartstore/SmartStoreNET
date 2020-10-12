@@ -24,7 +24,6 @@ namespace SmartStore.Core.Caching
 
         private readonly Work<ICacheScopeAccessor> _scopeAccessor;
         private MemoryCache _cache;
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public MemoryCacheManager(Work<ICacheScopeAccessor> scopeAccessor)
         {

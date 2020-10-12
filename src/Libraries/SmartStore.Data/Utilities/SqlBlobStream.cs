@@ -25,8 +25,8 @@ namespace SmartStore.Data.Utilities
         {
             Guard.NotNull(connectionFactory, nameof(connectionFactory));
             Guard.NotEmpty(connectionString, nameof(connectionString));
-            Guard.NotEmpty(connectionString, nameof(tableName));
-            Guard.NotEmpty(connectionString, nameof(blobColumnName));
+            Guard.NotEmpty(tableName, nameof(tableName));
+            Guard.NotEmpty(blobColumnName, nameof(blobColumnName));
             Guard.NotEmpty(pkColumnName, nameof(pkColumnName));
             Guard.NotNull(pkColumnValue, nameof(pkColumnValue));
 

@@ -38,11 +38,11 @@ namespace SmartStore.Admin.Models.News
         public string Full { get; set; }
 
         [UIHint("Media"), AdditionalMetadata("album", "content")]
-        [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.Picture")]
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Picture")]
         public int? PictureId { get; set; }
 
         [UIHint("Media"), AdditionalMetadata("album", "content")]
-        [SmartResourceDisplayName("Admin.Catalog.News.NewsItems.Fields.PreviewPictureId")]
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.PreviewPictureId")]
         public int? PreviewPictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.AllowComments")]

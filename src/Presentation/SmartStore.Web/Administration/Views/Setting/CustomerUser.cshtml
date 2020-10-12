@@ -879,12 +879,16 @@
                 .Columns(columns =>
                 {
                     columns.Bound(x => x.Name)
+                        .Width("15%")
                         .ReadOnly();
                     columns.Bound(x => x.Description)
+                        .Width("50%")
                         .ReadOnly();
                     columns.Bound(x => x.CookieTypeName)
+                        .Width("15%")
                         .ReadOnly();
                     columns.Bound(x => x.IsPluginInfo)
+                        .Width("8%")
                         .Template(item => @Html.SymbolForBool(item.IsPluginInfo))
                         .ClientTemplate(@Html.SymbolForBool("IsPluginInfo"))
                         .Centered()

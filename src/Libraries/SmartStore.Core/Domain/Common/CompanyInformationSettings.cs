@@ -71,11 +71,6 @@ namespace SmartStore.Core.Domain.Common
         public string Region { get; set; }
 
         /// <summary>
-        /// Gets or sets the country that will be used
-        /// </summary>
-        public string CountryName { get; set; }
-
-        /// <summary>
         /// Gets or sets the state that will be used
         /// </summary>
         public string StateName { get; set; }

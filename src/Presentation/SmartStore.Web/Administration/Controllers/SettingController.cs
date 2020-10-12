@@ -1366,8 +1366,6 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedSetting(homePageSeoSettings, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId, storeScope);
             }
 
-            companySettings.CountryName = _countryService.GetCountryById(model.CompanyInformationSettings.CountryId ?? 0)?.Name;
-
             if (resetUserSeoCharacterTable)
             {
                 SeoHelper.ResetUserSeoCharacterTable();

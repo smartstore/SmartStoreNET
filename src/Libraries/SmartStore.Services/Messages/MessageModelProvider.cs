@@ -395,12 +395,14 @@ namespace SmartStore.Services.Messages
         protected virtual object CreateCompanyModelPart(MessageContext messageContext)
         {
             var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
+            var countryService = _services.Resolve<ICountryService>();
+            var country = countryService.GetCountryById(settings.CountryId);
             dynamic m = new HybridExpando(settings, true);
 
             m.NameLine = Concat(settings.Salutation, settings.Title, settings.Firstname, settings.Lastname);
             m.StreetLine = Concat(settings.Street, settings.Street2);
             m.CityLine = Concat(settings.ZipCode, settings.City);
-            m.CountryLine = Concat(settings.CountryName, settings.Region);
+            m.CountryLine = Concat(country.GetLocalized(x => x.Name), settings.Region);
 
             PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
             return m;

@@ -21,8 +21,7 @@ namespace SmartStore.Core.Domain.Blogs
             nameof(BlogPost.IsPublished),
             nameof(BlogPost.StartDateUtc),
             nameof(BlogPost.EndDateUtc),
-            nameof(BlogPost.LimitedToStores),
-            nameof(BlogPost.LanguageId)
+            nameof(BlogPost.LimitedToStores)
         };
 
         public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
@@ -39,12 +38,6 @@ namespace SmartStore.Core.Domain.Blogs
         /// </summary>
         [DataMember]
         public bool IsPublished { get; set; }
-
-        /// <summary>
-        /// Gets or sets the language identifier
-        /// </summary>
-        [DataMember]
-        public int LanguageId { get; set; }
 
         /// <summary>
         /// Gets or sets the blog post title
@@ -184,12 +177,6 @@ namespace SmartStore.Core.Domain.Blogs
             get => _blogComments ?? (_blogComments = new HashSet<BlogComment>());
             protected set => _blogComments = value;
         }
-
-        /// <summary>
-        /// Gets or sets the language
-        /// </summary>
-        [DataMember]
-        public virtual Language Language { get; set; }
     }
 
     public enum PreviewDisplayType

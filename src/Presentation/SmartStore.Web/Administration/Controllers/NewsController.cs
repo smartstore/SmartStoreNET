@@ -186,8 +186,6 @@ namespace SmartStore.Admin.Controllers
                 newsItem.EndDateUtc = model.EndDate;
                 newsItem.CreatedOnUtc = model.CreatedOn;
 
-                newsItem.LanguageId = _languageService.GetDefaultLanguageId();
-
                 _newsService.InsertNews(newsItem);
 
                 model.SeName = newsItem.ValidateSeName(model.SeName, newsItem.Title, true);

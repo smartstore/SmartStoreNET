@@ -5,11 +5,8 @@
     using System.Linq;
     using Setup;
     using SmartStore.Core.Data;
-    using SmartStore.Core.Domain.Blogs;
     using SmartStore.Core.Domain.Configuration;
-    using SmartStore.Core.Domain.Localization;
     using SmartStore.Core.Domain.Media;
-    using SmartStore.Core.Domain.News;
     using SmartStore.Core.Domain.Seo;
     using SmartStore.Utilities;
 
@@ -46,7 +43,6 @@
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
             MigrateSettings(context);
-            MigrateUrlRecords(context);
         }
 
         public void MigrateSettings(SmartObjectContext context)
@@ -86,47 +82,6 @@
             if (defaultTitle != null) settings.Remove(defaultTitle);
             if (defaultMetaDescription != null) settings.Remove(defaultMetaDescription);
             if (defaultMetaKeywords != null) settings.Remove(defaultMetaKeywords);
-        }
-
-        public void MigrateUrlRecords(SmartObjectContext context)
-        {
-            // Migrate URL records of BlogPost and NewsItem that are stored with primary language ID. Must be 0 for "Standard" now.
-            var defaultLangId = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First().Id;
-
-            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
-            {
-                var urlRecords = context.Set<UrlRecord>();
-                var entityNames = new[] { nameof(BlogPost), nameof(NewsItem) };
-
-                foreach (var entityName in entityNames)
-                {
-                    var allEntityIds = urlRecords
-                        .Where(x => x.EntityName == entityName)
-                        .Select(x => x.EntityId)
-                        .Distinct()
-                        .ToList();
-
-                    foreach (var chunk in allEntityIds.Slice(200))
-                    {
-                        var entities = urlRecords
-                            .Where(x => x.EntityName == entityName && chunk.Contains(x.EntityId))
-                            .ToList();
-                        var entitiesMap = entities.ToMultimap(x => x.EntityId, x => x);
-
-                        foreach (var kvp in entitiesMap)
-                        {
-                            if (!kvp.Value.Any(x => x.LanguageId == 0))
-                            {
-                                // Migrate active and inactive slugs.
-                                kvp.Value.Where(x => x.LanguageId == defaultLangId).Each(x => x.LanguageId = 0);
-                            }
-                        }
-
-                        scope.Commit();
-                        context.DetachEntities<UrlRecord>();
-                    }
-                }
-            }
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

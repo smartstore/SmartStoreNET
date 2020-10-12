@@ -194,8 +194,6 @@ namespace SmartStore.Admin.Controllers
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
 
-                blogPost.LanguageId = _languageService.GetDefaultLanguageId();
-
                 _blogService.InsertBlogPost(blogPost);
 
                 model.SeName = blogPost.ValidateSeName(model.SeName, blogPost.Title, true);

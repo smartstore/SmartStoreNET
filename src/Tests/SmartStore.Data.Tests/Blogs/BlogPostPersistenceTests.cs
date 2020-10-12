@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Blogs
@@ -82,12 +81,6 @@ namespace SmartStore.Data.Tests.Blogs
                 MetaDescription = "MetaDescription 1",
                 MetaKeywords = "MetaKeywords 1",
                 LimitedToStores = true
-            };
-
-            blogPost.Language = new Language
-            {
-                Name = "English",
-                LanguageCulture = "en-Us",
             };
 
             return blogPost;

@@ -525,6 +525,10 @@
     <Compile Include="Migrations\202010030939136_AttributeChoiceBehaviour.designer.cs">
       <DependentUpon>202010030939136_AttributeChoiceBehaviour.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010121359446_RemoveBlogAndNewsLanguage.cs" />
+    <Compile Include="Migrations\202010121359446_RemoveBlogAndNewsLanguage.designer.cs">
+      <DependentUpon>202010121359446_RemoveBlogAndNewsLanguage.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -944,6 +948,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010030939136_AttributeChoiceBehaviour.resx">
       <DependentUpon>202010030939136_AttributeChoiceBehaviour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010121359446_RemoveBlogAndNewsLanguage.resx">
+      <DependentUpon>202010121359446_RemoveBlogAndNewsLanguage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

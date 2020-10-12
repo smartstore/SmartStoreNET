@@ -17,10 +17,6 @@ namespace SmartStore.Data.Mapping.News
             Property(x => x.MediaFileId).HasColumnName("MediaFileId");
             Property(x => x.PreviewMediaFileId).HasColumnName("PreviewMediaFileId");
 
-            HasRequired(x => x.Language)
-                .WithMany()
-                .HasForeignKey(x => x.LanguageId).WillCascadeOnDelete(true);
-
             HasOptional(bp => bp.MediaFile)
                 .WithMany()
                 .HasForeignKey(bp => bp.MediaFileId)

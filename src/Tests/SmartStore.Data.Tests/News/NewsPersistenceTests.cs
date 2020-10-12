@@ -2,7 +2,6 @@
 using System.Linq;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.News;
 using SmartStore.Tests;
 
@@ -29,12 +28,7 @@ namespace SmartStore.Data.Tests.News
                 CreatedOnUtc = new DateTime(2010, 01, 03),
                 MetaTitle = "MetaTitle 1",
                 MetaDescription = "MetaDescription 1",
-                MetaKeywords = "MetaKeywords 1",
-                Language = new Language
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
+                MetaKeywords = "MetaKeywords 1"
             };
 
             var fromDb = SaveAndLoadEntity(news);
@@ -65,12 +59,7 @@ namespace SmartStore.Data.Tests.News
                 Full = "Full 1",
                 AllowComments = true,
                 Published = true,
-                CreatedOnUtc = new DateTime(2010, 01, 01),
-                Language = new Language
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
+                CreatedOnUtc = new DateTime(2010, 01, 01)
             };
 
             news.NewsComments.Add(new NewsComment

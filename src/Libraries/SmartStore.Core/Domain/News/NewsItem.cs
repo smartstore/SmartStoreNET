@@ -32,11 +32,6 @@ namespace SmartStore.Core.Domain.News
         private ICollection<NewsComment> _newsComments;
 
         /// <summary>
-        /// Gets or sets the language identifier
-        /// </summary>
-        public int LanguageId { get; set; }
-
-        /// <summary>
         /// Gets or sets the news title
         /// </summary>
         public string Title { get; set; }
@@ -97,6 +92,7 @@ namespace SmartStore.Core.Domain.News
         /// </remarks>
         /// </summary>
         public int ApprovedCommentCount { get; set; }
+
         /// <summary>
         /// Gets or sets the total number of not approved comments
         /// <remarks>The same as if we run newsItem.NewsComments.Where(n => !n.IsApproved).Count()
@@ -138,10 +134,5 @@ namespace SmartStore.Core.Domain.News
             get => _newsComments ?? (_newsComments = new HashSet<NewsComment>());
             protected set => _newsComments = value;
         }
-
-        /// <summary>
-        /// Gets or sets the language
-        /// </summary>
-        public virtual Language Language { get; set; }
     }
 }

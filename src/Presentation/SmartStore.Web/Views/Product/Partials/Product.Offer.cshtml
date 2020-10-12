@@ -79,16 +79,13 @@
 <script>
     // Ask question
     $(document).on('click', '.action-ask-question', function (e) {
-		console.log("hier");
-
         e.preventDefault();
         const el = $(this);
 		const form = el.data('form-selector');
-		console.log(form);
 		if (form) {  
 			const href = el.data('href');
             $.ajax({
-            cache: false,
+				cache: false,
                 url: href,
                 data: $(form).serialize(),
 				success: function (response) {

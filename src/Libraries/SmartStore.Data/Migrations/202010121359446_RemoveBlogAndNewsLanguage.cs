@@ -16,12 +16,12 @@
             DropForeignKey("dbo.BlogPost", "LanguageId", "dbo.Language");
             DropForeignKey("dbo.News", "LanguageId", "dbo.Language");
 
-            // Where does the second index and foreign key constraint come from?
             if (DataSettings.Current.IsSqlServer)
             {
                 Sql("IF (OBJECT_ID('BlogPost_Language', 'F') IS NOT NULL) ALTER TABLE [dbo].[BlogPost] DROP CONSTRAINT [BlogPost_Language];");
                 Sql("IF (OBJECT_ID('NewsItem_Language', 'F') IS NOT NULL) ALTER TABLE [dbo].[News] DROP CONSTRAINT [NewsItem_Language];");
 
+                // See Indexes.sql.
                 Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_BlogPost_LanguageId' AND object_id = OBJECT_ID('[dbo].[BlogPost]')) DROP INDEX [IX_BlogPost_LanguageId] ON [dbo].[BlogPost];");
                 Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_News_LanguageId' AND object_id = OBJECT_ID('[dbo].[News]')) DROP INDEX [IX_News_LanguageId] ON [dbo].[News];");
             }

@@ -98,9 +98,10 @@ namespace SmartStore.Services.Blogs
             string title = "", 
             string intro = "", 
             string body = "",
-            string tag = "")
+            string tag = "",
+            bool untracked = true)
         {
-            var query = _blogPostRepository.Table;
+            var query = untracked ? _blogPostRepository.TableUntracked : _blogPostRepository.Table;
 
             if (dateFrom.HasValue)
                 query = query.Where(b => dateFrom.Value <= b.CreatedOnUtc);

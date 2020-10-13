@@ -7,8 +7,10 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -55,11 +57,9 @@ namespace SmartStore.Services.Cms
             _storeMappingService = storeMappingService;
             _topicService = topicService;
             _urlHelper = urlHelper;
-
-            QuerySettings = DbQuerySettings.Default;
         }
 
-        public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; } = DbQuerySettings.Default;
 
         public virtual LinkResolverResult Resolve(string linkExpression, IEnumerable<CustomerRole> roles = null, int languageId = 0, int storeId = 0)
         {
@@ -148,6 +148,24 @@ namespace SmartStore.Services.Cms
                         case LinkType.Topic:
                             GetEntityData<Topic>(d2, storeId, languageId, x => null);
                             break;
+                        case LinkType.BlogPost:
+                            GetEntityData<BlogPost>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Title,
+                                Published = x.IsPublished,
+                                LimitedToStores = x.LimitedToStores,
+                                PictureId = x.MediaFileId
+                            });
+                            break;
+                        case LinkType.NewsItem:
+                            GetEntityData<NewsItem>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Title,
+                                Published = x.Published,
+                                LimitedToStores = x.LimitedToStores,
+                                PictureId = x.MediaFileId
+                            });
+                            break;
                         default:
                             throw new SmartException("Unknown link builder type.");
                     }
@@ -175,6 +193,8 @@ namespace SmartStore.Services.Cms
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
+                case LinkType.BlogPost:
+                case LinkType.NewsItem:
                     var entityName = d.Type.ToString();
 
                     if (d.CheckLimitedToStores &&
@@ -252,6 +272,8 @@ namespace SmartStore.Services.Cms
                         case LinkType.Category:
                         case LinkType.Manufacturer:
                         case LinkType.Topic:
+                        case LinkType.BlogPost:
+                        case LinkType.NewsItem:
                             if (int.TryParse(path, out var id))
                             {
                                 // Reduce thrown exceptions in console
@@ -352,17 +374,22 @@ namespace SmartStore.Services.Cms
                     ? LinkStatus.NotFound
                     : summary.Published ? LinkStatus.Ok : LinkStatus.Hidden;
 
-                if (data.Type == LinkType.Topic)
+                switch (data.Type)
                 {
-                    data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
-                        ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
-                        ?? summary.ShortTitle.NullEmpty()
-                        ?? summary.Title.NullEmpty()
-                        ?? summary.Name;
-                }
-                else
-                {
-                    data.Label = GetLocalized(data.Id, entityName, "Name", languageId, summary.Name);
+                    case LinkType.Topic:
+                        data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
+                            ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
+                            ?? summary.ShortTitle.NullEmpty()
+                            ?? summary.Title.NullEmpty()
+                            ?? summary.Name;
+                        break;
+                    case LinkType.BlogPost:
+                    case LinkType.NewsItem:
+                        data.Label = GetLocalized(data.Id, entityName, "Title", languageId, summary.Name);
+                        break;
+                    default:
+                        data.Label = GetLocalized(data.Id, entityName, "Name", languageId, summary.Name);
+                        break;
                 }
 
                 data.Slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);

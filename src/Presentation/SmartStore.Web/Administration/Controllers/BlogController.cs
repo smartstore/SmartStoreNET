@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
@@ -7,6 +8,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Html;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -90,6 +92,35 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         #region Blog posts
+
+        // AJAX.
+        public ActionResult AllBlogPosts(string selectedIds)
+        {
+            var query = _blogService.GetAllBlogPosts(0, null, null, 0, int.MaxValue, true).SourceQuery;
+            var pager = new FastPager<BlogPost>(query, 500);
+            var allBlogPosts = new Dictionary<int, string>();
+            var ids = selectedIds.ToIntArray();
+
+            while (pager.ReadNextPage(out var blogPosts))
+            {
+                foreach (var blogPost in blogPosts)
+                {
+                    allBlogPosts[blogPost.Id] = blogPost.GetLocalized(x => x.Title).Value;
+                }
+            }
+
+            var data = allBlogPosts
+                .Where(x => x.Value.HasValue())
+                .Select(x => new
+                {
+                    id = x.Key,
+                    text = x.Value,
+                    selected = ids.Contains(x.Key)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult Index()
         {

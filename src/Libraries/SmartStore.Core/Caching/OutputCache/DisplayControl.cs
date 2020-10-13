@@ -143,6 +143,9 @@ namespace SmartStore.Core.Caching
 
             switch (lp.LocaleKeyGroup)
             {
+                case nameof(BlogPost):
+                    prefix = "b";
+                    break;
                 case nameof(Product):
                     prefix = "p";
                     break;
@@ -151,6 +154,9 @@ namespace SmartStore.Core.Caching
                     break;
                 case nameof(Manufacturer):
                     prefix = "m";
+                    break;
+                case nameof(NewsItem):
+                    prefix = "n";
                     break;
                 case nameof(Topic):
                     prefix = "t";

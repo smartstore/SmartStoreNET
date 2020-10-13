@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Html;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -91,6 +92,35 @@ namespace SmartStore.Admin.Controllers
         #endregion
 
         #region News items
+
+        // AJAX.
+        public ActionResult AllNews(string selectedIds)
+        {
+            var query = _newsService.GetAllNews(0, 0, int.MaxValue, true).SourceQuery;
+            var pager = new FastPager<NewsItem>(query, 500);
+            var allNewsItems = new Dictionary<int, string>();
+            var ids = selectedIds.ToIntArray();
+
+            while (pager.ReadNextPage(out var newsItems))
+            {
+                foreach (var newsItem in newsItems)
+                {
+                    allNewsItems[newsItem.Id] = newsItem.GetLocalized(x => x.Title).Value;
+                }
+            }
+
+            var data = allNewsItems
+                .Where(x => x.Value.HasValue())
+                .Select(x => new
+                {
+                    id = x.Key,
+                    text = x.Value,
+                    selected = ids.Contains(x.Key)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult Index()
         {

@@ -8,6 +8,8 @@ namespace SmartStore.Services.Cms
         Category,
         Manufacturer,
         Topic,
+        BlogPost,
+        NewsItem,
         Url = 20,
         File = 30
     }
@@ -109,6 +111,10 @@ namespace SmartStore.Services.Cms
                     return ("far fa-building", "Common.Entity.Manufacturer");
                 case LinkType.Topic:
                     return ("far fa-file-alt", "Common.Entity.Topic");
+                case LinkType.BlogPost:
+                    return ("fa fa-blog", "Common.Entity.BlogPost");
+                case LinkType.NewsItem:
+                    return ("far fa-newspaper", "Common.Entity.NewsItem");
                 case LinkType.Url:
                     return ("fa fa-link", "Common.Url");
                 case LinkType.File:

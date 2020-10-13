@@ -56,6 +56,10 @@ namespace SmartStore.Services.News
         /// <param name="pageSize">Page size.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records.</param>
 		/// <param name="maxAge">The maximum age of returned news.</param>
+        /// <param name="title">Search for a term or phrase in the title.</param>
+        /// <param name="intro">Search for a term or phrase in the intro.</param>
+        /// <param name="full">Search for a term or phrase in the full description.</param>
+        /// <param name="untracked">Indicates whether to load entities tracked or untracked.</param>
         /// <returns>News items.</returns>
 		IPagedList<NewsItem> GetAllNews(
             int storeId, 
@@ -65,6 +69,7 @@ namespace SmartStore.Services.News
             DateTime? maxAge = null,
             string title = "", 
             string intro = "", 
-            string full = "");
+            string full = "",
+            bool untracked = true);
     }
 }

@@ -44,15 +44,20 @@ namespace SmartStore.Services.Blogs
         /// <summary>
         /// Gets all blog posts.
         /// </summary>
-		/// <param name="storeId">The store identifier; pass 0 to load all records.</param>
+        /// <param name="storeId">The store identifier; pass 0 to load all records.</param>
         /// <param name="dateFrom">Filter by created date; null if you want to get all records.</param>
         /// <param name="dateTo">Filter by created date; null if you want to get all records.</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records.</param>
-		/// <param name="maxAge">The maximum age of returned blog posts.</param>
+        /// <param name="maxAge">The maximum age of returned blog posts.</param>
+        /// <param name="title">Search for a term or phrase in the title.</param>
+        /// <param name="intro">Search for a term or phrase in the intro.</param>
+        /// <param name="body">Search for a term or phrase in the full description.</param>
+        /// <param name="tag">Search for a term or phrase in the tags field.</param>
+        /// <param name="untracked">Indicates whether to load entities tracked or untracked.</param>
         /// <returns>Blog posts.</returns>
-		IPagedList<BlogPost> GetAllBlogPosts(
+        IPagedList<BlogPost> GetAllBlogPosts(
             int storeId,
             DateTime? dateFrom,
             DateTime? dateTo, 
@@ -63,7 +68,8 @@ namespace SmartStore.Services.Blogs
             string title = "",
             string intro = "", 
             string body = "", 
-            string tag = "");
+            string tag = "",
+            bool untracked = true);
 
         /// <summary>
         /// Gets all blog posts.

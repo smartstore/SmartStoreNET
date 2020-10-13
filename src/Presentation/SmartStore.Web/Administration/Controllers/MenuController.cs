@@ -26,21 +26,13 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
-
-        #region Fields
-
         private readonly IMenuStorage _menuStorage;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
-        private readonly ICustomerService _customerService;
         private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
-
-        #endregion
-
-        #region Constructors
 
         public MenuController(
             IMenuStorage menuStorage,
@@ -48,7 +40,6 @@ namespace SmartStore.Admin.Controllers
             ILocalizedEntityService localizedEntityService,
             IStoreMappingService storeMappingService,
             IAclService aclService,
-            ICustomerService customerService,
             IEnumerable<Lazy<IMenuItemProvider,
             MenuItemProviderMetadata>> menuItemProviders,
             AdminAreaSettings adminAreaSettings)
@@ -58,12 +49,9 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _storeMappingService = storeMappingService;
             _aclService = aclService;
-            _customerService = customerService;
             _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.ProviderName, x => x);
             _adminAreaSettings = adminAreaSettings;
         }
-
-        #endregion
 
         #region Menu
 

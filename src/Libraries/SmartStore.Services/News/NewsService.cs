@@ -105,9 +105,10 @@ namespace SmartStore.Services.News
             DateTime? maxAge = null,
             string title = "", 
             string intro = "",
-            string full = "")
+            string full = "",
+            bool untracked = true)
         {
-            var query = _newsItemRepository.Table;
+            var query = untracked ? _newsItemRepository.TableUntracked : _newsItemRepository.Table;
 
             if (maxAge.HasValue)
             {

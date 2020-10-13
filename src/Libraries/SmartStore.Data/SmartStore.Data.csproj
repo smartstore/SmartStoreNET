@@ -665,6 +665,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DataMigrator.cs" />
     <Compile Include="Utilities\FastPager.cs" />
+    <Compile Include="Utilities\BlogPostConverter.cs" />
     <Compile Include="Utilities\MessageTemplateConverter.cs" />
     <Compile Include="Utilities\SqlBlobStream.cs" />
   </ItemGroup>

@@ -280,6 +280,11 @@ namespace SmartStore.Web.Infrastructure.Installation
             converter.ImportAll(_config.Language);
         }
 
+        private void PopulateBlogPosts()
+        {
+            var converter = new BlogPostConverter(_ctx);
+            converter.ImportAll(_config.Language);
+        }
         private void PopulateCategories()
         {
             var categoriesFirstLevel = _data.CategoriesFirstLevel();
@@ -313,12 +318,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             _data.AssignGroupedProducts(products);
         }
 
-        private void PopulateBlogPosts()
-        {
-            var blogPosts = _data.BlogPosts();
-            SaveRange(blogPosts);
-            PopulateUrlRecordsFor(blogPosts);
-        }
 
         private void PopulateNews()
         {

@@ -384,6 +384,11 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Import.Create)]
         public ActionResult Create(ImportProfileModel model)
         {
+            if (PathHelper.HasInvalidFileNameChars(model.TempFileName))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid file name.");
+            }
+
             var importFile = Path.Combine(FileSystemHelper.TempDirTenant(), model.TempFileName.EmptyNull());
 
             if (System.IO.File.Exists(importFile))

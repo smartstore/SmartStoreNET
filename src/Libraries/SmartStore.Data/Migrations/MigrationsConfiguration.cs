@@ -874,6 +874,12 @@
                 "Twitter-Benutzername",
                 "Twitter Username that gets displayed on Twitter cards when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
                 "Twitter-Benutzername, der auf Twitter-Karten angezeigt wird, wenn ein Produkt, eine Kategorie oder eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
+
+            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.FontStyles.BackgroundColor",
+                "Background color",
+                "Hintergrundfarbe",
+                "Specifies the background color of the text.",
+                "Legt die Hintergrundfarbe des Textes fest.");
         }
     }
 }

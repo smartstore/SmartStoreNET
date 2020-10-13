@@ -1035,14 +1035,9 @@ namespace SmartStore.Admin.Controllers
 
             HttpContext.Cache.RemoveByPattern("*");
 
-            this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
-            if (previousUrl.HasValue())
-            {
-                return Redirect(previousUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
         }
 
         [Permission(Permissions.System.Maintenance.Execute)]
@@ -1050,14 +1045,9 @@ namespace SmartStore.Admin.Controllers
         {
             _dbCache.Clear();
 
-            this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
-            if (previousUrl.HasValue())
-            {
-                return Redirect(previousUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
         }
 
         [Permission(Permissions.System.Maintenance.Execute)]
@@ -1065,10 +1055,7 @@ namespace SmartStore.Admin.Controllers
         {
             _services.WebHelper.RestartAppDomain();
 
-            if (previousUrl.HasValue())
-                return Redirect(previousUrl);
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
         }
 
         #endregion

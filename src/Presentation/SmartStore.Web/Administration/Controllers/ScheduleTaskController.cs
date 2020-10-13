@@ -208,14 +208,11 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
 
-            var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl });
-            var returnResult = returnUrl.HasValue() ? (ActionResult)Redirect(returnUrl) : (ActionResult)RedirectToAction("List");
-
             var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
             if (scheduleTask == null)
             {
                 NotifyError("Schedule task cannot be loaded");
-                return reloadResult;
+                return RedirectToAction("Edit", new { id = model.Id, returnUrl });
             }
 
             scheduleTask.Name = model.Name;
@@ -232,9 +229,15 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(T("Admin.System.ScheduleTasks.UpdateSuccess"));
 
             if (continueEditing)
-                return reloadResult;
+            {
+                return RedirectToAction("Edit", new { id = model.Id, returnUrl });
+            }
+            else if (returnUrl.HasValue())
+            {
+                return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
+            }
 
-            return returnResult;
+            return RedirectToAction("List");
         }
 
         [GridAction(EnableCustomBinding = true)]

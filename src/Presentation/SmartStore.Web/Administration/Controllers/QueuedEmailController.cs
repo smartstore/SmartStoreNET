@@ -274,13 +274,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifyError(string.Concat(T("Admin.Common.FileNotFound"), ": ", path));
 
-                    var referrer = Services.WebHelper.GetUrlReferrer();
-                    if (referrer.HasValue())
-                    {
-                        return Redirect(referrer);
-                    }
-
-                    return RedirectToAction("List");
+                    return RedirectToReferrer(null, () => RedirectToAction("List"));
                 }
 
                 return File(path, qea.MimeType, qea.Name);

@@ -578,10 +578,12 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Import.Execute)]
         public ActionResult Execute(int id)
         {
-            // permissions checked internally by DataImporter
+            // Permissions checked internally by DataImporter.
             var profile = _importProfileService.GetImportProfileById(id);
             if (profile == null)
+            {
                 return RedirectToAction("List");
+            }
 
             var taskParams = new Dictionary<string, string>
             {
@@ -593,11 +595,7 @@ namespace SmartStore.Admin.Controllers
 
             NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataImportTask"));
 
-            var referrer = Services.WebHelper.GetUrlReferrer();
-            if (referrer.HasValue())
-                return Redirect(referrer);
-
-            return RedirectToAction("List");
+            return RedirectToReferrer(null, () => RedirectToAction("List"));
         }
 
         [HttpPost, ActionName("Delete")]

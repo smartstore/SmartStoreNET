@@ -972,43 +972,6 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
-
-        public IList<NewsItem> NewsItems()
-        {
-            var news1 = new NewsItem
-            {
-                AllowComments = true,
-                Title = "Smartstore 3.2 now with the new CMS Page Builder",
-                Short = "Create fascinating content with the new Page Builder",
-                Full = "<p>Create fascinating content from products, product groups, images, videos and texts.<br/>" +
-                    "Transitions, animations, gradients, hover effects or overlays are easily applied in the WYSIWYG editor.<br/><br/>" +
-                    "More information about Smartstore 3.2 and Page Builder can be found at <a href=\"http://www.smartstore.com/en/net\">www.smartstore.com</a></p>",
-                Published = true,
-                MetaTitle = "Smartstore 3.2",
-                CreatedOnUtc = DateTime.Now
-            };
-            var news2 = new NewsItem
-            {
-                AllowComments = true,
-                Title = "Smartstore new release!",
-                Short = "Smartstore includes everything you need to begin your e-commerce online store.",
-                Full = "<p>Smartstore includes everything you need to begin your e-commerce online store.<br/>" +
-                    "We have thought of everything and it's all included!<br/><br/>Smartstore is a fully customizable shop-system. It's stable and highly usable.<br>" +
-                    "From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the Smartstore community.</p>",
-                Published = true,
-                MetaTitle = "Smartstore new release!",
-                CreatedOnUtc = DateTime.Now
-            };
-
-            var entities = new List<NewsItem>
-            {
-                news1, news2
-            };
-
-            this.Alter(entities);
-            return entities;
-        }
-
         public IList<PollAnswer> PollAnswers()
         {
             var pollAnswer1 = new PollAnswer()

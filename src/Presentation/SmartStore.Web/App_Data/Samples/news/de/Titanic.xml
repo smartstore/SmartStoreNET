@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewsItem>
+	<Title>Die RMS Titanic</Title>
+  <MetaTitle>Die RMS Titanic</MetaTitle>
+  <Short>Die RMS Titanic war ein Passagierschiff der britischen Reederei White Star Line und war am 2. April 1912 zur Indienststellung das größte Schiff der Welt. Die Titanic gehört wegen der Umstände, die mit ihrem Untergang verbunden werden, zu den bekanntesten Schiffen der Geschichte.</Short>
+	<MetaDescription>Die RMS Titanic war ein Passagierschiff der britischen Reederei White Star Line und war am 2. April 1912 zur Indienststellung das größte Schiftt der Welt. Die Titanic gehört wegen der Umstände, die mit ihrem Untergang verbunden werden, zu den bekanntesten Schiffen der Geschichte.</MetaDescription>
+  <Full>
+		<![CDATA[
+			<p>
+				Die RMS Titanic war ein Passagierschiff der britischen Reederei White Star Line. 
+        Sie wurde in Belfast auf der Werft von Harland &amp; Wolff gebaut und war bei der Indienststellung am 2. April 1912 das größte Schiff der Welt. 
+        Als zweiter von drei Dampfern der Olympic-Klasse war sie, wie ihre beiden Schwesterschiffe Olympic und Britannic, für den Nordatlantik-Liniendienst 
+        auf der Route Southampton–Cherbourg–Queenstown–New York, New York–Plymouth–Cherbourg–Southampton vorgesehen und sollte neue Maßstäbe im Reisekomfort setzen. 
+        Auf ihrer Jungfernfahrt kollidierte die Titanic am 14. 
+        April 1912 gegen 23:40 Uhr etwa 300 Seemeilen südöstlich von Neufundland seitlich mit einem Eisberg und sank zwei Stunden und 40 Minuten später.
+			</p>
+			<p>
+				Obwohl für die Evakuierung mehr als zwei Stunden Zeit zur Verfügung standen, kamen 1514 der über 2200 an Bord befindlichen Personen ums Leben –
+				hauptsächlich wegen der unzureichenden Zahl an Rettungsbooten und der Unerfahrenheit der Besatzung im Umgang mit diesen.
+				Wegen der hohen Opferzahl zählt der Untergang der Titanic zu den größten und berühmtesten Katastrophen der Seefahrt.
+				Der Untergang war Anlass für zahlreiche Maßnahmen zur Verbesserung der Sicherheit auf See.
+				Am 12. November 1913 wurde eine Konferenz einberufen, die einen internationalen Mindeststandard für die Sicherheit auf Handelsschiffen schaffen sollte.
+				Ergebnis dieser Konferenz war 1914 die erste Version der "International Convention for the Safety of Life at Sea" (Internationales Übereinkommen zum Schutz des menschlichen Lebens auf See). 
+        Diese umfasste die ausreichende Ausstattung mit Rettungsbooten, Besetzung der Funkstationen rund um die Uhr und die Errichtung der Internationalen Eispatrouille.
+			</p>
+			<p>
+				Die Titanic gehört wegen der Umstände, die mit ihrem Untergang verbunden werden, zu den bekanntesten Schiffen der Geschichte.
+				Weltweit beschäftigen sich bis heute Literatur, bildende Kunst sowie Film und Fernsehen mit den Ereignissen ihrer Jungfernfahrt und des Untergangs.
+				Besondere Aufmerksamkeit erlangte der gleichnamige Film aus dem Jahr 1997. Ihr Name steht für schwerwiegende Unglücke sowie die Unkontrollierbarkeit der Natur durch technische Errungenschaften.
+			</p>
+		]]>
+	</Full>
+	<CreatedOn>2020-07-16</CreatedOn>
+	<Image>rms-titanic.jpg</Image>
+  <ImagePreview>rms-titanic.jpg</ImagePreview>
+	<Comments>True</Comments>
+</NewsItem>

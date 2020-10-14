@@ -285,6 +285,14 @@ namespace SmartStore.Web.Infrastructure.Installation
             var converter = new BlogPostConverter(_ctx);
             converter.ImportAll(_config.Language);
         }
+
+        private void PopulateNewsItems()
+        {
+            var converter = new NewsItemConverter(_ctx);
+            var newsItems = converter.ImportAll(_config.Language);
+            PopulateUrlRecordsFor(newsItems);
+        }
+
         private void PopulateCategories()
         {
             var categoriesFirstLevel = _data.CategoriesFirstLevel();
@@ -316,14 +324,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             PopulateUrlRecordsFor(products);
 
             _data.AssignGroupedProducts(products);
-        }
-
-
-        private void PopulateNews()
-        {
-            var newsItems = _data.NewsItems();
-            SaveRange(newsItems);
-            PopulateUrlRecordsFor(newsItems);
         }
 
         private void PopulateManufacturerTemplates()
@@ -554,7 +554,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateForums", _data.Forums());
                 Populate("PopulateDiscounts", _data.Discounts());
                 Populate("PopulateBlogPosts", PopulateBlogPosts);
-                Populate("PopulateNews", PopulateNews);
+                Populate("PopulateNews", PopulateNewsItems);
                 Populate("PopulatePolls", _data.Polls());
             }
 

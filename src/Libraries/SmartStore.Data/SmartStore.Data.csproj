@@ -663,6 +663,7 @@
     <Compile Include="SmartObjectContext.cs" />
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\NewsItemConverter.cs" />
     <Compile Include="Utilities\DataMigrator.cs" />
     <Compile Include="Utilities\FastPager.cs" />
     <Compile Include="Utilities\BlogPostConverter.cs" />

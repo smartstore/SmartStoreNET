@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewsItem>
+	<Title>Die Zuse Z3</Title>
+  <MetaTitle>Die Zuse Z3</MetaTitle>
+	<Short>Die Z3 war ein deutscher elektromechanischer Computer, der 1935 von Konrad Zuse entworfen und mit Hilfe von Helmut Schreyer 1941 in Berlin fertiggestellt wurde. Er war der erste funktionierende programmierbare, vollautomatische Digitalrechner der Welt.</Short>
+	<MetaDescription>Die Z3 war ein deutscher elektromechanischer Computer, der 1935 von Konrad Zuse entworfen und mit Hilfe von Helmut Schreyer 1941 in Berlin fertiggestellt wurde. Er war der erste funktionierende programmierbare, vollautomatische Digitalrechner der Welt.</MetaDescription>
+	<Full>
+		<![CDATA[
+			<p>
+				Die Z3 war ein deutscher elektromechanischer Computer, der 1935 von Konrad Zuse entworfen und mit Hilfe von Helmut Schreyer 1941 in Berlin
+				fertiggestellt wurde. Es war der erste funktionierende, programmierbare, vollautomatische Digitalrechner der Welt. Die Z3 wurde mit 2.600
+				Relais gebaut, die eine 22-Bit-Wortlänge implementierten und mit einer Taktfrequenz von etwa 5-10 Hz arbeiteten. Der Programmcode wurde
+				auf gestanztem Film gespeichert und die Anfangswerte wurden manuell eingegeben. Das Gerät galt als nicht zwingend erforderlich und wurde
+				daher nie in den Alltagsbetrieb genommen. Basierend auf den Arbeiten von Hans Georg Küssner (vgl. Küssner-Effekt) wurde z.B. ein "Programm
+				zur Berechnung einer komplexen Matrix" geschrieben und zur Lösung von Flügelflatterproblemen eingesetzt.
+			</p>
+			<p>
+				Die Deutsche Versuchsanstalt für Luftfahrt hatte sich die Z2 angeschaut und Zuse 25.000 Reichsmark gegeben, damit er die Z3 bauen konnte.
+				Zuse bat die deutsche Regierung um finanzielle Mittel, um die Relais durch vollelektronische Schalter zu ersetzen, aber die Finanzierung
+				wurde während des Zweiten Weltkriegs verweigert, da eine solche Entwicklung als "nicht kriegswichtig" angesehen wurde. Am 12. Mai 1941
+				wurde die Z3 schließlich einer Gruppe von Wissenschaftlern (darunter Alfred Teichmann und Curt Schmieden) vorgestellt. Als Zuse 1941
+				kurzzeitig in den Krieg eingezogen wurde, schrieb er an einen Freund: "Andere lassen die Familie zurück, ich verlasse die Z3". (Konrad
+				Zuse: Berühmte Alumni der Technischen Universität Berlin).
+			</p>
+			<p>
+				Die ursprüngliche Z3 wurde am 21. Dezember 1943 bei einem alliierten Bombenangriff auf Berlin zerstört. Dies war ein tragischer Moment für
+				Zuse, da er keinen Beweis mehr dafür hatte, dass es wirklich eine funktionierende Z3 gegeben hatte. Eine funktionsfähige Nachbildung, die
+				1962 von der Zuse-KG zu Ausstellungszwecken angefertigt wurde, befindet sich im Deutschen Museum in München. An seinem ehemaligen
+				Standort, auf der Ruine des Hauses in der Methfesselstraße im Berliner Bezirk Kreuzberg, erinnert eine Gedenktafel an Zuses
+				Wirkungsstätte. Seit dem 100. Geburtstag von Konrad Zuse am 22. Juni 2010 ist ein Nachbau der Z3 auch im Konrad-Zuse-Museum in Hünfeld zu
+				sehen.
+			</p>
+			<p>
+				Die Z3 hieß ursprünglich V3 (Versuchsmodell 3 oder Experimentalmodell 3), wurde aber umbenannt, um sie nicht mit den deutschen V-Waffen zu
+				verwechseln. Ein voll funktionsfähiger Nachbau wurde 1961 von Zuses Firma Zuse KG gebaut, der heute im Deutschen Museum in München
+				dauerhaft ausgestellt ist. Die Z3 wurde 1998 im Prinzip als Turing-komplett vorgeführt. Aufgrund fehlender bedingter Verzweigungen erfüllt
+				die Z3 diese Definition jedoch nur, indem sie alle möglichen Ergebnisse einer Berechnung spekulativ berechnet. Dank dieser Maschine und
+				ihrer Vorgänger wurde Konrad Zuse oft als der Erfinder des Computers bezeichnet.
+			</p>
+		]]>
+	</Full>
+	<CreatedOn>2020-10-10</CreatedOn>
+	<Image>zuse-z3.jpg</Image>
+  <ImagePreview>zuse-z3.jpg</ImagePreview>
+	<Comments>True</Comments>
+</NewsItem>

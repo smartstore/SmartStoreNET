@@ -17,7 +17,7 @@ namespace SmartStore.Core.Caching
     {
         const string LockRecursionExceptionMessage = "Acquiring identical cache items recursively is not supported. Key: {0}";
 
-        // Wwe put a special string into cache if value is null,
+        // We put a special string into cache if value is null,
         // otherwise our 'Contains()' would always return false,
         // which is bad if we intentionally wanted to save NULL values.
         public const string FakeNull = "__[NULL]__";

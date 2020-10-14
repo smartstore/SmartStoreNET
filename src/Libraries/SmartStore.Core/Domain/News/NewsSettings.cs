@@ -27,12 +27,12 @@ namespace SmartStore.Core.Domain.News
         /// <summary>
         /// Gets or sets a value indicating news count displayed on the main page
         /// </summary>
-        public int MainPageNewsCount { get; set; } = 3;
+        public int MainPageNewsCount { get; set; } = 4;
 
         /// <summary>
         /// Gets or sets the page size for news archive
         /// </summary>
-        public int NewsArchivePageSize { get; set; } = 10;
+        public int NewsArchivePageSize { get; set; } = 9;
 
         /// <summary>
         /// The maximum age of news (in days) for RSS feed

@@ -64,25 +64,21 @@
 			{
 				columns.Bound(x => x.SystemName)
 					.Width(280)
-					.Template(x => Html.ActionLink(x.SystemName, "Edit", new { id = x.Id }))
 					.ClientTemplate("<a href='Edit/<#= Id #>'><#= SystemName #></a>");
 				columns.Bound(x => x.Title);
 				columns.Bound(x => x.IsPasswordProtected)
-					.Template(item => @Html.SymbolForBool(item.IsPasswordProtected))
-					.ClientTemplate(@Html.SymbolForBool("IsPasswordProtected"))
+					.ClientTemplate(Html.SymbolForBool("IsPasswordProtected"))
 					.Centered();
 				columns.Bound(x => x.IncludeInSitemap)
-					.Template(item => @Html.SymbolForBool(item.IncludeInSitemap))
-					.ClientTemplate(@Html.SymbolForBool("IncludeInSitemap"))
+					.ClientTemplate(Html.SymbolForBool("IncludeInSitemap"))
 					.Centered();
 				columns.Bound(x => x.RenderAsWidget)
-					.Template(item => @Html.SymbolForBool(item.RenderAsWidget))
-					.ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
+					.ClientTemplate(Html.SymbolForBool("RenderAsWidget"))
 					.Centered();
-				columns.Bound(x => x.WidgetZone);
+				columns.Bound(x => x.WidgetZone)
+					.ClientTemplate("<span style='word-break: break-all'><#= WidgetZone #></span>");
 				columns.Bound(x => x.LimitedToStores)
-					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.ClientTemplate(Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.AvailableStores.Count <= 1)
 					.Centered();
 				columns.Bound(x => x.Priority)

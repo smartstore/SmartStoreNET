@@ -57,6 +57,8 @@ Merging the contents of different languages must be done manually (migration is 
 * Customer tab on customer role edit page showed deleted customers.
 * #2041 Product with call for price did show as free in product list and grid view.
 * #2079 Order item editing: order total was not updated when both unit and item price were changed.
+* RSS feeds: relative URLs of objects embedded in HTML are replaced by absolute URLs.
+
 
 
 ## Smartstore 4.0.1

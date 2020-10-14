@@ -397,10 +397,16 @@ namespace SmartStore.Web.Controllers
             foreach (var blogPost in blogPosts)
             {
                 var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(ensureTwoPublishedLanguages: false) }, protocol);
+                var content = blogPost.GetLocalized(x => x.Body, detectEmptyHtml: true).Value;
+
+                if (content.HasValue())
+                {
+                    content = WebHelper.MakeAllUrlsAbsolute(content, Request);
+                }
 
                 var item = feed.CreateItem(
                     blogPost.GetLocalized(x => x.Title),
-                    blogPost.GetLocalized(x => x.Body, detectEmptyHtml: true),
+                    content,
                     blogPostUrl,
                     blogPost.CreatedOnUtc);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -674,15 +675,22 @@ namespace SmartStore.Web.Controllers
 
             foreach (var product in result.Hits)
             {
-                string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
+                var productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
                 if (productUrl.HasValue())
                 {
+                    var content = product.GetLocalized(x => x.FullDescription).Value;
+
+                    if (content.HasValue())
+                    {
+                        content = WebHelper.MakeAllUrlsAbsolute(content, Request);
+                    }
+
                     var item = feed.CreateItem(
                         product.GetLocalized(x => x.Name),
                         product.GetLocalized(x => x.ShortDescription),
                         productUrl,
                         product.CreatedOnUtc,
-                        product.FullDescription);
+                        content);
 
                     try
                     {

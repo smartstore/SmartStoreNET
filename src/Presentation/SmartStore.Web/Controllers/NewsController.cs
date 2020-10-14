@@ -258,13 +258,19 @@ namespace SmartStore.Web.Controllers
             foreach (var news in newsItems)
             {
                 var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(ensureTwoPublishedLanguages: false) }, protocol);
+                var content = news.GetLocalized(x => x.Full, true).Value;
+
+                if (content.HasValue())
+                {
+                    content = WebHelper.MakeAllUrlsAbsolute(content, Request);
+                }
 
                 var item = feed.CreateItem(
                     news.GetLocalized(x => x.Title),
                     news.GetLocalized(x => x.Short),
                     newsUrl,
                     news.CreatedOnUtc,
-                    news.GetLocalized(x => x.Full, true));
+                    content);
 
                 items.Add(item);
             }

@@ -14,6 +14,7 @@ Merging the contents of different languages must be done manually (migration is 
 * Theming: responsive font-sizing and spacing
 * **Page Builder**
 	* #2035 Added block to display news.
+	* #1729 Added option for title and intro inline background color.
 * **ContentSlider**
  	* #2036 Added Page Builder block to display content slider.
 * #2012 Added paging and sorting for bestsellers report.

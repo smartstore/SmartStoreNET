@@ -7,6 +7,7 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -29,7 +30,7 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllQuantityUnits(string label, int selectedId)
         {
             var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
@@ -40,11 +41,11 @@ namespace SmartStore.Admin.Controllers
 
             var list =
                 from m in quantityUnits
-                select new
+                select new ChoiceListItem
                 {
-                    id = m.Id.ToString(),
-                    text = m.GetLocalized(x => x.Name).Value,
-                    selected = m.Id == selectedId
+                    Id = m.Id.ToString(),
+                    Text = m.GetLocalized(x => x.Name).Value,
+                    Selected = m.Id == selectedId
                 };
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };

@@ -13,6 +13,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -86,7 +87,7 @@ namespace SmartStore.Admin.Controllers
 
         #region Discounts
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllDiscounts(string label, string selectedIds, DiscountType? type)
         {
             var discounts = _discountService.GetAllDiscounts(type, null, true).ToList();
@@ -98,11 +99,11 @@ namespace SmartStore.Admin.Controllers
             }
 
             var data = discounts
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = selectedArr.Contains(x.Id)
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = selectedArr.Contains(x.Id)
                 })
                 .ToList();
 

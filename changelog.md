@@ -28,7 +28,7 @@ Merging the contents of different languages must be done manually (migration is 
 * #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
 * #1644 Graying out unavailable attribute combinations.
-* #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages. 
+* #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages.
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies
@@ -38,6 +38,7 @@ Merging the contents of different languages must be done manually (migration is 
 * #2069 MegaSearch: product order is applied to all categories in which a product appears.
 * #2052 When editing a product, the stock quantity is only updated if it has not changed since the page was loaded.
 * #213 Added options for special title and meta tags on home page.
+* #1977 CMS Menu Builder: added new builder types for blogs and news.
 
 ### Bugfixes
 * **Media Manager**

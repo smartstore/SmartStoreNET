@@ -14,6 +14,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -69,7 +70,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllStores(string label, string selectedIds)
         {
             var stores = Services.StoreService.GetAllStores();
@@ -82,11 +83,11 @@ namespace SmartStore.Admin.Controllers
 
             var list =
                 from m in stores
-                select new
+                select new ChoiceListItem
                 {
-                    id = m.Id.ToString(),
-                    text = m.Name,
-                    selected = ids.Contains(m.Id)
+                    Id = m.Id.ToString(),
+                    Text = m.Name,
+                    Selected = ids.Contains(m.Id)
                 };
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };

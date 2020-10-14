@@ -410,40 +410,40 @@ namespace SmartStore.Admin.Controllers
         }
 
         // AJAX.
-        public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
+        public ActionResult AllTopics(string label, int selectedId, bool includeWidgets = false, bool includeHomePage = false)
         {
             var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
                         where includeWidgets || !x.RenderAsWidget
                         select x;
 
-            if (useTitles)
-            {
-                query = query.Where(x => !string.IsNullOrEmpty(x.Title));
-                query = query.OrderBy(x => x.Title);
-            }
-            else
-            {
-                query = query.OrderBy(x => x.SystemName);
-            }
-
             var topics = query.ToList();
 
             var list = topics
-                .Select(x => new
+                .Select(x =>
                 {
-                    id = x.Id,
-                    text = useTitles ? x.GetLocalized(y => y.Title).Value : x.SystemName,
-                    selected = x.Id == selectedId
+                    var item = new ChoiceListItem
+                    {
+                        Id = x.Id.ToString(),
+                        Text = x.GetLocalized(y => y.Title).Value.NullEmpty() ?? x.SystemName,
+                        Selected = x.Id == selectedId
+                    };
+
+                    if (!item.Text.IsCaseInsensitiveEqual(x.SystemName))
+                    {
+                        item.Description = x.SystemName;
+                    }
+
+                    return item;
                 })
                 .ToList();
 
             if (label.HasValue())
             {
-                list.Insert(0, new { id = 0, text = label, selected = false });
+                list.Insert(0, new ChoiceListItem { Id = "0", Text = label, Selected = false });
             }
             if (includeHomePage)
             {
-                list.Insert(0, new { id = -10, text = T("Admin.ContentManagement.Homepage").Text, selected = false });
+                list.Insert(0, new ChoiceListItem { Id = "-10", Text = T("Admin.ContentManagement.Homepage").Text, Selected = false });
             }
 
             return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };

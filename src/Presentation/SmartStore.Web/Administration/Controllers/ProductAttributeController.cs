@@ -7,11 +7,13 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -106,39 +108,46 @@ namespace SmartStore.Admin.Controllers
 
         #region Product attribute
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllProductAttributes(string label, int selectedId)
         {
-            var allAttributes = new Dictionary<int, string>();
+            var query = _productAttributeService.GetAllProductAttributes(0, int.MaxValue).SourceQuery;
+            var pager = new FastPager<ProductAttribute>(query, 500);
+            var allAttributes = new List<dynamic>();
 
-            for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+            while (pager.ReadNextPage(out var attributes))
             {
-                var attributes = _productAttributeService.GetAllProductAttributes(pageIndex, 500);
-
                 foreach (var attribute in attributes)
                 {
-                    allAttributes[attribute.Id] = attribute.GetLocalized(x => x.Name).Value;
-                }
+                    dynamic obj = new
+                    {
+                        attribute.Id,
+                        attribute.DisplayOrder,
+                        Name = attribute.GetLocalized(x => x.Name).Value
+                    };
 
-                if (!attributes.HasNextPage)
-                {
-                    break;
+                    allAttributes.Add(obj);
                 }
             }
 
             var data = allAttributes
-                .Where(x => x.Value.HasValue())
-                .Select(x => new
+                .OrderBy(x => x.DisplayOrder)
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Key,
-                    text = x.Value,
-                    selected = x.Key == selectedId
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = x.Id == selectedId
                 })
                 .ToList();
 
             if (label.HasValue())
             {
-                data.Insert(0, new { id = 0, text = label, selected = false });
+                data.Insert(0, new ChoiceListItem
+                {
+                    Id = "0",
+                    Text = label,
+                    Selected = false
+                });
             }
 
             return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };

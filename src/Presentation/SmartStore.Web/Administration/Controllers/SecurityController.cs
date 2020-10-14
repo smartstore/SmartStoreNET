@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
@@ -18,18 +19,18 @@ namespace SmartStore.Admin.Controllers
             _workContext = workContext;
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllAccessPermissions(string selected)
         {
             var systemNames = Services.Permissions.GetAllSystemNames();
             var selectedArr = selected.SplitSafe(",");
 
             var data = systemNames
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Key,
-                    text = x.Value,
-                    selected = selectedArr.Contains(x.Key)
+                    Id = x.Key,
+                    Text = x.Value,
+                    Selected = selectedArr.Contains(x.Key)
                 })
                 .ToList();
 

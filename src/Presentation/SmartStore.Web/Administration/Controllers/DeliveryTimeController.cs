@@ -7,6 +7,7 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -39,19 +40,19 @@ namespace SmartStore.Admin.Controllers
 
         #region Delivery time
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllDeliveryTimes(string selectedIds)
         {
             var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
             var selectedArr = selectedIds.ToIntArray();
 
             var data = deliveryTimes
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.GetLocalized(y => y.Name).Value,
-                    description = _deliveryTimeService.GetFormattedDeliveryDate(x),
-                    selected = selectedArr.Contains(x.Id)
+                    Id = x.Id.ToString(),
+                    Text = x.GetLocalized(y => y.Name).Value,
+                    Description = _deliveryTimeService.GetFormattedDeliveryDate(x),
+                    Selected = selectedArr.Contains(x.Id)
                 })
                 .ToList();
 

@@ -27,6 +27,7 @@ using SmartStore.Services.Payments;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -74,7 +75,7 @@ namespace SmartStore.Admin.Controllers
             _mediaSettings = mediaSettings;
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllRuleSets(string selectedIds, RuleScope? scope)
         {
             var ruleSets = _ruleStorage.GetAllRuleSets(false, false, scope, includeHidden: true);
@@ -83,13 +84,13 @@ namespace SmartStore.Admin.Controllers
             ruleSets.Add(new RuleSetEntity { Id = -1, Name = T("Admin.Rules.AddRule").Text + "…" });
 
             var data = ruleSets
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = selectedArr.Contains(x.Id),
-                    urlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
-                    url = x.Id == -1
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = selectedArr.Contains(x.Id),
+                    UrlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
+                    Url = x.Id == -1
                         ? Url.Action("Create", "Rule", new { area = "admin", scope })
                         : Url.Action("Edit", "Rule", new { id = x.Id, area = "admin" })
                 })

@@ -98,24 +98,31 @@ namespace SmartStore.Admin.Controllers
         {
             var query = _blogService.GetAllBlogPosts(0, null, null, 0, int.MaxValue, true).SourceQuery;
             var pager = new FastPager<BlogPost>(query, 500);
-            var allBlogPosts = new Dictionary<int, string>();
-            var ids = selectedIds.ToIntArray();
+            var allBlogPosts = new List<dynamic>();
+            var ids = selectedIds.ToIntArray().ToList();
 
             while (pager.ReadNextPage(out var blogPosts))
             {
                 foreach (var blogPost in blogPosts)
                 {
-                    allBlogPosts[blogPost.Id] = blogPost.GetLocalized(x => x.Title).Value;
+                    dynamic obj = new
+                    {
+                        blogPost.Id,
+                        blogPost.CreatedOnUtc,
+                        Title = blogPost.GetLocalized(x => x.Title).Value
+                    };
+
+                    allBlogPosts.Add(obj);
                 }
             }
 
             var data = allBlogPosts
-                .Where(x => x.Value.HasValue())
-                .Select(x => new
+                .OrderByDescending(x => x.CreatedOnUtc)
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Key,
-                    text = x.Value,
-                    selected = ids.Contains(x.Key)
+                    Id = x.Id.ToString(),
+                    Text = x.Title,
+                    Selected = ids.Contains(x.Id)
                 })
                 .ToList();
 

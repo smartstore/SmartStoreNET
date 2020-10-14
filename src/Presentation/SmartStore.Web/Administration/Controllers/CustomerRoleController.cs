@@ -17,6 +17,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -72,17 +73,22 @@ namespace SmartStore.Admin.Controllers
 
             var list = customerRoles
                 .OrderBy(x => x.Name)
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = ids.Contains(x.Id)
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = ids.Contains(x.Id)
                 })
                 .ToList();
 
             if (label.HasValue())
             {
-                list.Insert(0, new { id = "0", text = label, selected = false });
+                list.Insert(0, new ChoiceListItem
+                {
+                    Id = "0",
+                    Text = label,
+                    Selected = false
+                });
             }
 
             return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };

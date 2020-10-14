@@ -234,6 +234,7 @@
     <Compile Include="Filters\ResponseFilterStream.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
+    <Compile Include="Modelling\ChoiceListItem.cs" />
     <Compile Include="Modelling\MediaTemplateModel.cs" />
     <Compile Include="Modelling\Results\CachedFileResult.cs" />
     <Compile Include="Modelling\Results\FileResponder.cs" />

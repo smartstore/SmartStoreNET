@@ -98,24 +98,31 @@ namespace SmartStore.Admin.Controllers
         {
             var query = _newsService.GetAllNews(0, 0, int.MaxValue, true).SourceQuery;
             var pager = new FastPager<NewsItem>(query, 500);
-            var allNewsItems = new Dictionary<int, string>();
-            var ids = selectedIds.ToIntArray();
+            var allNewsItems = new List<dynamic>();
+            var ids = selectedIds.ToIntArray().ToList();
 
             while (pager.ReadNextPage(out var newsItems))
             {
                 foreach (var newsItem in newsItems)
                 {
-                    allNewsItems[newsItem.Id] = newsItem.GetLocalized(x => x.Title).Value;
+                    dynamic obj = new
+                    {
+                        newsItem.Id,
+                        newsItem.CreatedOnUtc,
+                        Title = newsItem.GetLocalized(x => x.Title).Value
+                    };
+
+                    allNewsItems.Add(obj);
                 }
             }
 
             var data = allNewsItems
-                .Where(x => x.Value.HasValue())
-                .Select(x => new
+                .OrderByDescending(x => x.CreatedOnUtc)
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Key,
-                    text = x.Value,
-                    selected = ids.Contains(x.Key)
+                    Id = x.Id.ToString(),
+                    Text = x.Title,
+                    Selected = ids.Contains(x.Id)
                 })
                 .ToList();
 

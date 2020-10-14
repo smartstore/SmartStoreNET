@@ -6,25 +6,23 @@
 	<MetaDescription>Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. Art und Konzeption war es damals etwas völlig Neues, da das Bauhaus eine Zusammenführung von Kunst und Handwerk darstellte.</MetaDescription>
 	<Body>
 		<![CDATA[
-			<p>
-				Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. 
+      <p>
+        Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. 
         Nach Art und Konzeption war es damals etwas völlig Neues, da das Bauhaus eine Zusammenführung von Kunst und Handwerk darstellte. 
         Das historische Bauhaus stellt heute die einflussreichste Bildungsstätte im Bereich der Architektur, der Kunst und des Designs im 20. Jahrhundert dar. 
         Das Bauhaus bestand zeitlich parallel mit und in der Weimarer Republik von 1919 bis 1933 und gilt heute weltweit als Heimstätte der 
         Avantgarde der Klassischen Moderne auf allen Gebieten der freien und angewandten Kunst und Architektur. Die Resonanz des Bauhauses 
         hält bis heute an und prägt wesentlich das Bild modernistischer Strömungen.
       </p>
-      <div>
-				<h4 class="fs-h4">
-					Bauhaus gründung 
-        </h4>
-        <p>
-					Das Bauhaus entstand in Weimar durch die Vereinigung der Großherzoglich-Sächsischen Kunstschule Weimar mit der 1907 von Henry van de Velde 
-          gegründeten Großherzoglich-Sächsischen Kunstgewerbeschule Weimar. 
-          Sie wurde zum direkten Vorläufer des Bauhauses, das dann in van de Veldes Schulgebäuden seine Arbeit aufnahm. 
-          1925 erfolgte der Umzug nach Dessau – ab 1926 im Gebäude des Bauhauses Dessau. 1932 musste das Bauhaus nach Berlin umziehen; 1933 wurde es geschlossen.
-        </p>
-			</div>
+			<h4 class="fs-h4">
+				Bauhaus gründung 
+      </h4>
+      <p>
+				Das Bauhaus entstand in Weimar durch die Vereinigung der Großherzoglich-Sächsischen Kunstschule Weimar mit der 1907 von Henry van de Velde 
+        gegründeten Großherzoglich-Sächsischen Kunstgewerbeschule Weimar. 
+        Sie wurde zum direkten Vorläufer des Bauhauses, das dann in van de Veldes Schulgebäuden seine Arbeit aufnahm. 
+        1925 erfolgte der Umzug nach Dessau – ab 1926 im Gebäude des Bauhauses Dessau. 1932 musste das Bauhaus nach Berlin umziehen; 1933 wurde es geschlossen.
+      </p>
       <h4 class="fs-h4">
 				Einfluss von Bauhaus
       </h4>
@@ -41,11 +39,11 @@
       </p>
 		]]>
 	</Body>
-	<Tags>Bauhaus, Walter Gropius, Weimar, School of Arts</Tags>
+	<Tags>Bauhaus,Walter Gropius,Weimar,Kunstschule</Tags>
 	<DisplayTags>True</DisplayTags>
 	<CreatedOn>2020-05-01</CreatedOn>
 	<DisplayType>20</DisplayType>
-	<Picture>bauhaus.jpg</Picture>
-	<PicturePreview>bauhaus-preview.jpg</PicturePreview>
+	<Image>bauhaus.jpg</Image>
+	<ImagePreview>bauhaus-preview.jpg</ImagePreview>
 	<Comments>True</Comments>
 </BlogPost>

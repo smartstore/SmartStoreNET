@@ -30,11 +30,11 @@
       </p>
 		]]>
 	</Body>
-	<Tags>Sport, Football, Entertainment</Tags>
+	<Tags>Sport,Fußball,Unterhaltung</Tags>
 	<DisplayTags>True</DisplayTags>
 	<CreatedOn>2020-07-02</CreatedOn>
 	<DisplayType>20</DisplayType>
-	<Picture>football.jpg</Picture>
-	<PicturePreview>football-preview.jpg</PicturePreview>
+	<Image>football.jpg</Image>
+	<ImagePreview>football-preview.jpg</ImagePreview>
 	<Comments>True</Comments>
 </BlogPost>

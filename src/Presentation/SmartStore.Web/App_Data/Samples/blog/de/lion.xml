@@ -35,12 +35,12 @@
       </p>
 		]]>
 	</Body>
-	<Tags>Nature, Lion, Wildlife</Tags>
+	<Tags>Natur,Löwe,Wildtiere</Tags>
 	<DisplayTags>False</DisplayTags>
 	<CreatedOn>2020-08-17</CreatedOn>
 	<DisplayType>40</DisplayType>
-	<Picture>lion.jpg</Picture>
-	<PicturePreview>lion-preview.jpg</PicturePreview>
+	<Image>lion.jpg</Image>
+	<ImagePreview>lion-preview.jpg</ImagePreview>
 	<Comments>True</Comments>
 	<SectionBg>dark</SectionBg>
 </BlogPost>

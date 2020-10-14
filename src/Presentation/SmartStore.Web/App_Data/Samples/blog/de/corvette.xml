@@ -22,11 +22,11 @@
 			</p>
 		]]>
 	</Body>
-	<Tags>Car, Oldtimer, Chevrolet, Corvette</Tags>
+	<Tags>Auto,Sport,Oldtimer,Chevrolet,Corvette</Tags>
 	<DisplayTags>False</DisplayTags>
 	<CreatedOn>2020-05-29</CreatedOn>
 	<DisplayType>10</DisplayType>
-	<Picture>sportscar.jpg</Picture>
+  <Image>sportscar.jpg</Image>
 	<Comments>True</Comments>
 	<SectionBg>dark</SectionBg>
 </BlogPost>

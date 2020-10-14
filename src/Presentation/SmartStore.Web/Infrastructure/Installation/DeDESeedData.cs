@@ -189,8 +189,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                .Alter("Guests", x =>
                {
                    x.Name = "Gäste";
-               })
-               ;
+               });
         }
 
         protected override void Alter(Address entity)
@@ -3640,20 +3639,6 @@ namespace SmartStore.Web.Infrastructure.Installation
         protected override void Alter(IList<BlogPost> entities)
         {
             base.Alter(entities);
-
-            entities.WithKey(x => x.Title)
-                .Alter("Online Discount Coupons", x =>
-                {
-                    x.Title = "Online Rabatt Coupon";
-                    x.Body = "<p>Sparen Sie mit unseren Online-Coupons bares Geld!</p>";
-                    x.Tags = "Geld, Rabatt, Coupon";
-                })
-                .Alter("Customer Service - Client Service", x =>
-                {
-                    x.Title = "Kundendienst - Unser Service";
-                    x.Body = "<p>Bei uns wird Service GROSS geschrieben! Auch nach Ihrem Einkauf bei uns können Sie mit uns Rechnen!<br></p>";
-                    x.Tags = "Shopsystem, Smartstore, asp.net, sample tag, Service";
-                });
         }
 
         protected override void Alter(IList<NewsItem> entities)

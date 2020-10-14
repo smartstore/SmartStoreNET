@@ -46,8 +46,10 @@ namespace SmartStore.Data.Utilities
         /// Imports all blog xml files to BlogPost table
         /// </summary>
         /// <param name="virtualRootPath">The virtual root path of blogs to import, e.g. "~/Plugins/MyPlugins/BlogPost". Default is "~/App_Data/Samples/blog".</param>
-        public void ImportAll(Language language, string virtualRootPath = null)
+        /// <returns>List of new imported blog posts</returns>
+        public IList<BlogPost> ImportAll(Language language, string virtualRootPath = null)
         {
+            var blogsImported = new List<BlogPost>();
             var table = _ctx.Set<BlogPost>();
             var sourceBlogs = LoadAll(language);
             var dbBlogMap = table.ToList().ToMultimap(x => x.Title, x => x, StringComparer.OrdinalIgnoreCase);
@@ -81,7 +83,7 @@ namespace SmartStore.Data.Utilities
                         MetaTitle = source.MetaTitle,
                         MetaDescription = source.MetaDescription,
                         Intro = source.Intro,
-                        Body = source.Body,
+                        Body = source.Body,                        
                         Tags = source.Tags,
                         DisplayTagsInPreview = source.DisplayTagsInPreview,
                         CreatedOnUtc = source.CreatedOnUtc,
@@ -93,16 +95,17 @@ namespace SmartStore.Data.Utilities
                         IsPublished = true
                     };
 
+                    blogsImported.Add(blog);
                     table.Add(blog);
                 }
             }
 
             _ctx.SaveChanges();
+            return blogsImported;
         }
 
         private DirectoryInfo ResolveBlogDirectory(Language language, string virtualRootPath = null)
         {
-            var rootPath = CommonHelper.MapPath(virtualRootPath.NullEmpty() ?? "~/App_Data/Samples/blog/");
             var testPaths = new[]
             {
                 language.LanguageCulture,
@@ -110,6 +113,7 @@ namespace SmartStore.Data.Utilities
                 "en"
             };
 
+            var rootPath = CommonHelper.MapPath(virtualRootPath.NullEmpty() ?? "~/App_Data/Samples/blog/");
             foreach (var path in testPaths.Select(x => Path.Combine(rootPath, x)))
             {
                 if (Directory.Exists(path))
@@ -118,7 +122,7 @@ namespace SmartStore.Data.Utilities
                 }
             }
 
-            throw new DirectoryNotFoundException($"Could not obtain an email templates path for language {language.LanguageCulture}. Fallback to 'en' failed, because directory does not exist.");
+            throw new DirectoryNotFoundException($"Could not obtain an blog post path for language {language.LanguageCulture}. Fallback to 'en' failed, because directory does not exist.");
         }
 
         private BlogPost DeserializeBlog(string fullPath)
@@ -128,9 +132,8 @@ namespace SmartStore.Data.Utilities
 
         private BlogPost DeserializeDocument(XDocument doc)
         {
-            var root = doc.Root;
             var result = new BlogPost();
-            var nodes = root.Nodes().OfType<XElement>();
+            var nodes = doc.Root.Nodes().OfType<XElement>();
 
             foreach (var node in nodes)
             {
@@ -165,13 +168,13 @@ namespace SmartStore.Data.Utilities
                     case "DisplayType":
                         result.PreviewDisplayType = (PreviewDisplayType)int.Parse(value);
                         break;
-                    case "Picture":
+                    case "Image":
                         var seName = GetSeName(Path.GetFileNameWithoutExtension(value));
-                        result.MediaFile = CreatePicture(value, seName);
+                        result.MediaFile = CreateImage(value, seName);
                         break;
-                    case "PicturePreview":
+                    case "ImagePreview":
                         seName = GetSeName(Path.GetFileNameWithoutExtension(value));
-                        result.PreviewMediaFile = CreatePicture(value, seName);
+                        result.PreviewMediaFile = CreateImage(value, seName);
                         break;
                     case "Comments":
                         result.AllowComments = value.ToBool();
@@ -185,13 +188,13 @@ namespace SmartStore.Data.Utilities
             return result;
         }
 
-        private MediaFile CreatePicture(string fileName, string seoFilename = null)
+        private MediaFile CreateImage(string fileName, string seoFilename = null)
         {
             try
             {
                 var ext = Path.GetExtension(fileName);
-                var path = Path.Combine(CommonHelper.MapPath("~/App_Data/Samples/blog/"), fileName).Replace('/', '\\');
                 var mimeType = MimeTypes.MapNameToMimeType(ext);
+                var path = Path.Combine(CommonHelper.MapPath("~/App_Data/Samples/blog/"), fileName).Replace('/', '\\');
                 var buffer = File.ReadAllBytes(path);
                 var now = DateTime.UtcNow;
 
@@ -216,7 +219,7 @@ namespace SmartStore.Data.Utilities
             }
             catch (Exception ex)
             {
-                //throw ex;
+                // Throw ex;
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }

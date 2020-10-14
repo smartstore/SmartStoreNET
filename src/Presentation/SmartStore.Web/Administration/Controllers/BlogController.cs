@@ -283,7 +283,7 @@ namespace SmartStore.Admin.Controllers
 
             var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            model.Tags = blogPost.Tags.SplitSafe(",");
+            model.Tags = blogPost.Tags.SplitSafe(",").Select(x => x = x.Trim()).ToArray();
 
             PrepareStoresMappingModel(model, blogPost, false);
 

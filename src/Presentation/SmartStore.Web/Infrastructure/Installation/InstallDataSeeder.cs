@@ -283,7 +283,8 @@ namespace SmartStore.Web.Infrastructure.Installation
         private void PopulateBlogPosts()
         {
             var converter = new BlogPostConverter(_ctx);
-            converter.ImportAll(_config.Language);
+            var blogPosts = converter.ImportAll(_config.Language);            
+            PopulateUrlRecordsFor(blogPosts);
         }
 
         private void PopulateNewsItems()

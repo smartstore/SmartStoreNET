@@ -42,11 +42,11 @@
 			</p>
 		]]>
 	</Body>
-	<Tags>Nature, Beach, Maledives</Tags>
+	<Tags>Natur,Strand,Malediven</Tags>
 	<DisplayTags>True</DisplayTags>
 	<CreatedOn>2020-10-07</CreatedOn>
 	<DisplayType>20</DisplayType>
-	<Picture>maldives.jpg</Picture>
-	<PicturePreview>maldives-preview.jpg</PicturePreview>
+	<Image>maldives.jpg</Image>
+	<ImagePreview>maldives-preview.jpg</ImagePreview>
 	<Comments>True</Comments>
 </BlogPost>

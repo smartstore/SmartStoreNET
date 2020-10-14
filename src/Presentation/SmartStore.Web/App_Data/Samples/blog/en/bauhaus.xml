@@ -16,27 +16,21 @@
 				Classic Modernism in all areas of free and applied art and architecture. The resonance of the Bauhaus continues to this day and
 				significantly shapes the image of modernist trends.
 			</p>
-			<div class="col-12 col-lg-8">
-				<h4 class="fs-h4">Foundation of the Bauhaus</h4>
-				<p>
-					The Bauhaus came into being in Weimar through the merger of the Grand Ducal-Saxon School of Art Weimar with the Grand Ducal-Saxon
-					School of Arts and Crafts Weimar,
-					founded in 1907 by Henry van de Velde. It became the direct predecessor of the Bauhaus, which then began its work in van de Velde's
-					school buildings.
-					In 1925 the school moved to Dessau - from 1926 in the building of the Bauhaus Dessau. In 1932 the Bauhaus had to move to Berlin; in
-					1933 it was closed.
-				</p>
-			</div>
+			<h4 class="fs-h4">Foundation of the Bauhaus</h4>
+			<p>
+				The Bauhaus came into being in Weimar through the merger of the Grand Ducal-Saxon School of Art Weimar with the Grand Ducal-Saxon
+				School of Arts and Crafts Weimar, founded in 1907 by Henry van de Velde. 
+        It became the direct predecessor of the Bauhaus, which then began its work in van de Velde's school buildings.
+				In 1925 the school moved to Dessau - from 1926 in the building of the Bauhaus Dessau. In 1932 the Bauhaus had to move to Berlin; in 1933 it was closed.
+			</p>
 			<h4 class="fs-h4">Influence of Bauhaus</h4>
 			<p>
 				The influence of the Bauhaus was so significant that the term Bauhaus is often colloquially equated with modernism in architecture and
 				design.
 				From an art historical perspective, however, it is problematic to view the so-called Bauhaus style and developments in Germany in
-				isolation and to use Bauhaus as a style term,
-				as an architectural style or furniture style. The designs and works of teachers and students at the Bauhaus are therefore seen as part of
-				transnational,
-				long-term currents and classified under terms such as Functionalism, Classic Modernism, New Objectivity, International Style, New
-				Building.
+				isolation and to use Bauhaus as a style term, as an architectural style or furniture style. 
+        The designs and works of teachers and students at the Bauhaus are therefore seen as part of transnational, long-term currents 
+        and classified under terms such as Functionalism, Classic Modernism, New Objectivity, International Style, New Building.
 			</p>
 			<p>
 				At the Bauhaus, the traditionally separate areas of the visual arts, applied arts and performing arts were combined on the basis of the
@@ -44,11 +38,11 @@
 			</p>
 		]]>
 	</Body>
-	<Tags>Bauhaus, Walter Gropius, Weimar, School of Arts</Tags>
+	<Tags>Bauhaus,Walter Gropius,Weimar,School of Arts</Tags>
 	<DisplayTags>True</DisplayTags>
 	<CreatedOn>2020-05-01</CreatedOn>
 	<DisplayType>20</DisplayType>
-	<Picture>bauhaus.jpg</Picture>
-	<PicturePreview>bauhaus-preview.jpg</PicturePreview>
+	<Image>bauhaus.jpg</Image>
+	<ImagePreview>bauhaus-preview.jpg</ImagePreview>
 	<Comments>True</Comments>
 </BlogPost>

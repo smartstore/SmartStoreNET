@@ -21,6 +21,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Rules.Domain;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
@@ -3742,6 +3743,29 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter(8, x =>
                 {
                     x.Name = "Einmal im Monat";
+                });
+        }
+
+        protected override void Alter(IList<RuleSetEntity> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.Name)
+                .Alter("Weekends", x =>
+                {
+                    x.Name = "Wochenenden";
+                })
+                .Alter("Watch manufacturers", x =>
+                {
+                    x.Name = "Uhrenhersteller";
+                })
+                .Alter("Categories with trousers", x =>
+                {
+                    x.Name = "Warengruppen mit Hosen";
+                })
+                .Alter("Major customers", x =>
+                {
+                    x.Name = "Wichtige Kunden";
                 });
         }
     }

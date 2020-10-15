@@ -553,6 +553,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateProductTags", _data.ProductTags());
                 Populate("PopulateForumsGroups", _data.ForumGroups());
                 Populate("PopulateForums", _data.Forums());
+                // Order! Before discounts but after categories, manufacturers.
+                Populate("PopulateRuleSets", _data.RuleSets());
                 Populate("PopulateDiscounts", _data.Discounts());
                 Populate("PopulateBlogPosts", PopulateBlogPosts);
                 Populate("PopulateNews", PopulateNewsItems);

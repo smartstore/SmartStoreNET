@@ -30,6 +30,8 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.IO;
+using SmartStore.Rules;
+using SmartStore.Rules.Domain;
 using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
@@ -1104,6 +1106,92 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
+        public IList<RuleSetEntity> RuleSets()
+        {
+            // Cart: weekends.
+            var weekends = new RuleSetEntity
+            {
+                Name = "Weekends",
+                IsActive = true
+            };
+            weekends.Rules.Add(new RuleEntity
+            {
+                RuleType = "Weekday",
+                Operator = RuleOperator.In,
+                Value = $"{(int)DayOfWeek.Sunday},{(int)DayOfWeek.Saturday}"
+            });
+
+            // Cart: manufacturers.
+            var watchesManufacturersIds = _ctx.Set<Manufacturer>()
+                .Where(x => x.Name == "Breitling" || x.Name == "Seiko")
+                .Select(x => x.Id)
+                .ToList();
+
+            var watchesManufacturers = new RuleSetEntity
+            {
+                Name = "Watch manufacturers",
+                IsActive = true
+            };
+            if (watchesManufacturersIds.Any())
+            {
+                watchesManufacturers.Rules.Add(new RuleEntity
+                {
+                    RuleType = "ProductFromManufacturerInCart",
+                    Operator = RuleOperator.In,
+                    Value = string.Join(",", watchesManufacturersIds)
+                });
+            }
+
+            // Cart: categories.
+            var trousersCategoryIds = _ctx.Set<Category>()
+                .Where(x => x.MetaTitle == "Trousers")
+                .Select(x => x.Id)
+                .ToList();
+
+            var trousersCategories = new RuleSetEntity
+            {
+                Name = "Categories with trousers",
+                IsActive = false
+            };
+            if (trousersCategoryIds.Any())
+            {
+                trousersCategories.Rules.Add(new RuleEntity
+                {
+                    RuleType = "ProductFromCategoryInCart",
+                    Operator = RuleOperator.In,
+                    Value = string.Join(",", trousersCategoryIds)
+                });
+            }
+
+            // Cart: major customers.
+            var majorCustomers = new RuleSetEntity
+            {
+                Name = "Major customers",
+                IsActive = true
+            };
+            majorCustomers.Rules.Add(new RuleEntity
+            {
+                RuleType = "CartSubtotal",
+                Operator = RuleOperator.GreaterThanOrEqualTo,
+                Value = "200"
+            });
+            majorCustomers.Rules.Add(new RuleEntity
+            {
+                RuleType = "CartOrderCount",
+                Operator = RuleOperator.GreaterThanOrEqualTo,
+                Value = "3"
+            });
+
+
+            var entities = new List<RuleSetEntity>
+            {
+                weekends, watchesManufacturers, trousersCategories, majorCustomers
+            };
+
+            Alter(entities);
+            return entities;
+        }
+
         #region Alterations
 
         protected virtual void Alter(IList<MeasureDimension> entities)
@@ -1279,6 +1367,10 @@ namespace SmartStore.Data.Setup
         }
 
         protected virtual void Alter(IList<PollAnswer> entities)
+        {
+        }
+
+        protected virtual void Alter(IList<RuleSetEntity> entities)
         {
         }
 

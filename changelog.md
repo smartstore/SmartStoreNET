@@ -40,6 +40,7 @@ Merging the contents of different languages must be done manually (migration is 
 * #2052 When editing a product, the stock quantity is only updated if it has not changed since the page was loaded.
 * #213 Added options for special title and meta tags on home page.
 * #1977 CMS Menu Builder: added new builder types for blogs and news.
+* Search Log: added option to hide top search terms in instant search.
 
 ### Bugfixes
 * **Media Manager**

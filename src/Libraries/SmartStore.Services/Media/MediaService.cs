@@ -348,7 +348,63 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Create/Update/Delete
+        #region Create/Update/Delete/Replace
+
+        public MediaFileInfo ReplaceFile(MediaFile file, Stream inStream, string newFileName)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(inStream, nameof(inStream));
+            Guard.NotEmpty(newFileName, nameof(newFileName));
+
+            var fileInfo = ConvertMediaFile(file);
+            var pathData = CreatePathData(fileInfo.Path);
+            pathData.FileName = newFileName;
+
+            var storageItem = ProcessFile(ref file, pathData, inStream, false, DuplicateFileHandling.Overwrite, MimeValidationType.MediaTypeMustMatch);
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
+            {
+                try
+                {
+                    _storageProvider.Save(file, storageItem);
+                    scope.Commit();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
+            return fileInfo;
+        }
+
+        public async Task<MediaFileInfo> ReplaceFileAsync(MediaFile file, Stream inStream, string newFileName)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(inStream, nameof(inStream));
+            Guard.NotEmpty(newFileName, nameof(newFileName));
+
+            var fileInfo = ConvertMediaFile(file);
+            var pathData = CreatePathData(fileInfo.Path);
+            pathData.FileName = newFileName;
+
+            var storageItem = ProcessFile(ref file, pathData, inStream, false, DuplicateFileHandling.Overwrite, MimeValidationType.MediaTypeMustMatch);
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
+            {
+                try
+                {
+                    await _storageProvider.SaveAsync(file, storageItem);
+                    await scope.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
+            return fileInfo;
+        }
 
         public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
@@ -491,7 +547,8 @@ namespace SmartStore.Services.Media
             MediaPathData pathData,
             Stream inStream,
             bool isTransient = true,
-            DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
+            DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError,
+            MimeValidationType mediaValidationType = MimeValidationType.MimeTypeMustMatch)
         {
             if (file != null)
             {
@@ -510,10 +567,17 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            if (file != null)
+            if (file != null && mediaValidationType != MimeValidationType.NoValidation)
             {
-                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
-
+                if (mediaValidationType == MimeValidationType.MimeTypeMustMatch)
+                {
+                    ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+                }
+                else if (mediaValidationType == MimeValidationType.MediaTypeMustMatch)
+                {
+                    ValidateMediaTypes("Save", _typeResolver.Resolve(pathData.Extension), file.MediaType);
+                }
+                
                 // Restore file if soft-deleted
                 file.Deleted = false;
 
@@ -1012,6 +1076,15 @@ namespace SmartStore.Services.Media
             {
                 // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
                 throw new NotSupportedException(T("Admin.Media.Exception.MimeType", operation, mime1, mime2));
+            }
+        }
+
+        private void ValidateMediaTypes(string operation, string mime1, string mime2)
+        {
+            if (mime1 != mime2)
+            {
+                // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
+                throw new NotSupportedException(T("Admin.Media.Exception.MediaType", operation, mime1, mime2));
             }
         }
 

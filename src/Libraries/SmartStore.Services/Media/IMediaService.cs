@@ -57,6 +57,13 @@ namespace SmartStore.Services.Media
         Skip
     }
 
+    public enum MimeValidationType
+    {
+        NoValidation,
+        MimeTypeMustMatch,
+        MediaTypeMustMatch
+    }
+
     #endregion
 
     #region Result & Cargo objects
@@ -180,6 +187,8 @@ namespace SmartStore.Services.Media
         void DeleteFile(MediaFile file, bool permanent, bool force = false);
         FileOperationResult CopyFile(MediaFileInfo mediaFile, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         MediaFileInfo MoveFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
+        MediaFileInfo ReplaceFile(MediaFile file, Stream inStream, string newFileName);
+        Task<MediaFileInfo> ReplaceFileAsync(MediaFile file, Stream inStream, string newFileName);
 
         bool FolderExists(string path);
         MediaFolderInfo CreateFolder(string path);

@@ -155,7 +155,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         private void PopulateShippingMethods()
         {
-            SaveRange(_data.ShippingMethods().Where(x => x != null));
+            SaveRange(_data.ShippingMethods(_config.SeedSampleData).Where(x => x != null));
         }
 
         private void PopulateCustomersAndUsers(string defaultUserEmail, string defaultUserPassword)
@@ -544,6 +544,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateProductAttributes", _data.ProductAttributes());
                 Populate("PopulateProductAttributeOptionsSets", _data.ProductAttributeOptionsSets());
                 Populate("PopulateProductAttributeOptions", _data.ProductAttributeOptions());
+                Populate("PopulateRuleSets", _data.RuleSets());
+                Populate("PopulateDiscounts", _data.Discounts());
                 Populate("PopulateCategories", PopulateCategories);
                 Populate("PopulateManufacturers", PopulateManufacturers);
                 Populate("PopulateProducts", PopulateProducts);
@@ -553,9 +555,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateProductTags", _data.ProductTags());
                 Populate("PopulateForumsGroups", _data.ForumGroups());
                 Populate("PopulateForums", _data.Forums());
-                // Order! Before discounts but after categories, manufacturers.
-                Populate("PopulateRuleSets", _data.RuleSets());
-                Populate("PopulateDiscounts", _data.Discounts());
                 Populate("PopulateBlogPosts", PopulateBlogPosts);
                 Populate("PopulateNews", PopulateNewsItems);
                 Populate("PopulatePolls", _data.Polls());

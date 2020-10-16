@@ -127,6 +127,7 @@ namespace SmartStore.Web.Infrastructure.Installation
         protected override void Alter(IList<ShippingMethod> entities)
         {
             base.Alter(entities);
+
             entities.WithKey(x => x.DisplayOrder)
                 .Alter(0, x =>
                 {
@@ -137,6 +138,12 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Versand";
                     x.Description = "Ihre Bestellung wird Ihnen durch unsere Versandpartner zugestellt.";
+                });
+
+            entities.WithKey(x => x.IgnoreCharges)
+                .Alter(true, x =>
+                {
+                    x.Name = "Kostenloser Versand";
                 });
         }
 
@@ -2728,87 +2735,39 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.MetaTitle)
-                .Alter("Furniture", x =>
-                {
-                    x.Name = "Möbel";
-                })
-                .Alter("Lounger", x =>
-                {
-                    x.Name = "Liegen";
-                })
-                .Alter("Chairs", x =>
-                {
-                    x.Name = "Sessel";
-                })
-                .Alter("Lamps", x =>
-                {
-                    x.Name = "Lampen";
-                })
-                .Alter("Fashion", x =>
-                {
-                    x.Name = "Mode";
-                })
-                .Alter("Sports", x =>
-                {
-                    x.Name = "Sport";
-                })
-                .Alter("Sunglasses", x =>
-                {
-                    x.Name = "Sonnenbrillen";
-                })
-                .Alter("Soccer", x =>
-                {
-                    x.Name = "Fußball";
-                })
-                .Alter("Books", x =>
-                {
-                    x.Name = "Bücher";
-                })
-                .Alter("Cook and enjoy", x =>
-                {
-                    x.Name = "Kochen und Genießen";
-                })
-                .Alter("Computers", x =>
-                {
-                    x.Name = "Computer";
-                })
-                .Alter("Desktops", x =>
-                {
-                    x.Name = "Desktop Computer";
-                })
-                .Alter("Notebooks", x =>
-                {
-                    x.Name = "Notebook";
-                })
-                .Alter("Software", x =>
-                {
-                    x.Name = "Software";
-                })
-                .Alter("Cell phones", x =>
-                {
-                    x.Name = "Smartphones";
-                })
-                .Alter("Digital Products", x =>
-                {
-                    x.Name = "Digitale Produkte";
-                })
-                .Alter("Gift cards", x =>
-                {
-                    x.Name = "Geschenkgutscheine";
-                })
-                .Alter("Watches", x =>
-                {
-                    x.Name = "Uhren";
-                })
-                .Alter("Gaming Accessories", x =>
-                {
-                    x.Name = "Zubehör";
-                })
-                .Alter("Games", x =>
-                {
-                    x.Name = "Spiele";
-                });
+            var names = new Dictionary<string, string>
+            {
+                { "Books", "Bücher" },
+                { "Cell phones", "Smartphones" },
+                { "Chairs", "Sessel" },
+                { "Cook and enjoy", "Kochen und Genießen" },
+                { "Computers", "Computer" },
+                { "Desktops", "Desktop Computer" },
+                { "Digital Products", "Digitale Produkte" },
+                { "Fashion", "Mode" },
+                { "Furniture", "Möbel" },
+                { "Games", "Spiele" },
+                { "Gaming Accessories", "Zubehör" },
+                { "Gift cards", "Geschenkgutscheine" },
+                { "Jackets", "Jacken" },
+                { "Lounger", "Liegen" },
+                { "Lamps", "Lampen" },
+                { "Notebooks", "Notebook" },
+                { "Shoes", "Schuhe" },
+                { "Sports", "Sport" },
+                { "Soccer", "Fußball" },
+                { "Sunglasses", "Sonnenbrillen" },
+                { "Tables", "Tische" },
+                { "Trousers", "Hosen" },
+                { "Watches", "Uhren" },                
+            };
+
+            var alterer = entities.WithKey(x => x.MetaTitle);
+
+            foreach (var kvp in names)
+            {
+                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
+            }
         }
 
         private void AlterFashionProducts(IList<Product> entities)
@@ -3411,15 +3370,21 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-                .Alter("Sample discount with coupon code", x =>
-                {
-                    x.Name = "Beispiel Rabatt mit Coupon-Code";
-                })
-                .Alter("20% order total' discount", x =>
-                {
-                    x.Name = "20% vom Gesamteinkauf";
-                });
+            var names = new Dictionary<string, string>
+            {
+                { "10% for certain manufacturers", "10% bei bestimmten Herstellern" },
+                { "20% order total discount", "20% auf den Bestellwert" },
+                { "20% for certain categories", "20% bei bestimmten Warengruppen" },
+                { "5% on weekend orders", "5% bei Bestellungen am Wochenende" },
+                { "Sample discount with coupon code", "Beispiel Rabatt mit Coupon-Code" },
+            };
+
+            var alterer = entities.WithKey(x => x.Name);
+
+            foreach (var kvp in names)
+            {
+                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
+            }
         }
 
         protected override void Alter(IList<DeliveryTime> entities)
@@ -3750,23 +3715,18 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-                .Alter("Weekends", x =>
-                {
-                    x.Name = "Wochenenden";
-                })
-                .Alter("Watch manufacturers", x =>
-                {
-                    x.Name = "Uhrenhersteller";
-                })
-                .Alter("Categories with trousers", x =>
-                {
-                    x.Name = "Warengruppen mit Hosen";
-                })
-                .Alter("Major customers", x =>
-                {
-                    x.Name = "Wichtige Kunden";
-                });
+            var names = new Dictionary<string, string>
+            {
+                { "Weekends", "Wochenenden" },
+                { "Major customers", "Wichtige Kunden" },
+            };
+
+            var alterer = entities.WithKey(x => x.Name);
+
+            foreach (var kvp in names)
+            {
+                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
+            }
         }
     }
 }

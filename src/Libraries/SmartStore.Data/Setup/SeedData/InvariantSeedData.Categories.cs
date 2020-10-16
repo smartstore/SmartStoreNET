@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Discounts;
 
 namespace SmartStore.Data.Setup
 {
@@ -8,17 +9,14 @@ namespace SmartStore.Data.Setup
     {
         public IList<Category> CategoriesFirstLevel()
         {
-            var sampleImagesPath = this._sampleImagesPath;
-            var categoryTemplateInGridAndLines =
-                this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
-
-            #region Categories
+            var imagesPath = _sampleImagesPath;
+            var gridOrLinesTemplate = CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
 
             var categoryFurniture = new Category
             {
                 Name = "Furniture",
                 Alias = "Furniture",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/furniture.jpg"),
                 Published = true,
                 DisplayOrder = 1,
@@ -30,7 +28,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Apple",
                 Alias = "Apple",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/apple.png"),
                 Published = true,
                 DisplayOrder = 1,
@@ -42,7 +40,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Sports",
                 Alias = "Sports",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/sports.jpg"),
                 Published = true,
                 DisplayOrder = 1,
@@ -54,7 +52,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Books",
                 Alias = "Books",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/emblem_library.png", GetSeName("Books")),
                 Published = true,
                 DisplayOrder = 1,
@@ -65,7 +63,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Fashion",
                 Alias = "Fashion",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/fashion.jpg"),
                 Published = true,
                 DisplayOrder = 2,
@@ -79,7 +77,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Gaming",
                 Alias = "Gaming",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("product/ps4_bundle_minecraft.jpg", GetSeName("Gaming")),
                 Published = true,
                 DisplayOrder = 3,
@@ -91,7 +89,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Digital Products",
                 Alias = "Digital Products",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/digitalproducts.jpg"),
                 Published = true,
                 DisplayOrder = 6,
@@ -103,7 +101,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Gift Cards",
                 Alias = "Gift Cards",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/gift-cards.png"),
                 Published = true,
                 DisplayOrder = 12,
@@ -115,7 +113,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Watches",
                 Alias = "Watches",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/watches.png"),
                 Published = true,
                 DisplayOrder = 10,
@@ -148,31 +146,28 @@ namespace SmartStore.Data.Setup
             //	MetaTitle = "Cell phones"
             //};
 
-            #endregion Categories
-
             var entities = new List<Category>
             {
                 categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads,
                 categoryGaming, categoryGiftCards, categoryFashion, categoryWatches
             };
 
-            this.Alter(entities);
+            Alter(entities);
             return entities;
         }
 
         public IList<Category> CategoriesSecondLevel()
         {
-            var sampleImagesPath = this._sampleImagesPath;
-            var categoryTemplateInGridAndLines = this.CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
+            var imagesPath = _sampleImagesPath;
+            var gridOrLinesTemplate = CategoryTemplates().Where(pt => pt.ViewPath == "CategoryTemplate.ProductsInGridOrLines").FirstOrDefault();
             var categories = _ctx.Set<Category>().ToList().ToDictionarySafe(x => x.Alias, x => x);
-
-            #region Categories Second Level
+            var discounts = _ctx.Set<Discount>().Where(x => x.DiscountTypeId == (int)DiscountType.AssignedToCategories).ToList();
 
             var categoryFashionJackets = new Category
             {
                 Name = "Jackets",
                 Alias = "Jackets",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/jackets.jpg"),
                 Published = true,
                 ParentCategoryId = categories["Fashion"].Id,
@@ -185,7 +180,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Shoes",
                 Alias = "Shoes",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/shoes.png"),
                 Published = true,
                 ParentCategoryId = categories["Fashion"].Id,
@@ -198,7 +193,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Sunglasses",
                 Alias = "Sunglasses",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/glasses.png"),
                 Published = true,
                 ParentCategoryId = categories["Fashion"].Id,
@@ -211,7 +206,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Trousers",
                 Alias = "Trousers",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/trousers.png"),
                 Published = true,
                 ParentCategoryId = categories["Fashion"].Id,
@@ -219,12 +214,17 @@ namespace SmartStore.Data.Setup
                 MetaTitle = "Trousers",
                 ShowOnHomePage = true
             };
+            if (discounts.Any())
+            {
+                categoryFashionTrousers.HasDiscountsApplied = true;
+                categoryFashionTrousers.AppliedDiscounts.Add(discounts.First());
+            }
 
             var categorySportsGolf = new Category
             {
                 Name = "Golf",
                 Alias = "Golf",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/golf.jpg"),
                 Published = true,
                 ParentCategoryId = categories["Sports"].Id,
@@ -237,7 +237,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Soccer",
                 Alias = "Soccer",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/soccer.png"),
                 Published = true,
                 ParentCategoryId = categories["Sports"].Id,
@@ -250,7 +250,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Basketball",
                 Alias = "Basketball",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/basketball.png"),
                 Published = true,
                 ParentCategoryId = categories["Sports"].Id,
@@ -263,7 +263,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/0000930_spiegel-bestseller.png", GetSeName("SPIEGEL-Bestseller")),
                 Published = true,
                 ParentCategoryId = categories["Books"].Id,
@@ -275,7 +275,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Cook and enjoy",
                 Alias = "Cook and enjoy",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("category/0000936_kochen-geniesen.jpeg", GetSeName("Cook and enjoy")),
                 Published = true,
                 ParentCategoryId = categories["Books"].Id,
@@ -287,7 +287,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Gaming Accessories",
                 Alias = "Gaming Accessories",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 ParentCategoryId = categories["Gaming"].Id,
                 MediaFile = CreatePicture("category/gaming_accessories.png"),
                 Published = true,
@@ -299,7 +299,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Games",
                 Alias = "Games",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 ParentCategoryId = categories["Gaming"].Id,
                 MediaFile = CreatePicture("category/games.jpg"),
                 Published = true,
@@ -311,7 +311,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Sofas",
                 Alias = "Sofas",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 ParentCategoryId = categories["Furniture"].Id,
                 MediaFile = CreatePicture("category/sofas.jpg"),
                 Published = true,
@@ -323,7 +323,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Chairs",
                 Alias = "Chairs",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 ParentCategoryId = categories["Furniture"].Id,
                 MediaFile = CreatePicture("category/furniture.jpg"),
                 Published = true,
@@ -335,7 +335,7 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Tables",
                 Alias = "Tables",
-                CategoryTemplateId = categoryTemplateInGridAndLines.Id,
+                CategoryTemplateId = gridOrLinesTemplate.Id,
                 ParentCategoryId = categories["Furniture"].Id,
                 MediaFile = CreatePicture("category/tables.jpg"),
                 Published = true,
@@ -393,8 +393,6 @@ namespace SmartStore.Data.Setup
             //	MetaTitle = "Notebooks"
             //};
 
-            #endregion
-
             var entities = new List<Category>
             {
                 categorySportsSoccer, categorySportsBasketball, categorySportsGolf, categoryBooksSpiegel,
@@ -402,7 +400,7 @@ namespace SmartStore.Data.Setup
                 categoryFashionTrousers, categoryFashionSunglasses, categoryFurnitureChairs, categoryFurnitureSofas, categoryFurnitureTables
             };
 
-            this.Alter(entities);
+            Alter(entities);
             return entities;
         }
     }

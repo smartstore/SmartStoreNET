@@ -274,24 +274,35 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
-        public IList<ShippingMethod> ShippingMethods()
+        public IList<ShippingMethod> ShippingMethods(bool includeSamples)
         {
-            var entities = new List<ShippingMethod>()
+            var entities = new List<ShippingMethod>
             {
                 new ShippingMethod
-                    {
-                        Name = "In-Store Pickup",
-                        Description ="Pick up your items at the store",
-                        DisplayOrder = 0
-                    },
+                {
+                    Name = "In-Store Pickup",
+                    Description ="Pick up your items at the store",
+                    DisplayOrder = 0
+                },
                 new ShippingMethod
-                    {
-                        Name = "By Ground",
-                        Description ="Compared to other shipping methods, like by flight or over seas, ground shipping is carried out closer to the earth",
-                        DisplayOrder = 1
-                    },
+                {
+                    Name = "By Ground",
+                    Description ="Compared to other shipping methods, like by flight or over seas, ground shipping is carried out closer to the earth",
+                    DisplayOrder = 1
+                },
             };
-            this.Alter(entities);
+
+            if (includeSamples)
+            {
+                entities.Add(new ShippingMethod
+                {
+                    Name = "Free shipping",
+                    DisplayOrder = 2,
+                    IgnoreCharges = true
+                });
+            }
+
+            Alter(entities);
             return entities;
         }
 
@@ -865,7 +876,9 @@ namespace SmartStore.Data.Setup
 
         public IList<Discount> Discounts()
         {
-            var sampleDiscountWithCouponCode = new Discount()
+            var ruleSets = _ctx.Set<RuleSetEntity>().Expand(x => x.Rules);
+
+            var couponCodeDiscount = new Discount
             {
                 Name = "Sample discount with coupon code",
                 DiscountType = DiscountType.AssignedToSkus,
@@ -875,25 +888,58 @@ namespace SmartStore.Data.Setup
                 RequiresCouponCode = true,
                 CouponCode = "123"
             };
-            var sampleDiscounTwentyPercentTotal = new Discount()
+
+            var orderTotalDiscount = new Discount
             {
-                Name = "'20% order total' discount",
+                Name = "20% order total discount",
                 DiscountType = DiscountType.AssignedToOrderTotal,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
                 DiscountPercentage = 20,
-                StartDateUtc = new DateTime(2013, 1, 1),
-                EndDateUtc = new DateTime(2020, 1, 1),
+                StartDateUtc = new DateTime(2019, 1, 1),
+                EndDateUtc = new DateTime(2024, 1, 1),
                 RequiresCouponCode = true,
                 CouponCode = "456"
             };
 
-            var entities = new List<Discount>
+            var manufacturersDiscount = new Discount
             {
-                sampleDiscountWithCouponCode, sampleDiscounTwentyPercentTotal
+                Name = "10% for certain manufacturers",
+                DiscountType = DiscountType.AssignedToManufacturers,
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+                UsePercentage = true,
+                DiscountPercentage = 10
             };
 
-            this.Alter(entities);
+            var categoriesDiscount = new Discount
+            {
+                Name = "20% for certain categories",
+                DiscountType = DiscountType.AssignedToCategories,
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+                UsePercentage = true,
+                DiscountPercentage = 20,
+                StartDateUtc = new DateTime(2020, 6, 1),
+                EndDateUtc = new DateTime(2020, 6, 30)
+            };
+
+            var weekendDiscount = new Discount
+            {
+                Name = "5% on weekend orders",
+                DiscountType = DiscountType.AssignedToOrderSubTotal,
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+                UsePercentage = true,
+                DiscountPercentage = 5
+            };
+            weekendDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "Weekday")));
+
+
+
+            var entities = new List<Discount>
+            {
+                couponCodeDiscount, orderTotalDiscount, weekendDiscount, manufacturersDiscount, categoriesDiscount
+            };
+
+            Alter(entities);
             return entities;
         }
 
@@ -1121,48 +1167,6 @@ namespace SmartStore.Data.Setup
                 Value = $"{(int)DayOfWeek.Sunday},{(int)DayOfWeek.Saturday}"
             });
 
-            // Cart: manufacturers.
-            var watchesManufacturersIds = _ctx.Set<Manufacturer>()
-                .Where(x => x.Name == "Breitling" || x.Name == "Seiko")
-                .Select(x => x.Id)
-                .ToList();
-
-            var watchesManufacturers = new RuleSetEntity
-            {
-                Name = "Watch manufacturers",
-                IsActive = true
-            };
-            if (watchesManufacturersIds.Any())
-            {
-                watchesManufacturers.Rules.Add(new RuleEntity
-                {
-                    RuleType = "ProductFromManufacturerInCart",
-                    Operator = RuleOperator.In,
-                    Value = string.Join(",", watchesManufacturersIds)
-                });
-            }
-
-            // Cart: categories.
-            var trousersCategoryIds = _ctx.Set<Category>()
-                .Where(x => x.MetaTitle == "Trousers")
-                .Select(x => x.Id)
-                .ToList();
-
-            var trousersCategories = new RuleSetEntity
-            {
-                Name = "Categories with trousers",
-                IsActive = false
-            };
-            if (trousersCategoryIds.Any())
-            {
-                trousersCategories.Rules.Add(new RuleEntity
-                {
-                    RuleType = "ProductFromCategoryInCart",
-                    Operator = RuleOperator.In,
-                    Value = string.Join(",", trousersCategoryIds)
-                });
-            }
-
             // Cart: major customers.
             var majorCustomers = new RuleSetEntity
             {
@@ -1182,10 +1186,17 @@ namespace SmartStore.Data.Setup
                 Value = "3"
             });
 
+            // Offer free shipping method for major customers.
+            var freeShipping = _ctx.Set<ShippingMethod>().FirstOrDefault(x => x.DisplayOrder == 2);
+            if (freeShipping != null)
+            {
+                freeShipping.RuleSets.Add(majorCustomers);
+            }
+
 
             var entities = new List<RuleSetEntity>
             {
-                weekends, watchesManufacturers, trousersCategories, majorCustomers
+                weekends, majorCustomers
             };
 
             Alter(entities);

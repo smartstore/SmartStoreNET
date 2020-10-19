@@ -3724,7 +3724,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Reminder of inactive new customers", x =>
                 {
                     x.Name = "Erinnerung an inaktive Neukunden";
-                    x.Subject = "Neue, aufregende Produkte warten auf Sie entdeckt zu werden";
+                    x.Subject = "Neue, aufregende Produkte warten auf Sie entdeckt zu werden.";
                 });
         }
 

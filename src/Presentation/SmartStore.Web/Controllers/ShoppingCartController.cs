@@ -1071,7 +1071,8 @@ namespace SmartStore.Web.Controllers
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
-                DisplayMoveToWishlistButton = _permissionService.Authorize(Permissions.Cart.AccessWishlist)
+                DisplayMoveToWishlistButton = _permissionService.Authorize(Permissions.Cart.AccessWishlist),
+                ShowBasePrice = _shoppingCartSettings.ShowBasePrice
             };
 
             var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -1164,6 +1165,11 @@ namespace SmartStore.Web.Controllers
                         decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
 
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
+
+                        if (shoppingCartUnitPriceWithDiscount != decimal.Zero && model.ShowBasePrice)
+                        {
+                            cartItemModel.BasePriceInfo = product.GetBasePriceInfo(shoppingCartUnitPriceWithDiscount, _localizationService, _priceFormatter, _workContext.WorkingCurrency);
+                        }
                     }
 
                     // Picture.

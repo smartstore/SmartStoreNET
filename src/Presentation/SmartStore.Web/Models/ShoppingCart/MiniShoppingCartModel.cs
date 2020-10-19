@@ -26,6 +26,8 @@ namespace SmartStore.Web.Models.ShoppingCart
         public int ThumbSize { get; set; }
         public bool DisplayMoveToWishlistButton { get; set; }
 
+        public bool ShowBasePrice { get; set; }
+
         #region Nested Classes
 
         public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
@@ -62,6 +64,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public QuantityControlType QuantiyControlType { get; set; }
 
             public string UnitPrice { get; set; }
+
+            public string BasePriceInfo { get; set; }
 
             public string AttributeInfo { get; set; }
 

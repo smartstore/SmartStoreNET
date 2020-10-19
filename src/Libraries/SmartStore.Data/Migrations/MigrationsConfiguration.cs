@@ -566,30 +566,6 @@
                 "Specifies whether a discount sign should be displayed on product pictures when discounts were applied.",
                 "Legt fest, ob ein Rabattzeichen auf dem Produktbild angezeigt werden soll, wenn Rabatte angewendet wurden.");
 
-            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.ColumnCount",
-                "Number of columns",
-                "Spaltenanzahl",
-                "Maximum number of columns at desktop resolution (minimum 1200px). Will be downscaled to other resolutions, has at least 2 columns at mobile resolution.",
-                "Maximale Anzahl von Spalten bei Desktop-Auflösung (mindestens 1200px). Wird auf andere Auflösungen herunterskaliert, mindestens 2 Spalten bei mobiler Auflösung.");
-
-            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Padding",
-                "Inner spacing",
-                "Innere Abstände",
-                "Spacing between the media and the edge of the cell.",
-                "Abstand zwischen den Medien und dem Rand der Zelle.");
-
-            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.Background",
-                "Background color",
-                "Hintergrundfarbe",
-                "Specifies the background colour. Is only visible if an inner spacing is defined.",
-                "Legt die Hintergrundfarbe fest. Ist nur sichtbar, wenn ein innerer Abstand definiert ist.");
-
-            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.Gallery.AccumulateDelay",
-                "Accumulated delay",
-                "Akkumulierte Verzögerung",
-                "Accumulates the value, multiplied by the index of the element, to the total delay.",
-                "Akkumuliert den Wert, multipliziert mit dem Index des Elements, zur Gesamtverzögerung.");
-
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.StateProvinceRequired",
                 "'State/province' required",
                 "'Bundesland' erferderlich",
@@ -874,12 +850,6 @@
                 "Twitter-Benutzername",
                 "Twitter Username that gets displayed on Twitter cards when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
                 "Twitter-Benutzername, der auf Twitter-Karten angezeigt wird, wenn ein Produkt, eine Kategorie oder eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
-
-            builder.AddOrUpdate("Plugins.SmartStore.PageBuilder.FontStyles.BackgroundColor",
-                "Background color",
-                "Hintergrundfarbe",
-                "Specifies the background color of the text.",
-                "Legt die Hintergrundfarbe des Textes fest.");
         }
     }
 }

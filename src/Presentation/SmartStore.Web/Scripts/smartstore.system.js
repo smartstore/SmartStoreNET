@@ -37,7 +37,7 @@
 
     String.prototype.format = function () {
         let s = this, args = arguments;
-        return s.replace(formatRe, (m, i) => {
+        return s.replace(formatRe, function(m, i) {
             return args[i];
         });
     };

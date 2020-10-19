@@ -150,6 +150,7 @@
 			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
             maxFiles: @(Model.Multifile ? 500 : 1),
             maxFilesSize: @maxFilesSize,
+            timeout: 300000,
             clickableElement: @Html.Raw(Model.ClickableElement.HasValue() ? Model.ClickableElement : "null"),
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
             showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),

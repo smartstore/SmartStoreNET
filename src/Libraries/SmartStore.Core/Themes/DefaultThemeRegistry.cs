@@ -22,7 +22,7 @@ namespace SmartStore.Core.Themes
         private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
         private readonly ConcurrentDictionary<EventThrottleKey, Timer> _eventQueue = new ConcurrentDictionary<EventThrottleKey, Timer>();
 
-        private readonly Regex _fileFilterPattern = new Regex(@"^\.(config|png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly Regex _fileFilterPattern = new Regex(@"^\.(config|png|gif|jpg|jpeg|css|scss|js|cshtml|svg|json)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private FileSystemWatcher _monitorFolders;
         private FileSystemWatcher _monitorFiles;
@@ -189,7 +189,7 @@ namespace SmartStore.Core.Themes
             Guard.NotEmpty(themeName, nameof(themeName));
 
             if (!ThemeManifestExists(themeName))
-                Enumerable.Empty<ThemeManifest>();
+                return Enumerable.Empty<ThemeManifest>()
 
             var derivedThemes = _themes.Values.Where(x => x.BaseThemeName != null && !x.ThemeName.IsCaseInsensitiveEqual(themeName));
             if (!deep)

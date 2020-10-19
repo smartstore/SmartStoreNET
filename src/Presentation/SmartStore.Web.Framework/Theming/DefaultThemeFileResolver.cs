@@ -77,8 +77,7 @@ namespace SmartStore.Web.Framework.Theming
                     if (key.ThemeName.IsCaseInsensitiveEqual(e.ThemeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, e.ThemeName))
                     {
                         // remove all cached pathes for this file/theme combination (also in all derived themes)
-                        InheritedThemeFileResult result;
-                        if (_files.TryGetValue(key, out result))
+                        if (_files.TryGetValue(key, out var result))
                         {
                             _files.Remove(key);
                             if (e.ChangeType == ThemeFileChangeType.Created)

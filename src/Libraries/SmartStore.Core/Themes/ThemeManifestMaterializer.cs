@@ -114,8 +114,7 @@ namespace SmartStore.Core.Themes
 
             string type = xel.GetAttribute("type").ToSafe("String");
 
-            string selectRef = null;
-            var varType = ConvertVarType(type, xel, out selectRef);
+            var varType = ConvertVarType(type, xel, out var selectRef);
 
             if (varType != ThemeVariableType.String && value.IsEmpty())
             {

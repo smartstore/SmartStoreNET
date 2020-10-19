@@ -2,7 +2,7 @@
 namespace SmartStore.Core.Themes
 {
     /// <summary>
-    /// Work context
+    /// Theme context
     /// </summary>
     public interface IThemeContext
     {

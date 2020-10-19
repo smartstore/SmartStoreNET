@@ -346,7 +346,9 @@ namespace SmartStore.Data.Setup
                 {
                     Name = "Inactive new customers",
                     Active = true,
-                    IsSystemRole = false
+                    IsSystemRole = false,
+                    // SystemName is not required. It's only used here to assign a rule set later.
+                    SystemName = "InactiveNewCustomers"
                 });
             }
 
@@ -1172,7 +1174,7 @@ namespace SmartStore.Data.Setup
                 new Campaign
                 {
                     Name = "Reminder of inactive new customers",
-                    Subject = "New, exciting products are waiting to be found by you",
+                    Subject = "New, exciting products are waiting for you to be discovered.",
                     Body = "<p>Efficiently unleash client-centric technologies and go forward information. Conveniently benchmark client-focused resources vis-a-vis interdependent paradigms. Synergistically disseminate interdependent supply chains via equity invested internal or 'organic' sources. Objectively exploit seamless growth strategies without orthogonal methodologies. Intrinsicly disseminate bricks-and-clicks web-readiness and e-business e-services.</p><p>Objectively develop performance based e-business and interdependent sources. Objectively evolve flexible markets via leveraged interfaces. Professionally deliver focused 'outside the box' thinking rather than global sources. Energistically redefine leveraged supply chains through customized relationships. Dramatically actualize resource sucking content rather than cross-platform e-business.</p><p>Seamlessly synthesize vertical mindshare without flexible sources. Distinctively productize timely infrastructures rather than cross-media niches. Dynamically evisculate pandemic convergence and scalable mindshare. Seamlessly embrace fully tested relationships whereas go forward initiatives. Globally actualize user-centric channels.</p>",
                     CreatedOnUtc = DateTime.UtcNow,
                     SubjectToAcl = true
@@ -1264,6 +1266,14 @@ namespace SmartStore.Data.Setup
                 freeShipping.RuleSets.Add(majorCustomers);
             }
 
+            // Assign rule conditions for inactive new customers to the related customer role.
+            // We later bind the reminder campaign to it.
+            var inactiveNewCustomersRole = _ctx.Set<CustomerRole>().FirstOrDefault(x => x.SystemName == "InactiveNewCustomers");
+            if (inactiveNewCustomersRole != null)
+            {
+                inactiveNewCustomersRole.RuleSets.Add(inactiveNewCustomers);
+            }
+
 
             var entities = new List<RuleSetEntity>
             {
@@ -1272,6 +1282,26 @@ namespace SmartStore.Data.Setup
 
             Alter(entities);
             return entities;
+        }
+
+        public void FinalizeSamples()
+        {
+            // Bind the reminder campaign to the rule conditions for inactive new customers.
+            var reminderCampaign = _ctx.Set<Campaign>().FirstOrDefault(x => x.SubjectToAcl);
+            if (reminderCampaign != null)
+            {
+                var inactiveNewCustomersRole = _ctx.Set<CustomerRole>().FirstOrDefault(x => x.SystemName == "InactiveNewCustomers");
+                if (inactiveNewCustomersRole != null)
+                {
+                    _ctx.Set<AclRecord>().Add(new AclRecord
+                    {
+                        EntityId = reminderCampaign.Id,
+                        EntityName = nameof(Campaign),
+                        CustomerRoleId = inactiveNewCustomersRole.Id,
+                        IsIdle = false
+                    });
+                }
+            }
         }
 
         #region Alterations

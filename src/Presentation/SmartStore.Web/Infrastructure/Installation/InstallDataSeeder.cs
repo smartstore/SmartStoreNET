@@ -544,6 +544,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateBlogPosts", PopulateBlogPosts);
                 Populate("PopulateNews", PopulateNewsItems);
                 Populate("PopulatePolls", _data.Polls());
+                Populate("FinalizeSamples", () => _data.FinalizeSamples());
             }
 
             Populate("MovePictures", MoveMedia);

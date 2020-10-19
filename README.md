@@ -49,7 +49,7 @@ The state-of-the-art architecture of Smartstore - with `ASP.NET 4.5` + `MVC 5`, 
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Translations:** [http://translate.smartstore.com/](http://translate.smartstore.com/)
 * **Documentation:** [Smartstore Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
-
+* **Developer Extension:** [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore)
 <p>&nbsp;</p>
 
 ## Highlights

@@ -425,13 +425,16 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     @include text-truncate();
 
     .delivery-time-status {
-        font-size: 0.85em;
         padding-right: 0.2rem;
         margin-left: 0.025rem;
     }
 }
+.delivery-date-block.sm {
+    font-size: $font-size-sm;
+    padding-top: 0.5rem;
+}
 
-.delivery-date > b {
+.delivery-date {
     font-weight: $font-weight-medium;
 }
 

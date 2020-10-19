@@ -63,15 +63,8 @@
                             if (showDeliveryDate)
                             {
                                 <div class="row cart-item-attr deliverytime-group">
-                                    <div class="col-3">
-                                        @if (!showDeliveryName)
-                                        {
-                                            @T("Products.DeliveryDate")
-                                        }
-                                        else 
-                                        {
-                                            <text>&nbsp;</text>
-                                        }
+                                    <div class="col-3">                                        
+                                        @T("Products.DeliveryDate")<text>:</text>
                                     </div>
 								    <div class="col-9">
 									    <span class="delivery-date">@Html.Raw(item.DeliveryTimeDate)</span>

@@ -413,15 +413,15 @@
                 "Specifies the maximum number of days for the delivery.",
                 "Legt den spätesten Zeitpunkt der Lieferung in Tagen fest.");
 
-            builder.AddOrUpdate("Products.DeliveryDate", "Arrives:", "Lieferung:");
+            builder.AddOrUpdate("Products.DeliveryDate", "estimated Delivery", "vorauss. Lieferung");
 
             builder.AddOrUpdate("DeliveryTimes.Dates.OnTomorrow", "Tomorrow", "Morgen");    // exactly tomorrow
             builder.AddOrUpdate("DeliveryTimes.Dates.Tomorrow", "tomorrow", "Morgen");      // <prefix> tomorrow
 
-            builder.AddOrUpdate("DeliveryTimes.Dates.DeliveryOn", "<b>{0}</b>", "<b>{0}</b>");   // allow "on {0}" etc.
-            builder.AddOrUpdate("DeliveryTimes.Dates.NotBefore", "not before <b>{0}</b>", "frühestens <b>{0}</b>");
-            builder.AddOrUpdate("DeliveryTimes.Dates.Until", "until <b>{0}</b>", "bis <b>{0}</b>");
-            builder.AddOrUpdate("DeliveryTimes.Dates.Between", "<b>{0}</b> - <b>{1}</b>", "<b>{0}</b> - <b>{1}</b>");   // allow "{0} till {1}" etc.
+            builder.AddOrUpdate("DeliveryTimes.Dates.DeliveryOn", "{0}", "{0}");   // allow "on {0}" etc.
+            builder.AddOrUpdate("DeliveryTimes.Dates.NotBefore", "not before {0}", "frühestens {0}");
+            builder.AddOrUpdate("DeliveryTimes.Dates.Until", "until {0}", "bis {0}");
+            builder.AddOrUpdate("DeliveryTimes.Dates.Between", "{0} - {1}", "{0} - {1}");   // allow "{0} till {1}" etc.
 
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None", "Do not display", "Nicht anzeigen");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly", "Date only (if possible)", "Nur Datum (sofern möglich)");

@@ -189,7 +189,7 @@ namespace SmartStore.Core.Themes
             Guard.NotEmpty(themeName, nameof(themeName));
 
             if (!ThemeManifestExists(themeName))
-                return Enumerable.Empty<ThemeManifest>()
+                return Enumerable.Empty<ThemeManifest>();
 
             var derivedThemes = _themes.Values.Where(x => x.BaseThemeName != null && !x.ThemeName.IsCaseInsensitiveEqual(themeName));
             if (!deep)

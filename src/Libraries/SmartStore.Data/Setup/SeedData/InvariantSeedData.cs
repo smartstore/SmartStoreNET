@@ -306,44 +306,51 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
-        public IList<CustomerRole> CustomerRoles()
+        public IList<CustomerRole> CustomerRoles(bool includeSamples)
         {
-            var crAdministrators = new CustomerRole
-            {
-                Name = "Administrators",
-                Active = true,
-                IsSystemRole = true,
-                SystemName = SystemCustomerRoleNames.Administrators,
-            };
-            var crForumModerators = new CustomerRole
-            {
-                Name = "Forum Moderators",
-                Active = true,
-                IsSystemRole = true,
-                SystemName = SystemCustomerRoleNames.ForumModerators,
-            };
-            var crRegistered = new CustomerRole
-            {
-                Name = "Registered",
-                Active = true,
-                IsSystemRole = true,
-                SystemName = SystemCustomerRoleNames.Registered,
-            };
-            var crGuests = new CustomerRole
-            {
-                Name = "Guests",
-                Active = true,
-                IsSystemRole = true,
-                SystemName = SystemCustomerRoleNames.Guests,
-            };
             var entities = new List<CustomerRole>
             {
-                crAdministrators,
-                crForumModerators,
-                crRegistered,
-                crGuests
+                new CustomerRole
+                {
+                    Name = "Administrators",
+                    Active = true,
+                    IsSystemRole = true,
+                    SystemName = SystemCustomerRoleNames.Administrators,
+                },
+                new CustomerRole 
+                {
+                    Name = "Forum Moderators",
+                    Active = true,
+                    IsSystemRole = true,
+                    SystemName = SystemCustomerRoleNames.ForumModerators,
+                },
+                new CustomerRole
+                {
+                    Name = "Registered",
+                    Active = true,
+                    IsSystemRole = true,
+                    SystemName = SystemCustomerRoleNames.Registered,
+                },
+                new CustomerRole
+                {
+                    Name = "Guests",
+                    Active = true,
+                    IsSystemRole = true,
+                    SystemName = SystemCustomerRoleNames.Guests,
+                }
             };
-            this.Alter(entities);
+
+            if (includeSamples)
+            {
+                entities.Add(new CustomerRole
+                {
+                    Name = "Inactive new customers",
+                    Active = true,
+                    IsSystemRole = false
+                });
+            }
+
+            Alter(entities);
             return entities;
         }
 
@@ -1158,6 +1165,24 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
+        public IList<Campaign> Campaigns()
+        {
+            var entities = new List<Campaign>
+            {
+                new Campaign
+                {
+                    Name = "Reminder of inactive new customers",
+                    Subject = "New, exciting products are waiting to be found by you",
+                    Body = "<p>Efficiently unleash client-centric technologies and go forward information. Conveniently benchmark client-focused resources vis-a-vis interdependent paradigms. Synergistically disseminate interdependent supply chains via equity invested internal or 'organic' sources. Objectively exploit seamless growth strategies without orthogonal methodologies. Intrinsicly disseminate bricks-and-clicks web-readiness and e-business e-services.</p><p>Objectively develop performance based e-business and interdependent sources. Objectively evolve flexible markets via leveraged interfaces. Professionally deliver focused 'outside the box' thinking rather than global sources. Energistically redefine leveraged supply chains through customized relationships. Dramatically actualize resource sucking content rather than cross-platform e-business.</p><p>Seamlessly synthesize vertical mindshare without flexible sources. Distinctively productize timely infrastructures rather than cross-media niches. Dynamically evisculate pandemic convergence and scalable mindshare. Seamlessly embrace fully tested relationships whereas go forward initiatives. Globally actualize user-centric channels.</p>",
+                    CreatedOnUtc = DateTime.UtcNow,
+                    SubjectToAcl = true
+                }
+            };
+
+            Alter(entities);
+            return entities;
+        }
+
         public IList<RuleSetEntity> RuleSets()
         {
             // Cart: weekends.
@@ -1210,6 +1235,27 @@ namespace SmartStore.Data.Setup
                 Value = "true"
             });
 
+            // Customer: inactive new customers.
+            var inactiveNewCustomers = new RuleSetEntity
+            {
+                Scope = RuleScope.Customer,
+                Name = "Inactive new customers",
+                Description = "One completed order placed at least 90 days ago.",
+                IsActive = true
+            };
+            inactiveNewCustomers.Rules.Add(new RuleEntity
+            {
+                RuleType = "CompletedOrderCount",
+                Operator = RuleOperator.IsEqualTo,
+                Value = "1"
+            });
+            inactiveNewCustomers.Rules.Add(new RuleEntity
+            {
+                RuleType = "LastOrderDateDays",
+                Operator = RuleOperator.GreaterThanOrEqualTo,
+                Value = "90"
+            });
+
 
             // Offer free shipping method for major customers.
             var freeShipping = _ctx.Set<ShippingMethod>().FirstOrDefault(x => x.DisplayOrder == 2);
@@ -1221,7 +1267,7 @@ namespace SmartStore.Data.Setup
 
             var entities = new List<RuleSetEntity>
             {
-                weekends, majorCustomers, saleProducts
+                weekends, majorCustomers, saleProducts, inactiveNewCustomers
             };
 
             Alter(entities);
@@ -1403,6 +1449,10 @@ namespace SmartStore.Data.Setup
         }
 
         protected virtual void Alter(IList<PollAnswer> entities)
+        {
+        }
+
+        protected virtual void Alter(IList<Campaign> entities)
         {
         }
 

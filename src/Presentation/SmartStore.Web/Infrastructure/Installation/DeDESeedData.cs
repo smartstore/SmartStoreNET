@@ -195,6 +195,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                .Alter("Guests", x =>
                {
                    x.Name = "Gäste";
+               })
+               .Alter("Inactive new customers", x =>
+               {
+                   x.Name = "Inaktive Neukunden";
                });
         }
 
@@ -3712,6 +3716,18 @@ namespace SmartStore.Web.Infrastructure.Installation
                 });
         }
 
+        protected override void Alter(IList<Campaign> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.Name)
+                .Alter("Reminder of inactive new customers", x =>
+                {
+                    x.Name = "Erinnerung an inaktive Neukunden";
+                    x.Subject = "Neue, aufregende Produkte warten auf Sie entdeckt zu werden";
+                });
+        }
+
         protected override void Alter(IList<RuleSetEntity> entities)
         {
             base.Alter(entities);
@@ -3730,6 +3746,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Sale";
                     x.Description = "Produkte mit angewendeten Rabatten.";
+                })
+                .Alter("Inactive new customers", x =>
+                {
+                    x.Name = "Inaktive Neukunden";
+                    x.Description = "Eine abgeschlossene, mindestens 90 Tage zurückliegende Bestellung.";
                 });
         }
     }

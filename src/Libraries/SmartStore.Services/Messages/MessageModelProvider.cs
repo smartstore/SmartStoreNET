@@ -402,7 +402,11 @@ namespace SmartStore.Services.Messages
             m.NameLine = Concat(settings.Salutation, settings.Title, settings.Firstname, settings.Lastname);
             m.StreetLine = Concat(settings.Street, settings.Street2);
             m.CityLine = Concat(settings.ZipCode, settings.City);
-            m.CountryLine = Concat(country.GetLocalized(x => x.Name), settings.Region);
+
+            if (country != null)
+            {
+                m.CountryLine = Concat(country.GetLocalized(x => x.Name), settings.Region);
+            }
 
             PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
             return m;

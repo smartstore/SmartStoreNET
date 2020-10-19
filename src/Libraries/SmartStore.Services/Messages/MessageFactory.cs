@@ -425,7 +425,7 @@ namespace SmartStore.Services.Messages
 
         public virtual object[] GetTestModels(MessageContext messageContext)
         {
-            var templateName = (messageContext.MessageTemplate?.Name ?? messageContext.MessageTemplateName);
+            var templateName = messageContext.MessageTemplate?.Name ?? messageContext.MessageTemplateName;
 
             var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
             {
@@ -467,7 +467,7 @@ namespace SmartStore.Services.Messages
                 }
             }
 
-            // Some models are special
+            // Some models are special.
             var isTransientTemplate = messageContext.MessageTemplate != null && messageContext.MessageTemplate.IsTransientRecord();
 
             if (!isTransientTemplate)
@@ -615,22 +615,37 @@ namespace SmartStore.Services.Messages
 
             var query = dbSet.Where(predicate);
 
-            // Determine how many entities match the given predicate
+            // Determine how many entities match the given predicate.
             var count = query.Count();
 
             object result;
 
             if (count > 0)
             {
-                // Fetch a random one
+                // Fetch a random one.
                 var skip = CommonHelper.GenerateRandomInteger(0, count);
                 result = query.OrderBy(x => x.Id).Skip(() => skip).FirstOrDefault();
             }
             else
             {
-                // No entity macthes the predicate. Provide a fallback test entity
+                // No entity matches the predicate. Provide a fallback test entity.
                 var entity = Activator.CreateInstance<T>();
-                result = _templateEngine.CreateTestModelFor(entity, entity.GetUnproxiedType().Name);
+
+                if (entity is NewsLetterSubscription subscription)
+                {
+                    // Campaign preview requires NewsLetterSubscription entity.
+                    subscription.NewsLetterSubscriptionGuid = Guid.NewGuid();
+                    subscription.Email = "john@doe.com";
+                    subscription.Active = true;
+                    subscription.CreatedOnUtc = DateTime.UtcNow;
+                    subscription.WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id;
+
+                    result = entity;
+                }
+                else
+                {
+                    result = _templateEngine.CreateTestModelFor(entity, entity.GetUnproxiedType().Name);
+                }
             }
 
             return result;

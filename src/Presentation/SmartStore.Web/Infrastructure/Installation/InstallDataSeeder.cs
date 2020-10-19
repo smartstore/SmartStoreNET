@@ -160,7 +160,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         private void PopulateCustomersAndUsers(string defaultUserEmail, string defaultUserPassword)
         {
-            var customerRoles = _data.CustomerRoles();
+            var customerRoles = _data.CustomerRoles(_config.SeedSampleData);
             SaveRange(customerRoles.Where(x => x != null));
 
             //admin user
@@ -529,6 +529,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 Populate("PopulateProductAttributes", _data.ProductAttributes());
                 Populate("PopulateProductAttributeOptionsSets", _data.ProductAttributeOptionsSets());
                 Populate("PopulateProductAttributeOptions", _data.ProductAttributeOptions());
+                Populate("PopulateCampaigns", _data.Campaigns());
                 Populate("PopulateRuleSets", _data.RuleSets());
                 Populate("PopulateDiscounts", _data.Discounts());
                 Populate("PopulateCategories", PopulateCategories);

@@ -2,6 +2,8 @@
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Rules;
+using SmartStore.Rules.Domain;
 
 namespace SmartStore.Data.Setup
 {
@@ -69,7 +71,7 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2,
                 MetaTitle = "Fashion",
                 ShowOnHomePage = true,
-                BadgeText = "SALE",
+                BadgeText = "NEW",
                 BadgeStyle = 4
             };
 
@@ -118,10 +120,27 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 DisplayOrder = 10,
                 MetaTitle = "Watches",
-                ShowOnHomePage = true,
+                ShowOnHomePage = true
+            };
+
+            var categorySale = new Category
+            {
+                Name = "Sale",
+                Alias = "Sale",
+                MetaTitle = "Sale",
+                CategoryTemplateId = gridOrLinesTemplate.Id,
+                Published = true,
+                DisplayOrder = 99,
+                ShowOnHomePage = false,
                 BadgeText = "%",
                 BadgeStyle = 5
             };
+
+            var saleRuleSet = _ctx.Set<RuleSetEntity>().FirstOrDefault(x => x.Scope == RuleScope.Product && x.Name == "Sale");
+            if (saleRuleSet != null)
+            {
+                categorySale.RuleSets.Add(saleRuleSet);
+            }
 
             //var categoryComputers = new Category
             //{
@@ -149,7 +168,7 @@ namespace SmartStore.Data.Setup
             var entities = new List<Category>
             {
                 categoryApple, categorySports, categoryBooks, categoryFurniture, categoryDigitalDownloads,
-                categoryGaming, categoryGiftCards, categoryFashion, categoryWatches
+                categoryGaming, categoryGiftCards, categoryFashion, categoryWatches, categorySale
             };
 
             Alter(entities);

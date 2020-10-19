@@ -895,12 +895,19 @@ namespace SmartStore.Data.Setup
                 DiscountType = DiscountType.AssignedToOrderTotal,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 20,
-                StartDateUtc = new DateTime(2019, 1, 1),
-                EndDateUtc = new DateTime(2024, 1, 1),
-                RequiresCouponCode = true,
-                CouponCode = "456"
+                DiscountPercentage = 20
             };
+            orderTotalDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "CartOrderCount")));
+
+            var weekendDiscount = new Discount
+            {
+                Name = "5% on weekend orders",
+                DiscountType = DiscountType.AssignedToOrderSubTotal,
+                DiscountLimitation = DiscountLimitationType.Unlimited,
+                UsePercentage = true,
+                DiscountPercentage = 5
+            };
+            weekendDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "Weekday")));
 
             var manufacturersDiscount = new Discount
             {
@@ -922,21 +929,20 @@ namespace SmartStore.Data.Setup
                 EndDateUtc = new DateTime(2020, 6, 30)
             };
 
-            var weekendDiscount = new Discount
+            var productsDiscount = new Discount
             {
-                Name = "5% on weekend orders",
-                DiscountType = DiscountType.AssignedToOrderSubTotal,
+                Name = "25% on certain products",
+                DiscountType = DiscountType.AssignedToSkus,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 5
+                DiscountPercentage = 25
             };
-            weekendDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "Weekday")));
-
 
 
             var entities = new List<Discount>
             {
-                couponCodeDiscount, orderTotalDiscount, weekendDiscount, manufacturersDiscount, categoriesDiscount
+                couponCodeDiscount, orderTotalDiscount, weekendDiscount,
+                manufacturersDiscount, categoriesDiscount, productsDiscount
             };
 
             Alter(entities);
@@ -1157,6 +1163,7 @@ namespace SmartStore.Data.Setup
             // Cart: weekends.
             var weekends = new RuleSetEntity
             {
+                Scope = RuleScope.Cart,
                 Name = "Weekends",
                 IsActive = true
             };
@@ -1170,7 +1177,9 @@ namespace SmartStore.Data.Setup
             // Cart: major customers.
             var majorCustomers = new RuleSetEntity
             {
+                Scope = RuleScope.Cart,
                 Name = "Major customers",
+                Description = "3 or more orders and current order value at least 200,- Euro.",
                 IsActive = true
             };
             majorCustomers.Rules.Add(new RuleEntity
@@ -1186,6 +1195,22 @@ namespace SmartStore.Data.Setup
                 Value = "3"
             });
 
+            // Product: sale.
+            var saleProducts = new RuleSetEntity
+            {
+                Scope = RuleScope.Product,
+                Name = "Sale",
+                Description = "Products with applied discounts.",
+                IsActive = true
+            };
+            saleProducts.Rules.Add(new RuleEntity
+            {
+                RuleType = "Discount",
+                Operator = RuleOperator.IsEqualTo,
+                Value = "true"
+            });
+
+
             // Offer free shipping method for major customers.
             var freeShipping = _ctx.Set<ShippingMethod>().FirstOrDefault(x => x.DisplayOrder == 2);
             if (freeShipping != null)
@@ -1196,7 +1221,7 @@ namespace SmartStore.Data.Setup
 
             var entities = new List<RuleSetEntity>
             {
-                weekends, majorCustomers
+                weekends, majorCustomers, saleProducts
             };
 
             Alter(entities);

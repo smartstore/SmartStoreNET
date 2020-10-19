@@ -138,10 +138,8 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Versand";
                     x.Description = "Ihre Bestellung wird Ihnen durch unsere Versandpartner zugestellt.";
-                });
-
-            entities.WithKey(x => x.IgnoreCharges)
-                .Alter(true, x =>
+                })
+                .Alter(2, x =>
                 {
                     x.Name = "Kostenloser Versand";
                 });
@@ -2759,7 +2757,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 { "Sunglasses", "Sonnenbrillen" },
                 { "Tables", "Tische" },
                 { "Trousers", "Hosen" },
-                { "Watches", "Uhren" },                
+                { "Watches", "Uhren" }
             };
 
             var alterer = entities.WithKey(x => x.MetaTitle);
@@ -2768,6 +2766,8 @@ namespace SmartStore.Web.Infrastructure.Installation
             {
                 alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
             }
+
+            entities.Where(x => x.BadgeText.IsCaseInsensitiveEqual("NEW")).Each(x => x.BadgeText = "NEU");
         }
 
         private void AlterFashionProducts(IList<Product> entities)
@@ -3375,6 +3375,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 { "10% for certain manufacturers", "10% bei bestimmten Herstellern" },
                 { "20% order total discount", "20% auf den Bestellwert" },
                 { "20% for certain categories", "20% bei bestimmten Warengruppen" },
+                { "25% on certain products", "25% auf bestimmte Produkte" },
                 { "5% on weekend orders", "5% bei Bestellungen am Wochenende" },
                 { "Sample discount with coupon code", "Beispiel Rabatt mit Coupon-Code" },
             };
@@ -3715,18 +3716,21 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            var names = new Dictionary<string, string>
-            {
-                { "Weekends", "Wochenenden" },
-                { "Major customers", "Wichtige Kunden" },
-            };
-
-            var alterer = entities.WithKey(x => x.Name);
-
-            foreach (var kvp in names)
-            {
-                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
-            }
+            entities.WithKey(x => x.Name)
+                .Alter("Weekends", x =>
+                {
+                    x.Name = "Wochenenden";
+                })
+                .Alter("Major customers", x =>
+                {
+                    x.Name = "Wichtige Kunden";
+                    x.Description = "3 oder mehr Bestellungen und aktueller Bestellwert mindestens 200,- Euro.";
+                })
+                .Alter("Sale", x =>
+                {
+                    x.Name = "Sale";
+                    x.Description = "Produkte mit angewendeten Rabatten.";
+                });
         }
     }
 }

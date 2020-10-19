@@ -60,7 +60,7 @@ Merging the contents of different languages must be done manually (migration is 
 * #2041 Product with call for price did show as free in product list and grid view.
 * #2079 Order item editing: order total was not updated when both unit and item price were changed.
 * RSS feeds: relative URLs of objects embedded in HTML are replaced by absolute URLs.
-
+* Rules: automatic category assignments of products were not taken into account in a search index updates.
 
 
 ## Smartstore 4.0.1

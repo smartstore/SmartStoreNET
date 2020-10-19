@@ -353,21 +353,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             DataMigrator.CreateSystemMenus(_ctx);
         }
 
-        private void AddProductTag(Product product, string tag)
-        {
-            var productTag = _ctx.Set<ProductTag>().FirstOrDefault(pt => pt.Name == tag);
-            if (productTag == null)
-            {
-                productTag = new ProductTag
-                {
-                    Name = tag,
-                    Published = true
-                };
-            }
-            product.ProductTags.Add(productTag);
-            Save(product);
-        }
-
         private void MoveMedia()
         {
             if (!_config.StoreMediaInDB)

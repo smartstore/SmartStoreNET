@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
 
@@ -658,6 +659,7 @@ namespace SmartStore.Data.Setup
             var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
             var taxCategoryIdElectronics = _ctx.Set<TaxCategory>().First(x => x.Name.Equals(TaxNameElectronics)).Id;
+            var discounts = _ctx.Set<Discount>().Where(x => x.DiscountTypeId == (int)DiscountType.AssignedToSkus && !x.RequiresCouponCode).ToList();
 
             #region Category Sofas
 
@@ -718,6 +720,15 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2,
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
             });
+
+            if (discounts.Any())
+            {
+                corbusierSofa.HasDiscountsApplied = true;
+                corbusierSofa.AppliedDiscounts.Add(discounts.First());
+
+                // Add the mapping manually. We do not want to wait for the schedule task to do this automatically.
+                corbusierSofa.ProductCategories.Add(new ProductCategory { Category = categories["Sale"], IsSystemMapping = true });
+            }
 
             #endregion Le Corbusier LC2 Sofa
 
@@ -1125,7 +1136,6 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 ShowOnHomePage = true,
                 Price = 1799.00M,
-                OldPrice = 1999.00M,
                 HasTierPrices = true,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -1230,6 +1240,15 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 1,
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
+
+            if (discounts.Any())
+            {
+                cubeChair.HasDiscountsApplied = true;
+                cubeChair.AppliedDiscounts.Add(discounts.First());
+
+                // Add the mapping manually. We do not want to wait for the schedule task to do this automatically.
+                cubeChair.ProductCategories.Add(new ProductCategory { Category = categories["Sale"], IsSystemMapping = true });
+            }
 
             #endregion Josef Hoffmann Cube Chair
 
@@ -2073,7 +2092,6 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true,
                 MetaTitle = "9,7' iPad",
                 Price = 319.00M,
-                OldPrice = 349.00M,
                 SpecialPrice = 299.00M,
                 SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
                 SpecialPriceEndDateTimeUtc = specialPriceEndDate,

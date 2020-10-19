@@ -61,7 +61,8 @@ namespace SmartStore.Services.Catalog
                 .Where(x => x.Published && !x.Deleted && x.RuleSets.Any(y => y.IsActive))
                 .ToListAsync();
 
-            using (var scope = new DbContextScope(ctx: _productCategoryRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            // Hooks are enabled because search index needs to be updated.
+            using (var scope = new DbContextScope(ctx: _productCategoryRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: true, autoCommit: false))
             {
                 foreach (var category in categories)
                 {

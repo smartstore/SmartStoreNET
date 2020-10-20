@@ -40,7 +40,7 @@ namespace SmartStore.Web.Framework.Filters
 
         public void OnException(ExceptionContext filterContext)
         {
-            if (filterContext.ExceptionHandled /*|| !filterContext.HttpContext.IsCustomErrorEnabled*/)
+            if (filterContext.ExceptionHandled || !filterContext.HttpContext.IsCustomErrorEnabled)
                 return;
 
             var exception = filterContext.Exception;

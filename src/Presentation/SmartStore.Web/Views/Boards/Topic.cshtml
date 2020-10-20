@@ -8,7 +8,7 @@
     Html.AddMetaDescriptionParts(Model.Subject);
 }
 
-<script type="text/javascript">
+<script>
     function handleTopicWatch(context) {
         $('.watch-topic-link-button').text(context.Text);
     }
@@ -94,9 +94,8 @@
     </div>
 }
 
-<script type="text/javascript">
-	jQuery(document).ready(function () {
-
+<script>
+    $(function () {
 		// Post voting.
 		$('button.post-vote-button').on('click', function () {
             var self = $(this),

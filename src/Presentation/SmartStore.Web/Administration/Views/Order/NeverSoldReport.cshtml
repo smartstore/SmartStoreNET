@@ -49,7 +49,6 @@
 
     <script>
         $(function () {
-
             $('#btnSearch').click(function () {
 				var grid = $('#neversoldreport-grid').data('tGrid');
 				// New search. Set page size to 1.
@@ -57,7 +56,6 @@
                 grid.ajaxRequest();
                 return false;
             });
-
         });
 
 		function onDataBinding(e) {

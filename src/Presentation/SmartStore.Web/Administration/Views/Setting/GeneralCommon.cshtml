@@ -21,24 +21,22 @@
 			</button>
         </div>
     </div>
-        
     
-<script type="text/javascript">
-	$(document).ready(function () {
-		
-		// Test creation of SEO names.
-		$('#TestSeoNameCreationButton').click(function () {
-			$(this).closest('form').doAjax({
-				type: 'POST',
-				url: '@Url.Action("TestSeoNameCreation")',
-				callbackSuccess: function (resp) {
+    <script>
+        $(function() {
+		    // Test creation of SEO names.
+		    $('#TestSeoNameCreationButton').click(function () {
+			    $(this).closest('form').doAjax({
+				    type: 'POST',
+				    url: '@Url.Action("TestSeoNameCreation")',
+				    callbackSuccess: function (resp) {
 
-					$('#TestSeoNameCreationResult').html('<p class="alert alert-info">' + resp + '</p>');
-				}
-			});
-		});
-	});
-</script>
+					    $('#TestSeoNameCreationResult').html('<p class="alert alert-info">' + resp + '</p>');
+				    }
+			    });
+		    });
+	    });
+    </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 

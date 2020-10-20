@@ -112,9 +112,8 @@
         )
 	</div>
 
-    <script type="text/javascript">
-
-        $(document).ready(function () {
+	<script>
+		$(function() {
             $('#search-products').click(function () {
                 var grid = $('#products-grid').data('tGrid');
                 grid.currentPage = 1; //new search. Set page size to 1
@@ -176,5 +175,4 @@
             e.values["SearchProductTypeId"] = $('#SearchProductTypeId').val();
         }
     </script>
-
 }

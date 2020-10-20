@@ -49,7 +49,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     window['onFileUploaded@(clientId)'] = function (file, result, progress) {
         if (result.success && result.downloadGuid) {
             setUploadedFile(result.downloadGuid, file.name, "@(containerId)");

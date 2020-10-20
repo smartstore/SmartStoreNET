@@ -194,7 +194,7 @@
                 .EnableCustomBinding(true))
 		</div>
 
-		<script type="text/javascript">
+		<script>
             $(function () {
 				$("#btnAddNewState").on("click", function (e) {
 					openPopup('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))');

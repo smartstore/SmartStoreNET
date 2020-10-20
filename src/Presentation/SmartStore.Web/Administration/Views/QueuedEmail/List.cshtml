@@ -116,7 +116,7 @@
 			.EnableCustomBinding(true))
 	</div>
 
-    <script type="text/javascript">
+    <script>
 
 		// Filter toggler
 		$('.btn-toggle-filter').on('click', function (e) {
@@ -125,9 +125,7 @@
 
         var selectedIds = [];
 
-        $(document).ready(function () {
-			
-            //search button
+        $(function() {
             $('#btnSearch').click(function () {
                 //search
                 var grid = $('#queuedEmails-grid').data('tGrid');

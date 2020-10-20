@@ -140,8 +140,8 @@
     @T("Search.HitsFor", countHtml, "<b class='font-weight-medium'>{0}</b>".FormatInvariant(Model.Term.NaIfEmpty().HtmlEncode()))
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function () {
         var result = $('#ForumSearchResult'),
             loading = false;
 

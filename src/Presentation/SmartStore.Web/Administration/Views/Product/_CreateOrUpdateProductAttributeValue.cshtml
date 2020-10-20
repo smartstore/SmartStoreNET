@@ -6,7 +6,7 @@
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProductVariantAttributeId)
 
-<script type="text/javascript">
+<script>
 	$(function () {
 		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
 			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.ValueTypeId)').val();

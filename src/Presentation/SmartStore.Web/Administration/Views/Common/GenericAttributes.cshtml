@@ -36,7 +36,7 @@
         .EnableCustomBinding(true)
         .ClientEvents(x => x.OnError("Grid_onError")))
 
-<script type="text/javascript">
+<script>
     function Grid_onError(e) {
         alert(e.XMLHttpRequest.responseText);
         e.preventDefault();

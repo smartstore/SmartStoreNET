@@ -376,9 +376,8 @@
 
 @Html.DeleteConfirmation("export-profile-delete")
 
-<script type="text/javascript">
-	jQuery(document).ready(function () {
-		
+<script>
+    $(function() {
 		// show/hide store projection (cant be done with toggler, because the control is another tab)
 		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
 			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));

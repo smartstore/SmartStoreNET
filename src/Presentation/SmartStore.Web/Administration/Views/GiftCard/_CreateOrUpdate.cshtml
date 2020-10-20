@@ -20,9 +20,8 @@
 
 @helper TabInfo()
 {
-	<script type="text/javascript">
-		$(document).ready(function () {
-
+	<script>
+        $(function() {
 			$("#@Html.FieldIdFor(model => model.GiftCardTypeId)").change(function () {
 				if ($(this).val() == '@((int)GiftCardType.Virtual)') {
 					$('#pnlRecipientEmail').show();

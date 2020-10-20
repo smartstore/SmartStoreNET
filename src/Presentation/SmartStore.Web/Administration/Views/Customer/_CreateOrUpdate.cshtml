@@ -552,8 +552,8 @@
 			columns.Bound(x => x.CreatedOn).ReadOnly();
 		}))
     
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script>
+        $(function() {
             $('#addRewardPoints').click(function () {
                 var rewardPointsValue = $("#@Html.FieldIdFor(model => model.AddRewardPointsValue)").val();
                 var rewardPointsMessage = $("#@Html.FieldIdFor(model => model.AddRewardPointsMessage)").val();

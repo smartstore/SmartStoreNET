@@ -3,8 +3,8 @@
 @using SmartStore.Web.Framework.UI;
 
 <div class="private-messages-box">
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script>
+		$(function () {
             $('#select-all-inbox').click(function () {
                 $('#pm-inbox-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
             });

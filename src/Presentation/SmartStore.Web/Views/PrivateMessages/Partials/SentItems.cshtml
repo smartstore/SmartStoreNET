@@ -5,9 +5,8 @@
 @using SmartStore.Web.Framework.UI;
 
 <div class="private-messages-box">
-    <script type="text/javascript">
-        $(document).ready(function () {
-
+	<script>
+		$(function () {
             $('#selectall-sent').click(function () {
                 $('#pm-sent-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
             });

@@ -80,8 +80,8 @@
 	</a>
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function() {
         $('#addOrderNote').click(function () {
             var orderNoteMessage = $("#@Html.FieldIdFor(model => model.AddOrderNoteMessage)").val();
             var orderNoteDisplayToCustomer = $("#@Html.FieldIdFor(model => model.AddOrderNoteDisplayToCustomer)").is(':checked');

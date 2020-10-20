@@ -80,15 +80,12 @@
 			.EnableCustomBinding(true))
 	</div>
     
-    <script type="text/javascript">
+    <script>
 
         var selectedIds = [];
 
-        $(document).ready(function () {
-
-            //search button
+        $(function() {
             $('#btnSearch').click(function () {
-                //search
                 var grid = $('#log-grid').data('tGrid');
                 grid.currentPage = 1; //new search. Set page size to 1
                 grid.ajaxRequest();

@@ -20,8 +20,8 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script>
+        $(function() {
         	// toggle third party email hand over label text
         	$('#@Html.FieldIdFor(model => model.ThirdPartyEmailHandOver)').change(function () {
         		$('#ThirdPartyEmailHandOverTextLocalized').toggle($(this).val() !== '0');

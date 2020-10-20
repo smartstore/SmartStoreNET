@@ -19,8 +19,8 @@
 
 @helper TabInfo()
 {
-    <script type="text/javascript">
-            $(document).ready(function () {
+    <script>
+            $(function() {
                 $("#@Html.FieldIdFor(model => model.DiscountTypeId)").change(toggleDiscountType);
                 $("#@Html.FieldIdFor(model => model.UsePercentage)").click(toggleUsePercentage);
                 $("#@Html.FieldIdFor(model => model.DiscountLimitationId)").change(toggleLimitation);

@@ -9,23 +9,22 @@
 
 @using (Html.BeginForm())
 {    
-<script type="text/javascript">
-	$(document).ready(function () {
-		$("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
-		$("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
-		$('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
+    <script>
+        $(function() {
+		    $("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
+		    $("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
+		    $('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
+	    });
 
-	});
+	    function updateAuxiliaryServicesTaxCategories() {
+		    var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
+			    shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
+			    paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
 
-	function updateAuxiliaryServicesTaxCategories() {
-		var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
-			shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
-			paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
-
-		$('#pnlShippingTaxClass').toggle(showCategories && shippingIsTaxable);
-		$('#pnlPaymentMethodAdditionalFeeTaxClass').toggle(showCategories && paymentFeeIsTaxable);
-	}
-</script>
+		    $('#pnlShippingTaxClass').toggle(showCategories && shippingIsTaxable);
+		    $('#pnlPaymentMethodAdditionalFeeTaxClass').toggle(showCategories && paymentFeeIsTaxable);
+	    }
+    </script>
     
     <div class="section-header">
         <div class="title">

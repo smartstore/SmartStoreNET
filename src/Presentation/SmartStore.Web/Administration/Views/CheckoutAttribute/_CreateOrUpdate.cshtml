@@ -197,9 +197,8 @@
 					.EnableCustomBinding(true))
 		</div>
 
-		<script type="text/javascript">
-			$(document).ready(function () {
-
+        <script>
+            $(function() {
 				$("#btnAddNewValue").on("click", function (e) {
 					openPopup('@(Url.Action("ValueCreatePopup", "CheckoutAttribute", new { checkoutAttributeId = Model.Id, btnId = "btnRefresh", formId = "checkoutattribute-form" }))', true);
 					return false;

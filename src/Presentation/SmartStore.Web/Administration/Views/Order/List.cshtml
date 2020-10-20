@@ -157,13 +157,12 @@
 
     { Html.RenderAction("OrderGrid", "Order"); }
 
-    <script type="text/javascript">
+    <script>
 		@*Used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 		var reportAggregates = "";
 
-		$(document).ready(function () {
-
+        $(function() {
 			// Filter toggler.
 			$('.btn-toggle-filter').on('click', function (e) {
 				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });

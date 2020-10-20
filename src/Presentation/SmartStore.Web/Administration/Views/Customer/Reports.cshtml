@@ -96,14 +96,12 @@
 
     <script>
         $(function () {
-
 			$('#btn-search-best-customers').click(function () {
 				var grid = $('#best-customers-grid').data('tGrid');
 				grid.currentPage = 1;
 				grid.ajaxRequest();
 				return false;
 			});
-
         });
 
         function bestCustomersOnDataBinding(e) {

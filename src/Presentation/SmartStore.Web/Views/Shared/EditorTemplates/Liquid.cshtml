@@ -16,7 +16,7 @@
     Html.AddCssFileParts("~/css/codemirror");
 }
 
-    <script type="text/javascript">
+<script>
     $(function () {
 		if (window.CodeMirror !== undefined) {
             var el = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)');
@@ -56,10 +56,10 @@
             }
         }
     });
-    </script>
+</script>
 
 @Html.TextArea(string.Empty, /* Name suffix */
-			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
-			   new { @class = "form-control", style = "max-width: initial;", rows = 20 }
+			(string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
+			new { @class = "form-control", style = "max-width: initial;", rows = 20 }
 )
 

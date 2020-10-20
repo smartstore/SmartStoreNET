@@ -229,12 +229,10 @@
 
 <script>
     $(function () {
-
         // Icon colors.
         $('.icon-color-chooser > option').each(function () {
             var option = $(this);
             option.data("color", localStorage.getItem('--' + this.value));
         });
-
     });
 </script>

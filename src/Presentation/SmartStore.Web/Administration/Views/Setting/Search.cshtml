@@ -341,13 +341,11 @@
 	}
 }
 
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-
+<script>
+    $(function() {
         // Toggle wildcard note.
         $('#@(Html.FieldIdFor(x => x.SearchMode)), #@(Html.FieldIdFor(x => x.ForumSearchSettings.SearchMode))').change(function () {
 			$(this).closest('table').find('.wildcard-note').toggle($(this).val() === '@((int)SearchMode.Contains)');
         }).trigger('change');
-
 	});
 </script>

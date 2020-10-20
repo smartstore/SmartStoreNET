@@ -29,9 +29,8 @@
 
 @helper TabInfo()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-			
+    <script>
+        $(function() {	
             $('#@(Html.FieldIdFor(x => x.RoundOrderItemsEnabled))').change(function () {
                 $('tr.round-order-items').toggle($(this).is(':checked'));
             }).trigger('change');
@@ -287,7 +286,6 @@
 
 <script>
     $(function () {
-
         // Show custom formatting example.
         $('#@Html.FieldIdFor(model => model.CustomFormatting)').on('change', function () {
 			$.ajax({

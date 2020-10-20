@@ -55,8 +55,8 @@ else
     @Html.ControlGroupFor(model => model.DirectDebitBankName, required: true, breakpoint: "md")
 </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function () {
         $('input[name=EnterIBAN]').on('change', function () {
             SwitchEnterIban($(this).filter(':checked').val());
         }).trigger('change');

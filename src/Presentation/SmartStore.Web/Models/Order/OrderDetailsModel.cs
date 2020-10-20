@@ -28,6 +28,7 @@ namespace SmartStore.Web.Models.Order
         public int StoreId { get; set; }
 
         public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+        public string MerchantCompanyCountryName { get; set; }
 
         public string OrderNumber { get; set; }
         public bool DisplayPdfInvoice { get; set; }

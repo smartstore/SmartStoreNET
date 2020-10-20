@@ -51,7 +51,7 @@
 						<span class="header text-smallest">
 							@{
                                 var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
-                                var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+                                var country = JoinValues(new string[] { order.MerchantCompanyCountryName, company.StateName }, ", ").ToString();
 							}
 							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
 						</span>

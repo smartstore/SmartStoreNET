@@ -39,6 +39,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly IPaymentService _paymentService;
         private readonly ICurrencyService _currencyService;
+        private readonly ICountryService _countryService;
         private readonly IQuantityUnitService _quantityUnitService;
         private readonly IMediaService _mediaService;
         private readonly IProductService _productService;
@@ -55,6 +56,7 @@ namespace SmartStore.Web.Controllers
             IOrderProcessingService orderProcessingService,
             IPaymentService paymentService,
             ICurrencyService currencyService,
+            ICountryService countryService,
             IQuantityUnitService quantityUnitService,
             IMediaService mediaService,
             IProductService productService,
@@ -70,6 +72,7 @@ namespace SmartStore.Web.Controllers
             _orderProcessingService = orderProcessingService;
             _paymentService = paymentService;
             _currencyService = currencyService;
+            _countryService = countryService;
             _quantityUnitService = quantityUnitService;
             _mediaService = mediaService;
             _productService = productService;
@@ -269,7 +272,10 @@ namespace SmartStore.Web.Controllers
 
             var model = new OrderDetailsModel();
 
+            // TODO: refactor modelling for multi-order processing.
             model.MerchantCompanyInfo = companyInfoSettings;
+            model.MerchantCompanyCountryName = _countryService.GetCountryById(companyInfoSettings.CountryId)?.GetLocalized(x => x.Name);
+
             model.Id = order.Id;
             model.StoreId = order.StoreId;
             model.CustomerLanguageId = order.CustomerLanguageId;
@@ -437,7 +443,7 @@ namespace SmartStore.Web.Controllers
                     {
                         var rate = _priceFormatter.FormatTaxRate(tr.Key);
                         //var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
-                        var labelKey = (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "ShoppingCart.Totals.TaxRateLineIncl" : "ShoppingCart.Totals.TaxRateLineExcl");
+                        var labelKey = _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "ShoppingCart.Totals.TaxRateLineIncl" : "ShoppingCart.Totals.TaxRateLineExcl";
 
                         model.TaxRates.Add(new OrderDetailsModel.TaxRate
                         {

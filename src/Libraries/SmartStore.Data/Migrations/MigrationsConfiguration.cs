@@ -850,6 +850,14 @@
                 "Twitter-Benutzername",
                 "Twitter Username that gets displayed on Twitter cards when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.",
                 "Twitter-Benutzername, der auf Twitter-Karten angezeigt wird, wenn ein Produkt, eine Kategorie oder eine Herstellerseite auf Twitter geteilt wird. Beginnt mit einem '@'.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Validation.NoEmptyPassword",
+                "Password must have a value.",
+                "Passwort muss einen Wert haben.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Validation.NoPasswordAllowed",
+                "HTML widgets cannot have a password protection.",
+                "HTML Widgets können keinen Passwortschutz haben.");
         }
     }
 }

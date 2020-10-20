@@ -190,11 +190,20 @@ namespace SmartStore.Admin.Models.Topics
             RuleFor(x => x.HtmlId)
                 .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
                 .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
+
+            RuleFor(x => x.IsPasswordProtected)
+                .Equal(false)
+                .When(x => x.RenderAsWidget)
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoPasswordAllowed"));
+
+            RuleFor(x => x.Password)
+                .NotEmpty()
+                .When(x => x.IsPasswordProtected && !x.RenderAsWidget)
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoEmptyPassword"));
         }
     }
 
-    public class TopicMapper :
-        IMapper<Topic, TopicModel>
+    public class TopicMapper : IMapper<Topic, TopicModel>
     {
         public void Map(Topic from, TopicModel to)
         {

@@ -423,18 +423,16 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     vertical-align: middle;
     max-width: 100%;
     @include text-truncate();
-
-    .delivery-time-status {
-        padding-right: 0.2rem;
-        margin-left: 0.025rem;
-    }
 }
-.delivery-date-block.sm {
-    font-size: $font-size-sm;
+.delivery-time .delivery-time-status {
+    font-size: 0.85em;
+    padding-right: 0.2rem;
+    margin-left: 0.025rem;
+}
+.pd-offer .delivery-date-block {
     padding-top: 0.5rem;
 }
-
-.delivery-date {
+.delivery-date > b {
     font-weight: $font-weight-medium;
 }
 

@@ -58,8 +58,11 @@
         if (showDeliveryDate)
         {
 			<div class="deliverytime-group d-flex">
-				<span class="delivery-date-block@(showStatusLabel ? " sm" : "")">
-					<span>@T("Products.DeliveryDate")</span>
+				<span class="delivery-date-block">
+                    @if (!showStatusLabel)
+                    {
+                        <span>@T("Products.DeliveryDate")</span>
+                    }
 					<span class="delivery-date">@Html.Raw(Model.DeliveryTimeDate)</span>
 				</span>
 			</div>

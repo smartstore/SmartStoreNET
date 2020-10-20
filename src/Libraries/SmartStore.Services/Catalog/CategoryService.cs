@@ -305,6 +305,8 @@ namespace SmartStore.Services.Catalog
         {
             var query = _categoryRepository.Table;
 
+            query = query.Where(c => !c.Deleted);
+
             if (!showHidden)
                 query = query.Where(c => c.Published);
 
@@ -315,8 +317,6 @@ namespace SmartStore.Services.Catalog
                 query = query.Where(c => c.Alias.Contains(alias));
 
             query = ApplyHiddenCategoriesFilter(query, storeId, showHidden);
-
-            query = query.Where(c => !c.Deleted);
 
             return query;
         }
@@ -401,7 +401,8 @@ namespace SmartStore.Services.Catalog
 
             if (grouping)
             {
-                // Only distinct categories (group by ID)
+                // Only distinct categories (group by ID).
+                // SQL Server CE: where-clause beyond this statement produces "SELECT @p__linq__0 AS[p__linq__0]..." which fails in CE.
                 query = from c in query
                         group c by c.Id into cGroup
                         orderby cGroup.Key

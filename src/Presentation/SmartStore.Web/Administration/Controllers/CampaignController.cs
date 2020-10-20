@@ -166,8 +166,6 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            PrepareCampaignModel(model, campaign);
-
             try
             {
                 var numberOfQueuedMessages = _campaignService.SendCampaign(campaign);

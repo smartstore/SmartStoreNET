@@ -1,7 +1,7 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
 
-@if (!Model.Body.Value.HasValue())
+@if (Model.Body == null || !Model.Body.Value.HasValue())
 {
     return;
 }

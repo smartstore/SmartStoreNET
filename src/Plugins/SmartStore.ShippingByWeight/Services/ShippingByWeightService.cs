@@ -112,8 +112,9 @@ namespace SmartStore.ShippingByWeight.Services
         public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight, string zip)
         {
             var existingRecords = GetShippingByWeightRecords()
-                .Where(x => x.ShippingMethodId == shippingMethodId && weight >= x.From && weight <= x.To)
-                .ToList();
+				.Where(x => x.ShippingMethodId == shippingMethodId && weight >= x.From && weight <= x.To)
+				.OrderBy(x => !string.IsNullOrEmpty(x.Zip))
+				.ToList();
 
             //filter by store
             var matchedByStore = existingRecords.Where(x => x.StoreId == storeId || x.StoreId == 0).ToList();

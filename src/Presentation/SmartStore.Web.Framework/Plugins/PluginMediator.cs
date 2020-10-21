@@ -305,6 +305,5 @@ namespace SmartStore.Web.Framework.Plugins
                 }
             }
         }
-
     }
 }

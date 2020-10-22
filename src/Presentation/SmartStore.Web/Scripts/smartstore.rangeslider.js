@@ -35,7 +35,6 @@
                 ratio = el.width() / range,
                 n = parseFloat(slider.val()) - min;
 
-
             if (SmartStore.globalization.culture.isRTL) {
                 bubble.css('right', (n * ratio) + 'px').attr('data-placement', n > range / 2 ? 'right' : 'left');
             }

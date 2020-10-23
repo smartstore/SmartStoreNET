@@ -73,7 +73,7 @@ namespace SmartStore.Services.Media
         /// Inserts a download
         /// </summary>
         /// <param name="download">Download</param>
-        void InsertDownload(Download download, out int? id);
+        void InsertDownload(Download download);
 
         /// <summary>
         /// Inserts a download.

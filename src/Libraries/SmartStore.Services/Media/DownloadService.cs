@@ -131,13 +131,11 @@ namespace SmartStore.Services.Media
             _downloadRepository.Delete(download);
         }
 
-        public virtual void InsertDownload(Download download, out int? id)
+        public virtual void InsertDownload(Download download)
         {
             Guard.NotNull(download, nameof(download));
 
             _downloadRepository.Insert(download);
-
-            id = download.Id;
         }
 
         public virtual MediaFileInfo InsertDownload(Download download, Stream stream, string fileName)

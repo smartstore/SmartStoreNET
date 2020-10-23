@@ -1955,8 +1955,8 @@ namespace SmartStore.Admin.Controllers
                     IsTransient = false
                 };
 
-                _downloadService.InsertDownload(download, out var downloadId);
-                orderItem.LicenseDownloadId = downloadId;
+                _downloadService.InsertDownload(download);
+                orderItem.LicenseDownloadId = download.Id;
 
                 setOldFileToTransient = true;
             }

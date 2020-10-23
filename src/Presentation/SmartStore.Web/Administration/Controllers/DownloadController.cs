@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
                 UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download, out _);
+            _downloadService.InsertDownload(download);
 
             return Json(new
             {
@@ -98,7 +98,7 @@ namespace SmartStore.Admin.Controllers
                 UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download, out _);
+            _downloadService.InsertDownload(download);
 
             return Json(new
             {

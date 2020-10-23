@@ -1270,7 +1270,7 @@ namespace SmartStore.Admin.Controllers
                         FileVersion = fileVersion
                     };
 
-                    _downloadService.InsertDownload(download, out _);
+                    _downloadService.InsertDownload(download);
                 }
                 else
                 {
@@ -1300,9 +1300,9 @@ namespace SmartStore.Admin.Controllers
                     IsTransient = false
                 };
 
-                _downloadService.InsertDownload(download, out var downloadId);
+                _downloadService.InsertDownload(download);
 
-                return downloadId;
+                return download.Id;
             }
 
             return null;

@@ -511,7 +511,6 @@ namespace SmartStore.Admin.Models.Orders
 
             [UIHint("Download")]
             public int LicenseDownloadId { get; set; }
-
         }
 
         public class AddOrderProductModel : ModelBase

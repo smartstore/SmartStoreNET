@@ -87,6 +87,20 @@ namespace SmartStore.Core.Domain.Media
             return _allowedThumbSizes.Contains(size);
         }
 
+        public int GetNextValidThumbnailSize(int currentSize)
+        {
+            var allowedSizes = GetAllowedThumbnailSizes();
+            foreach (var size in allowedSizes)
+            {
+                if (size >= currentSize)
+                {
+                    return size;
+                }
+            }
+
+            return MaxImageSize;
+        }
+
         private void EnsureThumbSizeWhitelist()
         {
             if (_allowedThumbSizes != null)

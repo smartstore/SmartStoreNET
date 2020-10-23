@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 
@@ -8,6 +9,7 @@ namespace SmartStore.Core.Domain.Logging
     /// <summary>
     /// Represents a log record
     /// </summary>
+    [Hookable(false)]
     public partial class Log : BaseEntity
     {
         /// <summary>

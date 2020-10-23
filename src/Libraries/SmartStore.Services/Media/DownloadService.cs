@@ -48,19 +48,19 @@ namespace SmartStore.Services.Media
             return downloads.OrderBySequence(downloadIds).ToList();
         }
 
-        public virtual IList<Download> GetDownloadsFor<TEntity>(TEntity entity) where TEntity : BaseEntity
+        public virtual IList<Download> GetDownloadsFor<TEntity>(TEntity entity, bool versionedFilesOnly = false) where TEntity : BaseEntity
         {
             Guard.NotNull(entity, nameof(entity));
 
-            return GetDownloadsFor(entity.Id, entity.GetUnproxiedType().Name);
+            return GetDownloadsFor(entity.Id, entity.GetUnproxiedType().Name, versionedFilesOnly);
         }
 
-        public virtual IList<Download> GetDownloadsFor(int entityId, string entityName)
+        public virtual IList<Download> GetDownloadsFor(int entityId, string entityName, bool versionedFilesOnly = false)
         {
             if (entityId > 0)
             {
                 var downloads = (from x in _downloadRepository.Table.Expand(x => x.MediaFile)
-                                 where x.EntityId == entityId && x.EntityName == entityName
+                                 where x.EntityId == entityId && x.EntityName == entityName && (!string.IsNullOrEmpty(x.FileVersion) && versionedFilesOnly)
                                  select x).ToList();
 
                 if (downloads.Any())
@@ -131,11 +131,13 @@ namespace SmartStore.Services.Media
             _downloadRepository.Delete(download);
         }
 
-        public virtual void InsertDownload(Download download)
+        public virtual void InsertDownload(Download download, out int? id)
         {
             Guard.NotNull(download, nameof(download));
 
             _downloadRepository.Insert(download);
+
+            id = download.Id;
         }
 
         public virtual MediaFileInfo InsertDownload(Download download, Stream stream, string fileName)

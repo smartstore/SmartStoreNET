@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
                 UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, out _);
 
             return Json(new
             {
@@ -98,7 +98,7 @@ namespace SmartStore.Admin.Controllers
                 UpdatedOnUtc = DateTime.UtcNow
             };
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, out _);
 
             return Json(new
             {
@@ -117,28 +117,17 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException(T("Common.NoFileUploaded"));
             }
 
-            var download = new Download
-            {
-                EntityId = entityId,
-                EntityName = entityName,
-                DownloadGuid = Guid.NewGuid(),
-                UseDownloadUrl = false,
-                DownloadUrl = string.Empty,
-                UpdatedOnUtc = DateTime.UtcNow
-            };
-
-            var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
+            var path = _mediaService.CombinePaths(SystemAlbumProvider.Downloads, postedFile.FileName);
+            var file = _mediaService.SaveFile(path, postedFile.Stream, dupeFileHandling: DuplicateFileHandling.Rename);
 
             return Json(new
             {
                 success = true,
                 clientCtrlId,
-                downloadId = download.Id,
-                id = download.MediaFileId,
-                name = mediaFile.Name,
-                type = mediaFile.MediaType,
-                thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
-                html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode, fieldName, entityId, entityName }) // OBSOLETE
+                id = file.Id,
+                name = file.Name,
+                type = file.MediaType,
+                thumbUrl = _mediaService.GetUrl(file.Id, _mediaSettings.ProductThumbPictureSize, host: string.Empty)
             });
         }
 

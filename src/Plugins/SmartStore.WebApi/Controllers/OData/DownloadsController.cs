@@ -35,7 +35,7 @@ namespace SmartStore.WebApi.Controllers.OData
         [WebApiAuthenticate(Permission = Permissions.Media.Download.Create)]
         public IHttpActionResult Post(Download entity)
         {
-            var result = Insert(entity, () => Service.InsertDownload(entity));
+            var result = Insert(entity, () => Service.InsertDownload(entity, out _));
             return result;
         }
 

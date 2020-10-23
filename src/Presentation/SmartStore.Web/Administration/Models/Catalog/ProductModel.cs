@@ -187,6 +187,8 @@ namespace SmartStore.Admin.Models.Catalog
         [UIHint("Download")]
         public int? SampleDownloadId { get; set; }
 
+        public int? OldSampleDownloadId { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasUserAgreement")]
         public bool HasUserAgreement { get; set; }
 

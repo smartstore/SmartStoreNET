@@ -94,6 +94,7 @@
 	var catalogSettings = this.CommonServices.Resolve<CatalogSettings>();
 	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+	var additionalCssClasses = ViewData["class"] != null ?  ViewData["class"].ToString() : "";
 	var fileName = string.Empty;
 	var initiallyShowUrlPanel = false;
 	var hasFile = false;
@@ -107,14 +108,16 @@
 		fileName = download.MediaFile?.Name ?? (download.Id.ToString().Grow(download.MediaFile?.Extension, "."));
 		thumbUrl = Url.Media(download.MediaFileId, mediaSettings.ProductThumbPictureSize);
 	}
-
+	
 	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
 }
 
-<div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
+<div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")@(additionalCssClasses.HasValue() ? " " + additionalCssClasses : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" })"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")">
+
+	<input type="hidden" name="is-url-download-@(Model)" id="is-url-download-@(Model)" value='@(initiallyShowUrlPanel ? "true" : "false")' />
 
 	<div @Html.Attr("class", "col-auto", !MinimalMode || hasFile)>
 		<!-- Type Chooser Dropdown -->
@@ -216,6 +219,6 @@
     }
 
 	$(function () {
-		$('#@clientId').downloadEditor();
+        $('#@clientId').downloadEditor();
 	});
 </script>

@@ -1405,7 +1405,7 @@ namespace SmartStore.Web.Controllers
 
                 if (itemModel.IsDownloadAllowed)
                 {
-                    itemModel.DownloadVersions = _downloadService.GetDownloadsFor(item.Product)
+                    itemModel.DownloadVersions = _downloadService.GetDownloadsFor(item.Product, true)
                         .Select(x => new DownloadVersion
                         {
                             FileVersion = x.FileVersion,

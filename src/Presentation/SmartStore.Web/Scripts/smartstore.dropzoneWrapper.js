@@ -512,7 +512,6 @@
 
             // Calls server function after sorting, to save current sort order.
             function sortMediaFiles() {
-
                 if ($el.data('sort-url') && $el.data('entity-id')) {
                     var items = previewContainer.find('.dz-image-preview');
 
@@ -927,8 +926,7 @@
         fuContainer.find('.fu-thumb').removeClass("empty").html(preview.thumbHtml);
         SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fu-thumb'));
 
-        var id = file.downloadId ? file.downloadId : file.id;
-        fuContainer.find('.hidden').val(id).trigger('change');
+        fuContainer.find('.hidden').val(file.id).trigger('change');
         fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
         if (options.downloadEnabled) {

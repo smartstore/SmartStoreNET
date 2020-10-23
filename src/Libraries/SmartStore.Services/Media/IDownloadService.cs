@@ -29,7 +29,7 @@ namespace SmartStore.Services.Media
         /// </summary>
         /// <param name="entity">Entity to get download for</param>
         /// <returns>List of download entities sorted by FileVersion</returns>
-        IList<Download> GetDownloadsFor<TEntity>(TEntity entity) where TEntity : BaseEntity;
+        IList<Download> GetDownloadsFor<TEntity>(TEntity entity, bool versionedFilesOnly = false) where TEntity : BaseEntity;
 
         /// <summary>
         /// Gets downloads by entity identifier
@@ -37,7 +37,7 @@ namespace SmartStore.Services.Media
         /// <param name="entityId">Entity identifier</param>
         /// <param name="entityName">Entity name</param>
         /// <returns>List of download entities</returns>
-        IList<Download> GetDownloadsFor(int entityId, string entityName);
+        IList<Download> GetDownloadsFor(int entityId, string entityName, bool versionedFilesOnly = false);
 
         /// <summary>
 		/// Gets downloads by entity identifier & fileversion
@@ -73,7 +73,7 @@ namespace SmartStore.Services.Media
         /// Inserts a download
         /// </summary>
         /// <param name="download">Download</param>
-        void InsertDownload(Download download);
+        void InsertDownload(Download download, out int? id);
 
         /// <summary>
         /// Inserts a download.

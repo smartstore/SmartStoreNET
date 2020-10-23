@@ -22,6 +22,8 @@
             if (useUrl == el.data("use-url"))
                 return;
 
+            el.find('#is-url-download').attr("value", useUrl);
+
             var i = el.find('.panel-switcher > .dropdown-toggle > .fa');
 
             if (useUrl) {
@@ -45,8 +47,6 @@
         this.init = function () {
             var elRemove = el.find('.remove-download'),
                 elSaveUrl = el.find('.save-download-url');
-
-            //console.log(el);
 
             // handle panel switcher buttons
             el.find('.toggle-file, .toggle-url').on('click', function (e) {
@@ -118,6 +118,6 @@
                 $.data(this, pluginName, new DownloadEditor(this, options));
             }
         });
-    }
+    };
 
 })(jQuery, window, document);

@@ -100,6 +100,7 @@ namespace SmartStore.Admin.Controllers
         private readonly SearchSettings _searchSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly Lazy<MediaSettings> _mediaSettings;
+        private readonly IMediaService _mediaService;
 
         #endregion
 
@@ -147,7 +148,8 @@ namespace SmartStore.Admin.Controllers
             AdminAreaSettings adminAreaSettings,
             SearchSettings searchSettings,
             ShoppingCartSettings shoppingCartSettings,
-            Lazy<MediaSettings> mediaSettings)
+            Lazy<MediaSettings> mediaSettings,
+            IMediaService mediaService)
         {
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -192,6 +194,7 @@ namespace SmartStore.Admin.Controllers
             _searchSettings = searchSettings;
             _shoppingCartSettings = shoppingCartSettings;
             _mediaSettings = mediaSettings;
+            _mediaService = mediaService;
         }
 
         #endregion
@@ -1908,6 +1911,7 @@ namespace SmartStore.Admin.Controllers
             var model = new OrderModel.UploadLicenseModel
             {
                 LicenseDownloadId = orderItem.LicenseDownloadId ?? 0,
+                OldLicenseDownloadId = orderItem.LicenseDownloadId ?? 0,
                 OrderId = order.Id,
                 OrderItemId = orderItem.Id
             };
@@ -1932,13 +1936,49 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            // Attach license.
-            if (model.LicenseDownloadId > 0)
-                orderItem.LicenseDownloadId = model.LicenseDownloadId;
-            else
-                orderItem.LicenseDownloadId = null;
+            var isUrlDownload = Request.Form["is-url-download-" + model.LicenseDownloadId] == "true";
+            var setOldFileToTransient = false;
 
-            MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
+            if (model.LicenseDownloadId != model.OldLicenseDownloadId && model.LicenseDownloadId != 0 && !isUrlDownload)
+            {
+                // Insert download if a new file was uploaded.
+                var mediaFileInfo = _mediaService.GetFileById(model.LicenseDownloadId);
+                var download = new Download
+                {
+                    MediaFile = mediaFileInfo.File,
+                    EntityId = model.OrderId,
+                    EntityName = "LicenseDownloadId",
+                    DownloadGuid = Guid.NewGuid(),
+                    UseDownloadUrl = false,
+                    DownloadUrl = string.Empty,
+                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsTransient = false
+                };
+
+                _downloadService.InsertDownload(download, out var downloadId);
+                orderItem.LicenseDownloadId = downloadId;
+
+                setOldFileToTransient = true;
+            }
+            else if (isUrlDownload)
+            {
+                var download = _downloadService.GetDownloadById(model.LicenseDownloadId);
+                download.IsTransient = false;
+                _downloadService.UpdateDownload(download);
+
+                orderItem.LicenseDownloadId = model.LicenseDownloadId;
+
+                setOldFileToTransient = true;
+            }
+
+            if (setOldFileToTransient && model.OldLicenseDownloadId > 0)
+            {
+                // Set old download to transient if LicenseDownloadId is 0.
+                var oldDownload = _downloadService.GetDownloadById(model.OldLicenseDownloadId);
+                oldDownload.IsTransient = true;
+                _downloadService.UpdateDownload(oldDownload);
+            }
+            
             _orderService.UpdateOrder(order);
 
             ViewBag.RefreshPage = true;
@@ -1965,9 +2005,13 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            // Attach license.
+            // Set deleted file to transient.
+            var download = _downloadService.GetDownloadById((int)model.OldLicenseDownloadId);
+            download.IsTransient = true;
+            _downloadService.UpdateDownload(download);
+
+            // Detach license.
             orderItem.LicenseDownloadId = null;
-            MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
             _orderService.UpdateOrder(order);
 
             ViewBag.RefreshPage = true;

@@ -9,6 +9,7 @@ using Autofac;
 using NuGet;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -244,8 +245,8 @@ namespace SmartStore.Admin.Controllers
             p.RecurringTotalCycles = m.RecurringTotalCycles;
 
             p.IsShipEnabled = m.IsShipEnabled;
-            p.DeliveryTimeId = m.DeliveryTimeId == 0 ? (int?)null : m.DeliveryTimeId;
-            p.QuantityUnitId = m.QuantityUnitId == 0 ? (int?)null : m.QuantityUnitId;
+            p.DeliveryTimeId = m.DeliveryTimeId == 0 ? null : m.DeliveryTimeId;
+            p.QuantityUnitId = m.QuantityUnitId == 0 ? null : m.QuantityUnitId;
             p.IsFreeShipping = m.IsFreeShipping;
             p.AdditionalShippingCharge = m.AdditionalShippingCharge;
             p.Weight = m.Weight;
@@ -257,7 +258,7 @@ namespace SmartStore.Admin.Controllers
             p.IsTaxExempt = m.IsTaxExempt;
             p.TaxCategoryId = m.TaxCategoryId ?? 0;
             p.CustomsTariffNumber = m.CustomsTariffNumber;
-            p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
+            p.CountryOfOriginId = m.CountryOfOriginId == 0 ? null : m.CountryOfOriginId;
 
             p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
             p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
@@ -271,42 +272,9 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
 
-            var p = product;
-            var m = model;
+            MiniMapper.Map(model, product);
 
-            p.IsDownload = m.IsDownload;
-            //p.DownloadId = m.DownloadId ?? 0;
-            p.UnlimitedDownloads = m.UnlimitedDownloads;
-            p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
-            p.DownloadExpirationDays = m.DownloadExpirationDays;
-            p.DownloadActivationTypeId = m.DownloadActivationTypeId;
-            p.HasUserAgreement = m.HasUserAgreement;
-            p.UserAgreementText = m.UserAgreementText;
-            p.HasSampleDownload = m.HasSampleDownload;
-            p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
-
-            if (m.NewVersionDownloadId > 0)
-            {
-                // Set version info & product id for new download.
-                var newVersion = _downloadService.GetDownloadById(m.NewVersionDownloadId.Value);
-                newVersion.FileVersion = m.NewVersion.EmptyNull();
-                newVersion.EntityId = p.Id;
-                newVersion.IsTransient = false;
-
-                _downloadService.UpdateDownload(newVersion);
-            }
-            else if (m.DownloadFileVersion.HasValue())
-            {
-                var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
-                if (download != null)
-                {
-                    download.FileVersion = m.DownloadFileVersion;
-                    download.EntityId = p.Id;
-                    download.IsTransient = false;
-
-                    _downloadService.UpdateDownload(download);
-                }
-            }
+            product.SampleDownloadId = model.SampleDownloadId == 0 ? null : model.SampleDownloadId;
         }
 
         [NonAction]
@@ -493,14 +461,6 @@ namespace SmartStore.Admin.Controllers
 
             //var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
-            // Handle download transiency.
-            var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
-            if (download != null)
-            {
-                MediaHelper.UpdateDownloadTransientStateFor(p, x => download.Id);
-            }
-            MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
-
             // SEO.
             m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
             _urlRecordService.SaveSlug(p, m.SeName, 0);
@@ -572,7 +532,7 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 // Downloads.
-                var productDownloads = _downloadService.GetDownloadsFor(product);
+                var productDownloads = _downloadService.GetDownloadsFor(product, true);
 
                 model.DownloadVersions = productDownloads
                     .Select(x => new DownloadVersion
@@ -595,6 +555,7 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
+                model.OldSampleDownloadId = model.SampleDownloadId;
 
                 // Media files.
                 var file = _mediaService.GetFileById(product.MainPictureId ?? 0);
@@ -1209,18 +1170,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            var testVersions = (new string[] { model.DownloadFileVersion, model.NewVersion }).Where(x => x.HasValue());
-            foreach (var testVersion in testVersions)
-            {
-                try
-                {
-                    var test = new SemanticVersion(testVersion).ToString();
-                }
-                catch
-                {
-                    ModelState.AddModelError("DownloadFileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
-                }
-            }
+            UpdateDataOfProductDownloads(model);
 
             if (ModelState.IsValid)
             {
@@ -1234,28 +1184,130 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(T("Admin.Catalog.Products.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = product.Id }) : RedirectToAction("List");
             }
-            else
-            {
-                // Remove uploaded Download
-                if (model.DownloadId != null)
-                {
-                    _downloadService.DeleteDownload(new Download { Id = model.DownloadId.Value });
-                }
-                else if (model.NewVersionDownloadId != null)
-                {
-                    _downloadService.DeleteDownload(new Download { Id = model.NewVersionDownloadId.Value });
-                }
-                else if (model.SampleDownloadId != null)
-                {
-                    _downloadService.DeleteDownload(new Download { Id = model.SampleDownloadId.Value });
-                }
-            }
 
             // If we got this far, something failed, redisplay form.
             PrepareProductModel(model, product, false, true);
 
             return View(model);
         }
+
+        [NonAction]
+        protected void UpdateDataOfProductDownloads(ProductModel model)
+        {
+            var testVersions = (new string[] { model.DownloadFileVersion, model.NewVersion }).Where(x => x.HasValue());
+            var saved = false;
+            foreach (var testVersion in testVersions)
+            {
+                try
+                {
+                    var test = new SemanticVersion(testVersion).ToString();
+
+                    // Insert versioned downloads here so they won't be saved if version ain't correct.
+                    // If NewVersionDownloadId has value
+                    if (model.NewVersion.HasValue() && !saved)
+                    {
+                        InsertProductDownload(model.NewVersionDownloadId, model.Id, model.NewVersion);
+                        saved = true;
+                    }
+                    else
+                    {
+                        InsertProductDownload(model.DownloadId, model.Id, model.DownloadFileVersion);
+                    }
+                }
+                catch
+                {
+                    ModelState.AddModelError("DownloadFileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
+                }
+            }
+
+            var isUrlDownload = Request.Form["is-url-download-" + model.SampleDownloadId] == "true";
+            var setOldFileToTransient = false;
+
+            if (model.SampleDownloadId != model.OldSampleDownloadId && model.SampleDownloadId != 0 && !isUrlDownload)
+            {
+                // Insert sample download if a new file was uploaded.
+                model.SampleDownloadId = InsertSampleDownload(model.SampleDownloadId, model.Id);
+
+                setOldFileToTransient = true;
+            }
+            else if (isUrlDownload)
+            {
+                var download = _downloadService.GetDownloadById((int)model.SampleDownloadId);
+                download.IsTransient = false;
+                _downloadService.UpdateDownload(download);
+
+                setOldFileToTransient = true;
+            }
+
+            if (setOldFileToTransient && model.OldSampleDownloadId > 0)
+            {
+                var download = _downloadService.GetDownloadById((int)model.OldSampleDownloadId);
+                download.IsTransient = true;
+                _downloadService.UpdateDownload(download);
+            }
+        }
+
+        [NonAction]
+        protected void InsertProductDownload(int? fileId, int entityId, string fileVersion = "")
+        {
+            if (fileId > 0)
+            {
+                var isUrlDownload = Request.Form["is-url-download-" + fileId] == "true";
+
+                if (!isUrlDownload)
+                {
+                    var mediaFileInfo = _mediaService.GetFileById((int)fileId);
+                    var download = new Download
+                    {
+                        MediaFile = mediaFileInfo.File,
+                        EntityId = entityId,
+                        EntityName = "Product",
+                        DownloadGuid = Guid.NewGuid(),
+                        UseDownloadUrl = false,
+                        DownloadUrl = string.Empty,
+                        UpdatedOnUtc = DateTime.UtcNow,
+                        IsTransient = false,
+                        FileVersion = fileVersion
+                    };
+
+                    _downloadService.InsertDownload(download, out _);
+                }
+                else
+                {
+                    var download = _downloadService.GetDownloadById((int)fileId);
+                    download.FileVersion = fileVersion;
+                    download.IsTransient = false;
+                    _downloadService.UpdateDownload(download);
+                }
+            }
+        }
+
+        [NonAction]
+        protected int? InsertSampleDownload(int? fileId, int entityId)
+        {
+            if (fileId > 0)
+            {
+                var mediaFileInfo = _mediaService.GetFileById((int)fileId);
+                var download = new Download
+                {
+                    MediaFile = mediaFileInfo.File,
+                    EntityId = entityId,
+                    EntityName = "Product",
+                    DownloadGuid = Guid.NewGuid(),
+                    UseDownloadUrl = false,
+                    DownloadUrl = string.Empty,
+                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsTransient = false
+                };
+
+                _downloadService.InsertDownload(download, out var downloadId);
+
+                return downloadId;
+            }
+
+            return null;
+        }
+
 
         [NonAction]
         protected void MapModelToProduct(ProductModel model, Product product, FormCollection form, out bool nameChanged)

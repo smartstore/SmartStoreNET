@@ -565,8 +565,9 @@ namespace SmartStore.Services.Seo
                 root.Add(xel);
             }
 
+            XDeclaration declaration = new XDeclaration("1.0", "UTF-8", "yes");
             XDocument document = new XDocument(root);
-            var xml = document.ToString(SaveOptions.DisableFormatting);
+            var xml = declaration.ToString() + document.ToString(SaveOptions.DisableFormatting);
             CheckDocumentSize(xml);
 
             return xml;

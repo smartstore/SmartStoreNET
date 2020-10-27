@@ -321,7 +321,7 @@
 
             el.on("queuecomplete", function () {
                 logEvent("queuecomplete");
-
+                
                 var dupeFiles = this.getFilesWithStatus(Dropzone.ERROR).filter(file => file.media && file.media.dupe === true);
                 var successFiles = this.getFilesWithStatus(Dropzone.SUCCESS);
 
@@ -926,7 +926,12 @@
         fuContainer.find('.fu-thumb').removeClass("empty").html(preview.thumbHtml);
         SmartStore.media.lazyLoadThumbnails(fuContainer.find('.fu-thumb'));
 
-        fuContainer.find('.hidden').val(file.id).trigger('change');
+        var id = file.downloadId ? file.downloadId : file.id;
+
+        if (!options.downloadEnabled) {
+            fuContainer.find('.hidden').val(id).trigger('change');
+        }
+
         fuContainer.find('.fu-message').removeClass("empty").html(file.name);
 
         if (options.downloadEnabled) {

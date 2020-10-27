@@ -1289,41 +1289,35 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
+        [MaxMediaFileSize]
         public ActionResult UploadFileCheckoutAttribute(string controlId)
         {
             var postedFile = Request.ToPostedFileResult();
             if (postedFile != null && postedFile.FileName.HasValue())
             {
-                int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                if (postedFile.Size > maxFileSize)
+                var download = new Download
                 {
-                    throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
-                }
-                else
+                    DownloadGuid = Guid.NewGuid(),
+                    UseDownloadUrl = false,
+                    DownloadUrl = "",
+                    UpdatedOnUtc = DateTime.UtcNow,
+                    EntityId = 0,
+                    EntityName = "CheckoutAttribute",
+                    IsTransient = true
+                };
+
+                var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
+
+                return Json(new
                 {
-                    var download = new Download
-                    {
-                        DownloadGuid = Guid.NewGuid(),
-                        UseDownloadUrl = false,
-                        DownloadUrl = "",
-                        UpdatedOnUtc = DateTime.UtcNow,
-                        EntityId = 0,
-                        EntityName = "CheckoutAttribute"
-                    };
-
-                    var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
-
-                    return Json(new
-                    {
-                        id = download.MediaFileId,
-                        name = mediaFile.Name,
-                        type = mediaFile.MediaType,
-                        thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
-                        success = true,
-                        message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
-                        downloadGuid = download.DownloadGuid,
-                    });
-                }
+                    id = download.MediaFileId,
+                    name = mediaFile.Name,
+                    type = mediaFile.MediaType,
+                    thumbUrl = _mediaService.GetUrl(download.MediaFileId, _mediaSettings.ProductThumbPictureSize, host: string.Empty),
+                    success = true,
+                    message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
+                    downloadGuid = download.DownloadGuid,
+                });
             }
 
             return Json(new
@@ -1571,6 +1565,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
+        [MaxMediaFileSize]
         public ActionResult UploadFileProductAttribute(int productId, int productAttributeId)
         {
             var product = _productService.GetProductById(productId);
@@ -1604,12 +1599,6 @@ namespace SmartStore.Web.Controllers
                 throw new ArgumentException(T("Common.NoFileUploaded"));
             }
 
-            int maxFileSize = _catalogSettings.FileUploadMaximumSizeBytes;
-            if (postedFile.Size > maxFileSize)
-            {
-                throw _exceptionFactory.MaxFileSizeExceeded(postedFile.FileName, postedFile.Size, maxFileSize);
-            }
-
             var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
@@ -1617,7 +1606,8 @@ namespace SmartStore.Web.Controllers
                 DownloadUrl = "",
                 UpdatedOnUtc = DateTime.UtcNow,
                 EntityId = productId,
-                EntityName = "ProductAttribute"
+                EntityName = "ProductAttribute",
+                IsTransient = true
             };
 
             var mediaFile = _downloadService.InsertDownload(download, postedFile.Stream, postedFile.FileName);
@@ -1633,7 +1623,6 @@ namespace SmartStore.Web.Controllers
                 downloadGuid = download.DownloadGuid,
             });
         }
-
 
         [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Cart(ProductVariantQuery query)

@@ -25,6 +25,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
@@ -51,6 +52,7 @@ namespace SmartStore.Services.Orders
         private readonly IGiftCardService _giftCardService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+        private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly IShippingService _shippingService;
         private readonly IShipmentService _shipmentService;
         private readonly ITaxService _taxService;
@@ -66,6 +68,7 @@ namespace SmartStore.Services.Orders
         private readonly IEventPublisher _eventPublisher;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        private readonly IDownloadService _downloadService;
 
         private readonly PaymentSettings _paymentSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
@@ -94,6 +97,7 @@ namespace SmartStore.Services.Orders
             IGiftCardService giftCardService,
             IShoppingCartService shoppingCartService,
             ICheckoutAttributeFormatter checkoutAttributeFormatter,
+            ICheckoutAttributeParser checkoutAttributeParser,
             IShippingService shippingService,
             IShipmentService shipmentService,
             ITaxService taxService,
@@ -109,6 +113,7 @@ namespace SmartStore.Services.Orders
             IEventPublisher eventPublisher,
             IGenericAttributeService genericAttributeService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
+            IDownloadService downloadService,
             PaymentSettings paymentSettings,
             RewardPointsSettings rewardPointsSettings,
             OrderSettings orderSettings,
@@ -131,6 +136,7 @@ namespace SmartStore.Services.Orders
             _giftCardService = giftCardService;
             _shoppingCartService = shoppingCartService;
             _checkoutAttributeFormatter = checkoutAttributeFormatter;
+            _checkoutAttributeParser = checkoutAttributeParser;
             _workContext = workContext;
             _storeContext = storeContext;
             _messageFactory = messageFactory;
@@ -146,6 +152,7 @@ namespace SmartStore.Services.Orders
             _eventPublisher = eventPublisher;
             _genericAttributeService = genericAttributeService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _downloadService = downloadService;
             _paymentSettings = paymentSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _orderSettings = orderSettings;
@@ -1505,6 +1512,30 @@ namespace SmartStore.Services.Orders
                             _genericAttributeService.SaveAttribute<object>(order, customProperty.Key, customProperty.Value.Value, order.StoreId);
                         }
 
+                        // Handle transiancy of uploaded files for checkout attributes
+                        if (order.CheckoutAttributesXml.HasValue())
+                        {
+                            var checkoutAttrs = _checkoutAttributeParser.ParseCheckoutAttributes(order.CheckoutAttributesXml);
+
+                            foreach (var attr in checkoutAttrs)
+                            {
+                                if (attr.AttributeControlType == AttributeControlType.FileUpload)
+                                {
+                                    var value = _checkoutAttributeParser.ParseValues(order.CheckoutAttributesXml, attr.Id).FirstOrDefault();
+                                    Guid.TryParse(value, out var downloadGuid);
+                                    if (downloadGuid != null)
+                                    {
+                                        var download = _downloadService.GetDownloadByGuid(downloadGuid);
+                                        if (download != null)
+                                        {
+                                            download.IsTransient = false;
+                                            _downloadService.UpdateDownload(download);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
                         // Uncomment this line to support transactions.
                         //scope.Complete();
 

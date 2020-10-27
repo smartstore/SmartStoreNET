@@ -13,6 +13,7 @@ Merging the contents of different languages must be done manually (migration is 
 ### New Features
 * Theming: responsive font-sizing and spacing
 * **Page Builder**
+	* #2042 Added gallery block to display a multitude of media files in various styles.
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
 * **ContentSlider**

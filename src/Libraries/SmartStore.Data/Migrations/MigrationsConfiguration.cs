@@ -858,6 +858,10 @@
             builder.AddOrUpdate("Admin.ContentManagement.Topics.Validation.NoPasswordAllowed",
                 "HTML widgets cannot have a password protection.",
                 "HTML Widgets können keinen Passwortschutz haben.");
+
+            builder.AddOrUpdate("Order.CompletePayment.Hint",
+                "Click 'Complete payment' if you have not yet paid and wish to start the payment process again.",
+                "Klicken Sie 'Zahlung veranlassen', falls Sie noch nicht gezahlt haben und den Zahlungsvorgang erneut starten möchten.");
         }
     }
 }

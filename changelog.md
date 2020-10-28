@@ -6,6 +6,7 @@
 * (NEW) **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
 
 ### Breaking changes
+* The **Glimpse** plugin is obsolete and has been removed! Does not work with .NET 4.7+ and hasn't been maintained for 7 years now. 
 * (DEV) **Web API**: porting to OData v4 has minor incompatibilities with v3. See this [blog post](https://smartstore.com/en/web-api-supports-odata-v4-as-from-smartstore-4-1) for details.
 * **Blogs\News**: the direct language association has been removed. Localized content is now entered using the localization editor. 
 Merging the contents of different languages must be done manually (migration is not possible).

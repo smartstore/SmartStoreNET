@@ -160,12 +160,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForum(ForumModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
-                var utcNow = DateTime.UtcNow;
                 var forum = model.ToEntity();
 
                 _forumService.InsertForum(forum);
@@ -212,6 +212,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForum(ForumModel model, bool continueEditing)
         {
@@ -245,6 +246,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForum(int id)
         {
@@ -275,6 +277,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup(ForumGroupModel model, bool continueEditing)
         {
@@ -325,6 +328,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForumGroup(ForumGroupModel model, bool continueEditing)
         {
@@ -360,6 +364,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForumGroup(int id)
         {

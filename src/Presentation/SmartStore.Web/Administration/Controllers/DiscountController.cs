@@ -163,6 +163,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Create)]
         public ActionResult Create(DiscountModel model, bool continueEditing)
         {
@@ -204,6 +205,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Update)]
         public ActionResult Edit(DiscountModel model, bool continueEditing)
         {
@@ -263,6 +265,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -298,9 +301,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult UsageHistoryList(int discountId, GridCommand command)
         {
             var model = new GridModel<DiscountModel.DiscountUsageHistoryModel>();
-
             var discount = _discountService.GetDiscountById(discountId);
-
             var discountHistories = _discountService.GetAllDiscountUsageHistory(discount.Id, null, command.Page - 1, command.PageSize);
 
             model.Data = discountHistories.Select(x => new DiscountModel.DiscountUsageHistoryModel

@@ -139,6 +139,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Create)]
         public ActionResult Create(CustomerRoleModel model, bool continueEditing)
         {
@@ -182,6 +183,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Update)]
         public ActionResult Edit(CustomerRoleModel model, bool continueEditing, FormCollection form)
         {
@@ -282,6 +284,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -343,6 +346,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ApplyRules(int id)
         {
             var customerRole = _customerService.GetCustomerRoleById(id);

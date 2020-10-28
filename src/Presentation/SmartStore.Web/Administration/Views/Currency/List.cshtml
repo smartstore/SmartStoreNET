@@ -8,39 +8,41 @@
 }
 
 <div class="section-header">
-    <div class="title">
-        <i class="far fa-money-bill-alt"></i>
-        @T("Admin.Configuration.Currencies")
-    </div>
-    <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary">
-            <i class="fa fa-plus"></i>
-            <span>@T("Admin.Common.AddNew")</span>
-        </a>
-        <a href="javascript:document.CurrencySettings.submit()" class="btn btn-warning">
-            <i class="fa fa-check"></i>
-            <span>@T("Admin.Common.Save")</span>
-        </a>
-        <a href="@Url.Action("List", "Currency", new { liveRates = true })" class="btn btn-secondary">
-            <i class="fa fa-sync"></i>
-            <span>@T("Admin.Configuration.Currencies.GetLiveRates")</span>
-        </a>
-    </div>
+	<div class="title">
+		<i class="far fa-money-bill-alt"></i>
+		@T("Admin.Configuration.Currencies")
+	</div>
+	<div class="options">
+		<a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
+		<a href="javascript:document.CurrencySettings.submit()" class="btn btn-warning">
+			<i class="fa fa-check"></i>
+			<span>@T("Admin.Common.Save")</span>
+		</a>
+		<a href="@Url.Action("List", "Currency", new { liveRates = true })" class="btn btn-secondary">
+			<i class="fa fa-sync"></i>
+			<span>@T("Admin.Configuration.Currencies.GetLiveRates")</span>
+		</a>
+	</div>
 </div>
 
 @using (Html.BeginForm("Save", "Currency", FormMethod.Post, new { name = "CurrencySettings" }))
 {
+	@Html.AntiForgeryToken()
+
 	@(Html.SmartStore().TabStrip().Name("currency-tabs").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Admin.Configuration.Currencies").Text).Content(TabList()).Selected(true);
 
-		if (rates != null) 
+		if (rates != null)
 		{
-			x.Add().Text(T("Admin.Configuration.Currencies.LiveRates").Text).Content(TabLiveRates());	
+			x.Add().Text(T("Admin.Configuration.Currencies.LiveRates").Text).Content(TabLiveRates());
 		}
 
 		x.Add().Text(T("Common.Options").Text).Content(TabOptions());
-		
+
 		//generate an event
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-config", this.Html, this.Model));
 	}))
@@ -51,28 +53,28 @@
 {
 	bool autoUpdateEnabled = ViewBag.AutoUpdateEnabled ?? false;
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
 				<div class="ctl-label">
 					<label>@T("Admin.Configuration.Currencies.Fields.ExchangeRateProvider")</label>
 				</div>
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("exchangeRateProvider", ViewBag.ExchangeRateProviders as IEnumerable<SelectListItem>)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("exchangeRateProvider", ViewBag.ExchangeRateProviders as IEnumerable<SelectListItem>)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				<div class="ctl-label">
 					<label>@T("Admin.Configuration.Currencies.Fields.CurrencyRateAutoUpdateEnabled")</label>
 				</div>
-            </td>
-            <td class="adminData">
-                @Html.CheckBox("autoUpdateEnabled", autoUpdateEnabled)
-            </td>
-        </tr>
-    </table>
+			</td>
+			<td class="adminData">
+				@Html.CheckBox("autoUpdateEnabled", autoUpdateEnabled)
+			</td>
+		</tr>
+	</table>
 }
 
 @helper TabList()
@@ -109,7 +111,7 @@
 @helper TabLiveRates()
 {
 	List<ExchangeRate> rates = ViewBag.Rates;
-	
+
 	if (rates != null)
 	{
 		<div>

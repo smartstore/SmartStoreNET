@@ -105,6 +105,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.DeliveryTime.Create)]
         public ActionResult CreateDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
@@ -153,6 +154,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.DeliveryTime.Update)]
         public ActionResult EditDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {

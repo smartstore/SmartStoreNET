@@ -9,6 +9,7 @@
 @using (Html.BeginForm())
 {
 	<fieldset>
+		@Html.AntiForgeryToken()
 		@Html.HiddenFor(model => model.Id)
 
 		<div class="section-header">
@@ -32,7 +33,7 @@
 						<span>@T("Admin.Common.Preview")</span>
 					</a>
 				}
-				
+
 				@if (Model.LogFileExists)
 				{
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">

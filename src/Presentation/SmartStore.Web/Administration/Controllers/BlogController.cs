@@ -221,6 +221,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Create)]
         public ActionResult Create(BlogPostModel model, bool continueEditing, FormCollection form)
         {
@@ -291,6 +292,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Update)]
         public ActionResult Edit(BlogPostModel model, bool continueEditing, FormCollection form)
         {
@@ -333,6 +335,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {

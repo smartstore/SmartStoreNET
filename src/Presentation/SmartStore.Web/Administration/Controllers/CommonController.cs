@@ -869,6 +869,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance")]
         [FormValueRequired("delete-image-cache")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteImageCache()
         {
@@ -881,6 +882,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Maintenance")]
+        [ValidateAntiForgeryToken]
         [FormValueRequired("delete-guests")]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
@@ -901,6 +903,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Maintenance")]
+        [ValidateAntiForgeryToken]
         [FormValueRequired("delete-exported-files")]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteFiles(MaintenanceModel model)
@@ -915,7 +918,7 @@ namespace SmartStore.Admin.Controllers
             model.DeleteExportedFiles.NumberOfDeletedFiles = 0;
             model.DeleteExportedFiles.NumberOfDeletedFolders = 0;
 
-            var appPath = this.Request.PhysicalApplicationPath;
+            var appPath = Request.PhysicalApplicationPath;
 
             string[] paths = new string[]
             {
@@ -985,6 +988,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance"), ValidateInput(false)]
         [FormValueRequired("execute-sql-query")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceExecuteSql(MaintenanceModel model)
         {

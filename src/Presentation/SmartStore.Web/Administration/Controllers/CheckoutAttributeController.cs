@@ -177,6 +177,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Create)]
         public ActionResult Create(CheckoutAttributeModel model, bool continueEditing)
         {
@@ -219,6 +220,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult Edit(CheckoutAttributeModel model, bool continueEditing)
         {
@@ -248,6 +250,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -310,6 +313,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult ValueCreatePopup(string btnId, string formId, CheckoutAttributeValueModel model)
         {
@@ -359,6 +363,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult ValueEditPopup(string btnId, string formId, CheckoutAttributeValueModel model)
         {

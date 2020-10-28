@@ -450,6 +450,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Create)]
         public ActionResult Create(CategoryModel model, bool continueEditing, FormCollection form)
         {
@@ -557,6 +558,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult Edit(CategoryModel model, bool continueEditing, FormCollection form)
         {
@@ -650,6 +652,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Delete)]
         public ActionResult Delete(int id, string deleteType)
         {
@@ -724,7 +727,6 @@ namespace SmartStore.Admin.Controllers
 
             _categoryService.UpdateProductCategory(productCategory);
 
-
             return ProductList(command, productCategory.CategoryId);
         }
 
@@ -741,6 +743,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.EditProduct)]
         public ActionResult ProductAdd(int categoryId, int[] selectedProductIds)
         {
@@ -773,6 +776,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ApplyRules(int id)
         {
             var category = _categoryService.GetCategoryById(id);

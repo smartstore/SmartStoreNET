@@ -3,11 +3,12 @@
 @using SmartStore.Core.Domain.Blogs;
 @using Telerik.Web.Mvc.UI;
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
-{   
+{
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
         .Content(TabInfo())
         .Selected(true);
@@ -27,8 +28,8 @@
                     @Html.SmartLabelFor(model => model.Locales[item].Title)
                 </td>
                 <td class="adminData">
-					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
                     @Html.EditorFor(model => Model.Locales[item].Title)
                     @Html.ValidationMessageFor(model => model.Locales[item].Title)
@@ -186,7 +187,7 @@
                 @Html.SmartLabelFor(model => model.SectionBg)
             </td>
             <td class="adminData">
-                @{ 
+                @{
                     var brandColors = GetThemeVariable("brand-colors")
                         .Trim()
                         .SplitSafe(",")
@@ -299,7 +300,7 @@
                 </td>
                 <td class="adminData">
                     @Html.EditorFor(x => x.SeName)
-					@if (Model.Id != 0)
+                    @if (Model.Id != 0)
                     {
                         @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "BlogPost", entityId = Model.Id })
                     }

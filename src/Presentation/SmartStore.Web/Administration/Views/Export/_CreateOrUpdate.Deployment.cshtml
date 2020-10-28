@@ -3,6 +3,7 @@
 @using SmartStore.Admin.Models.DataExchange
 @model ExportDeploymentModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 
 @Html.HiddenFor(model => model.Id)
@@ -57,8 +58,8 @@
 			@Html.SmartLabelFor(x => x.FileSystemPath)
 		</td>
 		<td class="adminData">
-            @Html.TextBoxFor(x => x.FileSystemPath, new { autocomplete = "new-password", @class = "text-box single-line" })
-            @*@Html.EditorFor(x => x.FileSystemPath)*@
+			@Html.TextBoxFor(x => x.FileSystemPath, new { autocomplete = "new-password", @class = "text-box single-line" })
+			@*@Html.EditorFor(x => x.FileSystemPath)*@
 			@Html.ValidationMessageFor(x => x.FileSystemPath)
 		</td>
 	</tr>

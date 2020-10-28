@@ -41,6 +41,7 @@
 	.Size(WindowSize.Medium)
 	.Content(@<text>
 		<form id="DeleteCategoryForm" method="POST" action="@Url.Action("Delete", "Category")">
+			@Html.AntiForgeryToken()
 			<input type="hidden" name="id" value="@Model.Id" />
 
 			<p>@T("Admin.Catalog.Categories.Delete.Hint")</p>

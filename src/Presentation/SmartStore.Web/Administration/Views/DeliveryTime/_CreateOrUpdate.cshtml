@@ -1,9 +1,9 @@
 ﻿@model DeliveryTimeModel
-@using Telerik.Web.Mvc.UI;
 @{
     var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
 }
 
+@Html.AntiForgeryToken()
 @Html.HiddenFor(model => model.Id)
 @(Html.LocalizedEditor<DeliveryTimeModel, DeliveryTimeLocalizedModel>("delivery-time-info-localized",
     @<table class="adminContent">

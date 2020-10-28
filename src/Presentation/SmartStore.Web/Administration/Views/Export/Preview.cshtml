@@ -13,6 +13,7 @@
 	</div>
 	<div class="options">
 		<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+			@Html.AntiForgeryToken()
 			<input type="hidden" name="Id" value="@Model.Id" />
 			<input type="hidden" name="SelectedIds" value="" />
 

@@ -71,10 +71,7 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(currency,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(currency, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
 
@@ -249,6 +246,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Currency.Update)]
+        [ValidateAntiForgeryToken]
         public ActionResult ApplyRate(string currencyCode, decimal rate)
         {
             var currency = _currencyService.GetCurrencyByCode(currencyCode);
@@ -265,6 +263,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Currency.Update)]
         public ActionResult Save(FormCollection formValues)
         {
@@ -310,6 +309,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Currency.Create)]
         public ActionResult Create(CurrencyModel model, bool continueEditing)
         {
@@ -368,6 +368,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Currency.Update)]
         public ActionResult Edit(CurrencyModel model, bool continueEditing)
         {
@@ -402,6 +403,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Currency.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {

@@ -62,8 +62,8 @@
 		<td class="adminData">
 			@Html.SettingEditorFor(model => model.ExperienceProfileId)
 
-			<a class="btn @(Model.ExperienceProfileId.HasValue() ? "btn-warning" : "btn-primary") mt-1" 
-				onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+			<a class="btn @(Model.ExperienceProfileId.HasValue() ? "btn-warning" : "btn-primary") mt-1@(hasCredentials ? "" : " disabled")" 
+				onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'
 				href="@Url.Action("UpsertExperienceProfile", new { area = Plugin.SystemName })">
 				<i class="fa-fw @(Model.ExperienceProfileId.HasValue() ? "fa fa-sync" : "far fa-list-alt")"></i>
 				<span>@T(Model.ExperienceProfileId.HasValue() ? "Common.Refresh" : "Common.AddNew")</span>
@@ -71,7 +71,7 @@
 
 			@if (Model.ExperienceProfileId.HasValue())
 			{
-				<a class="btn btn-danger mt-1" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+				<a class="btn btn-danger mt-1@(hasCredentials ? "" : " disabled")" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'
 					href="@Url.Action("DeleteExperienceProfile", new { area = Plugin.SystemName })">
 					<i class="far fa-trash-alt"></i>
 					<span>@T("Admin.Common.Delete")</span>
@@ -93,7 +93,7 @@
 				<div class="input-group-append">
 					@if (Model.WebhookId.HasValue())
 					{
-						<a class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+						<a class="btn btn-danger@(hasCredentials ? "" : " disabled")" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'
 							href="@Url.Action("DeleteWebhook", new { area = Plugin.SystemName })">
 							<i class="far fa-trash-alt"></i>
 							<span>@T("Admin.Common.Delete")</span>
@@ -101,7 +101,7 @@
 					}
 					else
 					{
-						<a class="btn btn-primary btn-primary-outline" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);' @(hasCredentials ? "" : "disabled='disabled'")
+						<a class="btn btn-primary btn-primary-outline@(hasCredentials ? "" : " disabled")" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'
 							href="@Url.Action("CreateWebhook", new { area = Plugin.SystemName })">
 							<i class="fa fa-plus"></i>
 							<span>@T("Common.AddNew")</span>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -144,7 +143,7 @@ namespace SmartStore.Web.Models.Catalog
         {
             public AddToCartModel()
             {
-                this.AllowedQuantities = new List<SelectListItem>();
+                AllowedQuantities = new List<SelectListItem>();
             }
             public int ProductId { get; set; }
 
@@ -155,7 +154,7 @@ namespace SmartStore.Web.Models.Catalog
             public bool CustomerEntersPrice { get; set; }
             [SmartResourceDisplayName("Products.EnterProductPrice")]
             public decimal CustomerEnteredPrice { get; set; }
-            public String CustomerEnteredPriceRange { get; set; }
+            public string CustomerEnteredPriceRange { get; set; }
 
             public int MinOrderAmount { get; set; }
             public int MaxOrderAmount { get; set; }

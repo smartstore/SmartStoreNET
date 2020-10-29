@@ -71,9 +71,10 @@
                     </div>
 
                     <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
-                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title" itemprop="headline">
+                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title">
                             @item.Title
                         </a>
+                        <meta itemprop="headline" content="@item.Title" />
                     </h3>
 
                     @if (item.Intro.HasValue())

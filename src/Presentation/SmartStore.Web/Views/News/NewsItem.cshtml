@@ -24,29 +24,35 @@
 
     @if (imageUrl.HasValue())
     {
+        <meta itemprop="image" content="@imageUrl" />
         <div class="shadow-sm shadow-primary mb-3">
             <figure class="single-media-item-image">
-                <img class="img-fluid" src="@imageUrl" 
-					 alt="@Model.PictureModel.AlternateText" 
-					 title="@Model.PictureModel.Title" 
-					 width="@Model.PictureModel.FullSizeImageWidth"
-					 height="@Model.PictureModel.FullSizeImageHeight"
-					 itemprop="image" />
+                <img class="img-fluid" src="@imageUrl"
+                     alt="@Model.PictureModel.AlternateText"
+                     title="@Model.PictureModel.Title"
+                     width="@Model.PictureModel.FullSizeImageWidth"
+                     height="@Model.PictureModel.FullSizeImageHeight" />
             </figure>
         </div>
     }
 
-    <div class="news-date text-muted mb-2" itemprop="datePublished">
+    <div class="news-date text-muted mb-2">
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
-    <meta itemprop="dateModified" content="@Model.CreatedOn.ToNativeString("D")">
+    <meta itemprop="datePublished" content="@Model.CreatedOn.ToString("s")" />
+
+    <meta itemprop="dateModified" content="@Model.CreatedOn.ToString("s")" />
+
+    <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
+
+    <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
 
     <div class="page-title mb-4">
         <h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
     </div>
 
-    <div class="news-body">    
+    <div class="news-body">
         @{ Html.RenderWidget("newsitem_page_before_body"); }
 
         <div class="news-content long-text html-editor-content" itemprop="articleBody">

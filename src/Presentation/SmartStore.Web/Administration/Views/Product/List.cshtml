@@ -1,17 +1,18 @@
 ﻿@model ProductListModel
 @{
 	var allString = T("Admin.Common.All").Text;
-    
-    ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
+
+	ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
 }
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-cube"></i>
-            @T("Admin.Catalog.Products.Manage")
-        </div>
-        <div class="options">
+	@Html.AntiForgeryToken()
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-cube"></i>
+			@T("Admin.Catalog.Products.Manage")
+		</div>
+		<div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
 			<div class="input-group d-inline-flex mr-3" style="width: 350px">
@@ -26,12 +27,12 @@
 						<i class="fa fa-angle-double-down"></i>
 					</button>
 				</div>
-			</div>		
+			</div>
 
-            <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="fa fa-plus"></i>
+			<a href="@Url.Action("Create")" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
 				<span>@T("Admin.Common.AddNew")</span>
-            </a>
+			</a>
 
 			<button type="submit" id="delete-selected" class="btn btn-secondary btn-to-danger">
 				<i class="far fa-trash-alt"></i>
@@ -39,8 +40,8 @@
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
-        </div>
-    </div>
+		</div>
+	</div>
 
 	<div class="row mt-3 grid-filter" style="display: none">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -89,7 +90,7 @@
 			</button>
 		</div>
 	</div>
-	
+
 	<div>
 		@(Html.Telerik().Grid<ProductModel>()
 			.Name("products-grid")
@@ -140,8 +141,8 @@
 			.EnableCustomBinding(true)
 			.PreserveGridState())
 	</div>
-    
-    <script>
+
+	<script>
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
@@ -267,5 +268,6 @@
 			var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
 			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
 		}
-    </script>  
+	</script>
+
 }

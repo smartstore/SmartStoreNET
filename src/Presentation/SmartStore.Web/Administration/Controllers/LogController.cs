@@ -128,6 +128,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("clearall")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Log.Delete)]
         public ActionResult ClearAll()
         {
@@ -183,12 +184,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Log.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
             var log = _logService.GetLogById(id);
             if (log == null)
-                //No log found with the specified id
+                // No log entry found with the specified id.
                 return RedirectToAction("List");
 
             _logService.DeleteLog(log);
@@ -198,6 +200,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Log.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {

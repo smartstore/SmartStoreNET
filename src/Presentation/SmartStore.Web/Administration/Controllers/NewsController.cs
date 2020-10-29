@@ -212,6 +212,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.News.Create)]
         public ActionResult Create(NewsItemModel model, bool continueEditing, FormCollection form)
         {
@@ -276,6 +277,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.News.Update)]
         public ActionResult Edit(NewsItemModel model, bool continueEditing, FormCollection form)
         {
@@ -313,6 +315,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.News.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -329,6 +332,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.News.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {

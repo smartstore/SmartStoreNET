@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Admin.Models.Menus
 @model MenuItemRecordModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.MenuId)

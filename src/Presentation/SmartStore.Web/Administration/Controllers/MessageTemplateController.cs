@@ -207,6 +207,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.MessageTemplate.Update)]
         public ActionResult Edit(MessageTemplateModel model, bool continueEditing, FormCollection form)
         {

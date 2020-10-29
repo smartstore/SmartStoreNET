@@ -4,6 +4,8 @@
     ViewBag.Title = T("Admin.ContentManagement.News.NewsItems").Text;
 }
 
+@Html.AntiForgeryToken()
+
 <div class="section-header">
     <div class="title">
         <i class="far fa-newspaper"></i>
@@ -128,15 +130,16 @@
         $('#delete-selected').click(function (e) {
         	e.preventDefault();
 
-        	var postData = {
-        		selectedIds: selectedIds
-        	};
+            var token = $('input[name="__RequestVerificationToken"]').val();
 
         	$.ajax({
         		cache:false,
         		type: "POST",
         		url: "@(Url.Action("DeleteSelected", "News"))",
-        		data: postData,
+        		data: {
+                    selectedIds: selectedIds,
+                    __RequestVerificationToken: token
+        	    },
         		complete: function (data) {
         			// Reload grid.
         			var grid = $('#newsitem-grid').data('tGrid');

@@ -211,55 +211,13 @@ namespace SmartStore.Admin.Controllers
             var p = product;
             var m = model;
 
-            p.ProductTypeId = m.ProductTypeId;
-            p.Visibility = m.Visibility;
-            p.Condition = m.Condition;
-            p.ProductTemplateId = m.ProductTemplateId;
+            MiniMapper.Map(m, p);
 
             nameChanged = !string.Equals(p.Name, m.Name, StringComparison.CurrentCultureIgnoreCase);
-
-            p.Name = m.Name;
-            p.ShortDescription = m.ShortDescription;
-            p.FullDescription = m.FullDescription;
-            p.Sku = m.Sku;
-            p.ManufacturerPartNumber = m.ManufacturerPartNumber;
-            p.Gtin = m.Gtin;
-            p.AdminComment = m.AdminComment;
-            p.AvailableStartDateTimeUtc = m.AvailableStartDateTimeUtc;
-            p.AvailableEndDateTimeUtc = m.AvailableEndDateTimeUtc;
-
-            p.AllowCustomerReviews = m.AllowCustomerReviews;
-            p.ShowOnHomePage = m.ShowOnHomePage;
-            p.HomePageDisplayOrder = m.HomePageDisplayOrder;
-            p.Published = m.Published;
-            p.RequireOtherProducts = m.RequireOtherProducts;
-            p.RequiredProductIds = m.RequiredProductIds;
-            p.AutomaticallyAddRequiredProducts = m.AutomaticallyAddRequiredProducts;
-
-            p.IsGiftCard = m.IsGiftCard;
-            p.GiftCardTypeId = m.GiftCardTypeId;
-
-            p.IsRecurring = m.IsRecurring;
-            p.RecurringCycleLength = m.RecurringCycleLength;
-            p.RecurringCyclePeriodId = m.RecurringCyclePeriodId;
-            p.RecurringTotalCycles = m.RecurringTotalCycles;
-
-            p.IsShipEnabled = m.IsShipEnabled;
             p.DeliveryTimeId = m.DeliveryTimeId == 0 ? null : m.DeliveryTimeId;
             p.QuantityUnitId = m.QuantityUnitId == 0 ? null : m.QuantityUnitId;
-            p.IsFreeShipping = m.IsFreeShipping;
-            p.AdditionalShippingCharge = m.AdditionalShippingCharge;
-            p.Weight = m.Weight;
-            p.Length = m.Length;
-            p.Width = m.Width;
-            p.Height = m.Height;
-
-            p.IsEsd = m.IsEsd;
-            p.IsTaxExempt = m.IsTaxExempt;
             p.TaxCategoryId = m.TaxCategoryId ?? 0;
-            p.CustomsTariffNumber = m.CustomsTariffNumber;
             p.CountryOfOriginId = m.CountryOfOriginId == 0 ? null : m.CountryOfOriginId;
-
             p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
             p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
         }
@@ -305,18 +263,7 @@ namespace SmartStore.Admin.Controllers
                 p.StockQuantity = m.StockQuantity;
             }
 
-            p.ManageInventoryMethodId = m.ManageInventoryMethodId;
-            p.DisplayStockAvailability = m.DisplayStockAvailability;
-            p.DisplayStockQuantity = m.DisplayStockQuantity;
-            p.MinStockQuantity = m.MinStockQuantity;
-            p.LowStockActivityId = m.LowStockActivityId;
-            p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
-            p.BackorderModeId = m.BackorderModeId;
-            p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
-            p.OrderMinimumQuantity = m.OrderMinimumQuantity;
-            p.OrderMaximumQuantity = m.OrderMaximumQuantity;
-            p.QuantityStep = m.QuantityStep;
-            p.HideQuantityControl = m.HideQuantityControl;
+            MiniMapper.Map(m, p);
 
             if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock && updateStockQuantity)
             {
@@ -342,18 +289,12 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductBundleItems(Product product, ProductModel model)
         {
-            var p = product;
-            var m = model;
-
-            p.BundleTitleText = m.BundleTitleText;
-            p.BundlePerItemPricing = m.BundlePerItemPricing;
-            p.BundlePerItemShipping = m.BundlePerItemShipping;
-            p.BundlePerItemShoppingCart = m.BundlePerItemShoppingCart;
+            MiniMapper.Map(model, product);
 
             // SEO
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(p, x => x.BundleTitleText, localized.BundleTitleText, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(product, x => x.BundleTitleText, localized.BundleTitleText, localized.LanguageId);
             }
         }
 
@@ -363,24 +304,7 @@ namespace SmartStore.Admin.Controllers
             var p = product;
             var m = model;
 
-            p.Price = m.Price;
-            p.OldPrice = m.OldPrice;
-            p.ProductCost = m.ProductCost;
-            p.SpecialPrice = m.SpecialPrice;
-            p.SpecialPriceStartDateTimeUtc = m.SpecialPriceStartDateTimeUtc;
-            p.SpecialPriceEndDateTimeUtc = m.SpecialPriceEndDateTimeUtc;
-            p.DisableBuyButton = m.DisableBuyButton;
-            p.DisableWishlistButton = m.DisableWishlistButton;
-            p.AvailableForPreOrder = m.AvailableForPreOrder;
-            p.CallForPrice = m.CallForPrice;
-            p.CustomerEntersPrice = m.CustomerEntersPrice;
-            p.MinimumCustomerEnteredPrice = m.MinimumCustomerEnteredPrice;
-            p.MaximumCustomerEnteredPrice = m.MaximumCustomerEnteredPrice;
-
-            p.BasePriceEnabled = m.BasePriceEnabled;
-            p.BasePriceBaseAmount = m.BasePriceBaseAmount;
-            p.BasePriceAmount = m.BasePriceAmount;
-            p.BasePriceMeasureUnit = m.BasePriceMeasureUnit;
+            MiniMapper.Map(m, p);
 
             // Discounts.
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
@@ -408,30 +332,21 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductSeo(Product product, ProductModel model)
         {
-            var p = product;
-            var m = model;
+            MiniMapper.Map(model, product);
 
-            p.MetaKeywords = m.MetaKeywords;
-            p.MetaDescription = m.MetaDescription;
-            p.MetaTitle = m.MetaTitle;
-
-            // SEO
             var service = _localizedEntityService;
             foreach (var localized in model.Locales)
             {
-                service.SaveLocalizedValue(p, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
-                service.SaveLocalizedValue(p, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
-                service.SaveLocalizedValue(p, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+                service.SaveLocalizedValue(product, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                service.SaveLocalizedValue(product, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+                service.SaveLocalizedValue(product, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
             }
         }
 
         [NonAction]
         protected void UpdateProductPictures(Product product, ProductModel model)
         {
-            var p = product;
-            var m = model;
-
-            p.HasPreviewPicture = m.HasPreviewPicture;
+            product.HasPreviewPicture = model.HasPreviewPicture;
         }
 
         [NonAction]
@@ -1055,6 +970,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.Create)]
         public ActionResult Create(ProductModel model, bool continueEditing, FormCollection form)
         {
@@ -1154,6 +1070,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.Update)]
         public ActionResult Edit(ProductModel model, bool continueEditing, FormCollection form)
         {
@@ -1395,6 +1312,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.Delete)]
         public ActionResult Delete(int id)
         {
@@ -1408,6 +1326,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Catalog.Product.Delete)]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteSelected(string selectedIds)
         {
             var products = new List<Product>();
@@ -1431,6 +1350,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.Create)]
         public ActionResult CopyProduct(ProductModel model)
         {
@@ -1724,6 +1644,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPromotion)]
         public ActionResult RelatedProductAdd(int productId, int[] selectedProductIds)
         {
@@ -1755,6 +1676,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPromotion)]
         public ActionResult CreateAllMutuallyRelatedProducts(int productId)
         {
@@ -1823,6 +1745,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPromotion)]
         public ActionResult CrossSellProductAdd(int productId, int[] selectedProductIds)
         {
@@ -1846,6 +1769,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPromotion)]
         public ActionResult CreateAllMutuallyCrossSellProducts(int productId)
         {
@@ -1928,6 +1852,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditAssociatedProduct)]
         public ActionResult AssociatedProductAdd(int productId, int[] selectedProductIds)
         {
@@ -2100,6 +2025,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditBundle)]
         public ActionResult BundleItemAdd(int productId, int[] selectedProductIds)
         {
@@ -2153,8 +2079,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditBundle)]
         public ActionResult BundleItemEditPopup(string btnId, string formId, bool continueEditing, ProductBundleItemModel model, FormCollection form)
         {
@@ -2203,6 +2130,7 @@ namespace SmartStore.Admin.Controllers
         #region Product pictures
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SortPictures(string pictures, int entityId)
         {
             var response = new List<dynamic>();
@@ -2249,6 +2177,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPicture)]
         public ActionResult ProductMediaFilesAdd(string mediaFileIds, int entityId)
         {
@@ -2312,6 +2241,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditPicture)]
         public ActionResult ProductPictureDelete(int id)
         {
@@ -2526,6 +2456,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditTag)]
         public ActionResult EditProductTag(string btnId, string formId, ProductTagModel model)
         {
@@ -3019,6 +2950,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult CopyAttributeOptions(int productVariantAttributeId, int optionsSetId, bool deleteExistingValues)
         {
@@ -3150,6 +3082,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult ProductAttributeValueCreatePopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
         {
@@ -3174,18 +3107,10 @@ namespace SmartStore.Admin.Controllers
             {
                 var pvav = new ProductVariantAttributeValue
                 {
-                    ProductVariantAttributeId = model.ProductVariantAttributeId,
-                    Name = model.Name,
-                    Alias = model.Alias,
-                    Color = model.Color,
                     MediaFileId = model.PictureId,
-                    PriceAdjustment = model.PriceAdjustment,
-                    WeightAdjustment = model.WeightAdjustment,
-                    IsPreSelected = model.IsPreSelected,
-                    DisplayOrder = model.DisplayOrder,
-                    ValueTypeId = model.ValueTypeId,
-                    Quantity = model.Quantity
                 };
+
+                MiniMapper.Map(model, pvav);
 
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
@@ -3268,6 +3193,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult ProductAttributeValueEditPopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
         {
@@ -3505,6 +3431,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult AttributeCombinationCreatePopup(
             string btnId,
@@ -3582,6 +3509,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult AttributeCombinationEditPopup(string btnId, string formId, ProductVariantAttributeCombinationModel model, FormCollection form)
         {
@@ -3609,6 +3537,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult CreateAllAttributeCombinations(ProductVariantAttributeCombinationModel model, int productId)
         {
@@ -3626,6 +3555,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Product.EditVariant)]
         public ActionResult DeleteAllAttributeCombinations(ProductVariantAttributeCombinationModel model, int productId)
         {

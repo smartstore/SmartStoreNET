@@ -95,6 +95,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateWeightPopup(string btnId, MeasureWeightModel model)
         {
@@ -151,6 +152,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditWeightPopup(string btnId, MeasureWeightModel model)
         {
@@ -256,6 +258,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateDimensionPopup(string btnId, MeasureDimensionModel model)
         {
@@ -312,6 +315,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditDimensionPopup(string btnId, MeasureDimensionModel model)
         {

@@ -137,6 +137,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Poll.Create)]
         public ActionResult Create(PollModel model, bool continueEditing)
         {
@@ -178,6 +179,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Poll.Update)]
         public ActionResult Edit(PollModel model, bool continueEditing)
         {
@@ -207,6 +209,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Poll.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {

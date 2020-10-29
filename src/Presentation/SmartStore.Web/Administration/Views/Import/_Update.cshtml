@@ -2,6 +2,7 @@
 @using SmartStore.Core.Domain.DataExchange;
 @model ImportProfileModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.TempFileName)
@@ -36,37 +37,37 @@
 			<td class="adminTitle">
 			</td>
 			<td id="ImportFileList" class="adminData wide">
-                <div class="w-50">
-				    @foreach (var file in Model.ExistingFiles)
-				    {
-					    <div class="py-2 border-bottom form-row">
-						    <div class="col d-flex align-items-center">
-                                @if (file.Label.HasValue())
-                                {
-                                    <span class="badge badge-info">
-                                        @Html.IconForFileExtension(file.Extension, false)
-                                        <span>@file.Label</span>
-                                    </span>
-                                }
-                                else
-                                {
-                                    @Html.IconForFileExtension(file.Extension, false)
-                                }
-							    <a class="pl-1" href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = file.Name })" download>@file.Name</a>
-						    </div>
-						    <div class="col-auto">
-							    <button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = file.Name })">
-								    <i class="far fa-trash-alt"></i>
-								    <span>@T("Admin.Common.Delete")</span>
-							    </button>
-						    </div>
-					    </div>
-				    }
-                </div>
+				<div class="w-50">
+					@foreach (var file in Model.ExistingFiles)
+					{
+						<div class="py-2 border-bottom form-row">
+							<div class="col d-flex align-items-center">
+								@if (file.Label.HasValue())
+								{
+									<span class="badge badge-info">
+										@Html.IconForFileExtension(file.Extension, false)
+										<span>@file.Label</span>
+									</span>
+								}
+								else
+								{
+									@Html.IconForFileExtension(file.Extension, false)
+								}
+								<a class="pl-1" href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = file.Name })" download>@file.Name</a>
+							</div>
+							<div class="col-auto">
+								<button type="button" class="btn btn-secondary btn-to-danger btn-sm import-file-delete ml-3" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = file.Name })">
+									<i class="far fa-trash-alt"></i>
+									<span>@T("Admin.Common.Delete")</span>
+								</button>
+							</div>
+						</div>
+					}
+				</div>
 			</td>
 		</tr>
 		@if (Model.ScheduleTaskId > 0)
-        {
+		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ScheduleTaskId)
@@ -77,7 +78,7 @@
 			</tr>
 		}
 		@if (Model.ImportResult != null)
-        {
+		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ImportResult)
@@ -117,13 +118,13 @@
 		@if (Model.EntityType == ImportEntityType.Product)
 		{
 			<tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(x => x.ImportRelatedData)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(x => x.ImportRelatedData)
-				    @Html.ValidationMessageFor(x => x.ImportRelatedData)
-			    </td>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ImportRelatedData)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ImportRelatedData)
+					@Html.ValidationMessageFor(x => x.ImportRelatedData)
+				</td>
 			</tr>
 		}
 		<tr>
@@ -213,16 +214,16 @@
 
 @if (Model.CsvConfiguration != null)
 {
-    var viewData = new ViewDataDictionary();
-    viewData.Add("ShowGroupCaption", true);
-    viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
-    viewData.ModelState.Merge(ViewData.ModelState);
-    Html.RenderPartial("CsvConfiguration", Model.CsvConfiguration, viewData);
+	var viewData = new ViewDataDictionary();
+	viewData.Add("ShowGroupCaption", true);
+	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+	viewData.ModelState.Merge(ViewData.ModelState);
+	Html.RenderPartial("CsvConfiguration", Model.CsvConfiguration, viewData);
 }
 
 @if (Model.ExistingFiles.Any(x => !x.RelatedType.HasValue))
 {
-    Html.RenderPartial("_ColumnMappings");
+	Html.RenderPartial("_ColumnMappings");
 }
 
 <script>
@@ -243,21 +244,24 @@
 
 	$(function() {
 		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
 		// delete import file
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
-			e.preventDefault();
-			$(this).doPostData({
-				ask: @T("Admin.Common.AskToProceed").JsText
+            e.preventDefault();
+            $(this).doPostData({
+                ask: @T("Admin.Common.AskToProceed").JsText,
+				data: { "__RequestVerificationToken": token }
 			});
 			return false;
 		});
 
 		// execute import
-		$('#ProfileImportButton').click(function (e) {
+        $('#ProfileImportButton').click(function (e) {
 			e.preventDefault();
-			$(this).doPostData({
-				ask: @T("Admin.Common.AskToProceed").JsText
+            $(this).doPostData({
+                ask: @T("Admin.Common.AskToProceed").JsText,
+				data: { "__RequestVerificationToken": token }
 			});
 			return false;
 		});
@@ -267,7 +271,9 @@
 		$('#ResetColumnMappings').on('click', function (e) {
 			e.preventDefault();
 			if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
-				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
+                var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post">';
+				form += '<input type="hidden" name="__RequestVerificationToken" value="' + token + '">';
+                form += '</form>';
 				$('body').append(form);
 				$('#ResetColumnMappingsForm').submit();
 			}
@@ -384,7 +390,6 @@
 		});
 
 		appendNewMappingRow();
-
 
 		function closeAllMappingEdits() {
 			$('#ImportColumnMappings').find('.mapping-edit').each(function () {
@@ -555,6 +560,5 @@
 
 			return item.text;
 		}
-
 	});
 </script>

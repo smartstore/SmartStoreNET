@@ -1,6 +1,6 @@
 ﻿@using Telerik.Web.Mvc.UI;
 @model ManufacturerModel
-
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("manufacturer-edit").Style(TabsStyle.Material).Items(x =>
@@ -381,9 +381,13 @@
 }
 
 <script>
-	$(function () {
+    var token;
+
+    $(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
         togglePageSize();
+
+        token = $('input[name="__RequestVerificationToken"]').val();
 
 		// Toggle top\bottom description.
 		$('.description-toggle-button').click(function() {
@@ -395,7 +399,11 @@
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("ProductAdd")',
-			data: { "manufacturerId": @Model.Id, "selectedProductIds": ids },
+            data: {
+                "manufacturerId": @Model.Id,
+                "selectedProductIds": ids,
+                "__RequestVerificationToken": token
+            },
 			callbackSuccess: function () {
 				$('#products-grid').data('tGrid').ajaxRequest();
 			}

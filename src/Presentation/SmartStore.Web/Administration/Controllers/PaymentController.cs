@@ -141,6 +141,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.PaymentMethod.Update)]
         public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, FormCollection form)
         {

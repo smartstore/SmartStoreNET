@@ -2,6 +2,7 @@
 
 @using SmartStore.Web.Framework.UI
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 

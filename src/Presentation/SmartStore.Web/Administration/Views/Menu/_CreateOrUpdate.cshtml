@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Admin.Models.Menus
 @model MenuRecordModel
 
+@Html.AntiForgeryToken()
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.IsSystemMenu)
 @Html.ValidationSummary(false)
@@ -156,6 +157,8 @@
 
 <script>
     $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
         // Process item command.
         $('#menu-items-container').on('click', '.menu-item-command:not(.disabled)', function (e) {
             e.preventDefault();
@@ -165,7 +168,8 @@
                 case 'delete-item':
 					el.doAjax({
 						type: 'POST',
-						ask: @T("Admin.Common.AskToProceed").JsText,
+                        ask: @T("Admin.Common.AskToProceed").JsText,
+                        data: { "__RequestVerificationToken": token },
                         callbackSuccess: function (response) {
                             if (!_.isEmpty(response)) {
                                 $('#menu-items').html(response);
@@ -177,6 +181,7 @@
                 case 'move-item-down':
                     el.doAjax({
                         type: 'POST',
+                        data: { "__RequestVerificationToken": token },
                         callbackSuccess: function (response) {
                             if (!_.isEmpty(response)) {
                                 $('#menu-items').html(response);

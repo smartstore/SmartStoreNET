@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Web.Framework.UI;
 @model LanguageModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("language-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
@@ -83,15 +84,15 @@
 				@Html.ValidationMessageFor(model => model.DisplayOrder)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SelectedStoreIds)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SelectedStoreIds)
-                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SelectedStoreIds)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SelectedStoreIds)
+				@Html.ValidationMessageFor(model => model.SelectedStoreIds)
+			</td>
+		</tr>
 		@if (Model.LastResourcesImportOnString.HasValue())
 		{
 			<tr>

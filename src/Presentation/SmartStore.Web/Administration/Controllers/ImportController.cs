@@ -381,6 +381,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Create)]
         public ActionResult Create(ImportProfileModel model)
         {
@@ -432,6 +433,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Import.Update)]
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(ImportProfileModel model, bool continueEditing, FormCollection form)
         {
             var profile = _importProfileService.GetImportProfileById(model.Id);
@@ -555,6 +557,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Update)]
         public ActionResult ResetColumnMappings(int id)
         {
@@ -575,6 +578,7 @@ namespace SmartStore.Admin.Controllers
         #region Execute / Delete
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Execute)]
         public ActionResult Execute(int id)
         {
@@ -599,6 +603,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -623,6 +628,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Delete)]
         public ActionResult DeleteImportFile(int id, string name)
         {
@@ -641,6 +647,7 @@ namespace SmartStore.Admin.Controllers
         #region Upload / Download
 
         [HttpPost]
+        //[ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Update)]
         public JsonResult FileUpload(int id)
         {

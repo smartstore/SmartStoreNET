@@ -132,6 +132,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.ProductReview.Update)]
         public ActionResult Edit(ProductReviewModel model, bool continueEditing)
         {
@@ -161,6 +162,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.ProductReview.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -180,6 +182,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.ProductReview.Approve)]
         public ActionResult ApproveSelected(ICollection<int> selectedIds)
         {
@@ -205,6 +208,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.ProductReview.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
@@ -229,6 +233,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.ProductReview.Approve)]
         public ActionResult DisapproveSelected(ICollection<int> selectedIds)
         {

@@ -1,6 +1,7 @@
 ﻿@using Telerik.Web.Mvc.UI;
 @model PollModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("poll-edit").Style(TabsStyle.Material).Items(x =>
@@ -8,12 +9,12 @@
     x.Add().Text(T("Admin.ContentManagement.Polls.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.ContentManagement.Polls.Answers").Text).Content(TabAnswers());
     x.Add().Text(T("Common.Voting").Text).Content(TabVoting());
-    
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "poll-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
-{        
+{
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -69,7 +70,7 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle"> 
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisplayOrder)
             </td>
             <td class="adminData">
@@ -111,51 +112,51 @@
 {
     if (Model.Id > 0)
     {
-		<div>
-			@(Html.Telerik().Grid<PollAnswerModel>()
-					.Name("answers-grid")
-					.DataKeys(x =>
-					{
-						x.Add(y => y.Id).RouteKey("Id");
-						x.Add(y => y.PollId).RouteKey("pollId");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Name)
-							.Width("60%");
-						columns.Bound(x => x.NumberOfVotes)
-							.ReadOnly()
-							.Width("10%")
+        <div>
+            @(Html.Telerik().Grid<PollAnswerModel>()
+                    .Name("answers-grid")
+                    .DataKeys(x =>
+                    {
+                        x.Add(y => y.Id).RouteKey("Id");
+                        x.Add(y => y.PollId).RouteKey("pollId");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Width("60%");
+                        columns.Bound(x => x.NumberOfVotes)
+                            .ReadOnly()
+                            .Width("10%")
                             .Centered();
-						columns.Bound(x => x.DisplayOrder1)
-							.Width("10%")
+                        columns.Bound(x => x.DisplayOrder1)
+                            .Width("10%")
                             .Centered();
-						columns.Command(commands =>
-						{
-							commands.Edit().Localize(T);
-							commands.Delete().Localize(T);
-						})
-						.Width("20%")
-						.HtmlAttributes(new { align = "right" }); ;
-					})
-					.ToolBar(x => x.Insert())
-					.Editable(x =>
-					{
-						x.Mode(GridEditMode.InLine);
-					})
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax().Select("PollAnswers", "Poll", new { pollId = Model.Id })
-							.Update("PollAnswerUpdate", "Poll")
-							.Delete("PollAnswerDelete", "Poll")
-							.Insert("PollAnswerAdd", "Poll", new { pollId = Model.Id });
-					})
-					.EnableCustomBinding(true))
-		</div>
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        })
+                        .Width("20%")
+                        .HtmlAttributes(new { align = "right" }); ;
+                    })
+                    .ToolBar(x => x.Insert())
+                    .Editable(x =>
+                    {
+                        x.Mode(GridEditMode.InLine);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax().Select("PollAnswers", "Poll", new { pollId = Model.Id })
+                            .Update("PollAnswerUpdate", "Poll")
+                            .Delete("PollAnswerDelete", "Poll")
+                            .Insert("PollAnswerAdd", "Poll", new { pollId = Model.Id });
+                    })
+                    .EnableCustomBinding(true))
+        </div>
     }
     else
     {
-		@T("Admin.ContentManagement.Polls.Answers.SaveBeforeEdit")
+        @T("Admin.ContentManagement.Polls.Answers.SaveBeforeEdit")
     }
 }
 
@@ -172,12 +173,12 @@
                 })
                 .Columns(columns =>
                 {
-			        columns.Bound(x => x.Email)
-				        .Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-				        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
-			        columns.Bound(x => x.Username)
-				        .Visible(Model.UsernamesEnabled);
-			        columns.Bound(x => x.FullName);
+                    columns.Bound(x => x.Email)
+                        .Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+                        .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
+                    columns.Bound(x => x.Username)
+                        .Visible(Model.UsernamesEnabled);
+                    columns.Bound(x => x.FullName);
                     columns.Bound(x => x.AnswerName);
                     columns.Bound(x => x.CreatedOn);
                 })
@@ -188,6 +189,6 @@
     }
     else
     {
-		@T("Admin.ContentManagement.Polls.Answers.SaveBeforeEdit")
+        @T("Admin.ContentManagement.Polls.Answers.SaveBeforeEdit")
     }
 }

@@ -158,7 +158,9 @@
                         });
 
                         $('#btnCreateAllCombinations, #btnDeleteAllCombinations').click(function () {
+							var token = $('input[name="__RequestVerificationToken"]').val();
                             $(this).doAjax({
+                                data: { "__RequestVerificationToken": token },
                                 callbackSuccess: function (resp) {
                                     $('#btnRefreshCombinations').click();
                                 }

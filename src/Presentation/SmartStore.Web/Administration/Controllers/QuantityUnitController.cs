@@ -91,6 +91,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Create)]
         public ActionResult CreateQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {
@@ -141,6 +142,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Measure.Update)]
         public ActionResult EditQuantityUnitPopup(string btnId, QuantityUnitModel model)
         {

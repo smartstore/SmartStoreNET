@@ -129,25 +129,11 @@
 	</div>
 
     <script>
-		function EntPicker_Completed(ids) {
-			$({}).doAjax({
-				type: 'POST',
-				url: '@Url.Action("BundleItemAdd")',
-				data: { "productId": @Model.Id, "selectedProductIds": ids },
-				callbackSuccess: function () {
-					$("#bundleitems-grid").data('tGrid').ajaxRequest();
-				}
-			});
-			return true;
-		};
+		var token = "";
 
-		function onRowDataBound_bundleItems(e) {
-			if (!e.dataItem.Published) {
-				$(e.row).find('td').wrapInner('<span class="text-muted" />');
-			}
-		}
+        $(function () {
+            token = $('input[name="__RequestVerificationToken"]').val();
 
-		$(function () {
 			$('#btnRefreshBundleItems').on('click', function () {
 				$("#bundleitems-grid").data('tGrid').ajaxRequest();
 				return false;
@@ -171,7 +157,29 @@
 
 				return false;
 			});
-		});
+        });
+
+		function EntPicker_Completed(ids) {
+			$({}).doAjax({
+				type: 'POST',
+				url: '@Url.Action("BundleItemAdd")',
+                data: {
+                    "productId": @Model.Id,
+                    "selectedProductIds": ids,
+					"__RequestVerificationToken": token 
+                },
+				callbackSuccess: function () {
+					$("#bundleitems-grid").data('tGrid').ajaxRequest();
+				}
+			});
+			return true;
+		};
+
+		function onRowDataBound_bundleItems(e) {
+			if (!e.dataItem.Published) {
+				$(e.row).find('td').wrapInner('<span class="text-muted" />');
+			}
+		}
     </script>
 }
 else

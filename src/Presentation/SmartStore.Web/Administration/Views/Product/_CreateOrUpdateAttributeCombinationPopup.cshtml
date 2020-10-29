@@ -2,6 +2,7 @@
 
 @using SmartStore.Core.Domain.Media;
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 

@@ -200,6 +200,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.Create)]
         public ActionResult Create(ProductAttributeModel model, bool continueEditing)
         {
@@ -254,6 +255,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.Update)]
         public ActionResult Edit(ProductAttributeModel model, bool continueEditing)
         {
@@ -289,6 +291,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -420,6 +423,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionCreatePopup(string btnId, string formId, ProductAttributeOptionModel model)
         {
@@ -467,6 +471,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionEditPopup(string btnId, string formId, ProductAttributeOptionModel model)
         {
@@ -502,6 +507,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionDelete(int id)
         {

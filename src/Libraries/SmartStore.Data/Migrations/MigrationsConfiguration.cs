@@ -862,6 +862,9 @@
             builder.AddOrUpdate("Order.CompletePayment.Hint",
                 "Click 'Complete payment' if you have not yet paid and wish to start the payment process again.",
                 "Klicken Sie 'Zahlung veranlassen', falls Sie noch nicht gezahlt haben und den Zahlungsvorgang erneut starten möchten.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Forums.ForumGroup.Updated")
+                .Value("de", "Die Forengruppe wurde erfolgreich aktualisiert.");
         }
     }
 }

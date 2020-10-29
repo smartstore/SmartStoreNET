@@ -26,7 +26,6 @@ namespace SmartStore.Services.Localization
         private readonly ICacheManager _cache;
         private readonly ISettingService _settingService;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly IEventPublisher _eventPublisher;
 
         public LanguageService(
             IRequestCache requestCache,
@@ -44,7 +43,6 @@ namespace SmartStore.Services.Localization
             _languageRepository = languageRepository;
             _settingService = settingService;
             _localizationSettings = localizationSettings;
-            _eventPublisher = eventPublisher;
             _storeMappingService = storeMappingService;
             _storeService = storeService;
             _storeContext = storeContext;

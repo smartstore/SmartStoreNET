@@ -208,7 +208,7 @@ namespace SmartStore.Services.Localization
             return GetLocalizedPropertyCollectionInternal(localeKeyGroup, 0, entityIds, isRange, isSorted);
         }
 
-        public virtual LocalizedPropertyCollection GetLocalizedPropertyCollectionInternal(string localeKeyGroup, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+        protected virtual LocalizedPropertyCollection GetLocalizedPropertyCollectionInternal(string localeKeyGroup, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
         {
             Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 

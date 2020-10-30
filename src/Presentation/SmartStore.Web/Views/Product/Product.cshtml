@@ -33,10 +33,10 @@
 
 @{ Html.RenderAction("MetaPropertiesProduct", "Common", new { product = Model }); }
 
-<div class="page product-details-page">
+<div class="page product-details-page" itemscope itemtype="http://schema.org/Product">
     @{ Html.RenderWidget("productdetails_top"); }
 
-    <article class="pd page-body" itemscope itemtype="http://schema.org/Product">
+    <article class="pd page-body">
 
         <div id="main-update-container" class="update-container" data-url="@updateUrl">
             @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))

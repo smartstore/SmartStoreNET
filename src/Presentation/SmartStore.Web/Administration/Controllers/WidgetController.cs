@@ -48,6 +48,8 @@ namespace SmartStore.Admin.Controllers
             return View(widgetsModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Widget.Activate)]
         public ActionResult ActivateProvider(string systemName, bool activate)
         {

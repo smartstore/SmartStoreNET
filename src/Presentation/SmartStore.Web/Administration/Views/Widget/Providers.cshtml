@@ -3,6 +3,8 @@
    ViewBag.Title = T("Admin.ContentManagement.Widgets").Text;
 }
 
+@Html.AntiForgeryToken()
+
 <div class="section-header">
    <div class="title">
        <i class="fa fa-plus-square"></i>
@@ -13,8 +15,55 @@
 <div>
 	@Html.ProviderList(Model,
 		@<div>
-			<a style="min-width: 150px" class='btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+			<a class="activate-provider btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")" style="min-width: 150px"
+               href='@Url.Action("ActivateProvider")' data-systemname="@item.SystemName" data-activate="@(!item.IsActive ? "true" : "false")">
 				@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
 			</a>
 		</div>)
 </div>
+
+<script>
+    $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val(); 
+
+        $(".activate-provider").on("click", function (e) {
+            e.preventDefault();
+
+            var $el = $(this);
+            var activate = $el.attr("data-activate") == "true" ? true : false;
+
+            $({}).doAjax({
+			    type: 'POST',
+			    url: '@Url.Action("ActivateProvider")',
+                data: {
+                    "__RequestVerificationToken": token, 
+                    "systemName": $el.attr("data-systemname"),
+                    "activate": activate
+                },
+			    callbackSuccess: function () {
+                    var item = $el.closest(".module-item");
+                    var badge = item.find(".badge");
+
+                    item.toggleClass("inactive", !activate);
+
+                    if (activate) {
+                        $el.addClass("btn-secondary btn-to-danger").removeClass("btn-success");
+                        $el.text(@T("Admin.Common.Deactivate").JsText);
+                        badge.text(@T("Common.Active").JsText);
+                        badge.addClass("badge-success").removeClass("badge-secondary");
+                    }
+                    else {
+                        $el.addClass("btn-success").removeClass("btn-secondary btn-to-danger");
+                        $el.text(@T("Admin.Common.Activate").JsText);
+                        badge.text(@T("Common.Inactive").JsText);
+                        badge.addClass("badge-secondary").removeClass("badge-success");
+                    }
+
+                    $el.attr("data-activate", !activate);
+			    }
+            });
+
+            return false;
+        })
+    });
+</script>

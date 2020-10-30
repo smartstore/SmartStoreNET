@@ -256,6 +256,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting]
         public ActionResult Blog(BlogSettings blogSettings, BlogSettingsModel model, int storeId)
         {
@@ -288,6 +289,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting]
         public ActionResult Forum(ForumSettings forumSettings, ForumSettingsModel model, int storeId)
         {
@@ -321,6 +323,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting]
         public ActionResult News(NewsSettings newsSettings, NewsSettingsModel model, int storeId)
         {
@@ -407,8 +410,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Permission(Permissions.Configuration.Setting.Update)]
         public ActionResult Shipping(ShippingSettingsModel model, FormCollection form)
         {
             // Note, model state is invalid here due to ShippingOriginAddress validation.
@@ -536,8 +540,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [Permission(Permissions.Configuration.Setting.Update)]
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Permission(Permissions.Configuration.Setting.Update)]
         public ActionResult Tax(TaxSettingsModel model, FormCollection form)
         {
             // Note, model state invalid here due to DefaultTaxAddress validation.
@@ -613,6 +618,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, ValidateInput(false), SaveSetting]
         public ActionResult Catalog(CatalogSettings catalogSettings, CatalogSettingsModel model)
         {
@@ -649,6 +655,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult RewardPoints(RewardPointsSettingsModel model, FormCollection form)
         {
@@ -714,6 +721,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Order(OrderSettingsModel model, FormCollection form)
         {
@@ -801,6 +809,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult ShoppingCart(ShoppingCartSettingsModel model, FormCollection form)
         {
@@ -842,6 +851,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting]
         public ActionResult Payment(PaymentSettings settings, PaymentSettingsModel model, FormCollection form)
         {
@@ -901,6 +911,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting, FormValueRequired("save")]
         public ActionResult Media(MediaSettings settings, MediaSettingsModel model)
         {
@@ -916,6 +927,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult ChangeMediaStorage(string targetProvider)
         {
@@ -964,6 +976,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, ValidateInput(false)]
         public ActionResult CustomerUser(CustomerUserSettingsModel model, FormCollection form)
         {
@@ -1087,6 +1100,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [AdminAuthorize]
         public ActionResult CookieInfoCreatePopup(string btnId, string formId, CookieInfoModel model)
         {
@@ -1175,6 +1189,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [AdminAuthorize]
         public ActionResult CookieInfoEditPopup(string btnId, string formId, CookieInfoModel model)
         {
@@ -1295,6 +1310,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting(IsRootedModel = true), FormValueRequired("save")]
         public ActionResult GeneralCommon(
             GeneralCommonSettingsModel model,
@@ -1430,6 +1446,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("GeneralCommon"), FormValueRequired("changeencryptionkey")]
         public ActionResult ChangeEnryptionKey(GeneralCommonSettingsModel model)
         {
@@ -1588,6 +1605,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost, SaveSetting]
         public ActionResult DataExchange(DataExchangeSettings settings, DataExchangeSettingsModel model, FormCollection form)
         {
@@ -1764,6 +1782,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Setting.Update)]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Search(SearchSettingsModel model, FormCollection form)
         {

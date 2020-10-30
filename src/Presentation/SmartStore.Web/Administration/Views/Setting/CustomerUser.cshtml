@@ -23,6 +23,7 @@
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.SmartStore().TabStrip().Name("customersettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
@@ -534,32 +535,32 @@
 
     <div id="pnlAddressSettingsSalutations">
         @(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-customer-localized",
-            @<table class="adminContent pnlSalutations">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.Locales[item].Salutations)
-                    </td>
-                    <td class="adminData">
-                        @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                    @<table class="adminContent pnlSalutations">
+                        <tr>
+                            <td class="adminTitle">
+                                @Html.SmartLabelFor(model => model.Locales[item].Salutations)
+                            </td>
+                            <td class="adminData">
+                                @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                                @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                        @Html.SettingEditorFor(model => Model.Locales[item].Salutations)
-                        @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
-                    </td>
-                </tr>
-            </table>
-            ,
-            @<table class="adminContent pnlSalutations">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
-                    </td>
-                    <td class="adminData">
-                        @Html.SettingEditorFor(model => model.AddressSettings.Salutations)
-                        @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
-                    </td>
-                </tr>
-            </table>
+                                @Html.SettingEditorFor(model => Model.Locales[item].Salutations)
+                                @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
+                            </td>
+                        </tr>
+                    </table>
+,
+                            @<table class="adminContent pnlSalutations">
+                                <tr>
+                                    <td class="adminTitle">
+                                        @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
+                                    </td>
+                                    <td class="adminData">
+                                        @Html.SettingEditorFor(model => model.AddressSettings.Salutations)
+                                        @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
+                                    </td>
+                                </tr>
+                            </table>
         ))
     </div>
 
@@ -803,14 +804,14 @@
             </td>
         </tr>
         <tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">
-						Cookies
-					</div>
-				</div>
-			</td>
-		</tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        Cookies
+                    </div>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PrivacySettings.EnableCookieConsent)
@@ -851,17 +852,17 @@
             </td>
         </tr>
         <tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">
-						@T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title")
-					</div>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title")
+                    </div>
                     <div class="text-muted">
                         @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction")
                     </div>
-				</div>
-			</td>
-		</tr>
+                </div>
+            </td>
+        </tr>
     </table>
 
     <form id="cookie-infos-form">

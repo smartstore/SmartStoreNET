@@ -1,28 +1,29 @@
 ﻿@model DataExchangeSettingsModel
 
 @{
-    ViewBag.Title = T("Admin.Common.DataExchange").Text;
+	ViewBag.Title = T("Admin.Common.DataExchange").Text;
 	Layout = "_SettingLayout";
 }
 
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-exchange-alt"></i>
-            @T("Admin.Common.DataExchange")
-        </div>
-        <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-warning">
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-exchange-alt"></i>
+			@T("Admin.Common.DataExchange")
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
 			</button>
-        </div>
-    </div>
+		</div>
+	</div>
 
-    Html.RenderAction("StoreScopeConfiguration", "Setting");
+	Html.RenderAction("StoreScopeConfiguration", "Setting");
 
-    @Html.ValidationSummary(false)
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false)
 
 	<table class="adminContent">
 		<tr>

@@ -158,6 +158,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.UrlRecord.Update)]
         public ActionResult Edit(UrlRecordModel model, bool continueEditing)
         {
@@ -196,6 +197,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.UrlRecord.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -221,6 +223,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.UrlRecord.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {

@@ -110,6 +110,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.ReturnRequest.Update)]
         public ActionResult Edit(ReturnRequestModel model, bool continueEditing)
         {
@@ -163,6 +164,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("notify-customer")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.ReturnRequest.Update)]
         public ActionResult NotifyCustomer(ReturnRequestModel model)
         {
@@ -184,6 +186,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.ReturnRequest.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -202,6 +205,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.ReturnRequest.Accept)]
         public ActionResult Accept(AutoUpdateOrderItemModel model)
         {

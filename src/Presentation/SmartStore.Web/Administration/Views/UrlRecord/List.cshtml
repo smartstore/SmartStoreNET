@@ -7,6 +7,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="fa fa-search"></i>
@@ -117,15 +119,17 @@
 			e.preventDefault();
 
 			if (confirm(@T("Admin.Common.AreYouSure").JsText)) {
-				var postData = {
-					selectedIds: selectedIds
-				};
+				
+				var token = $('input[name="__RequestVerificationToken"]').val();
 
 				$.ajax({
 					cache: false,
 					type: "POST",
 					url: "@(Url.Action("DeleteSelected", "UrlRecord"))",
-					data: postData,
+                    data: {
+						__RequestVerificationToken: token, 
+						selectedIds: selectedIds
+					},
 					complete: function (data) {
 						//reload grid
 						var grid = $('#urlrecord-grid').data('tGrid');

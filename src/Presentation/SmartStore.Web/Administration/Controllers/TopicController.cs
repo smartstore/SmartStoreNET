@@ -227,6 +227,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Topic.Create)]
         public ActionResult Create(TopicModel model, bool continueEditing, FormCollection form)
         {
@@ -333,6 +334,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Topic.Update)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {
@@ -388,6 +390,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Topic.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {

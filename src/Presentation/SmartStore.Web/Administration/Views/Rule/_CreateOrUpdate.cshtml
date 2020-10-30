@@ -1,6 +1,4 @@
 ﻿@model RuleSetModel
-
-@using SmartStore.Rules
 @using SmartStore.Admin.Models.Rules
 @{
     Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.rules.js");
@@ -8,6 +6,7 @@
     Html.AddScriptParts(true, "~/Administration/Content/telerik/js/2012.2.607/telerik.common.min.js");
 }
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.IsSubGroup)

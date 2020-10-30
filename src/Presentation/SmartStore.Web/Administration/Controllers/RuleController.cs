@@ -150,6 +150,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult Create(RuleSetModel model, bool continueEditing)
         {
@@ -186,6 +187,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult Edit(RuleSetModel model, bool continueEditing)
         {
@@ -213,6 +215,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -337,6 +340,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddRule(int ruleSetId, RuleScope scope, string ruleType)
         {
@@ -382,6 +386,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult UpdateRules(RuleEditItem[] ruleData, RuleScope ruleScope)
         {
@@ -398,6 +403,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteRule(int ruleId)
         {
@@ -414,6 +420,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult ChangeOperator(int ruleSetId, string op)
         {
@@ -434,6 +441,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddGroup(int ruleSetId, RuleScope scope)
         {
@@ -463,6 +471,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteGroup(int refRuleId)
         {
@@ -483,6 +492,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Execute)]
         public ActionResult Execute(int ruleSetId)
         {

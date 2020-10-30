@@ -1,5 +1,6 @@
 ﻿@model StoreModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 

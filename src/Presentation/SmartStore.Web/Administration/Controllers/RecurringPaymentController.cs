@@ -143,6 +143,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditRecurringPayment)]
         public ActionResult Edit(RecurringPaymentModel model, bool continueEditing)
         {
@@ -164,6 +165,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditRecurringPayment)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -206,6 +208,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("processnextpayment")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditRecurringPayment)]
         public ActionResult ProcessNextPayment(int id)
         {
@@ -236,6 +239,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("cancelpayment")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditRecurringPayment)]
         public ActionResult CancelRecurringPayment(int id)
         {

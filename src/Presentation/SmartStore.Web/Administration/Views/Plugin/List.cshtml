@@ -131,6 +131,8 @@
 
 @using (Html.BeginForm("ExecuteTasks", null, FormMethod.Post, new { id = "plugins-form" }))
 {
+	@Html.AntiForgeryToken()
+
     @Html.DropDownList("pluginsToInstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
     @Html.DropDownList("pluginsToUninstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
 
@@ -219,6 +221,7 @@
 <script>
     $(function() {
 		var stores = @Html.Raw(availableStores);
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
 		// Multistore
 		$(".store-limiter").editable({
@@ -440,7 +443,8 @@
 
     		$(this).doAjax({
     			type: 'GET',
-    			smallIcon: dialog.find('.modal-body'),
+                smallIcon: dialog.find('.modal-body'),
+				data: { __RequestVerificationToken: token },
     			callbackSuccess: function (resp) {
     				dialog = $('#plugin-licence-modal');
     				dialog.find('.modal-body').html(resp);
@@ -467,9 +471,11 @@
 		// reset license status
 		$('#plugin-licence-modal').on('click', '.licensing-reset-status-check', function() {
 			var licenseForm = $('#plugin-licence-modal').find('.modal-body form:first');
+			
 			$({}).doAjax({
 				type: 'POST',
-				url: licenseForm.attr('data-resetcheckurl'),
+                url: licenseForm.attr('data-resetcheckurl'),
+                data: { __RequestVerificationToken: token },
 				callbackSuccess: function (resp) {
 					if (resp.length > 0) {
 						var systemName = licenseForm.attr('data-systemname');

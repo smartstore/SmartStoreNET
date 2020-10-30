@@ -8,6 +8,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
 	<div class="multi-store-scope well border px-0 py-2">
 		<table class="adminContent adminContent-boxed">
 		<tr>
@@ -69,13 +71,15 @@
 	</div>
 }
 
-@*import variables window*@
 @{Html.SmartStore().Window()
     .Name("importvariables-window")
     .Title(T("Admin.Configuration.Themes.ImportVars"))
     .Content(
     @<text>
 		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
+            
+            @Html.AntiForgeryToken()
+
             <p class="text-muted">
                 @T("Admin.Configuration.Themes.ImportVars.Note")
             </p>

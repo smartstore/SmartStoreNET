@@ -3,34 +3,35 @@
 @model SearchSettingsModel
 
 @{
-    Layout = "_SettingLayout";
-    ViewBag.Title = T("Search.Title").Text;
+	Layout = "_SettingLayout";
+	ViewBag.Title = T("Search.Title").Text;
 }
 
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-search"></i>
-            @T("Search.Title")
-        </div>
-        <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-warning">
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-search"></i>
+			@T("Search.Title")
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
 			</button>
-        </div>
-    </div>
+		</div>
+	</div>
 
-    Html.RenderAction("StoreScopeConfiguration", "Setting");
+	Html.RenderAction("StoreScopeConfiguration", "Setting");
 
-    @Html.ValidationSummary(false)
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false)
 
-    @(Html.SmartStore().TabStrip().Name("searchsettings-edit").Style(TabsStyle.Material).Items(x =>
-     {
-         x.Add().Text(T("Admin.Catalog").Text).Content(@TabCatalogSettings()).Selected(true);
-         x.Add().Text(T("Forum.Forum").Text).Content(@TabForumSettings());
-     }))
+	@(Html.SmartStore().TabStrip().Name("searchsettings-edit").Style(TabsStyle.Material).Items(x =>
+	 {
+		 x.Add().Text(T("Admin.Catalog").Text).Content(@TabCatalogSettings()).Selected(true);
+		 x.Add().Text(T("Forum.Forum").Text).Content(@TabForumSettings());
+	 }))
 }
 
 @helper TabCatalogSettings()
@@ -75,15 +76,15 @@
 				</td>
 			</tr>
 		}
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(x => x.DefaultSortOrder)
-            </td>
-            <td class="adminData">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.DefaultSortOrder)
+			</td>
+			<td class="adminData">
 				@Html.SettingEditorFor(x => x.DefaultSortOrder, Html.DropDownListFor(x => x.DefaultSortOrder, Model.AvailableSortOrderModes))
-                @Html.ValidationMessageFor(x => x.DefaultSortOrder)
-            </td>
-        </tr>
+				@Html.ValidationMessageFor(x => x.DefaultSortOrder)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.SearchProductByIdentificationNumber)
@@ -234,15 +235,15 @@
 				@Html.ValidationMessageFor(x => x.ForumSearchSettings.SearchFields)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(x => x.ForumSearchSettings.DefaultSortOrder)
-            </td>
-            <td class="adminData">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ForumSearchSettings.DefaultSortOrder)
+			</td>
+			<td class="adminData">
 				@Html.SettingEditorFor(x => x.ForumSearchSettings.DefaultSortOrder, Html.DropDownListFor(x => x.ForumSearchSettings.DefaultSortOrder, Model.ForumSearchSettings.AvailableDefaultSortOrders))
-                @Html.ValidationMessageFor(x => x.ForumSearchSettings.DefaultSortOrder)
-            </td>
-        </tr>
+				@Html.ValidationMessageFor(x => x.ForumSearchSettings.DefaultSortOrder)
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -307,7 +308,7 @@
 				@Html.ValidationMessageFor(x => x.ForumSearchSettings.FilterMaxChoicesCount)
 			</td>
 		</tr>
-    </table>
+	</table>
 
 	<div class="mt-5">
 		@Html.SmartStore().TabStrip().Name("common-forum-facets-settings").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>

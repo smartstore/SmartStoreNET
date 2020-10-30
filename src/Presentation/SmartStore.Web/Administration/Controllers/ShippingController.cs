@@ -176,6 +176,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Shipping.Create)]
         public ActionResult CreateMethod(ShippingMethodModel model, bool continueEditing)
         {
@@ -223,6 +224,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Shipping.Update)]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing, FormCollection form)
         {
@@ -254,6 +256,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Shipping.Delete)]
         public ActionResult DeleteMethod(int id)
         {

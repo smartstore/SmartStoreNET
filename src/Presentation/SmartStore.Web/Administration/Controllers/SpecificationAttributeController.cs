@@ -162,6 +162,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Create)]
         public ActionResult Create(SpecificationAttributeModel model, bool continueEditing)
         {
@@ -219,6 +220,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Update)]
         public ActionResult Edit(SpecificationAttributeModel model, bool continueEditing)
         {
@@ -254,6 +256,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -272,6 +275,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
@@ -331,6 +335,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionCreatePopup(string btnId, string formId, SpecificationAttributeOptionModel model)
         {
@@ -401,6 +406,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionEditPopup(string btnId, string formId, SpecificationAttributeOptionModel model)
         {
@@ -459,6 +465,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Update)]
         public ActionResult SetAttributeValue(string pk, string value, string name, FormCollection form)
         {

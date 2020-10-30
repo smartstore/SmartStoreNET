@@ -200,6 +200,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Install)]
         public ActionResult ExecuteTasks(IEnumerable<string> pluginsToInstall, IEnumerable<string> pluginsToUninstall)
         {
@@ -274,6 +275,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
         public ActionResult SetSelectedStores(string pk /* SystemName */, string name, FormCollection form)
         {
@@ -409,6 +411,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditProviderPopup(string btnId, ProviderModel model)
         {
             var provider = _providerManager.GetProvider(model.SystemName);
@@ -521,8 +524,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(T("Admin.Common.ResourceNotFound"));
             }
 
-            var singleLicenseForAllStores = false;
-            var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor, out singleLicenseForAllStores);
+            var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor, out bool singleLicenseForAllStores);
             if (!isLicensable)
             {
                 return Content(T("Admin.Common.ResourceNotFound"));
@@ -581,6 +583,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.License)]
         public ActionResult LicensePlugin(string systemName, LicensePluginModel model)
         {
@@ -629,6 +632,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.License)]
         public ActionResult LicenseResetStatusCheck(string systemName)
         {

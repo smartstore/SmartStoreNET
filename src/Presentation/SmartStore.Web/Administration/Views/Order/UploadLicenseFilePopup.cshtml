@@ -16,6 +16,7 @@
         </div>
     </div>
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.HiddenFor(model => model.OrderId)

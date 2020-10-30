@@ -1,5 +1,4 @@
 ﻿@model BlogSettingsModel
-@using Telerik.Web.Mvc.UI;
 
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Blog").Text;
@@ -23,6 +22,7 @@
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.SmartStore().TabStrip().Name("blogsettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>

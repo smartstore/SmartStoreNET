@@ -7,6 +7,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="fa fa-truck"></i>

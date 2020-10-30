@@ -1111,6 +1111,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult ProcessOrder(string operation, string selectedIds)
         {
@@ -1267,6 +1268,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("cancelorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult CancelOrder(int id)
         {
@@ -1290,6 +1292,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("completeorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult CompleteOrder(int id)
         {
@@ -1313,6 +1316,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("captureorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult CaptureOrder(int id)
         {
@@ -1340,6 +1344,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("markorderaspaid")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult MarkOrderAsPaid(int id)
         {
@@ -1363,6 +1368,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult RefundOrder(int id)
         {
@@ -1390,6 +1396,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorderoffline")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult RefundOrderOffline(int id)
         {
@@ -1413,6 +1420,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult VoidOrder(int id)
         {
@@ -1440,6 +1448,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorderoffline")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult VoidOrderOffline(int id)
         {
@@ -1478,6 +1487,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [FormValueRequired("partialrefundorder")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult PartiallyRefundOrderPopup(string btnId, string formId, int id, bool online, OrderModel model)
         {
@@ -1558,6 +1568,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Delete)]
         public ActionResult Delete(int id)
         {
@@ -1585,6 +1596,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("btnSaveCC")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult EditCreditCardInfo(int id, OrderModel model)
         {
@@ -1596,20 +1608,13 @@ namespace SmartStore.Admin.Controllers
 
             if (order.AllowStoringCreditCardNumber)
             {
-                string cardType = model.CardType;
-                string cardName = model.CardName;
-                string cardNumber = model.CardNumber;
-                string cardCvv2 = model.CardCvv2;
-                string cardExpirationMonth = model.CardExpirationMonth;
-                string cardExpirationYear = model.CardExpirationYear;
-
-                order.CardType = _encryptionService.EncryptText(cardType);
-                order.CardName = _encryptionService.EncryptText(cardName);
-                order.CardNumber = _encryptionService.EncryptText(cardNumber);
-                order.MaskedCreditCardNumber = _encryptionService.EncryptText(_paymentService.GetMaskedCreditCardNumber(cardNumber));
-                order.CardCvv2 = _encryptionService.EncryptText(cardCvv2);
-                order.CardExpirationMonth = _encryptionService.EncryptText(cardExpirationMonth);
-                order.CardExpirationYear = _encryptionService.EncryptText(cardExpirationYear);
+                order.CardType = _encryptionService.EncryptText(model.CardType);
+                order.CardName = _encryptionService.EncryptText(model.CardName);
+                order.CardNumber = _encryptionService.EncryptText(model.CardNumber);
+                order.MaskedCreditCardNumber = _encryptionService.EncryptText(_paymentService.GetMaskedCreditCardNumber(model.CardNumber));
+                order.CardCvv2 = _encryptionService.EncryptText(model.CardCvv2);
+                order.CardExpirationMonth = _encryptionService.EncryptText(model.CardExpirationMonth);
+                order.CardExpirationYear = _encryptionService.EncryptText(model.CardExpirationYear);
                 _orderService.UpdateOrder(order);
             }
 
@@ -1619,6 +1624,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("btnSaveDD")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult EditDirectDebitInfo(int id, OrderModel model)
         {
@@ -1630,21 +1636,13 @@ namespace SmartStore.Admin.Controllers
 
             if (order.AllowStoringDirectDebit)
             {
-                string accountHolder = model.DirectDebitAccountHolder;
-                string accountNumber = model.DirectDebitAccountNumber;
-                string bankCode = model.DirectDebitBankCode;
-                string bankName = model.DirectDebitBankName;
-                string bic = model.DirectDebitBIC;
-                string country = model.DirectDebitCountry;
-                string iban = model.DirectDebitIban;
-
-                order.DirectDebitAccountHolder = _encryptionService.EncryptText(accountHolder);
-                order.DirectDebitAccountNumber = _encryptionService.EncryptText(accountNumber);
-                order.DirectDebitBankCode = _encryptionService.EncryptText(bankCode);
-                order.DirectDebitBankName = _encryptionService.EncryptText(bankName);
-                order.DirectDebitBIC = _encryptionService.EncryptText(bic);
-                order.DirectDebitCountry = _encryptionService.EncryptText(country);
-                order.DirectDebitIban = _encryptionService.EncryptText(iban);
+                order.DirectDebitAccountHolder = _encryptionService.EncryptText(model.DirectDebitAccountHolder);
+                order.DirectDebitAccountNumber = _encryptionService.EncryptText(model.DirectDebitAccountNumber);
+                order.DirectDebitBankCode = _encryptionService.EncryptText(model.DirectDebitBankCode);
+                order.DirectDebitBankName = _encryptionService.EncryptText(model.DirectDebitBankName);
+                order.DirectDebitBIC = _encryptionService.EncryptText(model.DirectDebitBIC);
+                order.DirectDebitCountry = _encryptionService.EncryptText(model.DirectDebitCountry);
+                order.DirectDebitIban = _encryptionService.EncryptText(model.DirectDebitIban);
 
                 _orderService.UpdateOrder(order);
             }
@@ -1656,6 +1654,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("btnSaveOrderTotals")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult EditOrderTotals(int id, OrderModel model)
         {
@@ -1686,6 +1685,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditItem)]
         public ActionResult EditOrderItem(AutoUpdateOrderItemModel model, FormCollection form)
         {
@@ -1737,6 +1737,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditItem)]
         public ActionResult DeleteOrderItem(AutoUpdateOrderItemModel model)
         {
@@ -1769,6 +1770,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Edit")]
         [FormValueRequired(FormValueRequirement.StartsWith, "btnAddReturnRequest")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.ReturnRequest.Create)]
         public ActionResult AddReturnRequest(int id, FormCollection form)
         {
@@ -1821,6 +1823,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ValidateInput(false), ActionName("Edit")]
         [FormValueRequired(FormValueRequirement.StartsWith, "btnResetDownloadCount")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult ResetDownloadCount(int id, FormCollection form)
         {
@@ -1856,6 +1859,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ValidateInput(false), ActionName("Edit")]
         [FormValueRequired(FormValueRequirement.StartsWith, "btnPvActivateDownload")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult ActivateDownloadOrderItem(int id, FormCollection form)
         {
@@ -1921,6 +1925,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [FormValueRequired("uploadlicense")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult UploadLicenseFilePopup(string btnId, string formId, OrderModel.UploadLicenseModel model)
         {
@@ -1990,6 +1995,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("UploadLicenseFilePopup")]
         [FormValueRequired("deletelicense")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult DeleteLicenseFilePopup(string btnId, string formId, OrderModel.UploadLicenseModel model)
         {
@@ -2096,6 +2102,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditItem)]
         public ActionResult AddProductToOrderDetails(int orderId, int productId, bool adjustInventory, bool? updateTotals, ProductVariantQuery query, FormCollection form)
         {
@@ -2104,17 +2111,12 @@ namespace SmartStore.Admin.Controllers
             var currency = _currencyService.GetCurrencyByCode(order.CustomerCurrencyCode);
             var includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
-            var unitPriceInclTax = decimal.Zero;
-            decimal.TryParse(form["UnitPriceInclTax"], out unitPriceInclTax);
-            var unitPriceExclTax = decimal.Zero;
-            decimal.TryParse(form["UnitPriceExclTax"], out unitPriceExclTax);
+            decimal.TryParse(form["UnitPriceInclTax"], out decimal unitPriceInclTax);
+            decimal.TryParse(form["UnitPriceExclTax"], out decimal unitPriceExclTax);
+            decimal.TryParse(form["SubTotalInclTax"], out decimal priceInclTax);
+            decimal.TryParse(form["SubTotalExclTax"], out decimal priceExclTax);
+            decimal.TryParse(form["TaxRate"], out decimal unitPriceTaxRate);
             int.TryParse(form["Quantity"], out var quantity);
-            var priceInclTax = decimal.Zero;
-            decimal.TryParse(form["SubTotalInclTax"], out priceInclTax);
-            var priceExclTax = decimal.Zero;
-            decimal.TryParse(form["SubTotalExclTax"], out priceExclTax);
-            var unitPriceTaxRate = decimal.Zero;
-            decimal.TryParse(form["TaxRate"], out unitPriceTaxRate);
 
             var warnings = new List<string>();
             var attributes = "";
@@ -2283,6 +2285,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult AddressEdit(OrderAddressModel model)
         {
@@ -2431,6 +2434,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult AddShipment(ShipmentModel model, FormCollection form, bool continueEditing)
         {
@@ -2492,6 +2496,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult ShipmentDetails(ShipmentModel model, bool continueEditing)
         {
@@ -2519,6 +2524,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult DeleteShipment(int id)
         {
@@ -2537,6 +2543,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsShipped(int id)
         {
@@ -2559,6 +2566,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.EditShipment)]
         public ActionResult SetAsDelivered(int id)
         {
@@ -2689,6 +2697,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.Update)]
         public ActionResult OrderNoteAdd(int orderId, bool displayToCustomer, string message)
         {

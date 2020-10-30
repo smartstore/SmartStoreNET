@@ -6,6 +6,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
 			@string.Format(T("Admin.Orders.Fields.PartialRefund.OrderInfo").Text, Model.Id)

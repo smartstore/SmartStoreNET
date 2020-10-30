@@ -22,6 +22,7 @@
 
 	Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+	@Html.AntiForgeryToken()
 	@Html.ValidationSummary(false)
 
 	@Html.SmartStore().TabStrip().Name("newssettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>

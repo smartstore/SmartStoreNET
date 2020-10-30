@@ -22,6 +22,7 @@
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.SmartStore().TabStrip().Name("ordersettings-edit").Style(TabsStyle.Material).Items(x =>
@@ -29,7 +30,6 @@
 		x.Add().Text(T("Admin.Configuration.Settings.Order.OrderSettings").Text).Content(TabOrderSettings()).Selected(true);
 		x.Add().Text(T("Admin.Configuration.Settings.Order.ReturnRequestSettings").Text).Content(TabReturnRequestSettings());
 
-		//generate an event
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "ordersettings-edit", this.Html, this.Model));
     })
 }

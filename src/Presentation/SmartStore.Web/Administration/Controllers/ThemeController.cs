@@ -111,6 +111,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("List")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult ListPost(ThemeListModel model, FormCollection form)
         {
@@ -164,6 +165,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
@@ -251,6 +253,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult ImportVariables(string theme, int storeId, FormCollection form)
         {

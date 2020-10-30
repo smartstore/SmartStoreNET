@@ -93,7 +93,7 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        #region List
+        #region List / Create / Edit / Update
 
         [Permission(Permissions.Configuration.Store.Read)]
         public ActionResult List()
@@ -139,6 +139,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Create)]
         public ActionResult Create(StoreModel model, bool continueEditing)
         {
@@ -175,6 +176,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Update)]
         public ActionResult Edit(StoreModel model, bool continueEditing)
         {
@@ -201,6 +203,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Delete)]
         public ActionResult Delete(int id)
         {

@@ -121,6 +121,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Edit")]
         [FormValueExists("save", "save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Update)]
         public ActionResult Edit(QueuedEmailModel model, bool continueEditing)
         {
@@ -149,6 +150,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Edit"), FormValueRequired("requeue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Create)]
         public ActionResult Requeue(QueuedEmailModel queuedEmailModel)
         {
@@ -179,6 +181,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Edit"), FormValueRequired("sendnow")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Send)]
         public async Task<ActionResult> SendNow(QueuedEmailModel queuedEmailModel)
         {
@@ -202,6 +205,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -219,6 +223,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
@@ -235,6 +240,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("List"), FormValueRequired("delete-all")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Delete)]
         public ActionResult DeleteAll()
         {

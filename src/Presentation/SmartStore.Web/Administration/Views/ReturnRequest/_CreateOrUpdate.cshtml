@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Core.Domain.Orders;
 @model ReturnRequestModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 

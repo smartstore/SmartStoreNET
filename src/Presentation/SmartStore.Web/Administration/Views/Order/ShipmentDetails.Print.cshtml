@@ -1,4 +1,6 @@
 ﻿@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Services.Directory;
+@using SmartStore.Services.Localization;
 @model IEnumerable<ShipmentModel>
 @{
 	Layout = "_Print";
@@ -24,7 +26,7 @@
 	{
 		var company = shipment.MerchantCompanyInfo;
 		var address = shipment.ShippingAddress;
-		var showGtin = shipment.Items.Any(x => !String.IsNullOrEmpty(x.Gtin));
+		var showGtin = shipment.Items.Any(x => x.Gtin.HasValue());
 
 		var colWidths = new int[] { 50, 20, 10 };
 
@@ -37,10 +39,13 @@
 					<div>
 						<span class="header text-smallest">
 							@{
+								var countryService = EngineContext.Current.Resolve<ICountryService>();
+								var country = countryService.GetCountryById(company.CountryId);
+
 								var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
-								var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+								var countryAndState = JoinValues(new string[] { country.GetLocalized(x => x.Name), company.StateName }, ", ").ToString();
 							}
-							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
+							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, countryAndState }, " &middot; ")
 						</span>
 					</div>
 					<div class="mt-2">
@@ -63,15 +68,15 @@
 						<tr>
 							<td class="label">@T("PDFPackagingSlip.DeliveryDate"):</td>
 							<td class="value">
-					            @if (shipment.DeliveryDate.HasValue)
-					            {
-						            @shipment.DeliveryDate.Value.ToString()
-					            }
-					            else
-					            {
-						            <span>@T("Admin.Orders.Shipments.DeliveryDate.NotYet")</span>
-					            }
-                            </td>
+								@if (shipment.DeliveryDate.HasValue)
+								{
+									@shipment.DeliveryDate.Value.ToString()
+								}
+								else
+								{
+									<span>@T("Admin.Orders.Shipments.DeliveryDate.NotYet")</span>
+								}
+							</td>
 						</tr>
 						@if (shipment.TrackingNumber.HasValue())
 						{

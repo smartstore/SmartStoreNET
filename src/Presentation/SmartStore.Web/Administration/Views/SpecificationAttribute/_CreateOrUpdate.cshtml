@@ -2,6 +2,7 @@
 @using SmartStore.Core.Search.Facets;
 @model SpecificationAttributeModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("specificationattribute-edit").Style(TabsStyle.Material).Items(x =>

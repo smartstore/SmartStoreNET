@@ -1,44 +1,45 @@
 ﻿@model RewardPointsSettingsModel
 
 @{
-    ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
+	ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
 	Layout = "_SettingLayout";
 }
 
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-trophy"></i>
-            @T("Admin.Configuration.Settings.RewardPoints")
-        </div>
-        <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-warning">
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-trophy"></i>
+			@T("Admin.Configuration.Settings.RewardPoints")
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
 			</button>
-        </div>
-    </div>
+		</div>
+	</div>
 
-    Html.RenderAction("StoreScopeConfiguration", "Setting");
+	Html.RenderAction("StoreScopeConfiguration", "Setting");
 
-    @Html.ValidationSummary(false)
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false)
 
 	<div class="alert alert-info alert-dismissible">
 		@T("Admin.Configuration.Settings.RewardPoints.Description")
 		<button class="close" data-dismiss="alert">&times;</button>
 	</div>
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Enabled)
-            </td>
-            <td class="adminData">
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Enabled)
+			</td>
+			<td class="adminData">
 				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" }))
-                @Html.ValidationMessageFor(model => model.Enabled)
-            </td>
-        </tr>
+				@Html.ValidationMessageFor(model => model.Enabled)
+			</td>
+		</tr>
 		<tbody id="pnlRewardPointSettings">
 			<tr>
 				<td class="adminTitle">
@@ -49,7 +50,7 @@
 						<div class="input-group-prepend">
 							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")</span>
 						</div>
-						@Html.SettingEditorFor(model => model.ExchangeRate, null, new { postfix = Model.PrimaryStoreCurrencyCode })   
+						@Html.SettingEditorFor(model => model.ExchangeRate, null, new { postfix = Model.PrimaryStoreCurrencyCode })
 					</div>)
 					@Html.ValidationMessageFor(model => model.ExchangeRate)
 				</td>

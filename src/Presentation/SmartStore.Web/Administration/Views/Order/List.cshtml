@@ -5,6 +5,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="far fa-chart-bar"></i>

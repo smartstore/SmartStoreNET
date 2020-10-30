@@ -1,6 +1,7 @@
 (function ($, window, document, undefined) {
 
     var root = $('#ruleset-root');
+    var token = "";
 
     function enableRuleValueControl(el) {
         var rule = el.closest('.rule');
@@ -74,6 +75,9 @@
         }
     });
 
+    $(function () {
+        token = $('input[name="__RequestVerificationToken"]').val();
+    });
 
     // Save rule set.
     $(document).on('click', 'button[name="save"]', function (e) {
@@ -95,7 +99,7 @@
         $.ajax({
             cache: false,
             url: root.data('url-addgroup'),
-            data: { ruleSetId: parentSetId, scope: scope },
+            data: { ruleSetId: parentSetId, scope: scope, __RequestVerificationToken: token },
             type: "POST",
             success: function (html) {
                 appendToRuleSetBody(parentSet, html);
@@ -114,7 +118,7 @@
         $.ajax({
             cache: false,
             url: root.data('url-deletegroup'),
-            data: { refRuleId: refRuleId },
+            data: { refRuleId: refRuleId, __RequestVerificationToken: token },
             type: "POST",
             success: function (result) {
                 if (result.Success) {
@@ -140,7 +144,7 @@
         $.ajax({
             cache: false,
             url: operator.data('url'),
-            data: { ruleSetId: parentSetId, op: op },
+            data: { ruleSetId: parentSetId, op: op, __RequestVerificationToken: token },
             type: 'POST',
             success: function (result) {
                 if (result.Success) {
@@ -174,14 +178,15 @@
     // Save rules.
     $(document).on('click', 'button.ruleset-save', function () {
         var data = getRuleData();
-
+        
         $.ajax({
             cache: false,
             url: root.data('url-updaterules'),
-            data: JSON.stringify(data),
+            data: {
+                __RequestVerificationToken: token,
+                ruleData: data
+            },
             type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json;charset=utf-8',
             success: function (result) {
                 if (result.Success) {
                     location.reload();
@@ -209,7 +214,7 @@
         $.ajax({
             cache: false,
             url: root.data('url-addrule'),
-            data: { ruleSetId: parentSetId, scope: scope, ruleType: ruleType },
+            data: { ruleSetId: parentSetId, scope: scope, ruleType: ruleType, __RequestVerificationToken: token },
             type: "POST",
             success: function (html) {
                 appendToRuleSetBody(parentSet, html);
@@ -228,7 +233,7 @@
         $.ajax({
             cache: false,
             url: root.data('url-deleterule'),
-            data: { ruleId: ruleId },
+            data: { ruleId: ruleId, __RequestVerificationToken: token },
             type: "POST",
             success: function (result) {
                 if (result.Success) {
@@ -249,7 +254,7 @@
         $.ajax({
             cache: false,
             url: $(this).attr('href'),
-            data: { ruleSetId: ruleSetId },
+            data: { ruleSetId: ruleSetId, __RequestVerificationToken: token },
             type: "POST",
             success: function (result) {
                 $('#excute-result')

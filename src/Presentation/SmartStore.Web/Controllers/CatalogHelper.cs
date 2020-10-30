@@ -1336,6 +1336,9 @@ namespace SmartStore.Web.Controllers
                             }
                         }
 
+                        if (product.SpecialPriceEndDateTimeUtc.HasValue && product.SpecialPriceEndDateTimeUtc > DateTime.UtcNow)
+                            model.ProductPrice.PriceValidUntilUtc = product.SpecialPriceEndDateTimeUtc.Value.ToString("u");
+
                         model.ProductPrice.PriceValue = finalPriceWithoutDiscount;
                         model.ProductPrice.PriceWithDiscountValue = finalPriceWithDiscount;
                         model.BasePriceInfo = product.GetBasePriceInfo(

@@ -41,13 +41,9 @@
         <div id="main-update-container" class="update-container" data-url="@updateUrl">
             @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
             {
-
                 <!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
-
                 <section class="row pd-section pd-section-top">
-
                     <!-- Picture -->
-
                     <div class="col-12 col-md-6 col-lg-7 pd-data-col">
                         @{ Html.RenderWidget("productdetails_pictures_top"); }
 
@@ -60,7 +56,6 @@
 
                     <!-- Sidebar: Info, Price, Buttons etc. -->
                     <aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
-
                         @{ Html.RenderWidget("productdetails_info_top"); }
 
                         <!-- Title/Brand/ReviewSummary -->

@@ -40,13 +40,10 @@
         @Model.CreatedOn.ToNativeString("D")
     </div>
 
-    <meta itemprop="datePublished" content="@Model.CreatedOn.ToString("s")" />
-
-    <meta itemprop="dateModified" content="@Model.CreatedOn.ToString("s")" />
-
+    <meta itemprop="datePublished" content="@Model.CreatedOn.ToString("u")" />
     <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
-
     <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
+    <meta itemprop="url" content="@Request.Url.AbsoluteUri" />
 
     <div class="page-title mb-4">
         <h1 class="fs-h2" itemprop="headline">@Model.Title</h1>

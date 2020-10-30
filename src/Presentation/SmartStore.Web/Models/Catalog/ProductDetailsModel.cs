@@ -196,6 +196,8 @@ namespace SmartStore.Web.Models.Catalog
 
             public string NoteWithDiscount { get; set; }
             public string NoteWithoutDiscount { get; set; }
+                        
+            public string PriceValidUntilUtc { get; set; }
         }
 
         public partial class GiftCardModel : ModelBase

@@ -28,14 +28,12 @@
         <meta itemprop="headline" content="@item.Title.Truncate(100, "...")" />
     </h4>
 
-    <div class="newsitem-date rfs" itemprop="datePublished">
-        @item.CreatedOn.ToString("s")
+    <div class="newsitem-date rfs">
+        @item.CreatedOn.ToNativeString("D")
     </div>
 
-    <meta itemprop="dateModified" content="@item.CreatedOn.ToString("s")">
-
+    <meta itemprop="datePublished" content="@item.CreatedOn.ToString("u")"/>
     <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
-
     <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
 
     <p class="newsitem-description rfs my-3 flex-grow-1" itemprop="description">

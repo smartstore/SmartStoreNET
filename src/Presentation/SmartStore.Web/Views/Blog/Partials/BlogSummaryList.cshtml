@@ -66,9 +66,12 @@
 
             <div class="@(hasBgImage ? "card-img-overlay d-flex flex-column justify-content-end p-0" : "bloglist-item-body")">
                 <div class="blogpost-text text-left w-100 p-4">
-                    <div class="blogpost-date rfs mb-2 text-muted" itemprop="dateCreated">
+                    <div class="blogpost-date rfs mb-2 text-muted">
                         @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
                     </div>
+                    <meta itemprop="datePublished" content="@item.CreatedOn.ToString("u")" />
+                    <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
+                    <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
 
                     <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
                         <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title">

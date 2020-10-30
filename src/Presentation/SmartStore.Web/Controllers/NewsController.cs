@@ -123,7 +123,7 @@ namespace SmartStore.Web.Controllers
             model.MetaDescription = newsItem.GetLocalized(x => x.MetaDescription);
             model.MetaKeywords = newsItem.GetLocalized(x => x.MetaKeywords);
             model.SeName = newsItem.GetSeName(ensureTwoPublishedLanguages: false);
-            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
+            model.CreatedOn = newsItem.CreatedOnUtc;
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnNewsCommentPage;
             model.DisplayAdminLink = _services.Permissions.Authorize(Permissions.System.AccessBackend, _services.WorkContext.CurrentCustomer);
             model.PictureModel = PrepareNewsItemPictureModel(newsItem, newsItem.MediaFileId);

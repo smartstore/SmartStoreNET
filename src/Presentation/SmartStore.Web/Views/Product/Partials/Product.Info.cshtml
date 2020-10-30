@@ -10,19 +10,34 @@
 	<!-- Brand -->
 	@if (brand != null)
 	{
-		<div class="pd-brand-block">
-			<a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
-				@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
-				{
-					<img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
-				}
-				else
-				{
-					<span @Html.LanguageAttributes(brand.Name)>@brand.Name</span>
-				}
-			</a>
-			<meta itemprop="brand" content="@brand.Name.Value">
-		</div>
+    <div class="pd-brand-block">
+        <a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
+            @if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
+            {
+                <img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
+            }
+            else
+            {
+                <span @Html.LanguageAttributes(brand.Name)>@brand.Name</span>
+            }
+        </a>
+        <meta itemprop="brand" content="@brand.Name.Value">
+
+        @if (Model.Sku.HasValue())
+        {
+            <meta itemprop="sku" content="@Model.Sku" />
+        }
+
+        @if (Model.Gtin.HasValue())
+        {
+            <meta itemprop="gtin" content="@Model.Gtin" />
+        }
+
+        @if (Model.ManufacturerPartNumber.HasValue())
+        {
+            <meta itemprop="mpn" content="@Model.ManufacturerPartNumber" />
+        }
+    </div>
 	}
 
 	<!-- Title -->

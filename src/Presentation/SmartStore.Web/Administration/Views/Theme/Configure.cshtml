@@ -143,5 +143,22 @@
 			$('#exportvariables-window').modal('hide');
         });
 
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $("#reset-vars").on('click', function (e) {
+            e.preventDefault();
+
+            $({}).doAjax({
+                type: 'POST',
+                url: $(this).attr("href"),
+                data: { "__RequestVerificationToken": token },
+                callbackSuccess: function (data) {
+                    displayNotification(data.Message, 'success');
+                }
+            });
+
+            return false;
+        });
+
     });
 </script>

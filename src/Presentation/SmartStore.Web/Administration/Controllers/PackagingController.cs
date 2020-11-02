@@ -35,6 +35,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UploadPackage(string returnUrl = "")
         {
             var isTheme = false;

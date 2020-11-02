@@ -647,7 +647,7 @@ namespace SmartStore.Admin.Controllers
         #region Upload / Download
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Import.Update)]
         public JsonResult FileUpload(int id)
         {

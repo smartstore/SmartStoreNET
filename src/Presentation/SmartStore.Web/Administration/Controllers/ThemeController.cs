@@ -236,6 +236,8 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List", new { storeId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Theme.Update)]
         public ActionResult Reset(string theme, int storeId)
         {
@@ -248,8 +250,14 @@ namespace SmartStore.Admin.Controllers
 
             Services.CustomerActivity.InsertActivity("ResetThemeVars", T("ActivityLog.ResetThemeVars"), theme);
 
-            NotifySuccess(T("Admin.Configuration.Themes.Notifications.ResetSuccess"));
-            return RedirectToAction("Configure", new { theme, storeId });
+            return new JsonResult
+            {
+                Data = new
+                {
+                    success = true,
+                    Message = T("Admin.Configuration.Themes.Notifications.ResetSuccess").Text
+                }
+            };
         }
 
         [HttpPost]

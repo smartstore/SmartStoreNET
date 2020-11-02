@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Upload)]
         [MaxMediaFileSize]
         public async Task<ActionResult> Upload(string path, string[] typeFilter = null, bool isTransient = false, DuplicateFileHandling duplicateFileHandling = DuplicateFileHandling.ThrowError)

@@ -23,6 +23,7 @@
     var assignableFiles = [];
     var assignableFileIds = "";
     var dialog = SmartStore.Admin ? SmartStore.Admin.Media.fileConflictResolutionDialog : null;
+    var token = $('input[name="__RequestVerificationToken"]').val();
 
     $.fn.dropzoneWrapper = function (options) {
         return this.each(function () {
@@ -176,6 +177,9 @@
                 if (enumId) {
                     formData.append("duplicateFileHandling", enumId);
                 }
+
+                if (token !== "")
+                    formData.append("__RequestVerificationToken", token);
 
                 // Send type filter if set.
                 var typeFilter = $el.data('type-filter');
@@ -460,7 +464,8 @@
                         url: $el.data('assignment-url'),
                         data: {
                             mediaFileIds: assignableFileIds,
-                            entityId: $el.data('entity-id')
+                            entityId: $el.data('entity-id'),
+                            __RequestVerificationToken: token 
                         },
                         success: function (response) {
                             $.each(response.response, function (i, value) {
@@ -528,7 +533,8 @@
                         url: $el.data('sort-url'),
                         data: {
                             pictures: newOrder.join(","),
-                            entityId: $el.data('entity-id')
+                            entityId: $el.data('entity-id'),
+                            __RequestVerificationToken: token 
                         },
                         success: function (response) {
                             // Set EntityMediaId & current DisplayOrder.
@@ -602,7 +608,10 @@
                         cache: false,
                         type: 'POST',
                         url: removeUrl,
-                        data: { id: entityMediaFileId },
+                        data: {
+                            id: entityMediaFileId,
+                            __RequestVerificationToken: token 
+                        },
                         success: function () {
                             previewThumb.remove();
 

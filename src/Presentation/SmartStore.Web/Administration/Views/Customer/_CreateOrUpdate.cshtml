@@ -684,11 +684,13 @@
     </div>
 
     <script>
-		$(function() {
+        $(function () {
             $('#customer-addresses').on('click', 'button.delete-address', function () {
+                var token = $('input[name="__RequestVerificationToken"]').val();
                 var card = $(this).closest('.card');
                 $(this).doAjax({
                     type: 'POST',
+                    data: { "__RequestVerificationToken": token },
 					ask: @T("Admin.Common.AskToProceed").JsText,
                     callbackSuccess: function (response) {
                         if (response.success) {

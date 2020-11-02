@@ -148,11 +148,19 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult CheckUpdateSuppress(string myVersion, string newVersion)
         {
             CheckUpdateSuppressInternal(myVersion, newVersion);
-            return RedirectToAction("Index", "Home");
+            return new JsonResult
+            {
+                Data = new
+                {
+                    Success = true
+                }
+            };
         }
 
         private void CheckUpdateSuppressInternal(string myVersion, string newVersion)
@@ -235,6 +243,8 @@ namespace SmartStore.Admin.Controllers
             return result;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult InstallUpdate(string packageUrl)
         {
@@ -1032,34 +1042,49 @@ namespace SmartStore.Admin.Controllers
             return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult ClearCache(string previousUrl)
+        public ActionResult ClearCache()
         {
             _services.Cache.Clear();
 
             HttpContext.Cache.RemoveByPattern("*");
 
-            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-
-            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
+            return new JsonResult
+            {
+                Data = new
+                {
+                    Success = true,
+                    Message = T("Admin.Common.TaskSuccessfullyProcessed").Text
+                }
+            };
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult ClearDatabaseCache(string previousUrl)
+        public ActionResult ClearDatabaseCache()
         {
             _dbCache.Clear();
 
-            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-
-            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
+            return new JsonResult { 
+                Data = new
+                {
+                    Success = true,
+                    Message = T("Admin.Common.TaskSuccessfullyProcessed").Text
+                }
+            };
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult RestartApplication(string previousUrl)
+        public ActionResult RestartApplication()
         {
             _services.WebHelper.RestartAppDomain();
 
-            return RedirectToReferrer(previousUrl, () => RedirectToAction("Index", "Home"));
+            return new JsonResult();
         }
 
         #endregion

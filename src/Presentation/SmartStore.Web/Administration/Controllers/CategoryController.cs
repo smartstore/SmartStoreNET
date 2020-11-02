@@ -556,7 +556,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save")]
         [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
@@ -634,21 +634,27 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ValidateInput(false)]
+        [HttpPost]
+        [ActionName("Edit"), FormValueRequired("inherit-acl-into-children")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
-        public ActionResult InheritAclIntoChildren(int categoryId)
+        public ActionResult InheritAclIntoChildren(CategoryModel model)
         {
-            _categoryService.InheritAclIntoChildren(categoryId, false, true, false);
+            _categoryService.InheritAclIntoChildren(model.Id, false, true, false);
 
-            return RedirectToAction("Edit", "Category", new { id = categoryId });
+            return RedirectToAction("Edit", "Category", new { id = model.Id });
         }
 
         [ValidateInput(false)]
+        [HttpPost]
+        [ActionName("Edit"), FormValueRequired("inherit-stores-into-children")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
-        public ActionResult InheritStoresIntoChildren(int categoryId)
+        public ActionResult InheritStoresIntoChildren(CategoryModel model)
         {
-            _categoryService.InheritStoresIntoChildren(categoryId, false, true, false);
+            _categoryService.InheritStoresIntoChildren(model.Id, false, true, false);
 
-            return RedirectToAction("Edit", "Category", new { id = categoryId });
+            return RedirectToAction("Edit", "Category", new { id = model.Id });
         }
 
         [HttpPost]

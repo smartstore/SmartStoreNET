@@ -1180,6 +1180,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.EditAddress)]
         public ActionResult AddressDelete(int customerId, int addressId)
         {

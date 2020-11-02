@@ -3621,6 +3621,8 @@ namespace SmartStore.Admin.Controllers
 
         #region Downloads
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Delete)]
         public ActionResult DeleteDownloadVersion(int downloadId, int productId)
         {
@@ -3629,9 +3631,13 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
 
             _downloadService.DeleteDownload(download);
-            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-
-            return RedirectToAction("Edit", new { id = productId });
+            
+            return new JsonResult { 
+                Data = new {
+                    success = true,
+                    Message = T("Admin.Common.TaskSuccessfullyProcessed").Text
+                } 
+            };
         }
 
         #endregion

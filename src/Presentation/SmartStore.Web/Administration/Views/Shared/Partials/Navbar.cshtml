@@ -1,7 +1,5 @@
 ﻿@using SmartStore.Core.Domain.Stores;
 @using SmartStore.Services.Customers;
-@using SmartStore.Services.Stores;
-@using SmartStore.Core;
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
@@ -53,16 +51,16 @@
 						@T("Admin.Configuration.Themes.PreviewMode")
 					</a>
 					<div class="dropdown-divider"></div>
-					<a class="dropdown-item" href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+					<a class="dropdown-item" id="clear-cache" href="#" data-url="@Url.Action("ClearCache", "Common", new { area = "Admin" })">
 						<i class="far fa-fw fa-trash-alt"></i>
 						@T("Admin.Header.ClearCache")
 					</a>
-					<a class="dropdown-item" href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+					<a class="dropdown-item" id="clear-database-cache" href="#" data-url="@Url.Action("ClearDatabaseCache", "Common", new { area = "Admin" })">
 						<i class="fa fa-fw"></i>
 						@T("Admin.Header.ClearDbCache")
 					</a>
 					<div class="dropdown-divider"></div>
-					<a class="dropdown-item" id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+					<a class="dropdown-item" id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { area = "Admin" })">
 						<i class="fa fa-fw fa-power-off"></i>
 						@T("Admin.Header.RestartApplication")
 					</a>
@@ -129,20 +127,45 @@
 
 		</ul>
 	</div>
-
 </nav>
+
+@Html.AntiForgeryToken()
 
 <script>
     $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
         $("#restart-application").on('click', function (e) {
             e.preventDefault();
             $.throbber.show({
                 message: @T("Admin.Header.RestartApplication.Progress").JsText,
                 callback: function () {
-                    setLocation($(e.target).data("url"));
-                    
+                    $({}).doAjax({
+                        type: 'POST',
+                        url: $(e.target).data("url"),
+                        data: { "__RequestVerificationToken": token },
+                        callbackSuccess: function (data) {
+                            //$.throbber.hide();
+                            location.reload();
+                        }
+                    });
                 }
             });
+            return false;
+        });
+
+		$("#clear-database-cache, #clear-cache").on('click', function (e) {
+            e.preventDefault();
+            
+            $({}).doAjax({
+                type: 'POST',
+                url: $(e.target).data("url"),
+                data: { "__RequestVerificationToken": token },
+                callbackSuccess: function (data) {
+					displayNotification(data.Message, 'success');
+                }
+            });
+               
             return false;
         });
 

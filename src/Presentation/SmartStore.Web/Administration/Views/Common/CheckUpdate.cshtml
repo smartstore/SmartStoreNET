@@ -40,7 +40,7 @@
 				<h4>@T("Admin.CheckUpdate.AutoUpdatePossible")</h4>
 				@Html.Raw(T("Admin.CheckUpdate.AutoUpdatePossibleInfo"))
 				<p class="mt-4">
-					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+					<a id="install-update" class="btn btn-primary" href="#" data-url='@Url.Action("InstallUpdate")' onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
 						<i class="fa fa-level-up-alt"></i>
 						<span>@T("Admin.CheckUpdate.UpdateNow")</span>
 					</a>
@@ -66,10 +66,52 @@
 				</a>
 			}
 
-			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>
+			<a id="check-update-surpress" class="btn btn-link" href="#" data-url="@Url.Action("CheckUpdateSuppress")">
 				<span>@T("Admin.CheckUpdate.DontNotifyAnymore")</span>
 			</a>
 		</div>
 	}
 </div>
 
+<script>
+    $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+		$("#check-update-surpress").on('click', function (e) {
+            e.preventDefault();
+
+            $({}).doAjax({
+                type: 'POST',
+                url: $(e.target).data("url"),
+                data: {
+                    "__RequestVerificationToken": token,
+                    "myVersion": "@Model.CurrentVersion",
+					"newVersion": "@Model.Version"
+                },
+                callbackSuccess: function (data) {
+					displayNotification(data.Message, 'success');
+                }
+            });
+
+            return false;
+        });
+
+		$("#install-update").on('click', function (e) {
+            e.preventDefault();
+
+            $({}).doAjax({
+                type: 'POST',
+                url: $(e.target).data("url"),
+                data: {
+                    "__RequestVerificationToken": token,
+                    "packageUrl": "@Model.AutoUpdatePackageUrl"
+                },
+                callbackSuccess: function (data) {
+					displayNotification(data.Message, 'success');
+                }
+            });
+
+            return false;
+        });
+    });
+</script>

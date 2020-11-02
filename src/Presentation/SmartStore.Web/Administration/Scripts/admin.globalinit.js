@@ -70,6 +70,51 @@
         });
     };
 
+    window.providerListInit = function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $(".activate-provider").on("click", function (e) {
+            e.preventDefault();
+
+            var $el = $(this);
+            var activate = $el.attr("data-activate") == "true" ? true : false;
+            //this.T = window.Res.Provider;
+
+            $({}).doAjax({
+                type: 'POST',
+                url: $el.data('href') || $el.attr('href'),
+                data: {
+                    "__RequestVerificationToken": token,
+                    "systemName": $el.attr("data-systemname"),
+                    "activate": activate
+                },
+                callbackSuccess: function () {
+                    var item = $el.closest(".module-item");
+                    var badge = item.find(".badge");
+
+                    item.toggleClass("inactive", !activate);
+
+                    if (activate) {
+                        $el.addClass("btn-secondary btn-to-danger").removeClass("btn-success");
+                        $el.text(window.Res.Provider.deactivate);
+                        badge.text(window.Res.Provider.active);
+                        badge.addClass("badge-success").removeClass("badge-secondary");
+                    }
+                    else {
+                        $el.addClass("btn-success").removeClass("btn-secondary btn-to-danger");
+                        $el.text(window.Res.Provider.activate);
+                        badge.text(window.Res.Provider.inactive);
+                        badge.addClass("badge-secondary").removeClass("badge-success");
+                    }
+
+                    $el.attr("data-activate", !activate);
+                }
+            });
+
+        return false;
+        })
+    }
+
     $(document).ready(function () {
         var html = $("html");
 

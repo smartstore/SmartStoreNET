@@ -275,7 +275,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
         public ActionResult SetSelectedStores(string pk /* SystemName */, string name, FormCollection form)
         {
@@ -308,26 +307,40 @@ namespace SmartStore.Admin.Controllers
             return new HttpStatusCodeResult(200);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
-        public ActionResult UpdateStringResources(string systemName, string returnUrl = null)
+        public ActionResult UpdateStringResources(string systemName)
         {
             var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
                 .FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase));
 
+            var success = false;
+            var message = "";
             if (pluginDescriptor == null)
             {
-                NotifyError(T("Admin.Configuration.Plugins.Resources.UpdateFailure"));
+                message = T("Admin.Configuration.Plugins.Resources.UpdateFailure").Text;
             }
             else
             {
                 Services.Localization.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
 
-                NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
+                success = true;
+                message = T("Admin.Configuration.Plugins.Resources.UpdateSuccess").Text;
             }
 
-            return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
+            return new JsonResult
+            {
+                Data = new
+                {
+                    Success = success,
+                    Message = message
+                }
+            };
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
         public ActionResult UpdateAllStringResources()
         {
@@ -345,9 +358,13 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
-
-            return RedirectToAction("List");
+            return new JsonResult
+            {
+                Data = new { 
+                    Success = true,
+                    Message = T("Admin.Configuration.Plugins.Resources.UpdateSuccess").Text
+                }
+            };
         }
 
         #endregion

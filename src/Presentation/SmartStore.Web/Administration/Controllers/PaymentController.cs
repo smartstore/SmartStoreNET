@@ -67,6 +67,8 @@ namespace SmartStore.Admin.Controllers
             return View(paymentMethodsModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.PaymentMethod.Activate)]
         public ActionResult ActivateProvider(string systemName, bool activate)
         {

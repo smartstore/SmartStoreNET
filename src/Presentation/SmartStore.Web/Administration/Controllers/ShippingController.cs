@@ -88,6 +88,8 @@ namespace SmartStore.Admin.Controllers
             return View(shippingProvidersModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Shipping.Activate)]
         public ActionResult ActivateProvider(string systemName, bool activate)
         {

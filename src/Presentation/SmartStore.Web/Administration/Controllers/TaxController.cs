@@ -62,6 +62,8 @@ namespace SmartStore.Admin.Controllers
             return View(taxProviderModels);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Tax.Activate)]
         public ActionResult ActivateProvider(string systemName)
         {

@@ -33,56 +33,58 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	<table class="adminContent configure-paypal-express">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TransactMode)
-            </td>
-            <td class="adminData">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.TransactMode)
+			</td>
+			<td class="adminData">
 				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, new List<SelectListItem>
 				{
 					new SelectListItem { Text = T("Plugins.Payments.PayPalExpress.ModeAuth"), Value = TransactMode.Authorize.ToString(), Selected = Model.TransactMode == TransactMode.Authorize },
 					new SelectListItem { Text = T("Plugins.Payments.PayPalExpress.ModeAuthAndCapture"), Value = TransactMode.AuthorizeAndCapture.ToString(), Selected = Model.TransactMode == TransactMode.AuthorizeAndCapture }
 				}))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.UseSandbox)
-            </td>
-            <td class="adminData">
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UseSandbox)
+			</td>
+			<td class="adminData">
 				@*multistore context not possible, see IPN handling*@
-                @Html.EditorFor(model => model.UseSandbox)
-                @Html.ValidationMessageFor(model => model.UseSandbox)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ApiAccountName)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApiAccountName)
-                @Html.ValidationMessageFor(model => model.ApiAccountName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ApiAccountPassword)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApiAccountPassword, null, new { htmlAttributes = new { autocomplete = "new-password", value = Model.ApiAccountPassword } })
-                @Html.ValidationMessageFor(model => model.ApiAccountPassword)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Signature)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.Signature)
-                @Html.ValidationMessageFor(model => model.Signature)
-            </td>
-        </tr>
+				@Html.EditorFor(model => model.UseSandbox)
+				@Html.ValidationMessageFor(model => model.UseSandbox)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ApiAccountName)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ApiAccountName)
+				@Html.ValidationMessageFor(model => model.ApiAccountName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ApiAccountPassword)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ApiAccountPassword, null, new { htmlAttributes = new { autocomplete = "new-password", value = Model.ApiAccountPassword } })
+				@Html.ValidationMessageFor(model => model.ApiAccountPassword)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Signature)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.Signature)
+				@Html.ValidationMessageFor(model => model.Signature)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.CallbackTimeout)
@@ -110,15 +112,15 @@
 				@Html.ValidationMessageFor(model => model.ShowButtonInMiniShoppingCart)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NoShipmentAddress)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NoShipmentAddress)
-                @Html.ValidationMessageFor(model => model.NoShipmentAddress)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NoShipmentAddress)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.NoShipmentAddress)
+				@Html.ValidationMessageFor(model => model.NoShipmentAddress)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ConfirmedShipment)
@@ -128,15 +130,15 @@
 				@Html.ValidationMessageFor(model => model.ConfirmedShipment)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DefaultShippingPrice)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DefaultShippingPrice, null, new { postfix = Model.PrimaryStoreCurrencyCode })
-                @Html.ValidationMessageFor(model => model.DefaultShippingPrice)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DefaultShippingPrice)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DefaultShippingPrice, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(model => model.DefaultShippingPrice)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AdditionalFee)
@@ -155,5 +157,5 @@
 				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
 			</td>
 		</tr>
-    </table>
+	</table>
 }

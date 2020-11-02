@@ -19,8 +19,8 @@ namespace SmartStore.Shipping.Controllers
 
         public FixedRateController(IShippingService shippingServicee, ISettingService settingService)
         {
-            this._shippingService = shippingServicee;
-            this._settingService = settingService;
+            _shippingService = shippingServicee;
+            _settingService = settingService;
         }
 
         public ActionResult Configure()
@@ -106,7 +106,7 @@ namespace SmartStore.Shipping.Controllers
         [NonAction]
         protected decimal GetShippingRate(int shippingMethodId)
         {
-            decimal rate = this._settingService.GetSettingByKey<decimal>(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId));
+            decimal rate = _settingService.GetSettingByKey<decimal>(string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId));
             return rate;
         }
     }

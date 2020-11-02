@@ -200,6 +200,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost, AdminAuthorize, ChildActionOnly, AdminThemed]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(PayPalPlusConfigurationModel model, FormCollection form)
         {
             if (!SaveConfigurationModel(model, form))
@@ -342,6 +343,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult PatchShipping()
         {
             var store = Services.StoreContext.CurrentStore;

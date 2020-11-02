@@ -60,6 +60,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
         }
 
         [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false), FormValueRequired("save")]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
@@ -86,6 +87,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
         [AdminAuthorize, HttpPost]
         [ActionName("Configure"), FormValueRequired("restore-scripts")]
+        [ValidateAntiForgeryToken]
         public ActionResult RestoreScripts()
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);

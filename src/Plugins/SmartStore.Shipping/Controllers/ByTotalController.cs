@@ -132,6 +132,7 @@ namespace SmartStore.Shipping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddShippingRate(ByTotalListModel model)
         {
             var shippingByTotalRecord = new ShippingByTotalRecord
@@ -158,6 +159,7 @@ namespace SmartStore.Shipping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ByTotalListModel model)
         {
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;

@@ -81,6 +81,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost, AdminAuthorize, ChildActionOnly]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(PayPalExpressConfigurationModel model, FormCollection form)
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);

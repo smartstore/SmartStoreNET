@@ -53,6 +53,7 @@ namespace SmartStore.WebApi.Controllers
 
         [HttpPost, ActionName("Configure")]
         [FormValueRequired("savegeneralsettings")]
+        [ValidateAntiForgeryToken]
         [Permission(WebApiPermissions.Update)]
         public ActionResult SaveGeneralSettings(WebApiConfigModel model)
         {
@@ -122,6 +123,7 @@ namespace SmartStore.WebApi.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(WebApiPermissions.Create)]
         public void ApiButtonCreateKeys(int customerId)
         {
@@ -129,6 +131,7 @@ namespace SmartStore.WebApi.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(WebApiPermissions.Delete)]
         public void ApiButtonRemoveKeys(int customerId)
         {
@@ -136,6 +139,7 @@ namespace SmartStore.WebApi.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(WebApiPermissions.Update)]
         public void ApiButtonEnable(int customerId)
         {
@@ -143,6 +147,7 @@ namespace SmartStore.WebApi.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(WebApiPermissions.Update)]
         public void ApiButtonDisable(int customerId)
         {

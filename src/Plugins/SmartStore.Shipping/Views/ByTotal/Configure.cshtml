@@ -16,6 +16,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	@Html.SmartStore().TabStrip().Name("shipping-by-weight-edit").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Plugins.Shipping.ByTotal.TabTitleGrid").Text).Content(TabGrid()).Selected(true);
@@ -194,6 +196,9 @@
     .Content(
     @<text>
 		<form method="post">
+			
+			@Html.AntiForgeryToken()
+
 			<table class="adminContent">
 				<tr>
 					<td class="adminTitle">

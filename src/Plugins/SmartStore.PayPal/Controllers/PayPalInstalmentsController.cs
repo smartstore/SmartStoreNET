@@ -316,6 +316,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost, ChildActionOnly, AdminAuthorize, AdminThemed]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(PayPalInstalmentsConfigModel model, FormCollection form)
         {
             Action<PayPalInstalmentsSettings> additionalMapping = (x) =>

@@ -42,6 +42,7 @@ namespace SmartStore.FacebookAuth.Controllers
         }
 
         [SaveSetting, HttpPost, AdminAuthorize, ChildActionOnly]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Authentication.Update)]
         public ActionResult Configure(FacebookExternalAuthSettings settings, ConfigurationModel model)
         {

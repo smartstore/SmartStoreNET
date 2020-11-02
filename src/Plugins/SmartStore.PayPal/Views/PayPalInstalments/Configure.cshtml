@@ -32,11 +32,12 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
 	@Html.HiddenFor(x => x.TransactMode)
 
-    @Html.Partial("ApiConfiguration")
+	@Html.Partial("ApiConfiguration")
 
-    <table class="adminContent">
+	<table class="adminContent">
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -51,8 +52,8 @@
 				@Html.SmartLabelFor(x => x.ProductPagePromotion)
 			</td>
 			<td class="adminData">
-                @Html.SettingEditorFor(x => x.ProductPagePromotion, 
-                    @Html.DropDownListFor(x => x.ProductPagePromotion, Model.ProductPagePromotions, T("Common.Unspecified")))
+				@Html.SettingEditorFor(x => x.ProductPagePromotion,
+					@Html.DropDownListFor(x => x.ProductPagePromotion, Model.ProductPagePromotions, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(x => x.ProductPagePromotion)
 			</td>
 		</tr>
@@ -61,8 +62,8 @@
 				@Html.SmartLabelFor(x => x.CartPagePromotion)
 			</td>
 			<td class="adminData">
-                @Html.SettingEditorFor(x => x.CartPagePromotion, 
-                    @Html.DropDownListFor(x => x.CartPagePromotion, Model.CartPagePromotions, T("Common.Unspecified")))
+				@Html.SettingEditorFor(x => x.CartPagePromotion,
+					@Html.DropDownListFor(x => x.CartPagePromotion, Model.CartPagePromotions, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(x => x.CartPagePromotion)
 			</td>
 		</tr>
@@ -71,8 +72,8 @@
 				@Html.SmartLabelFor(x => x.PaymentListPromotion)
 			</td>
 			<td class="adminData">
-                @Html.SettingEditorFor(x => x.PaymentListPromotion, 
-                    @Html.DropDownListFor(x => x.PaymentListPromotion, Model.PaymentListPromotions, T("Common.Unspecified")))
+				@Html.SettingEditorFor(x => x.PaymentListPromotion,
+					@Html.DropDownListFor(x => x.PaymentListPromotion, Model.PaymentListPromotions, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(x => x.PaymentListPromotion)
 			</td>
 		</tr>
@@ -87,34 +88,34 @@
 		</tr>
 
 		@*<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Promote)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(x => x.Promote, Html.CheckBoxFor(x => x.Promote, new { data_toggler_for = "#pnlPromote" }))
-				@Html.ValidationMessageFor(x => x.Promote)
-			</td>
-		</tr>
-        <tbody id="pnlPromote">
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(x => x.PromotionWidgetZones)
-			    </td>
-			    <td class="adminData">
-                    @Html.SettingEditorFor(x => x.PromotionWidgetZones, @Html.EditorFor(x => x.PromotionWidgetZones))
-				    @Html.ValidationMessageFor(x => x.PromotionWidgetZones)
-			    </td>
-		    </tr>
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(x => x.PromotionDisplayOrder)
-			    </td>
-			    <td class="adminData">
-				    @Html.SettingEditorFor(x => x.PromotionDisplayOrder)
-				    @Html.ValidationMessageFor(x => x.PromotionDisplayOrder)
-			    </td>
-		    </tr>
-        </tbody>*@
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Promote)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(x => x.Promote, Html.CheckBoxFor(x => x.Promote, new { data_toggler_for = "#pnlPromote" }))
+					@Html.ValidationMessageFor(x => x.Promote)
+				</td>
+			</tr>
+			<tbody id="pnlPromote">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.PromotionWidgetZones)
+					</td>
+					<td class="adminData">
+						@Html.SettingEditorFor(x => x.PromotionWidgetZones, @Html.EditorFor(x => x.PromotionWidgetZones))
+						@Html.ValidationMessageFor(x => x.PromotionWidgetZones)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.PromotionDisplayOrder)
+					</td>
+					<td class="adminData">
+						@Html.SettingEditorFor(x => x.PromotionDisplayOrder)
+						@Html.ValidationMessageFor(x => x.PromotionDisplayOrder)
+					</td>
+				</tr>
+			</tbody>*@
 
 		<tr class="adminSeparator">
 			<td colspan="2">
@@ -161,5 +162,5 @@
 				@Html.ValidationMessageFor(x => x.AdditionalFeePercentage)
 			</td>
 		</tr>
-    </table>
+	</table>
 }

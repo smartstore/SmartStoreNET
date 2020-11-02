@@ -41,6 +41,7 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost, AdminAuthorize, ChildActionOnly]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(PayPalStandardConfigurationModel model, FormCollection form)
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
@@ -134,26 +135,16 @@ namespace SmartStore.PayPal.Controllers
                         Logger.Error(ex, T("Plugins.Payments.PayPalStandard.FailedGetGross"));
                     }
 
-                    string payer_status = string.Empty;
-                    values.TryGetValue("payer_status", out payer_status);
-                    string payment_status = string.Empty;
-                    values.TryGetValue("payment_status", out payment_status);
-                    string pending_reason = string.Empty;
-                    values.TryGetValue("pending_reason", out pending_reason);
-                    string mc_currency = string.Empty;
-                    values.TryGetValue("mc_currency", out mc_currency);
-                    string txn_id = string.Empty;
-                    values.TryGetValue("txn_id", out txn_id);
-                    string payment_type = string.Empty;
-                    values.TryGetValue("payment_type", out payment_type);
-                    string payer_id = string.Empty;
-                    values.TryGetValue("payer_id", out payer_id);
-                    string receiver_id = string.Empty;
-                    values.TryGetValue("receiver_id", out receiver_id);
-                    string invoice = string.Empty;
-                    values.TryGetValue("invoice", out invoice);
-                    string payment_fee = string.Empty;
-                    values.TryGetValue("payment_fee", out payment_fee);
+                    values.TryGetValue("payer_status", out string payer_status);
+                    values.TryGetValue("payment_status", out string payment_status);
+                    values.TryGetValue("pending_reason", out string pending_reason);
+                    values.TryGetValue("mc_currency", out string mc_currency);
+                    values.TryGetValue("txn_id", out string txn_id);
+                    values.TryGetValue("payment_type", out string payment_type);
+                    values.TryGetValue("payer_id", out string payer_id);
+                    values.TryGetValue("receiver_id", out string receiver_id);
+                    values.TryGetValue("invoice", out string invoice);
+                    values.TryGetValue("payment_fee", out string payment_fee);
 
                     var paymentNote = T("Plugins.Payments.PayPalStandard.PaymentNote",
                         total, mc_currency, payer_status, payment_status, pending_reason, txn_id, payment_type, payer_id, receiver_id, invoice, payment_fee);

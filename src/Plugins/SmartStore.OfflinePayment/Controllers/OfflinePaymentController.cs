@@ -286,6 +286,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult CashOnDeliveryConfigure(CashOnDeliveryConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -315,6 +316,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult InvoiceConfigure(InvoiceConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -344,6 +346,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult PayInStoreConfigure(PayInStoreConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -373,6 +376,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult PrepaymentConfigure(PrepaymentConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -402,6 +406,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult DirectDebitConfigure(DirectDebitConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -455,6 +460,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult ManualConfigure(ManualConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
@@ -539,6 +545,7 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult PurchaseOrderNumberConfigure(PurchaseOrderNumberConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)

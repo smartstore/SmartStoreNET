@@ -67,6 +67,7 @@ namespace SmartStore.AmazonPay.Controllers
         }
 
         [HttpPost, AdminAuthorize]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
@@ -110,6 +111,7 @@ namespace SmartStore.AmazonPay.Controllers
         }
 
         [HttpPost, AdminAuthorize]
+        [ValidateAntiForgeryToken]
         public ActionResult SaveAccessData(string accessData)
         {
             try

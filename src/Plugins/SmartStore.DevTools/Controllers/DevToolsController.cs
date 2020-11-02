@@ -25,6 +25,7 @@ namespace SmartStore.DevTools.Controllers
 
         [AdminAuthorize, Permission(DevToolsPermissions.Update)]
         [HttpPost, ChildActionOnly, SaveSetting]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ConfigurationModel model, ProfilerSettings settings)
         {
             if (!ModelState.IsValid)

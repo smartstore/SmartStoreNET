@@ -148,6 +148,7 @@ namespace SmartStore.Tax.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddTaxByRegionRecord(ByRegionTaxRateListModel model)
         {
             if (!ModelState.IsValid)

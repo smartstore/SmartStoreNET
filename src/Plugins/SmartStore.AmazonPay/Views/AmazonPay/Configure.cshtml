@@ -31,6 +31,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	<table id="AmazonPayConfigTable" class="adminContent">
 		<tr>
 			<td colspan="2">
@@ -418,6 +420,7 @@
 	.Content(
 	@<text>
 		<form id="access-data-form" method="POST" action="@Url.Action("SaveAccessData", "AmazonPay", new { area = AmazonPayPlugin.SystemName })">
+			@Html.AntiForgeryToken()
 			<textarea id="amazon-access-data" name="accessData" rows="12" class="form-control" style="width: 98%;" placeholder="@T("Plugins.Payments.AmazonPay.PasteAccessData.Hint")"></textarea>
 		</form>
 	</text>)

@@ -19,8 +19,8 @@ namespace SmartStore.Tax.Controllers
 
         public TaxFixedRateController(ITaxCategoryService taxCategoryService, ISettingService settingService)
         {
-            this._taxCategoryService = taxCategoryService;
-            this._settingService = settingService;
+            _taxCategoryService = taxCategoryService;
+            _settingService = settingService;
         }
 
         public ActionResult Configure()
@@ -103,7 +103,7 @@ namespace SmartStore.Tax.Controllers
         [NonAction]
         protected decimal GetTaxRate(int taxCategoryId)
         {
-            decimal rate = this._settingService.GetSettingByKey<decimal>(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", taxCategoryId));
+            decimal rate = _settingService.GetSettingByKey<decimal>(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", taxCategoryId));
             return rate;
         }
     }

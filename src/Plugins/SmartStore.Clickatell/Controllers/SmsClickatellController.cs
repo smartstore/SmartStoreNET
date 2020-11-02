@@ -30,6 +30,7 @@ namespace SmartStore.Clickatell.Controllers
         }
 
         [HttpPost, SaveSetting, FormValueRequired("save")]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model)
         {
             if (!ModelState.IsValid)
@@ -46,6 +47,7 @@ namespace SmartStore.Clickatell.Controllers
         }
 
         [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
+        [ValidateAntiForgeryToken]
         public ActionResult TestSms(SmsClickatellModel model)
         {
             try

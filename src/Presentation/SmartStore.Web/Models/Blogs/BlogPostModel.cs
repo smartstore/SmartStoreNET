@@ -26,6 +26,7 @@ namespace SmartStore.Web.Models.Blogs
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
         public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOnUTC { get; set; }
         public IList<BlogPostTagModel> Tags { get; set; }
 
         public string Title { get; set; }

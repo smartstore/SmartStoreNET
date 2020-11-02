@@ -40,7 +40,7 @@
     <div class="blogpost-date text-muted">
         @Model.CreatedOn.ToNativeString("D")
     </div>
-    <meta itemprop="datePublished" content="@Model.CreatedOn.ToString("u"))" />
+    <meta itemprop="datePublished" content="@Model.CreatedOnUTC.ToString("u"))" />
     <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
     <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
     <meta itemprop="url" content="@Request.Url.AbsoluteUri" />

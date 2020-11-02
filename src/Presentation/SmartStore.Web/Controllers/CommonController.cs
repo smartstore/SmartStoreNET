@@ -267,7 +267,7 @@ namespace SmartStore.Web.Controllers
             {
                 Url = Url.RouteUrl("BlogPost", new { SeName = blogPost.SeName }, Request.Url.Scheme),
                 Title = blogPost.MetaTitle,
-                PublishedTime = blogPost.CreatedOn,
+                PublishedTime = blogPost.CreatedOnUTC,
                 Description = blogPost.MetaDescription,
                 Type = "article"
             };
@@ -291,7 +291,7 @@ namespace SmartStore.Web.Controllers
             {
                 Url = Url.RouteUrl("NewsItem", new { SeName = newsItem.SeName }, Request.Url.Scheme),
                 Title = newsItem.MetaTitle,
-                PublishedTime = newsItem.CreatedOn,
+                PublishedTime = newsItem.CreatedOnUTC,
                 Description = newsItem.MetaDescription,
                 Type = "article"
             };

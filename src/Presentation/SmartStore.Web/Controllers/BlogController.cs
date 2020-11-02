@@ -136,7 +136,8 @@ namespace SmartStore.Web.Controllers
             model.MetaDescription = blogPost.GetLocalized(x => x.MetaDescription);
             model.MetaKeywords = blogPost.GetLocalized(x => x.MetaKeywords);
             model.SeName = blogPost.GetSeName(ensureTwoPublishedLanguages: false);
-            model.CreatedOn = blogPost.CreatedOnUtc;
+            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
+            model.CreatedOnUTC = blogPost.CreatedOnUtc;
             model.AddNewComment.DisplayCaptcha = _captchaSettings.CanDisplayCaptcha && _captchaSettings.ShowOnBlogCommentPage;
             model.Comments.AllowComments = blogPost.AllowComments;
             model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;

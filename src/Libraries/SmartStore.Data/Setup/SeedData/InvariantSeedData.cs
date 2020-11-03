@@ -904,7 +904,9 @@ namespace SmartStore.Data.Setup
                 DiscountType = DiscountType.AssignedToOrderTotal,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 20
+                DiscountPercentage = 20,
+                StartDateUtc = new DateTime(2020, 2, 1),
+                EndDateUtc = new DateTime(2020, 2, 10)
             };
             orderTotalDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "CartOrderCount")));
 
@@ -914,7 +916,9 @@ namespace SmartStore.Data.Setup
                 DiscountType = DiscountType.AssignedToOrderSubTotal,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 5
+                DiscountPercentage = 5,
+                StartDateUtc = new DateTime(2020, 3, 1),
+                EndDateUtc = new DateTime(2020, 3, 10)
             };
             weekendDiscount.RuleSets.Add(ruleSets.FirstOrDefault(x => x.Rules.Any(y => y.RuleType == "Weekday")));
 
@@ -924,7 +928,9 @@ namespace SmartStore.Data.Setup
                 DiscountType = DiscountType.AssignedToManufacturers,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 10
+                DiscountPercentage = 10,
+                StartDateUtc = new DateTime(2020, 4, 5),
+                EndDateUtc = new DateTime(2020, 4, 10)
             };
 
             var categoriesDiscount = new Discount
@@ -944,7 +950,9 @@ namespace SmartStore.Data.Setup
                 DiscountType = DiscountType.AssignedToSkus,
                 DiscountLimitation = DiscountLimitationType.Unlimited,
                 UsePercentage = true,
-                DiscountPercentage = 25
+                DiscountPercentage = 25,
+                StartDateUtc = new DateTime(2020, 5, 10),
+                EndDateUtc = new DateTime(2020, 5, 15)
             };
 
 

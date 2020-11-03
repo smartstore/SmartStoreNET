@@ -211,13 +211,55 @@ namespace SmartStore.Admin.Controllers
             var p = product;
             var m = model;
 
-            MiniMapper.Map(m, p);
+            p.ProductTypeId = m.ProductTypeId;
+            p.Visibility = m.Visibility;
+            p.Condition = m.Condition;
+            p.ProductTemplateId = m.ProductTemplateId;
 
             nameChanged = !string.Equals(p.Name, m.Name, StringComparison.CurrentCultureIgnoreCase);
+
+            p.Name = m.Name;
+            p.ShortDescription = m.ShortDescription;
+            p.FullDescription = m.FullDescription;
+            p.Sku = m.Sku;
+            p.ManufacturerPartNumber = m.ManufacturerPartNumber;
+            p.Gtin = m.Gtin;
+            p.AdminComment = m.AdminComment;
+            p.AvailableStartDateTimeUtc = m.AvailableStartDateTimeUtc;
+            p.AvailableEndDateTimeUtc = m.AvailableEndDateTimeUtc;
+
+            p.AllowCustomerReviews = m.AllowCustomerReviews;
+            p.ShowOnHomePage = m.ShowOnHomePage;
+            p.HomePageDisplayOrder = m.HomePageDisplayOrder;
+            p.Published = m.Published;
+            p.RequireOtherProducts = m.RequireOtherProducts;
+            p.RequiredProductIds = m.RequiredProductIds;
+            p.AutomaticallyAddRequiredProducts = m.AutomaticallyAddRequiredProducts;
+
+            p.IsGiftCard = m.IsGiftCard;
+            p.GiftCardTypeId = m.GiftCardTypeId;
+
+            p.IsRecurring = m.IsRecurring;
+            p.RecurringCycleLength = m.RecurringCycleLength;
+            p.RecurringCyclePeriodId = m.RecurringCyclePeriodId;
+            p.RecurringTotalCycles = m.RecurringTotalCycles;
+
+            p.IsShipEnabled = m.IsShipEnabled;
             p.DeliveryTimeId = m.DeliveryTimeId == 0 ? null : m.DeliveryTimeId;
             p.QuantityUnitId = m.QuantityUnitId == 0 ? null : m.QuantityUnitId;
+            p.IsFreeShipping = m.IsFreeShipping;
+            p.AdditionalShippingCharge = m.AdditionalShippingCharge;
+            p.Weight = m.Weight;
+            p.Length = m.Length;
+            p.Width = m.Width;
+            p.Height = m.Height;
+
+            p.IsEsd = m.IsEsd;
+            p.IsTaxExempt = m.IsTaxExempt;
             p.TaxCategoryId = m.TaxCategoryId ?? 0;
+            p.CustomsTariffNumber = m.CustomsTariffNumber;
             p.CountryOfOriginId = m.CountryOfOriginId == 0 ? null : m.CountryOfOriginId;
+
             p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
             p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
         }
@@ -230,9 +272,19 @@ namespace SmartStore.Admin.Controllers
                 return;
             }
 
-            MiniMapper.Map(model, product);
+            var p = product;
+            var m = model;
 
-            product.SampleDownloadId = model.SampleDownloadId == 0 ? null : model.SampleDownloadId;
+            p.IsDownload = m.IsDownload;
+            //p.DownloadId = m.DownloadId ?? 0;
+            p.UnlimitedDownloads = m.UnlimitedDownloads;
+            p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
+            p.DownloadExpirationDays = m.DownloadExpirationDays;
+            p.DownloadActivationTypeId = m.DownloadActivationTypeId;
+            p.HasUserAgreement = m.HasUserAgreement;
+            p.UserAgreementText = m.UserAgreementText;
+            p.HasSampleDownload = m.HasSampleDownload;
+            p.SampleDownloadId = m.SampleDownloadId == 0 ? null : m.SampleDownloadId;
         }
 
         [NonAction]
@@ -263,7 +315,18 @@ namespace SmartStore.Admin.Controllers
                 p.StockQuantity = m.StockQuantity;
             }
 
-            MiniMapper.Map(m, p);
+            p.ManageInventoryMethodId = m.ManageInventoryMethodId;
+            p.DisplayStockAvailability = m.DisplayStockAvailability;
+            p.DisplayStockQuantity = m.DisplayStockQuantity;
+            p.MinStockQuantity = m.MinStockQuantity;
+            p.LowStockActivityId = m.LowStockActivityId;
+            p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
+            p.BackorderModeId = m.BackorderModeId;
+            p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
+            p.OrderMinimumQuantity = m.OrderMinimumQuantity;
+            p.OrderMaximumQuantity = m.OrderMaximumQuantity;
+            p.QuantityStep = m.QuantityStep;
+            p.HideQuantityControl = m.HideQuantityControl;
 
             if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock && updateStockQuantity)
             {
@@ -289,7 +352,13 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductBundleItems(Product product, ProductModel model)
         {
-            MiniMapper.Map(model, product);
+            var p = product;
+            var m = model;
+
+            p.BundleTitleText = m.BundleTitleText;
+            p.BundlePerItemPricing = m.BundlePerItemPricing;
+            p.BundlePerItemShipping = m.BundlePerItemShipping;
+            p.BundlePerItemShoppingCart = m.BundlePerItemShoppingCart;
 
             // SEO
             foreach (var localized in model.Locales)
@@ -304,7 +373,24 @@ namespace SmartStore.Admin.Controllers
             var p = product;
             var m = model;
 
-            MiniMapper.Map(m, p);
+            p.Price = m.Price;
+            p.OldPrice = m.OldPrice;
+            p.ProductCost = m.ProductCost;
+            p.SpecialPrice = m.SpecialPrice;
+            p.SpecialPriceStartDateTimeUtc = m.SpecialPriceStartDateTimeUtc;
+            p.SpecialPriceEndDateTimeUtc = m.SpecialPriceEndDateTimeUtc;
+            p.DisableBuyButton = m.DisableBuyButton;
+            p.DisableWishlistButton = m.DisableWishlistButton;
+            p.AvailableForPreOrder = m.AvailableForPreOrder;
+            p.CallForPrice = m.CallForPrice;
+            p.CustomerEntersPrice = m.CustomerEntersPrice;
+            p.MinimumCustomerEnteredPrice = m.MinimumCustomerEnteredPrice;
+            p.MaximumCustomerEnteredPrice = m.MaximumCustomerEnteredPrice;
+
+            p.BasePriceEnabled = m.BasePriceEnabled;
+            p.BasePriceBaseAmount = m.BasePriceBaseAmount;
+            p.BasePriceAmount = m.BasePriceAmount;
+            p.BasePriceMeasureUnit = m.BasePriceMeasureUnit;
 
             // Discounts.
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
@@ -332,7 +418,12 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdateProductSeo(Product product, ProductModel model)
         {
-            MiniMapper.Map(model, product);
+            var p = product;
+            var m = model;
+
+            p.MetaKeywords = m.MetaKeywords;
+            p.MetaDescription = m.MetaDescription;
+            p.MetaTitle = m.MetaTitle;
 
             var service = _localizedEntityService;
             foreach (var localized in model.Locales)
@@ -3107,10 +3198,18 @@ namespace SmartStore.Admin.Controllers
             {
                 var pvav = new ProductVariantAttributeValue
                 {
+                    ProductVariantAttributeId = model.ProductVariantAttributeId,
+                    Name = model.Name,
+                    Alias = model.Alias,
+                    Color = model.Color,
                     MediaFileId = model.PictureId,
+                    PriceAdjustment = model.PriceAdjustment,
+                    WeightAdjustment = model.WeightAdjustment,
+                    IsPreSelected = model.IsPreSelected,
+                    DisplayOrder = model.DisplayOrder,
+                    ValueTypeId = model.ValueTypeId,
+                    Quantity = model.Quantity
                 };
-
-                MiniMapper.Map(model, pvav);
 
                 pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 

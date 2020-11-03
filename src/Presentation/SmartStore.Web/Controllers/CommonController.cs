@@ -263,6 +263,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult MetaPropertiesBlog(BlogPostModel blogPost)
         {
+            if (blogPost.Id == 0)
+            {
+                return Content("");
+            }
+
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("BlogPost", new { SeName = blogPost.SeName }, Request.Url.Scheme),
@@ -287,6 +292,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult MetaPropertiesNews(NewsItemModel newsItem)
         {
+            if (newsItem.Id == 0)
+            {
+                return Content("");
+            }
+
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("NewsItem", new { SeName = newsItem.SeName }, Request.Url.Scheme),
@@ -305,6 +315,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult MetaPropertiesProduct(ProductDetailsModel product)
         {
+            if (product.Id == 0)
+            {
+                return Content("");
+            }
+
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("Product", new { SeName = product.SeName }, Request.Url.Scheme),
@@ -327,6 +342,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult MetaPropertiesCategory(CategoryModel category)
         {
+            if (category.Id == 0)
+            {
+                return Content("");
+            }
+
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("Category", new { SeName = category.SeName }, Request.Url.Scheme),
@@ -344,6 +364,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult MetaPropertiesManufacturer(ManufacturerModel manufacturer)
         {
+            if (manufacturer.Id == 0)
+            {
+                return Content("");
+            }
+
             var model = new MetaPropertiesModel
             {
                 Url = Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName }, Request.Url.Scheme),

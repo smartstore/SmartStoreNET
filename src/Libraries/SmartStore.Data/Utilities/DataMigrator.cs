@@ -780,6 +780,15 @@ DELETE TOP(20000) [c]
                     Model = "topic:paymentinfo",
                     DisplayOrder = ++order
                 });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("CookieManager"),
+                    Title = "Cookie Manager",
+                    DisplayOrder = ++order,
+                    CssClass = "cookie-manager"
+                });
 
                 scope.Commit();
                 order = 0;

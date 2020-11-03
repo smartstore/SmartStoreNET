@@ -694,7 +694,11 @@ namespace SmartStore.Services.DataExchange.Export
                 ToDeliveryTime(ctx, result, product.DeliveryTimeId);
 				ToQuantityUnit(ctx, result, product.QuantityUnitId);
 
-                result._Localized = GetLocalized(ctx, translations, urlRecords, product,
+				result.CountryOfOrigin = product.CountryOfOriginId.HasValue
+					? ToDynamic(ctx, product.CountryOfOrigin)
+					: null;
+
+				result._Localized = GetLocalized(ctx, translations, urlRecords, product,
 					x => x.Name,
 					x => x.ShortDescription,
 					x => x.FullDescription,

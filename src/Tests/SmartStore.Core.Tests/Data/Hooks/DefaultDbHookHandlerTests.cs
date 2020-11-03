@@ -142,6 +142,7 @@ namespace SmartStore.Core.Tests.Data.Hooks
             var hook = new Lazy<IDbSaveHook, HookMetadata>(() => new THook(), new HookMetadata
             {
                 HookedType = typeof(TEntity),
+                DbContextType = typeof(IDbContext),
                 ImplType = typeof(THook),
                 Important = typeof(THook).GetAttribute<ImportantAttribute>(false) != null
             });

@@ -78,11 +78,11 @@
 
             var $el = $(this);
             var activate = $el.attr("data-activate") == "true" ? true : false;
-            //this.T = window.Res.Provider;
+            var T = window.Res.Provider;
 
             $({}).doAjax({
                 type: 'POST',
-                url: $el.data('href') || $el.attr('href'),
+                url: $el.data('href'),
                 data: {
                     "__RequestVerificationToken": token,
                     "systemName": $el.attr("data-systemname"),
@@ -96,14 +96,14 @@
 
                     if (activate) {
                         $el.addClass("btn-secondary btn-to-danger").removeClass("btn-success");
-                        $el.text(window.Res.Provider.deactivate);
-                        badge.text(window.Res.Provider.active);
+                        $el.text(T.deactivate);
+                        badge.text(T.active);
                         badge.addClass("badge-success").removeClass("badge-secondary");
                     }
                     else {
                         $el.addClass("btn-success").removeClass("btn-secondary btn-to-danger");
-                        $el.text(window.Res.Provider.activate);
-                        badge.text(window.Res.Provider.inactive);
+                        $el.text(T.activate);
+                        badge.text(T.inactive);
                         badge.addClass("badge-secondary").removeClass("badge-success");
                     }
 

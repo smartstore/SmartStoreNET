@@ -51,7 +51,7 @@
 			<li class="choice-box@(item.IsPreSelected ? " selected" : "")">
 				<label class="choice-box-label">
 					<input type="radio" class="choice-box-control-native" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
-					<span class="choice-box-content tooltip-toggle" title="@label">
+					<span class="choice-box-content tooltip-toggle tooltip-toggle-always" title="@label">
 						<span class="@elClass" @Html.Attr("style", css, css.HasValue())>
 							@if (!css.HasValue())
 							{

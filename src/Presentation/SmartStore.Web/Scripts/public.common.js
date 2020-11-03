@@ -65,13 +65,14 @@
         function (ctx) {
             if ($.fn.tooltip === undefined)
                 return;
-            if (!Modernizr.touchevents) {
-                ctx.tooltip({
-                    selector: '[data-toggle=tooltip], .tooltip-toggle',
-                    animation: false,
-                    trigger: 'hover'
-                });
-            }
+            var selector = Modernizr.touchevents
+                ? '[data-toggle=tooltip], .tooltip-toggle.tooltip-toggle-always'
+                : '[data-toggle=tooltip], .tooltip-toggle';
+            ctx.tooltip({
+                selector: selector,
+                animation: false,
+                trigger: 'hover'
+            });
         },
         // touch spin
         function (ctx) {

@@ -168,7 +168,7 @@ namespace SmartStore.Core.Data.Hooks
 
             if (_hooksRequestCache.ContainsKey(requestKey))
             {
-                hooks = _hooksRequestCache[requestKey];
+                hooks = _hooksRequestCache[requestKey].ToArray();
             }
             else
             {

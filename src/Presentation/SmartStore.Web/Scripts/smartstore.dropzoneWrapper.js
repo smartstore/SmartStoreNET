@@ -182,7 +182,7 @@
                     formData.append("__RequestVerificationToken", token);
 
                 var directory = file.fullPath.substring(0, file.fullPath.lastIndexOf('/'));
-                if (directory !== "") 
+                if (directory) 
                     formData.append("directory", directory);
                 
                 // Send type filter if set.

@@ -750,6 +750,7 @@ namespace SmartStore.Web.Controllers
                 "/Wishlist",
                 "/Product/AskQuestion",
                 "/Product/EmailAFriend",
+                "/Cookiemanager",
 				//"/Search",
 				"/Config$",
                 "/Settings$",

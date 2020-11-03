@@ -1,11 +1,20 @@
 ﻿@model NewsItemListModel
 @using SmartStore.Web.Models.News;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Core.Domain.Seo;
+
 @{
     Layout = "_Layout";
     Html.AddTitleParts(Model.MetaTitle);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var newsUrl = Url.RouteUrl("NewsArchive", this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(newsUrl);
+    }
 }
 
 <div class="page news-list-page">

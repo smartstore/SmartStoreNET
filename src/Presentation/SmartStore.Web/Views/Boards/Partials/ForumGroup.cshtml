@@ -3,9 +3,9 @@
 
 <div class="forum-group table-responsive">
     <div class="group-title">
-        <h3 class="fs-h3" @Html.LanguageAttributes(Model.Name)>
+        <h1 class="fs-h3" @Html.LanguageAttributes(Model.Name)>
             @Html.RouteLink(Model.Name.Value, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
-        </h3>
+        </h1>
     </div>
 
     <table class="table">

@@ -2,6 +2,7 @@
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@using SmartStore.Core.Domain.Seo;
 
 @model ForumPageModel
 @{
@@ -9,6 +10,13 @@
 
     Html.AddTitleParts(Model.Name);
     Html.AddMetaDescriptionParts(Model.Name);
+
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var forumUrl = Url.RouteUrl("Forum", this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(forumUrl);
+    }
 
     var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
         .Name("paginator")
@@ -41,7 +49,7 @@
     <div class="row mt-5">
         <div class="col">
             <div class="heading mb-4">
-                <h2 class="heading-title" @Html.LanguageAttributes(Model.Name)>@Model.Name</h2>
+                <h1 class="heading-title fs-h2" @Html.LanguageAttributes(Model.Name)>@Model.Name</h1>
             </div>
         </div>
         <div class="col col-auto">
@@ -116,22 +124,22 @@
                         {
                             <span class="topictype"><label class="badge badge-info">@T("Forum.Announcement")</label></span>
                         }
-                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })                        
+                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         <div>
                             <div class="topic-starter text-muted d-inline-flex">
                                 @if (topic.CustomerId > 0)
                                 {
-									if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-									{
-										<span class="pr-1">@T("Forum.Author"):</span>
-										<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
-									}
-									else
-									{
-										<span class="pr-1">@T("Forum.Author"):</span>
-										<span>@topic.CustomerName</span>
-									}
-								}
+                                    if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+                                    {
+                                        <span class="pr-1">@T("Forum.Author"):</span>
+                                        <span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pr-1">@T("Forum.Author"):</span>
+                                        <span>@topic.CustomerName</span>
+                                    }
+                                }
                             </div>
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {

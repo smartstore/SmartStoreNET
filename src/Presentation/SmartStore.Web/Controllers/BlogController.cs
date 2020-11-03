@@ -31,6 +31,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Seo;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
 using SmartStore.Web.Models.Common;
@@ -51,6 +52,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IPageAssetsBuilder _pageAssetsBuilder;
 
         private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
@@ -70,6 +72,7 @@ namespace SmartStore.Web.Controllers
             ICustomerActivityService customerActivityService,
             IStoreMappingService storeMappingService,
             IGenericAttributeService genericAttributeService,
+            IPageAssetsBuilder pageAssetsBuilder,
             MediaSettings mediaSettings,
             BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
@@ -87,6 +90,7 @@ namespace SmartStore.Web.Controllers
             _customerActivityService = customerActivityService;
             _storeMappingService = storeMappingService;
             _genericAttributeService = genericAttributeService;
+            _pageAssetsBuilder = pageAssetsBuilder;
 
             _mediaSettings = mediaSettings;
             _blogSettings = blogSettings;
@@ -330,6 +334,12 @@ namespace SmartStore.Web.Controllers
 
             var model = PrepareBlogPostListModel(command);
 
+            if (_seoSettings.CanonicalUrlsEnabled)
+            {
+                var url = Url.RouteUrl("Blog", Request.Url.Scheme);
+                _pageAssetsBuilder.AddCanonicalUrlParts(url);
+            }
+
             return View("List", model);
         }
 
@@ -351,6 +361,12 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
+            if (_seoSettings.CanonicalUrlsEnabled)
+            {
+                var blogUrl = Url.RouteUrl("BlogByTag", new { tag }, Request.Url.Scheme);
+                _pageAssetsBuilder.AddCanonicalUrlParts(blogUrl);
+            }
+
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
         }
@@ -363,6 +379,12 @@ namespace SmartStore.Web.Controllers
             if (!_blogSettings.Enabled)
             {
                 return HttpNotFound();
+            }
+
+            if (_seoSettings.CanonicalUrlsEnabled)
+            {
+                var blogUrl = Url.RouteUrl("BlogByMonth", new { month  }, Request.Url.Scheme);
+                _pageAssetsBuilder.AddCanonicalUrlParts(blogUrl);
             }
 
             var model = PrepareBlogPostListModel(command);

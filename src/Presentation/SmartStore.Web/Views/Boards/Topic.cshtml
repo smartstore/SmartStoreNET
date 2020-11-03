@@ -19,7 +19,7 @@
         @{ Html.RenderAction("SearchBox", "Boards"); }
     </div>    
     <div class="title">
-        <h2>@Model.Subject</h2>
+        <h1 class="fs-h2">@Model.Subject</h1>
     </div>
     
     @if (Model.IsCustomerAllowedToEditTopic || Model.IsCustomerAllowedToDeleteTopic || Model.IsCustomerAllowedToMoveTopic) 

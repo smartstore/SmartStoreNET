@@ -265,7 +265,7 @@ namespace SmartStore.Web.Controllers
         {
             if (blogPost.Id == 0)
             {
-                return Content("");
+                return Content(string.Empty);
             }
 
             var model = new MetaPropertiesModel
@@ -294,7 +294,7 @@ namespace SmartStore.Web.Controllers
         {
             if (newsItem.Id == 0)
             {
-                return Content("");
+                return Content(string.Empty);
             }
 
             var model = new MetaPropertiesModel
@@ -317,7 +317,7 @@ namespace SmartStore.Web.Controllers
         {
             if (product.Id == 0)
             {
-                return Content("");
+                return Content(string.Empty);
             }
 
             var model = new MetaPropertiesModel
@@ -344,7 +344,7 @@ namespace SmartStore.Web.Controllers
         {
             if (category.Id == 0)
             {
-                return Content("");
+                return Content(string.Empty);
             }
 
             var model = new MetaPropertiesModel
@@ -366,7 +366,7 @@ namespace SmartStore.Web.Controllers
         {
             if (manufacturer.Id == 0)
             {
-                return Content("");
+                return Content(string.Empty);
             }
 
             var model = new MetaPropertiesModel
@@ -423,7 +423,7 @@ namespace SmartStore.Web.Controllers
             var model = PrepareLanguageSelectorModel();
 
             if (model.AvailableLanguages.Count < 2)
-                return Content("");
+                return Content(string.Empty);
 
             // register all available languages as <link hreflang="..." ... />
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
@@ -640,7 +640,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult StoreThemeSelector()
         {
             if (!_themeSettings.AllowCustomerToSelectTheme)
-                return Content("");
+                return Content(string.Empty);
 
             var model = new StoreThemeSelectorModel();
             var currentTheme = _themeRegistry.Value.GetThemeManifest(_themeContext.WorkingThemeName);

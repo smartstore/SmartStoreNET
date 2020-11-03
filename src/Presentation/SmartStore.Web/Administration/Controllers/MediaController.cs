@@ -39,13 +39,24 @@ namespace SmartStore.Admin.Controllers
         [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Upload)]
         [MaxMediaFileSize]
-        public async Task<ActionResult> Upload(string path, string[] typeFilter = null, bool isTransient = false, DuplicateFileHandling duplicateFileHandling = DuplicateFileHandling.ThrowError)
+        public async Task<ActionResult> Upload(string path, string[] typeFilter = null, bool isTransient = false, 
+            DuplicateFileHandling duplicateFileHandling = DuplicateFileHandling.ThrowError, string directory = "")
         {
             var len = Request.Files.Count;
             var result = new List<object>(len);
 
             for (var i = 0; i < len; ++i)
             {
+                if (directory.HasValue())
+                {
+                    path = _mediaService.CombinePaths(path, directory);
+
+                    if (!_mediaService.FolderExists(path))
+                    {
+                        _mediaService.CreateFolder(path);
+                    }
+                }
+
                 var uploadedFile = Request.Files[i];
                 var fileName = uploadedFile.FileName;
                 var filePath = _mediaService.CombinePaths(path, fileName);

@@ -181,6 +181,10 @@
                 if (token !== "")
                     formData.append("__RequestVerificationToken", token);
 
+                var directory = file.fullPath.substring(0, file.fullPath.lastIndexOf('/'));
+                if (directory !== "") 
+                    formData.append("directory", directory);
+                
                 // Send type filter if set.
                 var typeFilter = $el.data('type-filter');
                 if (typeFilter) {

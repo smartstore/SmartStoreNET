@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Rhino.Mocks;
@@ -21,7 +23,24 @@ namespace SmartStore.Tests
 {
     public class MockCommonServices : ICommonServices
     {
-        private IComponentContext _container;
+        static MockCommonServices()
+        {
+            // Autofac contains an unreplicable attribute 'NullableContextAttribute'.
+            // Add it to Castle Proxy "avoid" list. 
+            // https://stackoverflow.com/questions/64011323/cant-stub-class-with-nullablecontextattribute
+            var assemblies = new Assembly[] { typeof(IComponentContext).Assembly };
+
+            foreach (var assembly in assemblies)
+            {
+                var attrTypeToAvoid = Array.Find(assembly.GetTypes(), t => t.Name == "NullableContextAttribute");
+                if (attrTypeToAvoid != null)
+                {
+                    Castle.DynamicProxy.Generators.AttributesToAvoidReplicating.Add(attrTypeToAvoid);
+                    Console.WriteLine($"Found attribute to avoid: {attrTypeToAvoid.AssemblyQualifiedNameWithoutVersion()}");
+                }
+            }
+        }
+
         private IDbContext _dbContext;
 
         public MockCommonServices() : this(MockRepository.GenerateMock<IComponentContext>())
@@ -30,12 +49,11 @@ namespace SmartStore.Tests
 
         public MockCommonServices(IComponentContext container)
         {
-            _container = container;
-
+            Container = container;
             EventPublisher = MockRepository.GenerateStub<IEventPublisher>();
         }
 
-        public IComponentContext Container => _container;
+        public IComponentContext Container { get; }
         public IApplicationEnvironment ApplicationEnvironment => MockRepository.GenerateMock<IApplicationEnvironment>();
         public ICacheManager Cache => NullCache.Instance;
         public IRequestCache RequestCache => NullRequestCache.Instance;

@@ -240,6 +240,7 @@
     $(function() {
         var dialog = $("#add-changelog-window");
         var form = dialog.find("form");
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
         $('.add-changelog-btn').click(function (e) {
             var btn = $(e.currentTarget);
@@ -255,7 +256,8 @@
                 type: 'POST',
                 url: '@Url.Action("GetChangelogText", "Download")',
                 data: {
-                    downloadId: downloadId
+                    downloadId: downloadId,
+                    __RequestVerificationToken: token
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -278,6 +280,7 @@
                 data: {
                     downloadId: form.find("#DownloadId").val(),
                     changelogText: form.find("#AddChangelog").val(),
+                    __RequestVerificationToken: token
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -295,7 +298,6 @@
         });
         
         $('.download-versions').on('click', '.delete-download-version', function () {
-            var token = $('input[name="__RequestVerificationToken"]').val();
             var download = $(this).closest("tr");
 
             $(this).doAjax({

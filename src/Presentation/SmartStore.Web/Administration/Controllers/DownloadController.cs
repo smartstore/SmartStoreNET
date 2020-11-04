@@ -57,6 +57,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [ValidateInput(false)]
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
@@ -84,6 +85,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult CreateDownloadFromMediaFile(int mediaFileId, int entityId = 0, string entityName = "")
         {
@@ -108,6 +110,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Create)]
         public ActionResult AsyncUpload(string clientCtrlId, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
@@ -133,6 +136,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Update)]
         public ActionResult AddChangelog(int downloadId, string changelogText)
         {
@@ -150,6 +154,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Read)]
         public ActionResult GetChangelogText(int downloadId)
         {
@@ -171,6 +176,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Media.Download.Delete)]
         public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
         {

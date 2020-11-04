@@ -8,6 +8,7 @@
 * **OCI** provides connection to eprocurement systems via industry standard OCI (commercial plugin)
 * **cXmlPunchout** provides connection to eprocurement systems via industry standard cXmlPunchout (commercial plugin) 
 * **Video** support in product media gallery.
+* **Media Gallery** displays a multitude of media files in various styles as Page Builder block.
 * (PERF) **~10% faster page rendering** speed thanks to better eager loading & caching strategies
 
 ### Breaking changes
@@ -24,8 +25,7 @@ Merging the contents of different languages must be done manually (migration is 
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
 	* #2036 Added Page Builder block to display content slider.
-* #2012 Added paging and sorting for bestsellers report.
-* #2014 Added paging and sorting for top customers report.
+* #1644 Graying out unavailable attribute combinations.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
 * #1239 Added configurability for password strength.
@@ -35,7 +35,8 @@ Merging the contents of different languages must be done manually (migration is 
 * #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
 * #1715 Added product attributes selected by customer to RFQ and ask question message.
 * (DEV) Full localization support for properties of setting classes.
-* #1644 Graying out unavailable attribute combinations.
+* #2012 Added paging and sorting for bestsellers report.
+* #2014 Added paging and sorting for top customers report.
 * #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages.
 * Added option for SameSite mode property of cookies
 * #1307 Add 'apple-touch-icon' meta with all common sizes
@@ -63,6 +64,8 @@ Merging the contents of different languages must be done manually (migration is 
 * #1338 Display 'PanGV' in OffCanvas cart
 * #1988 Preconnect all external resources and load them async
 * #1968 Dropzone: upload the folder structure when a folder is dropped.
+* #1996 Page Builder: Added 'Loading behaviour' option to picture block
+* #2100 Improved schema for news, blogs and products
 
 ### Bugfixes
 * **Media Manager**
@@ -88,8 +91,8 @@ Merging the contents of different languages must be done manually (migration is 
 * #2000 Escape toxic chars in meta attributes 
 * Google Analytics: Fixed script error in conjunction with CookieManager
 * #2085 RTL: searchbar button wasn't aligned correctly
-* #2019 OffCancas compare: hide horizontal scrollbar
-
+* #2068 RTL: Fixed Page Builder slider positioning, dropdown and other alignments
+* #2019 OffCancas compare: hide horizontal scrollbar 
 
 ## Smartstore 4.0.1
 ### New Features

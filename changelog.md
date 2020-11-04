@@ -4,6 +4,8 @@
 ### Highlights
 * **Web API**: now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
 * (NEW) **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
+* **Video** support in product media gallery.
+* (PERF) **~10% faster page rendering** speed thanks to better eager loading & caching strategies
 
 ### Breaking changes
 * The **Glimpse** plugin is obsolete and has been removed! Does not work with .NET 4.7+ and hasn't been maintained for 7 years now. 

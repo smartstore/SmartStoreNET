@@ -2,8 +2,11 @@
 
 ## Smartstore 4.1.0
 ### Highlights
-* **Web API**: now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
+* **Web API:** now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
 * (NEW) **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
+* (DEV) [VS Extension](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore) to create plugins. Helps developing plugins for Smartstore by creating the basic structure of a Smartstore plugin with all the required files.  
+* **OCI** provides connection to eprocurement systems via industry standard OCI (commercial plugin)
+* **cXmlPunchout** provides connection to eprocurement systems via industry standard cXmlPunchout (commercial plugin) 
 * **Video** support in product media gallery.
 * (PERF) **~10% faster page rendering** speed thanks to better eager loading & caching strategies
 
@@ -20,8 +23,7 @@ Merging the contents of different languages must be done manually (migration is 
 	* #2042 Added gallery block to display a multitude of media files in various styles.
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
-* **ContentSlider**
- 	* #2036 Added Page Builder block to display content slider.
+	* #2036 Added Page Builder block to display content slider.
 * #2012 Added paging and sorting for bestsellers report.
 * #2014 Added paging and sorting for top customers report.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
@@ -35,6 +37,9 @@ Merging the contents of different languages must be done manually (migration is 
 * (DEV) Full localization support for properties of setting classes.
 * #1644 Graying out unavailable attribute combinations.
 * #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages.
+* Added option for SameSite mode property of cookies
+* #1307 Add 'apple-touch-icon' meta with all common sizes
+* #213 Allow special title and meta tags for home
 
 ### Improvements
 * (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies
@@ -46,6 +51,18 @@ Merging the contents of different languages must be done manually (migration is 
 * #213 Added options for special title and meta tags on home page.
 * #1977 CMS Menu Builder: added new builder types for blogs and news.
 * Search Log: added option to hide top search terms in instant search.
+* CookieManager: Admin area for user defined cookie information 
+* CookieManager: More compact frontend layout for mobile devices
+* Seo optimization for News, Blog & Boards
+* (Admin) More filter options for news & blog items
+* #1901 News: Made CreatedOn configurable 
+* #2078 Hidden news items should be rendered opaque if current user is in admin role.
+* #1902 Form registration clears values when switching between site languages
+* #1984 Render breadcrumb for pages that are part of the main menu. 
+* #2121 Media Manager: implement direct file "replace" support.
+* #1338 Display 'PanGV' in OffCanvas cart
+* #1988 Preconnect all external resources and load them async
+* #1968 Dropzone: upload the folder structure when a folder is dropped.
 
 ### Bugfixes
 * **Media Manager**
@@ -67,6 +84,11 @@ Merging the contents of different languages must be done manually (migration is 
 * RSS feeds: relative URLs of objects embedded in HTML are replaced by absolute URLs.
 * Rules: automatic category assignments of products were not taken into account in a search index updates.
 * Campaign preview did not work if there are no newsletter subscribers.
+* Many alt & title attribute fixes for pictures
+* #2000 Escape toxic chars in meta attributes 
+* Google Analytics: Fixed script error in conjunction with CookieManager
+* #2085 RTL: searchbar button wasn't aligned correctly
+* #2019 OffCancas compare: hide horizontal scrollbar
 
 
 ## Smartstore 4.0.1

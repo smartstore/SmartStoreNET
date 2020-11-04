@@ -66,7 +66,7 @@
             if ($.fn.tooltip === undefined)
                 return;
             var selector = Modernizr.touchevents
-                ? '[data-toggle=tooltip], .tooltip-toggle.tooltip-toggle-always'
+                ? '[data-toggle=tooltip].tooltip-toggle-touch, .tooltip-toggle.tooltip-toggle-touch'
                 : '[data-toggle=tooltip], .tooltip-toggle';
             ctx.tooltip({
                 selector: selector,

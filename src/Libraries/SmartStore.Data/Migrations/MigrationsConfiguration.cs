@@ -865,6 +865,10 @@
 
             builder.AddOrUpdate("Admin.ContentManagement.Forums.ForumGroup.Updated")
                 .Value("de", "Die Forengruppe wurde erfolgreich aktualisiert.");
+
+            builder.AddOrUpdate("Account.Login.NotRegisteredYet",
+                "Not registered yet?",
+                "Noch nicht registriert?");
         }
     }
 }

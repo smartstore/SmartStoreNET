@@ -10,6 +10,7 @@
 * (DEV) **Web API**: porting to OData v4 has minor incompatibilities with v3. See this [blog post](https://smartstore.com/en/web-api-supports-odata-v4-as-from-smartstore-4-1) for details.
 * **Blogs\News**: the direct language association has been removed. Localized content is now entered using the localization editor. 
 Merging the contents of different languages must be done manually (migration is not possible).
+* **PostFinance**: plugin has been extended and renamed. Users of this payment method must activate PostFinance e-Commerce in backend and enter the API access data again.
 
 ### New Features
 * Theming: responsive font-sizing and spacing

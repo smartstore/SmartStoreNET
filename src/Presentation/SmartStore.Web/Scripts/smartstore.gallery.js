@@ -450,7 +450,7 @@
             }
 
             function pauseVideos() {
-                pswpContainer.find('.video-item').each((i, el) => {
+                pswpContainer.find('.video-item').each((i, el), function() {
                     el.pause();
                 });
             }
@@ -507,11 +507,7 @@
                         }
                         else {
                             var src = a.attr('href');
-                            var html = `
-                                <div class="video-container d-flex align-items-center justify-content-center">
-                                    <video class="video-item" src="${src}" controls preload="metadata" />
-                                </div>
-                            `;
+                            var html = '<div class="video-container d-flex align-items-center justify-content-center"><video class="video-item" src="' + src + '" controls preload="metadata" /></div>';
                             items.push({ html: html, el: $this });
                         }
                     });

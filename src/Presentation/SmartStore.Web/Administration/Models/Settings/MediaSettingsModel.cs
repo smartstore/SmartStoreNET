@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -108,6 +111,38 @@ namespace SmartStore.Admin.Models.Settings
         public MediaSettingsValidator()
         {
             RuleFor(x => x.MaxUploadFileSize).GreaterThan(0);
+        }
+    }
+
+    public class MediaSettingsMapper : IMapper<MediaSettings, MediaSettingsModel>, IMapper<MediaSettingsModel, MediaSettings>
+    {
+        public void Map(MediaSettings from, MediaSettingsModel to)
+        {
+            MiniMapper.Map(from, to);
+
+            to.ImageTypes = MapMediaType(from.ImageTypes, MediaType.Image);
+            to.VideoTypes = MapMediaType(from.VideoTypes, MediaType.Video);
+            to.AudioTypes = MapMediaType(from.AudioTypes, MediaType.Audio);
+            to.DocumentTypes = MapMediaType(from.DocumentTypes, MediaType.Document);
+            to.TextTypes = MapMediaType(from.TextTypes, MediaType.Text);
+            to.BinTypes = MapMediaType(from.BinTypes, MediaType.Binary);
+        }
+
+        public void Map(MediaSettingsModel from, MediaSettings to)
+        {
+            MiniMapper.Map(from, to);
+
+            to.ImageTypes = MapMediaType(from.ImageTypes, MediaType.Image);
+            to.VideoTypes = MapMediaType(from.VideoTypes, MediaType.Video);
+            to.AudioTypes = MapMediaType(from.AudioTypes, MediaType.Audio);
+            to.DocumentTypes = MapMediaType(from.DocumentTypes, MediaType.Document);
+            to.TextTypes = MapMediaType(from.TextTypes, MediaType.Text);
+            to.BinTypes = MapMediaType(from.BinTypes, MediaType.Binary);
+        }
+
+        private static string MapMediaType(string types, MediaType mediaType)
+        {
+            return types.NullEmpty() ?? string.Join(" ", mediaType.DefaultExtensions);
         }
     }
 }

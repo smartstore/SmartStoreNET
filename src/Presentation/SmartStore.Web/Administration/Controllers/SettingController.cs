@@ -921,7 +921,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             ModelState.Clear();
-            MiniMapper.Map(model, settings);
+            settings = model.ToEntity();
 
             return NotifyAndRedirect("Media");
         }

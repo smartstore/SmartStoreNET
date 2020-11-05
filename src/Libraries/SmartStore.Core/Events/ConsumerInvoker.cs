@@ -101,11 +101,11 @@ namespace SmartStore.Core.Events
         {
             if (ex is AggregateException ae)
             {
-                ae.InnerExceptions.Each(x => Logger.Error(x));
+                ae.InnerExceptions.Each(x => Logger.Error(x, $"Error invoking event consumer '{descriptor}'."));
             }
             else
             {
-                Logger.Error(ex);
+                Logger.Error(ex, $"Error invoking event consumer '{descriptor}'.");
             }
 
             if (!descriptor.FireForget)

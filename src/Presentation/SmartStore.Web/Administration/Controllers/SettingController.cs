@@ -912,7 +912,8 @@ namespace SmartStore.Admin.Controllers
 
         [Permission(Permissions.Configuration.Setting.Update)]
         [ValidateAntiForgeryToken]
-        [HttpPost, SaveSetting, FormValueRequired("save")]
+        [HttpPost, FormValueRequired("save")]
+        [SaveSetting(UpdateParameterFromStore = false)]
         public ActionResult Media(MediaSettings settings, MediaSettingsModel model)
         {
             if (!ModelState.IsValid)

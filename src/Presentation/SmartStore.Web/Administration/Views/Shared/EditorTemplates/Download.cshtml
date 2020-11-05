@@ -92,7 +92,7 @@
 	var mediaService = this.CommonServices.MediaService;
 	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 	var catalogSettings = this.CommonServices.Resolve<CatalogSettings>();
-	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+	var downloadService = this.CommonServices.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
 	var additionalCssClasses = ViewData["class"] != null ? ViewData["class"].ToString() : "";
 	var fileName = string.Empty;
@@ -150,7 +150,7 @@
 		<div class="form-row flex-nowrap dropzone-container panel-file@(initiallyShowUrlPanel ? " hide": "")">
 
             <div class="fu-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
-                @if (download != null)
+                @if (download?.MediaFile != null)
                 {
                     @Html.MediaThumbnail(mediaService.ConvertMediaFile(download.MediaFile), MediaSettings.ThumbnailSizeMd)
                 }

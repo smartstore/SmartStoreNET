@@ -22,9 +22,9 @@ Merging the contents of different languages must be done manually (migration is 
 * Theming: responsive font-sizing and spacing
 * **Page Builder**
 	* #2042 Added gallery block to display a multitude of media files in various styles.
+	* #2036 Added block to display content slider.
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
-	* #2036 Added Page Builder block to display content slider.
 * #1644 Graying out unavailable attribute combinations.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.

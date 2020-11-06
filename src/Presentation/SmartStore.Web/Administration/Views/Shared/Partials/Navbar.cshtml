@@ -163,6 +163,7 @@
                 data: { "__RequestVerificationToken": token },
                 callbackSuccess: function (data) {
 					displayNotification(data.Message, 'success');
+					$(e.target).closest(".dropdown").dropdown('toggle');
                 }
             });
                

@@ -138,7 +138,7 @@ NOTE: Smartstore 4 requires [Visual C++ Redistributable für Visual Studio 2015]
 * IIS 7+
 * ASP.NET 4.5+
 * MS SQL Server 2008 Express (or higher) OR MS SQL Server Compact 4
-* Visual C++ Redistributable für Visual Studio 2015 ([Download](https://www.microsoft.com/en-US/download/details.aspx?id=52685))
+* Visual C++ Redistributable für Visual Studio 2015-2019 ([Download](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * Full Trust
 
 

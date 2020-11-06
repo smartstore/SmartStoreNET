@@ -100,7 +100,7 @@
                         </div>
                     </div>
 
-                    @if (!Model.DisplayCaptcha)
+                    @if (Model.DisplayCaptcha)
                     {
                         <div class="form-group captcha-box">
                             @Html.Raw(Html.GenerateCaptcha())

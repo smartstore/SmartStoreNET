@@ -34,16 +34,28 @@ namespace SmartStore.Web.Framework.Filters
                 return;
 
             // Update IP address.
-            var webHelper = WebHelper.Value;
-            var currentIpAddress = webHelper.GetCurrentIpAddress();
-            if (!String.IsNullOrEmpty(currentIpAddress))
+            var currentIpAddress = WebHelper.Value.GetCurrentIpAddress();
+
+            if (!string.IsNullOrEmpty(currentIpAddress))
             {
                 var customer = WorkContext.Value.CurrentCustomer;
-                if (customer != null && !currentIpAddress.Equals(customer.LastIpAddress, StringComparison.InvariantCultureIgnoreCase))
+
+                if (customer != null && !customer.Deleted && !customer.IsSystemAccount && 
+                    !currentIpAddress.Equals(customer.LastIpAddress, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var customerService = CustomerService.Value;
-                    customer.LastIpAddress = currentIpAddress;
-                    customerService.UpdateCustomer(customer);
+                    try
+                    {
+                        customer.LastIpAddress = currentIpAddress;
+                        CustomerService.Value.UpdateCustomer(customer);
+                    }
+                    catch (InvalidOperationException ioe)
+                    {
+                        // The exception may occur on the first call after a migration.
+                        if (!ioe.IsAlreadyAttachedEntityException())
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
         }

@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 
@@ -17,7 +16,6 @@ namespace SmartStore.Web.Framework.Filters
         public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
         public Lazy<IUserAgent> UserAgent { get; set; }
         public Lazy<ICustomerService> CustomerService { get; set; }
-        public Lazy<ILogger> Logger { get; set; }
 
         public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -46,30 +44,34 @@ namespace SmartStore.Web.Framework.Filters
             var pageUrl = WebHelper.Value.GetThisPageUrl(true);
             var userAgent = UserAgent.Value.RawValue;
 
-            try
+            if (pageUrl.HasValue())
             {
-                if (pageUrl.HasValue())
+                var previousPageUrl = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+                if (!pageUrl.IsCaseInsensitiveEqual(previousPageUrl))
                 {
-                    var previousPageUrl = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
-                    if (!pageUrl.IsCaseInsensitiveEqual(previousPageUrl))
-                    {
-                        GenericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.LastVisitedPage, pageUrl);
-                    }
+                    GenericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.LastVisitedPage, pageUrl);
                 }
+            }
 
-                if (userAgent.HasValue())
+            if (userAgent.HasValue())
+            {
+                var previousUserAgent = customer.LastUserAgent;
+                if (!userAgent.IsCaseInsensitiveEqual(previousUserAgent))
                 {
-                    var previousUserAgent = customer.LastUserAgent;
-                    if (!userAgent.IsCaseInsensitiveEqual(previousUserAgent))
+                    try
                     {
                         customer.LastUserAgent = userAgent;
                         CustomerService.Value.UpdateCustomer(customer);
                     }
+                    catch (InvalidOperationException ioe)
+                    {
+                        // The exception may occur on the first call after a migration.
+                        if (!ioe.IsAlreadyAttachedEntityException())
+                        {
+                            throw;
+                        }
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger?.Value?.Error(ex);
             }
         }
 

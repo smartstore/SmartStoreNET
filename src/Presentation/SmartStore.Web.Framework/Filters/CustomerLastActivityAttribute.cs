@@ -27,11 +27,22 @@ namespace SmartStore.Web.Framework.Filters
 
             var customer = WorkContext.Value.CurrentCustomer;
 
-            // update last activity date
-            if (!customer.IsSystemAccount && customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
+            // Update last activity date.
+            if (customer != null && !customer.Deleted && !customer.IsSystemAccount && customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
             {
-                customer.LastActivityDateUtc = DateTime.UtcNow;
-                CustomerService.Value.UpdateCustomer(customer);
+                try
+                {
+                    customer.LastActivityDateUtc = DateTime.UtcNow;
+                    CustomerService.Value.UpdateCustomer(customer);
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    // The exception may occur on the first call after a migration.
+                    if (!ioe.IsAlreadyAttachedEntityException())
+                    {
+                        throw;
+                    }
+                }
             }
         }
 

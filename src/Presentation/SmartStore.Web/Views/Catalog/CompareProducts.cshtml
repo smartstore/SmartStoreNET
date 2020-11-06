@@ -95,8 +95,10 @@
 											</div>
 										}
 										<div class="col text-right">
-											<a class="btn btn-secondary btn-to-danger btn-flat btn-no-border btn-remove rounded-0" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
-												@T("Common.Remove")
+											<a class="btn btn-secondary btn-to-danger btn-flat btn-no-border btn-icon btn-remove rounded-0" 
+											   href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' 
+											   rel="nofollow" title="@T("Common.Remove")">
+												&times;
 											</a>
 										</div>
 									</div>

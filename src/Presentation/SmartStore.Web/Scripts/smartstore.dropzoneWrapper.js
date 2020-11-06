@@ -179,7 +179,7 @@
                     formData.append("duplicateFileHandling", enumId);
                 }
 
-                if (token !== "")
+                if (token !== "" && !formData.get("__RequestVerificationToken"))
                     formData.append("__RequestVerificationToken", token);
 
                 if (file.fullPath) {
@@ -203,6 +203,9 @@
             });
 
             el.on("sendingmultiple", function (files, xhr, formData) {
+                if (token !== "" && !formData.get("__RequestVerificationToken"))
+                    formData.append("__RequestVerificationToken", token);
+                
                 logEvent("sendingmultiple", files, xhr, formData);
             });
 

@@ -5,8 +5,8 @@
 * **Web API:** now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
 * (NEW) **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
 * (DEV) [VS Extension](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore) to create plugins. Helps developing plugins for Smartstore by creating the basic structure of a Smartstore plugin with all the required files.  
-* **OCI** provides connection to eprocurement systems via industry standard OCI (commercial plugin)
-* **cXmlPunchout** provides connection to eprocurement systems via industry standard cXmlPunchout (commercial plugin) 
+* **OCI** provides connection to e-procurement systems via industry standard OCI (commercial plugin)
+* **cXmlPunchout** provides connection to e-procurement systems via industry standard cXmlPunchout (commercial plugin) 
 * **Video** support in product media gallery.
 * **Media Gallery** displays a multitude of media files in various styles as Page Builder block.
 * (PERF) **~10% faster page rendering** speed thanks to better eager loading & caching strategies

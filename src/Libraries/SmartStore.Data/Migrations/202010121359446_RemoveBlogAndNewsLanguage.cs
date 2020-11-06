@@ -39,8 +39,15 @@
         
         public override void Down()
         {
-            AddColumn("dbo.News", "LanguageId", c => c.Int(nullable: false));
-            AddColumn("dbo.BlogPost", "LanguageId", c => c.Int(nullable: false));
+            var defaultLanguageId = 1;
+
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                defaultLanguageId = new SmartObjectContext().Set<Language>().Select(x => x.Id).FirstOrDefault();
+            }
+
+            AddColumn("dbo.News", "LanguageId", c => c.Int(nullable: false, defaultValue: defaultLanguageId));
+            AddColumn("dbo.BlogPost", "LanguageId", c => c.Int(nullable: false, defaultValue: defaultLanguageId));
             CreateIndex("dbo.News", "LanguageId");
             CreateIndex("dbo.BlogPost", "LanguageId");
             AddForeignKey("dbo.News", "LanguageId", "dbo.Language", "Id", cascadeDelete: true);
@@ -56,9 +63,7 @@
                 return;
             }
 
-            // Migrate URL records of BlogPost and NewsItem that are stored with primary language ID. Must be 0 for "Standard" now.
-            var defaultLangId = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First().Id;
-
+            // URL records of BlogPost and NewsItem must now have 0 for "Standard" as language ID otherwise no link is created.
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
                 var urlRecords = context.Set<UrlRecord>();
@@ -84,7 +89,7 @@
                             if (!kvp.Value.Any(x => x.LanguageId == 0))
                             {
                                 // Migrate active and inactive slugs.
-                                kvp.Value.Where(x => x.LanguageId == defaultLangId).Each(x => x.LanguageId = 0);
+                                kvp.Value.Where(x => x.LanguageId != 0).Each(x => x.LanguageId = 0);
                             }
                         }
 

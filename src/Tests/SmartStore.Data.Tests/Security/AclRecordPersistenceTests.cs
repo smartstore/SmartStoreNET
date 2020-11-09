@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Security;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Security
 {

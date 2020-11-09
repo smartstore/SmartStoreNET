@@ -4,21 +4,9 @@ namespace SmartStore.Core.Domain.Common
 {
     public class CommonSettings : ISettings
     {
-		public CommonSettings()
-		{
-			UseStoredProceduresIfSupported = true;
-			AutoUpdateEnabled = true;
-			EntityPickerPageSize = 48;
-            MaxScheduleHistoryAgeInDays = 30;
-            MaxLogAgeInDays = 7;
-            MaxNumberOfScheduleHistoryEntries = 100;
-            MaxQueuedMessagesAgeInDays = 14;
-            MaxGuestsRegistrationAgeInMinutes = 1440;  // 1 day (60 * 24).
-        }
-		
-		public bool UseSystemEmailForContactUsForm { get; set; }
+        public bool UseSystemEmailForContactUsForm { get; set; }
 
-        public bool UseStoredProceduresIfSupported { get; set; }
+        public bool UseStoredProceduresIfSupported { get; set; } = true;
 
         public bool HideAdvertisementsOnAdminArea { get; set; }
 
@@ -27,36 +15,36 @@ namespace SmartStore.Core.Domain.Common
         /// </summary>
         public bool DisplayJavaScriptDisabledWarning { get; set; }
 
-		public bool AutoUpdateEnabled { get; set; }
+        public bool AutoUpdateEnabled { get; set; } = true;
 
-		/// <summary>
-		/// Gets or sets the page size for the entity picker
-		/// </summary>
-		public int EntityPickerPageSize { get; set; }
+        /// <summary>
+        /// Gets or sets the page size for the entity picker
+        /// </summary>
+        public int EntityPickerPageSize { get; set; } = 48;
 
         /// <summary>
         /// Gets or sets the maximum age of schedule history entries (in days).
         /// </summary>
-        public int MaxScheduleHistoryAgeInDays { get; set; }
+        public int MaxScheduleHistoryAgeInDays { get; set; } = 30;
 
         /// <summary>
         /// Gets or sets the maximum age of log entries (in days).
         /// </summary>
-        public int MaxLogAgeInDays { get; set; }
+        public int MaxLogAgeInDays { get; set; } = 7;
 
         /// <summary>
         /// Gets or sets the maximum number of schedule history entries per task.
         /// </summary>
-        public int MaxNumberOfScheduleHistoryEntries { get; set; }
+        public int MaxNumberOfScheduleHistoryEntries { get; set; } = 100;
 
         /// <summary>
         /// Gets or sets the maximum age of sent queued messages (in days).
         /// </summary>
-        public int MaxQueuedMessagesAgeInDays { get; set; }
+        public int MaxQueuedMessagesAgeInDays { get; set; } = 14;
 
         /// <summary>
         /// Gets or sets the maximum registration age (in minutes) for automatic deletion of guests customers.
         /// </summary>
-        public int MaxGuestsRegistrationAgeInMinutes { get; set; }
+        public int MaxGuestsRegistrationAgeInMinutes { get; set; } = 1440;  // 1 day (60 * 24).
     }
 }

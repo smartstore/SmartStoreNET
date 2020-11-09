@@ -3,20 +3,20 @@
 namespace SmartStore.Web.Framework.UI
 {
     public class ViewBasedComponentRenderer<TComponent> : ComponentRenderer<TComponent> where TComponent : Component
-	{
-		private readonly string _viewName;
+    {
+        private readonly string _viewName;
 
-		public ViewBasedComponentRenderer() 
-			: this(typeof(TComponent).Name)
-		{
-		}
+        public ViewBasedComponentRenderer()
+            : this(typeof(TComponent).Name)
+        {
+        }
 
         public ViewBasedComponentRenderer(string viewName)
-		{
-			Guard.NotEmpty(viewName, nameof(viewName));
+        {
+            Guard.NotEmpty(viewName, nameof(viewName));
 
-			_viewName = viewName;
-		}
+            _viewName = viewName;
+        }
 
         protected virtual string GetViewName()
         {
@@ -24,13 +24,13 @@ namespace SmartStore.Web.Framework.UI
         }
 
         public override void Render()
-		{
-			HtmlHelper.RenderPartial(GetViewName(), Component);
-		}
+        {
+            HtmlHelper.RenderPartial(GetViewName(), Component);
+        }
 
-		public override string ToHtmlString()
-		{
-			return HtmlHelper.Partial(GetViewName(), Component).ToString();
-		}
-	}
+        public override string ToHtmlString()
+        {
+            return HtmlHelper.Partial(GetViewName(), Component).ToString();
+        }
+    }
 }

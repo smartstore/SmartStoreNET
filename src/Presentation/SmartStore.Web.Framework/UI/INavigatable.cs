@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
 {
     public class ModifiedParameter
     {
-        public ModifiedParameter()  : this(null)
-        { 
+        public ModifiedParameter() : this(null)
+        {
         }
         public ModifiedParameter(string name)
         {
@@ -15,7 +14,7 @@ namespace SmartStore.Web.Framework.UI
             this.BooleanParamNames = new List<string>();
         }
 
-        public bool HasValue() 
+        public bool HasValue()
         {
             return !this.Name.IsEmpty();
         }
@@ -36,20 +35,20 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
-        string ActionName 
-        { 
-            get; 
-            set; 
+        string ActionName
+        {
+            get;
+            set;
         }
 
-        string RouteName 
-        { 
-            get; 
-            set; 
+        string RouteName
+        {
+            get;
+            set;
         }
 
-        RouteValueDictionary RouteValues 
-        { 
+        RouteValueDictionary RouteValues
+        {
             get;
         }
 
@@ -58,10 +57,10 @@ namespace SmartStore.Web.Framework.UI
             get;
         }
 
-        string Url 
-        { 
-            get; 
-            set; 
+        string Url
+        {
+            get;
+            set;
         }
     }
 }

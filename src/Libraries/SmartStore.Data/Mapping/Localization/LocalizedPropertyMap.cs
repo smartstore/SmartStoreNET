@@ -13,7 +13,7 @@ namespace SmartStore.Data.Mapping.Localization
             this.Property(lp => lp.LocaleKeyGroup).IsRequired().HasMaxLength(400);
             this.Property(lp => lp.LocaleKey).IsRequired().HasMaxLength(400);
             this.Property(lp => lp.LocaleValue).IsRequired().IsMaxLength();
-            
+
             this.HasRequired(lp => lp.Language)
                 .WithMany()
                 .HasForeignKey(lp => lp.LanguageId);

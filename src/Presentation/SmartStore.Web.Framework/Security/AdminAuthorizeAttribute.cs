@@ -6,12 +6,12 @@ using SmartStore.Core.Security;
 
 namespace SmartStore.Web.Framework.Security
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited=true, AllowMultiple=true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public class AdminAuthorizeAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public IPermissionService PermissionService { get; set; }
-		
-		private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
+        public IPermissionService PermissionService { get; set; }
+
+        private void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             filterContext.Result = new HttpUnauthorizedResult();
         }

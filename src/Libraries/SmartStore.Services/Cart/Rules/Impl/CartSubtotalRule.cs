@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using SmartStore.Core.Domain.Orders;
+﻿using SmartStore.Core.Domain.Orders;
 using SmartStore.Rules;
 using SmartStore.Services.Orders;
 using SmartStore.Utilities.Threading;
@@ -19,10 +18,12 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var lockKey = $"rule:cart:cartsubtotalrule:{Thread.CurrentThread.ManagedThreadId}-{expression.Id}";
+            var sessionKey = context.SessionKey;
+            var lockKey = "rule:cart:cartsubtotalrule:" + sessionKey.ToString();
+
             if (KeyedLock.IsLockHeld(lockKey))
             {
-                //$"locked: {lockKey}".Dump();
+                //$"locked expression {expression.Id}: {lockKey}".Dump();
                 return false;
             }
 
@@ -38,7 +39,7 @@ namespace SmartStore.Services.Cart.Rules.Impl
                 cartSubtotal = money.RoundedAmount;
 
                 var result = expression.Operator.Match(cartSubtotal, expression.Value);
-                //$"unlocked {result}: {lockKey}".Dump();
+                //$"unlocked expression {expression.Id}: {lockKey}".Dump();
                 return result;
             }
         }

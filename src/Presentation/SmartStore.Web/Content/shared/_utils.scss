@@ -79,8 +79,8 @@
 .btn,
 .nav-link,
 .menubar-link {
-	> i + span:not(:empty),
-	> i + em:not(:empty) {
+	> i:not(.d-none) + span:not(:empty),
+	> i:not(.d-none) + em:not(:empty) {
 		padding-left: 0.5em;
 	}
 
@@ -404,7 +404,7 @@ table th {
 // ------------------------------------------------------
 
 @include media-breakpoint-down(sm) {
-	.profiler-results {
+	.mp-results {
 		display: none !important;
 	}
 }

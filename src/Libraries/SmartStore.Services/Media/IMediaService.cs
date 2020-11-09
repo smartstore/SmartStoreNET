@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
@@ -19,7 +20,7 @@ namespace SmartStore.Services.Media
         WithTags = 1 << 1,
         WithTracks = 1 << 2,
         WithFolder = 1 << 3,
-        AsNoTracking  = 1 << 4,
+        AsNoTracking = 1 << 4,
         Full = WithBlob | WithTags | WithTracks | WithFolder,
         FullNoTracking = Full | AsNoTracking
     }
@@ -54,6 +55,13 @@ namespace SmartStore.Services.Media
         // Folder: Overwrite, File: Rename
         Rename,
         Skip
+    }
+
+    public enum MimeValidationType
+    {
+        NoValidation,
+        MimeTypeMustMatch,
+        MediaTypeMustMatch
     }
 
     #endregion
@@ -111,6 +119,13 @@ namespace SmartStore.Services.Media
         IMediaStorageProvider StorageProvider { get; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether image post-processing is enabled.
+        /// It is recommended to turn this off during long-running processes - like product imports -
+        /// as post-processing can heavily decrease processing time.
+        /// </summary>
+        public bool ImagePostProcessingEnabled { get; set; }
+
+        /// <summary>
         /// Determines the number of files that match the filter criteria in <paramref name="query"/>.
         /// </summary>
         /// <param name="query">The query that defines the criteria.</param>
@@ -152,6 +167,7 @@ namespace SmartStore.Services.Media
         bool FileExists(string path);
         MediaFileInfo GetFileByPath(string path, MediaLoadFlags flags = MediaLoadFlags.None);
         MediaFileInfo GetFileById(int id, MediaLoadFlags flags = MediaLoadFlags.None);
+        MediaFileInfo GetFileByName(int folderId, string fileName, MediaLoadFlags flags = MediaLoadFlags.None);
         IList<MediaFileInfo> GetFilesByIds(int[] ids, MediaLoadFlags flags = MediaLoadFlags.AsNoTracking);
         bool CheckUniqueFileName(string path, out string newPath);
         string CombinePaths(params string[] paths);
@@ -162,15 +178,17 @@ namespace SmartStore.Services.Media
         /// <param name="source">The source stream to find a match for.</param>
         /// <param name="files">The sequence of files to seek within for duplicates.</param>
         /// <param name="leaveOpen">Whether to leave the <paramref name="source"/>source stream</param> open.
-        /// <param name="equalFileId">Id of equal file if any.</param>
+        /// <param name="equalFile">A file from the <paramref name="files"/> collection whose content is equal to <paramref name="source"/>.</param>
         /// <returns><c>true</c> when a duplicate file was found, <c>false</c> otherwise.</returns>
-        bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId);
+        bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out MediaFile equalFile);
 
         MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         Task<MediaFileInfo> SaveFileAsync(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         void DeleteFile(MediaFile file, bool permanent, bool force = false);
         FileOperationResult CopyFile(MediaFileInfo mediaFile, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
         MediaFileInfo MoveFile(MediaFile file, string destinationFileName, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError);
+        MediaFileInfo ReplaceFile(MediaFile file, Stream inStream, string newFileName);
+        Task<MediaFileInfo> ReplaceFileAsync(MediaFile file, Stream inStream, string newFileName);
 
         bool FolderExists(string path);
         MediaFolderInfo CreateFolder(string path);

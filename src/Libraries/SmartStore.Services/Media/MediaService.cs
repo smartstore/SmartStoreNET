@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SmartStore.Core.Data;
@@ -14,15 +14,15 @@ using SmartStore.Core.Events;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
     public partial class MediaService : IMediaService
     {
-        public Localizer T { get; set; } = NullLocalizer.Instance;
-
         private readonly IRepository<MediaFile> _fileRepo;
         private readonly IFolderService _folderService;
         private readonly IMediaSearcher _searcher;
@@ -70,19 +70,19 @@ namespace SmartStore.Services.Media
             _helper = helper;
         }
 
+        public Localizer T { get; set; } = NullLocalizer.Instance;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public IMediaStorageProvider StorageProvider
-        {
-            get => _storageProvider;
-        }
+        public IMediaStorageProvider StorageProvider => _storageProvider;
+
+        public bool ImagePostProcessingEnabled { get; set; } = true;
 
         #region Query
 
         public int CountFiles(MediaSearchQuery query)
         {
             Guard.NotNull(query, nameof(query));
-            
+
             var q = _searcher.PrepareQuery(query, MediaLoadFlags.None);
             var count = q.Count();
             return count;
@@ -111,15 +111,15 @@ namespace SmartStore.Services.Media
 
             // Determine counts
             var result = (from f in q
-                    group f by 1 into g
-                    select new FileCountResult
-                    {
-                        Total = g.Count(),
-                        Trash = g.Count(x => x.Deleted),
-                        Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
-                        Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
-                        Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
-                    }).FirstOrDefault() ?? new FileCountResult();
+                          group f by 1 into g
+                          select new FileCountResult
+                          {
+                              Total = g.Count(),
+                              Trash = g.Count(x => x.Deleted),
+                              Unassigned = g.Count(x => !x.Deleted && x.FolderId == null),
+                              Transient = g.Count(x => !x.Deleted && x.IsTransient == true),
+                              Orphan = g.Count(x => !x.Deleted && x.FolderId > 0 && !untrackableFolderIds.Contains(x.FolderId.Value) && !x.Tracks.Any())
+                          }).FirstOrDefault() ?? new FileCountResult();
 
             if (result.Total == 0)
             {
@@ -129,9 +129,9 @@ namespace SmartStore.Services.Media
 
             // Determine file count for each folder
             var byFolders = from f in q
-                     where f.FolderId > 0 && !f.Deleted
-                     group f by f.FolderId.Value into grp
-                     select grp;
+                            where f.FolderId > 0 && !f.Deleted
+                            group f by f.FolderId.Value into grp
+                            select grp;
 
             result.Folders = byFolders
                 .Select(grp => new { FolderId = grp.Key, Count = grp.Count() })
@@ -182,11 +182,11 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_helper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, false, out var tokens))
             {
                 return _fileRepo.Table.Any(x => x.FolderId == tokens.Folder.Id && x.Name == tokens.FileName);
             }
-            
+
             return false;
         }
 
@@ -194,7 +194,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (_helper.TokenizePath(path, out var tokens))
+            if (_helper.TokenizePath(path, false, out var tokens))
             {
                 var table = _searcher.ApplyLoadFlags(_fileRepo.Table, flags);
 
@@ -262,7 +262,7 @@ namespace SmartStore.Services.Media
 
             newPath = null;
 
-            if (!_helper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, false, out var pathData))
             {
                 return false;
             }
@@ -308,12 +308,12 @@ namespace SmartStore.Services.Media
             return FolderService.NormalizePath(Path.Combine(paths), false);
         }
 
-        public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out int equalFileId)
+        public bool FindEqualFile(Stream source, IEnumerable<MediaFile> files, bool leaveOpen, out MediaFile equalFile)
         {
             Guard.NotNull(source, nameof(source));
             Guard.NotNull(files, nameof(files));
 
-            equalFileId = 0;
+            equalFile = null;
 
             try
             {
@@ -325,7 +325,7 @@ namespace SmartStore.Services.Media
                     {
                         if (source.ContentsEqual(other, true))
                         {
-                            equalFileId = file.Id;
+                            equalFile = file;
                             return true;
                         }
                     }
@@ -348,14 +348,71 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Create/Update/Delete
+        #region Create/Update/Delete/Replace
+
+        public MediaFileInfo ReplaceFile(MediaFile file, Stream inStream, string newFileName)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(inStream, nameof(inStream));
+            Guard.NotEmpty(newFileName, nameof(newFileName));
+
+            var fileInfo = ConvertMediaFile(file);
+            var pathData = CreatePathData(fileInfo.Path);
+            pathData.FileName = newFileName;
+
+            var storageItem = ProcessFile(ref file, pathData, inStream, false, DuplicateFileHandling.Overwrite, MimeValidationType.MediaTypeMustMatch);
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
+            {
+                try
+                {
+                    _storageProvider.Save(file, storageItem);
+                    scope.Commit();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
+            return fileInfo;
+        }
+
+        public async Task<MediaFileInfo> ReplaceFileAsync(MediaFile file, Stream inStream, string newFileName)
+        {
+            Guard.NotNull(file, nameof(file));
+            Guard.NotNull(inStream, nameof(inStream));
+            Guard.NotEmpty(newFileName, nameof(newFileName));
+
+            var fileInfo = ConvertMediaFile(file);
+            var pathData = CreatePathData(fileInfo.Path);
+            pathData.FileName = newFileName;
+
+            var storageItem = ProcessFile(ref file, pathData, inStream, false, DuplicateFileHandling.Overwrite, MimeValidationType.MediaTypeMustMatch);
+
+            using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
+            {
+                try
+                {
+                    await _storageProvider.SaveAsync(file, storageItem);
+                    await scope.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
+            return fileInfo;
+        }
 
         public MediaFileInfo SaveFile(string path, Stream stream, bool isTransient = true, DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
         {
             var pathData = CreatePathData(path);
 
             var file = _fileRepo.Table.FirstOrDefault(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
-            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
+            var isNewFile = file == null;
+            var storageItem = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -365,8 +422,22 @@ namespace SmartStore.Services.Media
                     scope.Commit();
                 }
 
-                _storageProvider.Save(file, stream);
-                scope.Commit();
+                try
+                {
+                    _storageProvider.Save(file, storageItem);
+                    scope.Commit();
+                }
+                catch (Exception ex)
+                {
+                    if (isNewFile)
+                    {
+                        // New file's metadata should be removed on storage save failure immediately
+                        DeleteFile(file, true, true);
+                        scope.Commit();
+                    }
+
+                    Logger.Error(ex);
+                }
             }
 
             return ConvertMediaFile(file, pathData.Folder);
@@ -378,7 +449,7 @@ namespace SmartStore.Services.Media
 
             var file = await _fileRepo.Table.FirstOrDefaultAsync(x => x.Name == pathData.FileName && x.FolderId == pathData.Folder.Id);
             var isNewFile = file == null;
-            stream = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
+            var storageItem = ProcessFile(ref file, pathData, stream, isTransient, dupeFileHandling);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
             {
@@ -390,23 +461,18 @@ namespace SmartStore.Services.Media
 
                 try
                 {
-                    await _storageProvider.SaveAsync(file, stream);
+                    await _storageProvider.SaveAsync(file, storageItem);
                     await scope.CommitAsync();
                 }
                 catch (Exception ex)
                 {
-                    if (isNewFile) 
+                    if (isNewFile)
                     {
                         // New file's metadata should be removed on storage save failure immediately
-                        if (file.MediaStorage != null)
-                        {
-                            file.MediaStorage.Data = null;
-                            file.MediaStorage = null;
-                        }
-                        _fileRepo.Delete(file);
+                        DeleteFile(file, true, true);
                         await scope.CommitAsync();
                     }
-                    
+
                     Logger.Error(ex);
                 }
             }
@@ -463,7 +529,7 @@ namespace SmartStore.Services.Media
         {
             Guard.NotEmpty(path, nameof(path));
 
-            if (!_helper.TokenizePath(path, out var pathData))
+            if (!_helper.TokenizePath(path, true, out var pathData))
             {
                 throw new ArgumentException(T("Admin.Media.Exception.InvalidPathExample", path), nameof(path));
             }
@@ -476,12 +542,13 @@ namespace SmartStore.Services.Media
             return pathData;
         }
 
-        protected Stream ProcessFile(
-            ref MediaFile file, 
-            MediaPathData pathData, 
-            Stream inStream, 
-            bool isTransient = true, 
-            DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError)
+        protected MediaStorageItem ProcessFile(
+            ref MediaFile file,
+            MediaPathData pathData,
+            Stream inStream,
+            bool isTransient = true,
+            DuplicateFileHandling dupeFileHandling = DuplicateFileHandling.ThrowError,
+            MimeValidationType mediaValidationType = MimeValidationType.MimeTypeMustMatch)
         {
             if (file != null)
             {
@@ -500,10 +567,17 @@ namespace SmartStore.Services.Media
                 }
             }
 
-            if (file != null)
+            if (file != null && mediaValidationType != MimeValidationType.NoValidation)
             {
-                ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
-
+                if (mediaValidationType == MimeValidationType.MimeTypeMustMatch)
+                {
+                    ValidateMimeTypes("Save", file.MimeType, pathData.MimeType);
+                }
+                else if (mediaValidationType == MimeValidationType.MediaTypeMustMatch)
+                {
+                    ValidateMediaTypes("Save", _typeResolver.Resolve(pathData.Extension), file.MediaType);
+                }
+                
                 // Restore file if soft-deleted
                 file.Deleted = false;
 
@@ -523,7 +597,7 @@ namespace SmartStore.Services.Media
                 file.IsTransient = false;
             }
 
-            var name = pathData.FileName.ToValidFileName();
+            var name = pathData.FileName;
             if (name != pathData.FileName)
             {
                 pathData.FileName = name;
@@ -538,40 +612,40 @@ namespace SmartStore.Services.Media
             }
 
             // Process image
-            if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outStream, out var size))
+            if (inStream != null && inStream.Length > 0 && file.MediaType == MediaType.Image && ProcessImage(file, inStream, out var outImage))
             {
-                inStream = outStream;
-                file.Size = (int)outStream.Length;
-                file.Width = size.Width;
-                file.Height = size.Height;
-                file.PixelSize = size.Width * size.Height;
+                file.Width = outImage.Size.Width;
+                file.Height = outImage.Size.Height;
+                file.PixelSize = outImage.Size.Width * outImage.Size.Height;
+
+                return MediaStorageItem.FromImage(outImage);
             }
             else
             {
                 file.RefreshMetadata(inStream);
-            }
 
-            return inStream;
+                return MediaStorageItem.FromStream(inStream);
+            }
         }
 
-        protected bool ProcessImage(MediaFile file, Stream inStream, out Stream outStream, out Size size)
+        protected bool ProcessImage(MediaFile file, Stream inStream, out IImage outImage)
         {
-            outStream = null;
-            size = Size.Empty;
+            outImage = null;
 
             var originalSize = Size.Empty;
+            var format = _imageProcessor.Factory.GetImageFormat(file.Extension) ?? new UnsupportedImageFormat(file.MimeType, file.Extension);
+
             try
             {
                 originalSize = ImageHeader.GetDimensions(inStream, file.MimeType);
             }
             catch { }
 
-            if (!_imageProcessor.IsSupportedImage(file.Extension))
+            if (format is UnsupportedImageFormat)
             {
-                outStream = inStream;
-                size = originalSize;
+                outImage = new ImageWrapper(inStream, originalSize, format);
                 return true;
-            }    
+            }
 
             var maxSize = _mediaSettings.MaximumImageSize;
 
@@ -580,26 +654,16 @@ namespace SmartStore.Services.Media
                 Quality = _mediaSettings.DefaultImageQuality,
                 Format = file.Extension,
                 DisposeSource = true,
+                ExecutePostProcessor = ImagePostProcessingEnabled,
                 IsValidationMode = true
             };
 
             if (originalSize.IsEmpty || (originalSize.Height <= maxSize && originalSize.Width <= maxSize))
             {
                 // Give subscribers the chance to (pre)-process
-                var evt = new ImageUploadValidatedEvent(query, originalSize);
+                var evt = new ImageUploadedEvent(query, originalSize);
                 _eventPublisher.Publish(evt);
-
-                if (evt.ResultStream != null)
-                {
-                    outStream = evt.ResultStream;
-                    // Maybe subscriber forgot to set this, so check
-                    size = evt.ResultSize.IsEmpty ? originalSize : evt.ResultSize;
-                }
-                else
-                {
-                    outStream = inStream;
-                    size = originalSize;
-                }
+                outImage = evt.ResultImage ?? new ImageWrapper(inStream, originalSize, format);
 
                 return true;
             }
@@ -608,8 +672,7 @@ namespace SmartStore.Services.Media
 
             using (var result = _imageProcessor.ProcessImage(query, false))
             {
-                size = new Size(result.Width, result.Height);
-                outStream = result.OutputStream;
+                outImage = result.Image;
                 return true;
             }
         }
@@ -639,7 +702,7 @@ namespace SmartStore.Services.Media
                 true /* copyData */,
                 (DuplicateEntryHandling)((int)dupeFileHandling),
                 () => dupe,
-                p => CheckUniqueFileName(p), 
+                p => CheckUniqueFileName(p),
                 out var isDupe);
 
             return new FileOperationResult
@@ -731,7 +794,7 @@ namespace SmartStore.Services.Media
 
         private void InternalCopyFileData(MediaFile file, MediaFile copy)
         {
-            _storageProvider.Save(copy, _storageProvider.OpenRead(file));
+            _storageProvider.Save(copy, MediaStorageItem.FromStream(_storageProvider.OpenRead(file)));
             _imageCache.Delete(copy);
 
             using (var scope = new DbContextScope(_fileRepo.Context, autoCommit: false))
@@ -784,7 +847,7 @@ namespace SmartStore.Services.Media
 
                 if (nameChanged)
                 {
-                    var title = destPathData.FileTitle.ToValidFileName();
+                    var title = destPathData.FileTitle;
                     var ext = destPathData.Extension.ToLower();
 
                     file.Name = title + "." + ext;
@@ -805,10 +868,10 @@ namespace SmartStore.Services.Media
         }
 
         private bool ValidateMoveOperation(
-            MediaFile file, 
+            MediaFile file,
             string destinationFileName,
             DuplicateFileHandling dupeFileHandling,
-            out bool nameChanged, 
+            out bool nameChanged,
             out MediaPathData destPathData)
         {
             Guard.NotNull(file, nameof(file));
@@ -890,11 +953,13 @@ namespace SmartStore.Services.Media
 
         #region Utils
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MediaFileInfo ConvertMediaFile(MediaFile file)
         {
             return ConvertMediaFile(file, _folderService.FindNode(file)?.Value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MediaFileInfo ConvertMediaFile(MediaFile file, MediaFolderNode folder)
         {
             var mediaFile = new MediaFileInfo(file, _storageProvider, _urlGenerator, folder?.Path)
@@ -982,7 +1047,7 @@ namespace SmartStore.Services.Media
 
         private MediaPathData CreateDestinationPathData(MediaFile file, string destinationFileName)
         {
-            if (!_helper.TokenizePath(destinationFileName, out var pathData))
+            if (!_helper.TokenizePath(destinationFileName, true, out var pathData))
             {
                 // Passed path is NOT a path, but a file name
 
@@ -990,7 +1055,7 @@ namespace SmartStore.Services.Media
                 {
                     // ...but file name includes path chars, which is not allowed
                     throw new ArgumentException(
-                        T("Admin.Media.Exception.InvalidPath", Path.GetDirectoryName(destinationFileName)), 
+                        T("Admin.Media.Exception.InvalidPath", Path.GetDirectoryName(destinationFileName)),
                         nameof(destinationFileName));
                 }
 
@@ -1014,12 +1079,21 @@ namespace SmartStore.Services.Media
             }
         }
 
+        private void ValidateMediaTypes(string operation, string mime1, string mime2)
+        {
+            if (mime1 != mime2)
+            {
+                // TODO: (mm) Create this and all other generic exceptions by MediaExceptionFactory
+                throw new NotSupportedException(T("Admin.Media.Exception.MediaType", operation, mime1, mime2));
+            }
+        }
+
         private void ValidateAlbums(string operation, int folderId1, int folderId2)
         {
             if (!_folderService.AreInSameAlbum(folderId1, folderId2))
             {
                 throw _exceptionFactory.NotSameAlbum(
-                    _folderService.GetNodeById(folderId1).Value.Path, 
+                    _folderService.GetNodeById(folderId1).Value.Path,
                     _folderService.GetNodeById(folderId2).Value.Path);
             }
         }

@@ -8,7 +8,7 @@ namespace SmartStore.Web.Models.PrivateMessages
         public PrivateMessageListModel(IPageable pageable) : base(pageable)
         {
         }
-        
+
         public IList<PrivateMessageModel> Messages { get; set; }
     }
 }

@@ -5,27 +5,27 @@
 
 (function ($, window, document, undefined) {
 
-	// Customize select2 defaults
-	$.extend($.fn.select2.defaults.defaults, {
-		minimumResultsForSearch: 12,
-		theme: 'bootstrap',
-		width: 'style', // 'resolve',
-		dropdownAutoWidth: false
-	});
+    // Customize select2 defaults
+    $.extend($.fn.select2.defaults.defaults, {
+        minimumResultsForSearch: 12,
+        theme: 'bootstrap',
+        width: 'style', // 'resolve',
+        dropdownAutoWidth: false
+    });
 
-	var lists = [];
+    var lists = [];
 
-	function load(url, selectedId, callback) {
-		$.ajax({
-			url: url,
-			dataType: 'json',
-			async: true,
-			data: { selectedId: selectedId || 0 },
-			success: function (data, status, jqXHR) {
-				lists[url] = data;
-				callback(data);
-			}
-		});
+    function load(url, selectedId, callback) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            async: true,
+            data: { selectedId: selectedId || 0 },
+            success: function (data, status, jqXHR) {
+                lists[url] = data;
+                callback(data);
+            }
+        });
     }
 
     function initLoad(select, url) {
@@ -41,69 +41,69 @@
         });
     }
 
-	$.fn.select2.amd.define('select2/data/lazyAdapter', [
-			'select2/data/array',
-			'select2/utils'
-		],
-		function (ArrayData, Utils) {
+    $.fn.select2.amd.define('select2/data/lazyAdapter', [
+        'select2/data/array',
+        'select2/utils'
+    ],
+        function (ArrayData, Utils) {
 
-			function LazyAdapter($element, options) {
-				this._isInitialized = false;
-				LazyAdapter.__super__.constructor.call(this, $element, options);
-			}
+            function LazyAdapter($element, options) {
+                this._isInitialized = false;
+                LazyAdapter.__super__.constructor.call(this, $element, options);
+            }
 
-			Utils.Extend(LazyAdapter, ArrayData);
+            Utils.Extend(LazyAdapter, ArrayData);
 
-			// Replaces the old 'initSelection()' callback method
-			LazyAdapter.prototype.current = function (callback) {
-				var select = this.$element,
-					opts = this.options.options;
+            // Replaces the old 'initSelection()' callback method
+            LazyAdapter.prototype.current = function (callback) {
+                var select = this.$element,
+                    opts = this.options.options;
 
-				if (!this._isInitialized) {
-					var init = opts.init || {},
-						initId = init.id || select.data('select-selected-id'),
-						initText = init.text || select.data('select-init-text');
+                if (!this._isInitialized) {
+                    var init = opts.init || {},
+                        initId = init.id || select.data('select-selected-id'),
+                        initText = init.text || select.data('select-init-text');
 
-					if (initId) {
-						// Add the option tag to the select element,
-						// otherwise the current val() will not be resolved.
+                    if (initId) {
+                        // Add the option tag to the select element,
+                        // otherwise the current val() will not be resolved.
                         var $option = select.find('option').filter(function (i, elm) {
                             // Do not === otherwise infinite loop ;-)
-							return elm.value == initId;
-						});
+                            return elm.value == initId;
+                        });
 
-						if ($option.length === 0) {
-							$option = this.option({ id: initId, text: initText, selected: true });
-							this.addOptions($option);
-						}
+                        if ($option.length === 0) {
+                            $option = this.option({ id: initId, text: initText, selected: true });
+                            this.addOptions($option);
+                        }
 
-						callback([{
-							id: initId,
-							text: initText || ''
-						}]);
+                        callback([{
+                            id: initId,
+                            text: initText || ''
+                        }]);
 
-						return;
-					}
-				}
+                        return;
+                    }
+                }
 
-				LazyAdapter.__super__.current.call(this, callback);
-			};
+                LazyAdapter.__super__.current.call(this, callback);
+            };
 
-			LazyAdapter.prototype.query = function (params, callback) {
-				var select = this.$element,
-					opts = this.options.options;
+            LazyAdapter.prototype.query = function (params, callback) {
+                var select = this.$element,
+                    opts = this.options.options;
 
-				if (!opts.lazy && !opts.lazy.url) {
-					callback({ results: [] });
-				}
-				else {
-					var url = opts.lazy.url,
-						init = opts.init || {},
-						initId = init.id || select.data('select-selected-id'),
-						term = params.term,
-						list = null;
+                if (!opts.lazy && !opts.lazy.url) {
+                    callback({ results: [] });
+                }
+                else {
+                    var url = opts.lazy.url,
+                        init = opts.init || {},
+                        initId = init.id || select.data('select-selected-id'),
+                        term = params.term,
+                        list = null;
 
-					list = lists[url];
+                    list = lists[url];
 
                     var doQuery = function (data) {
                         list = data;
@@ -123,22 +123,22 @@
                         callback({ results: list });
                     };
 
-					if (!list) {
-						load(url, initId, doQuery);
-					}
-					else {
-						doQuery(list);
-					}
-				}
+                    if (!list) {
+                        load(url, initId, doQuery);
+                    }
+                    else {
+                        doQuery(list);
+                    }
+                }
 
-				this._isInitialized = true;
-			};
+                this._isInitialized = true;
+            };
 
-			return LazyAdapter;
-		}
+            return LazyAdapter;
+        }
     );
 
-    $.fn.select2.amd.define('select2/data/remoteAdapter', [ 'select2/data/array', 'select2/utils' ],
+    $.fn.select2.amd.define('select2/data/remoteAdapter', ['select2/data/array', 'select2/utils'],
         function (ArrayData, Utils) {
 
             function RemoteAdapter($element, options) {
@@ -268,12 +268,16 @@
                         title = '',
                         preHtml = '',
                         postHtml = '',
-                        classes = '',
+                        classes = option.data('item-class') || '',
                         hint = item.hint || option.attr('data-hint'),
                         description = item.description || option.attr('data-description'),
                         icon = option.data('icon'),
                         truncateText = options.maxTextLength > 0 && text.length > options.maxTextLength,
                         appendHint = !isResult && hint && hint.length > 0;
+
+                    if (classes.length > 0) {
+                        classes = ' ' + classes;
+                    }
 
                     if (truncateText || appendHint) {
                         title = text;

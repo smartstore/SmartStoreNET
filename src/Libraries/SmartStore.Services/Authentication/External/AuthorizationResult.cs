@@ -17,10 +17,7 @@ namespace SmartStore.Services.Authentication.External
             this.Errors.Add(error);
         }
 
-        public bool Success
-        {
-            get { return this.Errors.Count == 0; }
-        }
+        public bool Success => this.Errors.Count == 0;
 
         public OpenAuthenticationStatus Status { get; private set; }
 

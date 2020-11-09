@@ -5,7 +5,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Media
 {
-	[TestFixture]
+    [TestFixture]
     public class PicturePersistenceTests : PersistenceTest
     {
         [Test]
@@ -13,13 +13,13 @@ namespace SmartStore.Data.Tests.Media
         {
             var picture = new MediaFile
             {
-				MediaStorage = new MediaStorage
-				{
-					Data = new byte[] { 1, 2, 3 }
-				},
+                MediaStorage = new MediaStorage
+                {
+                    Data = new byte[] { 1, 2, 3 }
+                },
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
-				MimeType = "image/pjpeg",
+                MimeType = "image/pjpeg",
                 MediaType = "image",
                 Name = "seo filename 1",
                 IsTransient = true

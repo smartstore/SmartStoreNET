@@ -26,7 +26,7 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the date and time of instance creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-        
+
         /// <summary>
         /// Gets the gift card
         /// </summary>

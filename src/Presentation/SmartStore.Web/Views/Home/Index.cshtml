@@ -1,6 +1,10 @@
 ﻿@{
 	Layout = "_Layout";
 	Html.AddBodyCssClass("home");
+
+	Html.AddTitleParts((string)ViewBag.MetaTitle);
+    Html.AddMetaDescriptionParts((string)ViewBag.MetaDescription);
+    Html.AddMetaKeywordParts((string)ViewBag.MetaKeywords);
 }
 
 <div class="page home-page">

@@ -9,13 +9,14 @@
 // --------------------------------------------------
 
 @import "_variables.scss";
-@import "../../Content/bs4/scss/bootstrap.scss"; 
+@import "../../Content/bs4/scss/bootstrap.scss";
 
 
 //
 // Vendors
 // --------------------------------------------------
 
+@import "../../Content/vendors/rfs/_rfs.scss";
 @import "../../Content/vendors/select2/scss/core.scss";
 @import "../../Content/vendors/colorpicker/scss/_colorpicker.scss";
 @import "../../Content/vendors/datetimepicker/scss/_tempusdominus.scss";
@@ -26,33 +27,33 @@
 // -----------------------------------------------------
 
 @each $color, $value in $theme-colors {
-	*:not(.show) > .btn-#{$color},
-	*:not(.show) > .btn-outline-#{$color} {
-		&:not(:active):not(.active):focus,
-		&:not(:active):not(.active).focus {
-			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($primary, .15);
-			}
-			@else {
-				box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($value, .4);
-			}
-		}
-	}
+    *:not(.show) > .btn-#{$color},
+    *:not(.show) > .btn-outline-#{$color} {
+        &:not(:active):not(.active):focus,
+        &:not(:active):not(.active).focus {
+            @if $color == "secondary" or $color == "light" {
+                box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($primary, .15);
+            }
+            @else {
+                box-shadow: 0 0 0 rgba(#000, 0) inset, 0 0 0 0.2em rgba($value, .4);
+            }
+        }
+    }
 }
 
 .btn-secondary {
-	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
+    @include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
 }
 
 .btn-light {
-	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+    @include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
 }
 
 .btn-secondary,
 .btn-light {
-	&:focus, &.focus {
-		border-color: rgba(#000, 0.2);
-	}
+    &:focus, &.focus {
+        border-color: rgba(#000, 0.2);
+    }
 }
 
 // Light button icons lighter (looks nice)
@@ -60,16 +61,16 @@
 
 .btn-secondary,
 .btn-light {
-	> i {
-		transition: opacity .05s ease-in-out;
-	}
+    > i {
+        transition: opacity .05s ease-in-out;
+    }
 
-	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
-		> i {
-			//opacity: 0.6;
-			color: lighten($body-color, 16%);
-		}
-	}
+    &:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
+        > i {
+            //opacity: 0.6;
+            color: lighten($body-color, 16%);
+        }
+    }
 }
 
 //
@@ -86,7 +87,7 @@
 @import '../../Content/shared/_forms.scss';
 @import '../../Content/shared/_pagination.scss';
 @import '../../Content/shared/_nav.scss';
-@import "../../Content/shared/_modal.scss"; 
+@import "../../Content/shared/_modal.scss";
 @import '../../Content/shared/_dropdown.scss';
 @import "../../Content/shared/_throbber.scss";
 @import "../../Content/shared/_spinner.scss";
@@ -119,7 +120,7 @@
 
 
 //
-// Dashboard 
+// Dashboard
 // --------------------------------------------------
 @import "_dashboard.scss";
 
@@ -139,4 +140,3 @@
 // --------------------------------------------------
 
 @import "_telerik.scss";
-

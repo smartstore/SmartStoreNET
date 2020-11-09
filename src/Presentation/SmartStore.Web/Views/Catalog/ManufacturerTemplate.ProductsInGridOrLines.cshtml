@@ -5,54 +5,56 @@
 
 @model ManufacturerModel
 @{
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Layout = "_Layout";
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
-		var manufacturerUrl = Url.RouteUrl("Manufacturer", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(manufacturerUrl);
-	}
+    Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	int firstItemIndex = 0;
-	int lastItemIndex = 0;
-	if (Model.SearchResult.TotalHitsCount > 0)
-	{
-		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
-		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
-	}
+    var manufacturerUrl = Url.RouteUrl("Manufacturer", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        Html.AddCanonicalUrlParts(manufacturerUrl);
+    }
 
-	Layout = "_Layout";
+    int firstItemIndex = 0;
+    int lastItemIndex = 0;
+    if (Model.SearchResult.TotalHitsCount > 0)
+    {
+        firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+        lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+    }
 
-	ViewBag.HideLeftCol = true; // ...on mobile
+    ViewBag.HideLeftCol = true; // ...on mobile
 }
+
+@{ Html.RenderAction("MetaPropertiesManufacturer", "Common", new { manufacturer = Model }); }
 
 @if (Model.SearchResult.Facets.Count > 0)
 {
-	@section left {
-		@{
-			Html.RenderAction("Filters", "Search", new { model = Model });
-		}
-	}
+    @section left {
+        @{
+            Html.RenderAction("Filters", "Search", new { model = Model });
+        }
+    }
 }
 
 <div class="page manufacturer-page">
     <div class="page-title">
         <h1 @Html.LanguageAttributes(Model.Name) class="h3">@Model.Name</h1>
-		@if (Model.SearchResult.TotalHitsCount > 0)
-		{
-			var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
-			var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
-			<h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
-		}
+        @if (Model.SearchResult.TotalHitsCount > 0)
+        {
+            var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
+            var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
+            <h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
+        }
     </div>
 
     <div class="page-body">
         @{ Html.RenderWidget("manufacturerdetails_top"); }
-        
-		@* Description *@
+
+        @* Description *@
         @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
             <div @Html.LanguageAttributes(Model.Description) class="manufacturer-description lead html-editor-content">
@@ -60,42 +62,42 @@
             </div>
         }
 
-		@* Featured products *@
+        @* Featured products *@
         @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
-		{
-			Html.RenderWidget("manufacturerdetails_before_featured_products");
+        {
+            Html.RenderWidget("manufacturerdetails_before_featured_products");
 
-			<div class="product-grid featured-product-grid block">
-				<div class="heading heading-center">
-					<h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
-				</div>
-				<div class="block-body pt-3 artlist-no-separators">
-					@{
-						Html.RenderPartial("Product.List", Model.FeaturedProducts);
-					}
-				</div>
-			</div>
-		}
+            <div class="product-grid featured-product-grid block">
+                <div class="heading heading-center">
+                    <h3 class="heading-title fs-h1">@T("Products.FeaturedProducts")</h3>
+                </div>
+                <div class="block-body pt-3 artlist-no-separators">
+                    @{
+                        Html.RenderPartial("Product.List", Model.FeaturedProducts);
+                    }
+                </div>
+            </div>
+        }
 
-		@* Product list *@
-		@{ Html.RenderWidget("categorydetails_before_product_list"); }
+        @* Product list *@
+        @{ Html.RenderWidget("categorydetails_before_product_list"); }
 
-		<div class="product-list-container">
-			@if (Model.Products != null)
+        <div class="product-list-container">
+            @if (Model.Products != null)
             {
                 Html.RenderPartial("Product.List", Model.Products);
             }
-		</div>
+        </div>
 
-		@if (Model.BottomDescription.Value.HasValue())
-		{
-			<div @Html.LanguageAttributes(Model.BottomDescription) class="manufacturer-description lead html-editor-content">
-				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
-			</div>
-		}
+        @if (Model.BottomDescription.Value.HasValue())
+        {
+            <div @Html.LanguageAttributes(Model.BottomDescription) class="manufacturer-description lead html-editor-content">
+                @Html.Raw(Html.CollapsedText(Model.BottomDescription))
+            </div>
+        }
 
-		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
-		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+        @* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+        @{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
         @{ Html.RenderWidget("manufacturerdetails_bottom"); }
     </div>

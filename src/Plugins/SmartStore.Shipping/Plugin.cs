@@ -1,22 +1,14 @@
-﻿using System;
-using System.Data.Entity.Migrations;
-using System.Web.Routing;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Shipping;
+﻿using System.Data.Entity.Migrations;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.Shipping.Data;
-using SmartStore.Shipping.Data.Migrations;
-using SmartStore.Shipping.Services;
-using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Shipping;
-using SmartStore.Services.Shipping.Tracking;
+using SmartStore.Shipping.Data;
+using SmartStore.Shipping.Data.Migrations;
 
 namespace SmartStore.Shipping
 {
-	public class Plugin : BasePlugin
+    public class Plugin : BasePlugin
     {
         private readonly ILogger _logger;
         private readonly ISettingService _settingService;
@@ -44,7 +36,7 @@ namespace SmartStore.Shipping
         /// Install the plugin
         /// </summary>
         public override void Install()
-        {            
+        {
             var shippingByTotalSettings = new ShippingByTotalSettings()
             {
                 LimitMethodsToCreated = false,
@@ -67,10 +59,10 @@ namespace SmartStore.Shipping
         {
             _settingService.DeleteSetting<ShippingByTotalSettings>();
 
-			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+            _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
-			var migrator = new DbMigrator(new Configuration());
-			migrator.Update(DbMigrator.InitialDatabase);
+            var migrator = new DbMigrator(new Configuration());
+            migrator.Update(DbMigrator.InitialDatabase);
 
             _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Shipping.FixedRateShipping", false);
 

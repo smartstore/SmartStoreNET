@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class ShoppingCartSettingsModel : ILocalizedModel<ShoppingCartSettingsLocalizedModel>
-	{
-		public ShoppingCartSettingsModel()
-		{
-			Locales = new List<ShoppingCartSettingsLocalizedModel>();
-		}
+    public class ShoppingCartSettingsModel : ILocalizedModel<ShoppingCartSettingsLocalizedModel>
+    {
+        public ShoppingCartSettingsModel()
+        {
+            Locales = new List<ShoppingCartSettingsLocalizedModel>();
+        }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DisplayCartAfterAddingProduct")]
         public bool DisplayCartAfterAddingProduct { get; set; }
@@ -31,14 +33,14 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnShoppingCart")]
         public bool ShowProductImagesOnShoppingCart { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart")]
-		public bool ShowProductBundleImagesOnShoppingCart { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnShoppingCart")]
+        public bool ShowProductBundleImagesOnShoppingCart { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesOnWishList")]
         public bool ShowProductImagesOnWishList { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList")]
-		public bool ShowProductBundleImagesOnWishList { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductBundleImagesOnWishList")]
+        public bool ShowProductBundleImagesOnWishList { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox")]
         public bool ShowDiscountBox { get; set; }
@@ -49,7 +51,7 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber")]
         public int CrossSellsNumber { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
         public bool EmailWishlistEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AllowAnonymousUsersToEmailWishlist")]
@@ -60,12 +62,13 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesInMiniShoppingCart")]
         public bool ShowProductImagesInMiniShoppingCart { get; set; }
-		
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes")]
-        public bool ShowDeliveryTimes { get; set; }
+        [UIHint("DeliveryTimes")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart")]
+        public DeliveryTimesPresentation DeliveryTimesInShoppingCart { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowShortDesc")]
         public bool ShowShortDesc { get; set; }
@@ -76,35 +79,35 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowBasePrice")]
         public bool ShowBasePrice { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity")]
-		public bool ShowLinkedAttributeValueQuantity { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity")]
+        public bool ShowLinkedAttributeValueQuantity { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox")]
         public bool ShowCommentBox { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
-		public bool ShowEsdRevocationWaiverBox { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
+        public bool ShowEsdRevocationWaiverBox { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
-		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
-		public SelectList AvailableNewsLetterSubscriptions { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
+        public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+        public SelectList AvailableNewsLetterSubscriptions { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver")]
-		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
-		public SelectList AvailableThirdPartyEmailHandOver { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver")]
+        public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+        public SelectList AvailableThirdPartyEmailHandOver { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
-		public string ThirdPartyEmailHandOverLabel { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
+        public string ThirdPartyEmailHandOverLabel { get; set; }
 
-		public IList<ShoppingCartSettingsLocalizedModel> Locales { get; set; }
-	}
+        public IList<ShoppingCartSettingsLocalizedModel> Locales { get; set; }
+    }
 
 
-	public class ShoppingCartSettingsLocalizedModel : ILocalizedModelLocal
-	{
-		public int LanguageId { get; set; }
+    public class ShoppingCartSettingsLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
-		public string ThirdPartyEmailHandOverLabel { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
+        public string ThirdPartyEmailHandOverLabel { get; set; }
+    }
 }

@@ -35,8 +35,8 @@
 					@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.Unsubscribe" : "BackInStockSubscriptions.NotifyMe")
                 </button>
                 
-                <script type="text/javascript">
-                    $(document).ready(function () {
+                <script>
+                    $(function () {
                         $("#back-in-stock-notify-me").click(function (e) {
                             parent.$(".modal").modal("hide");
                         });

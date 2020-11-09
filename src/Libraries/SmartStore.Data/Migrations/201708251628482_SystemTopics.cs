@@ -1,10 +1,9 @@
 namespace SmartStore.Data.Migrations
 {
+    using System.Data.Entity.Migrations;
+    using System.Linq;
     using Core.Domain.Topics;
     using Setup;
-    using System;
-    using System.Linq;
-    using System.Data.Entity.Migrations;
 
     public partial class SystemTopics : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
@@ -12,16 +11,13 @@ namespace SmartStore.Data.Migrations
         {
             AddColumn("dbo.Topic", "IsSystemTopic", c => c.Boolean(nullable: false, defaultValue: false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Topic", "IsSystemTopic");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {
@@ -43,15 +39,15 @@ namespace SmartStore.Data.Migrations
             var topics = context.Set<Topic>().Where(x => systemTopics.Contains(x.SystemName)).ToList();
             topics.Each(x => x.IsSystemTopic = true);
 
-			context.MigrateLocaleResources(MigrateLocaleResources);
+            context.MigrateLocaleResources(MigrateLocaleResources);
 
-			context.SaveChanges();
+            context.SaveChanges();
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.AddOrUpdate("Admin.ContentManagement.Topics.CannotBeDeleted", 
-                "This topic is required by your Shop and can therefore not be deleted.", 
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.CannotBeDeleted",
+                "This topic is required by your Shop and can therefore not be deleted.",
                 "Diese Seite wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
         }
     }

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Rules.Filters
 {
@@ -28,7 +22,7 @@ namespace SmartStore.Rules.Filters
         }
     }
 
-    public class FilterDescriptor<T, TValue> : FilterDescriptor where T : class 
+    public class FilterDescriptor<T, TValue> : FilterDescriptor where T : class
     {
         public FilterDescriptor(Expression<Func<T, TValue>> expression) : base(expression) // TODO
         {
@@ -81,12 +75,12 @@ namespace SmartStore.Rules.Filters
         }
     }
 
-    public class AnyFilterDescriptor<T, TAny, TAnyValue> : PredicateFilterDescriptor<T, TAny, TAnyValue> 
-        where T : class 
+    public class AnyFilterDescriptor<T, TAny, TAnyValue> : PredicateFilterDescriptor<T, TAny, TAnyValue>
+        where T : class
         where TAny : class
     {
         public AnyFilterDescriptor(
-            Expression<Func<T, IEnumerable<TAny>>> path, 
+            Expression<Func<T, IEnumerable<TAny>>> path,
             Expression<Func<TAny, TAnyValue>> anyPredicate)
             : base("Any", path, anyPredicate)
         {

@@ -13,27 +13,27 @@ namespace SmartStore.Data
 {
     public class SmartObjectContext : ObjectContextBase
     {
-		static SmartObjectContext()
-		{
-			if (!DataSettings.DatabaseIsInstalled())
-				return;
+        static SmartObjectContext()
+        {
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
 
-			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
-			{
-				TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem", "QueuedEmailAttachment", "ExportProfile" }
-			};
-			Database.SetInitializer(initializer);
-		}
+            var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>
+            {
+                TablesToCheck = new[] { "Customer", "Discount", "Order", "Product", "ShoppingCartItem", "QueuedEmailAttachment", "ExportProfile" }
+            };
+            Database.SetInitializer(initializer);
+        }
 
-		/// <summary>
-		/// For tooling support, e.g. EF Migrations
-		/// </summary>
-		public SmartObjectContext()
-			: base()
-		{
-		}
+        /// <summary>
+        /// For tooling support, e.g. EF Migrations
+        /// </summary>
+        public SmartObjectContext()
+            : base()
+        {
+        }
 
-		public SmartObjectContext(string nameOrConnectionString)
+        public SmartObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
         }
@@ -49,14 +49,14 @@ namespace SmartStore.Data
             //        && type.BaseType != null 
             //        && type.BaseType.IsGenericType 
             //        && type.BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>));
-			
+
             var typesToRegister = from t in Assembly.GetExecutingAssembly().GetTypes()
-                        where t.Namespace.HasValue() && 
-                              t.BaseType != null &&
-                              t.BaseType.IsGenericType
-                        let genericType = t.BaseType.GetGenericTypeDefinition()
-                        where genericType == typeof(EntityTypeConfiguration<>) || genericType == typeof(ComplexTypeConfiguration<>)
-                        select t;
+                                  where t.Namespace.HasValue() &&
+                                        t.BaseType != null &&
+                                        t.BaseType.IsGenericType
+                                  let genericType = t.BaseType.GetGenericTypeDefinition()
+                                  where genericType == typeof(EntityTypeConfiguration<>) || genericType == typeof(ComplexTypeConfiguration<>)
+                                  select t;
 
             foreach (var type in typesToRegister)
             {

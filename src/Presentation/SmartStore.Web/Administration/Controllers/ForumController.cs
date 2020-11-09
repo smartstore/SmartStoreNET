@@ -12,7 +12,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -25,13 +24,13 @@ namespace SmartStore.Admin.Controllers
         #region Fields
 
         private readonly IForumService _forumService;
-		private readonly ICommonServices _services;
-		private readonly IStoreMappingService _storeMappingService;
+        private readonly ICommonServices _services;
+        private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
         private readonly ILanguageService _languageService;
-		private readonly ILocalizedEntityService _localizedEntityService;
-		private readonly IUrlRecordService _urlRecordService;
+        private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IUrlRecordService _urlRecordService;
         private readonly IDateTimeHelper _dateTimeHelper;
 
         #endregion
@@ -40,23 +39,23 @@ namespace SmartStore.Admin.Controllers
 
         public ForumController(
             IForumService forumService,
-			ICommonServices services,
+            ICommonServices services,
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
-			ILanguageService languageService,
-			ILocalizedEntityService localizedEntityService,
-			IUrlRecordService urlRecordService,
+            ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService,
+            IUrlRecordService urlRecordService,
             IDateTimeHelper dateTimeHelper)
         {
             _forumService = forumService;
-			_services = services;
-			_storeMappingService = storeMappingService;
+            _services = services;
+            _storeMappingService = storeMappingService;
             _aclService = aclService;
             _customerService = customerService;
-			_languageService = languageService;
-			_localizedEntityService = localizedEntityService;
-			_urlRecordService = urlRecordService;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
+            _urlRecordService = urlRecordService;
             _dateTimeHelper = dateTimeHelper;
         }
 
@@ -65,54 +64,54 @@ namespace SmartStore.Admin.Controllers
         #region Utilities
 
         [NonAction]
-		private void PrepareForumGroupModel(ForumGroupModel model, ForumGroup forumGroup, bool excludeProperties)
-		{
-			Guard.NotNull(model, nameof(model));
+        private void PrepareForumGroupModel(ForumGroupModel model, ForumGroup forumGroup, bool excludeProperties)
+        {
+            Guard.NotNull(model, nameof(model));
 
-			var allStores = _services.StoreService.GetAllStores();
+            var allStores = _services.StoreService.GetAllStores();
 
-			if (forumGroup != null)
-			{
-				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(forumGroup.CreatedOnUtc, DateTimeKind.Utc);
-			}
+            if (forumGroup != null)
+            {
+                model.CreatedOn = _dateTimeHelper.ConvertToUserTime(forumGroup.CreatedOnUtc, DateTimeKind.Utc);
+            }
 
-			if (!excludeProperties)
-			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
+            if (!excludeProperties)
+            {
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(forumGroup);
             }
 
             ViewBag.StoreCount = allStores.Count;
-		}
+        }
 
-		[NonAction]
-		private void UpdateLocales(ForumGroupModel model, ForumGroup forumGroup)
-		{
-			foreach (var localized in model.Locales)
-			{
-				_localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Name, localized.Name, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Description, localized.Description, localized.LanguageId);
+        [NonAction]
+        private void UpdateLocales(ForumGroupModel model, ForumGroup forumGroup)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Name, localized.Name, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Description, localized.Description, localized.LanguageId);
 
-				var seName = forumGroup.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
-				_urlRecordService.SaveSlug(forumGroup, seName, localized.LanguageId);
-			}
-		}
+                var seName = forumGroup.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+                _urlRecordService.SaveSlug(forumGroup, seName, localized.LanguageId);
+            }
+        }
 
-		[NonAction]
-		private void UpdateLocales(ForumModel model, Forum forum)
-		{
-			foreach (var localized in model.Locales)
-			{
-				_localizedEntityService.SaveLocalizedValue(forum, x => x.Name, localized.Name, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(forum, x => x.Description, localized.Description, localized.LanguageId);
+        [NonAction]
+        private void UpdateLocales(ForumModel model, Forum forum)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(forum, x => x.Name, localized.Name, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(forum, x => x.Description, localized.Description, localized.LanguageId);
 
-				var seName = forum.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
-				_urlRecordService.SaveSlug(forum, seName, localized.LanguageId);
-			}
-		}
+                var seName = forum.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+                _urlRecordService.SaveSlug(forum, seName, localized.LanguageId);
+            }
+        }
 
-		#endregion
-        
+        #endregion
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -126,9 +125,9 @@ namespace SmartStore.Admin.Controllers
                 {
                     var forumGroupModel = fg.ToModel();
 
-					PrepareForumGroupModel(forumGroupModel, fg, false);
+                    PrepareForumGroupModel(forumGroupModel, fg, false);
 
-                    foreach (var f in fg.Forums.OrderBy(x=>x.DisplayOrder))
+                    foreach (var f in fg.Forums.OrderBy(x => x.DisplayOrder))
                     {
                         var forumModel = f.ToModel();
                         forumModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(f.CreatedOnUtc, DateTimeKind.Utc);
@@ -141,7 +140,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(forumGroupsModel);
         }
-        
+
         #region Forum
 
         [Permission(Permissions.Cms.Forum.Create)]
@@ -161,12 +160,12 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForum(ForumModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
-                var utcNow = DateTime.UtcNow;
                 var forum = model.ToEntity();
 
                 _forumService.InsertForum(forum);
@@ -213,6 +212,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForum(ForumModel model, bool continueEditing)
         {
@@ -246,6 +246,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForum(int id)
         {
@@ -266,31 +267,32 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup()
         {
-			var model = new ForumGroupModel { DisplayOrder = 1 };
+            var model = new ForumGroupModel { DisplayOrder = 1 };
 
-			AddLocales(_languageService, model.Locales);
+            AddLocales(_languageService, model.Locales);
 
-			PrepareForumGroupModel(model, null, false);
+            PrepareForumGroupModel(model, null, false);
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Create)]
         public ActionResult CreateForumGroup(ForumGroupModel model, bool continueEditing)
         {
             if (ModelState.IsValid)
             {
-				var forumGroup = model.ToEntity();
+                var forumGroup = model.ToEntity();
 
                 _forumService.InsertForumGroup(forumGroup);
 
-				model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
-				_urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
+                model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
+                _urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
 
-				UpdateLocales(model, forumGroup);
+                UpdateLocales(model, forumGroup);
 
-				SaveStoreMappings(forumGroup, model.SelectedStoreIds);
+                SaveStoreMappings(forumGroup, model.SelectedStoreIds);
                 SaveAclMappings(forumGroup, model.SelectedCustomerRoleIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Forums.ForumGroup.Added"));
@@ -299,7 +301,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-			PrepareForumGroupModel(model, null, true);
+            PrepareForumGroupModel(model, null, true);
 
             return View(model);
         }
@@ -313,19 +315,20 @@ namespace SmartStore.Admin.Controllers
 
             var model = forumGroup.ToModel();
 
-			AddLocales(_languageService, model.Locales, (locale, languageId) =>
-			{
-				locale.Name = forumGroup.GetLocalized(x => x.Name, languageId, false, false);
-				locale.Description = forumGroup.GetLocalized(x => x.Description, languageId, false, false);
-				locale.SeName = forumGroup.GetSeName(languageId, false, false);
-			});
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Name = forumGroup.GetLocalized(x => x.Name, languageId, false, false);
+                locale.Description = forumGroup.GetLocalized(x => x.Description, languageId, false, false);
+                locale.SeName = forumGroup.GetSeName(languageId, false, false);
+            });
 
-			PrepareForumGroupModel(model, forumGroup, false);
+            PrepareForumGroupModel(model, forumGroup, false);
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Update)]
         public ActionResult EditForumGroup(ForumGroupModel model, bool continueEditing)
         {
@@ -341,12 +344,12 @@ namespace SmartStore.Admin.Controllers
 
                 _forumService.UpdateForumGroup(forumGroup);
 
-				model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
-				_urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
+                model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
+                _urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
 
-				UpdateLocales(model, forumGroup);
+                UpdateLocales(model, forumGroup);
 
-				SaveStoreMappings(forumGroup, model.SelectedStoreIds);
+                SaveStoreMappings(forumGroup, model.SelectedStoreIds);
                 SaveAclMappings(forumGroup, model.SelectedCustomerRoleIds);
 
                 NotifySuccess(T("Admin.ContentManagement.Forums.ForumGroup.Updated"));
@@ -355,12 +358,13 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-			PrepareForumGroupModel(model, forumGroup, true);
+            PrepareForumGroupModel(model, forumGroup, true);
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Forum.Delete)]
         public ActionResult DeleteForumGroup(int id)
         {

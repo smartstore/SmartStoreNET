@@ -4,17 +4,18 @@
 @model ProductModel
 
 @{
-	Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
-	Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
+    Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
+    Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
 }
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 <script>
-	function productEditTab_onAjaxSuccess(tab, pane) {
-		applyCommonPlugins(pane);
-	}
+    function productEditTab_onAjaxSuccess(tab, pane) {
+        applyCommonPlugins(pane);
+    }
 </script>
 
 @Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
@@ -105,6 +106,11 @@
         .Icon("fa fa-download fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Downloads" })
         .Content(Html.Partial("_CreateOrUpdate.Downloads", Model).ToHtmlString());
+    x.Add().Text(T("Admin.Orders").Text)
+        .Icon("fa fa-chart-bar fa-lg fa-fw")
+        .LinkHtmlAttributes(new { data_tab_name = "Orders" })
+        .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Orders" })
+        .Ajax();
 
     // generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-edit", this.Html, this.Model));

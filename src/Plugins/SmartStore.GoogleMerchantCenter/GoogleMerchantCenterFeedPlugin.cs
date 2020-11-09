@@ -3,7 +3,6 @@ using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Data.Migrations;
 using SmartStore.GoogleMerchantCenter.Providers;
-using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services;
 using SmartStore.Services.DataExchange.Export;
 
@@ -11,19 +10,16 @@ namespace SmartStore.GoogleMerchantCenter
 {
     public class GoogleMerchantCenterFeedPlugin : BasePlugin, IConfigurable
     {
-		private readonly ICommonServices _services;
+        private readonly ICommonServices _services;
         private readonly IExportProfileService _exportProfileService;
 
         public GoogleMerchantCenterFeedPlugin(ICommonServices services, IExportProfileService exportProfileService)
         {
-			_services = services;
+            _services = services;
             _exportProfileService = exportProfileService;
         }
 
-		public static string SystemName
-		{
-			get { return "SmartStore.GoogleMerchantCenter"; }
-		}
+        public static string SystemName => "SmartStore.GoogleMerchantCenter";
 
         /// <summary>
         /// Gets a route for provider configuration
@@ -34,8 +30,8 @@ namespace SmartStore.GoogleMerchantCenter
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
-			controllerName = "FeedGoogleMerchantCenter";
-			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
+            controllerName = "FeedGoogleMerchantCenter";
+            routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
         }
 
         /// <summary>
@@ -43,7 +39,7 @@ namespace SmartStore.GoogleMerchantCenter
         /// </summary>
         public override void Install()
         {
-			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
+            _services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
             base.Install();
         }
@@ -53,14 +49,15 @@ namespace SmartStore.GoogleMerchantCenter
         /// </summary>
         public override void Uninstall()
         {
-			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+            _services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
             // Delete existing export profiles.
             var profiles = _exportProfileService.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName);
             profiles.Each(x => _exportProfileService.DeleteExportProfile(x, true));
 
-            var migrator = new DbMigrator(new Configuration());
-			migrator.Update(DbMigrator.InitialDatabase);
+            // Keep Google product table.
+            //var migrator = new DbMigrator(new Configuration());
+            //migrator.Update(DbMigrator.InitialDatabase);
 
             base.Uninstall();
         }

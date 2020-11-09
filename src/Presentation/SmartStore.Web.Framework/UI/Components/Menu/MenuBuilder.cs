@@ -11,16 +11,16 @@ namespace SmartStore.Web.Framework.UI
 
         public MenuBuilder<TModel> Template(string value)
         {
-			Component.Route = null;
-			Component.Template = value;
+            Component.Route = null;
+            Component.Template = value;
             return this;
         }
 
-		public MenuBuilder<TModel> Template(string action, string controller, object routeValues = null)
-		{
-			Component.Template = null;
-			Component.Route = new RouteInfo(action, controller, routeValues);
-			return this;
-		}
-	}
+        public MenuBuilder<TModel> Template(string action, string controller, object routeValues = null)
+        {
+            Component.Template = null;
+            Component.Route = new RouteInfo(action, controller, routeValues);
+            return this;
+        }
+    }
 }

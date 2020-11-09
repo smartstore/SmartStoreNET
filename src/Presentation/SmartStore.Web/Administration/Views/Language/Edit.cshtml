@@ -39,11 +39,14 @@
 
 @*Import resources dialog*@
 @{Html.SmartStore().Window()
-    .Name("importxml-window")
-    .Title(T("Admin.Configuration.Languages.Import"))
-    .Content(@<text>
+      .Name("importxml-window")
+      .Title(T("Admin.Configuration.Languages.Import"))
+      .BodyHtmlAttributes(new { @class = "pt-0" })
+      .Content(@<text>
 
 	<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportXml", "Language", new { id = Model.Id })">
+
+        @Html.AntiForgeryToken()
 
         @Html.SmartStore().TabStrip().Name("language-import-tab").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
         {
@@ -134,9 +137,8 @@
     </div>
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
+<script>
+    $(function() {
         // Submit resources import form
         $("#importxmlsubmit").click(function (e) {
             e.preventDefault();

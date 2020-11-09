@@ -117,6 +117,11 @@
 
     .unit-price { font-size: 1.25rem; line-height: 1.8; }
 
+    .pangv { 
+        font-size: $font-size-sm;
+        color: $text-muted;
+    }
+
 	.qty-input .form-control {
 		border-color: transparent;
 	}
@@ -138,7 +143,12 @@
 }
 
 .offcanvas-cart-footer {
-    overflow-x: hidden;
+    #mini-cart-basket-check:not(.d-none) {
+        & ~ #mini-cart-basket,
+        & ~ #mini-cart-checkout {
+            display: none;
+        }
+    }
 }
 
 .offcanvas-cart-footer-row {

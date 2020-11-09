@@ -1,20 +1,14 @@
 ﻿@using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.UI.Choices;
-@using SmartStore.Core.Domain.Media;
 
 @model ChoiceModel
+
 @{
     var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
     var controlId = Model.BuildControlId();
     var clientId = "upload" + CommonHelper.GenerateRandomInteger();
     var containerId = clientId + "container";
-    //var disabled = Model.IsDisabled;    // TODO?
-
-    //ex. ['jpg', 'jpeg', 'png', 'gif'] or []
     var allowedFileExtensions = string.Join("|", Model.AllowedFileExtensions.Select(x => x.Trim()).ToList());
-
-    var mediaService = this.CommonServices.MediaService;
-    var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
 }
 
 <div id="@containerId">
@@ -49,7 +43,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
     window['onFileUploaded@(clientId)'] = function (file, result, progress) {
         if (result.success && result.downloadGuid) {
             setUploadedFile(result.downloadGuid, file.name, "@(containerId)");

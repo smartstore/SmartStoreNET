@@ -1,4 +1,4 @@
-﻿namespace SmartStoreNetWebApiClient.Properties
+﻿namespace SmartStore.WebApi.Client.Properties
 {
     internal sealed partial class Settings
     {

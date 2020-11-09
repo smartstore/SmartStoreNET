@@ -7,7 +7,7 @@ Derivation on:
 
 (function (name, global, definition) {
     "use strict";
-     global[name] = definition(name, global);
+    global[name] = definition(name, global);
 }('EventBroker', (typeof window !== 'undefined' && window) || this, function definition(name, global) {
 
     "use strict";
@@ -16,8 +16,8 @@ Derivation on:
         name: 'EventBroker',
         version: '1.0.0'
     },
-    messages = {},
-	lastUid = -1;
+        messages = {},
+        lastUid = -1;
 
     /**
 	 *	Returns a function that throws the passed exception, for use as argument for setTimeout
@@ -39,7 +39,7 @@ Derivation on:
 
     function deliverMessage(originalMessage, matchedMessage, data) {
         var subscribers = messages[matchedMessage],
-			i, j;
+            i, j;
 
         if (!messages.hasOwnProperty(matchedMessage)) {
             return;
@@ -53,7 +53,7 @@ Derivation on:
     function createDeliveryFunction(message, data) {
         return function deliverNamespaced() {
             var topic = String(message),
-				position = topic.lastIndexOf('.');
+                position = topic.lastIndexOf('.');
 
             // deliver the message as it is now
             deliverMessage(message, message, data);
@@ -69,8 +69,8 @@ Derivation on:
 
     function messageHasSubscribers(message) {
         var topic = String(message),
-			found = messages.hasOwnProperty(topic),
-			position = topic.lastIndexOf('.');
+            found = messages.hasOwnProperty(topic),
+            position = topic.lastIndexOf('.');
 
         while (!found && position !== -1) {
             topic = topic.substr(0, position);
@@ -83,7 +83,7 @@ Derivation on:
 
     function publish(message, data, sync) {
         var deliver = createDeliveryFunction(message, data),
-			hasSubscribers = messageHasSubscribers(message);
+            hasSubscribers = messageHasSubscribers(message);
 
         if (!hasSubscribers) {
             return false;
@@ -147,15 +147,15 @@ Derivation on:
 	**/
     EventBroker.unsubscribe = function (tokenOrFunction) {
         var isToken = typeof tokenOrFunction === 'string',
-			key = isToken ? 'token' : 'func',
-			succesfulReturnValue = isToken ? tokenOrFunction : true,
+            key = isToken ? 'token' : 'func',
+            succesfulReturnValue = isToken ? tokenOrFunction : true,
 
-			result = false,
-			m, i, j;
+            result = false,
+            m, i, j;
 
         for (m in messages) {
             if (messages.hasOwnProperty(m)) {
-                for (i = messages[m].length - 1 ; i >= 0; i--) {
+                for (i = messages[m].length - 1; i >= 0; i--) {
                     if (messages[m][i][key] === tokenOrFunction) {
                         messages[m].splice(i, 1);
                         result = succesfulReturnValue;

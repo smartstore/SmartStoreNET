@@ -12,42 +12,42 @@ namespace SmartStore.Services.Orders
     /// </summary>
     public partial interface IShoppingCartService
     {
-		/// <summary>
-		/// Gets the shopping cart items count
-		/// </summary>
-		/// <param name="customer">Customer. Cannot be null.</param>
-		/// <param name="cartType">Type of cart to get items count for</param>
-		/// <param name="storeId">Store id</param>
-		/// <returns>Sum of all item quantities</returns>
-		int CountItems(Customer customer, ShoppingCartType cartType, int? storeId = null);
+        /// <summary>
+        /// Gets the shopping cart items count
+        /// </summary>
+        /// <param name="customer">Customer. Cannot be null.</param>
+        /// <param name="cartType">Type of cart to get items count for</param>
+        /// <param name="storeId">Store id</param>
+        /// <returns>Sum of all item quantities</returns>
+        int CountItems(Customer customer, ShoppingCartType cartType, int? storeId = null);
 
-		/// <summary>
-		/// Gets the shopping cart items
-		/// </summary>
-		/// <param name="customer">Customer. Cannot be null.</param>
-		/// <param name="cartType">Type of cart to get items for</param>
-		/// <param name="storeId">Store id</param>
-		/// <returns>All cart items</returns>
-		List<OrganizedShoppingCartItem> GetCartItems(Customer customer, ShoppingCartType cartType, int? storeId = null);
+        /// <summary>
+        /// Gets the shopping cart items
+        /// </summary>
+        /// <param name="customer">Customer. Cannot be null.</param>
+        /// <param name="cartType">Type of cart to get items for</param>
+        /// <param name="storeId">Store id</param>
+        /// <returns>All cart items</returns>
+        List<OrganizedShoppingCartItem> GetCartItems(Customer customer, ShoppingCartType cartType, int? storeId = null);
 
-		/// <summary>
-		/// Delete shopping cart item
-		/// </summary>
-		/// <param name="shoppingCartItem">Shopping cart item</param>
-		/// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
-		/// <param name="ensureOnlyActiveCheckoutAttributes">A value indicating whether to ensure that only active checkout attributes are attached to the current customer</param>
-		/// <param name="deleteChildCartItems">A value indicating whether to delete child cart items</param>
-		void DeleteShoppingCartItem(
-			ShoppingCartItem shoppingCartItem, 
-			bool resetCheckoutData = true,
-			bool ensureOnlyActiveCheckoutAttributes = false,
-			bool deleteChildCartItems = true);
+        /// <summary>
+        /// Delete shopping cart item
+        /// </summary>
+        /// <param name="shoppingCartItem">Shopping cart item</param>
+        /// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
+        /// <param name="ensureOnlyActiveCheckoutAttributes">A value indicating whether to ensure that only active checkout attributes are attached to the current customer</param>
+        /// <param name="deleteChildCartItems">A value indicating whether to delete child cart items</param>
+        void DeleteShoppingCartItem(
+            ShoppingCartItem shoppingCartItem,
+            bool resetCheckoutData = true,
+            bool ensureOnlyActiveCheckoutAttributes = false,
+            bool deleteChildCartItems = true);
 
-		void DeleteShoppingCartItem(
-			int shoppingCartItemId, 
-			bool resetCheckoutData = true,
-			bool ensureOnlyActiveCheckoutAttributes = false, 
-			bool deleteChildCartItems = true);
+        void DeleteShoppingCartItem(
+            int shoppingCartItemId,
+            bool resetCheckoutData = true,
+            bool ensureOnlyActiveCheckoutAttributes = false,
+            bool deleteChildCartItems = true);
 
         /// <summary>
         /// Deletes expired shopping cart items
@@ -67,11 +67,11 @@ namespace SmartStore.Services.Orders
 		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
         /// <returns>Warnings</returns>
         IList<string> GetRequiredProductWarnings(
-			Customer customer,
-            ShoppingCartType shoppingCartType, 
-			Product product,
-			int storeId, 
-			bool automaticallyAddRequiredProductsIfEnabled);
+            Customer customer,
+            ShoppingCartType shoppingCartType,
+            Product product,
+            int storeId,
+            bool automaticallyAddRequiredProductsIfEnabled);
 
         /// <summary>
 		/// Validates a product for standard properties
@@ -84,32 +84,32 @@ namespace SmartStore.Services.Orders
         /// <param name="quantity">Quantity</param>
         /// <returns>Warnings</returns>
         IList<string> GetStandardWarnings(
-			Customer customer, 
-			ShoppingCartType shoppingCartType,
-			Product product, 
-			string selectedAttributes,
-            decimal customerEnteredPrice, 
-			int quantity);
+            Customer customer,
+            ShoppingCartType shoppingCartType,
+            Product product,
+            string selectedAttributes,
+            decimal customerEnteredPrice,
+            int quantity);
 
-		/// <summary>
-		/// Validates shopping cart item attributes
-		/// </summary>
-		/// <param name="customer">The customer</param>
-		/// <param name="shoppingCartType">Shopping cart type</param>
-		/// <param name="product">Product</param>
-		/// <param name="selectedAttributes">Selected attributes</param>
-		/// <param name="combination">The product variant attribute combination instance (reduces database roundtrips)</param>
-		/// <param name="quantity">Quantity</param>
-		/// <param name="bundleItem">Product bundle item</param>
-		/// <returns>Warnings</returns>
-		IList<string> GetShoppingCartItemAttributeWarnings(
-			Customer customer, 
-			ShoppingCartType shoppingCartType,
-			Product product, 
-			string selectedAttributes, 
-			int quantity = 1, 
-			ProductBundleItem bundleItem = null,
-			ProductVariantAttributeCombination combination = null);
+        /// <summary>
+        /// Validates shopping cart item attributes
+        /// </summary>
+        /// <param name="customer">The customer</param>
+        /// <param name="shoppingCartType">Shopping cart type</param>
+        /// <param name="product">Product</param>
+        /// <param name="selectedAttributes">Selected attributes</param>
+        /// <param name="combination">The product variant attribute combination instance (reduces database roundtrips)</param>
+        /// <param name="quantity">Quantity</param>
+        /// <param name="bundleItem">Product bundle item</param>
+        /// <returns>Warnings</returns>
+        IList<string> GetShoppingCartItemAttributeWarnings(
+            Customer customer,
+            ShoppingCartType shoppingCartType,
+            Product product,
+            string selectedAttributes,
+            int quantity = 1,
+            ProductBundleItem bundleItem = null,
+            ProductVariantAttributeCombination combination = null);
 
         /// <summary>
         /// Validates shopping cart item (gift card)
@@ -120,14 +120,14 @@ namespace SmartStore.Services.Orders
         /// <returns>Warnings</returns>
         IList<string> GetShoppingCartItemGiftCardWarnings(ShoppingCartType shoppingCartType, Product product, string selectedAttributes);
 
-		/// <summary>
-		/// Validates bundle items
-		/// </summary>
-		/// <param name="shoppingCartType">Shopping cart type</param>
-		/// <param name="bundleItem">Product bundle item</param>
-		/// <returns>Warnings</returns>
-		IList<string> GetBundleItemWarnings(ProductBundleItem bundleItem);
-		IList<string> GetBundleItemWarnings(IList<OrganizedShoppingCartItem> cartItems);
+        /// <summary>
+        /// Validates bundle items
+        /// </summary>
+        /// <param name="shoppingCartType">Shopping cart type</param>
+        /// <param name="bundleItem">Product bundle item</param>
+        /// <returns>Warnings</returns>
+        IList<string> GetBundleItemWarnings(ProductBundleItem bundleItem);
+        IList<string> GetBundleItemWarnings(IList<OrganizedShoppingCartItem> cartItems);
 
         /// <summary>
         /// Validates shopping cart item
@@ -149,21 +149,21 @@ namespace SmartStore.Services.Orders
 		/// <param name="childItems">Child cart items to validate bundle items</param>
         /// <returns>Warnings</returns>
         IList<string> GetShoppingCartItemWarnings(
-			Customer customer, 
-			ShoppingCartType shoppingCartType,
-			Product product, 
-			int storeId, 
-			string selectedAttributes, 
-			decimal customerEnteredPrice,
-			int quantity, 
-			bool automaticallyAddRequiredProductsIfEnabled,
-            bool getStandardWarnings = true, 
-			bool getAttributesWarnings = true,
-            bool getGiftCardWarnings = true, 
-			bool getRequiredProductWarnings = true,
-			bool getBundleWarnings = true, 
-			ProductBundleItem bundleItem = null, 
-			IList<OrganizedShoppingCartItem> childItems = null);
+            Customer customer,
+            ShoppingCartType shoppingCartType,
+            Product product,
+            int storeId,
+            string selectedAttributes,
+            decimal customerEnteredPrice,
+            int quantity,
+            bool automaticallyAddRequiredProductsIfEnabled,
+            bool getStandardWarnings = true,
+            bool getAttributesWarnings = true,
+            bool getGiftCardWarnings = true,
+            bool getRequiredProductWarnings = true,
+            bool getBundleWarnings = true,
+            ProductBundleItem bundleItem = null,
+            IList<OrganizedShoppingCartItem> childItems = null);
 
         /// <summary>
         /// Validates whether this shopping cart is valid
@@ -184,47 +184,47 @@ namespace SmartStore.Services.Orders
         /// <param name="customerEnteredPrice">Price entered by a customer</param>
         /// <returns>Found shopping cart item</returns>
 		OrganizedShoppingCartItem FindShoppingCartItemInTheCart(
-			IList<OrganizedShoppingCartItem> shoppingCart,
+            IList<OrganizedShoppingCartItem> shoppingCart,
             ShoppingCartType shoppingCartType,
-			Product product,
+            Product product,
             string selectedAttributes = "",
             decimal customerEnteredPrice = decimal.Zero);
 
-		/// <summary>
-		/// Add product to cart
-		/// </summary>
-		/// <param name="customer">The customer</param>
-		/// <param name="product">The product</param>
-		/// <param name="cartType">Cart type</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <param name="selectedAttributes">Selected attributes</param>
-		/// <param name="customerEnteredPrice">Price entered by customer</param>
-		/// <param name="quantity">Quantity</param>
-		/// <param name="automaticallyAddRequiredProductsIfEnabled">Whether to add required products</param>
-		/// <param name="ctx">Add to cart context</param>
-		/// <returns>List with warnings</returns>
-		List<string> AddToCart(
-			Customer customer, 
-			Product product, 
-			ShoppingCartType cartType, 
-			int storeId, 
-			string selectedAttributes,
-			decimal customerEnteredPrice, 
-			int quantity, 
-			bool automaticallyAddRequiredProductsIfEnabled, 
-			AddToCartContext ctx = null);
+        /// <summary>
+        /// Add product to cart
+        /// </summary>
+        /// <param name="customer">The customer</param>
+        /// <param name="product">The product</param>
+        /// <param name="cartType">Cart type</param>
+        /// <param name="storeId">Store identifier</param>
+        /// <param name="selectedAttributes">Selected attributes</param>
+        /// <param name="customerEnteredPrice">Price entered by customer</param>
+        /// <param name="quantity">Quantity</param>
+        /// <param name="automaticallyAddRequiredProductsIfEnabled">Whether to add required products</param>
+        /// <param name="ctx">Add to cart context</param>
+        /// <returns>List with warnings</returns>
+        List<string> AddToCart(
+            Customer customer,
+            Product product,
+            ShoppingCartType cartType,
+            int storeId,
+            string selectedAttributes,
+            decimal customerEnteredPrice,
+            int quantity,
+            bool automaticallyAddRequiredProductsIfEnabled,
+            AddToCartContext ctx = null);
 
-		/// <summary>
-		/// Add product to cart
-		/// </summary>
-		/// <param name="ctx">Add to cart context</param>
-		void AddToCart(AddToCartContext ctx);
+        /// <summary>
+        /// Add product to cart
+        /// </summary>
+        /// <param name="ctx">Add to cart context</param>
+        void AddToCart(AddToCartContext ctx);
 
-		/// <summary>
-		/// Stores the shopping card items in the database
-		/// </summary>
-		/// <param name="ctx">Add to cart context</param>
-		void AddToCartStoring(AddToCartContext ctx);
+        /// <summary>
+        /// Stores the shopping card items in the database
+        /// </summary>
+        /// <param name="ctx">Add to cart context</param>
+        void AddToCartStoring(AddToCartContext ctx);
 
         /// <summary>
         /// Validates if all required attributes are selected
@@ -251,16 +251,16 @@ namespace SmartStore.Services.Orders
         /// <param name="toCustomer">To customer</param>
         void MigrateShoppingCart(Customer fromCustomer, Customer toCustomer);
 
-		/// <summary>
-		/// Copies a shopping cart item.
-		/// </summary>
-		/// <param name="sci">Shopping cart item</param>
-		/// <param name="customer">The customer</param>
-		/// <param name="cartType">Shopping cart type</param>
-		/// <param name="storeId">Store Id</param>
-		/// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
-		/// <returns>List with add-to-cart warnings.</returns>
-		IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
+        /// <summary>
+        /// Copies a shopping cart item.
+        /// </summary>
+        /// <param name="sci">Shopping cart item</param>
+        /// <param name="customer">The customer</param>
+        /// <param name="cartType">Shopping cart type</param>
+        /// <param name="storeId">Store Id</param>
+        /// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
+        /// <returns>List with add-to-cart warnings.</returns>
+        IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
 
         /// <summary>
 		/// Gets the subtotal of cart items for the current user
@@ -279,23 +279,23 @@ namespace SmartStore.Services.Orders
 		/// </summary>
         /// <returns>Formatted subtotal of cart items for the current user</returns>
         string GetFormattedCurrentCartSubTotal();
-        
+
         /// <summary>
         /// Gets the formatted subtotal of cart items for the current user
         /// </summary>
         /// <returns>Formatted subtotal of cart items for the current user</returns>
         string GetFormattedCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
 
-		/// <summary>
-		/// Get open carts subtotal
-		/// </summary>
-		/// <returns>subtotal</returns>
-		decimal GetAllOpenCartSubTotal();
+        /// <summary>
+        /// Get open carts subtotal
+        /// </summary>
+        /// <returns>subtotal</returns>
+        decimal GetAllOpenCartSubTotal();
 
-		/// <summary>
-		/// Get open wishlists subtotal
-		/// </summary>
-		/// <returns>subtotal</returns>
-		decimal GetAllOpenWishlistSubTotal();
-	}
+        /// <summary>
+        /// Get open wishlists subtotal
+        /// </summary>
+        /// <returns>subtotal</returns>
+        decimal GetAllOpenWishlistSubTotal();
+    }
 }

@@ -15,7 +15,7 @@ namespace SmartStore.Services.Orders
     public partial class GiftCardService : IGiftCardService
     {
         #region Fields
-        
+
         private readonly IRepository<GiftCard> _giftCardRepository;
         private readonly IEventPublisher _eventPublisher;
 
@@ -35,7 +35,7 @@ namespace SmartStore.Services.Orders
         }
 
         #endregion
-        
+
         #region Methods
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SmartStore.Services.Orders
         /// <param name="isGiftCardActivated">Value indicating whether gift card is activated; null to load all records</param>
         /// <param name="giftCardCouponCode">Gift card coupon code; null or string.empty to load all records</param>
         /// <returns>Gift cards</returns>
-        public virtual IList<GiftCard> GetAllGiftCards(int? purchasedWithOrderId, 
+        public virtual IList<GiftCard> GetAllGiftCards(int? purchasedWithOrderId,
             DateTime? startTime = null, DateTime? endTime = null,
             bool? isGiftCardActivated = null, string giftCardCouponCode = "")
         {

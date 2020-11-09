@@ -10,52 +10,50 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using SmartStore.Utilities.Threading;
 
 namespace SmartStore.ComponentModel
 {
-	public enum PropertyCachingStrategy
-	{
-		/// <summary>
-		/// Don't cache FastProperty instances
-		/// </summary>
-		Uncached = 0,
-		/// <summary>
-		/// Always cache FastProperty instances
-		/// </summary>
-		Cached = 1,
-		/// <summary>
-		/// Always cache FastProperty instances. PLUS cache all other properties of the declaring type.
-		/// </summary>
-		EagerCached = 2
-	}
+    public enum PropertyCachingStrategy
+    {
+        /// <summary>
+        /// Don't cache FastProperty instances
+        /// </summary>
+        Uncached = 0,
+        /// <summary>
+        /// Always cache FastProperty instances
+        /// </summary>
+        Cached = 1,
+        /// <summary>
+        /// Always cache FastProperty instances. PLUS cache all other properties of the declaring type.
+        /// </summary>
+        EagerCached = 2
+    }
 
-	public abstract class FastProperty
-	{
-		private static readonly ConcurrentDictionary<PropertyKey, FastProperty> _singlePropertiesCache = new ConcurrentDictionary<PropertyKey, FastProperty>();
+    public abstract class FastProperty
+    {
+        private static readonly ConcurrentDictionary<PropertyKey, FastProperty> _singlePropertiesCache = new ConcurrentDictionary<PropertyKey, FastProperty>();
 
-		// Using an array rather than IEnumerable, as target will be called on the hot path numerous times.
-		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _propertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
-		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _visiblePropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
+        // Using an array rather than IEnumerable, as target will be called on the hot path numerous times.
+        private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _propertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
+        private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _visiblePropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
 
         private Func<object, object> _valueGetter;
         private Action<object, object> _valueSetter;
-		private bool? _isPublicSettable;
-		private bool? _isSequenceType;
+        private bool? _isPublicSettable;
+        private bool? _isSequenceType;
 
-		/// <summary>
-		/// Initializes a <see cref="FastProperty"/>.
-		/// This constructor does not cache the helper. For caching, use <see cref="GetProperties(object, PropertyCachingStrategy)"/>.
-		/// </summary>
-		[SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
-		protected FastProperty(PropertyInfo property)
-		{
-			Guard.NotNull(property, nameof(property));
+        /// <summary>
+        /// Initializes a <see cref="FastProperty"/>.
+        /// This constructor does not cache the helper. For caching, use <see cref="GetProperties(object, PropertyCachingStrategy)"/>.
+        /// </summary>
+        [SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
+        protected FastProperty(PropertyInfo property)
+        {
+            Guard.NotNull(property, nameof(property));
 
-			Property = property;
-			Name = property.Name;
-		}
+            Property = property;
+            Name = property.Name;
+        }
 
         /// <summary>
         /// Gets the property value getter.
@@ -72,10 +70,7 @@ namespace SmartStore.ComponentModel
 
                 return _valueGetter;
             }
-            private set
-            {
-                _valueGetter = value;
-            }
+            private set => _valueGetter = value;
         }
 
         /// <summary>
@@ -93,10 +88,7 @@ namespace SmartStore.ComponentModel
 
                 return _valueSetter;
             }
-            private set
-            {
-                _valueSetter = value;
-            }
+            private set => _valueSetter = value;
         }
 
         protected abstract Func<object, object> MakePropertyGetter(PropertyInfo propertyInfo);
@@ -108,34 +100,34 @@ namespace SmartStore.ComponentModel
         /// </summary>
         public PropertyInfo Property { get; private set; }
 
-		/// <summary>
-		/// Gets (or sets in derived types) the property name.
-		/// </summary>
-		public virtual string Name { get; protected set; }
+        /// <summary>
+        /// Gets (or sets in derived types) the property name.
+        /// </summary>
+        public virtual string Name { get; protected set; }
 
-		public bool IsPublicSettable
-		{
-			get
-			{
-				if (!_isPublicSettable.HasValue)
-				{
-					_isPublicSettable = Property.CanWrite && Property.GetSetMethod(false) != null;
-				}
-				return _isPublicSettable.Value;
-			}
-		}
+        public bool IsPublicSettable
+        {
+            get
+            {
+                if (!_isPublicSettable.HasValue)
+                {
+                    _isPublicSettable = Property.CanWrite && Property.GetSetMethod(false) != null;
+                }
+                return _isPublicSettable.Value;
+            }
+        }
 
-		public bool IsSequenceType
-		{
-			get
-			{
-				if (!_isSequenceType.HasValue)
-				{
-					_isSequenceType = Property.PropertyType != typeof(string) && Property.PropertyType.IsSubClass(typeof(IEnumerable<>));
-				}
-				return _isSequenceType.Value;
-			}
-		}
+        public bool IsSequenceType
+        {
+            get
+            {
+                if (!_isSequenceType.HasValue)
+                {
+                    _isSequenceType = Property.PropertyType != typeof(string) && Property.PropertyType.IsSubClass(typeof(IEnumerable<>));
+                }
+                return _isSequenceType.Value;
+            }
+        }
 
         /// <summary>
         /// Returns the property value for the specified <paramref name="instance"/>.
@@ -144,9 +136,9 @@ namespace SmartStore.ComponentModel
         /// <returns>The property value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object GetValue(object instance)
-		{
-			return ValueGetter(instance);
-		}
+        {
+            return ValueGetter(instance);
+        }
 
         /// <summary>
         /// Sets the property value for the specified <paramref name="instance" />.
@@ -155,94 +147,94 @@ namespace SmartStore.ComponentModel
         /// <param name="value">The property value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(object instance, object value)
-		{
-			ValueSetter(instance, value);
-		}
+        {
+            ValueSetter(instance, value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FastProperty GetProperty<T>(
-			Expression<Func<T, object>> property,
-			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			return GetProperty(property.ExtractPropertyInfo(), cachingStrategy);
-		}
+            Expression<Func<T, object>> property,
+            PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+        {
+            return GetProperty(property.ExtractPropertyInfo(), cachingStrategy);
+        }
 
-		public static FastProperty GetProperty(
-			Type type,
-			string propertyName,
-			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			Guard.NotNull(type, nameof(type));
-			Guard.NotEmpty(propertyName, nameof(propertyName));
+        public static FastProperty GetProperty(
+            Type type,
+            string propertyName,
+            PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+        {
+            Guard.NotNull(type, nameof(type));
+            Guard.NotEmpty(propertyName, nameof(propertyName));
 
-			if (TryGetCachedProperty(type, propertyName, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
-			{
-				return fastProperty;
-			}
+            if (TryGetCachedProperty(type, propertyName, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
+            {
+                return fastProperty;
+            }
 
-			var key = new PropertyKey(type, propertyName);
-			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
-			{
-				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
-				if (pi != null)
-				{
-					fastProperty = Create(pi);
-					if (cachingStrategy > PropertyCachingStrategy.Uncached)
-					{
-						_singlePropertiesCache.TryAdd(key, fastProperty);
-					}
-				}
-			}
+            var key = new PropertyKey(type, propertyName);
+            if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
+            {
+                var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (pi != null)
+                {
+                    fastProperty = Create(pi);
+                    if (cachingStrategy > PropertyCachingStrategy.Uncached)
+                    {
+                        _singlePropertiesCache.TryAdd(key, fastProperty);
+                    }
+                }
+            }
 
-			return fastProperty;
-		}
+            return fastProperty;
+        }
 
-		public static FastProperty GetProperty(
-			PropertyInfo propertyInfo,
-			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
-		{
-			Guard.NotNull(propertyInfo, nameof(propertyInfo));
+        public static FastProperty GetProperty(
+            PropertyInfo propertyInfo,
+            PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+        {
+            Guard.NotNull(propertyInfo, nameof(propertyInfo));
 
-			if (TryGetCachedProperty(propertyInfo.ReflectedType, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
-			{
-				return fastProperty;
-			}
+            if (TryGetCachedProperty(propertyInfo.ReflectedType, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
+            {
+                return fastProperty;
+            }
 
-			var key = new PropertyKey(propertyInfo.ReflectedType, propertyInfo.Name);
-			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
-			{
-				fastProperty = Create(propertyInfo);
-				if (cachingStrategy > PropertyCachingStrategy.Uncached)
-				{
-					_singlePropertiesCache.TryAdd(key, fastProperty);
-				}
-			}
+            var key = new PropertyKey(propertyInfo.ReflectedType, propertyInfo.Name);
+            if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
+            {
+                fastProperty = Create(propertyInfo);
+                if (cachingStrategy > PropertyCachingStrategy.Uncached)
+                {
+                    _singlePropertiesCache.TryAdd(key, fastProperty);
+                }
+            }
 
-			return fastProperty;
-		}
+            return fastProperty;
+        }
 
-		private static bool TryGetCachedProperty(
-			Type type,
-			string propertyName,
-			bool eagerCached,
-			out FastProperty fastProperty)
-		{
-			fastProperty = null;
-			IDictionary<string, FastProperty> allProperties;
+        private static bool TryGetCachedProperty(
+            Type type,
+            string propertyName,
+            bool eagerCached,
+            out FastProperty fastProperty)
+        {
+            fastProperty = null;
+            IDictionary<string, FastProperty> allProperties;
 
-			if (eagerCached)
-			{
-				allProperties = (IDictionary<string, FastProperty>)GetProperties(type);
-				allProperties.TryGetValue(propertyName, out fastProperty);
-			}
+            if (eagerCached)
+            {
+                allProperties = (IDictionary<string, FastProperty>)GetProperties(type);
+                allProperties.TryGetValue(propertyName, out fastProperty);
+            }
 
-			if (fastProperty == null && _propertiesCache.TryGetValue(type, out allProperties))
-			{
-				allProperties.TryGetValue(propertyName, out fastProperty);
-			}
+            if (fastProperty == null && _propertiesCache.TryGetValue(type, out allProperties))
+            {
+                allProperties.TryGetValue(propertyName, out fastProperty);
+            }
 
-			return fastProperty != null;
-		}
+            return fastProperty != null;
+        }
 
         ///  <summary>
         ///  Given an object, adds each instance property with a public get method as a key and its
@@ -261,38 +253,38 @@ namespace SmartStore.ComponentModel
         ///  faster when the the same type is used multiple times with ObjectToDictionary.
         ///  </remarks>
         public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null, bool deep = false)
-		{
-			if (value is IDictionary<string, object> dictionary)
-			{
-				return new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
-			}
+        {
+            if (value is IDictionary<string, object> dictionary)
+            {
+                return new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
+            }
 
-			dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-			if (value != null)
-			{
-				keySelector = keySelector ?? new Func<string, string>(key => key);
+            if (value != null)
+            {
+                keySelector = keySelector ?? new Func<string, string>(key => key);
 
-				foreach (var prop in GetProperties(value.GetType()).Values)
-				{
-					var propValue = prop.GetValue(value);
-					if (deep && propValue != null && prop.Property.PropertyType.IsPlainObjectType())
-					{
-						propValue = ObjectToDictionary(propValue, deep: true);
-					}
+                foreach (var prop in GetProperties(value.GetType()).Values)
+                {
+                    var propValue = prop.GetValue(value);
+                    if (deep && propValue != null && prop.Property.PropertyType.IsPlainObjectType())
+                    {
+                        propValue = ObjectToDictionary(propValue, deep: true);
+                    }
 
-					dictionary[keySelector(prop.Name)] = propValue;
-				}
-			}
+                    dictionary[keySelector(prop.Name)] = propValue;
+                }
+            }
 
-			return dictionary;
-		}
+            return dictionary;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FastProperty Create(PropertyInfo property)
-		{
-			return new DelegatedAccessor(property);
-		}
+        {
+            return new DelegatedAccessor(property);
+        }
 
 
         /// <summary>
@@ -437,46 +429,46 @@ namespace SmartStore.ComponentModel
             }
         }
 
-		internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
-		{
-			// We avoid loading indexed properties using the Where statement.
-			var properties = type.GetRuntimeProperties().Where(IsCandidateProperty);
+        internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
+        {
+            // We avoid loading indexed properties using the Where statement.
+            var properties = type.GetRuntimeProperties().Where(IsCandidateProperty);
 
-			var typeInfo = type.GetTypeInfo();
-			if (typeInfo.IsInterface)
-			{
-				// Reflection does not return information about inherited properties on the interface itself.
-				properties = properties.Concat(typeInfo.ImplementedInterfaces.SelectMany(
-					interfaceType => interfaceType.GetRuntimeProperties().Where(IsCandidateProperty)));
-			}
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsInterface)
+            {
+                // Reflection does not return information about inherited properties on the interface itself.
+                properties = properties.Concat(typeInfo.ImplementedInterfaces.SelectMany(
+                    interfaceType => interfaceType.GetRuntimeProperties().Where(IsCandidateProperty)));
+            }
 
-			return properties;
-		}
+            return properties;
+        }
 
-		// Indexed properties are not useful (or valid) for grabbing properties off an object.
-		private static bool IsCandidateProperty(PropertyInfo property)
-		{
-			return property.GetIndexParameters().Length == 0 &&
-				property.GetMethod != null &&
-				property.GetMethod.IsPublic &&
-				!property.GetMethod.IsStatic;
-		}
+        // Indexed properties are not useful (or valid) for grabbing properties off an object.
+        private static bool IsCandidateProperty(PropertyInfo property)
+        {
+            return property.GetIndexParameters().Length == 0 &&
+                property.GetMethod != null &&
+                property.GetMethod.IsPublic &&
+                !property.GetMethod.IsStatic;
+        }
 
-		private static ConcurrentDictionary<Type, IDictionary<string, FastProperty>> CreateVolatileCache()
-		{
-			return new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
-		}
+        private static ConcurrentDictionary<Type, IDictionary<string, FastProperty>> CreateVolatileCache()
+        {
+            return new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
+        }
 
-		class PropertyKey : Tuple<Type, string>
-		{
-			public PropertyKey(Type type, string propertyName)
-				: base(type, propertyName)
-			{
-			}
-			public Type Type { get { return base.Item1; } }
-			public string PropertyName { get { return base.Item2; } }
-		}
-	}
+        class PropertyKey : Tuple<Type, string>
+        {
+            public PropertyKey(Type type, string propertyName)
+                : base(type, propertyName)
+            {
+            }
+            public Type Type => base.Item1;
+            public string PropertyName => base.Item2;
+        }
+    }
 
 
 

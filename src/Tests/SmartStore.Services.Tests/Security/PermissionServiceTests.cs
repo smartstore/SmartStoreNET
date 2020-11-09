@@ -8,6 +8,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Fakes;
 using SmartStore.Core.Security;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Tests.Security
         private ILocalizationService _localizationService;
         private IWorkContext _workContext;
         private ICacheManager _cacheManager;
+        private IRequestCache _requestCache;
 
         private CustomerRole _rAdmin = new CustomerRole { Id = 1, Active = true, SystemName = "Administrators" };
         private CustomerRole _rModerator = new CustomerRole { Id = 2, Active = true, SystemName = "Moderators" };
@@ -43,6 +45,7 @@ namespace SmartStore.Services.Tests.Security
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _cacheManager = NullCache.Instance;
+            _requestCache = new RequestCache(new FakeHttpContext("~/"));
 
             _permissionService = new PermissionService(
                 _permissionRepository,
@@ -50,7 +53,8 @@ namespace SmartStore.Services.Tests.Security
                 _customerService,
                 _localizationService,
                 _workContext,
-                _cacheManager);
+                _cacheManager,
+                _requestCache);
 
             _cAdmin.CustomerRoleMappings.Add(new CustomerRoleMapping
             {

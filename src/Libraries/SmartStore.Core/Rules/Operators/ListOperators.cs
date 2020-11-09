@@ -13,7 +13,7 @@ namespace SmartStore.Rules.Operators
 
     internal class InOperator : RuleOperator
     {
-        internal InOperator() 
+        internal InOperator()
             : this("In", false) { }
 
         protected InOperator(string op, bool negate)
@@ -39,7 +39,7 @@ namespace SmartStore.Rules.Operators
             var containsMethod = ExpressionHelper.GetCollectionContainsMethod(itemType);
 
             return Expression.Equal(
-                Expression.Call(right, containsMethod, left), 
+                Expression.Call(right, containsMethod, left),
                 Negate ? ExpressionHelper.FalseLiteral : ExpressionHelper.TrueLiteral);
         }
 

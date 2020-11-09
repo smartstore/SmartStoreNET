@@ -35,10 +35,10 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings)
         {
-            this._customerActivityService = customerActivityService;
-            this._customerService = customerService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._adminAreaSettings = adminAreaSettings;
+            _customerActivityService = customerActivityService;
+            _customerService = customerService;
+            _dateTimeHelper = dateTimeHelper;
+            _adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -74,20 +74,19 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.ActivityLog.Update)]
         public ActionResult SaveTypes(FormCollection formCollection)
         {
             var keys = formCollection.AllKeys.Where(c => c.StartsWith("checkBox_")).Select(c => c.Substring(9));
             foreach (var key in keys)
             {
-                int id;
-                if (Int32.TryParse(key, out id))
+                if (Int32.TryParse(key, out int id))
                 {
                     var activityType = _customerActivityService.GetActivityTypeById(id);
                     activityType.Enabled = !formCollection["checkBox_" + key].Equals("false");
                     _customerActivityService.UpdateActivityType(activityType);
                 }
-
             }
 
             NotifySuccess(T("Admin.Configuration.ActivityLog.ActivityLogType.Updated"));
@@ -165,6 +164,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("ListLogs")]
         [FormValueRequired("clearall")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.ActivityLog.Delete)]
         public ActionResult ClearAll()
         {
@@ -174,6 +174,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.ActivityLog.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {

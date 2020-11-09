@@ -8,21 +8,18 @@ using SmartStore.Web.Controllers;
 
 namespace SmartStore.AmazonPay
 {
-	public class DependencyRegistrar : IDependencyRegistrar
-	{
-		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
-		{
-			builder.RegisterType<AmazonPayService>().As<IAmazonPayService>().InstancePerRequest();
+    public class DependencyRegistrar : IDependencyRegistrar
+    {
+        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
+        {
+            builder.RegisterType<AmazonPayService>().As<IAmazonPayService>().InstancePerRequest();
 
-			if (isActiveModule)
-			{
-				builder.RegisterType<AmazonPayCheckoutFilter>().AsActionFilterFor<CheckoutController>().InstancePerRequest();
-			}
-		}
+            if (isActiveModule)
+            {
+                builder.RegisterType<AmazonPayCheckoutFilter>().AsActionFilterFor<CheckoutController>().InstancePerRequest();
+            }
+        }
 
-		public int Order
-		{
-			get { return 1; }
-		}
-	}
+        public int Order => 1;
+    }
 }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Rules.Filters
 {
@@ -27,10 +25,7 @@ namespace SmartStore.Rules.Filters
         public bool IsSubGroup { get; set; }
         public IRuleProvider Provider { get; set; }
 
-        public IEnumerable<IRuleExpression> Expressions
-        {
-            get => _expressions;
-        }
+        public IEnumerable<IRuleExpression> Expressions => _expressions;
 
         public void AddExpressions(params IRuleExpression[] expressions)
         {

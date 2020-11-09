@@ -1,5 +1,6 @@
 ﻿@model HomePageNewsItemsModel
 @using SmartStore.Web.Models.News;
+@using SmartStore.Core.Domain.Media;
 
 @if (Model.NewsItems.Count > 0)
 {
@@ -11,7 +12,7 @@
                 </div>
             </div>
             <div class="col col-auto">
-                <a class="btn btn-warning" href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" title="@T("News.RSS.Hint")">
+                <a class="btn btn-warning" href="@Url.Action("rss")" title="@T("News.RSS.Hint")">
                     <i class="fa fa-rss"></i>
                     <span>@T("News.RSS")</span>
                 </a>
@@ -27,7 +28,7 @@
             {
                 var item = Model.NewsItems.FirstOrDefault();
                 var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
-                var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
+                var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? MediaSettings.ThumbnailSizeLg, null, false);
 
                 <article class="row" itemscope itemtype="http://schema.org/NewsArticle">
                     @if (imageUrl.HasValue())
@@ -111,7 +112,7 @@
 @helper FirstNewsItem(NewsItemModel item)
 {
     var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
-    var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
+    var imageUrl = Url.Media(fileModel.File, MediaSettings.ThumbnailSizeXxl, null, false);
 
     if (imageUrl.HasValue())
     {
@@ -146,7 +147,7 @@
     foreach (var item in items)
     {
         var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
-        var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
+        var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? MediaSettings.ThumbnailSizeLg, null, false);
         var btnClasses = isMinimal ? "p-0" : "btn btn-sm btn-primary";
 
         <article class="row sm-gutters mb-4@(isMinimal ? " col-12 col-md-6" : "")" itemscope itemtype="http://schema.org/NewsArticle">

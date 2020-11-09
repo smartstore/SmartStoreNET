@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using SmartStore.Rules.Filters;
 
 namespace SmartStore.Rules.Operators
 {
     internal sealed class EqualOperator : RuleOperator
     {
-        internal EqualOperator() 
+        internal EqualOperator()
             : base("=") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
@@ -23,7 +22,7 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class NotEqualOperator : RuleOperator
     {
-        internal NotEqualOperator() 
+        internal NotEqualOperator()
             : base("!=") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
@@ -40,26 +39,26 @@ namespace SmartStore.Rules.Operators
 
     internal sealed class IsNullOperator : RuleOperator
     {
-        internal IsNullOperator() 
+        internal IsNullOperator()
             : base("IsNull") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.Equal(
-                left, 
+                left,
                 ExpressionHelper.CreateConstantExpression(null, GetBodyType(left)));
         }
     }
 
     internal sealed class IsNotNullOperator : RuleOperator
     {
-        internal IsNotNullOperator() 
+        internal IsNotNullOperator()
             : base("IsNotNull") { }
 
         protected override Expression GenerateExpression(Expression left, Expression right, bool liftToNull)
         {
             return Expression.NotEqual(
-                left, 
+                left,
                 ExpressionHelper.CreateConstantExpression(null, GetBodyType(left)));
         }
     }

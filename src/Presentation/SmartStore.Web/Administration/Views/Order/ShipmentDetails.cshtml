@@ -33,6 +33,7 @@
         </div>
     </div>
 	
+	@Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     <table class="adminContent">
@@ -171,6 +172,7 @@
 
 <script>
     $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
         // Toggle open URL button.
         $('#@Html.FieldIdFor(model => model.TrackingUrl)').change(function () {
@@ -181,7 +183,9 @@
         // Set as shipped or delivered.
 		$('#btn-setasshipped, #btn-setasdelivered').on('click', function (e) {
 			e.preventDefault();
-			$(this).doPostData({ });
+            $(this).doPostData({
+				data: { "__RequestVerificationToken": token }
+            });
 			return false;
 		});
 	});

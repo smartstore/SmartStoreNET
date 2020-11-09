@@ -11,50 +11,50 @@ namespace SmartStore.Services.Messages
 {
     public partial class CampaignService : ICampaignService
     {
-		private readonly ICommonServices _services;
-		private readonly IRepository<Campaign> _campaignRepository;
-		private readonly IMessageTemplateService _messageTemplateService;
+        private readonly ICommonServices _services;
+        private readonly IRepository<Campaign> _campaignRepository;
+        private readonly IMessageTemplateService _messageTemplateService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
 
         public CampaignService(
-			ICommonServices services,
-			IRepository<Campaign> campaignRepository,
-			IMessageTemplateService messageTemplateService,
+            ICommonServices services,
+            IRepository<Campaign> campaignRepository,
+            IMessageTemplateService messageTemplateService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IStoreMappingService storeMappingService,
             IAclService aclService)
         {
-			_services = services;
-			_campaignRepository = campaignRepository;
-			_messageTemplateService = messageTemplateService;
+            _services = services;
+            _campaignRepository = campaignRepository;
+            _messageTemplateService = messageTemplateService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _storeMappingService = storeMappingService;
             _aclService = aclService;
         }
 
-		public Localizer T { get; set; } = NullLocalizer.Instance;
+        public Localizer T { get; set; } = NullLocalizer.Instance;
 
         public virtual void InsertCampaign(Campaign campaign)
         {
-			Guard.NotNull(campaign, nameof(campaign));
+            Guard.NotNull(campaign, nameof(campaign));
 
             _campaignRepository.Insert(campaign);
         }
 
         public virtual void UpdateCampaign(Campaign campaign)
         {
-			Guard.NotNull(campaign, nameof(campaign));
+            Guard.NotNull(campaign, nameof(campaign));
 
-			_campaignRepository.Update(campaign);
+            _campaignRepository.Update(campaign);
         }
 
         public virtual void DeleteCampaign(Campaign campaign)
         {
-			Guard.NotNull(campaign, nameof(campaign));
+            Guard.NotNull(campaign, nameof(campaign));
 
-			_campaignRepository.Delete(campaign);
+            _campaignRepository.Delete(campaign);
         }
 
         public virtual Campaign GetCampaignById(int campaignId)
@@ -159,28 +159,28 @@ namespace SmartStore.Services.Messages
         }
 
         public virtual CreateMessageResult Preview(Campaign campaign)
-		{
-			Guard.NotNull(campaign, nameof(campaign));
+        {
+            Guard.NotNull(campaign, nameof(campaign));
 
-			var messageContext = new MessageContext
-			{
-				MessageTemplate = GetCampaignTemplate(),
-				TestMode = true
-			};
+            var messageContext = new MessageContext
+            {
+                MessageTemplate = GetCampaignTemplate(),
+                TestMode = true
+            };
 
-			var subscription =_services.MessageFactory.GetTestModels(messageContext).OfType<NewsLetterSubscription>().FirstOrDefault();
+            var subscription = _services.MessageFactory.GetTestModels(messageContext).OfType<NewsLetterSubscription>().FirstOrDefault();
 
-			var message = _services.MessageFactory.CreateMessage(messageContext, false /* do NOT queue */, subscription, campaign);
-			return message;
-		}
+            var message = _services.MessageFactory.CreateMessage(messageContext, false /* do NOT queue */, subscription, campaign);
+            return message;
+        }
 
-		private MessageTemplate GetCampaignTemplate()
-		{
-			var messageTemplate = _messageTemplateService.GetMessageTemplateByName(MessageTemplateNames.SystemCampaign, _services.StoreContext.CurrentStore.Id);
-			if (messageTemplate == null)
-				throw new SmartException(T("Common.Error.NoMessageTemplate", MessageTemplateNames.SystemCampaign));
+        private MessageTemplate GetCampaignTemplate()
+        {
+            var messageTemplate = _messageTemplateService.GetMessageTemplateByName(MessageTemplateNames.SystemCampaign, _services.StoreContext.CurrentStore.Id);
+            if (messageTemplate == null)
+                throw new SmartException(T("Common.Error.NoMessageTemplate", MessageTemplateNames.SystemCampaign));
 
-			return messageTemplate;
-		}
-	}
+            return messageTemplate;
+        }
+    }
 }

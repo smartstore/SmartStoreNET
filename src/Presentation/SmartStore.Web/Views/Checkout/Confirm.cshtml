@@ -119,10 +119,10 @@
             @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
-		@if (Model.MinOrderTotalWarning.HasValue())
+		@if (Model.OrderAmountWarning.HasValue())
 		{
 			<div class="alert alert-danger">
-				@Model.MinOrderTotalWarning
+				@Model.OrderAmountWarning
 			</div>
 		}
 
@@ -134,7 +134,7 @@
 				</a>
 			</div>
 			
-			@if (!Model.MinOrderTotalWarning.HasValue())
+			@if (!Model.OrderAmountWarning.HasValue())
             {
 				<div class="col-sm-6 col-lg-4 ml-lg-auto">
 					<button class="btn btn-danger btn-lg btn-block btn-buy" onclick="return false;">
@@ -149,7 +149,7 @@
     </div>
 </div>
 
-@if (!Model.MinOrderTotalWarning.HasValue())
+@if (!Model.OrderAmountWarning.HasValue())
 {
 	<script>
         $(function () {

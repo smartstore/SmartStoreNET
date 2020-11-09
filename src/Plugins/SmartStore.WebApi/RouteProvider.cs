@@ -5,23 +5,17 @@ using SmartStore.Web.Framework.WebApi;
 
 namespace SmartStore.WebApi
 {
-	public partial class RouteProvider : IRouteProvider
-	{
-		public void RegisterRoutes(RouteCollection routes)
-		{
+    public partial class RouteProvider : IRouteProvider
+    {
+        public void RegisterRoutes(RouteCollection routes)
+        {
             routes.MapRoute("SmartStore.WebApi.Action",
-				"Plugins/SmartStore.WebApi/{action}", 
-				new { controller = "WebApi" }, 
-				new[] { "SmartStore.WebApi.Controllers" }
-			)
-			.DataTokens["area"] = WebApiGlobal.PluginSystemName;
-		}
-		public int Priority
-		{
-			get
-			{
-				return 0;
-			}
-		}
-	}
+                "Plugins/SmartStore.WebApi/{action}",
+                new { controller = "WebApi" },
+                new[] { "SmartStore.WebApi.Controllers" }
+            )
+            .DataTokens["area"] = WebApiGlobal.PluginSystemName;
+        }
+        public int Priority => 0;
+    }
 }

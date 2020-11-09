@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 
 namespace SmartStore.Data.Utilities
 {
@@ -17,8 +16,8 @@ namespace SmartStore.Data.Utilities
         private long _dataIndex = 0;
 
         public SqlBlobStream(
-            IDbConnectionFactory connectionFactory, 
-            string connectionString, 
+            IDbConnectionFactory connectionFactory,
+            string connectionString,
             string tableName,
             string blobColumnName,
             string pkColumnName,
@@ -26,8 +25,8 @@ namespace SmartStore.Data.Utilities
         {
             Guard.NotNull(connectionFactory, nameof(connectionFactory));
             Guard.NotEmpty(connectionString, nameof(connectionString));
-            Guard.NotEmpty(connectionString, nameof(tableName));
-            Guard.NotEmpty(connectionString, nameof(blobColumnName));
+            Guard.NotEmpty(tableName, nameof(tableName));
+            Guard.NotEmpty(blobColumnName, nameof(blobColumnName));
             Guard.NotEmpty(pkColumnName, nameof(pkColumnName));
             Guard.NotNull(pkColumnValue, nameof(pkColumnValue));
 
@@ -99,7 +98,7 @@ namespace SmartStore.Data.Utilities
                 CloseReader();
                 return Seek(offset, origin);
             }
-            
+
             if (offset > _dataIndex)
             {
                 EnsureOpen();
@@ -116,14 +115,14 @@ namespace SmartStore.Data.Utilities
         public override bool CanSeek => true;
         public override bool CanRead => true;
         public override bool CanWrite => false;
-        public override long Position 
-        { 
-            get => _dataIndex; 
-            set => Seek(value, SeekOrigin.Begin); 
-        }
-        public override long Length 
+        public override long Position
         {
-            get 
+            get => _dataIndex;
+            set => Seek(value, SeekOrigin.Begin);
+        }
+        public override long Length
+        {
+            get
             {
                 EnsureOpen();
 
@@ -139,22 +138,33 @@ namespace SmartStore.Data.Utilities
         public override int Read(byte[] buffer, int offset, int count)
         {
             EnsureOpen();
-            
+
             var read = _reader.GetBytes(0, _dataIndex + offset, buffer, 0, count);
             _dataIndex += read;
 
             return (int)read;
         }
 
-        public override void Flush() => throw new NotSupportedException();
-        public override void SetLength(long value) => throw new NotSupportedException();
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override void Flush()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                CloseReader();    
+                CloseReader();
             }
         }
 

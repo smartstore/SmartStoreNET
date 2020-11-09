@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -15,8 +10,8 @@ using SmartStore.Data;
 namespace SmartStore.Services.Media
 {
     [Important]
-    public sealed class MediaTrackerHook : DbSaveHook<BaseEntity>
-    {   
+    public sealed class MediaTrackerHook : DbSaveHook<ObjectContextBase, BaseEntity>
+    {
         // Track items for the current (SaveChanges) unit.
         private readonly HashSet<MediaTrack> _actionsUnit = new HashSet<MediaTrack>();
 
@@ -39,29 +34,29 @@ namespace SmartStore.Services.Media
 
         protected override void OnUpdating(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, true);
+            HookObject(entry, true);
         }
 
         protected override void OnDeleted(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
         protected override void OnInserted(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
         protected override void OnUpdated(BaseEntity entity, IHookedEntity entry)
         {
-            HookObject(entity, entry, false);
+            HookObject(entry, false);
         }
 
-        private void HookObject(BaseEntity entity, IHookedEntity entry, bool beforeSave)
+        private void HookObject(IHookedEntity entry, bool beforeSave)
         {
             if (Silent)
                 return;
-            
+
             var type = entry.EntityType;
 
             if (!_mediaTracker.Value.TryGetTrackedPropertiesFor(type, out var properties))
@@ -115,13 +110,13 @@ namespace SmartStore.Services.Media
             if ((int)value > 0)
             {
                 (actions ?? _actionsUnit).Add(new MediaTrack
-                { 
+                {
                     Album = album,
-                    EntityId = entity.Id, 
-                    EntityName = entity.GetEntityName(), 
+                    EntityId = entity.Id,
+                    EntityName = entity.GetEntityName(),
                     Property = prop,
-                    MediaFileId = (int)value, 
-                    Operation = operation 
+                    MediaFileId = (int)value,
+                    Operation = operation
                 });
             }
         }

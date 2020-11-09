@@ -92,6 +92,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Campaign.Create)]
         public ActionResult Create(CampaignModel model, bool continueEditing)
         {
@@ -126,9 +127,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Campaign.Update)]
         public ActionResult Edit(CampaignModel model, bool continueEditing)
         {
@@ -157,6 +158,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("send-campaign")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Message.Send)]
         public ActionResult SendCampaign(CampaignModel model)
         {
@@ -165,8 +167,6 @@ namespace SmartStore.Admin.Controllers
             {
                 return RedirectToAction("List");
             }
-
-            PrepareCampaignModel(model, campaign);
 
             try
             {
@@ -183,6 +183,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Campaign.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
-using SmartStore.Utilities;
-using SmartStore.Core.Infrastructure;
 using System.Web.Mvc;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public abstract class ComponentBuilder<TComponent, TBuilder, TModel> : IHtmlString, IHideObjectMembers 
+    public abstract class ComponentBuilder<TComponent, TBuilder, TModel> : IHtmlString, IHideObjectMembers
         where TComponent : Component
         where TBuilder : ComponentBuilder<TComponent, TBuilder, TModel>
     {
@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.UI
         {
             Guard.NotNull(component, nameof(component));
             Guard.NotNull(htmlHelper, nameof(htmlHelper));
-            
+
             this.Component = component;
             this.HtmlHelper = htmlHelper;
         }
@@ -68,39 +68,39 @@ namespace SmartStore.Web.Framework.UI
             renderer.ViewData = this.HtmlHelper.ViewData;
         }
 
-		public TBuilder WithRenderer(ComponentRenderer<TComponent> instance)
-		{
-			Guard.NotNull(instance, nameof(instance));
+        public TBuilder WithRenderer(ComponentRenderer<TComponent> instance)
+        {
+            Guard.NotNull(instance, nameof(instance));
 
-			return this.WithRenderer<ComponentRenderer<TComponent>>(instance);
-		}
+            return this.WithRenderer<ComponentRenderer<TComponent>>(instance);
+        }
 
-		public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
+        public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance)
             where T : ComponentRenderer<TComponent>
         {
             Guard.NotNull(instance, nameof(instance));
 
-			this.Renderer = instance;
-			return this as TBuilder;
-		}
+            this.Renderer = instance;
+            return this as TBuilder;
+        }
 
-		public TBuilder WithRenderer<T>()
-			where T : ComponentRenderer<TComponent>
-		{
-			return this.WithRenderer(typeof(T));
-		}
+        public TBuilder WithRenderer<T>()
+            where T : ComponentRenderer<TComponent>
+        {
+            return this.WithRenderer(typeof(T));
+        }
 
-		public TBuilder WithRenderer(Type rendererType)
+        public TBuilder WithRenderer(Type rendererType)
         {
             Guard.NotNull(rendererType, nameof(rendererType));
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
 
-			if (Activator.CreateInstance(rendererType) is ComponentRenderer<TComponent> renderer)
-			{
-				this.Renderer = renderer;
-			}
+            if (Activator.CreateInstance(rendererType) is ComponentRenderer<TComponent> renderer)
+            {
+                this.Renderer = renderer;
+            }
 
-			return this as TBuilder;
+            return this as TBuilder;
         }
 
         public virtual TBuilder Name(string name)
@@ -109,7 +109,7 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-		public virtual TBuilder HtmlAttributes(object attributes)
+        public virtual TBuilder HtmlAttributes(object attributes)
         {
             return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
@@ -120,24 +120,24 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-		public virtual TBuilder HtmlAttribute(string name, object value)
-		{
-			Guard.NotEmpty(name, nameof(name));
-			Guard.NotNull(value, nameof(value));
+        public virtual TBuilder HtmlAttribute(string name, object value)
+        {
+            Guard.NotEmpty(name, nameof(name));
+            Guard.NotNull(value, nameof(value));
 
-			this.Component.HtmlAttributes[name] = value;
-			return this as TBuilder;
-		}
+            this.Component.HtmlAttributes[name] = value;
+            return this as TBuilder;
+        }
 
-		public virtual TBuilder AddCssClass(string cssClass)
-		{
-			Guard.NotEmpty(cssClass, nameof(cssClass));
+        public virtual TBuilder AddCssClass(string cssClass)
+        {
+            Guard.NotEmpty(cssClass, nameof(cssClass));
 
-			this.Component.HtmlAttributes.AppendCssClass(cssClass);
-			return this as TBuilder;
-		}
+            this.Component.HtmlAttributes.AppendCssClass(cssClass);
+            return this as TBuilder;
+        }
 
-		public string ToHtmlString()
+        public string ToHtmlString()
         {
             return this.Renderer.ToHtmlString();
         }

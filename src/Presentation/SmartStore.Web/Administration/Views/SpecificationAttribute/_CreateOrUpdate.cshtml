@@ -2,6 +2,7 @@
 @using SmartStore.Core.Search.Facets;
 @model SpecificationAttributeModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("specificationattribute-edit").Style(TabsStyle.Material).Items(x =>
@@ -132,15 +133,13 @@
         </tr>
     </table>
 
-	<script type="text/javascript">
-		$(document).ready(function () {
-
+	<script>
+        $(function () {
 			// Facet template hint.
 			$('#@(Html.FieldIdFor(x => x.FacetTemplateHint))').change(function () {
 				var sorting = $(this).val() !== '@((int)FacetTemplateHint.NumericRange)';
 				$('#SpecificationAttributeTable').find('.facet-sorting').toggle(sorting);
 			}).trigger('change');
-
 		});
 	</script>
 }
@@ -202,8 +201,8 @@
 	<input type="submit" id="btnRefresh" name="btnRefresh" class="d-none" />
 }
 
-<script type="text/javascript">
-	$(document).ready(function () {
+<script>
+    $(function () {
 		$('#btnRefresh').click(function () {
 			var optionsGrid = $("#specificationattributeoptions-grid");
 			optionsGrid.data('tGrid').ajaxRequest();

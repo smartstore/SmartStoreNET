@@ -35,7 +35,7 @@ namespace SmartStore.Services.Catalog
             var templates = query.ToList();
             return templates;
         }
- 
+
         public virtual ManufacturerTemplate GetManufacturerTemplateById(int manufacturerTemplateId)
         {
             if (manufacturerTemplateId == 0)

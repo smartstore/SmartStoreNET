@@ -15,7 +15,7 @@
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
         ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
-        : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.File, LinkType.Url };
+        : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.BlogPost, LinkType.NewsItem, LinkType.File, LinkType.Url };
 
     Html.AddScriptParts(true, "~/Scripts/smartstore.linkbuilder.js");
 }
@@ -73,6 +73,20 @@
                 {
                     <select class="form-control transferable resettable" 
                             data-select-url="@Url.Action("AllTopics", "Topic", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.BlogPost)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllBlogPosts", "Blog", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.NewsItem)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllNews", "News", new { area = "admin" })"
                             data-select-selected-id="@value"
                             data-select-init-text="@label"></select>
                 }

@@ -11,7 +11,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.HasKey(sci => sci.Id);
 
             this.Property(sci => sci.CustomerEnteredPrice).HasPrecision(18, 4);
-			this.Property(sci => sci.AttributesXml).IsMaxLength();
+            this.Property(sci => sci.AttributesXml).IsMaxLength();
 
             this.Ignore(sci => sci.ShoppingCartType);
             this.Ignore(sci => sci.IsFreeShipping);
@@ -26,10 +26,10 @@ namespace SmartStore.Data.Mapping.Orders
                 .WithMany()
                 .HasForeignKey(sci => sci.ProductId);
 
-			this.HasOptional(sci => sci.BundleItem)
-				.WithMany()
-				.HasForeignKey(sci => sci.BundleItemId)
-				.WillCascadeOnDelete(false);
+            this.HasOptional(sci => sci.BundleItem)
+                .WithMany()
+                .HasForeignKey(sci => sci.BundleItemId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

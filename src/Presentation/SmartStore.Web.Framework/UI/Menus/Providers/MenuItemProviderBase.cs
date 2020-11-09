@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Collections;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
     public abstract class MenuItemProviderBase : IMenuItemProvider
-	{
+    {
         public IIconExplorer IconExplorer { get; set; }
 
         public virtual TreeNode<MenuItem> Append(MenuItemProviderRequest request)
-		{
+        {
             Guard.NotNull(request, nameof(request));
             Guard.NotNull(request.Parent, nameof(request.Parent));
-			Guard.NotNull(request.Entity, nameof(request.Entity));
+            Guard.NotNull(request.Entity, nameof(request.Entity));
 
             // Add group header item.
             if (request.Entity.BeginGroup && !request.IsEditMode)
@@ -25,12 +24,12 @@ namespace SmartStore.Web.Framework.UI
                 });
             }
 
-			var node = AppendToParent(request, ConvertToMenuItem(request));
+            var node = AppendToParent(request, ConvertToMenuItem(request));
 
-			ApplyLink(request, node);
+            ApplyLink(request, node);
 
             return node;
-		}
+        }
 
         protected virtual TreeNode<MenuItem> AppendToParent(MenuItemProviderRequest request, MenuItem item)
         {
@@ -42,7 +41,7 @@ namespace SmartStore.Web.Framework.UI
             var root = request.Parent.Root;
             var providers = root.GetMetadata<List<string>>("Providers");
             var provider = request.Entity.ProviderName;
-            
+
             node.SetMetadata("Provider", provider);
 
             if (providers == null)
@@ -68,17 +67,17 @@ namespace SmartStore.Web.Framework.UI
         /// <param name="entity">The entity to convert.</param>
         /// <returns>Menu item.</returns>
         protected virtual MenuItem ConvertToMenuItem(MenuItemProviderRequest request)
-		{
+        {
             var entity = request.Entity;
             var title = entity.GetLocalized(x => x.Title);
             string shortDescription = entity.GetLocalized(x => x.ShortDescription);
 
-			var menuItem = new MenuItem
-			{
+            var menuItem = new MenuItem
+            {
                 EntityId = entity.Id,
                 EntityName = "MenuItem", // nameof(MenuItemRecord),
                 MenuItemId = entity.Id,
-				Text = title,
+                Text = title,
                 Summary = shortDescription,
                 Visible = entity.Published,
                 Rtl = title?.CurrentLanguage?.Rtl ?? false,
@@ -130,7 +129,7 @@ namespace SmartStore.Web.Framework.UI
             // For future use: entity.ShowExpanded
 
             return menuItem;
-		}
+        }
 
         /// <summary>
         /// Generates and applies the link to the converted <see cref="MenuItem"/> object.
@@ -138,5 +137,5 @@ namespace SmartStore.Web.Framework.UI
         /// <param name="request">Contains information about the request to the provider.</param>
         /// <param name="node">The newly created menu item node to apply the generated link to.</param>
         protected abstract void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node);
-	}
+    }
 }

@@ -26,13 +26,14 @@
 
 .file-thumb {
     position: relative;
+    font-size: 1rem; // The size of video play icon
 
     > img {
         position: relative;
         display: inline-block;
     }
 
-    &[data-type=video]:before {
+    &.show[data-type=video]:before {
         position: absolute;
         display: block;
         content: '';
@@ -44,8 +45,8 @@
         z-index: 1;
     }
 
-    &[data-type=video]:after {
-        @include fontawesome("\f04b", 1rem, solid); // fas fa-play
+    &.show[data-type=video]:after {
+        @include fontawesome("\f04b", inherit, solid); // fas fa-play
         position: absolute;
         left: 50%;
         top: 50%;

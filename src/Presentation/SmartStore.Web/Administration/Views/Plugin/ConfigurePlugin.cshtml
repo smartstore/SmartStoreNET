@@ -4,6 +4,8 @@
 	ViewBag.Title = T("Admin.Common.Configure").Text + " - " + Model.FriendlyName;
 }
 
+@Html.AntiForgeryToken()
+
 <script>
 	$(function () {
 		SmartStore.Admin.movePluginActionButtons();
@@ -17,7 +19,7 @@
 		<a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
 	</div>
 	<div class="options">	
-		<a class="btn btn-secondary" href='@Url.Action("UpdateStringResources", new { systemName = Model.SystemName, returnUrl = Request.RawUrl })'>
+		<a class="update-string-resources btn btn-secondary" href='@Url.Action("UpdateStringResources")' data-system-name="@Model.SystemName">
 			<i class="fa fa-sync"></i>
 			<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
 		</a>
@@ -46,4 +48,28 @@
 	}
 </div>
 
+<script>
+	$(function () {
+		var token = $('input[name="__RequestVerificationToken"]').val();
 
+		$(".update-string-resources").on("click", function (e) {
+            e.preventDefault();
+
+            var $el = $(this);
+
+            $({}).doAjax({
+			    type: 'POST',
+			    url: $el.attr("href"),
+                data: {
+                    "__RequestVerificationToken": token,
+                    "systemName": $el.attr("data-system-name")
+                },
+				callbackSuccess: function (data) {
+					displayNotification(data.Message, data.Success ? "success" : "error");
+				}
+            });
+
+			return false;
+        })
+    });
+</script>

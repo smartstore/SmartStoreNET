@@ -7,7 +7,7 @@ namespace SmartStore.Data.Mapping.Shipping
     {
         public ShipmentItemMap()
         {
-			this.ToTable("ShipmentItem");
+            this.ToTable("ShipmentItem");
             this.HasKey(si => si.Id);
 
             this.HasRequired(si => si.Shipment)

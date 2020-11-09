@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
@@ -18,7 +15,7 @@ namespace SmartStore.Web.Controllers
         private readonly CatalogHelper _catalogHelper;
 
         public MenuController(
-            IMenuService menuService, 
+            IMenuService menuService,
             IBreadcrumb breadcrumb,
             CatalogSettings catalogSettings,
             CatalogHelper catalogHelper)

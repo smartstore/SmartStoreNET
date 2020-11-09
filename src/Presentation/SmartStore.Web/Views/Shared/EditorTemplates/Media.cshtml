@@ -99,8 +99,8 @@
 @{
     var random = CommonHelper.GenerateRandomInteger();
     var mediaService = this.CommonServices.MediaService;
-    var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
     var currentFile = Model != null ? mediaService.GetFileById((int)Model) : null;
+    var defaultValue = Model != null ? 0 : (int?)null;
 }
 
 <div class="fu-container@(MultiFile ? " xl" : "")">
@@ -110,9 +110,9 @@
         {
             // Single file uploads have preview images.
             <div class="fu-thumb fu-filename rounded" data-current-filename="@(currentFile?.Name)">
-                @Html.MediaThumbnail(currentFile, 250)
+                @Html.MediaThumbnail(currentFile, MediaSettings.ThumbnailSizeMd)
             </div>
-            @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : 0 })
+            @Html.HiddenFor(x => x, new { @class = "hidden", Value = currentFile != null ? Model : defaultValue })
         }
 
         <div class="fu-controls">

@@ -18,7 +18,7 @@
     }
 
     var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-    var maxFilesSize = mediaSettings.MaxUploadFileSize;
+    var maxFilesSize = Model.MaxFileSize ?? mediaSettings.MaxUploadFileSize;
 }
 
 <div @Html.Attr("class", "dropzone-container", Model.Multifile || !Model.HasTemplatePreview)>
@@ -65,7 +65,7 @@
 {
     // TODO: find a better way!!!
     var mediaService = EngineContext.Current.Resolve<IMediaService>();
-    var files = Model.UploadedFiles;
+    var files = Model.UploadedFiles ?? new List<IMediaFile>();
 
     <!-- Placeholder to paste preview container into -->
     <div id="@Model.PreviewContainerId" class="d-flex flex-wrap preview-container mt-3">
@@ -75,40 +75,41 @@
             var isMainPic = file.MediaFileId == Model.MainFileId;
             var entityMediaId = 0;
 
-            if (Model.EntityType.Equals("Product"))
+            if (Model.EntityType == "Product")
             {
                 var entityMediaFile = file as ProductMediaFile;
                 entityMediaId = entityMediaFile.Id;
             }
-
+        
             <div class="fu-file-preview dz-image-preview dz-success dz-complete shadow-sm"
                  data-display-order="@file.DisplayOrder"
                  data-media-id="@file.MediaFileId"
                  data-media-name="@file.MediaFile.Name"
                  @Html.Attr("data-entity-media-id", entityMediaId.ToString(), entityMediaId != 0)>
 
-                @FilePreviewTemplate(previewUrl, file.MediaFile.Name)
+                @FilePreviewTemplate(previewUrl, file.MediaFile.Name, file.MediaFile.MediaType)
             </div>
         }
     </div>
 
     <div class="file-preview-template d-none">
         <div class="fu-file-preview dz-image-preview shadow-sm">
-            @FilePreviewTemplate("", "")
+            @FilePreviewTemplate("", "", "")
         </div>
     </div>
 }
 
-@helper FilePreviewTemplate(string previewUrl, string fileName)
+@helper FilePreviewTemplate(string previewUrl, string fileName, string dataType)
 {
     <span class="main-pic-badge badge badge-success">@T("FileUploader.MultiFiles.MainMediaFile")</span>
 
-    <figure class="file-figure d-flex m-0 align-items-center justify-content-center">
+    <figure class="file-figure d-flex m-0 align-items-center justify-content-center file-thumb show loaded" data-type="@dataType">
         <i class="file-icon fa-fw show d-none"></i>
-        <img class="file-img" data-dz-thumbnail @Html.Attr("src", previewUrl, previewUrl.HasValue()) />
+        @*Append number of ticks because otherwise when an image is updated via API or import, the old image will still be displayed.*@
+        <img class="file-img" data-dz-thumbnail @Html.Attr("src", previewUrl + "&num=" + DateTime.UtcNow.Ticks, previewUrl.HasValue()) />
     </figure>
 
-    <!-- File (product) gallery preview overlay -->
+    <!-- Media gallery preview overlay -->
     <div class="fu-file-info-container d-flex flex-column w-100 h-100 justify-content-between">
         <div class="drag-gripper align-middle">
             <i class="drag-icon fas fa-grip-vertical fs-h5 text-white p-0 text-center"></i>
@@ -149,6 +150,7 @@
 			onMediaSelected: @Html.Raw(Model.OnMediaSelectedHandlerName.HasValue() ? Model.OnMediaSelectedHandlerName : "null"),
             maxFiles: @(Model.Multifile ? 500 : 1),
             maxFilesSize: @maxFilesSize,
+            timeout: 300000,
             clickableElement: @Html.Raw(Model.ClickableElement.HasValue() ? Model.ClickableElement : "null"),
             previewContainerId: "@(Model.Multifile ? Model.PreviewContainerId : "")",
             showRemoveButton: @(Model.ShowRemoveButton ? "true" : "false" ),

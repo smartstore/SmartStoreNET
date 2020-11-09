@@ -1,55 +1,83 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
-using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class ProductVariantAttributesController : WebApiEntityController<ProductVariantAttribute, IProductAttributeService>
-	{
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-		protected override void Insert(ProductVariantAttribute entity)
-		{
-			Service.InsertProductVariantAttribute(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        protected override void Update(ProductVariantAttribute entity)
-		{
-			Service.UpdateProductVariantAttribute(entity);
-		}
-
-        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
-        protected override void Delete(ProductVariantAttribute entity)
-		{
-			Service.DeleteProductVariantAttribute(entity);
-		}
-
-		[WebApiQueryable]
+    {
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductVariantAttribute> GetProductVariantAttribute(int key)
-		{
-			return GetSingleResult(key);
-		}
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-		// Navigation properties.
-
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public SingleResult<ProductAttribute> GetProductAttribute(int key)
-		{
-			return GetRelatedEntity(key, x => x.ProductAttribute);
-		}
+        public IHttpActionResult Get(int key)
+        {
+            return Ok(GetByKey(key));
+        }
 
-		[WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
-        public IQueryable<ProductVariantAttributeValue> GetProductVariantAttributeValues(int key)
-		{
-			return GetRelatedCollection(key, x => x.ProductVariantAttributeValues);
-		}
-	}
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+        public IHttpActionResult Post(ProductVariantAttribute entity)
+        {
+            var result = Insert(entity, () => Service.InsertProductVariantAttribute(entity));
+            return result;
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+        public async Task<IHttpActionResult> Put(int key, ProductVariantAttribute entity)
+        {
+            var result = await UpdateAsync(entity, key, () => Service.UpdateProductVariantAttribute(entity));
+            return result;
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+        public async Task<IHttpActionResult> Patch(int key, Delta<ProductVariantAttribute> model)
+        {
+            var result = await PartiallyUpdateAsync(key, model, entity => Service.UpdateProductVariantAttribute(entity));
+            return result;
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.EditVariant)]
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity => Service.DeleteProductVariantAttribute(entity));
+            return result;
+        }
+
+        #region Navigation properties
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public IHttpActionResult GetProductAttribute(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.ProductAttribute));
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Catalog.Product.Read)]
+        public IHttpActionResult GetProductVariantAttributeValues(int key)
+        {
+            return Ok(GetRelatedCollection(key, x => x.ProductVariantAttributeValues));
+        }
+
+        #endregion
+    }
 }

@@ -17,36 +17,36 @@ namespace SmartStore.Services.Tasks
     {
         private readonly IScheduleTaskService _scheduledTaskService;
         private readonly Func<Type, ITask> _taskResolver;
-		private readonly IComponentContext _componentContext;
-		private readonly IAsyncState _asyncState;
+        private readonly IComponentContext _componentContext;
+        private readonly IAsyncState _asyncState;
         private readonly IApplicationEnvironment _env;
 
         public const string CurrentCustomerIdParamName = "CurrentCustomerId";
-		public const string CurrentStoreIdParamName = "CurrentStoreId";
+        public const string CurrentStoreIdParamName = "CurrentStoreId";
 
-		public TaskExecutor(
-			IScheduleTaskService scheduledTaskService, 
-			IComponentContext componentContext,
-			IAsyncState asyncState,
-			Func<Type, ITask> taskResolver,
+        public TaskExecutor(
+            IScheduleTaskService scheduledTaskService,
+            IComponentContext componentContext,
+            IAsyncState asyncState,
+            Func<Type, ITask> taskResolver,
             IApplicationEnvironment env)
         {
             _scheduledTaskService = scheduledTaskService;
-			_componentContext = componentContext;
-			_asyncState = asyncState;
+            _componentContext = componentContext;
+            _asyncState = asyncState;
             _taskResolver = taskResolver;
             _env = env;
 
             Logger = NullLogger.Instance;
-			T = NullLocalizer.Instance;
-		}
+            T = NullLocalizer.Instance;
+        }
 
         public ILogger Logger { get; set; }
-		public Localizer T { get; set; }
+        public Localizer T { get; set; }
 
-		public async Task ExecuteAsync(
-			ScheduleTask entity,
-			IDictionary<string, string> taskParameters = null,
+        public async Task ExecuteAsync(
+            ScheduleTask entity,
+            IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
         {
             if (AsyncRunner.AppShutdownCancellationToken.IsCancellationRequested)
@@ -66,11 +66,11 @@ namespace SmartStore.Services.Tasks
             }
 
             bool faulted = false;
-			bool canceled = false;
+            bool canceled = false;
             string lastError = null;
             ITask task = null;
-			string stateName = null;
-			Type taskType = null;
+            string stateName = null;
+            Type taskType = null;
             Exception exception = null;
 
             var historyEntry = new ScheduleTaskHistory
@@ -83,61 +83,61 @@ namespace SmartStore.Services.Tasks
 
             try
             {
-				taskType = Type.GetType(entity.Type);
-				if (taskType == null)
-				{
-					Logger.DebugFormat("Invalid scheduled task type: {0}", entity.Type.NaIfEmpty());
-				}
+                taskType = Type.GetType(entity.Type);
+                if (taskType == null)
+                {
+                    Logger.DebugFormat("Invalid scheduled task type: {0}", entity.Type.NaIfEmpty());
+                }
 
-				if (taskType == null)
-					return;
+                if (taskType == null)
+                    return;
 
-				if (!PluginManager.IsActivePluginAssembly(taskType.Assembly))
-					return;
+                if (!PluginManager.IsActivePluginAssembly(taskType.Assembly))
+                    return;
 
                 entity.ScheduleTaskHistory.Add(historyEntry);
                 _scheduledTaskService.UpdateTask(entity);
             }
             catch
-			{
-				return;
-			}
+            {
+                return;
+            }
 
             try
             {
                 // Task history entry has been successfully added, now we execute the task.
-				// Create task instance.
-				task = _taskResolver(taskType);
-				stateName = entity.Id.ToString();
+                // Create task instance.
+                task = _taskResolver(taskType);
+                stateName = entity.Id.ToString();
 
-				// Create & set a composite CancellationTokenSource which also contains the global app shoutdown token.
-				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
-				_asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
+                // Create & set a composite CancellationTokenSource which also contains the global app shoutdown token.
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
+                _asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
 
-				var ctx = new TaskExecutionContext(_componentContext, historyEntry)
-				{
+                var ctx = new TaskExecutionContext(_componentContext, historyEntry)
+                {
                     ScheduleTaskHistory = historyEntry.Clone(),
-					CancellationToken = cts.Token,
-					Parameters = taskParameters ?? new Dictionary<string, string>()
-				};
+                    CancellationToken = cts.Token,
+                    Parameters = taskParameters ?? new Dictionary<string, string>()
+                };
 
-				Logger.DebugFormat("Executing scheduled task: {0}", entity.Type);
+                Logger.DebugFormat("Executing scheduled task: {0}", entity.Type);
 
-				if (task is IAsyncTask asyncTask)
-				{
-					await asyncTask.ExecuteAsync(ctx);
-				}
-				else
-				{
-					task.Execute(ctx);
-				}
+                if (task is IAsyncTask asyncTask)
+                {
+                    await asyncTask.ExecuteAsync(ctx);
+                }
+                else
+                {
+                    task.Execute(ctx);
+                }
             }
             catch (Exception ex)
             {
                 exception = ex;
                 faulted = true;
-				canceled = ex is OperationCanceledException;
-				lastError = ex.ToAllMessages(true);
+                canceled = ex is OperationCanceledException;
+                lastError = ex.ToAllMessages(true);
 
                 if (canceled)
                 {
@@ -145,7 +145,7 @@ namespace SmartStore.Services.Tasks
                 }
                 else
                 {
-					Logger.Error(ex, string.Concat(T("Admin.System.ScheduleTasks.RunningError", entity.Name), ": ", ex.Message));
+                    Logger.Error(ex, string.Concat(T("Admin.System.ScheduleTasks.RunningError", entity.Name), ": ", ex.Message));
                 }
             }
             finally
@@ -158,19 +158,19 @@ namespace SmartStore.Services.Tasks
                 historyEntry.ProgressMessage = null;
                 historyEntry.Error = lastError;
                 historyEntry.FinishedOnUtc = now;
-				
-				if (faulted)
-				{
-					if ((!canceled && entity.StopOnError) || task == null)
-					{
-						entity.Enabled = false;
+
+                if (faulted)
+                {
+                    if ((!canceled && entity.StopOnError) || task == null)
+                    {
+                        entity.Enabled = false;
                         updateTask = true;
-					}
-				}
-				else
-				{
+                    }
+                }
+                else
+                {
                     historyEntry.SucceededOnUtc = now;
-				}
+                }
 
                 try
                 {
@@ -190,8 +190,8 @@ namespace SmartStore.Services.Tasks
                 }
 
                 if (entity.Enabled)
-				{
-					entity.NextRunUtc = _scheduledTaskService.GetNextSchedule(entity);
+                {
+                    entity.NextRunUtc = _scheduledTaskService.GetNextSchedule(entity);
                     updateTask = true;
                 }
 

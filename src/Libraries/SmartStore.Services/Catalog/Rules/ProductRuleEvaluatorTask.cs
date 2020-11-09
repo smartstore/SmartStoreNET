@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Data.Utilities;
 using SmartStore.Rules;
 using SmartStore.Services.Catalog.Rules;
 using SmartStore.Services.Tasks;
@@ -38,31 +39,57 @@ namespace SmartStore.Services.Catalog
             var count = 0;
             var numDeleted = 0;
             var numAdded = 0;
+            var numCategories = 0;
             var pageSize = 500;
-            var categoryQuery = _categoryRepository.TableUntracked.Expand(x => x.RuleSets);
+            var pageIndex = -1;
 
-            if (ctx.Parameters.ContainsKey("CategoryIds"))
+            var categoryIds = ctx.Parameters.ContainsKey("CategoryIds")
+                ? ctx.Parameters["CategoryIds"].ToIntArray()
+                : null;
+
+            // Hooks are enabled because search index needs to be updated.
+            using (var scope = new DbContextScope(ctx: _productCategoryRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: true, autoCommit: false))
             {
-                var categoryIds = ctx.Parameters["CategoryIds"].ToIntArray();
-                categoryQuery = categoryQuery.Where(x => categoryIds.Contains(x.Id));
+                // Delete existing system mappings.
+                var deleteQuery = _productCategoryRepository.Table.Where(x => x.IsSystemMapping);
+                if (categoryIds != null)
+                {
+                    deleteQuery = deleteQuery.Where(x => categoryIds.Contains(x.CategoryId));
+                }
 
-                numDeleted = _productCategoryRepository.Context.ExecuteSqlCommand(
-                    "Delete From [dbo].[Product_Category_Mapping] Where [CategoryId] In ({0}) And [IsSystemMapping] = 1",
-                    false,
-                    null,
-                    string.Join(",", categoryIds));
-            }
-            else
-            {
-                numDeleted = _productCategoryRepository.Context.ExecuteSqlCommand("Delete From [dbo].[Product_Category_Mapping] Where [IsSystemMapping] = 1");
-            }
+                var pager = new FastPager<ProductCategory>(deleteQuery, pageSize);
 
-            var categories = await categoryQuery
-                .Where(x => x.Published && !x.Deleted && x.RuleSets.Any(y => y.IsActive))
-                .ToListAsync();
+                while (pager.ReadNextPage(out var mappings))
+                {
+                    if (ctx.CancellationToken.IsCancellationRequested)
+                        return;
 
-            using (var scope = new DbContextScope(ctx: _productCategoryRepository.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
-            {
+                    if (mappings.Any())
+                    {
+                        _productCategoryRepository.DeleteRange(mappings);
+                        numDeleted += await scope.CommitAsync();
+                    }
+                }
+
+                try
+                {
+                    _productCategoryRepository.Context.DetachEntities<ProductCategory>();
+                }
+                catch { }
+
+                // Insert new product category mappings.
+                var categoryQuery = _categoryRepository.TableUntracked.Expand(x => x.RuleSets);
+                if (categoryIds != null)
+                {
+                    categoryQuery = categoryQuery.Where(x => categoryIds.Contains(x.Id));
+                }
+
+                var categories = await categoryQuery
+                    .Where(x => x.Published && !x.Deleted && x.RuleSets.Any(y => y.IsActive))
+                    .ToListAsync();
+
+                numCategories = categories.Count;
+
                 foreach (var category in categories)
                 {
                     var ruleSetProductIds = new HashSet<int>();
@@ -77,7 +104,7 @@ namespace SmartStore.Services.Catalog
 
                         if (_ruleFactory.CreateExpressionGroup(ruleSet, _productRuleProvider) is SearchFilterExpression expression)
                         {
-                            var pageIndex = -1;
+                            pageIndex = -1;
                             while (true)
                             {
                                 // Do not touch searchResult.Hits. We only need the product identifiers.
@@ -124,7 +151,7 @@ namespace SmartStore.Services.Catalog
                 }
             }
 
-            Debug.WriteLineIf(numDeleted > 0 || numAdded > 0, $"Deleted {numDeleted} and added {numAdded} product mappings for {categories.Count} categories.");
+            Debug.WriteLineIf(numDeleted > 0 || numAdded > 0, $"Deleted {numDeleted} and added {numAdded} product mappings for {numCategories} categories.");
         }
     }
 }

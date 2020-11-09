@@ -4,8 +4,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -32,12 +31,13 @@ using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
 using SmartStore.Utilities;
+using SmartStore.Utilities.ObjectPools;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data.Utilities
 {
     public static class DataMigrator
-	{
+    {
         #region Download.ProductId
 
         /// <summary>
@@ -51,23 +51,23 @@ namespace SmartStore.Data.Utilities
             if (ctx == null)
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			const string entityName = "Product";
+            const string entityName = "Product";
 
 #pragma warning disable 612, 618
             // Get all products with a download 
             var productQuery = from p in ctx.Set<Product>().AsNoTracking()
-                        where (p.DownloadId != 0)
-                        orderby p.Id
-                        select new { p.Id, p.DownloadId };
+                               where (p.DownloadId != 0)
+                               orderby p.Id
+                               select new { p.Id, p.DownloadId };
 #pragma warning restore 612, 618
 
             var downloads = context.Set<Download>().Select(x => x).ToDictionary(x => x.Id);
-            
+
             int pageIndex = -1;
             while (true)
             {
                 var products = PagedList.Create(productQuery, ++pageIndex, 1000);
-                
+
                 foreach (var p in products)
                 {
                     try
@@ -102,335 +102,398 @@ namespace SmartStore.Data.Utilities
         /// <param name="product">Product to fix</param>
         /// <returns><c>true</c> when value was fixed</returns>
         public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductMediaFile> entities = null)
-		{
-			Guard.NotNull(product, nameof(product));
+        {
+            Guard.NotNull(product, nameof(product));
 
-			// INFO: this method must be able to handle pre-save state also.
+            // INFO: this method must be able to handle pre-save state also.
 
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			entities = entities ?? product.ProductPictures;
-			if (entities == null)
-				return false;
+            entities = entities ?? product.ProductPictures;
+            if (entities == null)
+                return false;
 
-			var transientEntities = entities.Where(x => x.Id == 0);
+            var transientEntities = entities.Where(x => x.Id == 0);
 
-			var sortedEntities = entities
-				// Remove transient entities
-				.Except(transientEntities) 
-				.OrderBy(x => x.DisplayOrder)
-				.ThenBy(x => x.Id)
-				.Select(x => ctx.Entry(x))
-				// Remove deleted and detached entities
-				.Where(x => x.State != EfState.Deleted && x.State != EfState.Detached) 
-				.Select(x => x.Entity)
-				// Added/transient entities must be appended
-				.Concat(transientEntities.OrderBy(x => x.DisplayOrder));
+            var sortedEntities = entities
+                // Remove transient entities
+                .Except(transientEntities)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.Id)
+                .Select(x => ctx.Entry(x))
+                // Remove deleted and detached entities
+                .Where(x => x.State != EfState.Deleted && x.State != EfState.Detached)
+                .Select(x => x.Entity)
+                // Added/transient entities must be appended
+                .Concat(transientEntities.OrderBy(x => x.DisplayOrder));
 
-			var newMainPictureId = sortedEntities.FirstOrDefault()?.MediaFileId;
+            var newMainPictureId = sortedEntities.FirstOrDefault()?.MediaFileId;
 
-			if (newMainPictureId != product.MainPictureId)
-			{
-				product.MainPictureId = newMainPictureId;
-				return true;
-			}
+            if (newMainPictureId != product.MainPictureId)
+            {
+                product.MainPictureId = newMainPictureId;
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		/// <summary>
-		/// Traverses all products and fixes 'MainPictureId' property values if it is out of sync.
-		/// </summary>
-		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
-		/// <param name="ifModifiedSinceUtc">Minimum modified or created date of products to process. Pass <c>null</c> to fix all products.</param>
-		/// <returns>The total count of fixed and updated product entities</returns>
-		public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
-		{
-			return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);
-		}
+        /// <summary>
+        /// Traverses all products and fixes 'MainPictureId' property values if it is out of sync.
+        /// </summary>
+        /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
+        /// <param name="ifModifiedSinceUtc">Minimum modified or created date of products to process. Pass <c>null</c> to fix all products.</param>
+        /// <returns>The total count of fixed and updated product entities</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
+        {
+            return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);
+        }
 
-		/// <summary>
-		/// Called from migration seeder and only processes product entities without MainPictureId value.
-		/// </summary>
-		/// <returns>The total count of fixed and updated product entities</returns>
-		internal static int FixProductMainPictureIds(IDbContext context, bool initial, DateTime? ifModifiedSinceUtc = null)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        /// <summary>
+        /// Called from migration seeder and only processes product entities without MainPictureId value.
+        /// </summary>
+        /// <returns>The total count of fixed and updated product entities</returns>
+        internal static int FixProductMainPictureIds(IDbContext context, bool initial, DateTime? ifModifiedSinceUtc = null)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			var query = from p in ctx.Set<Product>().AsNoTracking()
-						where (!initial || p.MainPictureId == null) && (ifModifiedSinceUtc == null || p.UpdatedOnUtc >= ifModifiedSinceUtc.Value)
-						orderby p.Id
-						select new { p.Id, p.MainPictureId };	
+            var query = from p in ctx.Set<Product>().AsNoTracking()
+                        where (!initial || p.MainPictureId == null) && (ifModifiedSinceUtc == null || p.UpdatedOnUtc >= ifModifiedSinceUtc.Value)
+                        orderby p.Id
+                        select new { p.Id, p.MainPictureId };
 
-			// Key = ProductId, Value = MainPictureId
-			var toUpdate = new Dictionary<int, int?>();
+            // Key = ProductId, Value = MainPictureId
+            var toUpdate = new Dictionary<int, int?>();
 
-			// 1st pass
-			int pageIndex = -1;
-			while (true)
-			{
-				var products = PagedList.Create(query, ++pageIndex, 1000);
-				var map = GetPoductPictureMap(ctx, products.Select(x => x.Id).ToArray());
+            // 1st pass
+            int pageIndex = -1;
+            while (true)
+            {
+                var products = PagedList.Create(query, ++pageIndex, 1000);
+                var map = GetPoductPictureMap(ctx, products.Select(x => x.Id).ToArray());
 
-				foreach (var p in products)
-				{
-					int? fixedPictureId = null;
-					if (map.ContainsKey(p.Id))
-					{
-						// Product has still a pic.
-						fixedPictureId = map[p.Id];
-					}
+                foreach (var p in products)
+                {
+                    int? fixedPictureId = null;
+                    if (map.ContainsKey(p.Id))
+                    {
+                        // Product has still a pic.
+                        fixedPictureId = map[p.Id];
+                    }
 
-					// Update only if fixed PictureId differs from current
-					if (fixedPictureId != p.MainPictureId)
-					{
-						toUpdate.Add(p.Id, fixedPictureId);
-					}
-				}
+                    // Update only if fixed PictureId differs from current
+                    if (fixedPictureId != p.MainPictureId)
+                    {
+                        toUpdate.Add(p.Id, fixedPictureId);
+                    }
+                }
 
-				if (!products.HasNextPage)
-					break;
-			}
+                if (!products.HasNextPage)
+                    break;
+            }
 
-			// 2nd pass
-			foreach (var chunk in toUpdate.Slice(1000))
-			{
-				using (var tx = ctx.Database.BeginTransaction())
-				{
-					foreach (var kvp in chunk)
-					{
-						context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
-					}
+            // 2nd pass
+            foreach (var chunk in toUpdate.Slice(1000))
+            {
+                using (var tx = ctx.Database.BeginTransaction())
+                {
+                    foreach (var kvp in chunk)
+                    {
+                        context.ExecuteSqlCommand("Update [Product] Set [MainPictureId] = {0} WHERE [Id] = {1}", false, null, kvp.Value, kvp.Key);
+                    }
 
-					context.SaveChanges();
-					tx.Commit();
-				}
-			}
+                    context.SaveChanges();
+                    tx.Commit();
+                }
+            }
 
-			return toUpdate.Count;
-		}
+            return toUpdate.Count;
+        }
 
-		private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
-		{
-			var map = new Dictionary<int, int>();
+        private static IDictionary<int, int> GetPoductPictureMap(SmartObjectContext context, IEnumerable<int> productIds)
+        {
+            var map = new Dictionary<int, int>();
 
-			var query = from pp in context.Set<ProductMediaFile>().AsNoTracking()
-						where productIds.Contains(pp.ProductId)
-						group pp by pp.ProductId into g
-						select new
-						{
-							ProductId = g.Key,
-							PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
-								.Take(1)
-								.Select(x => x.MediaFileId)
-						};
+            var query = from pp in context.Set<ProductMediaFile>().AsNoTracking()
+                        where productIds.Contains(pp.ProductId)
+                        group pp by pp.ProductId into g
+                        select new
+                        {
+                            ProductId = g.Key,
+                            PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
+                                .Take(1)
+                                .Select(x => x.MediaFileId)
+                        };
 
-			map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
+            map = query.ToList().ToDictionary(x => x.ProductId, x => x.PictureIds.First());
 
-			return map;
-		}
+            return map;
+        }
 
-		#endregion
+        #endregion
 
-		#region MoveFsMedia (V3.1)
+        #region MoveFsMedia (V3.1)
 
-		/// <summary>
-		/// Reorganizes media files in subfolders for V3.1
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static int MoveFsMedia(IDbContext context)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        /// <summary>
+        /// Reorganizes media files in subfolders for V3.1
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static int MoveFsMedia(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			int dirMaxLength = 4;
+            int dirMaxLength = 4;
 
-			// Check whether FS storage provider is active...
-			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Storage.Provider");
-			if (setting == null || !setting.Value.IsCaseInsensitiveEqual("MediaStorage.SmartStoreFileSystem"))
-			{
-				// DB provider is active: no need to move anything.
-				return 0;
-			}
+            // Check whether FS storage provider is active...
+            var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Storage.Provider");
+            if (setting == null || !setting.Value.IsCaseInsensitiveEqual("MediaStorage.SmartStoreFileSystem"))
+            {
+                // DB provider is active: no need to move anything.
+                return 0;
+            }
 
-			// What a huge, fucking hack! > IMediaFileSystem is defined in an
-			// assembly which we don't reference from here. But it also implements
-			// IFileSystem, which we can cast to.
-			var fsType = Type.GetType("SmartStore.Services.Media.IMediaFileSystem, SmartStore.Services");
-			var fs = EngineContext.Current.Resolve(fsType) as IFileSystem;
+            // What a huge, fucking hack! > IMediaFileSystem is defined in an
+            // assembly which we don't reference from here. But it also implements
+            // IFileSystem, which we can cast to.
+            var fsType = Type.GetType("SmartStore.Services.Media.IMediaFileSystem, SmartStore.Services");
+            var fs = EngineContext.Current.Resolve(fsType) as IFileSystem;
 
-			// Pattern for file matching. E.g. matches 0000234-0.png
-			var rg = new Regex(@"^([0-9]{7})-0[.](.{3,4})$", RegexOptions.Compiled | RegexOptions.Singleline);
-			var subfolders = new Dictionary<string, string>();
-			int i = 0;
+            // Pattern for file matching. E.g. matches 0000234-0.png
+            var rg = new Regex(@"^([0-9]{7})-0[.](.{3,4})$", RegexOptions.Compiled | RegexOptions.Singleline);
+            var subfolders = new Dictionary<string, string>();
+            int i = 0;
 
-			// Get root files
-			var files = fs.ListFiles("");
-			foreach (var chunk in files.Slice(500))
-			{
-				foreach (var file in chunk)
-				{
-					var match = rg.Match(file.Name);
-					if (match.Success)
-					{
-						var name = match.Groups[1].Value;
-						var ext = match.Groups[2].Value;
-						// The new file name without trailing -0
-						var newName = string.Concat(name, ".", ext);
-						// The subfolder name, e.g. 0024, when file name is 0024893.png
-						var dirName = name.Substring(0, dirMaxLength);
+            // Get root files
+            var files = fs.ListFiles("");
+            foreach (var chunk in files.Slice(500))
+            {
+                foreach (var file in chunk)
+                {
+                    var match = rg.Match(file.Name);
+                    if (match.Success)
+                    {
+                        var name = match.Groups[1].Value;
+                        var ext = match.Groups[2].Value;
+                        // The new file name without trailing -0
+                        var newName = string.Concat(name, ".", ext);
+                        // The subfolder name, e.g. 0024, when file name is 0024893.png
+                        var dirName = name.Substring(0, dirMaxLength);
 
-						if (!subfolders.TryGetValue(dirName, out string subfolder))
-						{
-							// Create subfolder "Storage/0000"
-							subfolder = fs.Combine("Storage", dirName);
-							fs.CreateFolder(subfolder);
-							subfolders[dirName] = subfolder;
-						}
+                        if (!subfolders.TryGetValue(dirName, out string subfolder))
+                        {
+                            // Create subfolder "Storage/0000"
+                            subfolder = fs.Combine("Storage", dirName);
+                            fs.CreateFolder(subfolder);
+                            subfolders[dirName] = subfolder;
+                        }
 
-						// Build destination path
-						var destinationPath = fs.Combine(subfolder, newName);
+                        // Build destination path
+                        var destinationPath = fs.Combine(subfolder, newName);
 
-						// Move the file now!
-						fs.RenameFile(file.Path, destinationPath);
-						i++;
-					}
-				}
-			}
+                        // Move the file now!
+                        fs.RenameFile(file.Path, destinationPath);
+                        i++;
+                    }
+                }
+            }
 
-			return i;
-		}
+            return i;
+        }
 
-		#endregion
+        #endregion
 
-		#region Address Formats
+        #region Address Formats
 
-		public static int ImportAddressFormats(IDbContext context)
-		{
-			var ctx = context as SmartObjectContext;
-			if (ctx == null)
-				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+        public static int ImportAddressFormats(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
-			var filePath = CommonHelper.MapPath("~/App_Data/AddressFormats.xml");
+            var filePath = CommonHelper.MapPath("~/App_Data/AddressFormats.xml");
 
-			if (!File.Exists(filePath))
-			{
-				return 0;
-			}
+            if (!File.Exists(filePath))
+            {
+                return 0;
+            }
 
-			var countries = ctx.Set<Country>()
-				.Where(x => x.AddressFormat == null)
-				.ToList()
-				.ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
+            var countries = ctx.Set<Country>()
+                .Where(x => x.AddressFormat == null)
+                .ToList()
+                .ToDictionarySafe(x => x.TwoLetterIsoCode, StringComparer.OrdinalIgnoreCase);
 
-			var doc = XDocument.Load(filePath);
+            var doc = XDocument.Load(filePath);
 
-			foreach (var node in doc.Root.Nodes().OfType<XElement>())
-			{
-				var code = node.Attribute("code")?.Value?.Trim();
-				var format = node.Value.Trim();
+            foreach (var node in doc.Root.Nodes().OfType<XElement>())
+            {
+                var code = node.Attribute("code")?.Value?.Trim();
+                var format = node.Value.Trim();
 
-				if (code.HasValue() && countries.TryGetValue(code, out var country))
-				{
-					country.AddressFormat = format;
-				}
-			}
+                if (code.HasValue() && countries.TryGetValue(code, out var country))
+                {
+                    country.AddressFormat = format;
+                }
+            }
 
-			return ctx.SaveChanges();
-		}
+            return ctx.SaveChanges();
+        }
 
         #endregion
 
         #region MoveCustomerFields (V3.2)
+
+        class CustomerStub
+        {
+            public int Id { get; set; }
+            public IEnumerable<AttributeStub> Attributes { get; set; }
+        }
+
+        class AttributeStub
+        {
+            public int Id { get; set; }
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
 
         /// <summary>
         /// Moves several customer fields saved as generic attributes to customer entity (Title, FirstName, LastName, BirthDate, Company, CustomerNumber)
         /// </summary>
         /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
         /// <returns>The total count of fixed and updated customer entities</returns>
-        public static int MoveCustomerFields(IDbContext context, Action<Customer, GenericAttribute> updater, params string[] candidates)
+        public static int MoveCustomerFields(
+            IDbContext context,
+            Action<IDictionary<string, object>, string, string> updater,
+            params string[] candidates)
         {
             Guard.NotNull(updater, nameof(updater));
-            
+
             if (!(context is SmartObjectContext ctx))
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
             if (candidates.Length == 0)
                 return 0;
 
-            // We delete attrs only if the WHOLE migration succeeded
-            var attrIdsToDelete = new List<int>(1000);
-            var gaTable = context.Set<GenericAttribute>();
+            const int pageSize = 1000;
+            var gaTable = context.Set<GenericAttribute>().AsNoTracking();
             //var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
 
-            var query = gaTable
-                .AsNoTracking()
-                .Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
+            var query = (
+                from a in gaTable
+                where a.KeyGroup == "Customer" && candidates.Contains(a.Key)
+                group a by a.EntityId into grps
+                where grps.Any()
+                select new CustomerStub
+                {
+                    Id = grps.Key,
+                    Attributes = grps.Select(a2 => new AttributeStub { Id = a2.Id, Key = a2.Key, Value = a2.Value })
+                })
                 .OrderBy(x => x.Id);
 
+            int numAffectedRows = 0;
             int numUpdated = 0;
 
             using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
             {
-                for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+                for (var pageIndex = 0; pageIndex < 9999999; pageIndex++)
                 {
-                    var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
+                    var data = query
+                        .Skip(pageIndex * pageSize)
+                        .Take(pageSize)
+                        .ToList();
 
-                    var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
-                    var customers = context.Set<Customer>()
-                        .Where(x => customerIds.Contains(x.Id))
-                        .ToDictionary(x => x.Id);
-
-                    // Move attrs one by one to customer
-                    foreach (var attr in attrs)
+                    foreach (var chunk in data.Slice(100))
                     {
-                        var customer = customers.Get(attr.EntityId);
-                        if (customer == null)
-                            continue;
-
-                        updater(customer, attr);
-
-                        attrIdsToDelete.Add(attr.Id);
+                        numAffectedRows += GenerateAndExecuteSql(chunk);
                     }
 
-                    // Save batch
-                    numUpdated += scope.Commit();
+                    numUpdated += data.Count;
 
-                    // Breathe
-                    context.DetachAll();
-
-                    if (!attrs.HasNextPage)
+                    if (data.Count == 0)
                         break;
-                }
-
-                // Everything worked out, now delete all orpahned attributes
-                if (attrIdsToDelete.Count > 0)
-                {
-                    try
-                    {
-                        // Don't rollback migration when this fails
-                        var stubs = attrIdsToDelete.Select(x => new GenericAttribute { Id = x }).ToList();
-                        foreach (var chunk in stubs.Slice(500))
-                        {
-                            chunk.Each(x => gaTable.Attach(x));
-                            gaTable.RemoveRange(chunk);
-                            scope.Commit();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var msg = ex.Message;
-                    }
                 }
             }
 
             return numUpdated;
+
+            int GenerateAndExecuteSql(IEnumerable<CustomerStub> customers)
+            {
+                var sb = PooledStringBuilder.Rent();
+
+                foreach (var c in customers)
+                {
+                    var attrs = c.Attributes.ToArray();
+
+                    if (attrs.Length == 0)
+                        continue;
+
+                    var columns = new Dictionary<string, object>();
+
+                    /// Generate UPDATE Customer statement
+                    foreach (var attr in attrs)
+                    {
+                        updater(columns, attr.Key, attr.Value);
+                    }
+
+                    if (columns.Count == 0)
+                        continue;
+
+                    sb.Append("UPDATE [Customer] SET");
+
+                    int i = 0;
+                    foreach (var kvp in columns)
+                    {
+                        sb.Append(" ");
+                        if (i > 0) sb.Append(", ");
+
+                        sb.Append($"[{kvp.Key}] = ");
+
+                        if (kvp.Value is int n)
+                        {
+                            sb.Append($"{n.ToString(CultureInfo.InvariantCulture)}");
+                        }
+                        else if (kvp.Value is DateTime d)
+                        {
+                            sb.Append($"'{d.ToIso8601String()}'");
+                        }
+                        else if (kvp.Value == null)
+                        {
+                            sb.Append("NULL");
+                        }
+                        else
+                        {
+                            sb.Append($"N'{kvp.Value}'");
+                        }
+
+                        i++;
+                    }
+
+                    sb.Append(" WHERE Id = {0}".FormatInvariant(c.Id));
+                    sb.Append("\n");
+
+                    // Generate all GenericAttribute DELETE statements
+                    for (i = 0; i < attrs.Length; i++)
+                    {
+                        var a = attrs[i];
+                        sb.AppendLine($"DELETE FROM [GenericAttribute] WHERE [Id] = {a.Id}");
+                    }
+                }
+
+                var sql = sb.ToStringAndReturn();
+                if (sql.HasValue())
+                {
+                    return ctx.Execute(sql);
+                }
+
+                return 0;
+            }
         }
 
         public static int DeleteGuestCustomerGenericAttributes(IDbContext context, TimeSpan olderThan)
@@ -716,6 +779,15 @@ DELETE TOP(20000) [c]
                     ProviderName = entityProvider,
                     Model = "topic:paymentinfo",
                     DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("CookieManager"),
+                    Title = "Cookie Manager",
+                    DisplayOrder = ++order,
+                    CssClass = "cookie-manager"
                 });
 
                 scope.Commit();
@@ -1618,7 +1690,8 @@ DELETE TOP(20000) [c]
                 }
             }
 
-            /*static*/ T GetExtraData<T>(OldDiscountRequirement req, string name)
+            /*static*/
+            T GetExtraData<T>(OldDiscountRequirement req, string name)
             {
                 try
                 {
@@ -1639,7 +1712,8 @@ DELETE TOP(20000) [c]
                 return default(T);
             }
 
-            /*static*/ PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
+            /*static*/
+            PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
             {
                 try
                 {
@@ -1660,7 +1734,8 @@ DELETE TOP(20000) [c]
                 return null;
             }
 
-            /*static*/ void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
+            /*static*/
+            void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
             {
                 // Store id (if plugin is limited to stores).
                 var settingName = $"PluginSetting.{pluginSystemName}.LimitedToStores";

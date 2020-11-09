@@ -19,7 +19,10 @@ namespace SmartStore.Services.Media
         [JsonProperty("filesCount")]
         public int FilesCount => Node.Value.FilesCount;
 
-        public static implicit operator TreeNode<MediaFolderNode>(MediaFolderInfo folderInfo) => folderInfo.Node;
+        public static implicit operator TreeNode<MediaFolderNode>(MediaFolderInfo folderInfo)
+        {
+            return folderInfo.Node;
+        }
 
         [JsonProperty("id")]
         public int Id => Node.Value.Id;

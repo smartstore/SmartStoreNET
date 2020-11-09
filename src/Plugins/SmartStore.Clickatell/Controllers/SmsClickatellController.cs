@@ -10,67 +10,69 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.Clickatell.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class SmsClickatellController : PluginControllerBase
     {
-		private readonly IPluginFinder _pluginFinder;
+        private readonly IPluginFinder _pluginFinder;
 
         public SmsClickatellController(IPluginFinder pluginFinder)
         {
             _pluginFinder = pluginFinder;
         }
 
-		[LoadSetting]
-		public ActionResult Configure(ClickatellSettings settings)
-		{
-			var model = new SmsClickatellModel();
-			MiniMapper.Map(settings, model);
+        [LoadSetting]
+        public ActionResult Configure(ClickatellSettings settings)
+        {
+            var model = new SmsClickatellModel();
+            MiniMapper.Map(settings, model);
 
-			return View(model);
+            return View(model);
         }
 
         [HttpPost, SaveSetting, FormValueRequired("save")]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model)
         {
-			if (!ModelState.IsValid)
-			{
-				return Configure(settings);
-			}
+            if (!ModelState.IsValid)
+            {
+                return Configure(settings);
+            }
 
-			MiniMapper.Map(model, settings);
-			settings.ApiId = model.ApiId.TrimSafe();
+            MiniMapper.Map(model, settings);
+            settings.ApiId = model.ApiId.TrimSafe();
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return RedirectToConfiguration(ClickatellSmsProvider.SystemName);
-		}
+            return RedirectToConfiguration(ClickatellSmsProvider.SystemName);
+        }
 
-		[HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
+        [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
+        [ValidateAntiForgeryToken]
         public ActionResult TestSms(SmsClickatellModel model)
         {
             try
             {
                 if (model.TestMessage.IsEmpty())
                 {
-					model.TestSucceeded = false;
-					model.TestSmsResult = T("Plugins.Sms.Clickatell.EnterMessage");
+                    model.TestSucceeded = false;
+                    model.TestSmsResult = T("Plugins.Sms.Clickatell.EnterMessage");
                 }
                 else
                 {
                     var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(ClickatellSmsProvider.SystemName);
                     var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;
 
-					plugin.SendSms(model.TestMessage);
+                    plugin.SendSms(model.TestMessage);
 
-					model.TestSucceeded = true;
-					model.TestSmsResult = T("Plugins.Sms.Clickatell.TestSuccess");
+                    model.TestSucceeded = true;
+                    model.TestSmsResult = T("Plugins.Sms.Clickatell.TestSuccess");
                 }
             }
             catch (Exception exception)
             {
-				model.TestSucceeded = false;
-				model.TestSmsResult = T("Plugins.Sms.Clickatell.TestFailed");
-				model.TestSmsDetailResult = exception.Message;
+                model.TestSucceeded = false;
+                model.TestSmsResult = T("Plugins.Sms.Clickatell.TestFailed");
+                model.TestSmsDetailResult = exception.Message;
             }
 
             return View("Configure", model);

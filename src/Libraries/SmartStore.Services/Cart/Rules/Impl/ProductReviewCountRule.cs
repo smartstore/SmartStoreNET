@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System.Linq;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Rules;
 using SmartStore.Services.Customers;
 
@@ -15,9 +16,10 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var reviews = _customerContentService.GetAllCustomerContent<ProductReview>(context.Customer.Id, true);
+            var query = _customerContentService.GetAllCustomerContent<ProductReview>(context.Customer.Id, true).SourceQuery;
+            var reviewsCount = query.Count();
 
-            return expression.Operator.Match(reviews.Count, expression.Value);
+            return expression.Operator.Match(reviewsCount, expression.Value);
         }
     }
 }

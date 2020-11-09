@@ -13,157 +13,157 @@ using SmartStore.Services;
 
 namespace SmartStore.Templating.Liquid
 {
-	public partial class LiquidTemplateEngine : ITemplateEngine, ITemplateFileSystem
-	{
-		private readonly Work<ICommonServices> _services;
-		private readonly Work<LocalizerEx> _localizer;
-		private readonly Work<IThemeContext> _themeContext;
-		private readonly IVirtualPathProvider _vpp;
+    public partial class LiquidTemplateEngine : ITemplateEngine, ITemplateFileSystem
+    {
+        private readonly Work<ICommonServices> _services;
+        private readonly Work<LocalizerEx> _localizer;
+        private readonly Work<IThemeContext> _themeContext;
+        private readonly IVirtualPathProvider _vpp;
 
-		public LiquidTemplateEngine(
-			Work<ICommonServices> services,
-			IVirtualPathProvider vpp, 
-			Work<IThemeContext> themeContext,
-			Work<LocalizerEx> localizer)
-		{
-			_services = services;
-			_vpp = vpp;
-			_localizer = localizer;
-			_themeContext = themeContext;
+        public LiquidTemplateEngine(
+            Work<ICommonServices> services,
+            IVirtualPathProvider vpp,
+            Work<IThemeContext> themeContext,
+            Work<LocalizerEx> localizer)
+        {
+            _services = services;
+            _vpp = vpp;
+            _localizer = localizer;
+            _themeContext = themeContext;
 
-			// Register Value type transformers
-			var allowedMoneyProps = new[] 
-			{
-				nameof(Money.Amount),
-				nameof(Money.RoundedAmount),
-				nameof(Money.TruncatedAmount),
-				nameof(Money.Formatted),
-				nameof(Money.DecimalDigits)
-			};
-			Template.RegisterSafeType(typeof(Money), allowedMoneyProps, x => x);
-			
-			// Register tag "zone"
-			Template.RegisterTagFactory(new ZoneTagFactory(_services.Value.EventPublisher));
+            // Register Value type transformers
+            var allowedMoneyProps = new[]
+            {
+                nameof(Money.Amount),
+                nameof(Money.RoundedAmount),
+                nameof(Money.TruncatedAmount),
+                nameof(Money.Formatted),
+                nameof(Money.DecimalDigits)
+            };
+            Template.RegisterSafeType(typeof(Money), allowedMoneyProps, x => x);
 
-			// Register Filters
-			Template.RegisterFilter(typeof(AdditionalFilters));
+            // Register tag "zone"
+            Template.RegisterTagFactory(new ZoneTagFactory(_services.Value.EventPublisher));
 
-			Template.NamingConvention = new CSharpNamingConvention();
-			Template.FileSystem = this;
-		}
+            // Register Filters
+            Template.RegisterFilter(typeof(AdditionalFilters));
 
-		#region Services
+            Template.NamingConvention = new CSharpNamingConvention();
+            Template.FileSystem = this;
+        }
 
-		public ICommonServices Services => _services.Value;
+        #region Services
 
-		public LocalizedString T(string key, int languageId, params object[] args)
-		{
-			return _localizer.Value(key, languageId, args);
-		}
+        public ICommonServices Services => _services.Value;
 
-		#endregion
+        public LocalizedString T(string key, int languageId, params object[] args)
+        {
+            return _localizer.Value(key, languageId, args);
+        }
 
-		#region ITemplateEngine
+        #endregion
 
-		public ITemplate Compile(string source)
-		{
-			Guard.NotNull(source, nameof(source));
+        #region ITemplateEngine
 
-			return new LiquidTemplate(Template.Parse(source), source);
-		}
+        public ITemplate Compile(string source)
+        {
+            Guard.NotNull(source, nameof(source));
 
-		public string Render(string source, object model, IFormatProvider formatProvider)
-		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(model, nameof(model));
-			Guard.NotNull(formatProvider, nameof(formatProvider));
+            return new LiquidTemplate(Template.Parse(source), source);
+        }
 
-			return Compile(source).Render(model, formatProvider);
-		}
+        public string Render(string source, object model, IFormatProvider formatProvider)
+        {
+            Guard.NotNull(source, nameof(source));
+            Guard.NotNull(model, nameof(model));
+            Guard.NotNull(formatProvider, nameof(formatProvider));
 
-		public ITestModel CreateTestModelFor(BaseEntity entity, string modelPrefix)
-		{
-			Guard.NotNull(entity, nameof(entity));
+            return Compile(source).Render(model, formatProvider);
+        }
 
-			return new TestDrop(entity, modelPrefix);
-		}
+        public ITestModel CreateTestModelFor(BaseEntity entity, string modelPrefix)
+        {
+            Guard.NotNull(entity, nameof(entity));
 
-		#endregion
+            return new TestDrop(entity, modelPrefix);
+        }
 
-		#region ITemplateFileSystem
+        #endregion
 
-		public Template GetTemplate(Context context, string templateName)
-		{
-			var virtualPath = ResolveVirtualPath(context, templateName);
+        #region ITemplateFileSystem
 
-			if (virtualPath.IsEmpty())
-			{
-				return null;
-			}
+        public Template GetTemplate(Context context, string templateName)
+        {
+            var virtualPath = ResolveVirtualPath(context, templateName);
 
-			var cacheKey = HttpRuntime.Cache.BuildScopedKey("LiquidPartial://" + virtualPath);
-			var cachedTemplate = HttpRuntime.Cache.Get(cacheKey);
+            if (virtualPath.IsEmpty())
+            {
+                return null;
+            }
 
-			if (cachedTemplate == null)
-			{
-				// Read from file, compile and put to cache with file dependeny
-				var source = ReadTemplateFileInternal(virtualPath);
-				cachedTemplate = Template.Parse(source);
-				var cacheDependency = _vpp.GetCacheDependency(virtualPath, DateTime.UtcNow);
-				HttpRuntime.Cache.Insert(cacheKey, cachedTemplate, cacheDependency);
-			}
+            var cacheKey = HttpRuntime.Cache.BuildScopedKey("LiquidPartial://" + virtualPath);
+            var cachedTemplate = HttpRuntime.Cache.Get(cacheKey);
 
-			return (Template)cachedTemplate;
-		}
+            if (cachedTemplate == null)
+            {
+                // Read from file, compile and put to cache with file dependeny
+                var source = ReadTemplateFileInternal(virtualPath);
+                cachedTemplate = Template.Parse(source);
+                var cacheDependency = _vpp.GetCacheDependency(virtualPath, DateTime.UtcNow);
+                HttpRuntime.Cache.Insert(cacheKey, cachedTemplate, cacheDependency);
+            }
 
-		public string ReadTemplateFile(Context context, string templateName)
-		{
-			var virtualPath = ResolveVirtualPath(context, templateName);
+            return (Template)cachedTemplate;
+        }
 
-			return ReadTemplateFileInternal(virtualPath);
-		}
+        public string ReadTemplateFile(Context context, string templateName)
+        {
+            var virtualPath = ResolveVirtualPath(context, templateName);
 
-		private string ReadTemplateFileInternal(string virtualPath)
-		{
-			if (virtualPath.IsEmpty())
-			{
-				return string.Empty;
-			}
+            return ReadTemplateFileInternal(virtualPath);
+        }
 
-			if (!_vpp.FileExists(virtualPath))
-			{
-				throw new FileNotFoundException($"Include file '{virtualPath}' does not exist.");
-			}
+        private string ReadTemplateFileInternal(string virtualPath)
+        {
+            if (virtualPath.IsEmpty())
+            {
+                return string.Empty;
+            }
 
-			using (var stream = _vpp.OpenFile(virtualPath))
-			{
-				return stream.AsString();
-			}
-		}
+            if (!_vpp.FileExists(virtualPath))
+            {
+                throw new FileNotFoundException($"Include file '{virtualPath}' does not exist.");
+            }
 
-		private string ResolveVirtualPath(Context context, string templateName)
-		{
-			var path = ((string)context[templateName]).NullEmpty() ?? templateName;
+            using (var stream = _vpp.OpenFile(virtualPath))
+            {
+                return stream.AsString();
+            }
+        }
 
-			if (path.IsEmpty())
-				return string.Empty;
+        private string ResolveVirtualPath(Context context, string templateName)
+        {
+            var path = ((string)context[templateName]).NullEmpty() ?? templateName;
 
-			path = path.EnsureEndsWith(".liquid");
+            if (path.IsEmpty())
+                return string.Empty;
 
-			string virtualPath = null;
+            path = path.EnsureEndsWith(".liquid");
 
-			if (!path.StartsWith("~/"))
-			{
-				var currentTheme = _themeContext.Value.CurrentTheme;
-				virtualPath = _vpp.Combine(currentTheme.Location, currentTheme.ThemeName, "Views/Shared/EmailTemplates", path);
-			}
-			else
-			{
-				virtualPath = VirtualPathUtility.ToAppRelative(path);
-			}
-			return virtualPath;
-		}
+            string virtualPath = null;
 
-		#endregion
-	}
+            if (!path.StartsWith("~/"))
+            {
+                var currentTheme = _themeContext.Value.CurrentTheme;
+                virtualPath = _vpp.Combine(currentTheme.Location, currentTheme.ThemeName, "Views/Shared/EmailTemplates", path);
+            }
+            else
+            {
+                virtualPath = VirtualPathUtility.ToAppRelative(path);
+            }
+            return virtualPath;
+        }
+
+        #endregion
+    }
 }

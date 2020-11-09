@@ -21,7 +21,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Install
 
             _validator = new InstallValidator(_ilService);
         }
-        
+
         [Test]
         public void Should_have_error_when_adminEmail_is_null_or_empty()
         {

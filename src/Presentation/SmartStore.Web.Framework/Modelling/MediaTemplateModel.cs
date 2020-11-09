@@ -1,4 +1,4 @@
-﻿using SmartStore.Services.Localization;
+﻿using System.Collections.Generic;
 using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework.Modelling
@@ -17,9 +17,10 @@ namespace SmartStore.Web.Framework.Modelling
         public MediaFileInfo File { get; private set; }
         public bool RenderViewer { get; private set; }
 
-        public string ExtraCssClasses { get; set; }
+        public int ThumbSize { get; set; } = 256;
+        public IDictionary<string, object> HtmlAttributes { get; set; }
 
-        public LocalizedValue<string> Title { get; set; }
-        public LocalizedValue<string> Alt { get; set; }
+        public string Title { get; set; }
+        public string Alt { get; set; }
     }
 }

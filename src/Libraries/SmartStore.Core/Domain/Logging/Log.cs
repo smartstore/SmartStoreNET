@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 
@@ -8,13 +9,14 @@ namespace SmartStore.Core.Domain.Logging
     /// <summary>
     /// Represents a log record
     /// </summary>
+    [Hookable(false)]
     public partial class Log : BaseEntity
     {
-		/// <summary>
-		/// Gets or sets the log level identifier
-		/// </summary>
-		[Index("IX_Log_Level", IsUnique = false)]
-		public int LogLevelId { get; set; }
+        /// <summary>
+        /// Gets or sets the log level identifier
+        /// </summary>
+        [Index("IX_Log_Level", IsUnique = false)]
+        public int LogLevelId { get; set; }
 
         /// <summary>
         /// Gets or sets the short message
@@ -51,35 +53,29 @@ namespace SmartStore.Core.Domain.Logging
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the logger name
-		/// </summary>
-		[Index("IX_Log_Logger", IsUnique = false)]
-		public string Logger { get; set; }
+        /// <summary>
+        /// Gets or sets the logger name
+        /// </summary>
+        [Index("IX_Log_Logger", IsUnique = false)]
+        public string Logger { get; set; }
 
-		/// <summary>
-		/// Gets or sets the HTTP method
-		/// </summary>
-		public string HttpMethod { get; set; }
+        /// <summary>
+        /// Gets or sets the HTTP method
+        /// </summary>
+        public string HttpMethod { get; set; }
 
-		/// <summary>
-		/// Gets or sets the user name
-		/// </summary>
-		public string UserName { get; set; }
+        /// <summary>
+        /// Gets or sets the user name
+        /// </summary>
+        public string UserName { get; set; }
 
-		/// <summary>
-		/// Gets or sets the log level
-		/// </summary>
-		public LogLevel LogLevel
+        /// <summary>
+        /// Gets or sets the log level
+        /// </summary>
+        public LogLevel LogLevel
         {
-            get
-            {
-                return (LogLevel)this.LogLevelId;
-            }
-            set
-            {
-                this.LogLevelId = (int)value;
-            }
+            get => (LogLevel)this.LogLevelId;
+            set => this.LogLevelId = (int)value;
         }
 
         /// <summary>

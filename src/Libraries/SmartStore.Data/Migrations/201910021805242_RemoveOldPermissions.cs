@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Web.Hosting;
     using SmartStore.Core.Data;
@@ -24,7 +23,7 @@ namespace SmartStore.Data.Migrations
             //DropColumn("dbo.PermissionRecord", "Category");
             //DropTable("dbo.PermissionRecord_Role_Mapping");
         }
-        
+
         public override void Down()
         {
             //CreateTable(

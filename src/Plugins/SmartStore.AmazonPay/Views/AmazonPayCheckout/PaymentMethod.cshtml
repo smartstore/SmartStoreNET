@@ -5,6 +5,9 @@
 
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+
+	var url = new Uri(Model.WidgetUrl);
+	Html.AddLinkPart("preconnect", "https://" + url.Host);
 }
 
 @section orderProgress{

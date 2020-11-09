@@ -3,11 +3,12 @@
 @using SmartStore.Core.Domain.Blogs;
 @using Telerik.Web.Mvc.UI;
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 @Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
-{   
+{
     x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
         .Content(TabInfo())
         .Selected(true);
@@ -20,34 +21,72 @@
 
 @helper TabInfo()
 {
+    @(Html.LocalizedEditor<BlogPostModel, BlogPostLocalizedModel>("blogpost-info-localized",
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Title)
+                </td>
+                <td class="adminData">
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                    @Html.EditorFor(model => Model.Locales[item].Title)
+                    @Html.ValidationMessageFor(model => model.Locales[item].Title)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Intro)
+                </td>
+                <td class="adminData wide">
+                    @Html.TextAreaFor(model => model.Locales[item].Intro, new { style = "height:100px" })
+                    @Html.ValidationMessageFor(model => model.Locales[item].Intro)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Body)
+                </td>
+                <td class="adminData wide">
+                    @Html.EditorFor(model => model.Locales[item].Body, "Html")
+                    @Html.ValidationMessageFor(model => model.Locales[item].Body)
+                </td>
+            </tr>
+        </table>
+        ,
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Title)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Title)
+                    @Html.ValidationMessageFor(model => model.Title)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Intro)
+                </td>
+                <td class="adminData wide">
+                    @Html.TextAreaFor(model => model.Intro, new { style = "height:100px" })
+                    @Html.ValidationMessageFor(model => model.Intro)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Body)
+                </td>
+                <td class="adminData wide">
+                    @Html.EditorFor(x => x.Body, "Html")
+                    @Html.ValidationMessageFor(model => model.Body)
+                </td>
+            </tr>
+        </table>
+    ))
+
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Title)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Title)
-                @Html.ValidationMessageFor(model => model.Title)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Intro)
-            </td>
-            <td class="adminData wide">
-                @Html.TextAreaFor(model => model.Intro, new { style = "height:100px" })
-                @Html.ValidationMessageFor(model => model.Intro)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Body)
-            </td>
-            <td class="adminData wide">
-                @Html.EditorFor(x => x.Body, "Html")
-                @Html.ValidationMessageFor(model => model.Body)
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Tags)
@@ -71,14 +110,6 @@
             <td class="adminData">
                 @Html.EditorFor(model => model.IsPublished)
                 @Html.ValidationMessageFor(model => model.IsPublished)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LanguageId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
             </td>
         </tr>
         <tr>
@@ -156,7 +187,7 @@
                 @Html.SmartLabelFor(model => model.SectionBg)
             </td>
             <td class="adminData">
-                @{ 
+                @{
                     var brandColors = GetThemeVariable("brand-colors")
                         .Trim()
                         .SplitSafe(",")
@@ -187,53 +218,97 @@
                 @Html.ValidationMessageFor(model => model.DisplayTagsInPreview)
             </td>
         </tr>
-
     </table>
 }
+
 @helper TabSeo()
 {
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaKeywords)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.MetaKeywords)
-                @Html.ValidationMessageFor(model => model.MetaKeywords)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaDescription)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.MetaDescription)
-                @Html.ValidationMessageFor(model => model.MetaDescription)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaTitle)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.MetaTitle)
-                @Html.ValidationMessageFor(model => model.MetaTitle)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SeName)
-                @if (Model.Id != 0)
-                {
-                    @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "BlogPost", entityId = Model.Id })
-                }
-                @Html.ValidationMessageFor(model => model.SeName)
-            </td>
-        </tr>
-    </table>
+    @(Html.LocalizedEditor<BlogPostModel, BlogPostLocalizedModel>("blogpost-seo-localized",
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                </td>
+                <td class="adminData">
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                    @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(model => model.Locales[item].MetaDescription)
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Locales[item].MetaKeywords)
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].SeName)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Locales[item].SeName)
+                    @Html.ValidationMessageFor(model => model.Locales[item].SeName)
+                </td>
+            </tr>
+        </table>
+        ,
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaTitle)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(x => x.MetaTitle)
+                    @Html.ValidationMessageFor(model => model.MetaTitle)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaDescription)
+                </td>
+                <td class="adminData">
+                    @Html.TextAreaFor(x => x.MetaDescription)
+                    @Html.ValidationMessageFor(model => model.MetaDescription)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MetaKeywords)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.MetaKeywords)
+                    @Html.ValidationMessageFor(model => model.MetaKeywords)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.SeName)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.SeName)
+                    @if (Model.Id != 0)
+                    {
+                        @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "BlogPost", entityId = Model.Id })
+                    }
+                    @Html.ValidationMessageFor(model => model.SeName)
+                </td>
+            </tr>
+        </table>
+    ))
 }
 
 <script>

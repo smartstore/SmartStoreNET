@@ -1,0 +1,42 @@
+﻿@model NewsItemListModel
+@using SmartStore.Web.Models.News;
+@using SmartStore.Web.Framework.UI;
+
+@if (Model.NewsItems.Count == 0)
+{
+    return;
+}
+
+<div class="page-title row mb-5">
+    <div class="col">
+        <div class="heading">
+            <h1 class="heading-title">
+                @if (Model.NewsHeading.HasValue())
+                {
+                    @Model.NewsHeading
+                }
+                else
+                {
+                    @T("News")
+                }
+            </h1>
+        </div>
+    </div>
+
+    <div class="col-auto text-right">
+        @if (Model.RssToLinkButton)
+        {
+            <a class="btn btn-warning" href="@Url.RouteUrl("NewsArchive")">
+                <span>@T("News.ViewAll")</span>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-warning" href="@Url.Action("rss")" title="@T("News.RSS.Hint")">
+                <i class="fa fa-rss"></i>
+                <span>@T("News.RSS")</span>
+            </a>
+        }
+    </div>
+</div>

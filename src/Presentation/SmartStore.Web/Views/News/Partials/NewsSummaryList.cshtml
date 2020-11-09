@@ -1,0 +1,61 @@
+﻿@model NewsItemListModel
+@using SmartStore.Web.Models.News;
+
+@if (Model.NewsItems.Count == 0)
+{
+    return;
+}
+
+@foreach (var item in Model.NewsItems)
+{
+    var fileModel = item.PreviewPictureModel.File != null ? item.PreviewPictureModel : item.PictureModel;
+    var imageUrl = Url.Media(fileModel.File, fileModel.Size ?? 512, null, false);
+
+<article class="newslist-item news-preview-lg mb-5 col-12 col-md-6 col-lg-4 d-flex flex-column@(item.Published ? "" : " unpublished")" itemscope itemtype="http://schema.org/NewsArticle">
+    @if (imageUrl.HasValue())
+    {
+        <figure style="--img-aspect-ratio: 0.5;">
+            <a href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })" class="newsitem-picture img-center-container shadow-sm shadow-primary">
+                <img src="@imageUrl" alt="@item.PictureModel.AlternateText" title="@item.PictureModel.Title" itemprop="image">
+            </a>
+        </figure>
+    }
+
+    <h4 class="newsitem-title fs-h5">
+        <a class="newsitem-title-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+            @item.Title.Truncate(60, "...")
+        </a>
+        <meta itemprop="headline" content="@item.Title.Truncate(100, "...")" />
+    </h4>
+
+    <div class="newsitem-date rfs">
+        @item.CreatedOn.ToNativeString("D")
+    </div>
+
+    <meta itemprop="datePublished" content="@item.CreatedOn.ToString("u")"/>
+    <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
+    <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
+
+    <p class="newsitem-description rfs my-3 flex-grow-1" itemprop="description">
+        @Html.Raw(item.Short.Truncate(160, "..."))
+    </p>
+
+    <div class="d-flex flex-row">
+        <div class="flex-grow-1">
+            <a class="btn btn-outline-gray rfs" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
+                @T("Common.Cms.ReadMore")
+            </a>
+        </div>
+
+        @if (item.Comments.AllowComments && !Model.DisableCommentCount)
+        {
+            <a class="rfs align-self-end btn btn-gray btn-flat@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
+               href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })"
+               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+                <i class="far fa-comment-alt"></i>
+                <span class="newsitem-comments-count">@item.Comments.NumberOfComments</span>
+            </a>
+        }
+    </div>
+</article>
+}

@@ -12,15 +12,15 @@ using SmartStore.Services.Localization;
 namespace SmartStore.Web.Framework.UI
 {
     public static class MenuExtensions
-	{
-		public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
-		{
-			Guard.NotNull(node, nameof(node));
+    {
+        public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
+        {
+            Guard.NotNull(node, nameof(node));
 
-			return node.Trail.Where(x => !x.IsRoot);
-		}
+            return node.Trail.Where(x => !x.IsRoot);
+        }
 
-		public static string GetItemText(this TreeNode<MenuItem> node, Localizer localizer)
+        public static string GetItemText(this TreeNode<MenuItem> node, Localizer localizer)
         {
             string result = null;
 
@@ -37,62 +37,62 @@ namespace SmartStore.Web.Framework.UI
             return result;
         }
 
-		/// <summary>
-		/// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
-		/// </summary>
-		/// <param name="node">The node to get the state for</param>
-		/// <param name="currentPath">The current path/breadcrumb</param>
-		/// <returns>
-		///		<see cref="NodePathState" /> enumeration indicating whether the node is in the current path (<c>Selected</c> or <c>Expanded</c>)
-		///		and whether it has children (<c>Parent</c>)
-		///	</returns>
-		public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IEnumerable<TreeNode<MenuItem>> currentPath)
-		{
-			return GetNodePathState(node, currentPath.Select(x => x.Value).ToList());
-		}
+        /// <summary>
+        /// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
+        /// </summary>
+        /// <param name="node">The node to get the state for</param>
+        /// <param name="currentPath">The current path/breadcrumb</param>
+        /// <returns>
+        ///		<see cref="NodePathState" /> enumeration indicating whether the node is in the current path (<c>Selected</c> or <c>Expanded</c>)
+        ///		and whether it has children (<c>Parent</c>)
+        ///	</returns>
+        public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IEnumerable<TreeNode<MenuItem>> currentPath)
+        {
+            return GetNodePathState(node, currentPath.Select(x => x.Value).ToList());
+        }
 
-		/// <summary>
-		/// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
-		/// </summary>
-		/// <param name="node">The node to get the state for</param>
-		/// <param name="currentPath">The current path/breadcrumb</param>
-		/// <returns>
-		///		<see cref="NodePathState" /> enumeration indicating whether the node is in the current path (<c>Selected</c> or <c>Expanded</c>)
-		///		and whether it has children (<c>Parent</c>)
-		///	</returns>
-		public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IList<MenuItem> currentPath)
-		{
-			Guard.NotNull(currentPath, nameof(currentPath));
-			
-			var state = NodePathState.Unknown;
+        /// <summary>
+        /// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
+        /// </summary>
+        /// <param name="node">The node to get the state for</param>
+        /// <param name="currentPath">The current path/breadcrumb</param>
+        /// <returns>
+        ///		<see cref="NodePathState" /> enumeration indicating whether the node is in the current path (<c>Selected</c> or <c>Expanded</c>)
+        ///		and whether it has children (<c>Parent</c>)
+        ///	</returns>
+        public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IList<MenuItem> currentPath)
+        {
+            Guard.NotNull(currentPath, nameof(currentPath));
 
-			if (node.HasChildren)
-			{
-				state = state | NodePathState.Parent;
-			}
+            var state = NodePathState.Unknown;
 
-			var lastInPath = currentPath.LastOrDefault();
+            if (node.HasChildren)
+            {
+                state = state | NodePathState.Parent;
+            }
 
-			if (currentPath.Count > 0)
-			{
-				if (node.Value.Equals(lastInPath))
-				{
-					state = state | NodePathState.Selected;
-				}
-				else
-				{
-					if (node.Depth - 1 < currentPath.Count)
-					{
-						if (currentPath[node.Depth - 1].Equals(node.Value))
-						{
-							state = state | NodePathState.Expanded;
-						}
-					}
-				}
-			}
+            var lastInPath = currentPath.LastOrDefault();
 
-			return state;
-		}
+            if (currentPath.Count > 0)
+            {
+                if (node.Value.Equals(lastInPath))
+                {
+                    state = state | NodePathState.Selected;
+                }
+                else
+                {
+                    if (node.Depth - 1 < currentPath.Count)
+                    {
+                        if (currentPath[node.Depth - 1].Equals(node.Value))
+                        {
+                            state = state | NodePathState.Expanded;
+                        }
+                    }
+                }
+            }
+
+            return state;
+        }
 
         /// <summary>
         /// Applies serialized route informations to a tree node.
@@ -136,7 +136,7 @@ namespace SmartStore.Web.Framework.UI
             var model = new MenuModel
             {
                 Name = menu.Name,
-				Template = template ?? menu.Name,
+                Template = template ?? menu.Name,
                 Root = menu.Root,
                 SelectedNode = menu.ResolveCurrentNode(context)
             };
@@ -194,7 +194,7 @@ namespace SmartStore.Web.Framework.UI
                 var entities = itemMap.ContainsKey(parentItemId)
                     ? itemMap[parentItemId].OrderBy(x => x.DisplayOrder)
                     : Enumerable.Empty<MenuItemRecord>();
-                
+
                 foreach (var entity in entities)
                 {
                     if (!string.IsNullOrEmpty(entity.ProviderName) && itemProviders.TryGetValue(entity.ProviderName, out var provider))

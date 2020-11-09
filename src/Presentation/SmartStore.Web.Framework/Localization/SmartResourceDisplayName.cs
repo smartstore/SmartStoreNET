@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
@@ -37,9 +36,6 @@ namespace SmartStore.Web.Framework
             }
         }
 
-        public string Name
-        {
-            get { return "SmartResourceDisplayName"; }
-        }
+        public string Name => "SmartResourceDisplayName";
     }
 }

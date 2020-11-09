@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Web.Framework.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Customer
 {
@@ -30,7 +30,7 @@ namespace SmartStore.Web.Models.Customer
             public int ProductId { get; set; }
             public LocalizedValue<string> ProductName { get; set; }
             public string ProductSeName { get; set; }
-			public string ProductUrl { get; set; }
+            public string ProductUrl { get; set; }
             public string ProductAttributes { get; set; }
 
             public int LicenseId { get; set; }

@@ -1,3 +1,4 @@
 ﻿@model CustomerAddressModel
-           
+
+@Html.AntiForgeryToken()
 @Html.EditorFor(model => model.Address, "Address")

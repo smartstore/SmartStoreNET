@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using SmartStore.Core.Domain.Orders;
+﻿using SmartStore.Core.Domain.Orders;
 using SmartStore.Rules;
 using SmartStore.Services.Orders;
 using SmartStore.Utilities.Threading;
@@ -21,7 +20,9 @@ namespace SmartStore.Services.Cart.Rules.Impl
 
         public bool Match(CartRuleContext context, RuleExpression expression)
         {
-            var lockKey = $"rule:cart:carttotalrule:{Thread.CurrentThread.ManagedThreadId}-{expression.Id}";
+            var sessionKey = context.SessionKey;
+            var lockKey = "rule:cart:carttotalrule:" + sessionKey.ToString();
+
             if (KeyedLock.IsLockHeld(lockKey))
             {
                 return false;

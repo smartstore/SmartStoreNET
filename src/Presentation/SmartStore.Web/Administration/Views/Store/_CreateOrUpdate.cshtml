@@ -1,15 +1,16 @@
 ﻿@model StoreModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 <table class="adminContent">
-    <tr>
+	<tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.LogoMediaFileId)
         </td>
-        <td class="adminData" id="store-logo-picture">
-            @Html.EditorFor(model => model.LogoMediaFileId, "#store-logo-picture", new { transientUpload = true })
+        <td class="adminData">
+            @Html.EditorFor(model => model.LogoMediaFileId, new { transientUpload = true })
             @Html.ValidationMessageFor(model => model.LogoMediaFileId)
         </td>
     </tr>
@@ -125,4 +126,59 @@
             </td>
         </tr>
     }
+
+	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">
+					Icons
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FavIconMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.FavIconMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.FavIconMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PngIconMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.PngIconMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.PngIconMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AppleTouchIconMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.AppleTouchIconMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.AppleTouchIconMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MsTileImageMediaFileId)
+        </td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.MsTileImageMediaFileId, new { transientUpload = true })
+			@Html.ValidationMessageFor(model => model.MsTileImageMediaFileId)
+		</td>
+    </tr>
+	<tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MsTileColor)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MsTileColor)
+            @Html.ValidationMessageFor(model => model.MsTileColor)
+        </td>
+    </tr>
 </table>

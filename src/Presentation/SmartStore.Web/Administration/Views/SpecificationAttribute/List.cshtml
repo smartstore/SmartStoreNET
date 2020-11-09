@@ -5,6 +5,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	<div class="section-header">
 		<div class="title">
 			@T("Admin.Catalog.Attributes.SpecificationAttributes")
@@ -59,21 +61,21 @@
 	</div>
 }
 
-<script type="text/javascript">
+<script>
 	var selectedIds = [];
 
-	$(document).ready(function () {
+	$(function() {
 		// "delete selected" button
 		$('#delete-selected').click(function (e) {
 			e.preventDefault();
 
-			var postData = { selectedIds: selectedIds };
+            var token = $('input[name="__RequestVerificationToken"]').val();
 
 			$.ajax({
 				cache: false,
 				type: "POST",
 				url: "@(Url.Action("DeleteSelected", "SpecificationAttribute"))",
-				data: postData,
+				data: { selectedIds: selectedIds, __RequestVerificationToken: token  },
 				complete: function (data) {
 					var grid = $('#specificationattributes-grid').data('tGrid');
 					grid.currentPage = 1;

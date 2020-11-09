@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 

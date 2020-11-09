@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 // codehint: sm-add (whole file)
 
 namespace SmartStore.Core.Domain.Themes
-{  
+{
     public class ThemeVariable : BaseEntity
     {
         /// <summary>
@@ -24,10 +21,10 @@ namespace SmartStore.Core.Domain.Themes
         /// </summary>
         public string Value { get; set; }
 
-		/// <summary>
-		/// Gets or sets the store identifier
-		/// </summary>
-		public int StoreId { get; set; }
+        /// <summary>
+        /// Gets or sets the store identifier
+        /// </summary>
+        public int StoreId { get; set; }
 
         protected override bool Equals(BaseEntity other)
         {

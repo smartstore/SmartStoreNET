@@ -1,0 +1,85 @@
+﻿@model ISeoModel
+
+@using SmartStore.Web.Framework.Seo;
+
+@{ 
+    var random = CommonHelper.GenerateRandomDigitCode(5);
+
+    var metaTitleResKey = GetResKey("MetaTitle");
+    var metaDescriptionResKey = GetResKey("MetaDescription");
+    var metaKeywordsResKey = GetResKey("MetaKeywords");
+}
+
+@functions {
+    string GetResKey(string propName)
+    {
+        return GetMetadata<string>(propName + "ResKey") ?? 
+                typeof(ISeoModel).GetProperty(propName).GetAttribute<SmartResourceDisplayName>(true).ResourceKey ?? 
+                "Admin.Configuration.Seo." + propName;
+    }
+}
+
+@(Html.LocalizedEditor<ISeoModel, SeoModelLocal>("seo-model-localized" + random,
+	@<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaTitle, metaTitleResKey)
+            </td>
+            <td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                @Html.SettingEditorFor(model => Model.Locales[item].MetaTitle)
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaDescription, metaDescriptionResKey)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => Model.Locales[item].MetaDescription)
+				@Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords, metaKeywordsResKey)
+            </td>
+            <td class="adminData wide">
+                @Html.SettingEditorFor(model => model.Locales[item].MetaKeywords)
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+            </td>
+        </tr>
+    </table>
+	,
+	@<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaTitle, metaTitleResKey)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MetaTitle)
+                @Html.ValidationMessageFor(model => model.MetaTitle)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaDescription, metaDescriptionResKey)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MetaDescription)
+                @Html.ValidationMessageFor(model => model.MetaDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaKeywords, metaKeywordsResKey)
+            </td>
+            <td class="adminData wide">
+                @Html.SettingEditorFor(x => x.MetaKeywords)
+                @Html.ValidationMessageFor(model => model.MetaKeywords)
+            </td>
+        </tr>
+    </table>
+))

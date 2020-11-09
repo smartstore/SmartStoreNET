@@ -3,14 +3,14 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.WebApi.Services
 {
-	public partial interface IWebApiPluginService
-	{
-		IQueryable<Customer> GetCustomers();
+    public partial interface IWebApiPluginService
+    {
+        IQueryable<Customer> GetCustomers();
 
-		bool CreateKeys(int customerId);
+        bool CreateKeys(int customerId);
 
-		void RemoveKeys(int customerId);
+        void RemoveKeys(int customerId);
 
-		void EnableOrDisableUser(int customerId, bool enable);
-	}
+        void EnableOrDisableUser(int customerId, bool enable);
+    }
 }

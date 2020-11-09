@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Configuration;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Configuration
 {
@@ -14,14 +14,14 @@ namespace SmartStore.Data.Tests.Configuration
             {
                 Name = "Setting1",
                 Value = "Value1",
-				StoreId = 1
+                StoreId = 1
             };
 
             var fromDb = SaveAndLoadEntity(setting);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Setting1");
             fromDb.Value.ShouldEqual("Value1");
-			fromDb.StoreId.ShouldEqual(1);
+            fromDb.StoreId.ShouldEqual(1);
         }
     }
 }

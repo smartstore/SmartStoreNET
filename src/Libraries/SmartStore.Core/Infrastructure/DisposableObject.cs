@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 namespace SmartStore
 {
-
     public abstract class DisposableObject : IDisposable
     {
         private bool _isDisposed;
@@ -13,7 +12,7 @@ namespace SmartStore
         public virtual bool IsDisposed
         {
             [DebuggerStepThrough]
-            get { return _isDisposed; }
+            get => _isDisposed;
         }
 
         [DebuggerStepThrough]
@@ -37,11 +36,11 @@ namespace SmartStore
         [DebuggerStepThrough]
         public void Dispose()
         {
-			if (!_isDisposed)
-			{
-				Dispose(true);
-				GC.SuppressFinalize(this);
-			}
+            if (!_isDisposed)
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
         }
 
         protected void Dispose(bool disposing)
@@ -104,7 +103,5 @@ namespace SmartStore
         {
             Dispose(false);
         }
-
     }
-
 }

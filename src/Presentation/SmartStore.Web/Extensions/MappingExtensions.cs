@@ -23,16 +23,16 @@ namespace SmartStore.Web
     {
         public static CategoryModel ToModel(this Category entity)
         {
-			if (entity == null)
+            if (entity == null)
                 return null;
 
             var model = new CategoryModel
             {
                 Id = entity.Id,
                 Name = entity.GetLocalized(x => x.Name),
-				FullName = entity.GetLocalized(x => x.FullName),
+                FullName = entity.GetLocalized(x => x.FullName),
                 Description = entity.GetLocalized(x => x.Description, detectEmptyHtml: true),
-				BottomDescription = entity.GetLocalized(x => x.BottomDescription, detectEmptyHtml: true),
+                BottomDescription = entity.GetLocalized(x => x.BottomDescription, detectEmptyHtml: true),
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),
@@ -42,7 +42,7 @@ namespace SmartStore.Web
             return model;
         }
 
-		public static ManufacturerModel ToModel(this Manufacturer entity)
+        public static ManufacturerModel ToModel(this Manufacturer entity)
         {
             if (entity == null)
                 return null;
@@ -149,31 +149,31 @@ namespace SmartStore.Web
         /// <param name="stateProvinceService">State service (used to prepare a select list). null to don't prepare the list.</param>
         /// <param name="loadCountries">A function to load countries  (used to prepare a select list). null to don't prepare the list.</param>
         public static void PrepareModel(this AddressModel model,
-            Address address, 
-			bool excludeProperties,
+            Address address,
+            bool excludeProperties,
             AddressSettings addressSettings,
             ILocalizationService localizationService = null,
             IStateProvinceService stateProvinceService = null,
             Func<IList<Country>> loadCountries = null)
         {
-			Guard.NotNull(model, nameof(model));
-			Guard.NotNull(addressSettings, nameof(addressSettings));
+            Guard.NotNull(model, nameof(model));
+            Guard.NotNull(addressSettings, nameof(addressSettings));
 
-			// Form fields
-			MiniMapper.Map(addressSettings, model);
+            // Form fields
+            MiniMapper.Map(addressSettings, model);
 
-			if (!excludeProperties && address != null)
+            if (!excludeProperties && address != null)
             {
-				MiniMapper.Map(address, model);
+                MiniMapper.Map(address, model);
 
-				model.EmailMatch = address.Email;
-				model.CountryName = address.Country?.GetLocalized(x => x.Name);
-				if (address.StateProvinceId.HasValue && address.StateProvince != null)
-				{
-					model.StateProvinceName = address.StateProvince.GetLocalized(x => x.Name);
-				}
-				model.FormattedAddress = Core.Infrastructure.EngineContext.Current.Resolve<IAddressService>().FormatAddress(address, true);
-			}
+                model.EmailMatch = address.Email;
+                model.CountryName = address.Country?.GetLocalized(x => x.Name);
+                if (address.StateProvinceId.HasValue && address.StateProvince != null)
+                {
+                    model.StateProvinceName = address.StateProvince.GetLocalized(x => x.Name);
+                }
+                model.FormattedAddress = Core.Infrastructure.EngineContext.Current.Resolve<IAddressService>().FormatAddress(address, true);
+            }
 
             // Countries and states
             if (addressSettings.CountryEnabled && loadCountries != null)
@@ -223,10 +223,10 @@ namespace SmartStore.Web
                     }
                 }
             }
-            
+
             if (localizationService != null)
             {
-                string salutations = addressSettings.GetLocalized(x => x.Salutations);
+                string salutations = addressSettings.GetLocalizedSetting(x => x.Salutations);
                 foreach (var sal in salutations.SplitSafe(","))
                 {
                     model.AvailableSalutations.Add(new SelectListItem { Value = sal, Text = sal });

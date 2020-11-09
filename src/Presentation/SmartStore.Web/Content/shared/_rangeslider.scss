@@ -147,3 +147,14 @@
         }
     }
 }
+
+[dir=rtl] .range-slider .range-value {
+
+    &[data-placement=right] {
+        transform: translateX(calc(#{$custom-range-thumb-width * 1.7} + #{$custom-range-thumb-width * 2}));
+    }
+
+    &[data-placement=left] {
+        transform: translateX(calc(#{$custom-range-thumb-width * -1.7} + #{$custom-range-thumb-width / 2}));
+    }
+}

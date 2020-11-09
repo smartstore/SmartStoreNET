@@ -6,6 +6,6 @@
 
         public string Template { get; set; }
 
-		public RouteInfo Route { get; set; }
+        public RouteInfo Route { get; set; }
     }
 }

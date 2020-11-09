@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace SmartStore
 {
-	public static class NameValueCollectionExtension
-	{
+    public static class NameValueCollectionExtension
+    {
         public static IDictionary<string, string> ToDictionary(this NameValueCollection collection)
         {
             Guard.NotNull(collection, nameof(collection));
-            
+
             var query = from key in collection.AllKeys
                         where key != null
                         select key;
@@ -19,5 +19,5 @@ namespace SmartStore
 
             return query.ToDictionary<string, string, string>(key => key, elementSelector);
         }
-	}
+    }
 }

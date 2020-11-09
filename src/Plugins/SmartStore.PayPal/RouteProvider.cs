@@ -29,17 +29,17 @@ namespace SmartStore.PayPal
             )
             .DataTokens["area"] = "SmartStore.PayPal";
 
-			routes.MapRoute("SmartStore.PayPalPlus",
-				"Plugins/SmartStore.PayPal/{controller}/{action}",
-				new { controller = "PayPalPlus", action = "Index" },
-				new[] { "SmartStore.PayPal.Controllers" }
-			)
-			.DataTokens["area"] = Plugin.SystemName;
+            routes.MapRoute("SmartStore.PayPalPlus",
+                "Plugins/SmartStore.PayPal/{controller}/{action}",
+                new { controller = "PayPalPlus", action = "Index" },
+                new[] { "SmartStore.PayPal.Controllers" }
+            )
+            .DataTokens["area"] = Plugin.SystemName;
 
 
 
-			//Legacay Routes
-			routes.MapRoute("SmartStore.PayPalExpress.IPN",
+            //Legacay Routes
+            routes.MapRoute("SmartStore.PayPalExpress.IPN",
                  "Plugins/PaymentPayPalExpress/IPNHandler",
                  new { controller = "PayPalExpress", action = "IPNHandler" },
                  new[] { "SmartStore.PayPal.Controllers" }
@@ -82,12 +82,6 @@ namespace SmartStore.PayPal
             .DataTokens["area"] = "SmartStore.PayPal";
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -48,18 +48,18 @@ namespace SmartStore.Data.Tests.Orders
         protected GiftCard GetTestGiftCard()
         {
             return new GiftCard()
-             {
-                 Amount = 1,
-                 IsGiftCardActivated = true,
-                 GiftCardCouponCode = "Secret",
-                 RecipientName = "RecipientName 1",
-                 RecipientEmail = "a@b.c",
-                 SenderName = "SenderName 1",
-                 SenderEmail = "d@e.f",
-                 Message = "Message 1",
-                 IsRecipientNotified = true,
-                 CreatedOnUtc = new DateTime(2010, 01, 01),
-             };
+            {
+                Amount = 1,
+                IsGiftCardActivated = true,
+                GiftCardCouponCode = "Secret",
+                RecipientName = "RecipientName 1",
+                RecipientEmail = "a@b.c",
+                SenderName = "SenderName 1",
+                SenderEmail = "d@e.f",
+                Message = "Message 1",
+                IsRecipientNotified = true,
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+            };
         }
 
         protected Order GetTestOrder()
@@ -79,8 +79,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

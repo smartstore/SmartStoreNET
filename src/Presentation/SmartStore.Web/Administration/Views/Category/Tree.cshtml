@@ -56,8 +56,8 @@
             .DragAndDrop(Model.CanEdit))
 </div>
 
-<script type="text/javascript">
-	$(document).ready(function () {
+<script>
+    $(function() {
 		$('#btnSearch').click(function () {
 			var tree = $('#category-treeview').data('tTreeView');
 			tree.ajaxRequest();

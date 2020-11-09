@@ -12,16 +12,16 @@ namespace SmartStore.GoogleMerchantCenter
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {
-		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
+        public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
             builder.RegisterType<GoogleFeedService>().As<IGoogleFeedService>().InstancePerRequest();
 
             //register named context
-			builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
+            builder.Register<IDbContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
                 .Named<IDbContext>(GoogleProductObjectContext.ALIASKEY)
                 .InstancePerRequest();
 
-			builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
+            builder.Register<GoogleProductObjectContext>(c => new GoogleProductObjectContext(DataSettings.Current.DataConnectionString))
                 .InstancePerRequest();
 
             //override required repository with our custom context
@@ -31,9 +31,6 @@ namespace SmartStore.GoogleMerchantCenter
                 .InstancePerRequest();
         }
 
-        public int Order
-        {
-            get { return 1; }
-        }
+        public int Order => 1;
     }
 }

@@ -13,9 +13,9 @@ namespace SmartStore.Web.Models.Order
     {
         public OrderDetailsModel()
         {
-			MerchantCompanyInfo = new CompanyInformationSettings();
-			
-			TaxRates = new List<TaxRate>();
+            MerchantCompanyInfo = new CompanyInformationSettings();
+
+            TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
             OrderNotes = new List<OrderNote>();
@@ -25,13 +25,14 @@ namespace SmartStore.Web.Models.Order
             ShippingAddress = new AddressModel();
         }
 
-		public int StoreId { get; set; }
+        public int StoreId { get; set; }
 
-		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+        public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+        public string MerchantCompanyCountryName { get; set; }
 
         public string OrderNumber { get; set; }
         public bool DisplayPdfInvoice { get; set; }
-		public bool RenderOrderNotes { get; set; }
+        public bool RenderOrderNotes { get; set; }
 
         public DateTime CreatedOn { get; set; }
 
@@ -88,16 +89,16 @@ namespace SmartStore.Web.Models.Order
         public string OrderTotalDiscount { get; set; }
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
-		public string CreditBalance { get; set; }
-		public string OrderTotalRounding { get; set; }
+        public string CreditBalance { get; set; }
+        public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public string CustomerComment { get; set; }
-		public int CustomerLanguageId { get; set; }
+        public int CustomerLanguageId { get; set; }
 
-		public IList<GiftCard> GiftCards { get; set; }
+        public IList<GiftCard> GiftCards { get; set; }
 
         public bool ShowSku { get; set; }
-		public bool ShowProductImages { get; set; }
+        public bool ShowProductImages { get; set; }
         public bool ShowProductBundleImages { get; set; }
         public int BundleThumbSize { get; set; }
 
@@ -108,41 +109,41 @@ namespace SmartStore.Web.Models.Order
 
         public partial class OrderItemModel : EntityModelBase
         {
-			public OrderItemModel()
-			{
-				BundleItems = new List<BundleItemModel>();
-			}
+            public OrderItemModel()
+            {
+                BundleItems = new List<BundleItemModel>();
+            }
 
             public string Sku { get; set; }
             public int ProductId { get; set; }
             public LocalizedValue<string> ProductName { get; set; }
             public string ProductSeName { get; set; }
-			public string ProductUrl { get; set; }
-			public ProductType ProductType { get; set; }
+            public string ProductUrl { get; set; }
+            public ProductType ProductType { get; set; }
             public string UnitPrice { get; set; }
             public string SubTotal { get; set; }
             public int Quantity { get; set; }
             public string QuantityUnit { get; set; }
             public string AttributeInfo { get; set; }
-			public bool BundlePerItemPricing { get; set; }
-			public bool BundlePerItemShoppingCart { get; set; }
-			public PictureModel Picture { get; set; }
+            public bool BundlePerItemPricing { get; set; }
+            public bool BundlePerItemShoppingCart { get; set; }
+            public PictureModel Picture { get; set; }
 
             public IList<BundleItemModel> BundleItems { get; set; }
         }
 
-		public partial class BundleItemModel : ModelBase
-		{
+        public partial class BundleItemModel : ModelBase
+        {
             public PictureModel Picture { get; set; }
             public string Sku { get; set; }
-			public string ProductName { get; set; }
-			public string ProductSeName { get; set; }
-			public string ProductUrl { get; set; }
-			public bool VisibleIndividually { get; set; }
-			public int Quantity { get; set; }
-			public int DisplayOrder { get; set; }
-			public string PriceWithDiscount { get; set; }
-			public string AttributeInfo { get; set; }
+            public string ProductName { get; set; }
+            public string ProductSeName { get; set; }
+            public string ProductUrl { get; set; }
+            public bool VisibleIndividually { get; set; }
+            public int Quantity { get; set; }
+            public int DisplayOrder { get; set; }
+            public string PriceWithDiscount { get; set; }
+            public string AttributeInfo { get; set; }
             public bool HideThumbnail { get; set; }
         }
 
@@ -150,22 +151,22 @@ namespace SmartStore.Web.Models.Order
         {
             public string Rate { get; set; }
             public string Value { get; set; }
-			public string Label { get; set; }
+            public string Label { get; set; }
         }
 
         public partial class GiftCard : ModelBase
         {
             public string CouponCode { get; set; }
             public string Amount { get; set; }
-			public string Remaining { get; set; }
-		}
+            public string Remaining { get; set; }
+        }
 
         public partial class OrderNote : ModelBase
         {
             public string Note { get; set; }
             public DateTime CreatedOn { get; set; }
-			public string FriendlyCreatedOn { get; set; }
-		}
+            public string FriendlyCreatedOn { get; set; }
+        }
 
         public partial class ShipmentBriefModel : EntityModelBase
         {

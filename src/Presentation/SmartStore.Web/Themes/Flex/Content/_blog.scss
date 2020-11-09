@@ -7,6 +7,10 @@
 
 .bloglist-item-root {
     overflow: hidden;
+
+    &.unpublished {
+        opacity: 0.5;
+    }
 }
 
 .bloglist-item-header {

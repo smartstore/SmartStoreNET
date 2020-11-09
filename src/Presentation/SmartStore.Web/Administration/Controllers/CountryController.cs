@@ -26,6 +26,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
         private readonly IStoreMappingService _storeMappingService;
+        private readonly ICurrencyService _currencyService;
 
         public CountryController(
             ICountryService countryService,
@@ -33,7 +34,8 @@ namespace SmartStore.Admin.Controllers
             IAddressService addressService,
             ILocalizedEntityService localizedEntityService,
             ILanguageService languageService,
-            IStoreMappingService storeMappingService)
+            IStoreMappingService storeMappingService,
+            ICurrencyService currencyService)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -41,6 +43,7 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
             _storeMappingService = storeMappingService;
+            _currencyService = currencyService;
         }
 
         #region Utilities 
@@ -64,15 +67,15 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        private void PrepareCountryModel(CountryModel model, Country country, bool excludeProperties)
+        private void PrepareCountryModel(CountryModel model, Country country)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(model, nameof(model));
 
-            if (!excludeProperties)
-            {
-                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
-            }
+            model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
+
+            model.AllCurrencies = _currencyService.GetAllCurrencies(true)
+                .Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name), Value = x.Id.ToString() })
+                .ToList();
         }
 
         #endregion
@@ -115,6 +118,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult CountryUpdate(CountryModel model, GridCommand command)
         {
@@ -154,9 +158,9 @@ namespace SmartStore.Admin.Controllers
             var model = new CountryModel();
 
             AddLocales(_languageService, model.Locales);
-            PrepareCountryModel(model, null, false);
+            PrepareCountryModel(model, null);
 
-            //default values
+            // Default values.
             model.Published = true;
             model.AllowsBilling = true;
             model.AllowsShipping = true;
@@ -165,6 +169,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Create)]
         public ActionResult Create(CountryModel model, bool continueEditing, FormCollection form)
         {
@@ -182,7 +187,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
-            PrepareCountryModel(model, null, true);
+            PrepareCountryModel(model, null);
 
             return View(model);
         }
@@ -201,12 +206,13 @@ namespace SmartStore.Admin.Controllers
                 locale.Name = country.GetLocalized(x => x.Name, languageId, false, false);
             });
 
-            PrepareCountryModel(model, country, false);
+            PrepareCountryModel(model, country);
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult Edit(CountryModel model, bool continueEditing, FormCollection form)
         {
@@ -230,12 +236,13 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
-            PrepareCountryModel(model, country, true);
+            PrepareCountryModel(model, country);
 
             return View(model);
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -297,6 +304,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult StateCreatePopup(string btnId, string formId, StateProvinceModel model)
         {
@@ -340,6 +348,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult StateEditPopup(string btnId, string formId, StateProvinceModel model)
         {

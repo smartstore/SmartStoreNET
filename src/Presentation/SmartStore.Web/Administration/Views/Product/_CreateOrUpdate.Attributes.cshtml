@@ -49,58 +49,69 @@
 				}
 			</script>
 
-			@(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
-				.Name("productvariantattributes-grid")
-				.DataKeys(keys =>
-				{
-					keys.Add(x => x.Id);
-				})
-				.DataBinding(dataBinding =>
-				{
-					dataBinding.Ajax()
-						.Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
-						.Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
-						.Update("ProductVariantAttributeUpdate", "Product")
-						.Delete("ProductVariantAttributeDelete", "Product");
-				})
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.ProductAttribute)
-						.Width("16%");
-					columns.Bound(x => x.AttributeControlType)
-						.Width("16%");
-					columns.Bound(x => x.TextPrompt)
-						.Width("16%");
-					columns.Bound(x => x.IsRequired)
-						.Width("10%")
-						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
-						.Centered();
-					columns.Bound(x => x.DisplayOrder1)
-						.Width("10%")
-						.Centered();
-					columns.Bound(x => x.ViewEditUrl)
-						.Width("16%")
-						.ClientTemplate(
-							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
-							"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
-						)
-						.ReadOnly()
-						.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
-					columns.Command(commands =>
+			<div>
+				@(Html.Telerik().Grid<ProductModel.ProductVariantAttributeModel>()
+					.Name("productvariantattributes-grid")
+					.DataKeys(keys =>
 					{
-						commands.Edit().Localize(T);
-						commands.Delete().Localize(T);
+						keys.Add(x => x.Id);
 					})
-					.Width("20%")
-					.HtmlAttributes(new { align = "right" });
-				})
-				.ToolBar(commands => commands.Insert() )
-				.ClientEvents(events =>
-				{
-					events.OnEdit("onProductVariantAttributeEdit");
-					events.OnRowDataBound("onProductVariantAttributeRowDataBound");
-				})
-				.EnableCustomBinding(true))
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax()
+							.Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
+							.Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
+							.Update("ProductVariantAttributeUpdate", "Product")
+							.Delete("ProductVariantAttributeDelete", "Product");
+					})
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.ProductAttribute)
+							.Width("15%");
+						columns.Bound(x => x.AttributeControlType);
+						columns.Bound(x => x.TextPrompt);
+						columns.Bound(x => x.CustomData);
+						columns.Bound(x => x.IsRequired)
+							.ClientTemplate(Html.SymbolForBool("IsRequired"))
+							.Centered();
+						columns.Bound(x => x.DisplayOrder1)
+							.Centered();
+						columns.Bound(x => x.ViewEditUrl)
+							.ClientTemplate(
+								"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
+								"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
+							)
+							.ReadOnly()
+							.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
+						columns.Command(commands =>
+						{
+							commands.Edit().Localize(T);
+							commands.Delete().Localize(T);
+						})
+						.Width("15%")
+						.HtmlAttributes(new { align = "right" });
+					})
+					.ToolBar(commands => commands.Insert() )
+					.ClientEvents(events =>
+					{
+						events.OnEdit("onProductVariantAttributeEdit");
+						events.OnRowDataBound("onProductVariantAttributeRowDataBound");
+					})
+					.EnableCustomBinding(true))
+				</div>
+				<div class="mt-4">
+					<div class="adminContent">
+						<div class="adminRow">
+							<div class="adminTitle">
+								@Html.SmartLabelFor(model => model.AttributeChoiceBehaviour)
+							</div>
+							<div class="adminData">
+								@Html.DropDownListForEnum(model => model.AttributeChoiceBehaviour)
+								@Html.ValidationMessageFor(model => model.AttributeChoiceBehaviour)
+							</div>
+						</div>
+					</div>
+				</div>
         }
         else
         {
@@ -129,10 +140,9 @@
             </div>
 
             <div class="mb-3">
-
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="d-none" />
                 <script>
-                    $(document).ready(function () {
+					$(function() {
                         $('.add-new-combination').on('click', function (e) {
                         	openPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');
                             return false;
@@ -148,7 +158,9 @@
                         });
 
                         $('#btnCreateAllCombinations, #btnDeleteAllCombinations').click(function () {
+							var token = $('input[name="__RequestVerificationToken"]').val();
                             $(this).doAjax({
+                                data: { "__RequestVerificationToken": token },
                                 callbackSuccess: function (resp) {
                                     $('#btnRefreshCombinations').click();
                                 }

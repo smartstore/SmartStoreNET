@@ -3,6 +3,7 @@
 @using Telerik.Web.Mvc.UI
 @model CustomerRoleModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("customer-role-edit").Style(TabsStyle.Material).Items(x =>
@@ -10,7 +11,7 @@
     x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
     x.Add().Text(T("Admin.Configuration.ACL").Text).Content(TabPermissions());
     x.Add().Text(T("Admin.Customers").Text).Content(TabCustomers());
-    
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-role-edit", this.Html, this.Model));
 })
 
@@ -55,6 +56,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OrderTotalMinimum)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.OrderTotalMinimum, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.OrderTotalMinimum)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.OrderTotalMaximum)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.OrderTotalMaximum, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.ValidationMessageFor(model => model.OrderTotalMaximum)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxDisplayType)
             </td>
             <td class="adminData">
@@ -75,10 +94,10 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IsSystemRole)
             </td>
-            <td class="adminData">			
-			    <div class="form-control-plaintext">
-				    @T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
-			    </div>
+            <td class="adminData">
+                <div class="form-control-plaintext">
+                    @T(Model.IsSystemRole ? "Admin.Common.Yes" : "Admin.Common.No")
+                </div>
 
                 @Html.HiddenFor(model => model.IsSystemRole)
                 @Html.ValidationMessageFor(model => model.IsSystemRole)
@@ -94,9 +113,9 @@
         if (Model.PermissionTree != null && Model.PermissionTree.HasChildren)
         {
             <p>
-			    <button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
-				    <span>@T("Common.ExpandCollapseAll")</span>
-			    </button>
+                <button id="ExpandCollapseAll" type="button" class="btn btn-sm btn-secondary">
+                    <span>@T("Common.ExpandCollapseAll")</span>
+                </button>
             </p>
             <div id="permission-tree" class="tree">
                 @PermissionNode(Model.PermissionTree)
@@ -104,16 +123,16 @@
         }
         else
         {
-	        <div class="alert alert-warning">
-		        @T("Admin.System.Warnings.NoPermissionsDefined")
-	        </div>
+            <div class="alert alert-warning">
+                @T("Admin.System.Warnings.NoPermissionsDefined")
+            </div>
         }
     }
     else
     {
-		<div class="alert alert-warning">
-			@T("Admin.SaveBeforeEdit")
-		</div>
+        <div class="alert alert-warning">
+            @T("Admin.SaveBeforeEdit")
+        </div>
     }
 }
 
@@ -139,35 +158,35 @@
             </div>
         }
         @(Html.Telerik().Grid<CustomerRoleMappingModel>()
-		    .Name("role-mapping-grid")
-		    .ClientEvents(events => events.OnRowDataBound("onRoleMappingRowDataBound"))
-		    .Columns(columns =>
-		    {
-			    columns.Bound(x => x.Email)
-				    .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
-			    columns.Bound(x => x.Username)
-				    .Visible(Model.UsernamesEnabled);
-			    columns.Bound(x => x.FullName);
-			    columns.Bound(x => x.Active)
-					.ClientTemplate(Html.SymbolForBool("Active"))
-					.Centered();
+            .Name("role-mapping-grid")
+            .ClientEvents(events => events.OnRowDataBound("onRoleMappingRowDataBound"))
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Email)
+                    .ClientTemplate("<a href=\"" + Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= Email #></a>");
+                columns.Bound(x => x.Username)
+                    .Visible(Model.UsernamesEnabled);
+                columns.Bound(x => x.FullName);
+                columns.Bound(x => x.Active)
+                    .ClientTemplate(Html.SymbolForBool("Active"))
+                    .Centered();
                 columns.Bound(x => x.CreatedOn);
                 columns.Bound(x => x.LastActivityDate);
-			    columns.Bound(x => x.IsSystemMapping)
-					.ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
-					.Centered();
-		    })
+                columns.Bound(x => x.IsSystemMapping)
+                    .ClientTemplate(Html.SymbolForBool("IsSystemMapping"))
+                    .Centered();
+            })
             .ToolBar(commands => commands.Template(RoleMappingsGridCommands))
-		    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-		    .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerRoleMappings", "CustomerRole"))
-		    .PreserveGridState()
-		    .EnableCustomBinding(true));
+            .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+            .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerRoleMappings", "CustomerRole"))
+            .PreserveGridState()
+            .EnableCustomBinding(true));
     }
     else
     {
-		<div class="alert alert-warning">
-			@T("Admin.SaveBeforeEdit")
-		</div>
+        <div class="alert alert-warning">
+            @T("Admin.SaveBeforeEdit")
+        </div>
     }
 }
 
@@ -192,7 +211,10 @@
 
         // Reapply rules.
         $('#btnReapplyRules').on('click', function () {
-    		$(this).doPostData({ });
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $(this).doPostData({
+                data: { "__RequestVerificationToken": token }
+            });
         });
 	});
 </script>
@@ -201,10 +223,10 @@
 {
     if (Model.ShowRuleApplyButton)
     {
-	    <button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
-		    <i class="fa fa-play"></i>
-		    <span>@T("Admin.Rules.ReapplyRules")</span>
-	    </button>
+        <button type="button" id="btnReapplyRules" class="t-button t-grid-save-changes" data-url="@Url.Action("ApplyRules", new { id = Model.Id })" data-ask="@T("Admin.Common.AskToProceed")">
+            <i class="fa fa-play"></i>
+            <span>@T("Admin.Rules.ReapplyRules")</span>
+        </button>
     }
 }
 
@@ -213,8 +235,8 @@
     <ul>
         @foreach (var child in node.Children)
         {
-            <li data-name="permission-@child.Value.PermissionRecordId" 
-                data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)" 
+            <li data-name="permission-@child.Value.PermissionRecordId"
+                data-value="@(child.Value.Allow.HasValue ? (child.Value.Allow.Value ? 2 : 1) : 0)"
                 data-label="@(child.GetMetadata<string>("DisplayName", false))"
                 title="@child.Value.SystemName">
                 @if (child.HasChildren)

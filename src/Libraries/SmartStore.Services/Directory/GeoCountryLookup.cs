@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using MaxMind.Db;
 using MaxMind.GeoIP2;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -11,11 +12,13 @@ namespace SmartStore.Services.Directory
     public partial class GeoCountryLookup : DisposableObject, IGeoCountryLookup
     {
         private readonly DatabaseReader _reader;
-        private readonly object _lock = new object();
 
         public GeoCountryLookup()
         {
-            _reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/GeoLite2/GeoLite2-Country.mmdb"));
+            // Old database not usable anymore due to US (Florida?) legal issues from 01 Jan 2020 on.
+            //_reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/GeoLite2/GeoLite2-Country.mmdb"));
+
+            _reader = new DatabaseReader(CommonHelper.MapPath("~/App_Data/Geo/dbip-country-lite.mmdb"));
         }
 
         public LookupCountryResponse LookupCountry(string addr)

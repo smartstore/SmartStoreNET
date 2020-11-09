@@ -1,6 +1,9 @@
 ﻿@model SmartStore.Web.Framework.Modelling.DeleteConfirmationModel
 
-@using (Html.BeginForm(Model.ActionName, Model.ControllerName, new { id = Model.Id }, FormMethod.Post, new { style = "margin:0;" })) {
+@using (Html.BeginForm(Model.ActionName, Model.ControllerName, new { id = Model.Id }, FormMethod.Post, new { style = "margin:0;" })) 
+{
+    @Html.AntiForgeryToken();
+
     <div>
         @T("Admin.Common.DeleteConfirmation")
     </div>

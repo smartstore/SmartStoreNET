@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewsItem>
+	<Title>The Z3 (Zuse Z3)</Title>
+  <MetaTitle>The Z3 (Zuse Z3)</MetaTitle>
+	<Short>The Z3 was a German electromechanical computer designed by Konrad Zuse in 1935, and completed with the help of Helmut Schreyer in 1941 in Berlin. It was the world's first working programmable, fully automatic digital computer.</Short>
+	<MetaDescription>The Z3 was a German electromechanical computer designed by Konrad Zuse in 1935, and completed with the help of Helmut Schreyer in 1941 in Berlin. It was the world's first working programmable, fully automatic digital computer.</MetaDescription>
+	<Full>
+		<![CDATA[
+			<p>
+				The Z3 was a German electromechanical computer designed by Konrad Zuse in 1935, and completed with the help of Helmut Schreyer in 1941 in Berlin.
+				It was the world's first working programmable, fully automatic digital computer.
+				The Z3 was built with 2,600 relays, implementing a 22-bit word length that operated at a clock frequency of about 5–10 Hz.
+				Program code was stored on punched film and initial values were entered manually.
+				It was not considered vital, so it was never put into everyday operation.
+				Based on the work of Hans Georg Küssner (cf. Küssner effect) e.g. a "Program to Compute a Complex Matrix" was written and used to solve wing flutter problems.
+			</p>
+			<p>
+				The Deutsche Versuchsanstalt für Luftfahrt had looked at the Z2 and gave Zuse 25,000 Reichsmark so that he could build the Z3.
+				Zuse asked the German government for funding to replace the relays with fully electronic switches, but funding was denied during World War
+				II since such development was deemed "not war-important".
+				On 12 May 1941, the Z3 was finally presented to a group of scientists (including Alfred Teichmann and Curt Schmieden).
+				When Zuse was briefly drafted into the war in 1941, he wrote to a friend: "Others leave the family behind, I leave the Z3". (Konrad Zuse:
+				Famous Alumni of the Technical University of Berlin).
+			</p>
+			<p>
+				The original Z3 was destroyed on 21 December 1943 during an Allied bombardment of Berlin. 
+        This was a tragic moment for Zuse, as he no longer had any proof that there really had been a functioning Z3.
+				A functioning replica, which was made by Zuse KG for exhibition purposes in 1962, is in the Deutsches Museum in Munich.
+				At its former location, on the ruins of the house in Methfesselstraße in the Berlin district of Kreuzberg, a plaque commemorates Zuse's
+				place of work. Since Konrad Zuse's 100th birthday on 22 June 2010, a replica of the Z3 has also been on display in the Konrad-Zuse-Museum in Hünfeld.
+			</p>
+			<p>
+				That Z3 was originally called V3 (Versuchsmodell 3 or Experimental Model 3) but was renamed so that it would not to be confused with
+				Germany's V-weapons.
+				A fully functioning replica was built in 1961 by Zuse's company, Zuse KG, which is now on permanent display at Deutsches Museum in Munich.
+				The Z3 was demonstrated in 1998 to be, in principle, Turing-complete.
+				However, because it lacked conditional branching, the Z3 only meets this definition by speculatively computing all possible outcomes of a
+				calculation. Thanks to this machine and its predecessors, Konrad Zuse has often been suggested as the inventor of the computer.
+			</p>
+		]]>
+	</Full>
+	<CreatedOn>2020-10-10</CreatedOn>
+	<Image>zuse-z3.jpg</Image>
+	<ImagePreview>zuse-z3.jpg</ImagePreview>
+	<Comments>True</Comments>
+</NewsItem>

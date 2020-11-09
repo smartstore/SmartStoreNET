@@ -23,9 +23,9 @@ namespace SmartStore.Admin.Models.Customers
         public string SearchUsername { get; set; }
         public bool UsernamesEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.List.SearchTerm")]
-		[AllowHtml]
-		public string SearchTerm { get; set; }
+        [SmartResourceDisplayName("Admin.Customers.Customers.List.SearchTerm")]
+        [AllowHtml]
+        public string SearchTerm { get; set; }
 
 
         [SmartResourceDisplayName("Admin.Customers.Customers.List.SearchDateOfBirth")]

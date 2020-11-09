@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Directory;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Directory
 {

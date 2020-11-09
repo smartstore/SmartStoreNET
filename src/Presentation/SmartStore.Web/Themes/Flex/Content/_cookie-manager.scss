@@ -1,0 +1,79 @@
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Cookie-Manager
+// --------------------------------------------------
+#cookie-manager-window {
+    font-size: $font-size-sm;
+
+    .cm-consent {
+        border-top: 1px solid $gray-300;
+        border-bottom: 1px solid $gray-300;
+        margin-top: -1px;
+    }
+
+    .nav-toggler {
+        position: relative;
+        line-height: $line-height-sm;
+        cursor: pointer;
+        margin: 0;
+        padding: 0.75rem 1rem;
+
+        .cm-consent-title {
+            margin-bottom: 0;
+
+            .collapse-chevron {
+                position: absolute;
+                right: 1rem;
+                transition: transform 0.35s, -webkit-transform 0.35s;
+            }
+
+            &.collapsed .collapse-chevron {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    .cm-consent-intro {
+        margin-top: 0.3125rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .cm-info-table {
+        margin-bottom: 0;
+
+        > tbody > tr {
+            > td {
+                padding: 0.5rem;
+            }
+
+            > th {
+                padding: 0.5rem;
+                padding-right: 0;
+                width: 35%
+            }
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        font-size: 0.825rem;
+
+        .cm-footer {
+            padding: 0;
+        }
+
+        .cm-footer .submit-consent {
+            padding: 0.5rem 0.75rem;
+            font-size: $font-size-sm;
+            line-height: $line-height-sm;
+            border-radius: $border-radius-sm;
+        }
+    }
+
+    .cm-close {
+        position: absolute;
+        right: 1.25rem;
+        z-index: 1000;
+    }
+}

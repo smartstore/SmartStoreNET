@@ -1,30 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Services.Authentication.External;
-using SmartStore.Web.Models.Customer;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Core;
+using SmartStore.Services.Authentication.External;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.Controllers
 {
 
     public partial class ExternalAuthenticationController : PublicControllerBase
     {
-		#region Fields
+        #region Fields
 
         private readonly IOpenAuthenticationService _openAuthenticationService;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
 
         #endregion
 
-		#region Constructors
+        #region Constructors
 
         public ExternalAuthenticationController(IOpenAuthenticationService openAuthenticationService,
-			IStoreContext storeContext)
+            IStoreContext storeContext)
         {
             this._openAuthenticationService = openAuthenticationService;
-			this._storeContext = storeContext;
+            this._storeContext = storeContext;
         }
 
         #endregion
@@ -42,7 +42,7 @@ namespace SmartStore.Web.Controllers
         {
             var model = new List<ExternalAuthenticationMethodModel>();
 
-			foreach (var eam in _openAuthenticationService.LoadActiveExternalAuthenticationMethods(_storeContext.CurrentStore.Id))
+            foreach (var eam in _openAuthenticationService.LoadActiveExternalAuthenticationMethods(_storeContext.CurrentStore.Id))
             {
                 var eamModel = new ExternalAuthenticationMethodModel();
 

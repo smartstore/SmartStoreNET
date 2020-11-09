@@ -2,10 +2,10 @@
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Extensions;
-using System.Web.Http.OData.Routing;
-using System.Web.Http.OData.Routing.Conventions;
+using System.Web.OData.Builder;
+using System.Web.OData.Extensions;
+using System.Web.OData.Routing;
+using System.Web.OData.Routing.Conventions;
 using Newtonsoft.Json;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
@@ -14,69 +14,86 @@ using SmartStore.Web.Framework.WebApi.OData;
 namespace SmartStore.Web.Framework.WebApi
 {
     public class WebApiStartupTask : IApplicationStart
-    {      
+    {
+        public int Order => 0;
+
         public void Start()
         {
-			var config = GlobalConfiguration.Configuration;
+            var config = GlobalConfiguration.Configuration;
 
-			var configBroadcaster = new WebApiConfigurationBroadcaster
-			{
-				Configuration = config,
-				ModelBuilder = new ODataConventionModelBuilder(),
-				RoutingConventions = ODataRoutingConventions.CreateDefault()
-			};
+            var configBroadcaster = new WebApiConfigurationBroadcaster
+            {
+                Configuration = config,
+                ModelBuilder = new ODataConventionModelBuilder(),
+                RoutingConventions = ODataRoutingConventions.CreateDefault()
+            };
 
-			config.DependencyResolver = new AutofacWebApiDependencyResolver();
+            config.DependencyResolver = new AutofacWebApiDependencyResolver();
+            //config.MapHttpAttributeRoutes();
 
-			config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
-            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
-            config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
-			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));
+            // Causes errors during XML serialization:
+            //var oDataFormatters = ODataMediaTypeFormatters.Create();
+            //config.Formatters.InsertRange(0, oDataFormatters);
 
-			config.AddODataQueryFilter(new WebApiQueryableAttribute());
+            var json = config.Formatters.JsonFormatter;
+            json.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            json.SerializerSettings.ContractResolver = new WebApiContractResolver(config.Formatters.JsonFormatter);
+            json.AddQueryStringMapping("$format", "json", "application/json");
 
-			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
-			config.EnableCors(corsAttribute);
-            
-			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+            var xml = config.Formatters.XmlFormatter;
+            xml.UseXmlSerializer = true;
+            xml.Indent = true;
+            xml.AddQueryStringMapping("$format", "xml", "application/xml");
 
-			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
-			configPublisher.Configure(configBroadcaster);
+            config.AddODataQueryFilter(new WebApiQueryableAttribute());
 
-			//config.Services.Insert(typeof(ModelBinderProvider), 0,
-			//	new SimpleModelBinderProvider(typeof(Address), new AddressModelBinder()));
+            var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
+            config.EnableCors(corsAttribute);
 
-			try
-			{
-				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameUploads))
-				{
-					config.Routes.MapHttpRoute(WebApiGlobal.RouteNameUploads, "api/{version}/Uploads/{action}/{id}",
-						new { version = "v1", controller = "Uploads", action = "Index", id = RouteParameter.Optional });
-				}
+            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
-				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultApi))
-				{
-					config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",
-						new { version = "v1", controller = "Home", id = RouteParameter.Optional });
-				}
-			}
-			catch (Exception) { }
+            // OData V4 uses DateTimeOffset to represent DateTime. But converting between DateTimeOffset and DateTime will lose the time zone information.
+            // Without UTC time zone configuration, OData would convert date values to the server's standard local time.
+            // This would overwrite the UTC values in the database with local time values.
+            // See https://docs.microsoft.com/en-us/odata/webapi/datetime-support
+            config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-			try
-			{
-				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
-				{
-					config.Routes.MapODataServiceRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
-						configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
-				}
-			}
-			catch (Exception) { }
-        }
+            // Allow OData actions and functions without the need for namespaces (OData V3 backward compatibility).
+            // A namespace URL world be for example: /Products(123)/ProductService.FinalPrice
+            // Note: the dot in this URL will cause IIS to return error 404. See ExtensionlessUrlHandler-Integrated-4.0.
+            config.EnableUnqualifiedNameCall(true);
 
-        public int Order
-        {
-            get { return 0; }
+            var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
+            configPublisher.Configure(configBroadcaster);
+
+            //config.Services.Insert(typeof(ModelBinderProvider), 0,
+            //	new SimpleModelBinderProvider(typeof(Address), new AddressModelBinder()));
+
+            try
+            {
+                if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameUploads))
+                {
+                    config.Routes.MapHttpRoute(WebApiGlobal.RouteNameUploads, "api/{version}/Uploads/{action}/{id}",
+                        new { version = "v1", controller = "Uploads", action = "Index", id = RouteParameter.Optional });
+                }
+
+                if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultApi))
+                {
+                    config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",
+                        new { version = "v1", controller = "Home", id = RouteParameter.Optional });
+                }
+            }
+            catch { }
+
+            try
+            {
+                if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultOdata))
+                {
+                    config.MapODataServiceRoute(WebApiGlobal.RouteNameDefaultOdata, WebApiGlobal.MostRecentOdataPath,
+                        configBroadcaster.ModelBuilder.GetEdmModel(), new DefaultODataPathHandler(), configBroadcaster.RoutingConventions);
+                }
+            }
+            catch { }
         }
     }
 }

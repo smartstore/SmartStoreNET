@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
@@ -14,75 +16,121 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class BlogCommentsController : WebApiEntityController<BlogComment, ICustomerContentService>
-	{
-		private readonly IRepository<CustomerContent> _contentRepository;
-		private readonly Lazy<IBlogService> _blogService;
+    {
+        private readonly IRepository<CustomerContent> _contentRepository;
+        private readonly Lazy<IBlogService> _blogService;
 
-		public BlogCommentsController(
-			IRepository<CustomerContent> contentRepository,
-			Lazy<IBlogService> blogService)
-		{
-			_contentRepository = contentRepository;
-			_blogService = blogService;
-		}
+        public BlogCommentsController(
+            IRepository<CustomerContent> contentRepository,
+            Lazy<IBlogService> blogService)
+        {
+            _contentRepository = contentRepository;
+            _blogService = blogService;
+        }
 
-		private void FulfillCrudOperation(BlogComment entity)
-		{
-			this.ProcessEntity(() =>
-			{
-				var blogPost = _blogService.Value.GetBlogPostById(entity.BlogPostId);
+        protected override IQueryable<BlogComment> GetEntitySet()
+        {
+            var query = _contentRepository.Table
+                .OrderByDescending(c => c.CreatedOnUtc)
+                .OfType<BlogComment>();
 
-				_blogService.Value.UpdateCommentTotals(blogPost);
-			});
-		}
+            return query;
+        }
 
-		protected override IQueryable<BlogComment> GetEntitySet()
-		{
-			var query = _contentRepository.Table
-				.OrderByDescending(c => c.CreatedOnUtc)
-				.OfType<BlogComment>();
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-			return query;
-		}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
+        public IHttpActionResult Get(int key)
+        {
+            return Ok(GetByKey(key));
+        }
 
+        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Create)]
-		protected override void Insert(BlogComment entity)
-		{
-			Service.InsertCustomerContent(entity);
+        public IHttpActionResult Post(BlogComment entity)
+        {
+            var result = Insert(entity, () =>
+            {
+                Service.InsertCustomerContent(entity);
+                UpdateCommentTotals(entity);
+            });
 
-			FulfillCrudOperation(entity);
-		}
+            return result;
+        }
 
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
-        protected override void Update(BlogComment entity)
-		{
-			Service.UpdateCustomerContent(entity);
+        public async Task<IHttpActionResult> Put(int key, BlogComment entity)
+        {
+            var result = await UpdateAsync(entity, key, () =>
+            {
+                Service.UpdateCustomerContent(entity);
 
-			FulfillCrudOperation(entity);
-		}
+                // Actually not necessary, but does not hurt in terms of synchronization.
+                UpdateCommentTotals(entity);
+            });
+
+            return result;
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Update)]
+        public async Task<IHttpActionResult> Patch(int key, Delta<BlogComment> model)
+        {
+            var result = await PartiallyUpdateAsync(key, model, entity =>
+            {
+                Service.UpdateCustomerContent(entity);
+
+                // Actually not necessary, but does not hurt in terms of synchronization.
+                UpdateCommentTotals(entity);
+            });
+
+            return result;
+        }
 
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Delete)]
-        protected override void Delete(BlogComment entity)
-		{
-			Service.DeleteCustomerContent(entity);
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity =>
+            {
+                Service.DeleteCustomerContent(entity);
+                UpdateCommentTotals(entity);
+            });
 
-			FulfillCrudOperation(entity);
-		}
+            return result;
+        }
 
-		[WebApiQueryable]
+        #region Navigation properties
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public SingleResult<BlogComment> GetBlogComment(int key)
-		{
-			return GetSingleResult(key);
-		}
+        public IHttpActionResult GetBlogPost(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.BlogPost));
+        }
 
-		// Navigation properties.
+        #endregion
 
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
-        public SingleResult<BlogPost> GetBlogPost(int key)
-		{
-			return GetRelatedEntity(key, x => x.BlogPost);
-		}
-	}
+        private void UpdateCommentTotals(BlogComment entity)
+        {
+            this.ProcessEntity(() =>
+            {
+                var blogPost = _blogService.Value.GetBlogPostById(entity.BlogPostId);
+
+                _blogService.Value.UpdateCommentTotals(blogPost);
+            });
+        }
+    }
 }

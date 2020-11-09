@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
-    public partial class MediaFileInfo : IFile
+    public partial class MediaFileInfo : IFile, ICloneable<MediaFileInfo>
     {
-        private string _url;
-        private string _thumbUrl;
+        private string _alt;
+        private string _title;
 
         private readonly IMediaStorageProvider _storageProvider;
         private readonly IMediaUrlGenerator _urlGenerator;
@@ -30,6 +34,29 @@ namespace SmartStore.Services.Media
             _storageProvider = storageProvider;
             _urlGenerator = urlGenerator;
         }
+
+        #region Clone
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MediaFileInfo Clone()
+        {
+            var clone = new MediaFileInfo(File, _storageProvider, _urlGenerator, Directory)
+            {
+                ThumbSize = this.ThumbSize,
+                _alt = this._alt,
+                _title = this._title
+            };
+
+            return clone;
+        }
+
+        #endregion
 
         [JsonIgnore]
         public MediaFile File { get; }
@@ -58,7 +85,63 @@ namespace SmartStore.Services.Media
         [JsonProperty("createdOn")]
         public DateTime CreatedOn => File.CreatedOnUtc;
 
-        public static explicit operator MediaFile(MediaFileInfo fileInfo) => fileInfo.File;
+        [JsonProperty("alt")]
+        public string Alt
+        {
+            get => _alt ?? File.Alt;
+            set => _alt = value;
+        }
+
+        [JsonProperty("titleAttr")]
+        public string TitleAttribute
+        {
+            get => _title ?? File.Title;
+            set => _title = value;
+        }
+
+        public static explicit operator MediaFile(MediaFileInfo fileInfo)
+        {
+            return fileInfo.File;
+        }
+
+        #region Url
+
+        private readonly IDictionary<(int size, string host), string> _cachedUrls = new Dictionary<(int, string), string>();
+
+        [JsonProperty("url")]
+        internal string Url => GetUrl(0, string.Empty);
+
+        [JsonProperty("thumbUrl")]
+        internal string ThumbUrl => GetUrl(ThumbSize, string.Empty);
+
+        [JsonIgnore]
+        internal int ThumbSize
+        {
+            // For serialization of "ThumbUrl" in MediaManager
+            get; set;
+        } = 256;
+
+        public string GetUrl(int maxSize = 0, string host = null)
+        {
+            var cacheKey = (maxSize, host);
+            if (!_cachedUrls.TryGetValue(cacheKey, out var url))
+            {
+                url = _urlGenerator.GenerateUrl(this, null, host, false);
+
+                if (maxSize > 0)
+                {
+                    // (perf) Instead of calling GenerateUrl() with a processing query we simply
+                    // append the query part to the string.
+                    url += "?size=" + maxSize.ToString(CultureInfo.InvariantCulture);
+                }
+
+                _cachedUrls[cacheKey] = url;
+            }
+
+            return url;
+        }
+
+        #endregion
 
         #region IFile
 
@@ -70,9 +153,6 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("name")]
         public string Name => File.Name;
-
-        [JsonProperty("alt")]
-        public string Alt => File.Alt;
 
         [JsonProperty("title")]
         public string Title => System.IO.Path.GetFileNameWithoutExtension(File.Name);
@@ -88,23 +168,6 @@ namespace SmartStore.Services.Media
 
         [JsonProperty("dimensions")]
         public Size Dimensions { get; }
-
-        [JsonProperty("url")]
-        public string Url
-        {
-            get { return _url ?? (_url = _urlGenerator.GenerateUrl(this, null, string.Empty)); }
-            set { _url = value; }
-        }
-
-        [JsonProperty("thumbUrl")]
-        public string ThumbUrl
-        {
-            get { return _thumbUrl ?? (_thumbUrl = _urlGenerator.GenerateUrl(this, new ProcessImageQuery { MaxSize = ThumbSize }, string.Empty)); }
-            set { _thumbUrl = value; }
-        }
-
-        [JsonIgnore]
-        public int ThumbSize { get; set; } = 256;
 
         [JsonIgnore]
         public bool Exists => File?.Id > 0;

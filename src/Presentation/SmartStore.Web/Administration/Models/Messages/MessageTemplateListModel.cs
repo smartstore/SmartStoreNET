@@ -5,15 +5,15 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Messages
 {
-	public class MessageTemplateListModel : ModelBase
-	{
-		public MessageTemplateListModel()
-		{
-			AvailableStores = new List<SelectListItem>();
-		}
+    public class MessageTemplateListModel : ModelBase
+    {
+        public MessageTemplateListModel()
+        {
+            AvailableStores = new List<SelectListItem>();
+        }
 
-		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
-		public int SearchStoreId { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
+        public int SearchStoreId { get; set; }
+        public IList<SelectListItem> AvailableStores { get; set; }
+    }
 }

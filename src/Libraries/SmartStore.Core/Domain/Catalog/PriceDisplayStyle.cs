@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [Flags]
     public enum PriceDisplayStyle
-	{
+    {
         /// <summary>
         /// Display prices without badges
         /// </summary>

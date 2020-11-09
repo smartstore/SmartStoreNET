@@ -6,21 +6,21 @@ namespace SmartStore.Core.Domain.Security
 {
     public class SecuritySettings : ISettings
     {
-		public SecuritySettings()
-		{
-			EncryptionKey = CommonHelper.GenerateRandomDigitCode(16);
-			AdminAreaAllowedIpAddresses = new List<string>();
-		}
+        public SecuritySettings()
+        {
+            EncryptionKey = CommonHelper.GenerateRandomDigitCode(16);
+            AdminAreaAllowedIpAddresses = new List<string>();
+        }
 
-		/// <summary>
-		/// When <c>true</c>, bypasses any SSL redirection on localhost
-		/// </summary>
-		public bool UseSslOnLocalhost { get; set; }
+        /// <summary>
+        /// When <c>true</c>, bypasses any SSL redirection on localhost
+        /// </summary>
+        public bool UseSslOnLocalhost { get; set; }
 
-		/// <summary>
-		/// Gets or sets an encryption key
-		/// </summary>
-		public string EncryptionKey { get; set; }
+        /// <summary>
+        /// Gets or sets an encryption key
+        /// </summary>
+        public string EncryptionKey { get; set; }
 
         /// <summary>
         /// Gets or sets a list of adminn area allowed IP addresses
@@ -32,9 +32,9 @@ namespace SmartStore.Core.Domain.Security
         /// </summary>
         public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
 
-		/// <summary>
-		/// Gets or sets a vaule indicating whether "Honeypot" is enabled to prevent bots from posting forms.
-		/// </summary>
-		public bool EnableHoneypotProtection { get; set; }
+        /// <summary>
+        /// Gets or sets a vaule indicating whether "Honeypot" is enabled to prevent bots from posting forms.
+        /// </summary>
+        public bool EnableHoneypotProtection { get; set; }
     }
 }

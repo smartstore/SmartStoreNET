@@ -43,20 +43,20 @@ namespace SmartStore.Web.Controllers
         private readonly IShippingService _shippingService;
         private readonly ICountryService _countryService;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public OrderController(
+        public OrderController(
             IDateTimeHelper dateTimeHelper,
             IPdfConverter pdfConverter,
             ProductUrlHelper productUrlHelper,
             OrderHelper orderHelper,
-            IOrderService orderService, 
+            IOrderService orderService,
             IShipmentService shipmentService,
-            IOrderProcessingService orderProcessingService, 
+            IOrderProcessingService orderProcessingService,
             IPaymentService paymentService,
-			IShippingService shippingService,
+            IShippingService shippingService,
             ICountryService countryService)
         {
             _dateTimeHelper = dateTimeHelper;
@@ -85,16 +85,16 @@ namespace SmartStore.Web.Controllers
             if (order == null)
                 throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
-			var store = Services.StoreService.GetStoreById(order.StoreId) ?? Services.StoreContext.CurrentStore;
-			var catalogSettings = Services.Settings.LoadSetting<CatalogSettings>(store.Id);
-			var shippingSettings = Services.Settings.LoadSetting<ShippingSettings>(store.Id);
+            var store = Services.StoreService.GetStoreById(order.StoreId) ?? Services.StoreContext.CurrentStore;
+            var catalogSettings = Services.Settings.LoadSetting<CatalogSettings>(store.Id);
+            var shippingSettings = Services.Settings.LoadSetting<ShippingSettings>(store.Id);
 
-			var model = new ShipmentDetailsModel
-			{
-				Id = shipment.Id,
-				TrackingNumber = shipment.TrackingNumber,
+            var model = new ShipmentDetailsModel
+            {
+                Id = shipment.Id,
+                TrackingNumber = shipment.TrackingNumber,
                 TrackingNumberUrl = shipment.TrackingUrl
-			};
+            };
 
             if (shipment.ShippedDateUtc.HasValue)
             {
@@ -105,7 +105,7 @@ namespace SmartStore.Web.Controllers
             {
                 model.DeliveryDate = _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc);
             }
-            
+
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
 
             if (srcm != null && srcm.IsShippingRateComputationMethodActive(shippingSettings))
@@ -119,32 +119,32 @@ namespace SmartStore.Web.Controllers
                         model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
                     }
 
-					if (shippingSettings.DisplayShipmentEventsToCustomers)
+                    if (shippingSettings.DisplayShipmentEventsToCustomers)
                     {
                         var shipmentEvents = shipmentTracker.GetShipmentEvents(shipment.TrackingNumber);
-						if (shipmentEvents != null)
-						{
-							foreach (var shipmentEvent in shipmentEvents)
-							{
-								var shipmentEventCountry = _countryService.GetCountryByTwoLetterIsoCode(shipmentEvent.CountryCode);
+                        if (shipmentEvents != null)
+                        {
+                            foreach (var shipmentEvent in shipmentEvents)
+                            {
+                                var shipmentEventCountry = _countryService.GetCountryByTwoLetterIsoCode(shipmentEvent.CountryCode);
 
-								var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel
-								{
-									Country = shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode,
-									Date = shipmentEvent.Date,
-									EventName = shipmentEvent.EventName,
-									Location = shipmentEvent.Location
-								};
+                                var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel
+                                {
+                                    Country = shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode,
+                                    Date = shipmentEvent.Date,
+                                    EventName = shipmentEvent.EventName,
+                                    Location = shipmentEvent.Location
+                                };
 
-								model.ShipmentStatusEvents.Add(shipmentStatusEventModel);
-							}
-						}
+                                model.ShipmentStatusEvents.Add(shipmentStatusEventModel);
+                            }
+                        }
                     }
                 }
             }
-            
+
             // Products in this shipment.
-			model.ShowSku = catalogSettings.ShowProductSku;
+            model.ShowSku = catalogSettings.ShowProductSku;
 
             foreach (var shipmentItem in shipment.ShipmentItems)
             {
@@ -159,143 +159,143 @@ namespace SmartStore.Web.Controllers
                     Id = shipmentItem.Id,
                     Sku = orderItem.Product.Sku,
                     ProductId = orderItem.Product.Id,
-					ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                    ProductName = orderItem.Product.GetLocalized(x => x.Name),
                     ProductSeName = orderItem.Product.GetSeName(),
                     AttributeInfo = orderItem.AttributeDescription,
                     QuantityOrdered = orderItem.Quantity,
                     QuantityShipped = shipmentItem.Quantity
                 };
 
-				shipmentItemModel.ProductUrl = _productUrlHelper.GetProductUrl(shipmentItemModel.ProductSeName, orderItem);
+                shipmentItemModel.ProductUrl = _productUrlHelper.GetProductUrl(shipmentItemModel.ProductSeName, orderItem);
 
-				model.Items.Add(shipmentItemModel);
+                model.Items.Add(shipmentItemModel);
             }
 
-            model.Order = _orderHelper.PrepareOrderDetailsModel(order);            
+            model.Order = _orderHelper.PrepareOrderDetailsModel(order);
             return model;
         }
 
-		#endregion
+        #endregion
 
-		#region Order details
+        #region Order details
 
-		[RewriteUrl(SslRequirement.Yes)]
+        [RewriteUrl(SslRequirement.Yes)]
         public ActionResult Details(int id)
         {
-			var order = _orderService.GetOrderById(id);
+            var order = _orderService.GetOrderById(id);
 
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+            if (IsNonExistentOrder(order))
+                return HttpNotFound();
 
-			if (IsUnauthorizedOrder(order))
-				return new HttpUnauthorizedResult();
+            if (IsUnauthorizedOrder(order))
+                return new HttpUnauthorizedResult();
 
             var model = _orderHelper.PrepareOrderDetailsModel(order);
             return View(model);
         }
 
-		[RewriteUrl(SslRequirement.Yes)]
-		public ActionResult Print(int id, bool pdf = false)
-		{
-			var order = _orderService.GetOrderById(id);
-			
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+        [RewriteUrl(SslRequirement.Yes)]
+        public ActionResult Print(int id, bool pdf = false)
+        {
+            var order = _orderService.GetOrderById(id);
 
-			if (IsUnauthorizedOrder(order))
-				return new HttpUnauthorizedResult();
+            if (IsNonExistentOrder(order))
+                return HttpNotFound();
 
-			var model = _orderHelper.PrepareOrderDetailsModel(order);
-			var fileName = T("Order.PdfInvoiceFileName", order.Id);
+            if (IsUnauthorizedOrder(order))
+                return new HttpUnauthorizedResult();
 
-			return PrintCore(new List<OrderDetailsModel> { model }, pdf, fileName);
-		}
+            var model = _orderHelper.PrepareOrderDetailsModel(order);
+            var fileName = T("Order.PdfInvoiceFileName", order.Id);
 
-		[AdminAuthorize]
+            return PrintCore(new List<OrderDetailsModel> { model }, pdf, fileName);
+        }
+
+        [AdminAuthorize]
         [Permission(Permissions.Order.Read)]
-		public ActionResult PrintMany(string ids = null, bool pdf = false)
-		{
-			const int maxOrders = 500;
-			IList<Order> orders = null;
-			var totalCount = 0;
+        public ActionResult PrintMany(string ids = null, bool pdf = false)
+        {
+            const int maxOrders = 500;
+            IList<Order> orders = null;
+            var totalCount = 0;
 
-			using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, forceNoTracking: true))
-			{
-				if (ids != null)
-				{
-					orders = _orderService.GetOrdersByIds(ids.ToIntArray());
-					totalCount = orders.Count;
-				}
-				else
-				{
-					var pagedOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 1);
-					totalCount = pagedOrders.TotalCount;
+            using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, forceNoTracking: true))
+            {
+                if (ids != null)
+                {
+                    orders = _orderService.GetOrdersByIds(ids.ToIntArray());
+                    totalCount = orders.Count;
+                }
+                else
+                {
+                    var pagedOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 1);
+                    totalCount = pagedOrders.TotalCount;
 
-					if (totalCount > 0 && totalCount <= maxOrders)
-					{
-						orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
-					}
-				}
-			}
+                    if (totalCount > 0 && totalCount <= maxOrders)
+                    {
+                        orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+                    }
+                }
+            }
 
-			if (totalCount == 0)
-			{
-				NotifyInfo(T("Admin.Common.ExportNoData"));
-				return RedirectToReferrer();
-			}
+            if (totalCount == 0)
+            {
+                NotifyInfo(T("Admin.Common.ExportNoData"));
+                return RedirectToReferrer();
+            }
 
-			if (totalCount > maxOrders)
-			{
-				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
-				return RedirectToReferrer();
-			}
+            if (totalCount > maxOrders)
+            {
+                NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
+                return RedirectToReferrer();
+            }
 
-			var listModel = orders.Select(x => _orderHelper.PrepareOrderDetailsModel(x)).ToList();
+            var listModel = orders.Select(x => _orderHelper.PrepareOrderDetailsModel(x)).ToList();
 
-			return PrintCore(listModel, pdf, "orders.pdf");
-		}
+            return PrintCore(listModel, pdf, "orders.pdf");
+        }
 
-		[NonAction]
-		private ActionResult PrintCore(List<OrderDetailsModel> model, bool pdf, string pdfFileName)
-		{
-			ViewBag.PdfMode = pdf;
-			var viewName = "Details.Print";
-			
-			if (pdf)
-			{
-				// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
-				var storeId = model[0].StoreId;
-				var routeValues = new RouteValueDictionary
-				{
-					["storeId"] = storeId,
-					["lid"] = Services.WorkContext.WorkingLanguage.Id
-				};
-				var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeId);
+        [NonAction]
+        private ActionResult PrintCore(List<OrderDetailsModel> model, bool pdf, string pdfFileName)
+        {
+            ViewBag.PdfMode = pdf;
+            var viewName = "Details.Print";
 
-				var settings = new PdfConvertSettings
-				{
-					Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-					Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
-					Page = new PdfViewContent(viewName, model, this.ControllerContext),
-					Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
-					Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
-				};
+            if (pdf)
+            {
+                // TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
+                var storeId = model[0].StoreId;
+                var routeValues = new RouteValueDictionary
+                {
+                    ["storeId"] = storeId,
+                    ["lid"] = Services.WorkContext.WorkingLanguage.Id
+                };
+                var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeId);
 
-				return new PdfResult(_pdfConverter, settings) { FileName = pdfFileName };
-			}
+                var settings = new PdfConvertSettings
+                {
+                    Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+                    Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
+                    Page = new PdfViewContent(viewName, model, this.ControllerContext),
+                    Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
+                    Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
+                };
 
-			return View(viewName, model);
-		}
+                return new PdfResult(_pdfConverter, settings) { FileName = pdfFileName };
+            }
+
+            return View(viewName, model);
+        }
 
         public ActionResult ReOrder(int id)
         {
-			var order = _orderService.GetOrderById(id);
+            var order = _orderService.GetOrderById(id);
 
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+            if (IsNonExistentOrder(order))
+                return HttpNotFound();
 
-			if (IsUnauthorizedOrder(order))
-				return new HttpUnauthorizedResult();
+            if (IsUnauthorizedOrder(order))
+                return new HttpUnauthorizedResult();
 
             _orderProcessingService.ReOrder(order);
             return RedirectToRoute("ShoppingCart");
@@ -307,36 +307,36 @@ namespace SmartStore.Web.Controllers
         {
             var order = _orderService.GetOrderById(id);
 
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+            if (IsNonExistentOrder(order))
+                return HttpNotFound();
 
-			if (IsUnauthorizedOrder(order))
-				return new HttpUnauthorizedResult();
+            if (IsUnauthorizedOrder(order))
+                return new HttpUnauthorizedResult();
 
-			try
-			{
-				if (_paymentService.CanRePostProcessPayment(order))
-				{
-					var postProcessPaymentRequest = new PostProcessPaymentRequest
-					{
-						Order = order,
-						IsRePostProcessPayment = true
-					};
+            try
+            {
+                if (_paymentService.CanRePostProcessPayment(order))
+                {
+                    var postProcessPaymentRequest = new PostProcessPaymentRequest
+                    {
+                        Order = order,
+                        IsRePostProcessPayment = true
+                    };
 
-					_paymentService.PostProcessPayment(postProcessPaymentRequest);
+                    _paymentService.PostProcessPayment(postProcessPaymentRequest);
 
-					if (postProcessPaymentRequest.RedirectUrl.HasValue())
-					{
-						return Redirect(postProcessPaymentRequest.RedirectUrl);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex);
-			}
+                    if (postProcessPaymentRequest.RedirectUrl.HasValue())
+                    {
+                        return Redirect(postProcessPaymentRequest.RedirectUrl);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex);
+            }
 
-			return RedirectToAction("Details", "Order", new { id = order.Id });
+            return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 
         [RewriteUrl(SslRequirement.Yes)]
@@ -348,10 +348,10 @@ namespace SmartStore.Web.Controllers
 
             var order = shipment.Order;
 
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+            if (IsNonExistentOrder(order))
+                return HttpNotFound();
 
-			if (IsUnauthorizedOrder(order))
+            if (IsUnauthorizedOrder(order))
                 return new HttpUnauthorizedResult();
 
             var model = PrepareShipmentDetailsModel(shipment);
@@ -359,25 +359,25 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		private bool IsNonExistentOrder(Order order)
-		{
-			var result = order == null || order.Deleted;
+        private bool IsNonExistentOrder(Order order)
+        {
+            var result = order == null || order.Deleted;
 
-			if (!Services.Permissions.Authorize(Permissions.Order.Read))
-			{
-				result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
-			}
+            if (!Services.Permissions.Authorize(Permissions.Order.Read))
+            {
+                result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		private bool IsUnauthorizedOrder(Order order)
-		{
+        private bool IsUnauthorizedOrder(Order order)
+        {
             if (!Services.Permissions.Authorize(Permissions.Order.Read))
                 return order == null || order.CustomerId != Services.WorkContext.CurrentCustomer.Id;
             else
                 return order == null;
-		}
+        }
 
         #endregion
     }

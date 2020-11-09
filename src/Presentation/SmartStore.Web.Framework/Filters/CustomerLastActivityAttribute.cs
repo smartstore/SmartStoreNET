@@ -8,10 +8,10 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class CustomerLastActivityAttribute : FilterAttribute, IActionFilter
     {
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<ICustomerService> CustomerService { get; set; }
-		
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<ICustomerService> CustomerService { get; set; }
+
+        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -26,17 +26,28 @@ namespace SmartStore.Web.Framework.Filters
                 return;
 
             var customer = WorkContext.Value.CurrentCustomer;
-            
-            // update last activity date
-            if (!customer.IsSystemAccount && customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
+
+            // Update last activity date.
+            if (customer != null && !customer.Deleted && !customer.IsSystemAccount && customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
             {
-                customer.LastActivityDateUtc = DateTime.UtcNow;
-				CustomerService.Value.UpdateCustomer(customer);
+                try
+                {
+                    customer.LastActivityDateUtc = DateTime.UtcNow;
+                    CustomerService.Value.UpdateCustomer(customer);
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    // The exception may occur on the first call after a migration.
+                    if (!ioe.IsAlreadyAttachedEntityException())
+                    {
+                        throw;
+                    }
+                }
             }
         }
 
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
-	}
+        public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+        }
+    }
 }

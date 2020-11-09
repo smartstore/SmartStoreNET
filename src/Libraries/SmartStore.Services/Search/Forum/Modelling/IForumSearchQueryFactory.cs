@@ -1,6 +1,6 @@
 ﻿namespace SmartStore.Services.Search.Modelling
 {
-	public interface IForumSearchQueryFactory
+    public interface IForumSearchQueryFactory
     {
         /// <summary>
         /// Creates a <see cref="ForumSearchQuery"/> instance from the current <see cref="HttpContextBase"/> 
@@ -13,5 +13,5 @@
         /// The last created query instance. The MVC model binder uses this property to avoid repeated binding.
         /// </summary>
         ForumSearchQuery Current { get; }
-	}
+    }
 }

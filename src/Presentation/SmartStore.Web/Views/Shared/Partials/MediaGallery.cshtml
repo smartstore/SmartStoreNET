@@ -1,0 +1,109 @@
+﻿@model MediaGalleryModel
+
+@using SmartStore.Services.Media;
+@using SmartStore.Web.Models.Media;
+
+@{
+    Html.AddScriptParts("~/bundles/smart-gallery");
+    var defaultFile = Model.Files?.ElementAtOrDefault(Model.GalleryStartIndex);
+}
+
+<div class="gal-box">
+    <!-- Thumbnail navigation -->
+    <div class="gal-nav-cell@(Model.Files.Count <= 1 ? " gal-nav-hidden" : "")">
+        <div class="gal-nav">
+            <div class="gal-list">
+                <div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
+                    @for (int i = 0; i < Model.Files.Count; i++)
+                    {
+                        var file = Model.Files[i];
+                        var linkTitle = T("Product.ThumbTitle", Model.ModelName, (i + 1).ToString()).Text;
+                        var picTitle = linkTitle;
+                        var picAlt = T("Product.ThumbAlternateText", Model.ModelName, (i + 1).ToString()).Text;
+
+                        if (file.Alt != null && file.Alt != Model.ModelName)
+                        {
+                            picAlt = file.Alt;
+                        }
+
+                        if (file.Title != null && file.TitleAttribute != Model.ModelName)
+                        {
+                            picTitle = file.Title;
+                        }
+
+                        <div class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+                            <a class="gal-item-viewport"
+                               itemprop="contentUrl"
+                               href="@file.GetUrl()"
+                               data-type="@file.MediaType"
+                               data-width="@file.Dimensions.Width"
+                               data-height="@file.Dimensions.Height"
+                               data-medium-image="@file.GetUrl(Model.ImageSize)"
+                               title="@linkTitle"
+                               data-picture-id="@file.Id">
+                                @Html.MediaThumbnail(file, Model.ThumbSize, new { @class = "gal-item-content", alt = picAlt, title = picTitle })
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Picture -->
+    <div class="gal-cell">
+        <div class="gal">
+            @if (Model.Files.Count > 0)
+            {
+                for (int i = 0; i < Model.Files.Count; i++)
+                {
+                    var file = Model.Files[i];
+                    <div class="gal-item">
+                        <a class="gal-item-viewport" href="@file.GetUrl()"
+                           data-thumb-image="@file.GetUrl(Model.ThumbSize)"
+                           data-medium-image="@file.GetUrl(Model.ImageSize)"
+                           data-picture-id="@file.Id">
+                            @*Html.MediaThumbnail(file, Model.ImageSize, htmlAttrs)*@
+                            @if (file.MediaType == MediaType.Image)
+                            {
+                                <img class="gal-item-content file-img"
+                                     @Html.Attr(i == Model.GalleryStartIndex ? "src" : "data-lazy", file.GetUrl(Model.ImageSize))
+                                     data-zoom="@file.GetUrl()"
+                                     data-zoom-width="@file.Dimensions.Width"
+                                     data-zoom-height="@file.Dimensions.Height"
+                                     alt="@file.Alt"
+                                     title="@file.TitleAttribute"
+                                     itemprop="image" />
+                            }
+                            else
+                            {
+                                <figure class="file-figure gal-item-content">
+                                    <picture class="file-thumb show fs-display-3" data-type="video" title="@file.TitleAttribute">
+                                        <img class="file-img"
+                                             @Html.Attr(i == Model.GalleryStartIndex ? "src" : "data-lazy", file.GetUrl(Model.ImageSize))
+                                             alt="@file.Alt" />
+                                    </picture>
+                                </figure>
+                            }
+                        </a>
+                    </div>
+                }
+            }
+            else if (Model.FallbackUrl.HasValue())
+            {
+                <div class="gal-item">
+                    <div class="gal-item-viewport no-picture" data-content="@T("Common.NoImageAvail")">
+                        <img class="gal-item-content" src="@Model.FallbackUrl" alt="@Model.DefaultAlt" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.BoxEnabled)
+{
+    using (Html.BeginZoneContent("aftercontent", key: "pswp"))
+    {
+        @Html.Partial("PhotoSwipe")
+    }
+}

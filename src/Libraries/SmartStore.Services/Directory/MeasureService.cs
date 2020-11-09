@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Events;
@@ -15,18 +13,15 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
         private readonly MeasureSettings _measureSettings;
-        private readonly IEventPublisher _eventPublisher;
 
         public MeasureService(
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
-            MeasureSettings measureSettings,
-            IEventPublisher eventPublisher)
+            MeasureSettings measureSettings)
         {
             _measureDimensionRepository = measureDimensionRepository;
             _measureWeightRepository = measureWeightRepository;
             _measureSettings = measureSettings;
-           _eventPublisher = eventPublisher;
         }
 
         #region Dimensions
@@ -38,14 +33,14 @@ namespace SmartStore.Services.Directory
 
             _measureDimensionRepository.Delete(measureDimension);
         }
-        
+
         public virtual MeasureDimension GetMeasureDimensionById(int measureDimensionId)
         {
             if (measureDimensionId == 0)
                 return null;
 
-			return _measureDimensionRepository.GetByIdCached(measureDimensionId, "db.dimension.id-" + measureDimensionId);
-		}
+            return _measureDimensionRepository.GetByIdCached(measureDimensionId, "db.dimension.id-" + measureDimensionId);
+        }
 
         public virtual MeasureDimension GetMeasureDimensionBySystemKeyword(string systemKeyword)
         {
@@ -61,12 +56,12 @@ namespace SmartStore.Services.Directory
 
         public virtual IList<MeasureDimension> GetAllMeasureDimensions()
         {
-			var query = from md in _measureDimensionRepository.Table
-						orderby md.DisplayOrder
-						select md;
-			var measureDimensions = query.ToListCached("db.dimension.all");
-			return measureDimensions;
-		}
+            var query = from md in _measureDimensionRepository.Table
+                        orderby md.DisplayOrder
+                        select md;
+            var measureDimensions = query.ToListCached("db.dimension.all");
+            return measureDimensions;
+        }
 
         public virtual void InsertMeasureDimension(MeasureDimension measure)
         {
@@ -84,8 +79,7 @@ namespace SmartStore.Services.Directory
             _measureDimensionRepository.Update(measure);
         }
 
-        public virtual decimal ConvertDimension(decimal quantity, 
-            MeasureDimension sourceMeasureDimension, MeasureDimension targetMeasureDimension, bool round = true)
+        public virtual decimal ConvertDimension(decimal quantity, MeasureDimension sourceMeasureDimension, MeasureDimension targetMeasureDimension, bool round = true)
         {
             decimal result = quantity;
             if (result != decimal.Zero && sourceMeasureDimension.Id != targetMeasureDimension.Id)
@@ -98,8 +92,7 @@ namespace SmartStore.Services.Directory
             return result;
         }
 
-        public virtual decimal ConvertToPrimaryMeasureDimension(decimal quantity,
-            MeasureDimension sourceMeasureDimension)
+        public virtual decimal ConvertToPrimaryMeasureDimension(decimal quantity, MeasureDimension sourceMeasureDimension)
         {
             decimal result = quantity;
             var baseDimensionIn = GetMeasureDimensionById(_measureSettings.BaseDimensionId);
@@ -113,8 +106,7 @@ namespace SmartStore.Services.Directory
             return result;
         }
 
-        public virtual decimal ConvertFromPrimaryMeasureDimension(decimal quantity,
-            MeasureDimension targetMeasureDimension)
+        public virtual decimal ConvertFromPrimaryMeasureDimension(decimal quantity, MeasureDimension targetMeasureDimension)
         {
             decimal result = quantity;
             var baseDimensionIn = GetMeasureDimensionById(_measureSettings.BaseDimensionId);
@@ -145,8 +137,8 @@ namespace SmartStore.Services.Directory
             if (measureWeightId == 0)
                 return null;
 
-			return _measureWeightRepository.GetByIdCached(measureWeightId, "db.weight.id-" + measureWeightId);
-		}
+            return _measureWeightRepository.GetByIdCached(measureWeightId, "db.weight.id-" + measureWeightId);
+        }
 
         public virtual MeasureWeight GetMeasureWeightBySystemKeyword(string systemKeyword)
         {
@@ -162,13 +154,13 @@ namespace SmartStore.Services.Directory
 
         public virtual IList<MeasureWeight> GetAllMeasureWeights()
         {
-			var query = from mw in _measureWeightRepository.Table
-						orderby mw.DisplayOrder
-						select mw;
+            var query = from mw in _measureWeightRepository.Table
+                        orderby mw.DisplayOrder
+                        select mw;
 
-			var measureWeights = query.ToListCached("db.weight.all");
-			return measureWeights;
-		}
+            var measureWeights = query.ToListCached("db.weight.all");
+            return measureWeights;
+        }
 
         public virtual void InsertMeasureWeight(MeasureWeight measure)
         {

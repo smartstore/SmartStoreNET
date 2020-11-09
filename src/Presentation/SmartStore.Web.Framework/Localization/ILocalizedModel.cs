@@ -6,13 +6,13 @@ namespace SmartStore.Web.Framework.Localization
     {
     }
 
-	public interface ILocalizedModel<T> : ILocalizedModel where T : ILocalizedModelLocal
+    public interface ILocalizedModel<T> : ILocalizedModel where T : ILocalizedModelLocal
     {
         IList<T> Locales { get; set; }
     }
 
-	public interface ILocalizedModelLocal
-	{
-		int LanguageId { get; set; }
-	}
+    public interface ILocalizedModelLocal
+    {
+        int LanguageId { get; set; }
+    }
 }

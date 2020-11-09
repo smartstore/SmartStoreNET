@@ -38,7 +38,7 @@ namespace SmartStore.Services.Media
         IReadOnlyDictionary<string, string> GetExtensionMediaTypeMap();
     }
 
-    public static class IMediaTypeResolverExtensions 
+    public static class IMediaTypeResolverExtensions
     {
         public static MediaType Resolve(this IMediaTypeResolver resolver, MediaFile file)
         {

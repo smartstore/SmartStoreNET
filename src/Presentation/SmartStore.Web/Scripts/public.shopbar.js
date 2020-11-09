@@ -40,9 +40,9 @@ $(function () {
         return false;
     });
 
-}); 
+});
 
-var ShopBar = (function($) {
+var ShopBar = (function ($) {
 
     var shopBar = $("#shopbar");
     var tools = {
@@ -142,7 +142,7 @@ var ShopBar = (function($) {
 
     return {
 
-        init: function(opts) {
+        init: function (opts) {
             // [...]
         },
 
@@ -189,7 +189,7 @@ var ShopBar = (function($) {
                 tool.removeClass("loaded").addClass("loading");
                 spinner.addClass("active");
             }
-            
+
             $.ajax({
                 cache: false,
                 type: "POST",

@@ -27,7 +27,7 @@ namespace SmartStore.Web.Models.Customer
             [SmartResourceDisplayName("RewardPoints.Fields.Message")]
             public string Message { get; set; }
 
-			[SmartResourceDisplayName("Common.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

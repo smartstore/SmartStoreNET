@@ -1,8 +1,7 @@
 namespace SmartStore.GoogleMerchantCenter.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class IsBundle : DbMigration
     {
         public override void Up()
@@ -17,7 +16,7 @@ namespace SmartStore.GoogleMerchantCenter.Data.Migrations
             AddColumn("dbo.GoogleProduct", "CustomLabel3", c => c.String(maxLength: 100));
             AddColumn("dbo.GoogleProduct", "CustomLabel4", c => c.String(maxLength: 100));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.GoogleProduct", "CustomLabel4");

@@ -1,6 +1,7 @@
 ﻿@using Telerik.Web.Mvc.UI;
 @model SpecificationAttributeOptionModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.SpecificationAttributeId)

@@ -1,8 +1,8 @@
 ﻿@model OrderModel
 @using SmartStore.Core.Domain.Tax;
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function() {
         toggleOrderTotals(false);
         toggleCC(false);
 		toggleDD(false);
@@ -765,7 +765,7 @@
 			</td>
 		</tr>
 	}
-	@if (!String.IsNullOrEmpty(Model.AuthorizationTransactionId))
+	@if (Model.AuthorizationTransactionId.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
@@ -778,7 +778,7 @@
 			</td>
 		</tr>
 	}
-	@if (!String.IsNullOrEmpty(Model.AuthorizationTransactionResult))
+	@if (Model.AuthorizationTransactionResult.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
@@ -791,7 +791,7 @@
 			</td>
 		</tr>
 	}
-	@if (!String.IsNullOrEmpty(Model.CaptureTransactionId))
+	@if (Model.CaptureTransactionId.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
@@ -804,7 +804,7 @@
 			</td>
 		</tr>
 	}
-	@if (!String.IsNullOrEmpty(Model.CaptureTransactionResult))
+	@if (Model.CaptureTransactionResult.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
@@ -817,7 +817,7 @@
 			</td>
 		</tr>
 	}
-	@if (!String.IsNullOrEmpty(Model.SubscriptionTransactionId))
+	@if (Model.SubscriptionTransactionId.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">

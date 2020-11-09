@@ -1,6 +1,7 @@
 ﻿@model EmailAccountModel
 
 @using Telerik.Web.Mvc.UI;
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 <table class="adminContent">

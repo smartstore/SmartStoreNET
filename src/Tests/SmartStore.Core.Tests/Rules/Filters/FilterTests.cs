@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
 using NUnit.Framework;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Rules;
 using SmartStore.Rules.Filters;
 
@@ -54,7 +46,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
             var op = RuleOperator.IsEmpty;
 
             Assert.AreEqual(true, op.Match((string)null, null));
-            Assert.AreEqual(true, op.Match(string.Empty, null)); 
+            Assert.AreEqual(true, op.Match(string.Empty, null));
             Assert.AreEqual(false, op.Match(" ab", null));
 
             var expectedResult = Customers.Where(x => string.IsNullOrWhiteSpace(x.Username)).ToList();
@@ -103,7 +95,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
             var expectedResult = Customers.Where(x => x.IsTaxExempt == true).ToList();
             var result = ExecuteQuery(op, x => x.IsTaxExempt, true);
 
-            AssertEquality(expectedResult, result); 
+            AssertEquality(expectedResult, result);
         }
 
         [Test]
@@ -189,7 +181,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
         }
 
         [Test]
-        public void OperatorGreatherThan() 
+        public void OperatorGreatherThan()
         {
             var op = RuleOperator.GreaterThan;
 
@@ -249,7 +241,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
         {
             var op = RuleOperator.In;
 
-            var orderIds = new List<int> { 1, 2, 5, 8 }; 
+            var orderIds = new List<int> { 1, 2, 5, 8 };
             Assert.AreEqual(true, op.Match(2, orderIds));
             Assert.AreEqual(false, op.Match(3, orderIds));
 

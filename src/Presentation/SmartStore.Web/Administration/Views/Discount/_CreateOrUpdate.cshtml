@@ -4,6 +4,7 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("discount-edit").Style(TabsStyle.Material).Items(x =>
@@ -13,14 +14,14 @@
     {
         x.Add().Text(T("Admin.Promotions.Discounts.History").Text).Content(TabHistory());
     }
-    
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "discount-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {
-    <script type="text/javascript">
-            $(document).ready(function () {
+    <script>
+            $(function() {
                 $("#@Html.FieldIdFor(model => model.DiscountTypeId)").change(toggleDiscountType);
                 $("#@Html.FieldIdFor(model => model.UsePercentage)").click(toggleUsePercentage);
                 $("#@Html.FieldIdFor(model => model.DiscountLimitationId)").change(toggleLimitation);
@@ -29,7 +30,7 @@
                 toggleLimitation();
                 toggleUsePercentage();
             });
-            
+
             function toggleDiscountType() {
             	var selectedDiscountTypeId = $("#@Html.FieldIdFor(model => model.DiscountTypeId)").val();
 
@@ -103,34 +104,34 @@
                 @Html.SmartLabelFor(model => model.AppliedToCategories)
             </td>
             <td class="adminData form-control-plaintext wide">
-				@if (!Model.AppliedToCategories.Any())
-				{
-					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
-				}
+                @if (!Model.AppliedToCategories.Any())
+                {
+                    <div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+                }
                 @Html.Raw(string.Join(" · ", Model.AppliedToCategories.Select(x => $"<a href='{Url.Action("Edit", "Category", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
-		<tr id="pnlAppliedToManufacturers">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AppliedToManufacturers)
-			</td>
-			<td class="adminData form-control-plaintext wide">
-				@if (!Model.AppliedToManufacturers.Any())
-				{
-					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
-				}
+        <tr id="pnlAppliedToManufacturers">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AppliedToManufacturers)
+            </td>
+            <td class="adminData form-control-plaintext wide">
+                @if (!Model.AppliedToManufacturers.Any())
+                {
+                    <div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+                }
                 @Html.Raw(string.Join(" · ", Model.AppliedToManufacturers.Select(x => $"<a href='{Url.Action("Edit", "Manufacturer", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
-			</td>
-		</tr>
+            </td>
+        </tr>
         <tr id="pnlAppliedToProducts">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AppliedToProducts)
             </td>
             <td class="adminData form-control-plaintext wide">
-				@if (!Model.AppliedToProducts.Any())
-				{
-					<div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
-				}
+                @if (!Model.AppliedToProducts.Any())
+                {
+                    <div class="muted">@T("Admin.Promotions.Discounts.NoObjectsAssigned")</div>
+                }
                 @Html.Raw(string.Join(" · ", Model.AppliedToProducts.Select(x => $"<a href='{Url.Action("Edit", "Product", new { id = x.Id })}'>{x.Name.HtmlEncode()}</a>")))
             </td>
         </tr>
@@ -184,7 +185,7 @@
                 @Html.SmartLabelFor(model => model.RequiresCouponCode)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.RequiresCouponCode, new { data_toggler_for = "#pnlCouponCode" })
+                @Html.CheckBoxFor(model => model.RequiresCouponCode, new { data_toggler_for = "#pnlCouponCode" })
                 @Html.ValidationMessageFor(model => model.RequiresCouponCode)
             </td>
         </tr>
@@ -212,7 +213,7 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.LimitationTimes, new { postfix = T("Admin.Promotions.Discounts.Fields.LimitationTimes.Times").Text })
-                @Html.ValidationMessageFor(model => model.LimitationTimes) 
+                @Html.ValidationMessageFor(model => model.LimitationTimes)
             </td>
         </tr>
         <tr>
@@ -228,8 +229,8 @@
 }
 
 @helper TabHistory()
-{ 
-	@(Html.Telerik().Grid<DiscountModel.DiscountUsageHistoryModel>()
+{
+    @(Html.Telerik().Grid<DiscountModel.DiscountUsageHistoryModel>()
         .Name("usagehistory-grid")
         .DataKeys(x =>
         {
@@ -254,6 +255,6 @@
             dataBinding.Ajax().Select("UsageHistoryList", "Discount", new { discountId = Model.Id })
                 .Delete("UsageHistoryDelete", "Discount");
         })
-		.PreserveGridState()
+        .PreserveGridState()
         .EnableCustomBinding(true))
 }

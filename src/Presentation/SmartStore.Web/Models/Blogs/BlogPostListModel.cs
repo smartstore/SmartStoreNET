@@ -11,12 +11,14 @@ namespace SmartStore.Web.Models.Blogs
             BlogPosts = new List<BlogPostModel>();
         }
 
-        public int WorkingLanguageId { get; set; }
         public bool RenderHeading { get; set; }
         public string BlogHeading { get; set; }
         public bool RssToLinkButton { get; set; }
         public bool DisableCommentCount { get; set; }
         public BlogPagingFilteringModel PagingFilteringContext { get; set; }
         public IList<BlogPostModel> BlogPosts { get; set; }
+        public string MetaTitle { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaKeywords { get; set; }
     }
 }

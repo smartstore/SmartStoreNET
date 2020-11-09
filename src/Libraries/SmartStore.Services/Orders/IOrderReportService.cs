@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -10,6 +9,14 @@ using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.Orders
 {
+    public enum ReportSorting
+    {
+        ByQuantityAsc = 0,
+        ByQuantityDesc,
+        ByAmountAsc,
+        ByAmountDesc
+    }
+
     /// <summary>
     /// Order report service interface
     /// </summary>
@@ -47,34 +54,36 @@ namespace SmartStore.Services.Orders
         /// Get order average report.
         /// </summary>
         /// <param name="storeId">Store identifier</param>
-        /// <param name="os">Order status</param>
+        /// <param name="orderStatus">Order status</param>
         /// <returns>Order average report.</returns>
-        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus os);
+        OrderAverageReportLineSummary OrderAverageReport(int storeId, OrderStatus orderStatus);
 
         /// <summary>
-        /// Get best sellers report
+        /// Get best sellers report.
         /// </summary>
 		/// <param name="storeId">Store identifier</param>
         /// <param name="startTime">Order start time; null to load all</param>
         /// <param name="endTime">Order end time; null to load all</param>
-        /// <param name="os">Order status; null to load all records</param>
-        /// <param name="ps">Order payment status; null to load all records</param>
-        /// <param name="ss">Shipping status; null to load all records</param>
+        /// <param name="orderStatus">Order status; null to load all records</param>
+        /// <param name="paymentStatus">Order payment status; null to load all records</param>
+        /// <param name="shippingStatus">Shipping status; null to load all records</param>
         /// <param name="billingCountryId">Billing country identifier; 0 to load all records</param>
-        /// <param name="recordsToReturn">Records to return</param>
-        /// <param name="orderBy">1 - order by quantity, 2 - order by total amount</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="sorting">Sorting of report items.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Result</returns>
-		IList<BestsellersReportLine> BestSellersReport(
+        /// <returns>Best selling products.</returns>
+		IPagedList<BestsellersReportLine> BestSellersReport(
             int storeId,
             DateTime? startTime,
             DateTime? endTime,
-            OrderStatus? os, 
-            PaymentStatus? ps, 
-            ShippingStatus? ss,
+            OrderStatus? orderStatus,
+            PaymentStatus? paymentStatus,
+            ShippingStatus? shippingStatus,
             int billingCountryId = 0,
-            int recordsToReturn = 5,
-            int orderBy = 1,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            ReportSorting sorting = ReportSorting.ByQuantityDesc,
             bool showHidden = false);
 
         /// <summary>

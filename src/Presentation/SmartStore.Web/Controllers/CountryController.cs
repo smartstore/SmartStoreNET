@@ -5,14 +5,14 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Infrastructure.Cache;
 
 namespace SmartStore.Web.Controllers
 {
     public partial class CountryController : PublicControllerBase
-	{
-		#region Fields
+    {
+        #region Fields
 
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
@@ -20,32 +20,34 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
 
-	    #endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-        public CountryController(ICountryService countryService, 
-            IStateProvinceService stateProvinceService, 
-            ILocalizationService localizationService, 
+        public CountryController(ICountryService countryService,
+            IStateProvinceService stateProvinceService,
+            ILocalizationService localizationService,
             IWorkContext workContext,
             ICacheManager cacheManager)
-		{
+        {
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
             this._localizationService = localizationService;
             this._workContext = workContext;
             this._cacheManager = cacheManager;
-		}
+        }
 
         #endregion
 
         #region States / provinces
 
+        /// <summary>
+        /// This action method gets called via an ajax request.
+        /// </summary>
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult GetStatesByCountryId(string countryId, bool addEmptyStateIfRequired)
         {
-            //this action method gets called via an ajax request
-            if (String.IsNullOrEmpty(countryId))
+            if (!countryId.HasValue())
                 throw new ArgumentNullException("countryId");
 
             string cacheKey = string.Format(ModelCacheEventConsumer.STATEPROVINCES_BY_COUNTRY_MODEL_KEY, countryId, addEmptyStateIfRequired, _workContext.WorkingLanguage.Id);
@@ -59,8 +61,8 @@ namespace SmartStore.Web.Controllers
 
                 if (addEmptyStateIfRequired && result.Count == 0)
                     result.Insert(0, new { id = 0, name = _localizationService.GetResource("Address.OtherNonUS") });
-                return result;
 
+                return result;
             });
 
             return Json(cacheModel, JsonRequestBehavior.AllowGet);

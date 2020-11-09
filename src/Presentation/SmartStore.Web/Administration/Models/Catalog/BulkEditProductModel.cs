@@ -10,8 +10,8 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-		public string ProductTypeName { get; set; }
-		public string ProductTypeLabelHint { get; set; }
+        public string ProductTypeName { get; set; }
+        public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.BulkEdit.Fields.SKU")]
         [AllowHtml]

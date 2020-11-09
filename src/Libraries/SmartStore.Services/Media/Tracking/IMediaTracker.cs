@@ -18,7 +18,7 @@ namespace SmartStore.Services.Media
         void Track<TSetting>(TSetting settings, int? prevMediaFileId, Expression<Func<TSetting, int?>> path) where TSetting : ISettings, new();
 
         void TrackMany(IEnumerable<MediaTrack> tracks);
-        void TrackMany(string albumName, IEnumerable<MediaTrack> tracks, bool isMigration);
+        void TrackMany(string albumName, IEnumerable<MediaTrack> tracks, bool isMigration = false);
 
         int DeleteAllTracks(string albumName);
         void DetectAllTracks(string albumName, bool isMigration = false);

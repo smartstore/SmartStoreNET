@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Data.Entity;
-using System.Threading.Tasks;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Media
 {
@@ -40,13 +35,13 @@ namespace SmartStore.Services.Media
         {
             var cacheKey = FolderTreeKey;
 
-            var root = _cache.Get(cacheKey, () => 
+            var root = _cache.Get(cacheKey, () =>
             {
                 var query = from x in _folderRepo.TableUntracked
                             orderby x.ParentId, x.Name
                             select x;
 
-                var unsortedNodes = query.ToList().Select(x => 
+                var unsortedNodes = query.ToList().Select(x =>
                 {
                     var item = new MediaFolderNode
                     {
@@ -134,7 +129,7 @@ namespace SmartStore.Services.Media
         {
             if (id <= 0)
                 return null;
-            
+
             return GetRootNode().SelectNodeById(id);
         }
 

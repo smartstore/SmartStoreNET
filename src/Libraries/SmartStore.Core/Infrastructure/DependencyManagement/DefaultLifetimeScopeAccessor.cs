@@ -1,88 +1,99 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Web;
 using Autofac;
-using Autofac.Core.Lifetime;
-using SmartStore.Core.Data;
-using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
-	public class DefaultLifetimeScopeAccessor : ILifetimeScopeAccessor
-	{
-		private ContextState<ILifetimeScope> _state;
-		private readonly ILifetimeScope _rootContainer;
-		internal static readonly object ScopeTag = "AutofacWebRequest";
+    public class DefaultLifetimeScopeAccessor : ILifetimeScopeAccessor
+    {
+        class ContextAwareScope : IDisposable
+        {
+            private readonly Action _disposer;
 
-		public DefaultLifetimeScopeAccessor(ILifetimeScope rootContainer)
-		{
-			Guard.NotNull(rootContainer, nameof(rootContainer));
+            public ContextAwareScope(Action disposer)
+            {
+                _disposer = disposer;
+            }
 
-			//rootContainer.ChildLifetimeScopeBeginning += OnScopeBeginning;
+            public void Dispose()
+            {
+                _disposer?.Invoke();
+            }
+        }
 
-			this._rootContainer = rootContainer;
-			this._state = new ContextState<ILifetimeScope>("CustomLifetimeScopeProvider.WorkScope");
-		}
+        private readonly ContextState<ILifetimeScope> _state;
+        private readonly ILifetimeScope _rootContainer;
+        internal static readonly object ScopeTag = "AutofacWebRequest";
 
-		public ILifetimeScope ApplicationContainer
-		{
-			get { return _rootContainer; }
-		}
+        public DefaultLifetimeScopeAccessor(ILifetimeScope rootContainer)
+        {
+            Guard.NotNull(rootContainer, nameof(rootContainer));
 
-		public IDisposable BeginContextAwareScope()
-		{
-			var disposer = HttpContext.Current != null
-				? ActionDisposable.Empty
-				: new ActionDisposable(() => this.EndLifetimeScope());
+            //rootContainer.ChildLifetimeScopeBeginning += OnScopeBeginning;
 
-			return disposer;
-		}
+            _rootContainer = rootContainer;
+            _state = new ContextState<ILifetimeScope>("CustomLifetimeScopeProvider.WorkScope");
+        }
 
-		public void EndLifetimeScope()
-		{
-			try
-			{
-				var scope = _state.GetState();
-				if (scope != null)
-				{
-					scope.Dispose();
-					_state.RemoveState();
-				}
-			}
-			catch { }
-		}
+        public ILifetimeScope ApplicationContainer => _rootContainer;
 
-		public ILifetimeScope GetLifetimeScope(Action<ContainerBuilder> configurationAction)
-		{
-			var scope = _state.GetState();
-			if (scope == null)
-			{
-				_state.SetState((scope = BeginLifetimeScope(configurationAction)));
-				//scope.CurrentScopeEnding += OnScopeEnding;
-			}
+        public IDisposable BeginContextAwareScope()
+        {
+            // Stack-like behaviour for Non-HttpContext thread:
+            // Only the first call returns a disposer, all nested calls to this method are void.
+            return HttpContext.Current != null
+                ? (IDisposable)ActionDisposable.Empty
+                : new ContextAwareScope(
+                    _state.GetState() == null
+                        ? this.EndLifetimeScope
+                        : (Action)null);
+        }
 
-			return scope;
-		}
+        public void EndLifetimeScope()
+        {
+            try
+            {
+                var scope = _state.GetState();
+                if (scope != null)
+                {
+                    scope.Dispose();
+                    _state.RemoveState();
+                }
+            }
+            catch { }
+        }
 
-		//private void OnScopeBeginning(object sender, LifetimeScopeBeginningEventArgs args)
-		//{
-		//	bool isWeb = System.Web.HttpContext.Current != null;
-		//	Debug.WriteLine("Scope Begin, Web: " + isWeb);
-		//}
+        public ILifetimeScope GetLifetimeScope(Action<ContainerBuilder> configurationAction)
+        {
+            var scope = _state.GetState();
+            if (scope == null)
+            {
+                _state.SetState((scope = BeginLifetimeScope(configurationAction)));
+                //scope.CurrentScopeEnding += OnScopeEnding;
+            }
 
-		//private void OnScopeEnding(object sender, LifetimeScopeEndingEventArgs args)
-		//{
-		//	bool isWeb = System.Web.HttpContext.Current != null;
-		//	Debug.WriteLine("Scope END, Web: " + isWeb);
-		//}
+            return scope;
+        }
 
-		public ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction)
-		{
-			return (configurationAction == null)
-				? _rootContainer.BeginLifetimeScope(ScopeTag)
-				: _rootContainer.BeginLifetimeScope(ScopeTag, configurationAction);
-		}
+        //private void OnScopeBeginning(object sender, LifetimeScopeBeginningEventArgs args)
+        //{
+        //	bool isWeb = System.Web.HttpContext.Current != null;
+        //	Debug.WriteLine("Scope Begin, Web: " + isWeb);
+        //}
 
-	}
+        //private void OnScopeEnding(object sender, LifetimeScopeEndingEventArgs args)
+        //{
+        //	bool isWeb = System.Web.HttpContext.Current != null;
+        //	Debug.WriteLine("Scope END, Web: " + isWeb);
+        //}
+
+        public ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction)
+        {
+            return (configurationAction == null)
+                ? _rootContainer.BeginLifetimeScope(ScopeTag)
+                : _rootContainer.BeginLifetimeScope(ScopeTag, configurationAction);
+        }
+
+    }
 }

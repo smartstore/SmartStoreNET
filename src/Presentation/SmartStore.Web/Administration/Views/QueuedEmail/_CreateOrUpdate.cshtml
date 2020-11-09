@@ -1,5 +1,6 @@
 ﻿@model QueuedEmailModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 

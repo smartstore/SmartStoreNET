@@ -4,7 +4,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Messages
 {
-	[TestFixture]
+    [TestFixture]
     public class MessageTemplatePersistenceTests : PersistenceTest
     {
         [Test]
@@ -13,25 +13,25 @@ namespace SmartStore.Data.Tests.Messages
             var mt = new MessageTemplate
             {
                 Name = "Template1",
-				To = "{{ Message.To }}",
-				BccEmailAddresses = "Bcc",
+                To = "{{ Message.To }}",
+                BccEmailAddresses = "Bcc",
                 Subject = "Subj",
                 Body = "Some text",
                 IsActive = true,
                 EmailAccountId = 1,
-				LimitedToStores = true
+                LimitedToStores = true
             };
 
 
             var fromDb = SaveAndLoadEntity(mt);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Template1");
-			fromDb.To.ShouldEqual("{{ Message.To }}");
-			fromDb.BccEmailAddresses.ShouldEqual("Bcc");
+            fromDb.To.ShouldEqual("{{ Message.To }}");
+            fromDb.BccEmailAddresses.ShouldEqual("Bcc");
             fromDb.Subject.ShouldEqual("Subj");
             fromDb.Body.ShouldEqual("Some text");
             fromDb.IsActive.ShouldBeTrue();
-			fromDb.LimitedToStores.ShouldBeTrue();
+            fromDb.LimitedToStores.ShouldBeTrue();
             fromDb.EmailAccountId.ShouldEqual(1);
         }
     }

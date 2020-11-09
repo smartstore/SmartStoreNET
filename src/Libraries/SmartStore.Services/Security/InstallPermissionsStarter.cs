@@ -49,7 +49,7 @@ namespace SmartStore.Services.Security
                 // INFO: even if no plugin has changed: directly after a DB migration this code block MUST run. It seems awkward
                 // that pending migrations exist when binaries has not changed. But after a manual DB reset for a migration rerun
                 // nobody touches the binaries usually.
-                
+
                 // Standard permission provider and all plugin providers.
                 var types = _typeFinder.FindClassesOfType<IPermissionProvider>(ignoreInactivePlugins: true).ToList();
                 foreach (var type in types)

@@ -39,7 +39,7 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>4.0.1</Version>
+		<Version>4.1.0</Version>
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
@@ -97,13 +97,15 @@
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-x64 Include="$(SqlCeFolder)\x64\**\*"/>
-		  	<V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.0.5\runtimes\win-x86\native\**\*"/>
-		  	<V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.0.5\runtimes\win-x64\native\**\*"/>
-		  	<LibSass-Native-Binaries-x86 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x86.1.2.0\runtimes\win-x86\native\**\*"/>
-		  	<LibSass-Native-Binaries-x64 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x64.1.2.0\runtimes\win-x64\native\**\*"/>
+			<V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.5.5\runtimes\win-x86\native\**\*"/>
+			<V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.5.5\runtimes\win-x64\native\**\*"/>
+			<V8-Native-Binaries-x86 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.3.5.5\runtimes\win-x86\lib\net45\**\*"/>
+			<V8-Native-Binaries-x64 Include="$(SrcFolder)\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.3.5.5\runtimes\win-x64\lib\net45\**\*"/>
+		  	<LibSass-Native-Binaries-x86 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x86.1.2.6\runtimes\win-x86\native\**\*"/>
+		  	<LibSass-Native-Binaries-x64 Include="$(SrcFolder)\packages\LibSassHost.Native.win-x64.1.2.6\runtimes\win-x64\native\**\*"/>
       		<VC14-Native-Binaries-x86 Include="$(LibFolder)\msvcp140\x86\**\*"/>
       		<VC14-Native-Binaries-x64 Include="$(LibFolder)\msvcp140\x64\**\*"/>
-      		<RoslynFiles Include="$(SrcFolder)\packages\Microsoft.Net.Compilers.2.10.0\tools\**\*"/>
+      		<RoslynFiles Include="$(SrcFolder)\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\tools\Roslyn472\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->

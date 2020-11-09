@@ -7,46 +7,20 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Affiliates
 {
-    /// <summary>
-    /// Affiliate service
-    /// </summary>
     public partial class AffiliateService : IAffiliateService
     {
-        #region Fields
-
         private readonly IRepository<Affiliate> _affiliateRepository;
-        private readonly IEventPublisher _eventPublisher;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="affiliateRepository">Affiliate repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public AffiliateService(IRepository<Affiliate> affiliateRepository,
-            IEventPublisher eventPublisher)
+        public AffiliateService(IRepository<Affiliate> affiliateRepository)
         {
             _affiliateRepository = affiliateRepository;
-            _eventPublisher = eventPublisher;
         }
 
-        #endregion
-
-        #region Methods
-        
-        /// <summary>
-        /// Gets an affiliate by affiliate identifier
-        /// </summary>
-        /// <param name="affiliateId">Affiliate identifier</param>
-        /// <returns>Affiliate</returns>
         public virtual Affiliate GetAffiliateById(int affiliateId)
         {
             if (affiliateId == 0)
                 return null;
-            
+
             return _affiliateRepository.GetById(affiliateId);
         }
 
@@ -102,8 +76,5 @@ namespace SmartStore.Services.Affiliates
 
             _affiliateRepository.Update(affiliate);
         }
-
-        #endregion
-        
     }
 }

@@ -4,44 +4,44 @@ using FluentValidation;
 
 namespace SmartStore.Web.Framework.Validators
 {
-	public abstract class SmartValidatorBase<T> : AbstractValidator<T> where T : class
-	{
-		protected SmartValidatorBase()
-		{
-		}
+    public abstract class SmartValidatorBase<T> : AbstractValidator<T> where T : class
+    {
+        protected SmartValidatorBase()
+        {
+        }
 
-		public void Validate(T model, ModelStateDictionary modelState)
-		{
-			var result = Validate(model);
+        public void Validate(T model, ModelStateDictionary modelState)
+        {
+            var result = Validate(model);
 
-			if (!result.IsValid)
-			{
+            if (!result.IsValid)
+            {
                 foreach (var error in result.Errors.DistinctBy(x => x.ErrorMessage))
-				{
-					try
-					{
-						modelState.AddModelError(error.PropertyName, error.ErrorMessage);
-					}
-					catch { }
-				}
-			}
-		}
+                {
+                    try
+                    {
+                        modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                    }
+                    catch { }
+                }
+            }
+        }
 
-		public bool Validate(T model, List<string> warnings)
-		{
-			var result = Validate(model);
+        public bool Validate(T model, List<string> warnings)
+        {
+            var result = Validate(model);
 
-			if (!result.IsValid)
-			{
+            if (!result.IsValid)
+            {
                 foreach (var error in result.Errors.DistinctBy(x => x.ErrorMessage))
                 {
                     warnings.Add(error.ErrorMessage);
                 }
 
-				return false;
-			}
+                return false;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 }

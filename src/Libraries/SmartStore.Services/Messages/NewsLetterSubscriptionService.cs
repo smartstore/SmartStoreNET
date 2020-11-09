@@ -13,24 +13,24 @@ namespace SmartStore.Services.Messages
         private readonly IRepository<Customer> _customerRepository;
         private readonly ICommonServices _services;
 
-		public NewsLetterSubscriptionService(
+        public NewsLetterSubscriptionService(
             IRepository<NewsLetterSubscription> subscriptionRepository,
             IRepository<Customer> customerRepository,
             ICommonServices services)
         {
             _subscriptionRepository = subscriptionRepository;
             _customerRepository = customerRepository;
-			_services = services;
-		}
+            _services = services;
+        }
 
         public void InsertNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
+            Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
-			if (newsLetterSubscription.StoreId == 0)
-			{
-				throw new SmartException("News letter subscription must be assigned to a valid store.");
-			}
+            if (newsLetterSubscription.StoreId == 0)
+            {
+                throw new SmartException("News letter subscription must be assigned to a valid store.");
+            }
 
             // Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
@@ -47,12 +47,12 @@ namespace SmartStore.Services.Messages
 
         public void UpdateNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
+            Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
-			if (newsLetterSubscription.StoreId == 0)
-			{
-				throw new SmartException("News letter subscription must be assigned to a valid store.");
-			}
+            if (newsLetterSubscription.StoreId == 0)
+            {
+                throw new SmartException("News letter subscription must be assigned to a valid store.");
+            }
 
             // Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
@@ -70,8 +70,8 @@ namespace SmartStore.Services.Messages
                 // If the previous entry was false, but this one is true, publish a subscribe.
                 PublishSubscriptionEvent(newsLetterSubscription.Email, true, publishSubscriptionEvents);
             }
-            
-            if ((originalSubscription.Active && newsLetterSubscription.Active) && 
+
+            if ((originalSubscription.Active && newsLetterSubscription.Active) &&
                 (originalSubscription.Email != newsLetterSubscription.Email))
             {
                 // If the two emails are different publish an unsubscribe.
@@ -87,7 +87,7 @@ namespace SmartStore.Services.Messages
 
         public virtual void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
+            Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
             _subscriptionRepository.Delete(newsLetterSubscription);
 
@@ -95,55 +95,55 @@ namespace SmartStore.Services.Messages
             PublishSubscriptionEvent(newsLetterSubscription.Email, false, publishSubscriptionEvents);
         }
 
-		public virtual bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId)
-		{
-			bool? result = null;
+        public virtual bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId)
+        {
+            bool? result = null;
 
-			if (email.IsEmail())
-			{
-				var newsletter = GetNewsLetterSubscriptionByEmail(email, storeId);
-				if (newsletter != null)
-				{
-					if (add)
-					{
-						if (!newsletter.Active)
-						{
-							_services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
-						}
-						UpdateNewsLetterSubscription(newsletter);
-						result = true;
-					}
-					else
-					{
-						DeleteNewsLetterSubscription(newsletter);
-						result = false;
-					}
-				}
-				else
-				{
-					if (add)
-					{
-						newsletter = new NewsLetterSubscription
-						{
-							NewsLetterSubscriptionGuid = Guid.NewGuid(),
-							Email = email,
-							Active = false,
-							CreatedOnUtc = DateTime.UtcNow,
-							StoreId = storeId,
+            if (email.IsEmail())
+            {
+                var newsletter = GetNewsLetterSubscriptionByEmail(email, storeId);
+                if (newsletter != null)
+                {
+                    if (add)
+                    {
+                        if (!newsletter.Active)
+                        {
+                            _services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
+                        }
+                        UpdateNewsLetterSubscription(newsletter);
+                        result = true;
+                    }
+                    else
+                    {
+                        DeleteNewsLetterSubscription(newsletter);
+                        result = false;
+                    }
+                }
+                else
+                {
+                    if (add)
+                    {
+                        newsletter = new NewsLetterSubscription
+                        {
+                            NewsLetterSubscriptionGuid = Guid.NewGuid(),
+                            Email = email,
+                            Active = false,
+                            CreatedOnUtc = DateTime.UtcNow,
+                            StoreId = storeId,
                             WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id
-						};
-						InsertNewsLetterSubscription(newsletter);
+                        };
+                        InsertNewsLetterSubscription(newsletter);
 
-						_services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
+                        _services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
 
-						result = true;
-					}
-				}
-			}
-			return result;
-		}
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
 
-		public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
+        public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
         {
             if (newsLetterSubscriptionId == 0) return null;
 
@@ -165,20 +165,20 @@ namespace SmartStore.Services.Messages
 
         public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email, int storeId = 0)
         {
-			if (!email.IsEmail())
-				return null;
+            if (!email.IsEmail())
+                return null;
 
             email = email.Trim();
 
-			var query = _subscriptionRepository.Table
-				.Where(x => x.Email == email);
+            var query = _subscriptionRepository.Table
+                .Where(x => x.Email == email);
 
-			if (storeId > 0)
-				query = query.Where(x => x.StoreId == storeId);
+            if (storeId > 0)
+                query = query.Where(x => x.StoreId == storeId);
 
-			var subscription = query.OrderBy(x => x.Id).FirstOrDefault();
+            var subscription = query.OrderBy(x => x.Id).FirstOrDefault();
 
-			return subscription;
+            return subscription;
         }
 
         public virtual IPagedList<NewsletterSubscriber> GetAllNewsLetterSubscriptions(
@@ -237,27 +237,27 @@ namespace SmartStore.Services.Messages
         {
             if (publishSubscriptionEvents)
             {
-				if (isSubscribe)
+                if (isSubscribe)
                 {
-					_services.EventPublisher.Publish(new EmailSubscribedEvent(email));
-				}
+                    _services.EventPublisher.Publish(new EmailSubscribedEvent(email));
+                }
                 else
                 {
-					_services.EventPublisher.Publish(new EmailUnsubscribedEvent(email));
-				}
+                    _services.EventPublisher.Publish(new EmailUnsubscribedEvent(email));
+                }
             }
         }
 
-		private static string EnsureSubscriberEmailOrThrow(string email)
-		{
-			string output = email.EmptyNull().Trim().Truncate(255);
+        private static string EnsureSubscriberEmailOrThrow(string email)
+        {
+            string output = email.EmptyNull().Trim().Truncate(255);
 
-			if (!output.IsEmail())
-			{
-				throw Error.ArgumentOutOfRange("email", "Email is not valid", email);
-			}
+            if (!output.IsEmail())
+            {
+                throw Error.ArgumentOutOfRange("email", "Email is not valid", email);
+            }
 
-			return output;
-		}
-    }    
+            return output;
+        }
+    }
 }

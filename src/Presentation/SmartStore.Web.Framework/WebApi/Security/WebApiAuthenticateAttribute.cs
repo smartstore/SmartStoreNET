@@ -19,244 +19,244 @@ using SmartStore.Web.Framework.WebApi.Caching;
 namespace SmartStore.Web.Framework.WebApi.Security
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
-	public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
-	{
-		protected HmacAuthentication _hmac = new HmacAuthentication();
+    public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
+    {
+        protected HmacAuthentication _hmac = new HmacAuthentication();
 
-		/// <summary>
-		/// The system name of the permission
-		/// </summary>
-		public string Permission { get; set; }
+        /// <summary>
+        /// The system name of the permission
+        /// </summary>
+        public string Permission { get; set; }
 
-		protected string CreateContentMd5Hash(HttpRequestMessage request)
-		{
-			if (request != null && request.Content != null)
-			{
-				byte[] contentBytes = request.Content.ReadAsByteArrayAsync().Result;
+        protected string CreateContentMd5Hash(HttpRequestMessage request)
+        {
+            if (request != null && request.Content != null)
+            {
+                byte[] contentBytes = request.Content.ReadAsByteArrayAsync().Result;
 
                 if (contentBytes != null && contentBytes.Length > 0)
                 {
                     return _hmac.CreateContentMd5Hash(contentBytes);
                 }
-			}
+            }
 
-			return "";
-		}
+            return "";
+        }
 
-		protected virtual bool HasPermission(IDependencyScope dependencyScope, Customer customer)
-		{
-			var result = true;
+        protected virtual bool HasPermission(IDependencyScope dependencyScope, Customer customer)
+        {
+            var result = true;
 
-			if (Permission.HasValue())
-			{
-				try
-				{
-					var permissionService = dependencyScope.GetService<IPermissionService>();
+            if (Permission.HasValue())
+            {
+                try
+                {
+                    var permissionService = (IPermissionService)dependencyScope.GetService(typeof(IPermissionService));
                     result = permissionService.Authorize(Permission, customer);
-				}
-				catch { }
-			}
+                }
+                catch { }
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		protected virtual void LogUnauthorized(HttpActionContext actionContext, IDependencyScope dependencyScope, HmacResult result, Customer customer)
-		{
-			try
-			{
-				var localization = dependencyScope.GetService<ILocalizationService>();
-				var loggerFactory = dependencyScope.GetService<ILoggerFactory>();
-				var logger = loggerFactory.GetLogger(this.GetType());
+        protected virtual void LogUnauthorized(HttpActionContext actionContext, IDependencyScope dependencyScope, HmacResult result, Customer customer)
+        {
+            try
+            {
+                var localization = (ILocalizationService)dependencyScope.GetService(typeof(ILocalizationService));
+                var loggerFactory = (ILoggerFactory)dependencyScope.GetService(typeof(ILoggerFactory));
+                var logger = loggerFactory.GetLogger(this.GetType());
 
-				var strResult = result.ToString();
-				var description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
-				
-				logger.Warn(
-					new SecurityException("{0}\r\n{1}".FormatInvariant(description, actionContext.Request.Headers.ToString())),
-					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatInvariant(strResult)
-				);
-			}
-			catch (Exception ex)
-			{
-				ex.Dump();
-			}
-		}
+                var strResult = result.ToString();
+                var description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
 
-		protected virtual Customer GetCustomer(IDependencyScope dependencyScope, int customerId)
-		{
-			Customer customer = null;
+                logger.Warn(
+                    new SecurityException("{0}\r\n{1}".FormatInvariant(description, actionContext.Request.Headers.ToString())),
+                    localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatInvariant(strResult)
+                );
+            }
+            catch (Exception ex)
+            {
+                ex.Dump();
+            }
+        }
 
-			try
-			{
-				var customerService = dependencyScope.GetService<ICustomerService>();
-				customer = customerService.GetCustomerById(customerId);
-			}
-			catch (Exception ex)
-			{
-				ex.Dump();
-			}
+        protected virtual Customer GetCustomer(IDependencyScope dependencyScope, int customerId)
+        {
+            Customer customer = null;
 
-			return customer;
-		}
+            try
+            {
+                var customerService = (ICustomerService)dependencyScope.GetService(typeof(ICustomerService));
+                customer = customerService.GetCustomerById(customerId);
+            }
+            catch (Exception ex)
+            {
+                ex.Dump();
+            }
 
-		protected virtual HmacResult IsAuthenticated(
-			HttpActionContext actionContext,
-			IDependencyScope dependencyScope,
-			WebApiControllingCacheData controllingData,
-			DateTime utcNow,
-			out Customer customer)
-		{
-			customer = null;
+            return customer;
+        }
 
-			DateTime headDateTime;
-			var request = HttpContext.Current.Request;
-			var authorization = actionContext.Request.Headers.Authorization;
+        protected virtual HmacResult IsAuthenticated(
+            HttpActionContext actionContext,
+            IDependencyScope dependencyScope,
+            WebApiControllingCacheData controllingData,
+            DateTime utcNow,
+            out Customer customer)
+        {
+            customer = null;
 
-			if (request == null)
-				return HmacResult.FailedForUnknownReason;
+            DateTime headDateTime;
+            var request = HttpContext.Current.Request;
+            var authorization = actionContext.Request.Headers.Authorization;
 
-			if (controllingData.ApiUnavailable)
-				return HmacResult.ApiUnavailable;
+            if (request == null)
+                return HmacResult.FailedForUnknownReason;
 
-			if (authorization == null || authorization.Scheme.IsEmpty() || authorization.Parameter.IsEmpty())
-				return HmacResult.InvalidAuthorizationHeader;
+            if (controllingData.ApiUnavailable)
+                return HmacResult.ApiUnavailable;
 
-			string headContentMd5 = request.Headers["Content-Md5"] ?? request.Headers["Content-MD5"];
-			string headTimestamp = request.Headers[WebApiGlobal.Header.Date];
-			string headPublicKey = request.Headers[WebApiGlobal.Header.PublicKey];
-			string signatureConsumer = authorization.Parameter;
+            if (authorization == null || authorization.Scheme.IsEmpty() || authorization.Parameter.IsEmpty())
+                return HmacResult.InvalidAuthorizationHeader;
 
-			if (string.IsNullOrWhiteSpace(headPublicKey))
-				return HmacResult.UserInvalid;
+            string headContentMd5 = request.Headers["Content-Md5"] ?? request.Headers["Content-MD5"];
+            string headTimestamp = request.Headers[WebApiGlobal.Header.Date];
+            string headPublicKey = request.Headers[WebApiGlobal.Header.PublicKey];
+            string signatureConsumer = authorization.Parameter;
 
-			if (!_hmac.IsAuthorizationHeaderValid(authorization.Scheme, signatureConsumer))
-				return HmacResult.InvalidAuthorizationHeader;
+            if (string.IsNullOrWhiteSpace(headPublicKey))
+                return HmacResult.UserInvalid;
 
-			if (!_hmac.ParseTimestamp(headTimestamp, out headDateTime))
-				return HmacResult.InvalidTimestamp;
+            if (!_hmac.IsAuthorizationHeaderValid(authorization.Scheme, signatureConsumer))
+                return HmacResult.InvalidAuthorizationHeader;
 
-			int maxMinutes = (controllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : controllingData.ValidMinutePeriod);
+            if (!_hmac.ParseTimestamp(headTimestamp, out headDateTime))
+                return HmacResult.InvalidTimestamp;
 
-			if (Math.Abs((headDateTime - utcNow).TotalMinutes) > maxMinutes)
-				return HmacResult.TimestampOutOfPeriod;
+            int maxMinutes = (controllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : controllingData.ValidMinutePeriod);
 
-			var cacheUserData = WebApiCachingUserData.Data();
+            if (Math.Abs((headDateTime - utcNow).TotalMinutes) > maxMinutes)
+                return HmacResult.TimestampOutOfPeriod;
 
-			var apiUser = cacheUserData.FirstOrDefault(x => x.PublicKey == headPublicKey);
-			if (apiUser == null)
-				return HmacResult.UserUnknown;
+            var cacheUserData = WebApiCachingUserData.Data();
 
-			if (!apiUser.Enabled)
-				return HmacResult.UserDisabled;
+            var apiUser = cacheUserData.FirstOrDefault(x => x.PublicKey == headPublicKey);
+            if (apiUser == null)
+                return HmacResult.UserUnknown;
 
-			if (!controllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
-				return HmacResult.TimestampOlderThanLastRequest;
+            if (!apiUser.Enabled)
+                return HmacResult.UserDisabled;
 
-			var context = new WebApiRequestContext
-			{
-				HttpMethod = request.HttpMethod,
-				HttpAcceptType = request.Headers["Accept"],
-				PublicKey = headPublicKey,
-				SecretKey = apiUser.SecretKey,
-				Url = HttpUtility.UrlDecode(request.Url.AbsoluteUri.ToLower())
-			};
+            if (!controllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
+                return HmacResult.TimestampOlderThanLastRequest;
 
-			var contentMd5 = CreateContentMd5Hash(actionContext.Request);
+            var context = new WebApiRequestContext
+            {
+                HttpMethod = request.HttpMethod,
+                HttpAcceptType = request.Headers["Accept"],
+                PublicKey = headPublicKey,
+                SecretKey = apiUser.SecretKey,
+                Url = HttpUtility.UrlDecode(request.Url.AbsoluteUri.ToLower())
+            };
 
-			if (headContentMd5.HasValue() && headContentMd5 != contentMd5)
-				return HmacResult.ContentMd5NotMatching;
+            var contentMd5 = CreateContentMd5Hash(actionContext.Request);
 
-			var messageRepresentation = _hmac.CreateMessageRepresentation(context, contentMd5, headTimestamp);
+            if (headContentMd5.HasValue() && headContentMd5 != contentMd5)
+                return HmacResult.ContentMd5NotMatching;
 
-			if (string.IsNullOrEmpty(messageRepresentation))
-				return HmacResult.MissingMessageRepresentationParameter;
+            var messageRepresentation = _hmac.CreateMessageRepresentation(context, contentMd5, headTimestamp);
 
-			var signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
+            if (string.IsNullOrEmpty(messageRepresentation))
+                return HmacResult.MissingMessageRepresentationParameter;
 
-			if (signatureProvider != signatureConsumer)
-			{
-				if (controllingData.AllowEmptyMd5Hash)
-				{
-					messageRepresentation = _hmac.CreateMessageRepresentation(context, null, headTimestamp);
+            var signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
 
-					signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
+            if (signatureProvider != signatureConsumer)
+            {
+                if (controllingData.AllowEmptyMd5Hash)
+                {
+                    messageRepresentation = _hmac.CreateMessageRepresentation(context, null, headTimestamp);
 
-					if (signatureProvider != signatureConsumer)
-						return HmacResult.InvalidSignature;
-				}
-				else
-				{
-					return HmacResult.InvalidSignature;
-				}
-			}
+                    signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
 
-			customer = GetCustomer(dependencyScope, apiUser.CustomerId);
-			if (customer == null)
-				return HmacResult.UserUnknown;
+                    if (signatureProvider != signatureConsumer)
+                        return HmacResult.InvalidSignature;
+                }
+                else
+                {
+                    return HmacResult.InvalidSignature;
+                }
+            }
 
-			if (!customer.Active || customer.Deleted)
-				return HmacResult.UserIsInactive;
+            customer = GetCustomer(dependencyScope, apiUser.CustomerId);
+            if (customer == null)
+                return HmacResult.UserUnknown;
 
-			if (!HasPermission(dependencyScope, customer))
-				return HmacResult.UserHasNoPermission;
+            if (!customer.Active || customer.Deleted)
+                return HmacResult.UserIsInactive;
 
-			//var headers = HttpContext.Current.Response.Headers;
-			//headers.Add(ApiHeaderName.LastRequest, apiUser.LastRequest.HasValue ? apiUser.LastRequest.Value.ToString("o") : "");
+            if (!HasPermission(dependencyScope, customer))
+                return HmacResult.UserHasNoPermission;
 
-			apiUser.LastRequest = headDateTime;
+            //var headers = HttpContext.Current.Response.Headers;
+            //headers.Add(ApiHeaderName.LastRequest, apiUser.LastRequest.HasValue ? apiUser.LastRequest.Value.ToString("o") : "");
 
-			return HmacResult.Success;
-		}
+            apiUser.LastRequest = headDateTime;
 
-		public override void OnAuthorization(HttpActionContext actionContext)
-		{
-			var result = HmacResult.FailedForUnknownReason;
-			var controllingData = WebApiCachingControllingData.Data();
-			var dependencyScope = actionContext.Request.GetDependencyScope();
-			var utcNow = DateTime.UtcNow;
-			Customer customer = null;
+            return HmacResult.Success;
+        }
 
-			try
-			{
-				result = IsAuthenticated(actionContext, dependencyScope, controllingData, utcNow, out customer);
-			}
-			catch (Exception ex)
-			{
-				ex.Dump();
-			}
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+            var result = HmacResult.FailedForUnknownReason;
+            var controllingData = WebApiCachingControllingData.Data();
+            var dependencyScope = actionContext.Request.GetDependencyScope();
+            var utcNow = DateTime.UtcNow;
+            Customer customer = null;
 
-			if (result == HmacResult.Success)
-			{
-				// Inform core about the authentication. Note, you cannot use IWorkContext.set_CurrentCustomer here.
-				HttpContext.Current.User = new SmartStorePrincipal(customer, HmacAuthentication.Scheme1);
+            try
+            {
+                result = IsAuthenticated(actionContext, dependencyScope, controllingData, utcNow, out customer);
+            }
+            catch (Exception ex)
+            {
+                ex.Dump();
+            }
 
-				var response = HttpContext.Current.Response;
+            if (result == HmacResult.Success)
+            {
+                // Inform core about the authentication. Note, you cannot use IWorkContext.set_CurrentCustomer here.
+                HttpContext.Current.User = new SmartStorePrincipal(customer, HmacAuthentication.Scheme1);
+
+                var response = HttpContext.Current.Response;
 
                 response.AddHeader(WebApiGlobal.Header.AppVersion, SmartStoreVersion.CurrentFullVersion);
                 response.AddHeader(WebApiGlobal.Header.Version, controllingData.Version);
-				response.AddHeader(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
-				response.AddHeader(WebApiGlobal.Header.Date, utcNow.ToString("o"));
-				response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
+                response.AddHeader(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
+                response.AddHeader(WebApiGlobal.Header.Date, utcNow.ToString("o"));
+                response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
 
-				response.Cache.SetCacheability(HttpCacheability.NoCache);
-			}
-			else
-			{
-				actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                response.Cache.SetCacheability(HttpCacheability.NoCache);
+            }
+            else
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
 
-				var headers = actionContext.Response.Headers;
-				var authorization = actionContext.Request.Headers.Authorization;
+                var headers = actionContext.Response.Headers;
+                var authorization = actionContext.Request.Headers.Authorization;
 
-				// See RFC-2616
-				var scheme = _hmac.GetWwwAuthenticateScheme(authorization != null ? authorization.Scheme : null);
-				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));
+                // See RFC-2616
+                var scheme = _hmac.GetWwwAuthenticateScheme(authorization != null ? authorization.Scheme : null);
+                headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));
 
                 headers.Add(WebApiGlobal.Header.AppVersion, SmartStoreVersion.CurrentFullVersion);
                 headers.Add(WebApiGlobal.Header.Version, controllingData.Version);
-				headers.Add(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
-				headers.Add(WebApiGlobal.Header.Date, utcNow.ToString("o"));
-				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
-				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
+                headers.Add(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
+                headers.Add(WebApiGlobal.Header.Date, utcNow.ToString("o"));
+                headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
+                headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
                 if (result == HmacResult.UserHasNoPermission && Permission.HasValue())
                 {
@@ -264,17 +264,17 @@ namespace SmartStore.Web.Framework.WebApi.Security
                 }
 
                 if (controllingData.LogUnauthorized)
-				{
-					LogUnauthorized(actionContext, dependencyScope, result, customer);
-				}
-			}
-		}
+                {
+                    LogUnauthorized(actionContext, dependencyScope, result, customer);
+                }
+            }
+        }
 
-		/// <remarks>we should never get here... just for security reason</remarks>
-		protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
-		{
-			var message = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-			throw new HttpResponseException(message);
-		}
-	}
+        /// <remarks>we should never get here... just for security reason</remarks>
+        protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
+        {
+            var message = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            throw new HttpResponseException(message);
+        }
+    }
 }

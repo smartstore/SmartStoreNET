@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Core.Domain.Affiliates
 {
@@ -10,7 +7,7 @@ namespace SmartStore.Core.Domain.Affiliates
     /// Represents an affiliate
     /// </summary>
     [DataContract]
-	public partial class Affiliate : BaseEntity, ISoftDeletable
+    public partial class Affiliate : BaseEntity, ISoftDeletable
     {
 
         [DataMember]

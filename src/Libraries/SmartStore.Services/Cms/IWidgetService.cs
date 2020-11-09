@@ -15,14 +15,14 @@ namespace SmartStore.Services.Cms
         /// <returns>Widgets</returns>
 		IEnumerable<Provider<IWidget>> LoadActiveWidgets(int storeId = 0);
 
-        
+
         /// <summary>
         /// Load active widgets
         /// </summary>
         /// <param name="widgetZone">Widget zone</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+        /// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Widgets</returns>
-		IEnumerable<Provider<IWidget>> LoadActiveWidgetsByWidgetZone(string widgetZone, int storeId = 0);
+        IEnumerable<Provider<IWidget>> LoadActiveWidgetsByWidgetZone(string widgetZone, int storeId = 0);
 
         /// <summary>
         /// Load widget by system name

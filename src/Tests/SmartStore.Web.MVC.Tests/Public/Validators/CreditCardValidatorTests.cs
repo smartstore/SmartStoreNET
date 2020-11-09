@@ -10,7 +10,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators
     public class CreditCardValidatorTests
     {
         TestValidator _validator;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -18,8 +18,8 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators
 
             _validator = new TestValidator
             {
-				v => v.RuleFor(x => x.CreditCard).CreditCard()
-			};
+                v => v.RuleFor(x => x.CreditCard).CreditCard()
+            };
         }
 
         [Test]

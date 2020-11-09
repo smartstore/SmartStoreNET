@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>The highest mountain on earth: Mount Everest</Title>
+  <MetaTitle>The highest mountain on earth: Mount Everest</MetaTitle>
+	<Intro>Mount Everest is a mountain in the Himalayas and with a height of 8848 m the highest mountain on earth. It belongs to the 14 eight-thousanders and to the Seven Summits.</Intro>
+	<MetaDescription>Mount Everest is a mountain in the Himalayas and with a height of 8848 m the highest mountain on earth. It belongs to the 14 eight-thousanders and to the Seven Summits.</MetaDescription>
+	<Body>
+		<![CDATA[
+		<p>
+			Mount Everest is a mountain in the Himalayas and with a height of 8848 m the highest mountain on earth. It
+			belongs to the 14 eight-thousanders and to the Seven Summits. Mount Everest has been named after the British land
+			surveyor George Everest since 1856. In Nepal the mountain is called Sagarmatha, in Tibetan Qomolangma (German
+			pronunciation "Tschomolangma"), Chinese/Mandarin 珠穆朗瑪峰, Zhūmùlǎngmǎ Fēng.</p>
+		<p>
+			Mount Everest is located in the Mahalangur Himal in the Khumbu region of Nepal on the border with China (Tibet Autonomous Region);
+			the western and south-eastern ridges of its three summits form the border. On the Nepalese side it is part
+			of the Sagarmatha National Park, which is a UNESCO World Heritage Site. On the northern side, it is part of the
+			Qomolangma National Nature Reserve, which corresponds to the Qomolangma Biosphere Reserve designated by UNESCO.
+		</p>
+		<p>
+			Edmund Hillary and Tenzing Norgay succeeded in the first ascent of the "third pole" on 29 May 1953. On 8 May 1978 Reinhold
+			Messner and Peter Habeler climbed the summit for the first time without additional oxygen. To date (end of 2018), the summit has been
+			reached by mountaineers about 8400 times. Over 300 mountaineers have lost their lives on the way there or back.
+		</p>
+		<p>
+			While Mount Everest is the highest elevation above sea level, there are two other mountains that deserve the title "highest
+			mountain on earth". Measured from the foot of the mountain, this is the volcano Mauna Kea in Hawaii, and from the centre of the earth, the
+			Chimborazo in Ecuador.
+		</p>
+		]]>
+	</Body>
+	<Tags>Nature,Mount Everest,Mountain</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-06-17</CreatedOn>
+	<DisplayType>40</DisplayType>
+	<Image>mount-everest.jpg</Image>
+	<ImagePreview>mount-everest-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+	<SectionBg>dark</SectionBg>
+</BlogPost>

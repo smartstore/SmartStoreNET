@@ -7,14 +7,14 @@ namespace SmartStore.Data.Mapping.Catalog
     {
         public ProductVariantAttributeMap()
         {
-			this.ToTable("Product_ProductAttribute_Mapping");
+            this.ToTable("Product_ProductAttribute_Mapping");
             this.HasKey(pva => pva.Id);
-	        this.Ignore(pva => pva.AttributeControlType);
+            this.Ignore(pva => pva.AttributeControlType);
 
             this.HasRequired(pva => pva.Product)
                 .WithMany(pva => pva.ProductVariantAttributes)
                 .HasForeignKey(pva => pva.ProductId);
-            
+
             this.HasRequired(pva => pva.ProductAttribute)
                 .WithMany()
                 .HasForeignKey(pva => pva.ProductAttributeId);

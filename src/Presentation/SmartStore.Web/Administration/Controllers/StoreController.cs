@@ -8,11 +8,13 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -62,13 +64,13 @@ namespace SmartStore.Admin.Controllers
             model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
                 .Select(x => new SelectListItem
                 {
-                    Text = x.Name,
+                    Text = x.GetLocalized(y => y.Name),
                     Value = x.Id.ToString()
                 })
                 .ToList();
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllStores(string label, string selectedIds)
         {
             var stores = Services.StoreService.GetAllStores();
@@ -81,17 +83,17 @@ namespace SmartStore.Admin.Controllers
 
             var list =
                 from m in stores
-                select new
+                select new ChoiceListItem
                 {
-                    id = m.Id.ToString(),
-                    text = m.Name,
-                    selected = ids.Contains(m.Id)
+                    Id = m.Id.ToString(),
+                    Text = m.Name,
+                    Selected = ids.Contains(m.Id)
                 };
 
             return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        #region List
+        #region List / Create / Edit / Update
 
         [Permission(Permissions.Configuration.Store.Read)]
         public ActionResult List()
@@ -137,6 +139,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Create)]
         public ActionResult Create(StoreModel model, bool continueEditing)
         {
@@ -173,6 +176,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Update)]
         public ActionResult Edit(StoreModel model, bool continueEditing)
         {
@@ -199,6 +203,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Store.Delete)]
         public ActionResult Delete(int id)
         {

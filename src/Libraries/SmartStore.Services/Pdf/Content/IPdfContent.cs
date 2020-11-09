@@ -4,20 +4,20 @@ using System.Text;
 
 namespace SmartStore.Services.Pdf
 {
-	public interface IPdfContent
-	{
-		PdfContentKind Kind { get; }
+    public interface IPdfContent
+    {
+        PdfContentKind Kind { get; }
 
-		string Process(string flag);
+        string Process(string flag);
 
-		void WriteArguments(string flag, StringBuilder builder);
+        void WriteArguments(string flag, StringBuilder builder);
 
-		void Teardown();
-	}
+        void Teardown();
+    }
 
-	public enum PdfContentKind
-	{
-		Html,
-		Url
-	}
+    public enum PdfContentKind
+    {
+        Html,
+        Url
+    }
 }

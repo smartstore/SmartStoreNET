@@ -3,6 +3,8 @@
    ViewBag.Title = T("Admin.ContentManagement.Widgets").Text;
 }
 
+@Html.AntiForgeryToken()
+
 <div class="section-header">
    <div class="title">
        <i class="fa fa-plus-square"></i>
@@ -10,10 +12,11 @@
    </div>
 </div>
 
-<div>
+<div class="provider-list">
 	@Html.ProviderList(Model,
 		@<div>
-			<a style="min-width: 150px" class='btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+			<a class="activate-provider btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")" style="min-width: 150px"
+               data-href='@Url.Action("ActivateProvider")' href="#" data-systemname="@item.SystemName" data-activate="@(!item.IsActive ? "true" : "false")">
 				@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
 			</a>
 		</div>)

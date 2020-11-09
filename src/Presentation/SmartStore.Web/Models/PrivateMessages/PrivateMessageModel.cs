@@ -1,6 +1,6 @@
-﻿using FluentValidation.Attributes;
+﻿using System;
+using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
-using System;
 
 namespace SmartStore.Web.Models.PrivateMessages
 {
@@ -18,7 +18,7 @@ namespace SmartStore.Web.Models.PrivateMessages
         public string Subject { get; set; }
 
         public string Message { get; set; }
-        
+
         public DateTime CreatedOn { get; set; }
 
         public bool IsRead { get; set; }

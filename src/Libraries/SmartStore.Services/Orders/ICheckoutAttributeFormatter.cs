@@ -27,8 +27,8 @@ namespace SmartStore.Services.Orders
         /// <param name="allowHyperlinks">A value indicating whether to HTML hyperink tags could be rendered (if required)</param>
         /// <returns>Attributes</returns>
         string FormatAttributes(string attributes,
-            Customer customer, 
-            string serapator = "<br />", 
+            Customer customer,
+            string serapator = "<br />",
             bool htmlEncode = true,
             bool renderPrices = true,
             bool allowHyperlinks = true);

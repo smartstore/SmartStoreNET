@@ -1,26 +1,30 @@
 ﻿@model IEnumerable<ShippingRateComputationMethodModel>
 
-@{    
+@{
     ViewBag.Title = T("Admin.Configuration.Shipping.Providers").Text;
 }
+
+@Html.AntiForgeryToken()
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-truck"></i>
         @T("Admin.Configuration.Shipping.Providers")
     </div>
-	<div class="options">
-		@{ 
+    <div class="options">
+        @{
             Html.RenderWidget("admin_button_toolbar_before");
             Html.Widget("admin_button_toolbar_after");
         }
-	</div>
+    </div>
 </div>
 
-<div>
-	@Html.ProviderList(Model,
-	@<div>
-		<a style="min-width: 150px" class='btn@(item.IsActive ? " btn-secondary btn-to-danger" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
-			<span>@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))</span>
-		</a>
-	</div>)
+<div class="provider-list">
+    @Html.ProviderList(Model,
+            @<div>
+                 <a class="activate-provider btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")" style="min-width: 150px"
+                    data-href='@Url.Action("ActivateProvider")' href="#" data-systemname="@item.SystemName" data-activate="@(!item.IsActive ? "true" : "false")">
+                     @T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+                 </a>
+            </div>)
 </div>

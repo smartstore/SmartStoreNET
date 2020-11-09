@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Caching;
@@ -24,8 +25,6 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class MessageTemplateController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IMessageTemplateService _messageTemplateService;
         private readonly ICampaignService _campaignService;
         private readonly IMessageFactory _messageFactory;
@@ -37,10 +36,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreService _storeService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly EmailAccountSettings _emailAccountSettings;
-
-        #endregion
-
-        #region Constructors
+        private readonly IMediaTracker _mediaTracker;
 
         public MessageTemplateController(
             IMessageTemplateService messageTemplateService,
@@ -53,7 +49,8 @@ namespace SmartStore.Admin.Controllers
             ILocalizationService localizationService,
             IStoreService storeService,
             IStoreMappingService storeMappingService,
-            EmailAccountSettings emailAccountSettings)
+            EmailAccountSettings emailAccountSettings,
+            IMediaTracker mediaTracker)
         {
             _messageTemplateService = messageTemplateService;
             _campaignService = campaignService;
@@ -66,9 +63,8 @@ namespace SmartStore.Admin.Controllers
             _storeService = storeService;
             _storeMappingService = storeMappingService;
             _emailAccountSettings = emailAccountSettings;
+            _mediaTracker = mediaTracker;
         }
-
-        #endregion
 
         #region Utilities
 
@@ -79,9 +75,28 @@ namespace SmartStore.Admin.Controllers
             {
                 int lid = localized.LanguageId;
 
-                MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment1FileId, lid, false, false), localized.Attachment1FileId, true);
-                MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment2FileId, lid, false, false), localized.Attachment2FileId, true);
-                MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment3FileId, lid, false, false), localized.Attachment3FileId, true);
+                // Attachments: handle tracking of localized media file uploads
+                var attachments = new List<(int? prevId, int? curId, string prop)>(3)
+                {
+                    (mt.GetLocalized(x => x.Attachment1FileId, lid, false, false), localized.Attachment1FileId, $"Attachment1FileId[{lid}]"),
+                    (mt.GetLocalized(x => x.Attachment2FileId, lid, false, false), localized.Attachment2FileId, $"Attachment2FileId[{lid}]"),
+                    (mt.GetLocalized(x => x.Attachment3FileId, lid, false, false), localized.Attachment3FileId, $"Attachment3FileId[{lid}]")
+                };
+
+                foreach (var attach in attachments)
+                {
+                    if (attach.prevId != attach.curId)
+                    {
+                        if (attach.prevId.HasValue)
+                        {
+                            _mediaTracker.Untrack(mt, attach.prevId.Value, attach.prop);
+                        }
+                        if (attach.curId.HasValue)
+                        {
+                            _mediaTracker.Track(mt, attach.curId.Value, attach.prop);
+                        }
+                    }
+                }
 
                 _localizedEntityService.SaveLocalizedValue(mt, x => x.To, localized.To, lid);
                 _localizedEntityService.SaveLocalizedValue(mt, x => x.ReplyTo, localized.ReplyTo, lid);
@@ -105,7 +120,7 @@ namespace SmartStore.Admin.Controllers
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
             }
         }
-        
+
         private void PrepareLastModelTree(MessageTemplate template)
         {
             ViewBag.LastModelTreeJson = template.LastModelTree;
@@ -192,6 +207,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.MessageTemplate.Update)]
         public ActionResult Edit(MessageTemplateModel model, bool continueEditing, FormCollection form)
         {
@@ -248,7 +264,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Preview(int id, bool isCampaign = false)
         {
             var model = new MessageTemplatePreviewModel();
-                        
+
             // TODO: (mc) Liquid > Display info about preview models
             try
             {
@@ -333,8 +349,6 @@ namespace SmartStore.Admin.Controllers
             return (MessageTemplatePreviewModel)HttpContext.Cache.Get("mtpreview:" + token);
         }
 
-        #endregion
-
         [HttpPost]
         [Permission(Permissions.System.Message.Send)]
         public async Task<ActionResult> SendTestMail(string token, string to)
@@ -358,7 +372,11 @@ namespace SmartStore.Admin.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-        
+
+        #endregion
+
+        #region Templates
+
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("save-in-file")]
         [Permission(Permissions.Cms.MessageTemplate.Update)]
@@ -416,5 +434,7 @@ namespace SmartStore.Admin.Controllers
 
             return RedirectToAction("List");
         }
+
+        #endregion
     }
 }

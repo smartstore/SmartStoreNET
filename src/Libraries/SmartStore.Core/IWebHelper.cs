@@ -2,9 +2,6 @@ using System.Web;
 
 namespace SmartStore.Core
 {
-    /// <summary>
-    /// Represents a common helper
-    /// </summary>
     public partial interface IWebHelper
     {
         /// <summary>
@@ -13,21 +10,21 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         string GetUrlReferrer();
 
-		/// <summary>
-		/// Gets a unique client identifier
-		/// </summary>
-		/// <returns>A unique identifier</returns>
-		/// <remarks>
-		/// The client identifier is a hashed combination of client ip address and user agent.
-		/// This method returns <c>null</c> if IP or user agent (or both) cannot be determined.
-		/// </remarks>
-		string GetClientIdent();
+        /// <summary>
+        /// Gets a unique client identifier
+        /// </summary>
+        /// <returns>A unique identifier</returns>
+        /// <remarks>
+        /// The client identifier is a hashed combination of client ip address and user agent.
+        /// This method returns <c>null</c> if IP or user agent (or both) cannot be determined.
+        /// </remarks>
+        string GetClientIdent();
 
-		/// <summary>
-		/// Get context IP address
-		/// </summary>
-		/// <returns>URL referrer</returns>
-		string GetCurrentIpAddress();
+        /// <summary>
+        /// Get context IP address
+        /// </summary>
+        /// <returns>URL referrer</returns>
+        string GetCurrentIpAddress();
 
         /// <summary>
         /// Gets this page name
@@ -49,7 +46,7 @@ namespace SmartStore.Core
         /// </summary>
         /// <returns>true - secured, false - not secured</returns>
         bool IsCurrentConnectionSecured();
-        
+
         /// <summary>
         /// Gets server variable by name
         /// </summary>
@@ -87,7 +84,7 @@ namespace SmartStore.Core
         /// .ashx
         /// </remarks>
         bool IsStaticResource(HttpRequest request);
-        
+
         /// <summary>
         /// Maps a virtual path to a physical disk path.
         /// </summary>
@@ -112,7 +109,7 @@ namespace SmartStore.Core
         /// <param name="queryString">Query string to remove</param>
         /// <returns>New url</returns>
         string RemoveQueryString(string url, string queryString);
-        
+
         /// <summary>
         /// Gets query string value by name
         /// </summary>

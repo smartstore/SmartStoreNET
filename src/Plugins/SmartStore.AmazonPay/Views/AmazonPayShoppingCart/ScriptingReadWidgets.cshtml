@@ -3,6 +3,9 @@
 @{
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
     Html.AddScriptParts(true, "~/Plugins/SmartStore.AmazonPay/Scripts/jquery.deserialize.js");
+
+    var url = new Uri(Model.WidgetUrl);
+	Html.AddLinkPart("preconnect", "https://" + url.Host);
 }
 
 <script>

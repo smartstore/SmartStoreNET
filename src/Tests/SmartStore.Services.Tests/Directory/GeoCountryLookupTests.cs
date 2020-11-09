@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
-using SmartStore.Core.Utilities;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Tests.Directory
@@ -13,7 +9,6 @@ namespace SmartStore.Services.Tests.Directory
     [TestFixture]
     public class GeoCountryLookupTests
     {
-        private IGeoCountryLookup _geoCountryLookup;
         private IDictionary<string, LookupCountryResponse> _addresses;
 
         [SetUp]
@@ -21,8 +16,6 @@ namespace SmartStore.Services.Tests.Directory
         {
             try
             {
-                _geoCountryLookup = new GeoCountryLookup();
-
                 _addresses = new Dictionary<string, LookupCountryResponse>
                 {
                     ["0:0:0:0:0:ffff:b0eb:6304"] = new LookupCountryResponse { IsoCode = "TR", Name = "Turkey" },
@@ -39,7 +32,8 @@ namespace SmartStore.Services.Tests.Directory
                     ["176.235.99.4"] = new LookupCountryResponse { IsoCode = "TR", Name = "Turkey" },
                     ["185.216.213.237"] = new LookupCountryResponse { IsoCode = "DE", Name = "Germany", IsInEu = true },
                     ["41.60.232.2"] = new LookupCountryResponse { IsoCode = "KE", Name = "Kenya" },
-                    ["88.157.176.94"] = new LookupCountryResponse { IsoCode = "PT", Name = "Portugal", IsInEu = true }
+                    ["88.157.176.94"] = new LookupCountryResponse { IsoCode = "PT", Name = "Portugal", IsInEu = true },
+                    ["193.62.7.52"] = new LookupCountryResponse { IsoCode = "GB", Name = "United Kingdom", IsInEu = false }
                 };
             }
             catch (FileNotFoundException)
@@ -51,18 +45,21 @@ namespace SmartStore.Services.Tests.Directory
         [Test]
         public void CanLookup()
         {
-            if (_addresses?.Any() ?? false)
+            using (var geoCountryLookup = new GeoCountryLookup())
             {
-                foreach (var kvp in _addresses)
+                if (_addresses?.Any() ?? false)
                 {
-                    var ip = kvp.Key;
-                    var expect = kvp.Value;
+                    foreach (var kvp in _addresses)
+                    {
+                        var ip = kvp.Key;
+                        var expect = kvp.Value;
 
-                    var response = _geoCountryLookup.LookupCountry(ip);
+                        var response = geoCountryLookup.LookupCountry(ip);
 
-                    Assert.AreEqual(expect.IsoCode, response.IsoCode, response.Name);
-                    Assert.AreEqual(expect.Name, response.Name, response.Name);
-                    Assert.AreEqual(expect.IsInEu, response.IsInEu, response.Name);
+                        Assert.AreEqual(expect.IsoCode, response.IsoCode, response.Name);
+                        Assert.AreEqual(expect.Name, response.Name, response.Name);
+                        Assert.AreEqual(expect.IsInEu, response.IsInEu, response.Name);
+                    }
                 }
             }
         }

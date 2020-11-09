@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewsItem>
+	<Title>The RMS Titanic</Title>
+  <MetaTitle>The RMS Titanic</MetaTitle>
+  <Short>The RMS Titanic was a passenger ship of the British shipping company White Star Line and was the largest ship in the world when it was commissioned on 2 April 1912. The Titanic is one of the most famous ships in history because of the circumstances associated with its sinking.</Short>
+	<MetaDescription>The RMS Titanic was a passenger ship of the British shipping company White Star Line and was the largest ship in the world when it was commissioned on 2 April 1912. The Titanic is one of the most famous ships in history because of the circumstances associated with its sinking.</MetaDescription>
+  <Full>
+		<![CDATA[
+			<p>
+				The RMS Titanic was a passenger ship of the British shipping company White Star Line. It was built in Belfast at the Harland &amp; Wolff
+				shipyard and was the largest ship in the world when it entered service on 2 April 1912. Like its two sister ships, the Olympic and
+				Britannic, the Titanic was the second of three Olympic-class steamers and was intended for the North Atlantic liner service on the route
+				Southampton-Cherbourg-Queenstown-New York, New York-Plymouth-Cherbourg-Southampton, and was to set new standards in travel comfort. On its
+				maiden voyage, the Titanic collided laterally with an iceberg about 300 nautical miles southeast of Newfoundland at about 23:40 on 14
+				April 1912 and sank two hours and 40 minutes later.
+			</p>
+			<p>
+				Although more than two hours were available for evacuation, 1514 of the more than 2200 people on board were killed - mainly because of the
+				insufficient number of lifeboats and the inexperience of the crew in handling them. Because of the high number of victims, the sinking of
+				the Titanic is one of the biggest and most famous catastrophes in the maritime world. The sinking prompted numerous measures to improve
+				safety at sea. On 12 November 1913, a conference was convened to establish a minimum international standard for safety on merchant ships.
+				This conference resulted in the first version of the International Convention for the Safety of Life at Sea in 1914. This included the
+				provision of lifeboats, 24-hour manning of radio stations and the establishment of the International Ice Patrol.
+			</p>
+			<p>
+				Because of the circumstances surrounding its sinking, the Titanic is one of the most famous ships in history. Worldwide, literature, fine
+				arts, film and television still deal with the events of its maiden voyage and the sinking. The film of the same name, made in 1997, has
+				attracted particular attention, and its name stands for serious accidents and the uncontrollability of nature through technical
+				achievements.
+			</p>
+		]]>
+	</Full>
+	<CreatedOn>2020-07-16</CreatedOn>
+	<Image>rms-titanic.jpg</Image>
+  <ImagePreview>rms-titanic.jpg</ImagePreview>
+  <Comments>True</Comments>
+</NewsItem>

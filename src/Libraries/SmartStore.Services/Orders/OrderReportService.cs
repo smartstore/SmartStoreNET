@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
@@ -21,7 +20,8 @@ namespace SmartStore.Services.Orders
         private readonly IRepository<Product> _productRepository;
         private readonly IDateTimeHelper _dateTimeHelper;
 
-        public OrderReportService(IRepository<Order> orderRepository,
+        public OrderReportService(
+            IRepository<Order> orderRepository,
             IRepository<OrderItem> orderItemRepository,
             IRepository<Product> productRepository,
             IDateTimeHelper dateTimeHelper)
@@ -181,87 +181,68 @@ namespace SmartStore.Services.Orders
             return item;
         }
 
-        public virtual IList<BestsellersReportLine> BestSellersReport(
+        public virtual IPagedList<BestsellersReportLine> BestSellersReport(
             int storeId,
             DateTime? startTime,
             DateTime? endTime,
-            OrderStatus? os,
-            PaymentStatus? ps,
-            ShippingStatus? ss,
+            OrderStatus? orderStatus,
+            PaymentStatus? paymentStatus,
+            ShippingStatus? shippingStatus,
             int billingCountryId = 0,
-            int recordsToReturn = 5,
-            int orderBy = 1,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            ReportSorting sorting = ReportSorting.ByQuantityDesc,
             bool showHidden = false)
         {
-            int? orderStatusId = null;
-            if (os.HasValue)
-                orderStatusId = (int)os.Value;
+            var orderStatusId = orderStatus.HasValue ? (int)orderStatus.Value : (int?)null;
+            var paymentStatusId = paymentStatus.HasValue ? (int)paymentStatus.Value : (int?)null;
+            var shippingStatusId = shippingStatus.HasValue ? (int)shippingStatus : (int?)null;
 
-            int? paymentStatusId = null;
-            if (ps.HasValue)
-                paymentStatusId = (int)ps.Value;
+            var query =
+                from orderItem in _orderItemRepository.TableUntracked
+                join o in _orderRepository.TableUntracked on orderItem.OrderId equals o.Id
+                join p in _productRepository.TableUntracked on orderItem.ProductId equals p.Id
+                where (storeId == 0 || storeId == o.StoreId) &&
+                (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
+                (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
+                (!orderStatusId.HasValue || orderStatusId == o.OrderStatusId) &&
+                (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
+                (!shippingStatusId.HasValue || shippingStatusId == o.ShippingStatusId) &&
+                (!o.Deleted) &&
+                (!p.Deleted) && (!p.IsSystemProduct) &&
+                (billingCountryId == 0 || o.BillingAddress.CountryId == billingCountryId) &&
+                (showHidden || p.Published)
+                select orderItem;
 
-            int? shippingStatusId = null;
-            if (ss.HasValue)
-                shippingStatusId = (int)ss.Value;
-
-
-            var query1 = from orderItem in _orderItemRepository.Table
-                         join o in _orderRepository.Table on orderItem.OrderId equals o.Id
-                         join p in _productRepository.Table on orderItem.ProductId equals p.Id
-                         where (storeId == 0 || storeId == o.StoreId) &&
-                         (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
-                         (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
-                         (!orderStatusId.HasValue || orderStatusId == o.OrderStatusId) &&
-                         (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
-                         (!shippingStatusId.HasValue || shippingStatusId == o.ShippingStatusId) &&
-                         (!o.Deleted) &&
-                         (!p.Deleted) && (!p.IsSystemProduct) &&
-                         (billingCountryId == 0 || o.BillingAddress.CountryId == billingCountryId) &&
-                         (showHidden || p.Published)
-                         select orderItem;
-
-            var query2 =
-                //group by products
-                from orderItem in query1
+            // Group by product ID.
+            var groupedQuery =
+                from orderItem in query
                 group orderItem by orderItem.ProductId into g
-                select new
+                select new BestsellersReportLine
                 {
-                    EntityId = g.Key,
+                    ProductId = g.Key,
                     TotalAmount = g.Sum(x => x.PriceExclTax),
-                    TotalQuantity = g.Sum(x => x.Quantity),
+                    TotalQuantity = g.Sum(x => x.Quantity)
                 };
 
-            switch (orderBy)
+            switch (sorting)
             {
-                case 1:
-                    {
-                        query2 = query2.OrderByDescending(x => x.TotalQuantity).ThenByDescending(x => x.TotalAmount);
-                    }
+                case ReportSorting.ByAmountAsc:
+                    groupedQuery = groupedQuery.OrderBy(x => x.TotalAmount);
                     break;
-                case 2:
-                    {
-                        query2 = query2.OrderByDescending(x => x.TotalAmount);
-                    }
+                case ReportSorting.ByAmountDesc:
+                    groupedQuery = groupedQuery.OrderByDescending(x => x.TotalAmount);
                     break;
+                case ReportSorting.ByQuantityAsc:
+                    groupedQuery = groupedQuery.OrderBy(x => x.TotalQuantity).ThenByDescending(x => x.TotalAmount);
+                    break;
+                case ReportSorting.ByQuantityDesc:
                 default:
-                    throw new ArgumentException("Wrong orderBy parameter", "orderBy");
+                    groupedQuery = groupedQuery.OrderByDescending(x => x.TotalQuantity).ThenByDescending(x => x.TotalAmount);
+                    break;
             }
 
-            if (recordsToReturn != 0 && recordsToReturn != int.MaxValue)
-                query2 = query2.Take(() => recordsToReturn);
-
-            var result = query2.ToList().Select(x =>
-            {
-                var reportLine = new BestsellersReportLine()
-                {
-                    ProductId = x.EntityId,
-                    TotalAmount = x.TotalAmount,
-                    TotalQuantity = x.TotalQuantity
-                };
-                return reportLine;
-            }).ToList();
-
+            var result = new PagedList<BestsellersReportLine>(groupedQuery, pageIndex, pageSize);
             return result;
         }
 
@@ -332,19 +313,18 @@ namespace SmartStore.Services.Orders
         {
             var groupedProductId = (int)ProductType.GroupedProduct;
 
-            // This inner query should retrieve all purchased order product varint identifiers.
-            var query1 = (from orderItem in _orderItemRepository.Table
-                          join o in _orderRepository.Table on orderItem.OrderId equals o.Id
-                          where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
-                                (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
-                                (!o.Deleted)
+            var query1 = (from orderItem in _orderItemRepository.TableUntracked
+                          join o in _orderRepository.TableUntracked on orderItem.OrderId equals o.Id
+                          where !o.Deleted &&
+                                (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
+                                (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc)
                           select orderItem.ProductId).Distinct();
 
-            var query2 = from p in _productRepository.Table
+            var query2 = from p in _productRepository.TableUntracked
                          where !query1.Contains(p.Id) &&
-                                p.ProductTypeId != groupedProductId &&
-                               !p.Deleted &&
-                               (showHidden || p.Published)
+                                !p.Deleted && !p.IsSystemProduct &&
+                               (showHidden || p.Published) &&
+                                p.ProductTypeId != groupedProductId
                          orderby p.Name
                          select p;
 
@@ -387,8 +367,6 @@ namespace SmartStore.Services.Orders
             query = query.Where(x =>
                 x.ShippingStatusId == (int)ShippingStatus.NotYetShipped
                 || x.PaymentStatusId == (int)PaymentStatus.Pending
-                || x.OrderStatusId == (int)OrderStatus.Pending
-                || x.OrderStatusId == (int)OrderStatus.Processing
             );
             var dataPoints = query.Select(x => new OrderDataPoint
             {
@@ -424,7 +402,7 @@ namespace SmartStore.Services.Orders
             {
                 CreatedOn = x.CreatedOnUtc,
                 OrderTotal = x.OrderTotal,
-                OrderStatusId = x.OrderStatusId 
+                OrderStatusId = x.OrderStatusId
             });
             return new PagedList<OrderDataPoint>(dataPoints, pageIndex, pageSize);
         }

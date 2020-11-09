@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
@@ -14,10 +13,7 @@ namespace SmartStore.Data.Migrations
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

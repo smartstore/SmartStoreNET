@@ -1,24 +1,13 @@
 ﻿@model BlogPostListModel
 @using SmartStore.Web.Models.Blogs;
 @using SmartStore.Web.Framework.UI;
-@using System.Globalization;
 
 @{
     Layout = "_Layout";
 
-    var parsedMonth = Model.PagingFilteringContext.GetParsedMonth();
-
-    Html.AddTitleParts(
-        parsedMonth != null ?
-        T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
-        T("PageTitle.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
-    );
-    Html.AddMetaDescriptionParts(
-        parsedMonth != null ?
-        T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
-        T("Metadesc.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
-    );
-
+    Html.AddTitleParts(Model.MetaTitle);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
     Html.AppendScriptParts(true, "~/Content/vendors/imagesloaded/imagesloaded.pkgd.min.js");
 }
 
@@ -79,8 +68,8 @@
     {
         <div class="comments-overlay">
             <a class="fs-xs m-2 btn btn-secondary btn-circle@(item.Comments.NumberOfComments > 0 ? " vivid" : "")"
-                href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
-                title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
+               href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })"
+               title="@string.Format(@T("Blog.CommentsLink").Text, item.Comments.NumberOfComments)">
                 <span class="blogpost-comments-icon fa fa-comment-alt pr-1"></span>
                 <span class="blogpost-comments-count">@item.Comments.NumberOfComments</span>
             </a>
@@ -90,6 +79,6 @@
 
 <script>
     $(function () {
-        $(".blogposts").masonaryGrid(".bloglist-item");
+        $(".blogposts").masonryGrid(".bloglist-item");
     });
 </script>

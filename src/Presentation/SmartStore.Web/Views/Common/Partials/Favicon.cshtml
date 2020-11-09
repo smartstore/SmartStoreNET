@@ -1,8 +1,43 @@
-﻿ @model FaviconModel
+﻿@model FaviconModel
 
 @using SmartStore.Web.Models.Common;
 
-@if (Model.Uploaded)
+@if (Model.FavIcon != null)
 {
-    <link rel="shortcut icon" href="@Model.FaviconUrl?v=@SmartStoreVersion.CurrentVersion" />
+    <link rel="shortcut icon" href="@Url.Media(Model.FavIcon, 0, null, false)?v=@SmartStoreVersion.CurrentVersion" />
+}
+
+@if (Model.PngIcon != null)
+{
+    @*16x16 (browser tabs), 32x32 (Taskbar), 96x96 (Desktop), 196x196 (Android Chrome)*@
+    <!-- png icons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="@Url.Media(Model.PngIcon, 16, null, false)">
+    <link rel="icon" type="image/png" sizes="32x32" href="@Url.Media(Model.PngIcon, 32, null, false)">
+    <link rel="icon" type="image/png" sizes="96x96" href="@Url.Media(Model.PngIcon, 96, null, false)">
+    <link rel="icon" type="image/png" sizes="196x196" href="@Url.Media(Model.PngIcon, 196, null, false)">
+}
+
+@if (Model.AppleTouchIcon != null)
+{
+    <!-- Apple touch icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="@Url.Media(Model.AppleTouchIcon, 57, null, false)">
+    <link rel="apple-touch-icon" sizes="60x60" href="@Url.Media(Model.AppleTouchIcon, 60, null, false)">
+    <link rel="apple-touch-icon" sizes="72x72" href="@Url.Media(Model.AppleTouchIcon, 72, null, false)">
+    <link rel="apple-touch-icon" sizes="76x76" href="@Url.Media(Model.AppleTouchIcon, 76, null, false)">
+    <link rel="apple-touch-icon" sizes="114x114" href="@Url.Media(Model.AppleTouchIcon, 114, null, false)">
+    <link rel="apple-touch-icon" sizes="120x120" href="@Url.Media(Model.AppleTouchIcon, 120, null, false)">
+    <link rel="apple-touch-icon" sizes="144x144" href="@Url.Media(Model.AppleTouchIcon, 144, null, false)">
+    <link rel="apple-touch-icon" sizes="152x152" href="@Url.Media(Model.AppleTouchIcon, 152, null, false)">
+    <link rel="apple-touch-icon" sizes="180x180" href="@Url.Media(Model.AppleTouchIcon, 180, null, false)">
+}
+
+@if (Model.MsTileIcon != null)
+{
+    <!-- Microsoft tiles -->
+    if (Model.MsTileColor.HasValue())
+    {
+        <meta name="msapplication-TileColor" content="@Model.MsTileColor">
+    }
+    <meta name="msapplication-TileImage" content="@Url.Media(Model.MsTileIcon, 144, null, false)">
+    <meta name="msapplication-config" content="@Url.Content("~/browserconfig.xml")" />
 }

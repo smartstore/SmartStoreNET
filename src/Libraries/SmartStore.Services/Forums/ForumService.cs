@@ -273,12 +273,12 @@ namespace SmartStore.Services.Forums
             }
 
             // Delete forum subscriptions (topics).
-            var queryTopicIds = 
+            var queryTopicIds =
                 from ft in _forumTopicRepository.Table
                 where ft.ForumId == forum.Id
                 select ft.Id;
 
-            var queryFs1 = 
+            var queryFs1 =
                 from fs in _forumSubscriptionRepository.Table
                 where queryTopicIds.Contains(fs.TopicId)
                 select fs;
@@ -289,7 +289,7 @@ namespace SmartStore.Services.Forums
             }
 
             // Delete forum subscriptions (forum).
-            var queryFs2 = 
+            var queryFs2 =
                 from fs in _forumSubscriptionRepository.Table
                 where fs.ForumId == forum.Id
                 select fs;
@@ -715,17 +715,17 @@ namespace SmartStore.Services.Forums
             return privateMessage;
         }
 
-		public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(
-			int storeId, 
-			int fromCustomerId,
-            int toCustomerId, 
-			bool? isRead, 
-			bool? isDeletedByAuthor, 
-			bool? isDeletedByRecipient,
-			int pageIndex, 
-			int pageSize)
+        public virtual IPagedList<PrivateMessage> GetAllPrivateMessages(
+            int storeId,
+            int fromCustomerId,
+            int toCustomerId,
+            bool? isRead,
+            bool? isDeletedByAuthor,
+            bool? isDeletedByRecipient,
+            int pageIndex,
+            int pageSize)
         {
-			var query = _forumPrivateMessageRepository.Table;
+            var query = _forumPrivateMessageRepository.Table;
 
             if (storeId > 0)
             {
@@ -752,9 +752,9 @@ namespace SmartStore.Services.Forums
                 query = query.Where(pm => isDeletedByRecipient.Value == pm.IsDeletedByRecipient);
             }
 
-			query = query.OrderByDescending(pm => pm.CreatedOnUtc);
+            query = query.OrderByDescending(pm => pm.CreatedOnUtc);
 
-			var privateMessages = new PagedList<PrivateMessage>(query, pageIndex, pageSize);
+            var privateMessages = new PagedList<PrivateMessage>(query, pageIndex, pageSize);
             return privateMessages;
         }
 
@@ -770,11 +770,11 @@ namespace SmartStore.Services.Forums
                 throw new SmartException("Recipient could not be loaded");
             }
 
-			_genericAttributeService.SaveAttribute(customerTo, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, false, message.StoreId);
+            _genericAttributeService.SaveAttribute(customerTo, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, false, message.StoreId);
 
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-				_services.MessageFactory.SendPrivateMessageNotification(customerTo, message, _services.WorkContext.WorkingLanguage.Id);                
+                _services.MessageFactory.SendPrivateMessageNotification(customerTo, message, _services.WorkContext.WorkingLanguage.Id);
             }
         }
 
@@ -797,7 +797,7 @@ namespace SmartStore.Services.Forums
             if (message != null)
             {
                 _forumPrivateMessageRepository.Delete(message);
-            }            
+            }
         }
 
         #endregion
@@ -817,21 +817,21 @@ namespace SmartStore.Services.Forums
 
         public virtual IPagedList<ForumSubscription> GetAllSubscriptions(int customerId, int forumId, int topicId, int pageIndex, int pageSize)
         {
-            var fsQuery = 
-				from fs in _forumSubscriptionRepository.Table
-				join c in _customerRepository.Table on fs.CustomerId equals c.Id
-				where
-					(customerId == 0 || fs.CustomerId == customerId) &&
-					(forumId == 0 || fs.ForumId == forumId) &&
-					(topicId == 0 || fs.TopicId == topicId) &&
-					(c.Active && !c.Deleted)
-				select fs.SubscriptionGuid;
+            var fsQuery =
+                from fs in _forumSubscriptionRepository.Table
+                join c in _customerRepository.Table on fs.CustomerId equals c.Id
+                where
+                    (customerId == 0 || fs.CustomerId == customerId) &&
+                    (forumId == 0 || fs.ForumId == forumId) &&
+                    (topicId == 0 || fs.TopicId == topicId) &&
+                    (c.Active && !c.Deleted)
+                select fs.SubscriptionGuid;
 
-            var query = 
-				from fs in _forumSubscriptionRepository.Table
-				where fsQuery.Contains(fs.SubscriptionGuid)
-				orderby fs.CreatedOnUtc descending, fs.SubscriptionGuid descending
-				select fs;
+            var query =
+                from fs in _forumSubscriptionRepository.Table
+                where fsQuery.Contains(fs.SubscriptionGuid)
+                orderby fs.CreatedOnUtc descending, fs.SubscriptionGuid descending
+                select fs;
 
             var forumSubscriptions = new PagedList<ForumSubscription>(query, pageIndex, pageSize);
             return forumSubscriptions;
@@ -1019,7 +1019,7 @@ namespace SmartStore.Services.Forums
 
             public ForumXmlSitemapResult(
                 XmlSitemapBuildContext context,
-                IForumService forumService, 
+                IForumService forumService,
                 UrlHelper urlHelper,
                 IUrlRecordService urlRecordService)
             {
@@ -1085,7 +1085,7 @@ namespace SmartStore.Services.Forums
                 // Enlist topics
                 var pager = new FastPager<ForumTopic>(_topicsQuery.AsNoTracking(), _context.MaximumNodeCount);
 
-                while (pager.ReadNextPage(x => new { x.Id, x.UpdatedOnUtc, x.Subject }, x => x.Id, out var topics)) 
+                while (pager.ReadNextPage(x => new { x.Id, x.UpdatedOnUtc, x.Subject }, x => x.Id, out var topics))
                 {
                     if (_context.CancellationToken.IsCancellationRequested)
                     {

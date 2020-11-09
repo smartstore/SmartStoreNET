@@ -1,14 +1,9 @@
-/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="theme.scss" />
 
 //
 // Article/Product list & item styles
 // --------------------------------------------------
 
-$art-font-size:                 $font-size-base;
-$art-font-size-sm:              $font-size-sm;
-$art-font-size-xs:              $font-size-xs;
 $art-line-height:               1.3;
 $art-price-color:               $product-price-color;
 $art-price-offer-color:         $red;
@@ -47,10 +42,6 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 
 .artlist-action {
     padding: 0 0.25rem;
-
-    &:not(:last-child) {
-        //margin-right: 0.5rem;
-    }
 
     label {
         font-size: $font-size-sm;
@@ -104,7 +95,9 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 
     .artlist-action-group {
         .btn { 
-            font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
+            font-size: 1rem; 
+            text-align: left; 
+            border-radius: $btn-border-radius;
             > b { background: transparent; } 
         }
     }
@@ -170,12 +163,16 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 // List
 
 .artlist {
+    --art-font-size: #{$font-size-sm};
+    --art-font-size-sm: #{$font-size-xs};
+    --art-font-size-xs: #{$font-size-xs};
+
     position: relative;
     margin-bottom: 1.5rem;
-    font-size: $art-font-size;
     line-height: $art-line-height; 
     z-index: 3;
     border-collapse: collapse;
+    font-size: var(--art-font-size);
 }
 
 .art {
@@ -265,14 +262,12 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 }
 
 .art-brand {
-    font-size: $art-font-size-sm;
     color: $text-muted;
     text-transform: uppercase;
 }
 
 .art-name {
     box-sizing: content-box;
-    font-size: $art-font-size;
     font-weight: $font-weight-medium;
     margin-bottom: 0.25rem;
     line-height: $art-line-height;
@@ -280,7 +275,6 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 }
 
 .art-genericname {
-    font-size: $art-font-size;
     font-weight: $font-weight-medium;
     text-align: center;
     overflow: hidden;
@@ -289,7 +283,6 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 }
 
 .art-description {
-    font-size: $art-font-size-sm;
     color: $text-muted;
     margin-bottom: 0.4rem;
 }
@@ -321,20 +314,17 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 }
 
 .art-pangv {
-    font-size: $art-font-size-xs;
     color: $text-muted;
     padding-top: 0.25rem;
 }
 
 .art-shipsurcharge {
-    font-size: $art-font-size-sm;
     color: $danger;
     padding-top: 0.4rem;
     @include text-truncate();
 }
 
 .art-legalinfo {
-    font-size: $art-font-size-xs;
     color: $text-muted;
 }
 
@@ -405,7 +395,6 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 }
 
 .art-more-opts {
-    font-size: $art-font-size-sm;
     color: $text-muted;
 }
 
@@ -416,7 +405,6 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 .art-attrs {
     margin-top: -0.5rem;
     margin-bottom: 1rem;
-    font-size: $art-font-size-sm;
 
     td { padding: 1px 0; }
     td:first-child { 
@@ -425,11 +413,36 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
     }
 }
 
+// Font sizes
+// ---------------------------------------------
 
-// List style
+.art-name,
+.art-genericname {
+    font-size: var(--art-font-size);
+}
+
+.art-brand,
+.art-description,
+.art-shipsurcharge, 
+.art-more-opts, 
+.art-attrs {
+    font-size: var(--art-font-size-sm);
+}
+
+.art-pangv,
+.art-legalinfo,
+.art-delivery-info {
+    font-size: var(--art-font-size-sm);
+}
+
+
+// Line style (one item per row)
 // ---------------------------------------------
 
 .artlist-lines {
+    --art-font-size: #{$font-size-base};
+    --art-font-size-sm: #{$font-size-sm};
+
     .art {
         @include make-art-row();
         margin-left: 0;
@@ -475,6 +488,7 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 
     .art-brand,
     .art-rating {
+        font-size: var(--art-font-size-xs);
         position: relative;
         margin-bottom: 0;
     }
@@ -498,13 +512,12 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
     }
 
     .art-name {
-        font-size: 1rem;
         margin-bottom: 0.5em;
     }
 
     .art-price {
-        font-size: 1.6rem;
-        font-weight: 500;
+        @include font-size(1.5rem);
+        font-weight: $font-weight-medium;
         display: block;
         margin-bottom: 0.25rem;
     }
@@ -548,6 +561,9 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
     .delivery-time {
         white-space: normal;
     }
+    .delivery-date-block {
+        padding-top: 0.25rem;
+    }
 }
 
 
@@ -588,24 +604,24 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
 
     .art-name {
         // At least 2 lines height for name
-        height: ($art-font-size * $art-line-height) * 2;
+        height: calc(var(--art-font-size) * #{$art-line-height} * 2);
     }
 
     .art-description {
         // At least 2 lines height for description
-        height: ($art-font-size-sm * $art-line-height) * 2;
+        height: calc(var(--art-font-size-sm) * #{$art-line-height} * 2);
     }
     
     &.artlist-boxed .art-price-block {
         // At least 2 lines height for description
-        height: ($art-font-size-sm * $art-line-height) * 2;
+        height: calc(var(--art-font-size-sm) * #{$art-line-height} * 2);
     }
 
     .art-delivery-info,
     .art-pangv {
         // Always 1 line height, even if empty
         box-sizing: content-box;
-        min-height: $art-font-size * $art-line-height;
+        min-height: calc(var(--art-font-size) * #{$art-line-height});
         @include text-truncate();
     }
 
@@ -615,7 +631,7 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
     .art-more-opts {
         // Always 1 small line height, even if empty
         box-sizing: content-box;
-        min-height: $art-font-size-sm * $art-line-height;
+        min-height: calc(var(--art-font-size-sm) * #{$art-line-height});
         @include text-truncate();
     }
 
@@ -624,7 +640,7 @@ $art-drop-box-shadow:           0 0 1px rgba(#000, 0.1), 0 2px 2px rgba(#000, 0.
     }*/
 
     .art-oldprice {
-        font-size: $art-font-size * 0.925;
+        min-height: calc(var(--art-font-size) * 0.925);
     }
 
     .art-variant-info {

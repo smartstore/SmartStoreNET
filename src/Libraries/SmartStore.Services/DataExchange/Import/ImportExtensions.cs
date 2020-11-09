@@ -8,36 +8,36 @@ using SmartStore.Utilities;
 namespace SmartStore.Services.DataExchange.Import
 {
     public static class ImportExtensions
-	{
-		/// <summary>
-		/// Get folder for import files
-		/// </summary>
-		/// <param name="profile">Import profile</param>
-		/// <returns>Folder path</returns>
-		public static string GetImportFolder(
-			this ImportProfile profile,
-			bool content = false,
-			bool create = false, 
-			bool absolutePath = true)
-		{
-			var path = string.Concat(
-				DataSettings.Current.TenantPath,
-				"/ImportProfiles/",
-				profile.FolderName,
-				content ? "/Content" : "");
+    {
+        /// <summary>
+        /// Get folder for import files
+        /// </summary>
+        /// <param name="profile">Import profile</param>
+        /// <returns>Folder path</returns>
+        public static string GetImportFolder(
+            this ImportProfile profile,
+            bool content = false,
+            bool create = false,
+            bool absolutePath = true)
+        {
+            var path = string.Concat(
+                DataSettings.Current.TenantPath,
+                "/ImportProfiles/",
+                profile.FolderName,
+                content ? "/Content" : "");
 
-			if (absolutePath)
-			{
-				path = CommonHelper.MapPath(path);
+            if (absolutePath)
+            {
+                path = CommonHelper.MapPath(path);
 
-				if (create && !System.IO.Directory.Exists(path))
-				{
-					System.IO.Directory.CreateDirectory(path);
-				}
-			}
+                if (create && !System.IO.Directory.Exists(path))
+                {
+                    System.IO.Directory.CreateDirectory(path);
+                }
+            }
 
-			return path;
-		}
+            return path;
+        }
 
         /// <summary>
         /// Gets import files for an import profile.
@@ -78,8 +78,8 @@ namespace SmartStore.Services.DataExchange.Import
         /// <param name="profile">Import profile</param>
         /// <returns>Log file path</returns>
         public static string GetImportLogPath(this ImportProfile profile)
-		{
-			return Path.Combine(profile.GetImportFolder(), "log.txt");
-		}
-	}
+        {
+            return Path.Combine(profile.GetImportFolder(), "log.txt");
+        }
+    }
 }

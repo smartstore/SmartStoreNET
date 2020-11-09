@@ -4,8 +4,8 @@ using SmartStore.Core.Localization;
 namespace SmartStore.Web.Framework.UI
 {
     [MenuItemProvider("route")]
-	public class RouteMenuItemProvider : MenuItemProviderBase
-	{
+    public class RouteMenuItemProvider : MenuItemProviderBase
+    {
         public RouteMenuItemProvider()
         {
             T = NullLocalizer.Instance;
@@ -14,7 +14,7 @@ namespace SmartStore.Web.Framework.UI
         public Localizer T { get; set; }
 
         protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
-		{
+        {
             try
             {
                 node.ApplyRouteData(request.Entity.Model);

@@ -12,7 +12,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<CategoryTemplate> _categoryTemplateRepository;
         private readonly IEventPublisher _eventPublisher;
 
-		public CategoryTemplateService(IRepository<CategoryTemplate> categoryTemplateRepository, IEventPublisher eventPublisher)
+        public CategoryTemplateService(IRepository<CategoryTemplate> categoryTemplateRepository, IEventPublisher eventPublisher)
         {
             _categoryTemplateRepository = categoryTemplateRepository;
             _eventPublisher = eventPublisher;
@@ -35,7 +35,7 @@ namespace SmartStore.Services.Catalog
             var templates = query.ToList();
             return templates;
         }
- 
+
         public virtual CategoryTemplate GetCategoryTemplateById(int categoryTemplateId)
         {
             if (categoryTemplateId == 0)

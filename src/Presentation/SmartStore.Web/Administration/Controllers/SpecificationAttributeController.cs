@@ -9,7 +9,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -25,22 +24,22 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ICustomerActivityService _customerActivityService;
-		private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
         public SpecificationAttributeController(
             ISpecificationAttributeService specificationAttributeService,
             ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             ICustomerActivityService customerActivityService,
-			AdminAreaSettings adminAreaSettings)
+            AdminAreaSettings adminAreaSettings)
         {
             _specificationAttributeService = specificationAttributeService;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
             _customerActivityService = customerActivityService;
-			_adminAreaSettings = adminAreaSettings;
+            _adminAreaSettings = adminAreaSettings;
         }
-        
+
         #region Utilities
 
         private void UpdateAttributeLocales(SpecificationAttribute specificationAttribute, SpecificationAttributeModel model)
@@ -48,8 +47,8 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Name, localized.Name, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Alias, localized.Alias, localized.LanguageId);
-			}
+                _localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Alias, localized.Alias, localized.LanguageId);
+            }
         }
 
         private void UpdateOptionLocales(SpecificationAttributeOption specificationAttributeOption, SpecificationAttributeOptionModel model)
@@ -57,35 +56,35 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Name, localized.Name, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Alias, localized.Alias, localized.LanguageId);
-			}
+                _localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Alias, localized.Alias, localized.LanguageId);
+            }
         }
 
-		private bool AddMultipleOptionNames(SpecificationAttributeOptionModel model)
-		{
-			var values = model.Name.SplitSafe(";");
-			var alias = model.Alias.SplitSafe(";");
-			var order = model.DisplayOrder;
+        private bool AddMultipleOptionNames(SpecificationAttributeOptionModel model)
+        {
+            var values = model.Name.SplitSafe(";");
+            var alias = model.Alias.SplitSafe(";");
+            var order = model.DisplayOrder;
 
-			for (var i = 0; i < values.Length; ++i)
-			{
-				var sao = new SpecificationAttributeOption
-				{
-					Name = values.SafeGet(i).Trim(),
-					Alias = alias.SafeGet(i).Trim(),
-					DisplayOrder = order++,
-					SpecificationAttributeId = model.SpecificationAttributeId
-				};
+            for (var i = 0; i < values.Length; ++i)
+            {
+                var sao = new SpecificationAttributeOption
+                {
+                    Name = values.SafeGet(i).Trim(),
+                    Alias = alias.SafeGet(i).Trim(),
+                    DisplayOrder = order++,
+                    SpecificationAttributeId = model.SpecificationAttributeId
+                };
 
-				try
-				{
-					_specificationAttributeService.InsertSpecificationAttributeOption(sao);
-				}
-				catch (Exception ex)
-				{
-					ModelState.AddModelError("", ex.Message);
-					return false;
-				}
+                try
+                {
+                    _specificationAttributeService.InsertSpecificationAttributeOption(sao);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return false;
+                }
 
                 try
                 {
@@ -110,13 +109,13 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
                 catch { }
-			}
+            }
 
-			return true;
-		}
+            return true;
+        }
 
         #endregion
-        
+
         #region Specification attributes
 
         public ActionResult Index()
@@ -127,16 +126,16 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Catalog.Attribute.Read)]
         public ActionResult List()
         {
-			ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
+            ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
 
-			return View();
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Catalog.Attribute.Read)]
         public ActionResult List(GridCommand command)
         {
-			var gridModel = new GridModel<SpecificationAttributeModel>();
+            var gridModel = new GridModel<SpecificationAttributeModel>();
 
             var data = _specificationAttributeService.GetSpecificationAttributes()
                 .ForCommand(command)
@@ -144,7 +143,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             gridModel.Data = data.PagedForCommand(command);
-			gridModel.Total = data.Count;
+            gridModel.Total = data.Count;
 
             return new JsonResult
             {
@@ -157,12 +156,13 @@ namespace SmartStore.Admin.Controllers
         {
             var model = new SpecificationAttributeModel();
 
-			AddLocales(_languageService, model.Locales);
+            AddLocales(_languageService, model.Locales);
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Create)]
         public ActionResult Create(SpecificationAttributeModel model, bool continueEditing)
         {
@@ -170,27 +170,27 @@ namespace SmartStore.Admin.Controllers
             {
                 var specificationAttribute = model.ToEntity();
 
-				try
-				{
-					_specificationAttributeService.InsertSpecificationAttribute(specificationAttribute);
-				}
-				catch (Exception ex)
-				{
-					ModelState.AddModelError("", ex.Message);
-					return View(model);
-				}
+                try
+                {
+                    _specificationAttributeService.InsertSpecificationAttribute(specificationAttribute);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
 
-				try
-				{
-					UpdateAttributeLocales(specificationAttribute, model);
-				}
-				catch (Exception ex)
-				{
-					continueEditing = true;
-					NotifyError(ex.Message);
-				}
+                try
+                {
+                    UpdateAttributeLocales(specificationAttribute, model);
+                }
+                catch (Exception ex)
+                {
+                    continueEditing = true;
+                    NotifyError(ex.Message);
+                }
 
-				_customerActivityService.InsertActivity("AddNewSpecAttribute", T("ActivityLog.AddNewSpecAttribute"), specificationAttribute.Name);
+                _customerActivityService.InsertActivity("AddNewSpecAttribute", T("ActivityLog.AddNewSpecAttribute"), specificationAttribute.Name);
 
                 NotifySuccess(T("Admin.Catalog.Attributes.SpecificationAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = specificationAttribute.Id }) : RedirectToAction("List");
@@ -210,16 +210,17 @@ namespace SmartStore.Admin.Controllers
 
             var model = specificationAttribute.ToModel();
 
-			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = specificationAttribute.GetLocalized(x => x.Name, languageId, false, false);
-				locale.Alias = specificationAttribute.GetLocalized(x => x.Alias, languageId, false, false);
-			});
+                locale.Alias = specificationAttribute.GetLocalized(x => x.Alias, languageId, false, false);
+            });
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Update)]
         public ActionResult Edit(SpecificationAttributeModel model, bool continueEditing)
         {
@@ -233,17 +234,17 @@ namespace SmartStore.Admin.Controllers
             {
                 specificationAttribute = model.ToEntity(specificationAttribute);
 
-				try
-				{
-					_specificationAttributeService.UpdateSpecificationAttribute(specificationAttribute);
+                try
+                {
+                    _specificationAttributeService.UpdateSpecificationAttribute(specificationAttribute);
 
-					UpdateAttributeLocales(specificationAttribute, model);
-				}
-				catch (Exception ex)
-				{
-					ModelState.AddModelError("", ex.Message);
-					return View(model);
-				}
+                    UpdateAttributeLocales(specificationAttribute, model);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
 
                 _customerActivityService.InsertActivity("EditSpecAttribute", T("ActivityLog.EditSpecAttribute"), specificationAttribute.Name);
 
@@ -255,6 +256,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -272,22 +274,23 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-		[HttpPost]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Delete)]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
-		{
-			if (selectedIds != null && selectedIds.Count > 0)
-			{
-				var attributes = _specificationAttributeService.GetSpecificationAttributesByIds(selectedIds.ToArray()).ToList();
-				var deletedNames = string.Join(", ", attributes.Select(x => x.Name));
+        {
+            if (selectedIds != null && selectedIds.Count > 0)
+            {
+                var attributes = _specificationAttributeService.GetSpecificationAttributesByIds(selectedIds.ToArray()).ToList();
+                var deletedNames = string.Join(", ", attributes.Select(x => x.Name));
 
-				attributes.Each(x => _specificationAttributeService.DeleteSpecificationAttribute(x));
+                attributes.Each(x => _specificationAttributeService.DeleteSpecificationAttribute(x));
 
-				_customerActivityService.InsertActivity("DeleteSpecAttribute", T("ActivityLog.DeleteSpecAttribute"), deletedNames);
-			}
+                _customerActivityService.InsertActivity("DeleteSpecAttribute", T("ActivityLog.DeleteSpecAttribute"), deletedNames);
+            }
 
-			return Json(new { Result = true });
-		}
+            return Json(new { Result = true });
+        }
 
         #endregion
 
@@ -297,17 +300,17 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Catalog.Attribute.Read)]
         public ActionResult OptionList(int specificationAttributeId, GridCommand command)
         {
-			var gridModel = new GridModel<SpecificationAttributeOptionModel>();
-			var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttributeId);
+            var gridModel = new GridModel<SpecificationAttributeOptionModel>();
+            var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttributeId);
 
-			gridModel.Data = options.Select(x =>
+            gridModel.Data = options.Select(x =>
             {
                 var model = x.ToModel();
                 model.NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : $"{x.Name} - {x.Color}");
 
                 return model;
             });
-			gridModel.Total = options.Count();
+            gridModel.Total = options.Count();
 
             return new JsonResult
             {
@@ -326,12 +329,13 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales);
 
-			ViewBag.MultipleEnabled = true;
+            ViewBag.MultipleEnabled = true;
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionCreatePopup(string btnId, string formId, SpecificationAttributeOptionModel model)
         {
@@ -343,33 +347,33 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				if (model.Multiple)
-				{
+                if (model.Multiple)
+                {
                     if (!AddMultipleOptionNames(model))
                     {
                         return View(model);
                     }
-				}
-				else
-				{
-					var sao = model.ToEntity();
+                }
+                else
+                {
+                    var sao = model.ToEntity();
 
                     try
-					{
-						_specificationAttributeService.InsertSpecificationAttributeOption(sao);
-					}
-					catch (Exception ex)
-					{
-						ModelState.AddModelError("", ex.Message);
-						return View(model);
-					}
+                    {
+                        _specificationAttributeService.InsertSpecificationAttributeOption(sao);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", ex.Message);
+                        return View(model);
+                    }
 
                     try
                     {
                         UpdateOptionLocales(sao, model);
                     }
                     catch { }
-				}
+                }
 
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
@@ -395,13 +399,14 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = sao.GetLocalized(x => x.Name, languageId, false, false);
-				locale.Alias = sao.GetLocalized(x => x.Alias, languageId, false, false);
-			});
+                locale.Alias = sao.GetLocalized(x => x.Alias, languageId, false, false);
+            });
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionEditPopup(string btnId, string formId, SpecificationAttributeOptionModel model)
         {
@@ -416,16 +421,16 @@ namespace SmartStore.Admin.Controllers
                 sao = model.ToEntity(sao);
 
                 try
-				{
-					_specificationAttributeService.UpdateSpecificationAttributeOption(sao);
+                {
+                    _specificationAttributeService.UpdateSpecificationAttributeOption(sao);
 
-					UpdateOptionLocales(sao, model);
-				}
-				catch (Exception ex)
-				{
-					ModelState.AddModelError("", ex.Message);
-					return View(model);
-				}
+                    UpdateOptionLocales(sao, model);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
 
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
@@ -440,9 +445,9 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Catalog.Attribute.EditOption)]
         public ActionResult OptionDelete(int optionId, int specificationAttributeId, GridCommand command)
         {
-			var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(optionId);
+            var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(optionId);
 
-			_specificationAttributeService.DeleteSpecificationAttributeOption(sao);
+            _specificationAttributeService.DeleteSpecificationAttributeOption(sao);
 
             return OptionList(specificationAttributeId, command);
         }
@@ -452,37 +457,38 @@ namespace SmartStore.Admin.Controllers
         public ActionResult GetOptionsByAttributeId(int attributeId)
         {
             var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attributeId);
-            var result = 
-				from o in options
-				select new { id = o.Id, name = o.Name, text = o.Name };
+            var result =
+                from o in options
+                select new { id = o.Id, name = o.Name, text = o.Name };
 
             return Json(result.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Attribute.Update)]
         public ActionResult SetAttributeValue(string pk, string value, string name, FormCollection form)
         {
-			var success = false;
-			var message = string.Empty;
+            var success = false;
+            var message = string.Empty;
 
-			// name is the entity id of product specification attribute mapping.
-			var attribute = _specificationAttributeService.GetProductSpecificationAttributeById(Convert.ToInt32(name));
+            // name is the entity id of product specification attribute mapping.
+            var attribute = _specificationAttributeService.GetProductSpecificationAttributeById(Convert.ToInt32(name));
 
-			try
-			{
-				attribute.SpecificationAttributeOptionId = Convert.ToInt32(value);
+            try
+            {
+                attribute.SpecificationAttributeOptionId = Convert.ToInt32(value);
 
-				_specificationAttributeService.UpdateProductSpecificationAttribute(attribute);
-				success = true;
-			}
-			catch (Exception ex)
-			{
-				message = ex.Message;
-			}
+                _specificationAttributeService.UpdateProductSpecificationAttribute(attribute);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
 
-			// we give back the name to xeditable to overwrite the grid data in success event when a grid element got updated.
-			return Json(new { success, message, name = attribute.SpecificationAttributeOption?.Name });
+            // we give back the name to xeditable to overwrite the grid data in success event when a grid element got updated.
+            return Json(new { success, message, name = attribute.SpecificationAttributeOption?.Name });
         }
 
         #endregion

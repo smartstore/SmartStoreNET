@@ -9,7 +9,7 @@
     /*hide "add spec" table if no attributes are defined*/
     if (Model.AddSpecificationAttributeModel.AvailableAttributes.Count > 0)
     {
-        <script type="text/javascript">
+        <script>
             $(function() {
                 $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").on('change', function() {
 
@@ -133,7 +133,7 @@
         </table>
     
         <div>
-            <script type="text/javascript">
+            <script>
                 function OnCommand(e) {
                     var link = $(e.row).find(".spec-attr-opt");
                     if(e.name == "edit") {

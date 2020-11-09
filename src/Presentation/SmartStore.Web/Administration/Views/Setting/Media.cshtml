@@ -14,33 +14,79 @@
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
         </div>
     </div>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     <table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AutoGenerateAbsoluteUrls)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AutoGenerateAbsoluteUrls)
-				@Html.ValidationMessageFor(model => model.AutoGenerateAbsoluteUrls)
-			</td>
-		</tr>
-		<tr>
+        <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvatarPictureSize)
+                @Html.SmartLabelFor(model => model.AutoGenerateAbsoluteUrls)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AvatarPictureSize, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.AvatarPictureSize)
+                @Html.SettingEditorFor(model => model.AutoGenerateAbsoluteUrls)
+                @Html.ValidationMessageFor(model => model.AutoGenerateAbsoluteUrls)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MakeFilesTransientWhenOrphaned)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MakeFilesTransientWhenOrphaned)
+                @Html.ValidationMessageFor(model => model.MakeFilesTransientWhenOrphaned)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
+                @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
+                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaximumImageSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaximumImageSize, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.MaximumImageSize)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        @T("Admin.Configuration.Settings.Media.ImageSizes")
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
         </tr>
         <tr>
@@ -54,38 +100,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
-				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ProductDetailsPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ProductDetailsPictureSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DefaultPictureZoomEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
-                @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
             </td>
         </tr>
         <tr>
@@ -104,6 +123,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.BundledProductPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.BundledProductPictureSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MessageProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
             </td>
         </tr>
         <tr>
@@ -153,49 +181,31 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaximumImageSize)
+                @Html.SmartLabelFor(model => model.AvatarPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaximumImageSize, null, new { postfix = T("Common.Pixel").Text })
-                @Html.ValidationMessageFor(model => model.MaximumImageSize)
+                @Html.SettingEditorFor(model => model.AvatarPictureSize, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.AvatarPictureSize)
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaxUploadFileSize)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaxUploadFileSize, null, new { postfix = "KB" })
-                @Html.ValidationMessageFor(model => model.MaxUploadFileSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MakeFilesTransientWhenOrphaned)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MakeFilesTransientWhenOrphaned)
-                @Html.ValidationMessageFor(model => model.MakeFilesTransientWhenOrphaned)
-            </td>
-        </tr>
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">
-						@T("Admin.Configuration.Settings.Media.MediaTypes")
-					</div>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        @T("Admin.Configuration.Settings.Media.MediaTypes")
+                    </div>
                     <div class="text-muted">
                         @T("Admin.Configuration.Settings.Media.MediaTypesNotes")
                     </div>
-				</div>
-			</td>
-		</tr>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ImageTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.ImageTypes, Html.TextAreaFor(model => Model.ImageTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.ImageTypes, Html.TextAreaFor(model => Model.ImageTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.ImageTypes)
             </td>
         </tr>
@@ -204,7 +214,7 @@
                 @Html.SmartLabelFor(model => model.VideoTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.VideoTypes, Html.TextAreaFor(model => Model.VideoTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.VideoTypes, Html.TextAreaFor(model => Model.VideoTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.VideoTypes)
             </td>
         </tr>
@@ -213,7 +223,7 @@
                 @Html.SmartLabelFor(model => model.AudioTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AudioTypes, Html.TextAreaFor(model => Model.AudioTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.AudioTypes, Html.TextAreaFor(model => Model.AudioTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.AudioTypes)
             </td>
         </tr>
@@ -222,7 +232,7 @@
                 @Html.SmartLabelFor(model => model.DocumentTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.DocumentTypes, Html.TextAreaFor(model => Model.DocumentTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.DocumentTypes, Html.TextAreaFor(model => Model.DocumentTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.DocumentTypes)
             </td>
         </tr>
@@ -231,7 +241,7 @@
                 @Html.SmartLabelFor(model => model.TextTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.TextTypes, Html.TextAreaFor(model => Model.TextTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.TextTypes, Html.TextAreaFor(model => Model.TextTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.TextTypes)
             </td>
         </tr>
@@ -240,50 +250,49 @@
                 @Html.SmartLabelFor(model => model.BinTypes)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.BinTypes, Html.TextAreaFor(model => Model.BinTypes, new { rows = 2 }))
+                @Html.SettingEditorFor(model => model.BinTypes, Html.TextAreaFor(model => Model.BinTypes, new { rows = 2 }))
                 @Html.ValidationMessageFor(model => model.BinTypes)
             </td>
         </tr>
 
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">
-						@(T("Admin.Configuration.Settings.Media.MediaIsStoredIn"))&hellip;
-					</div>
-				</div>
-				<div class="alert alert-warning">
-					<p>
-						@T("Admin.Configuration.Settings.Media.MoveMediaNote")
-					</p>
-					<p>
-						@(T("Admin.Configuration.Settings.Media.CurrentStorageLocation")):
-						<strong>@Model.StorageProvider</strong>
-					</p>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.StorageProvider)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.StorageProvider, Model.AvailableStorageProvider)
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        @(T("Admin.Configuration.Settings.Media.MediaIsStoredIn"))&hellip;
+                    </div>
+                </div>
+                <div class="alert alert-warning">
+                    <p>
+                        @T("Admin.Configuration.Settings.Media.MoveMediaNote")
+                    </p>
+                    <p>
+                        @(T("Admin.Configuration.Settings.Media.CurrentStorageLocation")):
+                        <strong>@Model.StorageProvider</strong>
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StorageProvider)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.StorageProvider, Model.AvailableStorageProvider)
 
-				<button type="button" id="MoveMediaButton" class="btn btn-danger mt-3" data-url="@Url.Action("ChangeMediaStorage")">
-					<i class="fa fa-fw fa-cogs"></i>
-					<span>@(T("Admin.Common.MoveNow"))!</span>
-				</button>
+                <button type="button" id="MoveMediaButton" class="btn btn-danger mt-3" data-url="@Url.Action("ChangeMediaStorage")">
+                    <i class="fa fa-fw fa-cogs"></i>
+                    <span>@(T("Admin.Common.MoveNow"))!</span>
+                </button>
 
-				@Html.ValidationMessageFor(model => model.StorageProvider)			
-			</td>
-		</tr>
+                @Html.ValidationMessageFor(model => model.StorageProvider)
+            </td>
+        </tr>
     </table>
 }
 
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-
+<script>
+    $(function() {
     	// Move media.
     	$('#MoveMediaButton').click(function () {
     		if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
@@ -294,7 +303,10 @@
     			});
 
     			$(this).doPostData({
-    				data: { targetProvider: $('#@Html.FieldIdFor(model => model.StorageProvider)').val() }
+                    data: {
+                        targetProvider: $('#@Html.FieldIdFor(model => model.StorageProvider)').val(),
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }
     			});
     		}
     	});

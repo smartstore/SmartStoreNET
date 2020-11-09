@@ -5,6 +5,9 @@
 
     ViewBag.Title = T("Admin.Catalog.ProductReviews").Text;
 }
+
+@Html.AntiForgeryToken()
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-star"></i>
@@ -96,13 +99,12 @@
 			.EnableCustomBinding(true))
 </div>
 
-<script type="text/javascript">
-		
+<script>
     var selectedIds = [];
 
-    $(document).ready(function () {
-        
-        //search button
+    $(function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
         $('#btnSearch').click(function () {
             //search
             var grid = $('#productreviews-grid').data('tGrid');
@@ -128,16 +130,15 @@
 
         function processMany(e, action) {
             e.preventDefault();
-
-            var postData = {
-                selectedIds: selectedIds
-            };
-
+            
             $.ajax({
                 cache:false,
                 type: "POST",
                 url: action,
-                data: postData,
+                data: {
+                    selectedIds: selectedIds,
+                    "__RequestVerificationToken": token
+                },
                 complete: function (data) {
                     //reload grid
                     var grid = $('#productreviews-grid').data('tGrid');

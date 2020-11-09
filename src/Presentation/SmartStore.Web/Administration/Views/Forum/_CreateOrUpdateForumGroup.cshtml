@@ -1,6 +1,7 @@
 ﻿@using Telerik.Web.Mvc.UI;
 @model ForumGroupModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 

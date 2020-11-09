@@ -11,9 +11,9 @@ using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.MVC.Tests.Framework.Controllers
 {
-	[TestFixture]
-	public class RewriteUrlAttributeTests
-	{
+    [TestFixture]
+    public class RewriteUrlAttributeTests
+    {
         [Test]
         public void Can_enforce_Ssl_Www()
         {
@@ -101,70 +101,70 @@ namespace SmartStore.Web.MVC.Tests.Framework.Controllers
         }
 
         [Test]
-		public void Can_retain_Ssl_Www()
-		{
-			var store = new Store
-			{
-				SslEnabled = true,
-				ForceSslForAllPages = true,
-				Url = "https://www.shop.com"
-			};
+        public void Can_retain_Ssl_Www()
+        {
+            var store = new Store
+            {
+                SslEnabled = true,
+                ForceSslForAllPages = true,
+                Url = "https://www.shop.com"
+            };
 
-			var attr = CreateRewriteUrlAttribute(store, "https://www.shop.com", CanonicalHostNameRule.RequireWww, out var context);
+            var attr = CreateRewriteUrlAttribute(store, "https://www.shop.com", CanonicalHostNameRule.RequireWww, out var context);
 
-			attr.OnAuthorization(context);
-			var result = context.Result as RedirectResult;
+            attr.OnAuthorization(context);
+            var result = context.Result as RedirectResult;
 
-			Assert.IsNull(result);
-		}
+            Assert.IsNull(result);
+        }
 
-		private RewriteUrlAttribute CreateRewriteUrlAttribute(
-			Store store, 
-			string requestUrl,
-			CanonicalHostNameRule rule,
-			out AuthorizationContext filterContext)
-		{
-			filterContext = null;
+        private RewriteUrlAttribute CreateRewriteUrlAttribute(
+            Store store,
+            string requestUrl,
+            CanonicalHostNameRule rule,
+            out AuthorizationContext filterContext)
+        {
+            filterContext = null;
 
-			var attr = new RewriteUrlAttribute(SslRequirement.Yes)
-			{
-				SeoSettings = new Lazy<SeoSettings>(() => new SeoSettings
-				{
-					CanonicalHostNameRule = rule
-				}),
-				SecuritySettings = new Lazy<SecuritySettings>(() => new SecuritySettings
-				{
-					UseSslOnLocalhost = true
-				})
-			};
+            var attr = new RewriteUrlAttribute(SslRequirement.Yes)
+            {
+                SeoSettings = new Lazy<SeoSettings>(() => new SeoSettings
+                {
+                    CanonicalHostNameRule = rule
+                }),
+                SecuritySettings = new Lazy<SecuritySettings>(() => new SecuritySettings
+                {
+                    UseSslOnLocalhost = true
+                })
+            };
 
-			var storeContext = MockRepository.GenerateMock<IStoreContext>();
-			storeContext.Expect(x => x.CurrentStore).Return(store);
-			attr.StoreContext = new Lazy<IStoreContext>(() => storeContext);
+            var storeContext = MockRepository.GenerateMock<IStoreContext>();
+            storeContext.Expect(x => x.CurrentStore).Return(store);
+            attr.StoreContext = new Lazy<IStoreContext>(() => storeContext);
 
             var workContext = MockRepository.GenerateMock<IWorkContext>();
             attr.WorkContext = new Lazy<IWorkContext>(() => workContext);
 
             var httpContext = new FakeHttpContext("~/", "GET");
-			var httpRequest = new FakeHttpRequest("~/", new Uri(requestUrl), null);
-			httpContext.SetRequest(httpRequest);
+            var httpRequest = new FakeHttpRequest("~/", new Uri(requestUrl), null);
+            httpContext.SetRequest(httpRequest);
 
-			var isHttps = httpRequest.IsSecureConnection;
-			string secureUrl = isHttps ? requestUrl : requestUrl.Replace("http:", "https:");
-			string nonSecureUrl = isHttps ? requestUrl.Replace("https:", "http:") : requestUrl;
+            var isHttps = httpRequest.IsSecureConnection;
+            string secureUrl = isHttps ? requestUrl : requestUrl.Replace("http:", "https:");
+            string nonSecureUrl = isHttps ? requestUrl.Replace("https:", "http:") : requestUrl;
 
-			var webHelper = MockRepository.GenerateMock<IWebHelper>();
-			webHelper.Expect(x => x.IsCurrentConnectionSecured()).Return(isHttps);
-			webHelper.Expect(x => x.GetThisPageUrl(true, true)).Return(secureUrl);
-			webHelper.Expect(x => x.GetThisPageUrl(true, false)).Return(nonSecureUrl);
-			attr.WebHelper = new Lazy<IWebHelper>(() => webHelper);
+            var webHelper = MockRepository.GenerateMock<IWebHelper>();
+            webHelper.Expect(x => x.IsCurrentConnectionSecured()).Return(isHttps);
+            webHelper.Expect(x => x.GetThisPageUrl(true, true)).Return(secureUrl);
+            webHelper.Expect(x => x.GetThisPageUrl(true, false)).Return(nonSecureUrl);
+            attr.WebHelper = new Lazy<IWebHelper>(() => webHelper);
 
-			filterContext = new AuthorizationContext
-			{
-				HttpContext = httpContext
-			};
+            filterContext = new AuthorizationContext
+            {
+                HttpContext = httpContext
+            };
 
-			return attr;
-		}
-	}
+            return attr;
+        }
+    }
 }

@@ -63,7 +63,7 @@
     <Value>Verbindungszeichenfolge angeben (Connection string)</Value>
   </LocaleResource>
   <LocaleResource Name="Recommended">
-    <Value>(Empfohlen)</Value>
+    <Value>(empfohlen)</Value>
   </LocaleResource>
   <LocaleResource Name="RestartInstallation">
     <Value>Installation neu starten</Value>
@@ -78,7 +78,7 @@
     <Value>SQL Server Authentifizierung</Value>
   </LocaleResource>
   <LocaleResource Name="SqlCompact">
-    <Value>Integrierte Datenbank verwenden (SQL Server Compact)</Value>
+    <Value>SQL Server Compact (ungeeignet im Produktivmodus)</Value>
   </LocaleResource>
   <LocaleResource Name="SqlServerName">
     <Value>SQL Server Name</Value>
@@ -99,7 +99,7 @@
     <Value>Installation</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip1">
-    <Value>Smartstore ist eine leistungsfähige E-Commerce Lösung für kleine- und mittelständische Unternehmen. Dieser Assistent führt Sie durch die Konfiguration von Smartstore</Value>
+    <Value>Smartstore ist eine leistungsfähige E-Commerce Lösung für Unternehmen jeder Größe. Dieser Assistent führt Sie durch die Konfiguration von Smartstore</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip2">
  <Value>Um den Assistenten abzuschliessen, müssen Sie u.U. Verbindungsdaten zu Ihrem Datenbankserver angeben. Bitte kontaktieren Sie hierfür gegebenenfalls Ihren ISP. Falls Sie auf einem lokalen Computer installieren, benötigen Sie eventuell Informationen von Ihrem Systemadministrator</Value> 

@@ -10,7 +10,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.SpecificationAttributeOption", "Color", c => c.String(maxLength: 100));
             AlterColumn("dbo.Rule", "Operator", c => c.String(nullable: false, maxLength: 20));
         }
-        
+
         public override void Down()
         {
             AlterColumn("dbo.Rule", "Operator", c => c.String(nullable: false, maxLength: 10));

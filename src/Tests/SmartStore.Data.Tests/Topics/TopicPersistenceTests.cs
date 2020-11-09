@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Topics;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Topics;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Topics
 {
@@ -22,7 +22,7 @@ namespace SmartStore.Data.Tests.Topics
                 MetaKeywords = "Meta keywords",
                 MetaDescription = "Meta description",
                 MetaTitle = "Meta title",
-				LimitedToStores = true
+                LimitedToStores = true
             };
 
             var fromDb = SaveAndLoadEntity(topic);
@@ -36,7 +36,7 @@ namespace SmartStore.Data.Tests.Topics
             fromDb.MetaKeywords.ShouldEqual("Meta keywords");
             fromDb.MetaDescription.ShouldEqual("Meta description");
             fromDb.MetaTitle.ShouldEqual("Meta title");
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
         }
     }
 }

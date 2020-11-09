@@ -1,10 +1,17 @@
-﻿using SmartStore.Core.Domain.Forums;
+﻿using System.Collections.Generic;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class ForumSettingsModel
+    public class ForumSettingsModel : ISeoModel
     {
+        public ForumSettingsModel()
+        {
+            Locales = new List<SeoModelLocal>();
+        }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumsEnabled")]
         public bool ForumsEnabled { get; set; }
 
@@ -73,5 +80,13 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumFeedCount")]
         public int ForumFeedCount { get; set; }
+
+        public string MetaTitle { get; set; }
+
+        public string MetaDescription { get; set; }
+
+        public string MetaKeywords { get; set; }
+
+        public IList<SeoModelLocal> Locales { get; set; }
     }
 }

@@ -1,9 +1,102 @@
 # Release Notes
 
+## Smartstore 4.1.0
+### Highlights
+* **Web API:** now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.
+* (NEW) **Delivery dates:** product info now shows estimated delivery date (exact date, range, *Not before*, *Not later than*). Merchant can enter optional Min/Max delivery days and also specify business hours.
+* (DEV) [VS Extension](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore) to create plugins. Helps developing plugins for Smartstore by creating the basic structure of a Smartstore plugin with all the required files.  
+* **OCI** provides connection to e-procurement systems via industry standard OCI (commercial plugin)
+* **cXmlPunchout** provides connection to e-procurement systems via industry standard cXmlPunchout (commercial plugin) 
+* **Video** support in product media gallery.
+* **Media Gallery** displays a multitude of media files in various styles as Page Builder block.
+* (PERF) **~10% faster page rendering** speed thanks to better eager loading & caching strategies
+
+### Breaking changes
+* The **Glimpse** plugin is obsolete and has been removed! Does not work with .NET 4.7+ and hasn't been maintained for 7 years now. 
+* (DEV) **Web API**: porting to OData v4 has minor incompatibilities with v3. See this [blog post](https://smartstore.com/en/web-api-supports-odata-v4-as-from-smartstore-4-1) for details.
+* **Blogs\News**: the direct language association has been removed. Localized content is now entered using the localization editor. 
+Merging the contents of different languages must be done manually (migration is not possible).
+* **PostFinance**: plugin has been extended and renamed. Users of this payment method must activate PostFinance e-Commerce in backend and enter the API access data again.
+
+### New Features
+* Theming: responsive font-sizing and spacing
+* **Page Builder**
+	* #2042 Added gallery block to display a multitude of media files in various styles.
+	* #2036 Added block to display content slider.
+	* #2035 Added block to display news.
+	* #1729 Added option for title and intro inline background color.
+* #1644 Graying out unavailable attribute combinations.
+* #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
+* #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
+* #1239 Added configurability for password strength.
+* #1678 Determine initial working currency based on IP/country.
+* #1697 Added picture and color options to checkout attribute values.
+* #1788 Added setting to restrict order amount in general and for customer roles in specific.
+* #1978 Added minimum and maximum days to delivery times to show a specific delivery date.
+* #1715 Added product attributes selected by customer to RFQ and ask question message.
+* (DEV) Full localization support for properties of setting classes.
+* #2012 Added paging and sorting for bestsellers report.
+* #2014 Added paging and sorting for top customers report.
+* #2092 Added meta properties for social media sharing to category, manufacturer, news and blog pages.
+* Added option for SameSite mode property of cookies
+* #1307 Add 'apple-touch-icon' meta with all common sizes
+* #213 Allow special title and meta tags for home
+
+### Improvements
+* (PERF) 10% faster page rendering speed thanks to better eager loading & caching strategies
+* #1981 Added grouping for cart rules.
+* #1407 Added menu to set order and payment status for orders checked in backend grid.
+* #1778 Back button closes offcanvas menu/cart.
+* #2069 MegaSearch: product order is applied to all categories in which a product appears.
+* #2052 When editing a product, the stock quantity is only updated if it has not changed since the page was loaded.
+* #213 Added options for special title and meta tags on home page.
+* #1977 CMS Menu Builder: added new builder types for blogs and news.
+* Search Log: added option to hide top search terms in instant search.
+* CookieManager: Admin area for user defined cookie information 
+* CookieManager: More compact frontend layout for mobile devices
+* Seo optimization for News, Blog & Boards
+* (Admin) More filter options for news & blog items
+* #1901 News: Made CreatedOn configurable 
+* #2078 Hidden news items should be rendered opaque if current user is in admin role.
+* #1902 Form registration clears values when switching between site languages
+* #1984 Render breadcrumb for pages that are part of the main menu. 
+* #2121 Media Manager: implement direct file "replace" support.
+* #1338 Display 'PanGV' in OffCanvas cart
+* #1988 Preconnect all external resources and load them async
+* #1968 Dropzone: upload the folder structure when a folder is dropped.
+* #1996 Page Builder: Added 'Loading behaviour' option to picture block
+* #2100 Improved schema for news, blogs and products
+
+### Bugfixes
+* **Media Manager**
+	* The file date should be displayed in local time and not in UTC.
+* **Page Builder**
+	* Reveal effect on story block conflicted with nested block reveal effects.
+	* #2068 Fixed RTL display issues with dropdown menus and slider.
+* **Export**
+	* An empty export file was created at the end of an export when using the batch-size option.
+	* The offset option skipped one record too much.
+	* The XML export of CountryOfOrigin caused an error.
+* Message template attachments were not attached to the email.
+* Shipment templates showed all products of the order instead of only those of the shipment.
+* EasyCredit: fixed "Could not convert setting 'EasyCreditSettings.LastPurchaseLimitUpdatedOn' to type 'DateTime'".
+* #2076 Attributes were not pre-selected for all associated products of a grouped product.
+* Customer tab on customer role edit page showed deleted customers.
+* #2041 Product with call for price did show as free in product list and grid view.
+* #2079 Order item editing: order total was not updated when both unit and item price were changed.
+* RSS feeds: relative URLs of objects embedded in HTML are replaced by absolute URLs.
+* Rules: automatic category assignments of products were not taken into account in a search index updates.
+* Campaign preview did not work if there are no newsletter subscribers.
+* Many alt & title attribute fixes for pictures
+* #2000 Escape toxic chars in meta attributes 
+* Google Analytics: Fixed script error in conjunction with CookieManager
+* #2085 RTL: searchbar button wasn't aligned correctly
+* #2068 RTL: Fixed Page Builder slider positioning, dropdown and other alignments
+* #2019 OffCancas compare: hide horizontal scrollbar 
+
 ## Smartstore 4.0.1
 ### New Features
-
-- Check on app startup whether any plugin has changed and refresh all plugin locale resources.
+* Check on app startup whether any plugin has changed and refresh all plugin locale resources.
 
 ### Improvements
 * Theming: minimal but effective tweaks (rounding, shadows, typo)

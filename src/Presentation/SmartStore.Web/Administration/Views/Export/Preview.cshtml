@@ -13,6 +13,7 @@
 	</div>
 	<div class="options">
 		<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+			@Html.AntiForgeryToken()
 			<input type="hidden" name="Id" value="@Model.Id" />
 			<input type="hidden" name="SelectedIds" value="" />
 
@@ -35,11 +36,10 @@
 	</div>
 </div>
 
-<script type="text/javascript">
+<script>
 	var selectedIds = [];
 
-	jQuery(document).ready(function () {
-
+    $(function() {
 		// execute export
 		$('#ExportAll, #ExportSelected').click(function (e) {
 			e.preventDefault();
@@ -55,7 +55,6 @@
 			form.submit();
 			return false;
 		});
-
 
 		// master checkbox clicked
 		$('input[type=checkbox].master-checkbox').click(function () {

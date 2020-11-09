@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Text;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using SmartStore.Core.IO;
-using System.Diagnostics;
 
 namespace SmartStore
 {
-	public static class StreamExtensions
-	{
+    public static class StreamExtensions
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
-		{
-			return new StreamReader(stream, Encoding.UTF8, true, 0x400, leaveOpen);
-		}
+        {
+            return new StreamReader(stream, Encoding.UTF8, true, 0x400, leaveOpen);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
-		{
-			return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
-		}
+        {
+            return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
+        }
 
         public static Stream MakeSeekable(this Stream stream)
         {
@@ -31,50 +31,50 @@ namespace SmartStore
             return new SeekableReadOnlyStream(stream, (int)stream.Length);
         }
 
-        public static bool ToFile(this Stream srcStream, string path) 
+        public static bool ToFile(this Stream srcStream, string path)
         {
-			if (srcStream == null)
-				return false;
+            if (srcStream == null)
+                return false;
 
-			const int BuffSize = 32768;
-			var result = true;
-			Stream dstStream = null;
-			var buffer = new byte[BuffSize];
+            const int BuffSize = 32768;
+            var result = true;
+            Stream dstStream = null;
+            var buffer = new byte[BuffSize];
 
-			try 
+            try
             {
                 using (dstStream = File.Open(path, FileMode.Create))
                 {
-					int len;
+                    int len;
                     while ((len = srcStream.Read(buffer, 0, BuffSize)) > 0)
                     {
                         dstStream.Write(buffer, 0, len);
                     }
-				}
+                }
             }
-			catch 
+            catch
             {
-				result = false;
-			}
-			finally
-			{
-				if (dstStream != null)
-				{
-					dstStream.Close();
-					dstStream.Dispose();
-				}
-			}
+                result = false;
+            }
+            finally
+            {
+                if (dstStream != null)
+                {
+                    dstStream.Close();
+                    dstStream.Dispose();
+                }
+            }
 
-			return (result && File.Exists(path));
-		}
+            return (result && File.Exists(path));
+        }
 
-        public static bool ContentsEqual(this Stream src, Stream other, bool? forceLengthCompare = null) 
+        public static bool ContentsEqual(this Stream src, Stream other, bool? forceLengthCompare = null)
         {
-			if (src == null)
-				throw new ArgumentNullException(nameof(src));
+            if (src == null)
+                throw new ArgumentNullException(nameof(src));
 
-			if (other == null)
-				throw new ArgumentNullException(nameof(other));
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
 
             if (src == other)
             {
@@ -98,13 +98,13 @@ namespace SmartStore
             const int bufferSize = 1024 * intSize; // 2048;
             var buffer1 = new byte[bufferSize];
             var buffer2 = new byte[bufferSize];
-            
+
             while (true)
             {
                 int len1 = src.Read(buffer1, 0, bufferSize);
                 int len2 = other.Read(buffer2, 0, bufferSize);
 
-				if (len1 != len2)
+                if (len1 != len2)
                     return false;
 
                 if (len1 == 0)
@@ -120,7 +120,7 @@ namespace SmartStore
                     }
                 }
 
-				return true;
+                return true;
             }
         }
     }

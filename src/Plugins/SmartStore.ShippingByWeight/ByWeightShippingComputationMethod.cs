@@ -20,48 +20,48 @@ namespace SmartStore.ShippingByWeight
     public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
     {
         private readonly IShippingService _shippingService;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
         private readonly IShippingByWeightService _shippingByWeightService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
         private readonly ILocalizationService _localizationService;
         private readonly IPriceFormatter _priceFormatter;
         private readonly ICommonServices _services;
-		private readonly ITaxService _taxService;
-        
+        private readonly ITaxService _taxService;
+
         public ByWeightShippingComputationMethod(
             IShippingService shippingService,
-			IStoreContext storeContext,
+            IStoreContext storeContext,
             IShippingByWeightService shippingByWeightService,
-            IPriceCalculationService priceCalculationService, 
+            IPriceCalculationService priceCalculationService,
             ShippingByWeightSettings shippingByWeightSettings,
             ILocalizationService localizationService,
             IPriceFormatter priceFormatter,
             ICommonServices services,
-			ITaxService taxService)
+            ITaxService taxService)
         {
             _shippingService = shippingService;
-			_storeContext = storeContext;
+            _storeContext = storeContext;
             _shippingByWeightService = shippingByWeightService;
             _priceCalculationService = priceCalculationService;
             _shippingByWeightSettings = shippingByWeightSettings;
             _localizationService = localizationService;
             _priceFormatter = priceFormatter;
             _services = services;
-			_taxService = taxService;
+            _taxService = taxService;
 
-			T = NullLocalizer.Instance;
-		}
+            T = NullLocalizer.Instance;
+        }
 
-		public Localizer T { get; set; }
+        public Localizer T { get; set; }
 
-		#region Utilities
+        #region Utilities
 
-		private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId, string zip)
+        private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId, string zip)
         {
             decimal? shippingTotal = null;
 
-			var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, storeId, countryId, weight, zip);
+            var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, storeId, countryId, weight, zip);
             if (shippingByWeightRecord == null)
             {
                 if (_shippingByWeightSettings.LimitMethodsToCreated)
@@ -102,7 +102,7 @@ namespace SmartStore.ShippingByWeight
 
             return shippingTotal;
         }
-        
+
         #endregion
 
         #region Methods
@@ -124,50 +124,50 @@ namespace SmartStore.ShippingByWeight
                 response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
-			
-			int storeId = request.StoreId > 0 ? request.StoreId : _storeContext.CurrentStore.Id;
-			var taxRate = decimal.Zero;
-			decimal subTotalInclTax = decimal.Zero;
+
+            int storeId = request.StoreId > 0 ? request.StoreId : _storeContext.CurrentStore.Id;
+            var taxRate = decimal.Zero;
+            decimal subTotalInclTax = decimal.Zero;
             decimal subTotalExclTax = decimal.Zero;
             decimal currentSubTotal = decimal.Zero;
             int countryId = 0;
             string zip = null;
 
-			if (request.ShippingAddress != null)
-			{
-				countryId = request.ShippingAddress.CountryId ?? 0;
+            if (request.ShippingAddress != null)
+            {
+                countryId = request.ShippingAddress.CountryId ?? 0;
                 zip = request.ShippingAddress.ZipPostalCode;
-			}
-            
+            }
+
             foreach (var shoppingCartItem in request.Items)
             {
-				if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
-				{
-					continue;
-				}
+                if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
+                {
+                    continue;
+                }
 
-				var itemSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
+                var itemSubTotal = _priceCalculationService.GetSubTotal(shoppingCartItem, true);
 
-				var itemSubTotalInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, true, request.Customer, out taxRate);
-				subTotalInclTax += itemSubTotalInclTax;
+                var itemSubTotalInclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, true, request.Customer, out taxRate);
+                subTotalInclTax += itemSubTotalInclTax;
 
                 var itemSubTotalExclTax = _taxService.GetProductPrice(shoppingCartItem.Item.Product, itemSubTotal, false, request.Customer, out taxRate);
                 subTotalExclTax += itemSubTotalExclTax;
             }
 
-			var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
+            var weight = _shippingService.GetShoppingCartTotalWeight(request.Items, _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts);
             var shippingMethods = _shippingService.GetAllShippingMethods(request, storeId);
             currentSubTotal = _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax ? subTotalExclTax : subTotalInclTax;
 
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);
-                
+
                 decimal? rate = GetRate(subTotalInclTax, weight, shippingMethod.Id, storeId, countryId, zip);
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();
-					shippingOption.ShippingMethodId = shippingMethod.Id;
+                    shippingOption.ShippingMethodId = shippingMethod.Id;
                     shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
 
                     if (record != null && record.SmallQuantityThreshold > currentSubTotal)
@@ -213,14 +213,14 @@ namespace SmartStore.ShippingByWeight
             controllerName = "ShippingByWeight";
             routeValues = new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } };
         }
-        
+
         /// <summary>
         /// Install plugin
         /// </summary>
         public override void Install()
         {
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
-            
+
             base.Install();
         }
 
@@ -229,11 +229,11 @@ namespace SmartStore.ShippingByWeight
         /// </summary>
         public override void Uninstall()
         {
-			var migrator = new DbMigrator(new Configuration());
-			migrator.Update(DbMigrator.InitialDatabase);
+            var migrator = new DbMigrator(new Configuration());
+            migrator.Update(DbMigrator.InitialDatabase);
 
-			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
-            
+            _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+
             base.Uninstall();
         }
 
@@ -244,32 +244,18 @@ namespace SmartStore.ShippingByWeight
         /// <summary>
         /// Gets a shipping rate computation method type
         /// </summary>
-        public ShippingRateComputationMethodType ShippingRateComputationMethodType
-        {
-            get
-            {
-                return ShippingRateComputationMethodType.Offline;
-            }
-        }
+        public ShippingRateComputationMethodType ShippingRateComputationMethodType => ShippingRateComputationMethodType.Offline;
 
 
         /// <summary>
         /// Gets a shipment tracker
         /// </summary>
-        public IShipmentTracker ShipmentTracker
-        {
-            get
-            {
+        public IShipmentTracker ShipmentTracker =>
                 //uncomment a line below to return a general shipment tracker (finds an appropriate tracker by tracking number)
                 //return new GeneralShipmentTracker(EngineContext.Current.Resolve<ITypeFinder>());
-                return null; 
-            }
-        }
+                null;
 
-		public bool IsActive
-		{
-			get { return true; }
-		}
+        public bool IsActive => true;
 
         #endregion
     }

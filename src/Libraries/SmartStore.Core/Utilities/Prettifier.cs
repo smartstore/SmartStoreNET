@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -10,8 +8,8 @@ namespace SmartStore.Utilities
 {
     public static class Prettifier
     {
-	    [SuppressMessage("ReSharper", "RedundantAssignment")]
-	    public static string BytesToString(long bytes)
+        [SuppressMessage("ReSharper", "RedundantAssignment")]
+        public static string BytesToString(long bytes)
         {
             double result = bytes;
             double dsize = bytes;
@@ -46,7 +44,7 @@ namespace SmartStore.Utilities
         {
             if (xml.IsEmpty() || xml.IsWhiteSpace())
                 return xml;
-            
+
             // first read the xml ignoring whitespace
             using (var xmlReader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true, CheckCharacters = false }))
             {
@@ -60,9 +58,6 @@ namespace SmartStore.Utilities
                 var result = sb.ToString();
                 return result;
             }
-
         }
-
     }
-
 }

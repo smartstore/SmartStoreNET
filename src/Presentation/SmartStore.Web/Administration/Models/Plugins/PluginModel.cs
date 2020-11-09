@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Plugins
 {
@@ -14,7 +14,7 @@ namespace SmartStore.Admin.Models.Plugins
         public PluginModel()
         {
             Locales = new List<PluginLocalizedModel>();
-			LicenseLabel = new LicenseLabelModel();
+            LicenseLabel = new LicenseLabelModel();
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Group")]
@@ -41,32 +41,32 @@ namespace SmartStore.Admin.Models.Plugins
         [AllowHtml]
         public string Author { get; set; }
 
-        [SmartResourceDisplayName("Common.DisplayOrder")] 
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
         public string ConfigurationUrl { get; set; }
 
-		public string Url { get; set; }
+        public string Url { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Installed")]
         public bool Installed { get; set; }
 
-		public LicenseLabelModel LicenseLabel { get; set; }
+        public LicenseLabelModel LicenseLabel { get; set; }
 
-		public bool IsConfigurable { get; set; }
+        public bool IsConfigurable { get; set; }
 
-		public RouteInfo ConfigurationRoute { get; set; }
+        public RouteInfo ConfigurationRoute { get; set; }
 
         public string IconUrl { get; set; }
 
         public IList<PluginLocalizedModel> Locales { get; set; }
 
-		public int[] SelectedStoreIds { get; set; }
+        public int[] SelectedStoreIds { get; set; }
     }
 
 
-	public class PluginLocalizedModel : ILocalizedModelLocal
+    public class PluginLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 
@@ -74,9 +74,9 @@ namespace SmartStore.Admin.Models.Plugins
         [AllowHtml]
         public string FriendlyName { get; set; }
 
-		[SmartResourceDisplayName("Common.Description")]
-		[AllowHtml]
-		public string Description { get; set; }
+        [SmartResourceDisplayName("Common.Description")]
+        [AllowHtml]
+        public string Description { get; set; }
     }
 
     public partial class PluginValidator : AbstractValidator<PluginModel>

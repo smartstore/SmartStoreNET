@@ -16,6 +16,10 @@
         <Value>Nur Text</Value>
     </LocaleResource>
 
+    <LocaleResource Name="CookieInfo">
+      <Value>PayPal nutzt Cookies zur Darstellung und Abwicklung des Zahlungsvorgangs über PayPal.</Value>
+    </LocaleResource>
+
     <LocaleResource Name="AccessData">
         <Value>Zugangsdaten</Value>
     </LocaleResource>
@@ -90,7 +94,7 @@
         <Value>Webhook-ID</Value>
     </LocaleResource>
     <LocaleResource Name="WebhookId.Hint">
-        <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
+        <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisiert werden kann.</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

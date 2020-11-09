@@ -2,73 +2,118 @@
 
 (function ($, window, document, undefined) {
 
-	var _commonPluginFactories = [
-		// panel toggling
-		function (ctx) {
+    var _commonPluginFactories = [
+        // panel toggling
+        function (ctx) {
             ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
-				SmartStore.Admin.togglePanel(el, false);
-			});
-		},
-		// select2
-		function (ctx) {
-			ctx.find("select:not(.noskin)").selectWrapper();
+                SmartStore.Admin.togglePanel(el, false);
+            });
         },
-		// tooltips
-		function (ctx) {
-			ctx.find(".cph").tooltip({
-				selector: "a.hint",
-				placement: SmartStore.globalization.culture.isRTL ? "right" : "left",
-				trigger: 'hover',
-				delay: { show: 400, hide: 0 }
-			});
-		},
-		// switch
-		function (ctx) {
+        // select2
+        function (ctx) {
+            ctx.find("select:not(.noskin)").selectWrapper();
+        },
+        // tooltips
+        function (ctx) {
+            ctx.find(".cph").tooltip({
+                selector: "a.hint",
+                placement: SmartStore.globalization.culture.isRTL ? "right" : "left",
+                trigger: 'hover',
+                delay: { show: 400, hide: 0 }
+            });
+        },
+        // switch
+        function (ctx) {
             ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox], .switcher > input[type=checkbox]").each(function (i, el) {
-				$(el)
-					.wrap('<label class="switch"></label>')
+                $(el)
+                    .wrap('<label class="switch"></label>')
                     .after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>')
                     .parent().on('click', function (e) { if ($(el).is('[readonly]')) { e.preventDefault(); } });
-			});
-		},
-		// Telerik
-		function (ctx) {
-			Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
-				// reject .t-button that has a .t-group-indicator as parent
-				return !$(this).parent().hasClass("t-group-indicator");
-			}));
-		},
-		// btn-trigger
-		function (ctx) {
-			// Temp only: delegates anchor clicks to corresponding form-button.
-			ctx.find("a[rel='btn-trigger']").click(function () {
-				var el = $(this);
-				var target = el.data("target");
-				var action = el.data("action");
-				var button = el.closest("form").find("button[type=submit][name=" + target + "][value=" + action + "]");
-				button.click();
-				return false;
-			});
-		},
-		// ColorPicker
-		function (ctx) {
-			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
+            });
+        },
+        // Telerik
+        function (ctx) {
+            Hacks.Telerik.handleButton(ctx.find(".t-button").filter(function (index) {
+                // reject .t-button that has a .t-group-indicator as parent
+                return !$(this).parent().hasClass("t-group-indicator");
+            }));
+        },
+        // btn-trigger
+        function (ctx) {
+            // Temp only: delegates anchor clicks to corresponding form-button.
+            ctx.find("a[rel='btn-trigger']").click(function () {
+                var el = $(this);
+                var target = el.data("target");
+                var action = el.data("action");
+                var button = el.closest("form").find("button[type=submit][name=" + target + "][value=" + action + "]");
+                button.click();
+                return false;
+            });
+        },
+        // ColorPicker
+        function (ctx) {
+            ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
         },
         // RangeSlider
         function (ctx) {
             ctx.find(".range-slider").rangeSlider();
         }
-	];
+    ];
 
 	/* 
 	Helpful in AJAX scenarios, where jQuery plugins has to be applied 
 	to newly created html.
 	*/
-	window.applyCommonPlugins = function (/* jQuery */ context) {
-		$.each(_commonPluginFactories, function (i, val) {
-			val.call(this, $(context));
-		});
-	};
+    window.applyCommonPlugins = function (/* jQuery */ context) {
+        $.each(_commonPluginFactories, function (i, val) {
+            val.call(this, $(context));
+        });
+    };
+
+    window.providerListInit = function () {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $(".activate-provider").on("click", function (e) {
+            e.preventDefault();
+
+            var $el = $(this);
+            var activate = $el.attr("data-activate") == "true" ? true : false;
+            var T = window.Res.Provider;
+
+            $({}).doAjax({
+                type: 'POST',
+                url: $el.data('href'),
+                data: {
+                    "__RequestVerificationToken": token,
+                    "systemName": $el.attr("data-systemname"),
+                    "activate": activate
+                },
+                callbackSuccess: function () {
+                    var item = $el.closest(".module-item");
+                    var badge = item.find(".badge");
+
+                    item.toggleClass("inactive", !activate);
+
+                    if (activate) {
+                        $el.addClass("btn-secondary btn-to-danger").removeClass("btn-success");
+                        $el.text(T.deactivate);
+                        badge.text(T.active);
+                        badge.addClass("badge-success").removeClass("badge-secondary");
+                    }
+                    else {
+                        $el.addClass("btn-success").removeClass("btn-secondary btn-to-danger");
+                        $el.text(T.activate);
+                        badge.text(T.inactive);
+                        badge.addClass("badge-secondary").removeClass("badge-success");
+                    }
+
+                    $el.attr("data-activate", !activate);
+                }
+            });
+
+        return false;
+        })
+    }
 
     $(document).ready(function () {
         var html = $("html");
@@ -77,12 +122,12 @@
 
         applyCommonPlugins($("body"));
 
-    	// Handle panel toggling
+        // Handle panel toggling
         $(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
-			SmartStore.Admin.togglePanel(e.target, true);
+            SmartStore.Admin.togglePanel(e.target, true);
         });
 
-		// Tooltips
+        // Tooltips
         $("#page").tooltip({
             selector: "a[rel=tooltip], .tooltip-toggle",
             trigger: 'hover'
@@ -103,10 +148,10 @@
             }, 300);
         });
 
-		// check overridden store settings
+        // check overridden store settings
         $('.multi-store-override-option').each(function (i, el) {
-			SmartStore.Admin.checkOverriddenStoreValue(el);
-		});
+            SmartStore.Admin.checkOverriddenStoreValue(el);
+        });
 
         // publish entity commit messages
         $('.entity-commit-trigger').on('click', function (e) {
@@ -118,11 +163,11 @@
                     id: el.data('commit-id')
                 });
             }
-		});
+        });
 
-		// Because we restyled the grid, the filter dropdown does not position
-		// correctly anymore. We have to reposition it.
-		Hacks.Telerik.handleGridFilter();
+        // Because we restyled the grid, the filter dropdown does not position
+        // correctly anymore. We have to reposition it.
+        Hacks.Telerik.handleGridFilter();
 
         // sticky section-header
         var navbar = $("#navbar");
@@ -207,11 +252,11 @@
         });
 
         $(window).on('load', function () {
-			// swap classes onload and domready
-			html.removeClass("loading").addClass("loaded");
+            // swap classes onload and domready
+            html.removeClass("loading").addClass("loaded");
         });
 
     });
 
 
-})( jQuery, this, document );
+})(jQuery, this, document);

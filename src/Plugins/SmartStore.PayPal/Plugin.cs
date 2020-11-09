@@ -9,6 +9,7 @@ using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Payments;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Order;
 using SmartStore.Web.Models.ShoppingCart;
@@ -17,30 +18,33 @@ namespace SmartStore.PayPal
 {
     [SystemName("Widgets.PayPal")]
     [FriendlyName("PayPal")]
-    public class Plugin : BasePlugin, IWidget
+    public class Plugin : BasePlugin, IWidget, ICookiePublisher
     {
         private readonly ICommonServices _services;
-		private readonly Lazy<IPayPalService> _payPalService;
+        private readonly Lazy<IPayPalService> _payPalService;
         private readonly Lazy<ICurrencyService> _currencyService;
+        private readonly Lazy<IPaymentService> _paymentService;
 
         public Plugin(
             ICommonServices services,
-			Lazy<IPayPalService> payPalService,
-            Lazy<ICurrencyService> currencyService)
-		{
+            Lazy<IPayPalService> payPalService,
+            Lazy<ICurrencyService> currencyService,
+            Lazy<IPaymentService> paymentService)
+        {
             _services = services;
-			_payPalService = payPalService;
+            _payPalService = payPalService;
             _currencyService = currencyService;
+            _paymentService = paymentService;
 
-			Logger = NullLogger.Instance;
-		}
+            Logger = NullLogger.Instance;
+        }
 
-		public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
-		public static string SystemName => "SmartStore.PayPal";
+        public static string SystemName => "SmartStore.PayPal";
 
-		public override void Install()
-		{
+        public override void Install()
+        {
             _services.Settings.SaveSetting(new PayPalExpressPaymentSettings());
             _services.Settings.SaveSetting(new PayPalDirectPaymentSettings());
             _services.Settings.SaveSetting(new PayPalStandardPaymentSettings());
@@ -49,11 +53,11 @@ namespace SmartStore.PayPal
 
             _services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			base.Install();
-		}
+            base.Install();
+        }
 
-		public override void Uninstall()
-		{
+        public override void Uninstall()
+        {
             DeleteWebhook(_services.Settings.LoadSetting<PayPalPlusPaymentSettings>(), PayPalPlusProvider.SystemName);
             DeleteWebhook(_services.Settings.LoadSetting<PayPalInstalmentsSettings>(), PayPalInstalmentsProvider.SystemName);
 
@@ -65,8 +69,24 @@ namespace SmartStore.PayPal
 
             _services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
-			base.Uninstall();
-		}
+            base.Uninstall();
+        }
+
+        public IEnumerable<CookieInfo> GetCookieInfo()
+        {
+            var isActive = _paymentService.Value.IsPaymentMethodActive("Payments.PayPalPlus", _services.StoreContext.CurrentStore.Id);
+            if (!isActive)
+                return null;
+
+            var cookieInfo = new CookieInfo
+            {
+                Name = _services.Localization.GetResource("Plugins.FriendlyName.Widgets.PayPal"),
+                Description = _services.Localization.GetResource("Plugins.SmartStore.PayPal.CookieInfo"),
+                CookieType = CookieType.Required
+            };
+
+            return new List<CookieInfo> { cookieInfo };
+        }
 
         public IList<string> GetWidgetZones()
         {
@@ -161,5 +181,5 @@ namespace SmartStore.PayPal
                 Logger.Log(LogLevel.Error, ex, null, null);
             }
         }
-	}
+    }
 }

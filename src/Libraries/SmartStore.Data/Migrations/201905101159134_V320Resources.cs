@@ -2,24 +2,21 @@ namespace SmartStore.Data.Migrations
 {
     using System.Data.Entity.Migrations;
     using SmartStore.Core.Domain.Catalog;
+    using SmartStore.Core.Domain.Common;
     using SmartStore.Data.Setup;
     using SmartStore.Utilities;
-    using SmartStore.Core.Domain.Common;
 
     public partial class V320Resources : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

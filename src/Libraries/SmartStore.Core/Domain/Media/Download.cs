@@ -1,5 +1,3 @@
-using NuGet;
-using SmartStore.Core.Domain.Catalog;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,40 +9,40 @@ namespace SmartStore.Core.Domain.Media
     /// Represents a download
     /// </summary>
     [DataContract]
-	public partial class Download : BaseEntity, ITransient
-	{		
-		/// <summary>
+    public partial class Download : BaseEntity//, ITransient
+    {
+        /// <summary>
         /// Gets or sets a GUID
         /// </summary>
-		[DataMember]
-		[Index]
-		public Guid DownloadGuid { get; set; }
+        [DataMember]
+        [Index]
+        public Guid DownloadGuid { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether DownloadUrl property should be used
         /// </summary>
 		[DataMember]
-		public bool UseDownloadUrl { get; set; }
+        public bool UseDownloadUrl { get; set; }
 
         /// <summary>
         /// Gets or sets a download URL
         /// </summary>
 		[DataMember]
-		public string DownloadUrl { get; set; }
+        public string DownloadUrl { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity transient/preliminary
-		/// </summary>
-		[DataMember]
-		[Index("IX_UpdatedOn_IsTransient", 1)]
-		public bool IsTransient { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity transient/preliminary
+        /// </summary>
+        [DataMember]
+        [Index("IX_UpdatedOn_IsTransient", 1)]
+        public bool IsTransient { get; set; }
 
-		/// <summary>
-		/// Gets or sets the date and time of instance update
-		/// </summary>
-		[DataMember]
-		[Index("IX_UpdatedOn_IsTransient", 0)]
-		public DateTime UpdatedOnUtc { get; set; }
+        /// <summary>
+        /// Gets or sets the date and time of instance update
+        /// </summary>
+        [DataMember]
+        [Index("IX_UpdatedOn_IsTransient", 0)]
+        public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the media file identifier
@@ -57,7 +55,7 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
         [DataMember]
         public virtual MediaFile MediaFile { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value indicating the corresponding entity id
         /// </summary>

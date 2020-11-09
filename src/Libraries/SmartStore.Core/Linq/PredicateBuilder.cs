@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SmartStore.Linq
@@ -37,15 +36,15 @@ namespace SmartStore.Linq
         }
 
         /// <summary>Start an expression</summary>
-        public static ExpressionStarter<T> New<T>(Expression<Func<T, bool>> expr = null) 
-        { 
-            return new ExpressionStarter<T>(expr); 
+        public static ExpressionStarter<T> New<T>(Expression<Func<T, bool>> expr = null)
+        {
+            return new ExpressionStarter<T>(expr);
         }
 
         /// <summary> Create an expression with a stub expression true or false to use when the expression is not yet started. </summary>
-        public static ExpressionStarter<T> New<T>(bool defaultExpression) 
-        { 
-            return new ExpressionStarter<T>(defaultExpression); 
+        public static ExpressionStarter<T> New<T>(bool defaultExpression)
+        {
+            return new ExpressionStarter<T>(defaultExpression);
         }
 
         [Obsolete("Use PredicateBuilder.New() instead.")]

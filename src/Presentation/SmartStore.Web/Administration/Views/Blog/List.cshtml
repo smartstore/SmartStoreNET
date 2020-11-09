@@ -1,51 +1,146 @@
-﻿@using Telerik.Web.Mvc.UI
-
+﻿@model SmartStore.Admin.Models.Blogs.BlogListModel
+@using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.Blog.BlogPosts").Text;
 }
+
 <div class="section-header">
     <div class="title">
-        <i class="far fa-edit"></i>
+        <i class="fa fa-blog"></i>
         @T("Admin.ContentManagement.Blog.BlogPosts")
     </div>
     <div class="options">
-		@{ Html.RenderWidget("admin_button_toolbar_before"); }
+        @{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+        <button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+            <i class="fa fa-filter"></i>
+            <span>@T("Common.Filter")</span>
+            <i class="fa fa-angle-double-down"></i>
+        </button>
+        
         <a href="@Url.Action("Create")" class="btn btn-primary">
-			<i class="fa fa-plus"></i>
-			<span>@T("Admin.Common.AddNew")</span>
-		</a>
+            <i class="fa fa-plus"></i>
+            <span>@T("Admin.Common.AddNew")</span>
+        </a>
 
-		@{ Html.RenderWidget("admin_button_toolbar_after"); }
+        @{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
+
+<div class="row mt-3 grid-filter" style="display: none">
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchTitle)
+        @Html.TextBoxFor(model => Model.SearchTitle, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchIntro)
+        @Html.TextBoxFor(model => Model.SearchIntro, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchBody)
+        @Html.TextBoxFor(model => Model.SearchBody, new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchTags)
+        @Html.DropDownListFor(model => model.SearchTags, Model.SearchAvailableTags, T("Admin.Common.All"), new { @class = "form-control" })
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchStartDate)
+        @Html.EditorFor(model => model.SearchStartDate)
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchEndDate)
+        @Html.EditorFor(model => model.SearchEndDate)
+    </div>
+    @if (!Model.IsSingleStoreMode)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchStoreId)
+            @Html.EditorFor(model => model.SearchStoreId)
+        </div>
+    }
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        @Html.SmartLabelFor(model => model.SearchIsPublished)
+        @Html.EditorFor(model => model.SearchIsPublished)
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+        @Html.SmartLabel(string.Empty, string.Empty)
+        <button type="submit" id="search-blog-items" value="search-blog-items" class="btn btn-warning btn-block">
+            <span>@T("Admin.Common.ApplyFilter")</span>
+        </button>
+    </div>
+</div>
+
 <div>
-	@(Html.Telerik().Grid<BlogPostModel>()
+    @(Html.Telerik().Grid<BlogPostModel>()
         .Name("blogpost-grid")
         .Columns(columns =>
         {
-                columns.Bound(x => x.Title)
-                        .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-                        .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
-                columns.Bound(x => x.LanguageName);
-                columns.Bound(x => x.Comments)
-                    .Template(@<div>Html.ActionLink(@item.Comments, "Comments", new { filterByBlogPostId = item.Id })</div>)
-				    .ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\"><#= Comments #></a></div>")
-                    .Centered();
-			    columns.Bound(x => x.StartDate);
-			    columns.Bound(x => x.EndDate);
-			    columns.Bound(x => x.CreatedOn);
-                columns.Bound(x => x.IsPublished)
-                    .Template(item => @Html.SymbolForBool(item.IsPublished))
-				    .ClientTemplate(@Html.SymbolForBool("IsPublished"))
-                    .Centered();
-		    })
-		    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-		    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
-		    .PreserveGridState()
-		    .EnableCustomBinding(true))
+            columns.Bound(x => x.Title)
+                .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+            columns.Bound(x => x.IsPublished)
+                .ClientTemplate(Html.SymbolForBool("IsPublished"))
+                .Centered();
+            columns.Bound(x => x.Comments)
+                .ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\"><#= Comments #></a></div>")
+                .Centered();
+            columns.Bound(x => x.StartDate);
+            columns.Bound(x => x.EndDate);
+            columns.Bound(x => x.LimitedToStores)
+                .ClientTemplate(Html.SymbolForBool("LimitedToStores"))
+                .Hidden(Model.IsSingleStoreMode)
+                .Centered();
+            columns.Bound(x => x.CreatedOn);
+        })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Blog"))
+        .ClientEvents(events => events.OnDataBinding("blogPostGrid_onDataBinding").OnRowDataBound("blogPostGrid_onRowDataBound"))
+        .PreserveGridState()
+        .EnableCustomBinding(true))
 </div>
 
+<script>
+	$(function () {
+		// Filter toggler.
+		$('.btn-toggle-filter').on('click', function (e) {
+			$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+		});
+
+		// Search button.
+		$('#search-blog-items').click(function () {
+			//search
+			var grid = $('#blogpost-grid').data('tGrid');
+			grid.currentPage = 1;
+            grid.ajaxRequest();
+
+			return false;
+		});
+
+		$("#@Html.FieldIdFor(model => model.SearchTitle)").keydown(function (event) {
+			if (event.keyCode == 13) {
+				$("#search-blog-items").click();
+				return false;
+			}
+		});
+	});
+
+	function blogPostGrid_onDataBinding(e) {
+		var searchModel = {
+            SearchTitle: $('#@Html.FieldIdFor(model => model.SearchTitle)').val(),
+			SearchIntro: $('#SearchIntro').val(),
+            SearchBody: $('#SearchBody').val(),
+            SearchTags: $('#SearchTags').val(),
+            SearchStartDate: $('#SearchStartDate').val(),
+			SearchEndDate: $('#SearchEndDate').val(),
+            SearchStoreId: $('#SearchStoreId').val(),
+			SearchIsPublished: $('#SearchIsPublished').val()
+		};
+		e.data = searchModel;
+    }
+
+    function blogPostGrid_onRowDataBound(e) {
+    	if (!e.dataItem.IsPublished) {
+    		$(e.row).find('td').wrapInner('<span class="muted" />');
+    	}
+    }
+</script>  

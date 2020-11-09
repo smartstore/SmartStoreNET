@@ -1,8 +1,8 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using System.Web.Hosting;
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Localization;
     using SmartStore.Core.Domain.Tasks;
@@ -40,6 +40,12 @@ namespace SmartStore.Data.Migrations
                 .ForeignKey("dbo.RuleSet", t => t.RuleSetEntity_Id, cascadeDelete: true)
                 .Index(t => t.CustomerRole_Id)
                 .Index(t => t.RuleSetEntity_Id);
+
+            if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
+            {
+                // Copy customer role mappings.
+                Sql("IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Customer_CustomerRole_Mapping')) BEGIN Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping] END");
+            }
         }
 
         public override void Down()
@@ -64,16 +70,6 @@ namespace SmartStore.Data.Migrations
             if (!DataSettings.DatabaseIsInstalled())
             {
                 return;
-            }
-
-            try
-            {
-                // Copy role mappings. Keep it running as long as it takes.
-                context.ExecuteSqlCommand("Insert Into [dbo].[CustomerRoleMapping] (CustomerId, CustomerRoleId, IsSystemMapping) Select Customer_Id As Customer_Id, CustomerRole_Id As CustomerRole_Id, 0 As IsSystemMapping From [dbo].[Customer_CustomerRole_Mapping]", false, 60 * 120);
-            }
-            catch (Exception ex)
-            {
-                ex.Dump();
             }
 
             var defaultLang = context.Set<Language>().AsNoTracking().OrderBy(x => x.DisplayOrder).First();

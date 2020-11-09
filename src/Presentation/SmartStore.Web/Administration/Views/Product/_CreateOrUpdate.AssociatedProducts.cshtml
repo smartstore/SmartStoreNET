@@ -74,11 +74,17 @@ else
 }
 
 <script>
-	function AssociatedProducts_Selected(ids) {
+    function AssociatedProducts_Selected(ids) {
+		var token = $('input[name="__RequestVerificationToken"]').val();
+
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("AssociatedProductAdd")',
-			data: { "productId": @Model.Id, "selectedProductIds": ids },
+            data: {
+                "productId": @Model.Id,
+                "selectedProductIds": ids,
+				"__RequestVerificationToken": token 
+            },
 			callbackSuccess: function () {
 				$('#associatedproducts-grid').data('tGrid').ajaxRequest();
 			}

@@ -2,7 +2,6 @@
 
 namespace SmartStore
 {
-
     /// <summary>
     /// Generic variant of <see cref="ICloneable" />.
     /// </summary>
@@ -15,5 +14,4 @@ namespace SmartStore
         /// <returns>The cloned instance</returns>
         new T Clone();
     }
-
 }

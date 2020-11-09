@@ -3,179 +3,179 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Collections.Specialized;
-using System.Text;
 using SmartStore.Collections;
 using System.Drawing;
 using ImageProcessor.Imaging.Formats;
+using System.Windows.Input;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
-	public class ProcessImageQuery : QueryString
-	{
-		private readonly static HashSet<string> _supportedTokens = new HashSet<string> { "w", "h", "q", "m", "size" };
+    public class ProcessImageQuery : QueryString
+    {
+        // Key = Supported token name, Value = Validator
+        private readonly static Dictionary<string, Func<string, string, bool>> _supportedTokens = new Dictionary<string, Func<string, string, bool>> 
+        { 
+            ["w"] = (k, v) => ValidateSizeToken(k, v),
+            ["h"] = (k, v) => ValidateSizeToken(k, v),
+            ["size"] = (k, v) => ValidateSizeToken(k, v),
+            ["q"] = (k, v) => ValidateQualityToken(k, v),
+            ["m"] = (k, v) => ValidateScaleModeToken(k, v)
+        };
 
-		public ProcessImageQuery()
-			: this(null, new NameValueCollection())
-		{
-		}
+        public ProcessImageQuery()
+            : this(null, new NameValueCollection())
+        {
+        }
 
-		public ProcessImageQuery(byte[] source)
-			: this(source, new NameValueCollection())
-		{
-		}
+        public ProcessImageQuery(byte[] source)
+            : this(source, new NameValueCollection())
+        {
+        }
 
-		public ProcessImageQuery(Stream source)
-			: this(source, new NameValueCollection())
-		{
-		}
+        public ProcessImageQuery(Stream source)
+            : this(source, new NameValueCollection())
+        {
+        }
 
-		public ProcessImageQuery(Image source)
-			: this(source, new NameValueCollection())
-		{
-		}
+        public ProcessImageQuery(Image source)
+            : this(source, new NameValueCollection())
+        {
+        }
 
-		public ProcessImageQuery(string source)
-			: this(source, new NameValueCollection())
-		{
-		}
+        public ProcessImageQuery(string source)
+            : this(source, new NameValueCollection())
+        {
+        }
 
-		public ProcessImageQuery(object source, NameValueCollection query)
-			: base(SanitizeCollection(query))
-		{
-			Guard.NotNull(query, nameof(query));
+        public ProcessImageQuery(object source, NameValueCollection query)
+        {
+            Guard.NotNull(query, nameof(query));
 
-			Source = source;
-			DisposeSource = true;
-			Notify = true;
-		}
+            Source = source;
+            DisposeSource = true;
+            Notify = true;
 
-		public ProcessImageQuery(ProcessImageQuery query)
-			: base(SanitizeCollection(query))
-		{
-			Guard.NotNull(query, nameof(query));
+            // Add tokens sanitized
+            query.AllKeys.Each(key => Add(key, query[key], false));
+        }
 
-			Source = query.Source;
-			Format = query.Format;
-			DisposeSource = query.DisposeSource;
-		}
+        public ProcessImageQuery(ProcessImageQuery query)
+            : base(query)
+        {
+            Guard.NotNull(query, nameof(query));
 
-		private static NameValueCollection SanitizeCollection(NameValueCollection query)
-		{
-			// We just need the supported flags
-			var sanitizable = query.AllKeys.Any(x => !_supportedTokens.Contains(x));
-			if (sanitizable)
-			{
-				var copy = new NameValueCollection(query);
-				foreach (var key in copy.AllKeys)
-				{
-					if (!_supportedTokens.Contains(key))
-					{
-						copy.Remove(key);
-					}
-				}
+            Source = query.Source;
+            Format = query.Format;
+            DisposeSource = query.DisposeSource;
+        }
 
-				return copy;
-			}
+        /// <summary>
+        /// The source image's physical path, app-relative virtual path, or a Stream, byte array, Image or IFile instance.
+        /// </summary>
+        public object Source { get; set; }
 
-			return query;
-		}
+        public string FileName { get; set; }
 
-		/// <summary>
-		/// The source image's physical path, app-relative virtual path, or a Stream, byte array, Image or IFile instance.
-		/// </summary>
-		public object Source { get; set; }
+        /// <summary>
+        /// Whether to dispose the source stream after processing completes
+        /// </summary>
+        public bool DisposeSource { get; set; }
 
-		public string FileName { get; set; }
+        /// <summary>
+        /// Whether to execute an applicable post processor which
+        /// can reduce the resulting file size drastically, but also
+        /// can slow down processing time.
+        /// </summary>
+        public bool ExecutePostProcessor { get; set; } = true;
 
-		/// <summary>
-		/// Whether to dispose the source stream after processing completes
-		/// </summary>
-		public bool DisposeSource { get; set; }
+        public int? MaxWidth
+        {
+            get => Get<int?>("w") ?? Get<int?>("size");
+            set => Set("w", value);
+        }
 
-		/// <summary>
-		/// Whether to execute an applicable post processor which
-		/// can reduce the resulting file size drastically, but also
-		/// can slow down processing time.
-		/// </summary>
-		public bool ExecutePostProcessor { get; set; }
+        public int? MaxHeight
+        {
+            get => Get<int?>("h") ?? Get<int?>("size");
+            set => Set("h", value);
+        }
 
-		public int? MaxWidth
-		{
-			get { return Get<int?>("w") ?? Get<int?>("size"); }
-			set { Set("w", value); }
-		}
+        public int? MaxSize
+        {
+            get => Get<int?>("size");
+            set => Set("size", value);
+        }
 
-		public int? MaxHeight
-		{
-			get { return Get<int?>("h") ?? Get<int?>("size"); }
-			set { Set("h", value); }
-		}
+        public int? Quality
+        {
+            get => Get<int?>("q");
+            set => Set("q", value);
+        }
 
-		public int? MaxSize
-		{
-			get { return Get<int?>("size"); }
-			set { Set("size", value); }
-		}
+        /// <summary>
+        /// max (default) | boxpad | crop | min | pad | stretch
+        /// </summary>
+        public string ScaleMode
+        {
+            get => Get<string>("m");
+            set => Set("m", value);
+        }
 
-		public int? Quality
-		{
-			get { return Get<int?>("q"); }
-			set { Set("q", value); }
-		}
+        /// <summary>
+        /// center (default) | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right
+        /// </summary>
+        public string AnchorPosition
+        {
+            get => Get<string>("pos");
+            set => Set("pos", value);
+        }
 
-		/// <summary>
-		/// max (default) | boxpad | crop | min | pad | stretch
-		/// </summary>
-		public string ScaleMode
-		{
-			get { return Get<string>("m"); }
-			set { Set("m", value); }
-		}
+        public string BackgroundColor
+        {
+            get => Get<string>("bg");
+            set => Set("bg", value);
+        }
 
-		/// <summary>
-		/// center (default) | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right
-		/// </summary>
-		public string AnchorPosition
-		{
-			get { return Get<string>("pos"); }
-			set { Set("pos", value); }
-		}
+        /// <summary>
+        /// Gets or sets the output file format either as a string ("png", "jpg", "gif" and "svg"),
+        /// or as a format object instance.
+        /// When format is not specified, the original format of the source image is used (unless it is not a web safe format - jpeg is the fallback in that scenario).
+        /// </summary>
+        public object Format { get; set; }
 
-		public string BackgroundColor
-		{
-			get { return Get<string>("bg"); }
-			set { Set("bg", value); }
-		}
+        public bool IsValidationMode { get; set; }
 
-		/// <summary>
-		/// Gets or sets the output file format either as a string ("png", "jpg", "gif" and "svg"),
-		/// or as a format object instance.
-		/// When format is not specified, the original format of the source image is used (unless it is not a web safe format - jpeg is the fallback in that scenario).
-		/// </summary>
-		public object Format { get; set; }
+        public bool Notify { get; set; }
 
-		public bool IsValidationMode { get; set; }
+        public override QueryString Add(string name, string value, bool isUnique)
+        {
+            // Keep away invalid tokens from underlying query
+            if (_supportedTokens.TryGetValue(name, out var validator) && validator(name, value))
+            {
+                return base.Add(name, value, isUnique);
+            }
 
-		public bool Notify { get; set; }
+            return this;
+        }
 
-		private T Get<T>(string name)
-		{
-			return base[name].Convert<T>();
-		}
+        private T Get<T>(string name)
+        {
+            return this[name].Convert<T>();
+        }
 
-		private void Set<T>(string name, T val)
-		{
-			if (val == null)
-				base.Remove(name);
-			else
-				base.Add(name, val.Convert<string>(), true);
-		}
+        private void Set<T>(string name, T val)
+        {
+            if (val == null)
+                Remove(name);
+            else
+                Add(name, val.Convert<string>(), true);
+        }
 
 
-		public bool NeedsProcessing(bool ignoreQualityFlag = false)
-		{
-			if (base.Count == 0)
-				return false;
+        public bool NeedsProcessing(bool ignoreQualityFlag = false)
+        {
+            if (this.Count == 0)
+                return false;
 
             if (object.Equals(Format, "svg"))
             {
@@ -183,53 +183,115 @@ namespace SmartStore.Services.Media
                 return false;
             }
 
-			if (ignoreQualityFlag && base.Count == 1 && base["q"] != null)
-			{
-				// Return false if ignoreQualityFlag is true and "q" is the only flag.
-				return false;
-			}
-
-			if (base.Count == 1 && Quality == 100)
-			{
-				// If "q" is the only flag and its value is 100, we don't need to process
-				return false;
-			}
-
-			return true;
-		}
-
-		public string CreateHash()
-		{
-			var hash = string.Empty;
-
-			foreach (var key in base.AllKeys)
-			{
-				if (key == "m" && base["m"] == "max")
-					continue; // Mode 'max' is default and can be omitted
-
-                hash += "-" + key + base[key];
-
+            if (ignoreQualityFlag && this.Count == 1 && this["q"] != null)
+            {
+                // Return false if ignoreQualityFlag is true and "q" is the only flag.
+                return false;
             }
 
-			return hash;
-		}
+            if (this.Count == 1 && Quality >= 90)
+            {
+                // If "q" is the only flag and its value is >= 90, we don't need to process
+                return false;
+            }
 
-		public string GetResultExtension()
-		{
-			if (Format == null)
-			{
-				return null;
-			}
-			else if (Format is ISupportedImageFormat)
-			{
-				return ((ISupportedImageFormat)Format).DefaultExtension;
-			}
-			else if (Format is string)
-			{
-				return (string)Format;
-			}
+            return true;
+        }
 
-			return null;
-		}
-	}
+        public string CreateHash()
+        {
+            var hash = string.Empty;
+
+            foreach (var key in this.AllKeys)
+            {
+                if (key == "m" && this["m"] == "max")
+                    continue; // Mode 'max' is default and can be omitted
+
+                hash += "-" + key + this[key];
+            }
+
+            return hash;
+        }
+
+        public string GetResultExtension()
+        {
+            if (Format == null)
+            {
+                return null;
+            }
+            else if (Format is ISupportedImageFormat)
+            {
+                return ((ISupportedImageFormat)Format).DefaultExtension;
+            }
+            else if (Format is string)
+            {
+                return (string)Format;
+            }
+
+            return null;
+        }
+
+        #region Static Helpers
+
+        public static ResizeMode ConvertScaleMode(string mode)
+        {
+            switch (mode.EmptyNull().ToLower())
+            {
+                case "boxpad":
+                    return ResizeMode.BoxPad;
+                case "crop":
+                    return ResizeMode.Crop;
+                case "min":
+                    return ResizeMode.Min;
+                case "pad":
+                    return ResizeMode.Pad;
+                case "stretch":
+                    return ResizeMode.Stretch;
+                default:
+                    return ResizeMode.Max;
+            }
+        }
+
+        public static AnchorPosition ConvertAnchorPosition(string anchor)
+        {
+            switch (anchor.EmptyNull().ToLower())
+            {
+                case "top":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.Top;
+                case "bottom":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.Bottom;
+                case "left":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.Left;
+                case "right":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.Right;
+                case "top-left":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.TopLeft;
+                case "top-right":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.TopRight;
+                case "bottom-left":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.BottomLeft;
+                case "bottom-right":
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.BottomRight;
+                default:
+                    return SmartStore.Services.Media.Imaging.AnchorPosition.Center;
+            }
+        }
+
+        private static bool ValidateSizeToken(string key, string value)
+        {
+            return uint.TryParse(value, out var size) && size < 10000;
+        }
+
+        private static bool ValidateQualityToken(string key, string value)
+        {
+            return uint.TryParse(value, out var q) && q <= 100;
+        }
+
+        private static bool ValidateScaleModeToken(string key, string value)
+        {
+            return (new[] { "max", "boxpad", "crop", "min", "pad", "stretch" }).Contains(value);
+        }
+
+        #endregion
+    }
 }

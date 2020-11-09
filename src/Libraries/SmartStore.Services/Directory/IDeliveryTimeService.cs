@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Directory
 {
@@ -14,7 +17,7 @@ namespace SmartStore.Services.Directory
         /// at least one dependant entity
         /// </summary>
         bool IsAssociated(int deliveryTimeId);
-        
+
         /// <summary>
         /// Deletes delivery time
         /// </summary>
@@ -28,12 +31,12 @@ namespace SmartStore.Services.Directory
         /// <returns>DeliveryTime</returns>
         DeliveryTime GetDeliveryTimeById(int deliveryTimeId);
 
-		/// <summary>
-		/// Gets the delivery time for a product
-		/// </summary>
-		/// <param name="product">The product</param>
-		/// <returns>Delivery time</returns>
-		DeliveryTime GetDeliveryTime(Product product);
+        /// <summary>
+        /// Gets the delivery time for a product
+        /// </summary>
+        /// <param name="product">The product</param>
+        /// <returns>Delivery time</returns>
+        DeliveryTime GetDeliveryTime(Product product);
 
         /// <summary>
         /// Gets all delivery times
@@ -65,5 +68,30 @@ namespace SmartStore.Services.Directory
         /// <param name="product">The product</param>
         /// <returns>Delivery time</returns>
         DeliveryTime GetDefaultDeliveryTime();
+
+        /// <summary>
+        /// Calculates the delivery date based on current shop date.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <returns>Calculated minimum and maximum date.</returns>
+        (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime);
+
+        /// <summary>
+        /// Calculates the delivery date.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <param name="fromDate">The date from which the delivery date should be calculated.</param>
+        /// <returns>Calculated minimum and maximum date.</returns>
+        (DateTime? minDate, DateTime? maxDate) GetDeliveryDate(DeliveryTime deliveryTime, DateTime fromDate);
+
+        /// <summary>
+        /// Gets the formatted delivery date.
+        /// </summary>
+        /// <param name="deliveryTime">Delivery time.</param>
+        /// <param name="fromDate">The date from which the delivery date should be calculated.
+        /// <c>null</c> to use store's local time <see cref="DateTimeHelper.DefaultStoreTimeZone"/>.</param>
+        /// <param name="culture">Culture to use for formatting. <c>null</c> to use UI culture of current thread.</param>
+        /// <returns>Formatted delivery date.</returns>
+        string GetFormattedDeliveryDate(DeliveryTime deliveryTime, DateTime? fromDate = null, CultureInfo culture = null);
     }
 }

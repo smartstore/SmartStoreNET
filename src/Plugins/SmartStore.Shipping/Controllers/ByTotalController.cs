@@ -19,23 +19,23 @@ namespace SmartStore.Shipping.Controllers
         private readonly IShippingByTotalService _shippingByTotalService;
         private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly ICountryService _countryService;
-		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly ICommonServices _services;
+        private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly ICommonServices _services;
 
         public ByTotalController(
-			IShippingService shippingService,
+            IShippingService shippingService,
             IShippingByTotalService shippingByTotalService,
-            ShippingByTotalSettings shippingByTotalSettings, 
+            ShippingByTotalSettings shippingByTotalSettings,
             ICountryService countryService,
-			AdminAreaSettings adminAreaSettings,
-			ICommonServices services)
+            AdminAreaSettings adminAreaSettings,
+            ICommonServices services)
         {
             _shippingService = shippingService;
             _shippingByTotalService = shippingByTotalService;
             _shippingByTotalSettings = shippingByTotalSettings;
             _countryService = countryService;
-			_adminAreaSettings = adminAreaSettings;
-			_services = services;
+            _adminAreaSettings = adminAreaSettings;
+            _services = services;
         }
 
         public ActionResult Configure()
@@ -47,19 +47,19 @@ namespace SmartStore.Shipping.Controllers
             }
 
             var model = new ByTotalListModel();
-			var allStores = _services.StoreService.GetAllStores();
+            var allStores = _services.StoreService.GetAllStores();
 
             foreach (var sm in shippingMethods)
             {
                 model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
             }
 
-			//stores
-			model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            //stores
+            model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
+            foreach (var store in allStores)
+            {
+                model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
+            }
 
             //model.AvailableCountries.Add(new SelectListItem { Text = "*", Value = "0" });
             var countries = _countryService.GetAllCountries(true);
@@ -73,7 +73,7 @@ namespace SmartStore.Shipping.Controllers
             model.SmallQuantitySurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
             model.CalculateTotalIncludingTax = _shippingByTotalSettings.CalculateTotalIncludingTax;
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);
         }
@@ -81,7 +81,7 @@ namespace SmartStore.Shipping.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult RatesList(GridCommand command)
         {
-			int totalCount;
+            int totalCount;
             var data = _shippingByTotalService.GetShippingByTotalModels(command.Page - 1, command.PageSize, out totalCount);
 
             var model = new GridModel<ByTotalModel>
@@ -132,18 +132,19 @@ namespace SmartStore.Shipping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddShippingRate(ByTotalListModel model)
         {
             var shippingByTotalRecord = new ShippingByTotalRecord
             {
-				StoreId = model.AddStoreId,
+                StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
                 StateProvinceId = model.AddStateProvinceId,
                 Zip = model.AddZip,
                 From = model.AddFrom,
                 To = model.AddTo,
-                UsePercentage = model.AddUsePercentage,                
+                UsePercentage = model.AddUsePercentage,
                 ShippingChargePercentage = (model.AddUsePercentage) ? model.AddShippingChargePercentage : 0,
                 ShippingChargeAmount = (model.AddUsePercentage) ? 0 : model.AddShippingChargeAmount,
                 BaseCharge = model.AddBaseCharge,
@@ -152,12 +153,13 @@ namespace SmartStore.Shipping.Controllers
 
             _shippingByTotalService.InsertShippingByTotalRecord(shippingByTotalRecord);
 
-			NotifySuccess(T("Plugins.Shipping.ByTotal.AddNewRecord.Success"));
+            NotifySuccess(T("Plugins.Shipping.ByTotal.AddNewRecord.Success"));
 
-			return Json(new { Result = true });
+            return Json(new { Result = true });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ByTotalListModel model)
         {
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
@@ -167,9 +169,9 @@ namespace SmartStore.Shipping.Controllers
 
             _services.Settings.SaveSetting(_shippingByTotalSettings);
 
-			NotifySuccess(T("Admin.Configuration.Updated"));
+            NotifySuccess(T("Admin.Configuration.Updated"));
 
-			return Configure();
-		}
+            return Configure();
+        }
     }
 }

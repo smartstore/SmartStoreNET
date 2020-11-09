@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Web.Mvc;
-using System.Web;
-using System.Web.UI;
 using System.IO;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.UI;
 
 namespace SmartStore.Web.Framework.UI
-{ 
+{
     public abstract class ComponentRenderer<TComponent> : IHtmlString where TComponent : Component
     {
         protected ComponentRenderer()
@@ -51,40 +51,40 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-		protected string SanitizeId(string id)
-		{
-			return id.SanitizeHtmlId();
-		}
-
-		public virtual void Render()
+        protected string SanitizeId(string id)
         {
-			WriteHtml(ViewContext.Writer);
-		}
+            return id.SanitizeHtmlId();
+        }
+
+        public virtual void Render()
+        {
+            WriteHtml(ViewContext.Writer);
+        }
 
         public virtual string ToHtmlString()
         {
             using (var stringWriter = new StringWriter())
             {
-				WriteHtml(stringWriter);
-				var str = stringWriter.ToString();
-				return str;
-			}
-		}
+                WriteHtml(stringWriter);
+                var str = stringWriter.ToString();
+                return str;
+            }
+        }
 
-		protected void WriteHtml(TextWriter writer)
-		{
-			this.VerifyState();
-			this.Component.Id = SanitizeId(this.Component.Id);
+        protected void WriteHtml(TextWriter writer)
+        {
+            this.VerifyState();
+            this.Component.Id = SanitizeId(this.Component.Id);
 
-			using (var htmlWriter = new HtmlTextWriter(writer))
-			{
-				WriteHtmlCore(htmlWriter);
-			}
-		}
+            using (var htmlWriter = new HtmlTextWriter(writer))
+            {
+                WriteHtmlCore(htmlWriter);
+            }
+        }
 
-		protected virtual void WriteHtmlCore(HtmlTextWriter writer)
-		{
-			throw new NotImplementedException();
-		}
+        protected virtual void WriteHtmlCore(HtmlTextWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

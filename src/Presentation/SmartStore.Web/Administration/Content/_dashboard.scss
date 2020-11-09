@@ -41,10 +41,20 @@
 
             &:first-child {
                 padding-left: 1.5rem !important;
+
+                [dir=rtl] & {
+                    padding-right: 1.5rem !important;
+                    padding-left: initial !important;
+                }
             }
 
             &:last-child {
                 padding-right: 1.5rem !important;
+            }
+
+            [dir=rtl] & {
+                padding-left: 1.5rem !important;
+                padding-right: initial !important;
             }
         }
 
@@ -170,7 +180,7 @@
         }
 
         td.display-row {
-            padding: 1rem 1rem;
+            padding: 1rem;
         }
     }
 
@@ -236,6 +246,11 @@
         width: 80%;
         justify-content: center;
         padding-left: 1rem;
+
+        [dir=rtl] & {
+            padding-left: initial;
+            padding-right: 1rem;
+        }
     }
 
     .statistics-container-inner {
@@ -278,12 +293,22 @@
             user-select: none;
 
             &.hidden {
-                text-decoration: line-through;
+                color: $text-muted;
                 user-select: none;
+            }
+
+            &.inactive {
+                cursor: initial;
+                text-decoration: line-through;
             }
 
             &:not(:last-child) {
                 padding-right: 1rem;
+
+                [dir=rtl] & {
+                    padding-right: initial;
+                    padding-left: 1rem;
+                }
             }
         }
 
@@ -294,11 +319,16 @@
         }
 
         .legend {
-            border-radius: 7px;
+            border-radius: 50%;
             display: inline-block;
             height: 11px;
-            margin-right: .3rem;
             width: 11px;
+            margin-right: .3rem;
+
+            [dir=rtl] & {
+                margin-right: initial;
+                margin-left: .3rem;
+            }
         }
 
         .hidden > .legend {
@@ -323,6 +353,7 @@
     .chart-tooltip {
         opacity: 1;
         position: absolute;
+        width: fit-content;
         background: rgba(#000, 0.8);
         color: $light;
         border-radius: $border-radius-sm;
@@ -414,9 +445,14 @@
             display: inline-block;
             width: 11px;
             height: 11px;
-            margin-right: 0.33rem;
             border-radius: 50%;
             margin-bottom: -1px;
+            margin-right: 0.33rem;
+
+            [dir=rtl] & {
+                margin-right: initial;
+                margin-left: 0.33rem;
+            }
         }
 
         .chart-tooltip-title {

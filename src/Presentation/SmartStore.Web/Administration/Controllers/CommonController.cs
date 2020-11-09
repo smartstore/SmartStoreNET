@@ -38,7 +38,7 @@ using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
+using SmartStore.Services.Media.Imaging;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tasks;
@@ -148,11 +148,19 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult CheckUpdateSuppress(string myVersion, string newVersion)
         {
             CheckUpdateSuppressInternal(myVersion, newVersion);
-            return RedirectToAction("Index", "Home");
+            return new JsonResult
+            {
+                Data = new
+                {
+                    Success = true
+                }
+            };
         }
 
         private void CheckUpdateSuppressInternal(string myVersion, string newVersion)
@@ -235,6 +243,8 @@ namespace SmartStore.Admin.Controllers
             return result;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult InstallUpdate(string packageUrl)
         {
@@ -869,6 +879,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance")]
         [FormValueRequired("delete-image-cache")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteImageCache()
         {
@@ -881,6 +892,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Maintenance")]
+        [ValidateAntiForgeryToken]
         [FormValueRequired("delete-guests")]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
@@ -901,6 +913,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Maintenance")]
+        [ValidateAntiForgeryToken]
         [FormValueRequired("delete-exported-files")]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceDeleteFiles(MaintenanceModel model)
@@ -915,7 +928,7 @@ namespace SmartStore.Admin.Controllers
             model.DeleteExportedFiles.NumberOfDeletedFiles = 0;
             model.DeleteExportedFiles.NumberOfDeletedFolders = 0;
 
-            var appPath = this.Request.PhysicalApplicationPath;
+            var appPath = Request.PhysicalApplicationPath;
 
             string[] paths = new string[]
             {
@@ -985,6 +998,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance"), ValidateInput(false)]
         [FormValueRequired("execute-sql-query")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
         public ActionResult MaintenanceExecuteSql(MaintenanceModel model)
         {
@@ -1028,47 +1042,49 @@ namespace SmartStore.Admin.Controllers
             return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult ClearCache(string previousUrl)
+        public ActionResult ClearCache()
         {
             _services.Cache.Clear();
 
             HttpContext.Cache.RemoveByPattern("*");
 
-            this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
-
-            if (previousUrl.HasValue())
+            return new JsonResult
             {
-                return Redirect(previousUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
+                Data = new
+                {
+                    Success = true,
+                    Message = T("Admin.Common.TaskSuccessfullyProcessed").Text
+                }
+            };
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult ClearDatabaseCache(string previousUrl)
+        public ActionResult ClearDatabaseCache()
         {
             _dbCache.Clear();
 
-            this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
-
-            if (previousUrl.HasValue())
-            {
-                return Redirect(previousUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
+            return new JsonResult { 
+                Data = new
+                {
+                    Success = true,
+                    Message = T("Admin.Common.TaskSuccessfullyProcessed").Text
+                }
+            };
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Maintenance.Execute)]
-        public ActionResult RestartApplication(string previousUrl)
+        public ActionResult RestartApplication()
         {
             _services.WebHelper.RestartAppDomain();
 
-            if (previousUrl.HasValue())
-                return Redirect(previousUrl);
-
-            return RedirectToAction("Index", "Home");
+            return new JsonResult();
         }
 
         #endregion

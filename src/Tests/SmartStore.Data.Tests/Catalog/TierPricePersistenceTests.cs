@@ -1,8 +1,8 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {
@@ -13,16 +13,16 @@ namespace SmartStore.Data.Tests.Catalog
         public void Can_save_and_load_tierPrice()
         {
             var tierPrice = new TierPrice
-			{
-				StoreId = 7,
-				Quantity = 1,
-				Price = 2.1M,
-				Product = GetTestProduct()
-			};
+            {
+                StoreId = 7,
+                Quantity = 1,
+                Price = 2.1M,
+                Product = GetTestProduct()
+            };
 
             var fromDb = SaveAndLoadEntity(tierPrice);
             fromDb.ShouldNotBeNull();
-			fromDb.StoreId.ShouldEqual(7);
+            fromDb.StoreId.ShouldEqual(7);
             fromDb.Quantity.ShouldEqual(1);
             fromDb.Price.ShouldEqual(2.1M);
 
@@ -36,7 +36,7 @@ namespace SmartStore.Data.Tests.Catalog
             {
                 Quantity = 1,
                 Price = 2,
-				Product = GetTestProduct(),
+                Product = GetTestProduct(),
                 CustomerRole = new CustomerRole()
                 {
                     Name = "Administrators",
@@ -55,14 +55,14 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.CustomerRole.Name.ShouldEqual("Administrators");
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
-			};
-		}
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+            };
+        }
     }
 }

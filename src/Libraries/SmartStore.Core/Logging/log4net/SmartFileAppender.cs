@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using log4net.Appender;
 using log4net.Util;
 
 namespace SmartStore.Core.Logging
 {
-	public class SmartFileAppender : RollingFileAppender
+    public class SmartFileAppender : RollingFileAppender
     {
         /// <summary>
         /// Dictionary of already known suffixes (based on previous attempts) for a given filename.

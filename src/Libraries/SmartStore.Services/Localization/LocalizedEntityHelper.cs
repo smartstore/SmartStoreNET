@@ -19,7 +19,7 @@ namespace SmartStore.Services.Localization
         private readonly Language _defaultLanguage;
 
         public LocalizedEntityHelper(
-            ILanguageService languageService, 
+            ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             IUrlRecordService urlRecordService,
             IWorkContext workContext)
@@ -33,7 +33,8 @@ namespace SmartStore.Services.Localization
             _defaultLanguage = _languageService.GetLanguageById(_languageService.GetDefaultLanguageId());
         }
 
-        public LocalizedValue<TProp> GetLocalizedValue<T, TProp>(T entity,
+        public LocalizedValue<TProp> GetLocalizedValue<T, TProp>(T obj,
+            int id, // T is BaseEntity = EntityId, T is ISetting = StoreId
             string localeKeyGroup,
             string localeKey,
             Func<T, TProp> fallback,
@@ -41,10 +42,10 @@ namespace SmartStore.Services.Localization
             bool returnDefaultValue = true,
             bool ensureTwoPublishedLanguages = true,
             bool detectEmptyHtml = false)
-            where T : ILocalizedEntity
+            where T : class
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
 
             TProp result = default;
             var str = string.Empty;
@@ -79,14 +80,14 @@ namespace SmartStore.Services.Localization
             // Localized value
             if (loadLocalizedValue)
             {
-                str = _localizedEntityService.GetLocalizedValue(requestLanguage.Id, entity.Id, localeKeyGroup, localeKey);
+                str = _localizedEntityService.GetLocalizedValue(requestLanguage.Id, id, localeKeyGroup, localeKey);
 
                 if (detectEmptyHtml && HtmlUtils.IsEmptyHtml(str))
                 {
                     str = string.Empty;
                 }
 
-                if (str.HasValue())
+                if (!string.IsNullOrEmpty(str))
                 {
                     currentLanguage = requestLanguage;
                     result = str.Convert<TProp>(CultureInfo.InvariantCulture);
@@ -94,10 +95,10 @@ namespace SmartStore.Services.Localization
             }
 
             // Set default value if required
-            if (returnDefaultValue && str.IsEmpty())
+            if (returnDefaultValue && string.IsNullOrEmpty(str))
             {
                 currentLanguage = _defaultLanguage;
-                result = fallback(entity);
+                result = fallback(obj);
             }
 
             if (currentLanguage == null)

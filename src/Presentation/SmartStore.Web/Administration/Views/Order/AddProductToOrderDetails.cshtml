@@ -2,62 +2,63 @@
 @model OrderModel.AddOrderProductModel.ProductDetailsModel
 
 @{
-    ViewBag.Title = string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId);
+	ViewBag.Title = string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId);
 }
 
-<script type="text/javascript">
-    $(function () {
+<script>
+	$(function () {
 		$('#ProductAddAttributeContainer').find('select').selectWrapper();
 	});
 </script>
 
 @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
 @using (Html.BeginForm("AddProductToOrderDetails", "Order",
-    new RouteValueDictionary(new { orderId = Model.OrderId, productId = Model.ProductId }),
-    FormMethod.Post,
-    new Dictionary<string, Object> { { "enctype", "multipart/form-data" } }))
+	new RouteValueDictionary(new { orderId = Model.OrderId, productId = Model.ProductId }),
+	FormMethod.Post,
+	new Dictionary<string, Object> { { "enctype", "multipart/form-data" } }))
 {
-    @Html.ValidationSummary(false)
-    <div class="section-header">
-        <div class="title">
-            @string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId)
-            @Html.ActionLink("(" + T("Admin.Orders.Products.AddNew.BackToList") + ")", "AddProductToOrder", new { orderId = Model.OrderId })
-        </div>
-        <div class="options">
-        </div>
-    </div>
-    <div>
-        @if (Model.Warnings.Count > 0)
-        {
-            <div class="alert alert-danger">
-                @foreach (var warning in Model.Warnings)
-                {
-                    @warning
-                    <br />
-                }
-            </div>
-        }
-    </div>
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false)
+	<div class="section-header">
+		<div class="title">
+			@string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId)
+			@Html.ActionLink("(" + T("Admin.Orders.Products.AddNew.BackToList") + ")", "AddProductToOrder", new { orderId = Model.OrderId })
+		</div>
+		<div class="options">
+		</div>
+	</div>
+	<div>
+		@if (Model.Warnings.Count > 0)
+		{
+			<div class="alert alert-danger">
+				@foreach (var warning in Model.Warnings)
+				{
+					@warning
+					<br />
+				}
+			</div>
+		}
+	</div>
 
-    if (Model.ProductType == ProductType.SimpleProduct)
-    {
-	    <table class="adminContent">
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.UnitPriceInclTax)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(model => model.UnitPriceInclTax)
-			    </td>
-		    </tr>
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.UnitPriceExclTax)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(model => model.UnitPriceExclTax)
-			    </td>
-		    </tr>
+	if (Model.ProductType == ProductType.SimpleProduct)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UnitPriceInclTax)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.UnitPriceInclTax)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.UnitPriceExclTax)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.UnitPriceExclTax)
+				</td>
+			</tr>
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.TaxRate)
@@ -66,40 +67,40 @@
 					@Html.EditorFor(model => model.TaxRate)
 				</td>
 			</tr>
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.Quantity)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(model => model.Quantity)
-			    </td>
-		    </tr>
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.SubTotalInclTax)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(model => model.SubTotalInclTax)
-			    </td>
-		    </tr>
-		    <tr>
-			    <td class="adminTitle">
-				    @Html.SmartLabelFor(model => model.SubTotalExclTax)
-			    </td>
-			    <td class="adminData">
-				    @Html.EditorFor(model => model.SubTotalExclTax)
-			    </td>
-		    </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Quantity)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Quantity)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SubTotalInclTax)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SubTotalInclTax)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SubTotalExclTax)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SubTotalExclTax)
+				</td>
+			</tr>
 		</table>
-		    
-        <div id="ProductAddAttributeContainer">
-            @{ Html.RenderPartial("_ProductAddAttributes", Model); }
-        </div>
-		
+
+		<div id="ProductAddAttributeContainer">
+			@{ Html.RenderPartial("_ProductAddAttributes", Model); }
+		</div>
+
 		var dataDictGiftCard = new ViewDataDictionary();
 		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
-        @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
-            
+		@Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
+
 		<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
@@ -110,7 +111,7 @@
 					@Html.ValidationMessageFor(model => model.AdjustInventory)
 				</td>
 			</tr>
-			@if(Model.ShowUpdateTotals)
+			@if (Model.ShowUpdateTotals)
 			{
 				<tr>
 					<td class="adminTitle">
@@ -132,17 +133,17 @@
 				</td>
 			</tr>
 		</table>
-    }
-    else if (Model.ProductType == ProductType.GroupedProduct)
-    {
-        <div>
-            Grouped products are not currently supported for adding to an existing order.
-        </div>
-    }
-    else if (Model.ProductType == ProductType.BundledProduct)
-    {
-        <div>
-            Bundled products are not currently supported for adding to an existing order.
-        </div>
-    }
+	}
+	else if (Model.ProductType == ProductType.GroupedProduct)
+	{
+		<div>
+			Grouped products are not currently supported for adding to an existing order.
+		</div>
+	}
+	else if (Model.ProductType == ProductType.BundledProduct)
+	{
+		<div>
+			Bundled products are not currently supported for adding to an existing order.
+		</div>
+	}
 }

@@ -4,91 +4,91 @@
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     ViewBag.Title = T("Admin.System.Log").Text;
 }
+
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="fa fa-fire"></i>
             @T("Admin.System.Log")
         </div>
         <div class="options">
-            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary">
+            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AskToProceed").JsText);">
                 <i class="far fa-trash-alt"></i>
-				<span>@T("Admin.System.Log.DeleteSelected")</span>
+                <span>@T("Admin.System.Log.DeleteSelected")</span>
             </button>
-            <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
+            <button type="submit" name="clearall" value="clearall" class="btn btn-danger" onclick="return confirm(@T("Admin.Common.AskToProceed").JsText);">
                 <i class="far fa-trash-alt"></i>
-				<span>@T("Admin.System.Log.ClearLog")</span>
+                <span>@T("Admin.System.Log.ClearLog")</span>
             </button>
         </div>
     </div>
 
-	<div class="row mt-3 grid-filter">
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CreatedOnFrom)
-			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CreatedOnTo)
-			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.Logger)
-			@Html.TextBoxFor(model => Model.Logger, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.Message)
-			@Html.TextBoxFor(model => model.Message, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.LogLevelId)
-			@Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabel(string.Empty, string.Empty)
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-				<span>@T("Admin.Common.Search")</span>
-			</button>
-		</div>
-	</div>
+    <div class="row mt-3 grid-filter">
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.CreatedOnFrom)
+            @Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.CreatedOnTo)
+            @Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.Logger)
+            @Html.TextBoxFor(model => Model.Logger, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.Message)
+            @Html.TextBoxFor(model => model.Message, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.LogLevelId)
+            @Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
+        </div>
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabel(string.Empty, string.Empty)
+            <button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+                <span>@T("Admin.Common.Search")</span>
+            </button>
+        </div>
+    </div>
 
-	<div>
-		@(Html.Telerik().Grid<LogModel>()
-			.Name("log-grid")
-			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-			.Columns(columns =>
-			{
-				columns.Bound(x => x.Id)
-					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-					.Title("<input id='mastercheckbox' type='checkbox'/>")
-					.Width(50)
-					.HtmlAttributes(new { style = "text-align:center" })
-					.HeaderHtmlAttributes(new { style = "text-align:center" });
-				columns.Bound(x => x.Logger)
-					.Width(120)
-					.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
-				columns.Bound(x => x.ShortMessage)
-					.ClientTemplate("<span class='badge badge-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
-				columns.Bound(x => x.UserName)
-					.Width(220);
-				columns.Bound(x => x.CreatedOn)
-					.Width(160);
-			})
-			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-			.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
-			.PreserveGridState()
-			.EnableCustomBinding(true))
-	</div>
-    
-    <script type="text/javascript">
+    <div>
+        @(Html.Telerik().Grid<LogModel>()
+            .Name("log-grid")
+            .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.Id)
+                    .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                    .Title("<input id='mastercheckbox' type='checkbox'/>")
+                    .Width(50)
+                    .HtmlAttributes(new { style = "text-align:center" })
+                    .HeaderHtmlAttributes(new { style = "text-align:center" });
+                columns.Bound(x => x.Logger)
+                    .Width(120)
+                    .ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
+                columns.Bound(x => x.ShortMessage)
+                    .ClientTemplate("<span class='badge badge-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+                columns.Bound(x => x.UserName)
+                    .Width(220);
+                columns.Bound(x => x.CreatedOn)
+                    .Width(160);
+            })
+            .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+            .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
+            .PreserveGridState()
+            .EnableCustomBinding(true))
+    </div>
+
+    <script>
 
         var selectedIds = [];
 
-        $(document).ready(function () {
-
-            //search button
+        $(function() {
             $('#btnSearch').click(function () {
-                //search
                 var grid = $('#log-grid').data('tGrid');
                 grid.currentPage = 1; //new search. Set page size to 1
                 grid.ajaxRequest();
@@ -109,15 +109,16 @@
             $('#delete-selected').click(function (e) {
                 e.preventDefault();
 
-                var postData = {
-                    selectedIds: selectedIds
-                };
+                var token = $('input[name="__RequestVerificationToken"]').val();
 
                 $.ajax({
                     cache:false,
                     type: "POST",
                     url: "@(Url.Action("DeleteSelected", "Log"))",
-                    data: postData,
+                    data: {
+                        __RequestVerificationToken: token,
+                        selectedIds: selectedIds
+                    },
                     complete: function (data) {
                         //reload grid
                         var grid = $('#log-grid').data('tGrid');
@@ -135,25 +136,25 @@
                 return false;
             });
 
-            
+
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });
 
-            // Wire up checkboxes. 
+            // Wire up checkboxes.
             $(document).on('change', '#log-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);
                     if (checked == -1) {
-                        //add id to selectedIds.  
+                        //add id to selectedIds.
                         selectedIds.push($check.val());
                     }
                 }
                 else {
                     var checked = jQuery.inArray($check.val(), selectedIds);
                     if (checked > -1) {
-                        //remove id from selectedIds.  
+                        //remove id from selectedIds.
                         selectedIds = $.grep(selectedIds, function (item, index) {
                             return item != $check.val();
                         });
@@ -180,18 +181,18 @@
             $('#log-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
                 var currentId = $(this).val();
                 var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
+                //set checked based on if current checkbox's value is in selectedIds.
                 $(this).attr('checked', checked > -1);
             });
 
             updateMasterCheckbox();
         }
-        
+
         function updateMasterCheckbox() {
             var numChkBoxes = $('#log-grid input[type=checkbox][id!=mastercheckbox]').length;
             var numChkBoxesChecked = $('#log-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
             $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
         }
     </script>
-    
+
 }

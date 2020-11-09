@@ -13,9 +13,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         [UIHint("Stores")]
         [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
-		public int SearchStoreId { get; set; }
+        public int SearchStoreId { get; set; }
 
         public bool IsSingleStoreMode { get; set; }
-		public int GridPageSize { get; set; }
+        public int GridPageSize { get; set; }
     }
 }

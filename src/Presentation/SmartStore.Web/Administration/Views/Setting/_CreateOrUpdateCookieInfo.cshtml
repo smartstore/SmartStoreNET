@@ -1,0 +1,72 @@
+﻿@model CookieInfoModel
+@using SmartStore.Web.Framework;
+@using SmartStore.Admin.Models.Settings;
+
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(false)
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.SelectedStoreIds)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.SelectedStoreIds)
+			@Html.ValidationMessageFor(model => model.SelectedStoreIds)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.CookieType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListForEnum(model => model.CookieType)
+			@Html.ValidationMessageFor(model => model.CookieType)
+		</td>
+	</tr>
+</table>
+
+@(Html.LocalizedEditor<CookieInfoModel, CookieInfoLocalizedModel>("ci-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Locales[item].Name)
+				@Html.ValidationMessageFor(model => model.Locales[item].Name)
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData wide">
+				@Html.EditorFor(model => model.Locales[item].Description)
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Description)
+			</td>
+			<td class="adminData wide">
+				@Html.EditorFor(model => model.Description)
+				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
+	</table>
+))

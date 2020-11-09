@@ -1,0 +1,20 @@
+﻿@model FacetGroup
+
+@using SmartStore.Core.Search.Facets
+
+@{ 
+    var facets = Model.Facets.Where(x => x.Published);
+
+    //....
+
+    if (!facets.Any())
+    {
+        return;
+    }
+}
+
+<div class="facet-body-inner">
+	<div class="my-custom-facet-container d-flex align-items-end">
+		Hello - my custom facet template for "@(Model.Label)"!
+	</div>
+</div>

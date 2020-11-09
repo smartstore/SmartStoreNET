@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+﻿using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Localization
 {

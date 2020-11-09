@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
@@ -16,7 +15,7 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }

@@ -17,7 +17,7 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.OnlineCustomers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Customers.OnlineCustomers.Fields.LastVisitedPage")]
         public string LastVisitedPage { get; set; }
     }

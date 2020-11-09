@@ -33,20 +33,20 @@ namespace SmartStore.Services.Payments
         /// <param name="provideFallbackMethod">Provide a fallback payment method if there is no match.</param>
         /// <returns>Filtered payment methods.</returns>
         IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
-			Customer customer = null,
-			IList<OrganizedShoppingCartItem> cart = null,
-			int storeId = 0,
-			PaymentMethodType[] types = null,
-			bool provideFallbackMethod = true);
+            Customer customer = null,
+            IList<OrganizedShoppingCartItem> cart = null,
+            int storeId = 0,
+            PaymentMethodType[] types = null,
+            bool provideFallbackMethod = true);
 
-		/// <summary>
-		/// Load payment provider by system name
-		/// </summary>
-		/// <param name="systemName">System name</param>
-		/// <param name="onlyWhenActive"><c>true</c> to load only active provider</param>
-		/// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
-		/// <returns>Found payment provider</returns>
-		Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0);
+        /// <summary>
+        /// Load payment provider by system name
+        /// </summary>
+        /// <param name="systemName">System name</param>
+        /// <param name="onlyWhenActive"><c>true</c> to load only active provider</param>
+        /// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
+        /// <returns>Found payment provider</returns>
+        Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0);
 
         /// <summary>
         /// Load all payment providers
@@ -62,38 +62,38 @@ namespace SmartStore.Services.Payments
         /// <returns>Dictionary of payment methods. Key is the payment method system name.</returns>
         IDictionary<string, PaymentMethod> GetAllPaymentMethods(int storeId = 0);
 
-		/// <summary>
-		/// Gets payment method extra data by system name
-		/// </summary>
-		/// <param name="systemName">Provider system name</param>
-		/// <returns>Payment method entity</returns>
-		PaymentMethod GetPaymentMethodBySystemName(string systemName);
+        /// <summary>
+        /// Gets payment method extra data by system name
+        /// </summary>
+        /// <param name="systemName">Provider system name</param>
+        /// <returns>Payment method entity</returns>
+        PaymentMethod GetPaymentMethodBySystemName(string systemName);
 
-		/// <summary>
-		/// Insert payment method extra data
-		/// </summary>
-		/// <param name="paymentMethod">Payment method</param>
-		void InsertPaymentMethod(PaymentMethod paymentMethod);
+        /// <summary>
+        /// Insert payment method extra data
+        /// </summary>
+        /// <param name="paymentMethod">Payment method</param>
+        void InsertPaymentMethod(PaymentMethod paymentMethod);
 
-		/// <summary>
-		/// Updates payment method extra data
-		/// </summary>
-		/// <param name="paymentMethod">Payment method</param>
-		void UpdatePaymentMethod(PaymentMethod paymentMethod);
+        /// <summary>
+        /// Updates payment method extra data
+        /// </summary>
+        /// <param name="paymentMethod">Payment method</param>
+        void UpdatePaymentMethod(PaymentMethod paymentMethod);
 
-		/// <summary>
-		/// Delete payment method extra data
-		/// </summary>
-		/// <param name="paymentMethod">Payment method</param>
-		void DeletePaymentMethod(PaymentMethod paymentMethod);
+        /// <summary>
+        /// Delete payment method extra data
+        /// </summary>
+        /// <param name="paymentMethod">Payment method</param>
+        void DeletePaymentMethod(PaymentMethod paymentMethod);
 
 
-		/// <summary>
-		/// Pre process a payment
-		/// </summary>
-		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
-		/// <returns>Pre process payment result</returns>
-		PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest);
+        /// <summary>
+        /// Pre process a payment
+        /// </summary>
+        /// <param name="processPaymentRequest">Payment info required for an order processing</param>
+        /// <returns>Pre process payment result</returns>
+        PreProcessPaymentResult PreProcessPayment(ProcessPaymentRequest processPaymentRequest);
 
         /// <summary>
         /// Process a payment
@@ -218,10 +218,10 @@ namespace SmartStore.Services.Payments
         /// <returns>Masked credit card number</returns>
         string GetMaskedCreditCardNumber(string creditCardNumber);
 
-		/// <summary>
-		/// Gets all payment filters
-		/// </summary>
-		/// <returns>List of payment filters</returns>
-		IList<IPaymentMethodFilter> GetAllPaymentMethodFilters();
+        /// <summary>
+        /// Gets all payment filters
+        /// </summary>
+        /// <returns>List of payment filters</returns>
+        IList<IPaymentMethodFilter> GetAllPaymentMethodFilters();
     }
 }

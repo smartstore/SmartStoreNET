@@ -75,7 +75,7 @@
     <Value>Use SQL Server account</Value>
   </LocaleResource>
   <LocaleResource Name="SqlCompact">
-    <Value>Use built-in data storage (SQL Server Compact)</Value>
+    <Value>SQL Server Compact (not suitable in production mode)</Value>
   </LocaleResource>
   <LocaleResource Name="SqlServerName">
     <Value>SQL Server name</Value>
@@ -96,7 +96,7 @@
     <Value>Installation</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip1">
-    <Value>Smartstore is the leading ASP.NET online shop e-commerce solution. This wizard will guide you through the process of configuring Smartstore</Value>
+    <Value>Smartstore is a powerful e-commerce solution for companies of any size. This wizard will guide you through the process of configuring Smartstore</Value>
   </LocaleResource>
   <LocaleResource Name="Tooltip2">
     <Value>To complete this wizard, you must know some information regarding your database server ("connection string"). Please contact your ISP if necessary. If you're installing on a local machine or server, you might need information from your System Admin</Value>

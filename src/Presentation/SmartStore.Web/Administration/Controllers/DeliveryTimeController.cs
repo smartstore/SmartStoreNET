@@ -7,6 +7,7 @@ using SmartStore.Core.Security;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -29,8 +30,7 @@ namespace SmartStore.Admin.Controllers
             _languageService = languageService;
         }
 
-        [NonAction]
-        public void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
+        private void UpdateLocales(DeliveryTime deliveryTime, DeliveryTimeModel model)
         {
             foreach (var localized in model.Locales)
             {
@@ -39,6 +39,25 @@ namespace SmartStore.Admin.Controllers
         }
 
         #region Delivery time
+
+        // AJAX.
+        public ActionResult AllDeliveryTimes(string selectedIds)
+        {
+            var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
+            var selectedArr = selectedIds.ToIntArray();
+
+            var data = deliveryTimes
+                .Select(x => new ChoiceListItem
+                {
+                    Id = x.Id.ToString(),
+                    Text = x.GetLocalized(y => y.Name).Value,
+                    Description = _deliveryTimeService.GetFormattedDeliveryDate(x),
+                    Selected = selectedArr.Contains(x.Id)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 
         public ActionResult Index()
         {
@@ -53,12 +72,18 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Configuration.DeliveryTime.Read)]
-        public ActionResult List(GridCommand command)
+        public ActionResult List(GridCommand _)
         {
             var gridModel = new GridModel<DeliveryTimeModel>();
 
             var deliveryTimeModels = _deliveryTimeService.GetAllDeliveryTimes()
-                .Select(x => x.ToModel())
+                .Select(x =>
+                {
+                    var model = x.ToModel();
+                    model.DeliveryInfo = _deliveryTimeService.GetFormattedDeliveryDate(x);
+
+                    return model;
+                })
                 .ToList();
 
             gridModel.Data = deliveryTimeModels;
@@ -67,30 +92,6 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult
             {
                 Data = gridModel
-            };
-        }
-
-        // Ajax.
-        public ActionResult AllDeliveryTimes(string label, int selectedId)
-        {
-            var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
-            if (label.HasValue())
-            {
-                deliveryTimes.Insert(0, new DeliveryTime { Name = label, Id = 0 });
-            }
-
-            var list = from m in deliveryTimes
-                       select new
-                       {
-                           id = m.Id.ToString(),
-                           text = m.GetLocalized(x => x.Name).Value,
-                           selected = m.Id == selectedId
-                       };
-
-            return new JsonResult
-            {
-                Data = list.ToList(),
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
 
@@ -104,6 +105,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.DeliveryTime.Create)]
         public ActionResult CreateDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {
@@ -152,6 +154,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.DeliveryTime.Update)]
         public ActionResult EditDeliveryTimePopup(string btnId, DeliveryTimeModel model)
         {

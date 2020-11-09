@@ -1,24 +1,19 @@
 ﻿namespace SmartStore.Data.Migrations
 {
-	using System;
+    using System;
+    using System.Data.Entity.Migrations;
     using System.Linq;
-	using System.Data.Entity.Migrations;
-	using Setup;
+    using Setup;
     using SmartStore.Core.Data;
-    using SmartStore.Core.Domain.Catalog;
-	using SmartStore.Core.Domain.Common;
-    using SmartStore.Core.Domain.Configuration;
-    using SmartStore.Core.Domain.Media;
-    using SmartStore.Core.Domain.Tasks;
     using SmartStore.Utilities;
 
-	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
-	{
-		public MigrationsConfiguration()
-		{
-			AutomaticMigrationsEnabled = false;
-			AutomaticMigrationDataLossAllowed = true;
-			ContextKey = "SmartStore.Core";
+    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
+    {
+        public MigrationsConfiguration()
+        {
+            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationDataLossAllowed = true;
+            ContextKey = "SmartStore.Core";
 
             if (DataSettings.Current.IsSqlServer)
             {
@@ -30,31 +25,31 @@
 
                 CommandTimeout = 9999999;
             }
-		}
+        }
 
-		public void SeedDatabase(SmartObjectContext context)
-		{
-			using (var scope = new DbContextScope(context, hooksEnabled: false))
-			{
-				Seed(context);
-				scope.Commit();
-			}		
-		}
+        public void SeedDatabase(SmartObjectContext context)
+        {
+            using (var scope = new DbContextScope(context, hooksEnabled: false))
+            {
+                Seed(context);
+                scope.Commit();
+            }
+        }
 
-		protected override void Seed(SmartObjectContext context)
-		{
+        protected override void Seed(SmartObjectContext context)
+        {
             context.MigrateLocaleResources(MigrateLocaleResources);
-			MigrateSettings(context);
+            MigrateSettings(context);
         }
 
-		public void MigrateSettings(SmartObjectContext context)
-		{
+        public void MigrateSettings(SmartObjectContext context)
+        {
 
         }
 
-		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
-		{
-
-		}
-	}
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        {
+           
+        }
+    }
 }

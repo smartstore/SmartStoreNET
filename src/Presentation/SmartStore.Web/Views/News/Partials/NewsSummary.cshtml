@@ -1,0 +1,18 @@
+﻿@model NewsItemListModel
+@using SmartStore.Web.Models.News;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "";
+}
+
+@if (Model.RenderHeading)
+{
+    <div>
+        @{ Html.RenderPartial("NewsSummaryHeading", Model); }
+    </div>
+}
+
+<div class="news-items row">
+    @{ Html.RenderPartial("NewsSummaryList", Model); }
+</div>

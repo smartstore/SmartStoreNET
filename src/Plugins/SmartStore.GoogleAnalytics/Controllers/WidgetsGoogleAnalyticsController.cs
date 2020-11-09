@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleAnalytics.Models;
+using SmartStore.GoogleAnalytics.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
@@ -23,64 +24,83 @@ namespace SmartStore.GoogleAnalytics.Controllers
     public class WidgetsGoogleAnalyticsController : SmartController
     {
         private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
         private readonly ISettingService _settingService;
         private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
         private readonly ICookieManager _cookieManager;
 
         public WidgetsGoogleAnalyticsController(
-			IWorkContext workContext,
-			IStoreContext storeContext,
-			ISettingService settingService,
-			IOrderService orderService,
+            IWorkContext workContext,
+            IStoreContext storeContext,
+            ISettingService settingService,
+            IOrderService orderService,
             ICategoryService categoryService,
             ICookieManager cookieManager)
         {
             _workContext = workContext;
-			_storeContext = storeContext;
+            _storeContext = storeContext;
             _settingService = settingService;
             _orderService = orderService;
             _categoryService = categoryService;
             _cookieManager = cookieManager;
         }
 
-		[AdminAuthorize, ChildActionOnly, LoadSetting]
+        [AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)
         {
             var model = new ConfigurationModel();
-			MiniMapper.Map(settings, model);
-            
+            MiniMapper.Map(settings, model);
+
             model.ZoneId = settings.WidgetZone;
-            model.AvailableZones.Add(new SelectListItem { Text = "<head> HTML tag", Value = "head_html_tag"});
+            model.AvailableZones.Add(new SelectListItem { Text = "<head> HTML tag", Value = "head_html_tag" });
             model.AvailableZones.Add(new SelectListItem { Text = "Before <body> end HTML tag", Value = "body_end_html_tag_before" });
 
             return View(model);
         }
 
-        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
+        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false), FormValueRequired("save")]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<GoogleAnalyticsSettings>(storeScope);
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<GoogleAnalyticsSettings>(storeScope);
 
-			ModelState.Clear();
+            ModelState.Clear();
 
-			MiniMapper.Map(model, settings);
-			settings.WidgetZone = model.ZoneId;
+            MiniMapper.Map(model, settings);
+            settings.WidgetZone = model.ZoneId;
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
+            using (Services.Settings.BeginScope())
+            {
+                storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+            }
 
-			using (Services.Settings.BeginScope())
-			{
-				_settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
-			}
+            using (Services.Settings.BeginScope())
+            {
+                _settingService.SaveSetting(settings, x => x.WidgetZone, 0, false);
+            }
 
-			return RedirectToConfiguration("SmartStore.GoogleAnalytics");
+            return RedirectToConfiguration("SmartStore.GoogleAnalytics", true);
+        }
+
+        [AdminAuthorize, HttpPost]
+        [ActionName("Configure"), FormValueRequired("restore-scripts")]
+        [ValidateAntiForgeryToken]
+        public ActionResult RestoreScripts()
+        {
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<GoogleAnalyticsSettings>(storeScope);
+
+            settings.TrackingScript = GoogleAnalyticsScriptHelper.GetTrackingScript();
+            settings.EcommerceScript = GoogleAnalyticsScriptHelper.GetEcommerceScript();
+            settings.EcommerceDetailScript = GoogleAnalyticsScriptHelper.GetEcommerceDetailScript();
+
+            _settingService.SaveSetting(settings, storeScope);
+
+            return RedirectToConfiguration("SmartStore.GoogleAnalytics", true);
         }
 
         [ChildActionOnly]
@@ -115,15 +135,15 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
         private Order GetLastOrder()
         {
-			var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
-			return order;
+            var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
+                null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+            return order;
         }
 
-		private string GetOptOutCookieScript()
-		{
-			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
-			var script = @"
+        private string GetOptOutCookieScript()
+        {
+            var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+            var script = @"
 				var gaProperty = '{GOOGLEID}'; 
 				var disableStr = 'ga-disable-' + gaProperty; 
 				if (document.cookie.indexOf(disableStr + '=true') > -1) { 
@@ -136,70 +156,72 @@ namespace SmartStore.GoogleAnalytics.Controllers
 				} 
 			";
 
-			script = script + "\n";
-			script = script.Replace("{GOOGLEID}", settings.GoogleId);
-			script = script.Replace("{NOTIFICATION}", T("Plugins.Widgets.GoogleAnalytics.OptOutNotification").JsText.ToHtmlString());
+            script = script + "\n";
+            script = script.Replace("{GOOGLEID}", settings.GoogleId);
+            script = script.Replace("{NOTIFICATION}", T("Plugins.Widgets.GoogleAnalytics.OptOutNotification").JsText.ToHtmlString());
 
-			return script;
-		}
+            return script;
+        }
 
         private string GetStorageScript()
         {
             // If no consent to analytical cookies was given, set storage to none.
             var script = @"
-				ga('set', 'storage', 'none'); 
-	            ga('set', 'clientId', '{0}'); 
+                {
+                  'storage': 'none',
+                  'clientId': '" + _workContext.CurrentCustomer.CustomerGuid + @"',
+                  'storeGac': false
+                }
 			";
 
             script = script + "\n";
-            script = script.FormatWith(_workContext.CurrentCustomer.CustomerGuid);
-
+            
             return script;
         }
 
         private string GetTrackingScript(bool cookiesAllowed)
         {
-			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var script = settings.TrackingScript + "\n";
             script = script.Replace("{GOOGLEID}", settings.GoogleId);
             script = script.Replace("{ECOMMERCE}", "");
-			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
-            script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
+            script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
+            script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "'auto'" : GetStorageScript());
 
             return script;
         }
-        
+
         private string GetEcommerceScript(Order order, bool cookiesAllowed)
         {
-			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var usCulture = new CultureInfo("en-US");
-            
+
             var script = settings.TrackingScript + "\n";
             script = script.Replace("{GOOGLEID}", settings.GoogleId);
-			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
+            script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
 
-			if (order != null)
+            if (order != null)
             {
-				var site = _storeContext.CurrentStore.Url
-					.EmptyNull()
-					.Replace("http://", "")
-					.Replace("https://", "")
-					.Replace("/", "");
+                var site = _storeContext.CurrentStore.Url
+                    .EmptyNull()
+                    .Replace("http://", "")
+                    .Replace("https://", "")
+                    .Replace("/", "");
 
                 var ecScript = settings.EcommerceScript + "\n";
                 ecScript = ecScript.Replace("{GOOGLEID}", settings.GoogleId);
                 ecScript = ecScript.Replace("{ORDERID}", order.GetOrderNumber());
-				ecScript = ecScript.Replace("{SITE}", FixIllegalJavaScriptChars(site));
+                ecScript = ecScript.Replace("{SITE}", FixIllegalJavaScriptChars(site));
                 ecScript = ecScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
                 ecScript = ecScript.Replace("{TAX}", order.OrderTax.ToString("0.00", usCulture));
                 ecScript = ecScript.Replace("{SHIP}", order.OrderShippingInclTax.ToString("0.00", usCulture));
                 ecScript = ecScript.Replace("{CITY}", order.BillingAddress == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.City));
-                ecScript = ecScript.Replace("{STATEPROVINCE}", order.BillingAddress == null || order.BillingAddress.StateProvince == null 
-					? "" 
-					: FixIllegalJavaScriptChars(order.BillingAddress.StateProvince.Name));
-                ecScript = ecScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null 
-					? ""
-					: FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
+                ecScript = ecScript.Replace("{STATEPROVINCE}", order.BillingAddress == null || order.BillingAddress.StateProvince == null
+                    ? ""
+                    : FixIllegalJavaScriptChars(order.BillingAddress.StateProvince.Name));
+                ecScript = ecScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null
+                    ? ""
+                    : FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
                 ecScript = ecScript.Replace("{CURRENCY}", order.CustomerCurrencyCode);
 
                 var sb = new StringBuilder();
@@ -231,7 +253,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
                 script = script.Replace("{ECOMMERCE}", ecScript);
 
                 // If no consent to third party cookies was given, set storage to none.
-                script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "" : GetStorageScript());
+                script = script.Replace("{STORAGETYPE}", cookiesAllowed ? "'auto'" : GetStorageScript());
             }
 
             return script;

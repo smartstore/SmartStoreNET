@@ -53,9 +53,8 @@
 	</a>
 }
 
-<script type="text/javascript">
+<script>
      $(function() {
-
 			$('#addtaxbyregionrecord').on("click", function (e) {
 				e.preventDefault();
 
@@ -91,6 +90,7 @@
 	.Content(
 	@<text>
 		<form method="post">
+			@Html.AntiForgeryToken()
 			<table class="adminContent">
 				<tr>
 					<td class="adminTitle">

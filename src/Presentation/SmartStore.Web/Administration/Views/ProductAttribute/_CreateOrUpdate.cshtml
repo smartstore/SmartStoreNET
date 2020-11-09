@@ -2,6 +2,7 @@
 @using SmartStore.Core.Search.Facets;
 @model ProductAttributeModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("productattribute-edit").Style(TabsStyle.Material).Items(x =>
@@ -221,10 +222,9 @@
 
 		<input type="button" id="btnOption" name="btnOption" class="d-none" />
 		<input type="button" id="btnOptionRefresh" name="btnOptionRefresh" value="" class="d-none" />
-
-		<script type="text/javascript">
-			$(document).ready(function () {
-
+	
+		<script>
+			$(function() {
 				var mainGrid = $('#productattributeoptionsset-grid');
 
 				// Refresh options set grid.

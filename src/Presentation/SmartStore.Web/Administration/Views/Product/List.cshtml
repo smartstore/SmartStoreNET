@@ -1,17 +1,18 @@
 ﻿@model ProductListModel
 @{
 	var allString = T("Admin.Common.All").Text;
-    
-    ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
+
+	ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
 }
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-cube"></i>
-            @T("Admin.Catalog.Products.Manage")
-        </div>
-        <div class="options">
+	@Html.AntiForgeryToken()
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-cube"></i>
+			@T("Admin.Catalog.Products.Manage")
+		</div>
+		<div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
 			<div class="input-group d-inline-flex mr-3" style="width: 350px">
@@ -26,12 +27,12 @@
 						<i class="fa fa-angle-double-down"></i>
 					</button>
 				</div>
-			</div>		
+			</div>
 
-            <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="fa fa-plus"></i>
+			<a href="@Url.Action("Create")" class="btn btn-primary">
+				<i class="fa fa-plus"></i>
 				<span>@T("Admin.Common.AddNew")</span>
-            </a>
+			</a>
 
 			<button type="submit" id="delete-selected" class="btn btn-secondary btn-to-danger">
 				<i class="far fa-trash-alt"></i>
@@ -39,8 +40,8 @@
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
-        </div>
-    </div>
+		</div>
+	</div>
 
 	<div class="row mt-3 grid-filter" style="display: none">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -89,7 +90,7 @@
 			</button>
 		</div>
 	</div>
-	
+
 	<div>
 		@(Html.Telerik().Grid<ProductModel>()
 			.Name("products-grid")
@@ -98,7 +99,6 @@
 				columns.Bound(x => x.Id)
 					.Filterable(false)
 					.Sortable(false)
-					.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
 					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
 					.Title("<input id='mastercheckbox' type='checkbox'/>")
 					.Width(50)
@@ -110,16 +110,10 @@
 					columns.Bound(x => x.PictureThumbnailUrl)
 						.Sortable(false)
 						.Width(50)
-						.Template(
-						@<text>
-							<img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
-						</text>
-						)
 						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
 				}
 				columns.Bound(x => x.Name)
-					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+					.ClientTemplate(Html.LabeledProductName("Id", "Name"));
 				columns.Bound(x => x.Sku);
 				columns.Bound(x => x.Price)
 					.Format("{0:0.00}")
@@ -127,15 +121,13 @@
 				columns.Bound(x => x.StockQuantity)
 					.Centered();
 				columns.Bound(x => x.LimitedToStores)
-					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.ClientTemplate(Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.IsSingleStoreMode)
 					.Centered();
 				columns.Bound(x => x.CreatedOn);
 				columns.Bound(x => x.UpdatedOn);
 				columns.Bound(x => x.Published)
-					.Template(item => @Html.SymbolForBool(item.Published))
-					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.ClientTemplate(Html.SymbolForBool("Published"))
 					.Centered();
 			})
 			.Sortable(x =>
@@ -149,13 +141,12 @@
 			.EnableCustomBinding(true)
 			.PreserveGridState())
 	</div>
-    
-    <script type="text/javascript">
+
+	<script>
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
 		$(function () {
-
 			$("#products-grid").thumbZoomer();
 
 			// Filter toggler
@@ -277,5 +268,6 @@
 			var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
 			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
 		}
-    </script>  
+	</script>
+
 }

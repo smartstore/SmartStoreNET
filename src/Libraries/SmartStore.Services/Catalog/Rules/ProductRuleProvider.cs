@@ -422,7 +422,9 @@ namespace SmartStore.Services.Catalog.Rules
             if (_pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus") != null)
             {
                 ISearchFilter[] filters(string fieldName, int parentId, int[] valueIds)
-                    => valueIds.Select(id => SearchFilter.ByField(fieldName, id).ExactMatch().NotAnalyzed().HasParent(parentId)).ToArray();
+                {
+                    return valueIds.Select(id => SearchFilter.ByField(fieldName, id).ExactMatch().NotAnalyzed().HasParent(parentId)).ToArray();
+                }
 
                 var pageIndex = -1;
                 var variantQuery = _productAttributeRepository.Value.TableUntracked

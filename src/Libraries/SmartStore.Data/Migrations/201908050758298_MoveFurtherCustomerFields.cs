@@ -1,12 +1,11 @@
 namespace SmartStore.Data.Migrations
 {
-    using SmartStore.Core.Domain.Common;
-    using SmartStore.Core.Domain.Customers;
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
-    using System;
-    using System.Data.Entity.Migrations;
-    
+
     public partial class MoveFurtherCustomerFields : DbMigration, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
@@ -23,7 +22,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Customer", "LastUserAgent", c => c.String());
             AddColumn("dbo.Customer", "LastUserDeviceType", c => c.String());
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Customer", "LastUserDeviceType");
@@ -51,31 +50,28 @@ namespace SmartStore.Data.Migrations
             var numUpdatedCustomers = DataMigrator.MoveCustomerFields(context, UpdateCustomer, candidates);
         }
 
-        private static void UpdateCustomer(Customer customer, GenericAttribute attr)
+        private static void UpdateCustomer(IDictionary<string, object> columns, string key, string value)
         {
-            switch (attr.Key)
+            switch (key)
             {
                 case "Gender":
-                    customer.Gender = attr.Value?.Truncate(100);
+                    columns[key] = value?.Truncate(100);
                     break;
                 case "VatNumberStatusId":
-                    customer.VatNumberStatusId = attr.Value.Convert<int>();
+                    columns[key] = value.Convert<int>();
                     break;
                 case "TimeZoneId":
-                    customer.TimeZoneId = attr.Value?.Truncate(255);
+                    columns[key] = value?.Truncate(255);
                     break;
                 case "TaxDisplayTypeId":
-                    customer.TaxDisplayTypeId = attr.Value.Convert<int>();
+                    columns[key] = value.Convert<int>();
                     break;
                 case "LastForumVisit":
-                    customer.LastForumVisit = attr.Value.Convert<DateTime>();
+                    columns[key] = value.Convert<DateTime>();
                     break;
                 case "LastUserAgent":
-                    customer.LastUserAgent = attr.Value.Convert<string>();
-                    break;
                 case "LastUserDeviceType":
-                    // TODO: split
-                    customer.LastUserDeviceType = attr.Value.Convert<string>();
+                    columns[key] = value;
                     break;
             }
         }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.News;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.News
 {
@@ -25,16 +24,11 @@ namespace SmartStore.Data.Tests.News
                 AllowComments = true,
                 ApprovedCommentCount = 1,
                 NotApprovedCommentCount = 2,
-				LimitedToStores = true,
+                LimitedToStores = true,
                 CreatedOnUtc = new DateTime(2010, 01, 03),
                 MetaTitle = "MetaTitle 1",
                 MetaDescription = "MetaDescription 1",
-                MetaKeywords = "MetaKeywords 1",
-                Language = new Language()
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
+                MetaKeywords = "MetaKeywords 1"
             };
 
             var fromDb = SaveAndLoadEntity(news);
@@ -48,14 +42,11 @@ namespace SmartStore.Data.Tests.News
             fromDb.AllowComments.ShouldEqual(true);
             fromDb.ApprovedCommentCount.ShouldEqual(1);
             fromDb.NotApprovedCommentCount.ShouldEqual(2);
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 03));
             fromDb.MetaTitle.ShouldEqual("MetaTitle 1");
             fromDb.MetaDescription.ShouldEqual("MetaDescription 1");
             fromDb.MetaKeywords.ShouldEqual("MetaKeywords 1");
-
-            fromDb.Language.ShouldNotBeNull();
-            fromDb.Language.Name.ShouldEqual("English");
         }
 
         [Test]
@@ -68,28 +59,21 @@ namespace SmartStore.Data.Tests.News
                 Full = "Full 1",
                 AllowComments = true,
                 Published = true,
-                CreatedOnUtc = new DateTime(2010, 01, 01),
-                Language = new Language()
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
+                CreatedOnUtc = new DateTime(2010, 01, 01)
             };
-            news.NewsComments.Add
-                (
-                    new NewsComment
-                    {
-                        CommentText = "Comment text 1",
-                        IpAddress = "192.168.1.1",
-                        IsApproved = true,
-                        CreatedOnUtc = new DateTime(2010, 01, 03),
-                        UpdatedOnUtc = new DateTime(2010, 01, 04),
-                        Customer = GetTestCustomer()
-                    }
-                );
+
+            news.NewsComments.Add(new NewsComment
+            {
+                CommentText = "Comment text 1",
+                IpAddress = "192.168.1.1",
+                IsApproved = true,
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+                Customer = GetTestCustomer()
+            });
+
             var fromDb = SaveAndLoadEntity(news);
             fromDb.ShouldNotBeNull();
-
 
             fromDb.NewsComments.ShouldNotBeNull();
             (fromDb.NewsComments.Count == 1).ShouldBeTrue();

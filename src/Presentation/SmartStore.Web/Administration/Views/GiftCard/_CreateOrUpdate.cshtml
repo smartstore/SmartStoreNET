@@ -2,6 +2,7 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Catalog;
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 
 @Html.HiddenFor(model => model.Id)
@@ -13,16 +14,14 @@
     {
         x.Add().Text(T("Admin.GiftCards.History").Text).Content(TabHistory());
     }
-    	
-    //generate an event
+
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "giftcard-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {
-	<script type="text/javascript">
-		$(document).ready(function () {
-
+    <script>
+        $(function() {
 			$("#@Html.FieldIdFor(model => model.GiftCardTypeId)").change(function () {
 				if ($(this).val() == '@((int)GiftCardType.Virtual)') {
 					$('#pnlRecipientEmail').show();
@@ -37,22 +36,27 @@
 			}).trigger('change');
 
             $('#generateCouponCode').click(function () {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
                 $.ajax({
                     cache:false,
                     type: "POST",
                     url: "@(Url.Action("GenerateCouponCode", "GiftCard"))",
+                    data: {
+                        __RequestVerificationToken: token
+                    },
                     success: function (data) {
                          $('#@Html.FieldIdFor(model => model.GiftCardCouponCode)').val(data.CouponCode);
                     },
                     error:function (xhr, ajaxOptions, thrownError){
                         alert('Failed to generate code.')
-                    }  
+                    }
                 });
             });
 
 		});
     </script>
-	
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -70,9 +74,9 @@
                     @Html.SmartLabelFor(model => model.PurchasedWithOrderId)
                 </td>
                 <td class="adminData">
-					<div class="form-control-plaintext">
-						<a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
-					</div>
+                    <div class="form-control-plaintext">
+                        <a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
+                    </div>
                 </td>
             </tr>
         }
@@ -81,7 +85,7 @@
                 @Html.SmartLabelFor(model => model.Amount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Amount, new { postfix = Model.PrimaryStoreCurrencyCode }) 
+                @Html.EditorFor(model => model.Amount, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.Amount)
             </td>
         </tr>
@@ -92,7 +96,7 @@
                     @Html.SmartLabelFor(model => model.RemainingAmountStr)
                 </td>
                 <td class="adminData">
-					@Html.TextBoxFor(model => model.RemainingAmountStr, new { @readonly = "readonly", @class = "form-control-plaintext" })
+                    @Html.TextBoxFor(model => model.RemainingAmountStr, new { @readonly = "readonly", @class = "form-control-plaintext" })
                 </td>
             </tr>
         }
@@ -111,16 +115,16 @@
             </td>
             <td class="adminData">
 
-				<div class="input-group">
-					@Html.EditorFor(model => model.GiftCardCouponCode)
+                <div class="input-group">
+                    @Html.EditorFor(model => model.GiftCardCouponCode)
 
-					<div class="input-group-append">
-						<button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-outline-secondary">
-							<i class="fa fa-cog"></i>
-							<span>@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")</span>
-						</button>
-					</div>
-				</div>
+                    <div class="input-group-append">
+                        <button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-outline-secondary">
+                            <i class="fa fa-cog"></i>
+                            <span>@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")</span>
+                        </button>
+                    </div>
+                </div>
 
                 @Html.ValidationMessageFor(model => model.GiftCardCouponCode)
             </td>
@@ -177,28 +181,28 @@
                     @Html.SmartLabelFor(model => model.IsRecipientNotified)
                 </td>
                 <td class="adminData">
-					@T(Model.IsRecipientNotified ? "Admin.Common.Yes" : "Admin.Common.No")
-					&nbsp;
+                    <span class="pr-3">@T(Model.IsRecipientNotified ? "Admin.Common.Yes" : "Admin.Common.No")</span>
+                    
                     <button type="submit" name="notifyRecipient" value="notifyRecipient" class="btn btn-secondary">
-						<i class="fa fa-envelope"></i>
-						<span>@T("Admin.GiftCards.Fields.IsRecipientNotified.Notify")</span>
-					</button>
+                        <i class="fa fa-envelope"></i>
+                        <span>@T("Admin.GiftCards.Fields.IsRecipientNotified.Notify")</span>
+                    </button>
                 </td>
             </tr>
         }
         @if (Model.Id > 0)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CreatedOn)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						@Html.DisplayFor(model => model.CreatedOn)
-					</div>
-				</td>
-			</tr>
-		}
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CreatedOn)
+                </td>
+                <td class="adminData">
+                    <div class="form-control-plaintext">
+                        @Html.DisplayFor(model => model.CreatedOn)
+                    </div>
+                </td>
+            </tr>
+        }
     </table>
 }
 
@@ -227,7 +231,6 @@
         {
             dataBinding.Ajax().Select("UsageHistoryList", "GiftCard", new { giftCardId = Model.Id });
         })
-		.PreserveGridState()
+        .PreserveGridState()
         .EnableCustomBinding(true))
-    
 }

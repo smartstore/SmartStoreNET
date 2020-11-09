@@ -5,14 +5,14 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Tax.Models
 {
-	public class ByRegionTaxRateListModel : ModelBase
+    public class ByRegionTaxRateListModel : ModelBase
     {
-		public ByRegionTaxRateListModel()
+        public ByRegionTaxRateListModel()
         {
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
             AvailableTaxCategories = new List<SelectListItem>();
-			TaxRates = new List<ByRegionTaxRateModel>();
+            TaxRates = new List<ByRegionTaxRateModel>();
         }
 
         [SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.Country")]
@@ -21,11 +21,11 @@ namespace SmartStore.Tax.Models
         [SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.StateProvince")]
         public int AddStateProvinceId { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.Zip")]
+        [SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.Zip")]
         public string AddZip { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.TaxCategory")]
-		public int AddTaxCategoryId { get; set; }
+        [SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.TaxCategory")]
+        public int AddTaxCategoryId { get; set; }
 
         [SmartResourceDisplayName("Plugins.Tax.CountryStateZip.Fields.Percentage")]
         public decimal AddPercentage { get; set; }
@@ -34,6 +34,6 @@ namespace SmartStore.Tax.Models
         public IList<SelectListItem> AvailableStates { get; set; }
         public IList<SelectListItem> AvailableTaxCategories { get; set; }
 
-		public IList<ByRegionTaxRateModel> TaxRates { get; set; }        
+        public IList<ByRegionTaxRateModel> TaxRates { get; set; }
     }
 }

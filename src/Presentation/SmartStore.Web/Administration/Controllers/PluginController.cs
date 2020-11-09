@@ -23,23 +23,23 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public partial class PluginController : AdminControllerBase
-	{
+    {
         private readonly IPluginFinder _pluginFinder;
         private readonly ILanguageService _languageService;
-		private readonly IProviderManager _providerManager;
-		private readonly PluginMediator _pluginMediator;
+        private readonly IProviderManager _providerManager;
+        private readonly PluginMediator _pluginMediator;
 
         public PluginController(
             IPluginFinder pluginFinder,
-			ILanguageService languageService,
-			IProviderManager providerManager,
-			PluginMediator pluginMediator)
-		{
+            ILanguageService languageService,
+            IProviderManager providerManager,
+            PluginMediator pluginMediator)
+        {
             _pluginFinder = pluginFinder;
             _languageService = languageService;
-			_providerManager = providerManager;
-			_pluginMediator = pluginMediator;
-		}
+            _providerManager = providerManager;
+            _pluginMediator = pluginMediator;
+        }
 
         #region Utilities
 
@@ -60,94 +60,94 @@ namespace SmartStore.Admin.Controllers
         }
 
         private LicensingData PrepareLicenseLabelModel(LicenseLabelModel model, PluginDescriptor pluginDescriptor, string url = null)
-		{
+        {
             if (IsLicensable(pluginDescriptor))
-			{
-				// We always show license button to serve ability to delete a key.
-				model.IsLicensable = true;
-				model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
+            {
+                // We always show license button to serve ability to delete a key.
+                model.IsLicensable = true;
+                model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-				var cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
-				if (cachedLicense == null)
-				{
+                var cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+                if (cachedLicense == null)
+                {
                     // Licensed plugin has not been used yet -> Check state.
                     model.LicenseState = LicenseChecker.CheckState(pluginDescriptor.SystemName, url);
 
-					// And try to get license data again.
-					cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
-				}
+                    // And try to get license data again.
+                    cachedLicense = LicenseChecker.GetLicense(pluginDescriptor.SystemName, url);
+                }
 
-				if (cachedLicense != null)
-				{
-					// Licensed plugin has been used.
-					model.LicenseState = cachedLicense.State;
-					model.TruncatedLicenseKey = cachedLicense.TruncatedLicenseKey;
-					model.RemainingDemoUsageDays = cachedLicense.RemainingDemoDays;
-				}
-				else
-				{
-					// It's confusing to display a license state when there is no license data yet.
-					model.HideLabel = true;
-				}
+                if (cachedLicense != null)
+                {
+                    // Licensed plugin has been used.
+                    model.LicenseState = cachedLicense.State;
+                    model.TruncatedLicenseKey = cachedLicense.TruncatedLicenseKey;
+                    model.RemainingDemoUsageDays = cachedLicense.RemainingDemoDays;
+                }
+                else
+                {
+                    // It's confusing to display a license state when there is no license data yet.
+                    model.HideLabel = true;
+                }
 
-				return cachedLicense;
-			}
+                return cachedLicense;
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		[NonAction]
+        [NonAction]
         protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)
         {
             var model = pluginDescriptor.ToModel();
 
-			// Using GetResource because T could fallback to NullLocalizer here.
-			model.Group = Services.Localization.GetResource("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
+            // Using GetResource because T could fallback to NullLocalizer here.
+            model.Group = Services.Localization.GetResource("Admin.Plugins.KnownGroup." + pluginDescriptor.Group);
 
-			if (forList)
-			{
-				model.FriendlyName = pluginDescriptor.GetLocalizedValue(Services.Localization, "FriendlyName");
-				model.Description = pluginDescriptor.GetLocalizedValue(Services.Localization, "Description");
-			}
+            if (forList)
+            {
+                model.FriendlyName = pluginDescriptor.GetLocalizedValue(Services.Localization, "FriendlyName");
+                model.Description = pluginDescriptor.GetLocalizedValue(Services.Localization, "Description");
+            }
 
             // Locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-				locale.FriendlyName = pluginDescriptor.GetLocalizedValue(Services.Localization, "FriendlyName", languageId, false);
-				locale.Description = pluginDescriptor.GetLocalizedValue(Services.Localization, "Description", languageId, false);
+                locale.FriendlyName = pluginDescriptor.GetLocalizedValue(Services.Localization, "FriendlyName", languageId, false);
+                locale.Description = pluginDescriptor.GetLocalizedValue(Services.Localization, "Description", languageId, false);
             });
 
-			// Stores
-			model.SelectedStoreIds = Services.Settings.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
+            // Stores
+            model.SelectedStoreIds = Services.Settings.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
 
-			// Icon
-			model.IconUrl = _pluginMediator.GetIconUrl(pluginDescriptor);
-            
+            // Icon
+            model.IconUrl = _pluginMediator.GetIconUrl(pluginDescriptor);
+
             if (pluginDescriptor.Installed)
             {
                 // specify configuration URL only when a plugin is already installed
-				if (pluginDescriptor.IsConfigurable)
-				{
-					model.ConfigurationUrl = Url.Action("ConfigurePlugin", new { systemName = pluginDescriptor.SystemName });
+                if (pluginDescriptor.IsConfigurable)
+                {
+                    model.ConfigurationUrl = Url.Action("ConfigurePlugin", new { systemName = pluginDescriptor.SystemName });
 
-					if (!forList)
-					{
-						var configurable = pluginDescriptor.Instance() as IConfigurable;
+                    if (!forList)
+                    {
+                        var configurable = pluginDescriptor.Instance() as IConfigurable;
 
-						string actionName;
-						string controllerName;
-						RouteValueDictionary routeValues;
-						configurable.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
+                        string actionName;
+                        string controllerName;
+                        RouteValueDictionary routeValues;
+                        configurable.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
 
-						if (actionName.HasValue() && controllerName.HasValue())
-						{
-							model.ConfigurationRoute = new RouteInfo(actionName, controllerName, routeValues);
-						}
-					}
-				}
+                        if (actionName.HasValue() && controllerName.HasValue())
+                        {
+                            model.ConfigurationRoute = new RouteInfo(actionName, controllerName, routeValues);
+                        }
+                    }
+                }
 
-				// License label
-				PrepareLicenseLabelModel(model.LicenseLabel, pluginDescriptor);
+                // License label
+                PrepareLicenseLabelModel(model.LicenseLabel, pluginDescriptor);
             }
 
             return model;
@@ -161,12 +161,12 @@ namespace SmartStore.Admin.Controllers
                 .ThenBy(p => p.DisplayOrder)
                 .Select(x => PreparePluginModel(x));
 
-			var model = new LocalPluginsModel();
+            var model = new LocalPluginsModel();
 
-			model.AvailableStores = Services.StoreService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+            model.AvailableStores = Services.StoreService
+                .GetAllStores()
+                .Select(s => s.ToModel())
+                .ToList();
 
             var groupedPlugins = from p in plugins
                                  group p by p.Group into g
@@ -200,6 +200,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Install)]
         public ActionResult ExecuteTasks(IEnumerable<string> pluginsToInstall, IEnumerable<string> pluginsToUninstall)
         {
@@ -239,7 +240,7 @@ namespace SmartStore.Admin.Controllers
                 // Restart application.
                 if (tasksCount > 0)
                 {
-					Services.WebHelper.RestartAppDomain(aggressive: true);
+                    Services.WebHelper.RestartAppDomain(aggressive: true);
                 }
             }
             catch (Exception ex)
@@ -253,7 +254,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Plugin.Read)]
         public ActionResult ReloadList()
         {
-			Services.WebHelper.RestartAppDomain(aggressive: true);
+            Services.WebHelper.RestartAppDomain(aggressive: true);
 
             return RedirectToAction("List");
         }
@@ -267,86 +268,104 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-			var model = PreparePluginModel(descriptor, false);
-			model.FriendlyName = descriptor.GetLocalizedValue(Services.Localization, "FriendlyName");
-            
+            var model = PreparePluginModel(descriptor, false);
+            model.FriendlyName = descriptor.GetLocalizedValue(Services.Localization, "FriendlyName");
+
             return View(model);
         }
 
         [HttpPost]
         [Permission(Permissions.Configuration.Plugin.Update)]
         public ActionResult SetSelectedStores(string pk /* SystemName */, string name, FormCollection form)
-		{
-			// Gets called from x-editable.
-			try 
-			{
-				var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(pk, false);
-				if (pluginDescriptor == null)
-				{
-					return HttpNotFound("The plugin does not exist.");
-				}
-				
-				string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
-				var storeIds = (form["value[]"] ?? "0").Split(',').Select(x => x.ToInt()).Where(x => x > 0).ToList();
-				if (storeIds.Count > 0)
-				{
-					Services.Settings.SetSetting<string>(settingKey, string.Join(",", storeIds));
-				}
-				else
-				{
-					Services.Settings.DeleteSetting(settingKey);
-				}
-			}
-			catch (Exception ex)
-			{
-				return new HttpStatusCodeResult(501, ex.Message);
-			}
+        {
+            // Gets called from x-editable.
+            try
+            {
+                var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(pk, false);
+                if (pluginDescriptor == null)
+                {
+                    return HttpNotFound("The plugin does not exist.");
+                }
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-			return new HttpStatusCodeResult(200);
-		}
+                string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
+                var storeIds = (form["value[]"] ?? "0").Split(',').Select(x => x.ToInt()).Where(x => x > 0).ToList();
+                if (storeIds.Count > 0)
+                {
+                    Services.Settings.SetSetting<string>(settingKey, string.Join(",", storeIds));
+                }
+                else
+                {
+                    Services.Settings.DeleteSetting(settingKey);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(501, ex.Message);
+            }
 
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+            return new HttpStatusCodeResult(200);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
-        public ActionResult UpdateStringResources(string systemName, string returnUrl = null)
-		{
-			var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
-				.FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase));
+        public ActionResult UpdateStringResources(string systemName)
+        {
+            var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
+                .FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase));
 
-			if (pluginDescriptor == null)
-			{
-				NotifyError(T("Admin.Configuration.Plugins.Resources.UpdateFailure"));
-			}
-			else
-			{
-				Services.Localization.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
+            var success = false;
+            var message = "";
+            if (pluginDescriptor == null)
+            {
+                message = T("Admin.Configuration.Plugins.Resources.UpdateFailure").Text;
+            }
+            else
+            {
+                Services.Localization.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
 
-				NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
-			}
+                success = true;
+                message = T("Admin.Configuration.Plugins.Resources.UpdateSuccess").Text;
+            }
 
-			return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
-		}
+            return new JsonResult
+            {
+                Data = new
+                {
+                    Success = success,
+                    Message = message
+                }
+            };
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.Update)]
         public ActionResult UpdateAllStringResources()
-		{
-			var pluginDescriptors = _pluginFinder.GetPluginDescriptors(false);
+        {
+            var pluginDescriptors = _pluginFinder.GetPluginDescriptors(false);
 
-			foreach (var plugin in pluginDescriptors)
-			{
-				if (plugin.Installed)
-				{
-					Services.Localization.ImportPluginResourcesFromXml(plugin, null, false);
-				}
-				else
-				{
-					Services.Localization.DeleteLocaleStringResources(plugin.ResourceRootKey);
-				}
-			}
+            foreach (var plugin in pluginDescriptors)
+            {
+                if (plugin.Installed)
+                {
+                    Services.Localization.ImportPluginResourcesFromXml(plugin, null, false);
+                }
+                else
+                {
+                    Services.Localization.DeleteLocaleStringResources(plugin.ResourceRootKey);
+                }
+            }
 
-			NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
-
-			return RedirectToAction("List");
-		}
+            return new JsonResult
+            {
+                Data = new { 
+                    Success = true,
+                    Message = T("Admin.Configuration.Plugins.Resources.UpdateSuccess").Text
+                }
+            };
+        }
 
         #endregion
 
@@ -409,6 +428,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditProviderPopup(string btnId, ProviderModel model)
         {
             var provider = _providerManager.GetProvider(model.SystemName);
@@ -521,8 +541,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(T("Admin.Common.ResourceNotFound"));
             }
 
-            var singleLicenseForAllStores = false;
-            var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor, out singleLicenseForAllStores);
+            var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor, out bool singleLicenseForAllStores);
             if (!isLicensable)
             {
                 return Content(T("Admin.Common.ResourceNotFound"));
@@ -581,6 +600,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.License)]
         public ActionResult LicensePlugin(string systemName, LicensePluginModel model)
         {
@@ -629,6 +649,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Plugin.License)]
         public ActionResult LicenseResetStatusCheck(string systemName)
         {

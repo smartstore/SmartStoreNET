@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Catalog
             ToTable("Product_MediaFile_Mapping");
             HasKey(pp => pp.Id);
             Property(pp => pp.MediaFileId).HasColumnName("MediaFileId");
-            
+
             HasRequired(pp => pp.MediaFile)
                 .WithMany(p => p.ProductMediaFiles)
                 .HasForeignKey(pp => pp.MediaFileId)

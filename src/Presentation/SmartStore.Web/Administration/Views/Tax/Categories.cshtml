@@ -1,6 +1,5 @@
 ﻿@model Telerik.Web.Mvc.GridModel<TaxCategoryModel>
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
 @{    
     ViewBag.Title = T("Admin.Configuration.Tax.Categories").Text;
 }
@@ -44,7 +43,7 @@
 			.EnableCustomBinding(true))
 </div>
 
-<script type="text/javascript">
+<script>
 	function grid_onError(e) {
 		alert(e.XMLHttpRequest.responseText);
 		e.preventDefault();

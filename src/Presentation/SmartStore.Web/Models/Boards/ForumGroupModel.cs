@@ -13,8 +13,8 @@ namespace SmartStore.Web.Models.Boards
 
         public LocalizedValue<string> Name { get; set; }
         public LocalizedValue<string> Description { get; set; }
-		public string SeName { get; set; }
+        public string SeName { get; set; }
 
-		public IList<ForumRowModel> Forums { get; set; }
+        public IList<ForumRowModel> Forums { get; set; }
     }
 }

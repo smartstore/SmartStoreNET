@@ -41,458 +41,464 @@ using SmartStore.Utilities;
 namespace SmartStore.Services.Messages
 {
     public enum ModelTreeMemberKind
-	{
-		Primitive,
-		Complex,
-		Collection,
-		Root
-	}
+    {
+        Primitive,
+        Complex,
+        Collection,
+        Root
+    }
 
-	public class ModelTreeMember
-	{
-		public string Name { get; set; }
-		public ModelTreeMemberKind Kind { get; set; }
-	}
+    public class ModelTreeMember
+    {
+        public string Name { get; set; }
+        public ModelTreeMemberKind Kind { get; set; }
+    }
 
-	public partial class MessageModelProvider : IMessageModelProvider
-	{
-		private readonly ICommonServices _services;
-		private readonly ITemplateEngine _templateEngine;
-		private readonly IMessageTemplateService _messageTemplateService;
-		private readonly IEmailAccountService _emailAccountService;
-		private readonly UrlHelper _urlHelper;
+    public partial class MessageModelProvider : IMessageModelProvider
+    {
+        private readonly ICommonServices _services;
+        private readonly ITemplateEngine _templateEngine;
+        private readonly IMessageTemplateService _messageTemplateService;
+        private readonly IEmailAccountService _emailAccountService;
+        private readonly UrlHelper _urlHelper;
 
-		public MessageModelProvider(
-			ICommonServices services,
-			ITemplateEngine templateEngine,
-			IMessageTemplateService messageTemplateService,
-			IEmailAccountService emailAccountService,
-			UrlHelper urlHelper)
-		{
-			_services = services;
-			_templateEngine = templateEngine;
-			_messageTemplateService = messageTemplateService;
-			_emailAccountService = emailAccountService;
-			_urlHelper = urlHelper;
+        public MessageModelProvider(
+            ICommonServices services,
+            ITemplateEngine templateEngine,
+            IMessageTemplateService messageTemplateService,
+            IEmailAccountService emailAccountService,
+            UrlHelper urlHelper)
+        {
+            _services = services;
+            _templateEngine = templateEngine;
+            _messageTemplateService = messageTemplateService;
+            _emailAccountService = emailAccountService;
+            _urlHelper = urlHelper;
 
-			T = NullLocalizer.InstanceEx;
-			Logger = NullLogger.Instance;
-		}
+            T = NullLocalizer.InstanceEx;
+            Logger = NullLogger.Instance;
+        }
 
-		public LocalizerEx T { get; set; }
-		public ILogger Logger { get; set; }
+        public LocalizerEx T { get; set; }
+        public ILogger Logger { get; set; }
 
-		public virtual void AddGlobalModelParts(MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
+        public virtual void AddGlobalModelParts(MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
 
-			var model = messageContext.Model;
+            var model = messageContext.Model;
 
-			model["Context"] = new Dictionary<string, object>
-			{
-				{ "TemplateName", messageContext.MessageTemplate.Name },
-				{ "LanguageId", messageContext.Language.Id },
-				{ "LanguageCulture", messageContext.Language.LanguageCulture },
-				{ "LanguageRtl", messageContext.Language.Rtl },
-				{ "BaseUrl", messageContext.BaseUri.ToString() }
-			};
+            model["Context"] = new Dictionary<string, object>
+            {
+                { "TemplateName", messageContext.MessageTemplate.Name },
+                { "LanguageId", messageContext.Language.Id },
+                { "LanguageCulture", messageContext.Language.LanguageCulture },
+                { "LanguageRtl", messageContext.Language.Rtl },
+                { "BaseUrl", messageContext.BaseUri.ToString() }
+            };
 
-			dynamic email = new ExpandoObject();
-			email.Email = messageContext.EmailAccount.Email;
-			email.SenderName = messageContext.EmailAccount.DisplayName;
-			email.DisplayName = messageContext.EmailAccount.DisplayName; // Alias
-			model["Email"] = email;
+            dynamic email = new ExpandoObject();
+            email.Email = messageContext.EmailAccount.Email;
+            email.SenderName = messageContext.EmailAccount.DisplayName;
+            email.DisplayName = messageContext.EmailAccount.DisplayName; // Alias
+            model["Email"] = email;
 
-			model["Theme"] = CreateThemeModelPart(messageContext);
-			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
-			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
-		}
+            model["Theme"] = CreateThemeModelPart(messageContext);
+            model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
+            model["Store"] = CreateModelPart(messageContext.Store, messageContext);
+        }
 
-		public object CreateModelPart(object part, bool ignoreNullMembers, params string[] ignoreMemberNames)
-		{
-			Guard.NotNull(part, nameof(part));
+        public object CreateModelPart(object part, bool ignoreNullMembers, params string[] ignoreMemberNames)
+        {
+            Guard.NotNull(part, nameof(part));
 
-			var store = _services.StoreContext.CurrentStore;
-			var messageContext = new MessageContext
-			{
-				Language = _services.WorkContext.WorkingLanguage,
-				Store = store,
-				BaseUri = new Uri(_services.StoreService.GetHost(store)),
-				Model = new TemplateModel()
-			};
-			
-			if (part is Customer x)
-			{
-				// This case is not handled in AddModelPart core method.
-				messageContext.Customer = x;
-				messageContext.Model["Part"] = CreateModelPart(x, messageContext);
-			}
-			else
-			{
-				messageContext.Customer = _services.WorkContext.CurrentCustomer;
-				AddModelPart(part, messageContext, "Part");
-			}
+            var store = _services.StoreContext.CurrentStore;
+            var messageContext = new MessageContext
+            {
+                Language = _services.WorkContext.WorkingLanguage,
+                Store = store,
+                BaseUri = new Uri(_services.StoreService.GetHost(store)),
+                Model = new TemplateModel()
+            };
 
-			object result = null;
+            if (part is Customer x)
+            {
+                // This case is not handled in AddModelPart core method.
+                messageContext.Customer = x;
+                messageContext.Model["Part"] = CreateModelPart(x, messageContext);
+            }
+            else
+            {
+                messageContext.Customer = _services.WorkContext.CurrentCustomer;
+                AddModelPart(part, messageContext, "Part");
+            }
 
-			if (messageContext.Model.Any())
-			{
-				result = messageContext.Model.FirstOrDefault().Value;
+            object result = null;
 
-				if (result is IDictionary<string, object> dict)
-				{
-					SanitizeModelDictionary(dict, ignoreNullMembers, ignoreMemberNames);
-				}
-			}
+            if (messageContext.Model.Any())
+            {
+                result = messageContext.Model.FirstOrDefault().Value;
 
-			return result;
-		}
+                if (result is IDictionary<string, object> dict)
+                {
+                    SanitizeModelDictionary(dict, ignoreNullMembers, ignoreMemberNames);
+                }
+            }
 
-		private void SanitizeModelDictionary(IDictionary<string, object> dict, bool ignoreNullMembers, params string[] ignoreMemberNames)
-		{
-			if (ignoreNullMembers || ignoreMemberNames.Length > 0)
-			{
-				foreach (var key in dict.Keys.ToArray())
-				{
-					var expando = dict as HybridExpando;
-					var value = dict[key];
+            return result;
+        }
 
-					if ((ignoreNullMembers && value == null) || ignoreMemberNames.Contains(key))
-					{
-						if (expando != null)
-							expando.Override(key, null); // INFO: we cannot remove entries from HybridExpando
-						else
-							dict.Remove(key);
-						continue;
-					}
+        private void SanitizeModelDictionary(IDictionary<string, object> dict, bool ignoreNullMembers, params string[] ignoreMemberNames)
+        {
+            if (ignoreNullMembers || ignoreMemberNames.Length > 0)
+            {
+                foreach (var key in dict.Keys.ToArray())
+                {
+                    var expando = dict as HybridExpando;
+                    var value = dict[key];
 
-					if (value != null && value.GetType().IsSequenceType())
-					{
-						var ignoreMemberNames2 = ignoreMemberNames
-							.Where(x => x.StartsWith(key + ".", StringComparison.OrdinalIgnoreCase))
-							.Select(x => x.Substring(key.Length + 1))
-							.ToArray();
+                    if ((ignoreNullMembers && value == null) || ignoreMemberNames.Contains(key))
+                    {
+                        if (expando != null)
+                            expando.Override(key, null); // INFO: we cannot remove entries from HybridExpando
+                        else
+                            dict.Remove(key);
+                        continue;
+                    }
 
-						if (value is IDictionary<string, object> dict2)
-						{
-							SanitizeModelDictionary(dict2, ignoreNullMembers, ignoreMemberNames2);
-						}
-						else
-						{
-							var list = ((IEnumerable)value).OfType<IDictionary<string, object>>();
-							foreach (var dict3 in list)
-							{
-								SanitizeModelDictionary(dict3, ignoreNullMembers, ignoreMemberNames2);
-							}
-						}
-					}
-				}
-			}
-		}
+                    if (value != null && value.GetType().IsSequenceType())
+                    {
+                        var ignoreMemberNames2 = ignoreMemberNames
+                            .Where(x => x.StartsWith(key + ".", StringComparison.OrdinalIgnoreCase))
+                            .Select(x => x.Substring(key.Length + 1))
+                            .ToArray();
 
-		public virtual void AddModelPart(object part, MessageContext messageContext, string name = null)
-		{
-			Guard.NotNull(part, nameof(part));
-			Guard.NotNull(messageContext, nameof(messageContext));
+                        if (value is IDictionary<string, object> dict2)
+                        {
+                            SanitizeModelDictionary(dict2, ignoreNullMembers, ignoreMemberNames2);
+                        }
+                        else
+                        {
+                            var list = ((IEnumerable)value).OfType<IDictionary<string, object>>();
+                            foreach (var dict3 in list)
+                            {
+                                SanitizeModelDictionary(dict3, ignoreNullMembers, ignoreMemberNames2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-			var model = messageContext.Model;
+        public virtual void AddModelPart(object part, MessageContext messageContext, string name = null)
+        {
+            Guard.NotNull(part, nameof(part));
+            Guard.NotNull(messageContext, nameof(messageContext));
 
-			name = name.NullEmpty() ?? ResolveModelName(part);
+            var model = messageContext.Model;
 
-			object modelPart = null;
+            name = name.NullEmpty() ?? ResolveModelName(part);
 
-			switch (part)
-			{
-				case INamedModelPart x:
-					modelPart = x;
-					break;
-				case IModelPart x:
-					MergeModelBag(x, model, messageContext);
-					break;
-				case Order x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Product x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Customer x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Address x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Shipment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case OrderNote x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case RecurringPayment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ReturnRequest x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case GiftCard x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case NewsLetterSubscription x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case Campaign x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ProductReview x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case BlogComment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case NewsComment x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ForumTopic x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ForumPost x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
+            object modelPart = null;
+
+            switch (part)
+            {
+                case INamedModelPart x:
+                    modelPart = x;
+                    break;
+                case IModelPart x:
+                    MergeModelBag(x, model, messageContext);
+                    break;
+                case Order x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case Product x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case Customer x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case Address x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case Shipment x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case OrderNote x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case RecurringPayment x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ReturnRequest x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case GiftCard x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case NewsLetterSubscription x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case Campaign x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ProductReview x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case BlogComment x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case NewsComment x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ForumTopic x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ForumPost x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
                 case ForumPostVote x:
                     modelPart = CreateModelPart(x, messageContext);
                     break;
-				case Forum x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case PrivateMessage x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case IEnumerable<GenericAttribute> x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case PollVotingRecord x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ProductReviewHelpfulness x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case ForumSubscription x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				case BackInStockSubscription x:
-					modelPart = CreateModelPart(x, messageContext);
-					break;
-				default:
-					var partType = part.GetType();
-					modelPart = part;
+                case Forum x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case PrivateMessage x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case IEnumerable<GenericAttribute> x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case PollVotingRecord x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ProductReviewHelpfulness x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case ForumSubscription x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                case BackInStockSubscription x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
+                default:
+                    var partType = part.GetType();
+                    modelPart = part;
 
-					if (partType.IsPlainObjectType() && !partType.IsAnonymous())
-					{
-						var evt = new MessageModelPartMappingEvent(part);
-						_services.EventPublisher.Publish(evt);
+                    if (partType.IsPlainObjectType() && !partType.IsAnonymous())
+                    {
+                        var evt = new MessageModelPartMappingEvent(part);
+                        _services.EventPublisher.Publish(evt);
 
-						if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
-						{
-							modelPart = evt.Result;
-							name = evt.ModelPartName.NullEmpty() ?? ResolveModelName(evt.Result) ?? name;
-						}
-						else
-						{
-							modelPart = part;
-						}
+                        if (evt.Result != null && !object.ReferenceEquals(evt.Result, part))
+                        {
+                            modelPart = evt.Result;
+                            name = evt.ModelPartName.NullEmpty() ?? ResolveModelName(evt.Result) ?? name;
+                        }
+                        else
+                        {
+                            modelPart = part;
+                        }
 
-						modelPart = evt.Result ?? part;
-						name = evt.ModelPartName.NullEmpty() ?? name;
-					}
+                        modelPart = evt.Result ?? part;
+                        name = evt.ModelPartName.NullEmpty() ?? name;
+                    }
 
-					break;
-			}
+                    break;
+            }
 
-			if (modelPart != null)
-			{
-				if (name.IsEmpty())
-				{
-					throw new SmartException($"Could not resolve a model key for part '{modelPart.GetType().Name}'. Use an instance of 'NamedModelPart' class to pass model with name.");
-				}
+            if (modelPart != null)
+            {
+                if (name.IsEmpty())
+                {
+                    throw new SmartException($"Could not resolve a model key for part '{modelPart.GetType().Name}'. Use an instance of 'NamedModelPart' class to pass model with name.");
+                }
 
-				if (model.TryGetValue(name, out var existing))
-				{
-					// A model part with the same name exists in model already...
-					if (existing is IDictionary<string, object> x)
-					{
-						// but it's a dictionary which we can easily merge with
-						x.Merge(FastProperty.ObjectToDictionary(modelPart), true);
-					}
-					else
-					{
-						// Wrap in HybridExpando and merge
-						var he = new HybridExpando(existing, true);
-						he.Merge(FastProperty.ObjectToDictionary(modelPart), true);
-						model[name] = he;
-					}
-				}
-				else
-				{
-					// Put part to model as new property
-					model[name] = modelPart;
-				}	
-			}	
-		}
+                if (model.TryGetValue(name, out var existing))
+                {
+                    // A model part with the same name exists in model already...
+                    if (existing is IDictionary<string, object> x)
+                    {
+                        // but it's a dictionary which we can easily merge with
+                        x.Merge(FastProperty.ObjectToDictionary(modelPart), true);
+                    }
+                    else
+                    {
+                        // Wrap in HybridExpando and merge
+                        var he = new HybridExpando(existing, true);
+                        he.Merge(FastProperty.ObjectToDictionary(modelPart), true);
+                        model[name] = he;
+                    }
+                }
+                else
+                {
+                    // Put part to model as new property
+                    model[name] = modelPart;
+                }
+            }
+        }
 
-		public string ResolveModelName(object model)
-		{
-			Guard.NotNull(model, nameof(model));
+        public string ResolveModelName(object model)
+        {
+            Guard.NotNull(model, nameof(model));
 
-			string name = null;
-			var type = model.GetType();
+            string name = null;
+            var type = model.GetType();
 
-			try
-			{
-				if (model is BaseEntity be)
-				{
-					name = be.GetUnproxiedType().Name;
-				}
-				else if (model is ITestModel te)
-				{
-					name = te.ModelName;
-				}
-				else if (model is INamedModelPart mp)
-				{
-					name = mp.ModelPartName;
-				}
-				else if (type.IsPlainObjectType())
-				{
-					name = type.Name;
-				}
-			}
-			catch { }
+            try
+            {
+                if (model is BaseEntity be)
+                {
+                    name = be.GetUnproxiedType().Name;
+                }
+                else if (model is ITestModel te)
+                {
+                    name = te.ModelName;
+                }
+                else if (model is INamedModelPart mp)
+                {
+                    name = mp.ModelPartName;
+                }
+                else if (type.IsPlainObjectType())
+                {
+                    name = type.Name;
+                }
+            }
+            catch { }
 
-			return name;
-		}
+            return name;
+        }
 
-		#region Global model part handlers
+        #region Global model part handlers
 
-		protected virtual object CreateThemeModelPart(MessageContext messageContext)
-		{
-			var m = new Dictionary<string, object>
-			{
-				{ "FontFamily", "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
-				{ "BodyBg", "#f2f4f6" },
-				{ "BodyColor", "#555" },
-				{ "TitleColor", "#2f3133" },
-				{ "ContentBg", "#fff" },
-				{ "ShadeColor", "#e2e2e2" },
-				{ "LinkColor", "#0066c0" },
-				{ "BrandPrimary", "#3f51b5" },
-				{ "BrandSuccess", "#4caf50" },
-				{ "BrandWarning", "#ff9800" },
-				{ "BrandDanger", "#f44336" },
-				{ "MutedColor", "#a5a5a5" },
-			};
+        protected virtual object CreateThemeModelPart(MessageContext messageContext)
+        {
+            var m = new Dictionary<string, object>
+            {
+                { "FontFamily", "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
+                { "BodyBg", "#f2f4f6" },
+                { "BodyColor", "#555" },
+                { "TitleColor", "#2f3133" },
+                { "ContentBg", "#fff" },
+                { "ShadeColor", "#e2e2e2" },
+                { "LinkColor", "#0066c0" },
+                { "BrandPrimary", "#3f51b5" },
+                { "BrandSuccess", "#4caf50" },
+                { "BrandWarning", "#ff9800" },
+                { "BrandDanger", "#f44336" },
+                { "MutedColor", "#a5a5a5" },
+            };
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateCompanyModelPart(MessageContext messageContext)
-		{
-			var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
-			dynamic m = new HybridExpando(settings, true);
+        protected virtual object CreateCompanyModelPart(MessageContext messageContext)
+        {
+            var settings = _services.Settings.LoadSetting<CompanyInformationSettings>(messageContext.Store.Id);
+            var countryService = _services.Resolve<ICountryService>();
+            var country = countryService.GetCountryById(settings.CountryId);
+            dynamic m = new HybridExpando(settings, true);
 
-			m.NameLine = Concat(settings.Salutation, settings.Title, settings.Firstname, settings.Lastname);
-			m.StreetLine = Concat(settings.Street, settings.Street2);
-			m.CityLine = Concat(settings.ZipCode, settings.City);
-			m.CountryLine = Concat(settings.CountryName, settings.Region);
+            m.NameLine = Concat(settings.Salutation, settings.Title, settings.Firstname, settings.Lastname);
+            m.StreetLine = Concat(settings.Street, settings.Street2);
+            m.CityLine = Concat(settings.ZipCode, settings.City);
 
-			PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
-			return m;
-		}
+            if (country != null)
+            {
+                m.CountryLine = Concat(country.GetLocalized(x => x.Name), settings.Region);
+            }
 
-		protected virtual object CreateBankModelPart(MessageContext messageContext)
-		{
-			var settings = _services.Settings.LoadSetting<BankConnectionSettings>(messageContext.Store.Id);
-			var m = new HybridExpando(settings, true);
-			PublishModelPartCreatedEvent<BankConnectionSettings>(settings, m);
-			return m;
-		}
+            PublishModelPartCreatedEvent<CompanyInformationSettings>(settings, m);
+            return m;
+        }
 
-		protected virtual object CreateContactModelPart(MessageContext messageContext)
-		{
-			var settings = _services.Settings.LoadSetting<ContactDataSettings>(messageContext.Store.Id);
-			var contact = new HybridExpando(settings, true) as dynamic;
+        protected virtual object CreateBankModelPart(MessageContext messageContext)
+        {
+            var settings = _services.Settings.LoadSetting<BankConnectionSettings>(messageContext.Store.Id);
+            var m = new HybridExpando(settings, true);
+            PublishModelPartCreatedEvent<BankConnectionSettings>(settings, m);
+            return m;
+        }
 
-			// Aliases
-			contact.Phone = new
-			{
-				Company = settings.CompanyTelephoneNumber.NullEmpty(),
-				Hotline = settings.HotlineTelephoneNumber.NullEmpty(),
-				Mobile = settings.MobileTelephoneNumber.NullEmpty(),
-				Fax = settings.CompanyFaxNumber.NullEmpty()
-			};
+        protected virtual object CreateContactModelPart(MessageContext messageContext)
+        {
+            var settings = _services.Settings.LoadSetting<ContactDataSettings>(messageContext.Store.Id);
+            var contact = new HybridExpando(settings, true) as dynamic;
 
-			contact.Email = new
-			{
-				Company = settings.CompanyEmailAddress.NullEmpty(),
-				Webmaster = settings.WebmasterEmailAddress.NullEmpty(),
-				Support = settings.SupportEmailAddress.NullEmpty(),
-				Contact = settings.ContactEmailAddress.NullEmpty()
-			};
+            // Aliases
+            contact.Phone = new
+            {
+                Company = settings.CompanyTelephoneNumber.NullEmpty(),
+                Hotline = settings.HotlineTelephoneNumber.NullEmpty(),
+                Mobile = settings.MobileTelephoneNumber.NullEmpty(),
+                Fax = settings.CompanyFaxNumber.NullEmpty()
+            };
 
-			PublishModelPartCreatedEvent<ContactDataSettings>(settings, contact);
+            contact.Email = new
+            {
+                Company = settings.CompanyEmailAddress.NullEmpty(),
+                Webmaster = settings.WebmasterEmailAddress.NullEmpty(),
+                Support = settings.SupportEmailAddress.NullEmpty(),
+                Contact = settings.ContactEmailAddress.NullEmpty()
+            };
 
-			return contact;
-		}
+            PublishModelPartCreatedEvent<ContactDataSettings>(settings, contact);
 
-		#endregion
+            return contact;
+        }
 
-		#region Generic model part handlers
+        #endregion
 
-		protected virtual void MergeModelBag(IModelPart part, IDictionary<string, object> model, MessageContext messageContext)
-		{
-			if (!(model.Get("Bag") is IDictionary<string, object> bag))
-			{
-				model["Bag"] = bag = new Dictionary<string, object>();
-			}
+        #region Generic model part handlers
 
-			var source = part as IDictionary<string, object>;
-			bag.Merge(source);
-		}
+        protected virtual void MergeModelBag(IModelPart part, IDictionary<string, object> model, MessageContext messageContext)
+        {
+            if (!(model.Get("Bag") is IDictionary<string, object> bag))
+            {
+                model["Bag"] = bag = new Dictionary<string, object>();
+            }
 
-		#endregion
+            var source = part as IDictionary<string, object>;
+            bag.Merge(source);
+        }
 
-		#region Entity specific model part handlers
+        #endregion
 
-		protected virtual object CreateModelPart(Store part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        #region Entity specific model part handlers
 
-			var host = messageContext.BaseUri.ToString();
+        protected virtual object CreateModelPart(Store part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
+
+            var host = messageContext.BaseUri.ToString();
             var logoFile = _services.MediaService.GetFileById(messageContext.Store.LogoMediaFileId, MediaLoadFlags.AsNoTracking);
 
-			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
+            // Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Email", messageContext.EmailAccount.Email },
-				{ "EmailName", messageContext.EmailAccount.DisplayName },
-				{ "Name", part.Name },
-				{ "Url", host },
-				{ "Cdn", part.ContentDeliveryNetwork },
-				{ "PrimaryStoreCurrency", part.PrimaryStoreCurrency?.CurrencyCode },
-				{ "PrimaryExchangeRateCurrency", part.PrimaryExchangeRateCurrency?.CurrencyCode },
-				{ "Logo", CreateModelPart(logoFile, messageContext, host, null, new Size(400, 75)) },
-				{ "Company", CreateCompanyModelPart(messageContext) },
-				{ "Contact", CreateContactModelPart(messageContext) },
-				{ "Bank", CreateBankModelPart(messageContext) },
-				{ "Copyright", T("Content.CopyrightNotice", messageContext.Language.Id, DateTime.Now.Year.ToString(), part.Name).Text }
-			};
+            var m = new Dictionary<string, object>
+            {
+                { "Email", messageContext.EmailAccount.Email },
+                { "EmailName", messageContext.EmailAccount.DisplayName },
+                { "Name", part.Name },
+                { "Url", host },
+                { "Cdn", part.ContentDeliveryNetwork },
+                { "PrimaryStoreCurrency", part.PrimaryStoreCurrency?.CurrencyCode },
+                { "PrimaryExchangeRateCurrency", part.PrimaryExchangeRateCurrency?.CurrencyCode },
+                { "Logo", CreateModelPart(logoFile, messageContext, host, null, new Size(400, 75)) },
+                { "Company", CreateCompanyModelPart(messageContext) },
+                { "Contact", CreateContactModelPart(messageContext) },
+                { "Bank", CreateBankModelPart(messageContext) },
+                { "Copyright", T("Content.CopyrightNotice", messageContext.Language.Id, DateTime.Now.Year.ToString(), part.Name).Text }
+            };
 
-			var he = new HybridExpando(true);
-			he.Merge(m, true);
+            var he = new HybridExpando(true);
+            he.Merge(m, true);
 
-			PublishModelPartCreatedEvent(part, he);
+            PublishModelPartCreatedEvent(part, he);
 
-			return he;
-		}
+            return he;
+        }
 
         protected virtual object CreateModelPart(
             MediaFileInfo part,
@@ -536,363 +542,363 @@ namespace SmartStore.Services.Messages
         }
 
         protected virtual object CreateModelPart(Product part, MessageContext messageContext, string attributesXml = null)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var mediaSettings = _services.Resolve<MediaSettings>();
-			var shoppingCartSettings = _services.Resolve<ShoppingCartSettings>();
-			var catalogSettings = _services.Resolve<CatalogSettings>();
-			var deliveryTimeService = _services.Resolve<IDeliveryTimeService>();
-			var quantityUnitService = _services.Resolve<IQuantityUnitService>();
-			var productUrlHelper = _services.Resolve<ProductUrlHelper>();
+            var mediaSettings = _services.Resolve<MediaSettings>();
+            var shoppingCartSettings = _services.Resolve<ShoppingCartSettings>();
+            var catalogSettings = _services.Resolve<CatalogSettings>();
+            var deliveryTimeService = _services.Resolve<IDeliveryTimeService>();
+            var quantityUnitService = _services.Resolve<IQuantityUnitService>();
+            var productUrlHelper = _services.Resolve<ProductUrlHelper>();
 
-			var currency = _services.WorkContext.WorkingCurrency;
-			var additionalShippingCharge = new Money(
-				_services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency), 
-				currency, 
-				true);
-			var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
+            var currency = _services.WorkContext.WorkingCurrency;
+            var additionalShippingCharge = new Money(
+                _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency),
+                currency,
+                true);
+            var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
             var file = GetMediaFileFor(part, attributesXml);
             var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
-			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
-			
-			var m = new Dictionary<string, object>
-			{
-				{ "Id", part.Id },
-				{ "Sku", catalogSettings.ShowProductSku ? part.Sku : null },
-				{ "Name", name },
-				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language).Value.NullEmpty() },
-				{ "StockQuantity", part.StockQuantity },
-				{ "AdditionalShippingCharge", additionalShippingCharge },
-				{ "Url", url },
-				{ "Thumbnail", CreateModelPart(file, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
-				{ "ThumbnailLg", CreateModelPart(file, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
-				{ "DeliveryTime", null },
-				{ "QtyUnit", null }
-			};
+            var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
 
-			if (shoppingCartSettings.ShowDeliveryTimes && part.IsShipEnabled)
-			{
-				if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
-				{
-					m["DeliveryTime"] = new Dictionary<string, object>
-					{
-						{ "Color", dt.ColorHexValue },
-						{ "Name", dt.GetLocalized(x => x.Name, messageContext.Language).Value },
-					};
-				}
-			}
+            var m = new Dictionary<string, object>
+            {
+                { "Id", part.Id },
+                { "Sku", catalogSettings.ShowProductSku ? part.Sku : null },
+                { "Name", name },
+                { "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language).Value.NullEmpty() },
+                { "StockQuantity", part.StockQuantity },
+                { "AdditionalShippingCharge", additionalShippingCharge },
+                { "Url", url },
+                { "Thumbnail", CreateModelPart(file, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
+                { "ThumbnailLg", CreateModelPart(file, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
+                { "DeliveryTime", null },
+                { "QtyUnit", null }
+            };
 
-			if (quantityUnitService.GetQuantityUnitById(part.QuantityUnitId) is QuantityUnit qu)
-			{
-				m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language).Value;
-			}
+            if (part.IsShipEnabled && shoppingCartSettings.DeliveryTimesInShoppingCart != DeliveryTimesPresentation.None)
+            {
+                if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
+                {
+                    m["DeliveryTime"] = new Dictionary<string, object>
+                    {
+                        { "Color", dt.ColorHexValue },
+                        { "Name", dt.GetLocalized(x => x.Name, messageContext.Language).Value },
+                    };
+                }
+            }
 
-			PublishModelPartCreatedEvent<Product>(part, m);
+            if (quantityUnitService.GetQuantityUnitById(part.QuantityUnitId) is QuantityUnit qu)
+            {
+                m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language).Value;
+            }
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<Product>(part, m);
 
-		protected virtual object CreateModelPart(Customer part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var email = part.FindEmail();
-			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
-			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
+        protected virtual object CreateModelPart(Customer part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
+
+            var email = part.FindEmail();
+            var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
+            var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
             var customerVatStatus = (VatNumberStatus)part.VatNumberStatusId;
 
             int rewardPointsBalance = part.GetRewardPointsBalance();
-			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);
-			decimal rewardPointsAmount = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _services.WorkContext.WorkingCurrency);
+            decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);
+            decimal rewardPointsAmount = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _services.WorkContext.WorkingCurrency);
 
             var m = new Dictionary<string, object>
-			{
-				["Id"] = part.Id,
-				["CustomerGuid"] = part.CustomerGuid,
-				["Username"] = part.Username,
-				["Email"] = email,
-				["IsTaxExempt"] = part.IsTaxExempt,
-				["LastIpAddress"] = part.LastIpAddress,
-				["CreatedOn"] = ToUserDate(part.CreatedOnUtc, messageContext),
-				["LastLoginOn"] = ToUserDate(part.LastLoginDateUtc, messageContext),
-				["LastActivityOn"] = ToUserDate(part.LastActivityDateUtc, messageContext),
+            {
+                ["Id"] = part.Id,
+                ["CustomerGuid"] = part.CustomerGuid,
+                ["Username"] = part.Username,
+                ["Email"] = email,
+                ["IsTaxExempt"] = part.IsTaxExempt,
+                ["LastIpAddress"] = part.LastIpAddress,
+                ["CreatedOn"] = ToUserDate(part.CreatedOnUtc, messageContext),
+                ["LastLoginOn"] = ToUserDate(part.LastLoginDateUtc, messageContext),
+                ["LastActivityOn"] = ToUserDate(part.LastActivityDateUtc, messageContext),
 
-				["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
-				["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
-				["VatNumberStatus"] = customerVatStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
-				["CustomerNumber"] = part.CustomerNumber.NullEmpty(),
-				["IsRegistered"] = part.IsRegistered(),
+                ["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
+                ["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
+                ["VatNumberStatus"] = customerVatStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
+                ["CustomerNumber"] = part.CustomerNumber.NullEmpty(),
+                ["IsRegistered"] = part.IsRegistered(),
 
-				// URLs
-				["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext),
-				["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext),
-				["PasswordRecoveryURL"] = pwdRecoveryToken == null ? null : BuildActionUrl("passwordrecoveryconfirm", "customer",
-					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email, area = "" },
-					messageContext),
-				["AccountActivationURL"] = accountActivationToken == null ? null : BuildActionUrl("activation", "customer",
-					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email, area = "" },
-					messageContext),
+                // URLs
+                ["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext),
+                ["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext),
+                ["PasswordRecoveryURL"] = pwdRecoveryToken == null ? null : BuildActionUrl("passwordrecoveryconfirm", "customer",
+                    new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email, area = "" },
+                    messageContext),
+                ["AccountActivationURL"] = accountActivationToken == null ? null : BuildActionUrl("activation", "customer",
+                    new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email, area = "" },
+                    messageContext),
 
-				// Addresses
-				["BillingAddress"] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext),
-				["ShippingAddress"] = part.ShippingAddress == null ? null : CreateModelPart(part.ShippingAddress, messageContext),		
+                // Addresses
+                ["BillingAddress"] = CreateModelPart(part.BillingAddress ?? new Address(), messageContext),
+                ["ShippingAddress"] = part.ShippingAddress == null ? null : CreateModelPart(part.ShippingAddress, messageContext),
 
-				// Reward Points
-				["RewardPointsAmount"] = rewardPointsAmount,
-				["RewardPointsBalance"] = FormatPrice(rewardPointsAmount, messageContext),
-				["RewardPointsHistory"] = part.RewardPointsHistory.Count == 0 ? null : part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList(),
-			};
+                // Reward Points
+                ["RewardPointsAmount"] = rewardPointsAmount,
+                ["RewardPointsBalance"] = FormatPrice(rewardPointsAmount, messageContext),
+                ["RewardPointsHistory"] = part.RewardPointsHistory.Count == 0 ? null : part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList(),
+            };
 
-			PublishModelPartCreatedEvent<Customer>(part, m);
+            PublishModelPartCreatedEvent<Customer>(part, m);
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateModelPart(GiftCard part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        protected virtual object CreateModelPart(GiftCard part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Id", part.Id },
-				{ "SenderName", part.SenderName.NullEmpty() },
-				{ "SenderEmail", part.SenderEmail.NullEmpty() },
-				{ "RecipientName", part.RecipientName.NullEmpty() },
-				{ "RecipientEmail", part.RecipientEmail.NullEmpty() },
-				{ "Amount", FormatPrice(part.Amount, messageContext) },
-				{ "CouponCode", part.GiftCardCouponCode.NullEmpty() }
-			};
+            var m = new Dictionary<string, object>
+            {
+                { "Id", part.Id },
+                { "SenderName", part.SenderName.NullEmpty() },
+                { "SenderEmail", part.SenderEmail.NullEmpty() },
+                { "RecipientName", part.RecipientName.NullEmpty() },
+                { "RecipientEmail", part.RecipientEmail.NullEmpty() },
+                { "Amount", FormatPrice(part.Amount, messageContext) },
+                { "CouponCode", part.GiftCardCouponCode.NullEmpty() }
+            };
 
-			// Message
-			var message = (string)null;
-			if (part.Message.HasValue())
-			{
-				message = HtmlUtils.StripTags(part.Message);
-			}
-			m["Message"] = message;
+            // Message
+            var message = (string)null;
+            if (part.Message.HasValue())
+            {
+                message = HtmlUtils.StripTags(part.Message);
+            }
+            m["Message"] = message;
 
-			// RemainingAmount
-			Money remainingAmount = null;
-			var order = part?.PurchasedWithOrderItem?.Order;
-			if (order != null)
-			{
-				remainingAmount = FormatPrice(part.GetGiftCardRemainingAmount(), order, messageContext);
-			}
-			m["RemainingAmount"] = remainingAmount;
+            // RemainingAmount
+            Money remainingAmount = null;
+            var order = part?.PurchasedWithOrderItem?.Order;
+            if (order != null)
+            {
+                remainingAmount = FormatPrice(part.GetGiftCardRemainingAmount(), order, messageContext);
+            }
+            m["RemainingAmount"] = remainingAmount;
 
-			PublishModelPartCreatedEvent<GiftCard>(part, m);
+            PublishModelPartCreatedEvent<GiftCard>(part, m);
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateModelPart(NewsLetterSubscription part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        protected virtual object CreateModelPart(NewsLetterSubscription part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var gid = part.NewsLetterSubscriptionGuid;
+            var gid = part.NewsLetterSubscriptionGuid;
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Id", part.Id },
-				{ "Email", part.Email.NullEmpty() },
-				{ "ActivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = true }, messageContext) },
-				{ "DeactivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = false }, messageContext) }
-			};
+            var m = new Dictionary<string, object>
+            {
+                { "Id", part.Id },
+                { "Email", part.Email.NullEmpty() },
+                { "ActivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = true }, messageContext) },
+                { "DeactivationUrl", gid == Guid.Empty ? null : BuildRouteUrl("NewsletterActivation", new { token = part.NewsLetterSubscriptionGuid, active = false }, messageContext) }
+            };
 
-			var customer = messageContext.Customer;
-			if (customer != null && customer.Email.IsCaseInsensitiveEqual(part.Email.EmptyNull()))
-			{
-				// Set FullName only if a customer account exists for the subscriber's email address.
-				m["FullName"] = customer.GetFullName();
-			}
+            var customer = messageContext.Customer;
+            if (customer != null && customer.Email.IsCaseInsensitiveEqual(part.Email.EmptyNull()))
+            {
+                // Set FullName only if a customer account exists for the subscriber's email address.
+                m["FullName"] = customer.GetFullName();
+            }
 
-			PublishModelPartCreatedEvent<NewsLetterSubscription>(part, m);
+            PublishModelPartCreatedEvent<NewsLetterSubscription>(part, m);
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateModelPart(Campaign part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        protected virtual object CreateModelPart(Campaign part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var protocol = messageContext.BaseUri.Scheme;
-			var host = messageContext.BaseUri.Authority + messageContext.BaseUri.AbsolutePath;
-			var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
+            var protocol = messageContext.BaseUri.Scheme;
+            var host = messageContext.BaseUri.Authority + messageContext.BaseUri.AbsolutePath;
+            var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
 
-			// We must render the body separately
-			body = _templateEngine.Render(body, messageContext.Model, messageContext.FormatProvider);
+            // We must render the body separately
+            body = _templateEngine.Render(body, messageContext.Model, messageContext.FormatProvider);
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Id", part.Id },
-				{ "Subject", part.Subject.NullEmpty() },
-				{ "Body", WebHelper.MakeAllUrlsAbsolute(body, protocol, host).NullEmpty() },
-				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
-			};
-			
-			PublishModelPartCreatedEvent<Campaign>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                { "Id", part.Id },
+                { "Subject", part.Subject.NullEmpty() },
+                { "Body", WebHelper.MakeAllUrlsAbsolute(body, protocol, host).NullEmpty() },
+                { "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<Campaign>(part, m);
 
-		protected virtual object CreateModelPart(ProductReview part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Title", part.Title.NullEmpty() },
-				{ "Text", HtmlUtils.StripTags(part.ReviewText).NullEmpty() },
-				{ "Rating", part.Rating }
-			};
+        protected virtual object CreateModelPart(ProductReview part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<ProductReview>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                { "Title", part.Title.NullEmpty() },
+                { "Text", HtmlUtils.StripTags(part.ReviewText).NullEmpty() },
+                { "Rating", part.Rating }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<ProductReview>(part, m);
 
-		protected virtual object CreateModelPart(ProductReviewHelpfulness part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{ "ProductReviewId", part.ProductReviewId },
-				{ "ReviewTitle", part.ProductReview.Title },
-				{ "WasHelpful", part.WasHelpful }
-			};
+        protected virtual object CreateModelPart(ProductReviewHelpfulness part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			ApplyCustomerContentPart(m, part, messageContext);
+            var m = new Dictionary<string, object>
+            {
+                { "ProductReviewId", part.ProductReviewId },
+                { "ReviewTitle", part.ProductReview.Title },
+                { "WasHelpful", part.WasHelpful }
+            };
 
-			PublishModelPartCreatedEvent<ProductReviewHelpfulness>(part, m);
+            ApplyCustomerContentPart(m, part, messageContext);
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<ProductReviewHelpfulness>(part, m);
 
-		protected virtual object CreateModelPart(PollVotingRecord part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{ "PollAnswerId", part.PollAnswerId },
-				{ "PollAnswerName", part.PollAnswer.Name },
-				{ "PollId", part.PollAnswer.PollId }
-			};
+        protected virtual object CreateModelPart(PollVotingRecord part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			ApplyCustomerContentPart(m, part, messageContext);
+            var m = new Dictionary<string, object>
+            {
+                { "PollAnswerId", part.PollAnswerId },
+                { "PollAnswerName", part.PollAnswer.Name },
+                { "PollId", part.PollAnswer.PollId }
+            };
 
-			PublishModelPartCreatedEvent<PollVotingRecord>(part, m);
+            ApplyCustomerContentPart(m, part, messageContext);
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<PollVotingRecord>(part, m);
 
-		protected virtual object CreateModelPart(PrivateMessage part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{  "Subject", part.Subject.NullEmpty() },
-				{  "Text", part.FormatPrivateMessageText().NullEmpty() },
-				{  "FromEmail", part.FromCustomer?.FindEmail().NullEmpty() },
-				{  "ToEmail", part.ToCustomer?.FindEmail().NullEmpty() },
-				{  "FromName", part.FromCustomer?.GetFullName().NullEmpty() },
-				{  "ToName", part.ToCustomer?.GetFullName().NullEmpty() },
-				{  "Url", BuildActionUrl("View", "PrivateMessages", new { id = part.Id, area = "" }, messageContext) }
-			};
+        protected virtual object CreateModelPart(PrivateMessage part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<PrivateMessage>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                {  "Subject", part.Subject.NullEmpty() },
+                {  "Text", part.FormatPrivateMessageText().NullEmpty() },
+                {  "FromEmail", part.FromCustomer?.FindEmail().NullEmpty() },
+                {  "ToEmail", part.ToCustomer?.FindEmail().NullEmpty() },
+                {  "FromName", part.FromCustomer?.GetFullName().NullEmpty() },
+                {  "ToName", part.ToCustomer?.GetFullName().NullEmpty() },
+                {  "Url", BuildActionUrl("View", "PrivateMessages", new { id = part.Id, area = "" }, messageContext) }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<PrivateMessage>(part, m);
 
-		protected virtual object CreateModelPart(BlogComment part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{  "PostTitle", part.BlogPost.Title.NullEmpty() },
-				{  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(part.BlogPost.LanguageId, ensureTwoPublishedLanguages: false) }, messageContext) },
-				{  "Text", part.CommentText.NullEmpty() }
-			};
+        protected virtual object CreateModelPart(BlogComment part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<BlogComment>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                {  "PostTitle", part.BlogPost.GetLocalized(x => x.Title, messageContext.Language).Value.NullEmpty() },
+                {  "PostUrl", BuildRouteUrl("BlogPost", new { SeName = part.BlogPost.GetSeName(messageContext.Language.Id) }, messageContext) },
+                {  "Text", part.CommentText.NullEmpty() }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<BlogComment>(part, m);
 
-		protected virtual object CreateModelPart(NewsComment part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{  "NewsTitle", part.NewsItem.Title.NullEmpty() },
-				{  "Title", part.CommentTitle.NullEmpty() },
-				{  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
-				{  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
-			};
+        protected virtual object CreateModelPart(NewsComment part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<NewsComment>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                {  "NewsTitle", part.NewsItem.GetLocalized(x => x.Title, messageContext.Language).Value.NullEmpty() },
+                {  "Title", part.CommentTitle.NullEmpty() },
+                {  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
+                {  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<NewsComment>(part, m);
 
-		protected virtual object CreateModelPart(ForumTopic part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var pageIndex = messageContext.Model.GetFromBag<int>("TopicPageIndex");
+        protected virtual object CreateModelPart(ForumTopic part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var url = pageIndex > 0 ?
-				BuildRouteUrl("TopicSlugPaged", new { id = part.Id, slug = part.GetSeName(), page = pageIndex }, messageContext) :
-				BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext);
+            var pageIndex = messageContext.Model.GetFromBag<int>("TopicPageIndex");
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Subject", part.Subject.NullEmpty() },
-				{ "NumReplies", part.NumReplies },
-				{ "NumPosts", part.NumPosts },
-				{ "NumViews", part.Views },
-				{ "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText().NullEmpty() },
-				{ "Url", url },
-			};
+            var url = pageIndex > 0 ?
+                BuildRouteUrl("TopicSlugPaged", new { id = part.Id, slug = part.GetSeName(), page = pageIndex }, messageContext) :
+                BuildRouteUrl("TopicSlug", new { id = part.Id, slug = part.GetSeName() }, messageContext);
 
-			PublishModelPartCreatedEvent<ForumTopic>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                { "Subject", part.Subject.NullEmpty() },
+                { "NumReplies", part.NumReplies },
+                { "NumPosts", part.NumPosts },
+                { "NumViews", part.Views },
+                { "Body", part.GetFirstPost(_services.Resolve<IForumService>())?.FormatPostText().NullEmpty() },
+                { "Url", url },
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<ForumTopic>(part, m);
 
-		protected virtual object CreateModelPart(ForumPost part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            return m;
+        }
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Author", part.Customer.FormatUserName().NullEmpty() },
-				{ "Body", part.FormatPostText().NullEmpty() }
-			};
+        protected virtual object CreateModelPart(ForumPost part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<ForumPost>(part, m);
+            var m = new Dictionary<string, object>
+            {
+                { "Author", part.Customer.FormatUserName().NullEmpty() },
+                { "Body", part.FormatPostText().NullEmpty() }
+            };
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<ForumPost>(part, m);
+
+            return m;
+        }
 
         protected virtual object CreateModelPart(ForumPostVote part, MessageContext messageContext)
         {
@@ -915,271 +921,271 @@ namespace SmartStore.Services.Messages
         }
 
         protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var m = new Dictionary<string, object>
-			{
-				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language).Value.NullEmpty() },
-				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language)?.Value.NullEmpty() },
-				{ "NumPosts", part.NumPosts },
-				{ "NumTopics", part.NumTopics },
-				{ "Url", BuildRouteUrl("ForumSlug", new {  id = part.Id, slug = part.GetSeName(messageContext.Language.Id) }, messageContext) },
-			};
+            var m = new Dictionary<string, object>
+            {
+                { "Name", part.GetLocalized(x => x.Name, messageContext.Language).Value.NullEmpty() },
+                { "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language)?.Value.NullEmpty() },
+                { "NumPosts", part.NumPosts },
+                { "NumTopics", part.NumTopics },
+                { "Url", BuildRouteUrl("ForumSlug", new {  id = part.Id, slug = part.GetSeName(messageContext.Language.Id) }, messageContext) },
+            };
 
-			PublishModelPartCreatedEvent<Forum>(part, m);
+            PublishModelPartCreatedEvent<Forum>(part, m);
 
-			return m;
-		}
+            return m;
+        }
 
-		protected virtual object CreateModelPart(Address part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+        protected virtual object CreateModelPart(Address part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			var settings = _services.Resolve<AddressSettings>();
-			var languageId = messageContext.Language?.Id ?? messageContext.LanguageId;
+            var settings = _services.Resolve<AddressSettings>();
+            var languageId = messageContext.Language?.Id ?? messageContext.LanguageId;
 
-			var salutation = part.Salutation.NullEmpty();
-			var title = part.Title.NullEmpty();
-			var company = settings.CompanyEnabled ? part.Company : null;
-			var firstName = part.FirstName.NullEmpty();
-			var lastName = part.LastName.NullEmpty();
-			var street1 = settings.StreetAddressEnabled ? part.Address1 : null;
-			var street2 = settings.StreetAddress2Enabled ? part.Address2 : null;
-			var zip = settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null;
-			var city = settings.CityEnabled ? part.City : null;
-			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
-			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
-			
-			var m = new Dictionary<string, object>
-			{
-				{ "Title", title },
-				{ "Salutation", salutation },
-				{ "FullSalutation", part.GetFullSalutaion().NullEmpty() },
-				{ "FullName", part.GetFullName(false).NullEmpty() },
-				{ "Company", company },
-				{ "FirstName", firstName },
-				{ "LastName", lastName },
-				{ "Street1", street1 },
-				{ "Street2", street2 },
-				{ "Country", country },
-				{ "CountryId", part.Country?.Id },
-				{ "CountryAbbrev2", settings.CountryEnabled ? part.Country?.TwoLetterIsoCode.NullEmpty() : null },
-				{ "CountryAbbrev3", settings.CountryEnabled ? part.Country?.ThreeLetterIsoCode.NullEmpty() : null },
-				{ "State", state },
-				{ "StateAbbrev", settings.StateProvinceEnabled ? part.StateProvince?.Abbreviation.NullEmpty() : null },
-				{ "City", city },
-				{ "ZipCode", zip },
-				{ "Email", part.Email.NullEmpty() },
-				{ "Phone", settings.PhoneEnabled ? part.PhoneNumber : null },
-				{ "Fax", settings.FaxEnabled ? part.FaxNumber : null }
-			};
+            var salutation = part.Salutation.NullEmpty();
+            var title = part.Title.NullEmpty();
+            var company = settings.CompanyEnabled ? part.Company : null;
+            var firstName = part.FirstName.NullEmpty();
+            var lastName = part.LastName.NullEmpty();
+            var street1 = settings.StreetAddressEnabled ? part.Address1 : null;
+            var street2 = settings.StreetAddress2Enabled ? part.Address2 : null;
+            var zip = settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null;
+            var city = settings.CityEnabled ? part.City : null;
+            var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
+            var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
 
-			m["NameLine"] = Concat(salutation, title, firstName, lastName);
-			m["StreetLine"] = Concat(street1, street2);
-			m["CityLine"] = Concat(zip, city);
-			m["CountryLine"] = Concat(country, state);
+            var m = new Dictionary<string, object>
+            {
+                { "Title", title },
+                { "Salutation", salutation },
+                { "FullSalutation", part.GetFullSalutaion().NullEmpty() },
+                { "FullName", part.GetFullName(false).NullEmpty() },
+                { "Company", company },
+                { "FirstName", firstName },
+                { "LastName", lastName },
+                { "Street1", street1 },
+                { "Street2", street2 },
+                { "Country", country },
+                { "CountryId", part.Country?.Id },
+                { "CountryAbbrev2", settings.CountryEnabled ? part.Country?.TwoLetterIsoCode.NullEmpty() : null },
+                { "CountryAbbrev3", settings.CountryEnabled ? part.Country?.ThreeLetterIsoCode.NullEmpty() : null },
+                { "State", state },
+                { "StateAbbrev", settings.StateProvinceEnabled ? part.StateProvince?.Abbreviation.NullEmpty() : null },
+                { "City", city },
+                { "ZipCode", zip },
+                { "Email", part.Email.NullEmpty() },
+                { "Phone", settings.PhoneEnabled ? part.PhoneNumber : null },
+                { "Fax", settings.FaxEnabled ? part.FaxNumber : null }
+            };
 
-			PublishModelPartCreatedEvent<Address>(part, m);
+            m["NameLine"] = Concat(salutation, title, firstName, lastName);
+            m["StreetLine"] = Concat(street1, street2);
+            m["CityLine"] = Concat(zip, city);
+            m["CountryLine"] = Concat(country, state);
 
-			return m;
-		}
+            PublishModelPartCreatedEvent<Address>(part, m);
 
-		protected virtual object CreateModelPart(RewardPointsHistory part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
-			
-			var m = new Dictionary<string, object>
-			{
-				{ "Id", part.Id },
-				{ "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
-				{ "Message", part.Message.NullEmpty() },
-				{ "Points", part.Points },
-				{ "PointsBalance", part.PointsBalance },
-				{ "UsedAmount", part.UsedAmount }
-			};
+            return m;
+        }
 
-			PublishModelPartCreatedEvent<RewardPointsHistory>(part, m);
+        protected virtual object CreateModelPart(RewardPointsHistory part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			return m;
-		}
+            var m = new Dictionary<string, object>
+            {
+                { "Id", part.Id },
+                { "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) },
+                { "Message", part.Message.NullEmpty() },
+                { "Points", part.Points },
+                { "PointsBalance", part.PointsBalance },
+                { "UsedAmount", part.UsedAmount }
+            };
 
-		protected virtual object CreateModelPart(IEnumerable<GenericAttribute> part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            PublishModelPartCreatedEvent<RewardPointsHistory>(part, m);
 
-			var m = new Dictionary<string, object>();
+            return m;
+        }
 
-			foreach (var attr in part)
-			{
-				m[attr.Key] = attr.Value;
-			}
+        protected virtual object CreateModelPart(IEnumerable<GenericAttribute> part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			PublishModelPartCreatedEvent<IEnumerable<GenericAttribute>>(part, m);
+            var m = new Dictionary<string, object>();
 
-			return m;
-		}
+            foreach (var attr in part)
+            {
+                m[attr.Key] = attr.Value;
+            }
 
-		protected virtual object CreateModelPart(ForumSubscription part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            PublishModelPartCreatedEvent<IEnumerable<GenericAttribute>>(part, m);
 
-			var m = new Dictionary<string, object>
-			{
-				{  "SubscriptionGuid", part.SubscriptionGuid },
-				{  "CustomerId",  part.CustomerId },
-				{  "ForumId",  part.ForumId },
-				{  "TopicId",  part.TopicId },
-				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
-			};
+            return m;
+        }
 
-			PublishModelPartCreatedEvent<ForumSubscription>(part, m);
+        protected virtual object CreateModelPart(ForumSubscription part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			return m;
-		}
+            var m = new Dictionary<string, object>
+            {
+                {  "SubscriptionGuid", part.SubscriptionGuid },
+                {  "CustomerId",  part.CustomerId },
+                {  "ForumId",  part.ForumId },
+                {  "TopicId",  part.TopicId },
+                {  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+            };
 
-		protected virtual object CreateModelPart(BackInStockSubscription part, MessageContext messageContext)
-		{
-			Guard.NotNull(messageContext, nameof(messageContext));
-			Guard.NotNull(part, nameof(part));
+            PublishModelPartCreatedEvent<ForumSubscription>(part, m);
 
-			var m = new Dictionary<string, object>
-			{
-				{  "StoreId", part.StoreId },
-				{  "CustomerId",  part.CustomerId },
-				{  "ProductId",  part.ProductId },
-				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
-			};
+            return m;
+        }
 
-			PublishModelPartCreatedEvent<BackInStockSubscription>(part, m);
+        protected virtual object CreateModelPart(BackInStockSubscription part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
 
-			return m;
-		}
+            var m = new Dictionary<string, object>
+            {
+                {  "StoreId", part.StoreId },
+                {  "CustomerId",  part.CustomerId },
+                {  "ProductId",  part.ProductId },
+                {  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+            };
 
-		#endregion
+            PublishModelPartCreatedEvent<BackInStockSubscription>(part, m);
 
-		#region Model Tree
+            return m;
+        }
 
-		public TreeNode<ModelTreeMember> GetLastModelTree(string messageTemplateName)
-		{
-			Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
+        #endregion
 
-			var template = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, _services.StoreContext.CurrentStore.Id);
+        #region Model Tree
 
-			if (template != null)
-			{
-				return GetLastModelTree(template);
-			}
+        public TreeNode<ModelTreeMember> GetLastModelTree(string messageTemplateName)
+        {
+            Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
 
-			return null;
-		}
+            var template = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, _services.StoreContext.CurrentStore.Id);
 
-		public TreeNode<ModelTreeMember> GetLastModelTree(MessageTemplate template)
-		{
-			Guard.NotNull(template, nameof(template));
+            if (template != null)
+            {
+                return GetLastModelTree(template);
+            }
 
-			if (template.LastModelTree.IsEmpty())
-			{
-				return null;
-			}
+            return null;
+        }
 
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<TreeNode<ModelTreeMember>>(template.LastModelTree);
-		}
+        public TreeNode<ModelTreeMember> GetLastModelTree(MessageTemplate template)
+        {
+            Guard.NotNull(template, nameof(template));
 
-		public TreeNode<ModelTreeMember> BuildModelTree(TemplateModel model)
-		{
-			Guard.NotNull(model, nameof(model));
+            if (template.LastModelTree.IsEmpty())
+            {
+                return null;
+            }
 
-			var root = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = "Model", Kind = ModelTreeMemberKind.Root });
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<TreeNode<ModelTreeMember>>(template.LastModelTree);
+        }
 
-			foreach (var kvp in model)
-			{
-				root.Append(BuildModelTreePart(kvp.Key, kvp.Value));
-			}
+        public TreeNode<ModelTreeMember> BuildModelTree(TemplateModel model)
+        {
+            Guard.NotNull(model, nameof(model));
 
-			return root;
-		}
+            var root = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = "Model", Kind = ModelTreeMemberKind.Root });
 
-		private TreeNode<ModelTreeMember> BuildModelTreePart(string modelName, object instance)
-		{
-			var t = instance?.GetType();
-			TreeNode<ModelTreeMember> node = null;
+            foreach (var kvp in model)
+            {
+                root.Append(BuildModelTreePart(kvp.Key, kvp.Value));
+            }
 
-			if (t == null || t.IsPredefinedType())
-			{
-				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Primitive });
-			}
-			else if (t.IsSequenceType() && !(instance is IDictionary<string, object>))
-			{
-				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Collection });
-			}
-			else
-			{
-				node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Complex });
+            return root;
+        }
 
-				if (instance is IDictionary<string, object> dict)
-				{
-					foreach (var kvp in dict)
-					{
-						node.Append(BuildModelTreePart(kvp.Key, kvp.Value));
-					}
-				}
-				else if (instance is IDynamicMetaObjectProvider dyn)
-				{
-					foreach (var name in dyn.GetMetaObject(Expression.Constant(dyn)).GetDynamicMemberNames())
-					{
-						// we don't want to go deeper in "pure" dynamic objects
-						node.Append(new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = name, Kind = ModelTreeMemberKind.Primitive }));
-					}
-				}
-				else
-				{
-					node.AppendRange(BuildModelTreePartForClass(instance));
-				}
-			}
+        private TreeNode<ModelTreeMember> BuildModelTreePart(string modelName, object instance)
+        {
+            var t = instance?.GetType();
+            TreeNode<ModelTreeMember> node = null;
 
-			return node;
-		}
+            if (t == null || t.IsPredefinedType())
+            {
+                node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Primitive });
+            }
+            else if (t.IsSequenceType() && !(instance is IDictionary<string, object>))
+            {
+                node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Collection });
+            }
+            else
+            {
+                node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = modelName, Kind = ModelTreeMemberKind.Complex });
 
-		private IEnumerable<TreeNode<ModelTreeMember>> BuildModelTreePartForClass(object instance)
-		{
-			var type = instance?.GetType();
+                if (instance is IDictionary<string, object> dict)
+                {
+                    foreach (var kvp in dict)
+                    {
+                        node.Append(BuildModelTreePart(kvp.Key, kvp.Value));
+                    }
+                }
+                else if (instance is IDynamicMetaObjectProvider dyn)
+                {
+                    foreach (var name in dyn.GetMetaObject(Expression.Constant(dyn)).GetDynamicMemberNames())
+                    {
+                        // we don't want to go deeper in "pure" dynamic objects
+                        node.Append(new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = name, Kind = ModelTreeMemberKind.Primitive }));
+                    }
+                }
+                else
+                {
+                    node.AppendRange(BuildModelTreePartForClass(instance));
+                }
+            }
 
-			if (type == null)
-			{
-				yield break;
-			}
+            return node;
+        }
 
-			foreach (var prop in FastProperty.GetProperties(type).Values)
-			{
-				var pi = prop.Property;
+        private IEnumerable<TreeNode<ModelTreeMember>> BuildModelTreePartForClass(object instance)
+        {
+            var type = instance?.GetType();
 
-				if (pi.PropertyType.IsPredefinedType())
-				{
-					yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Primitive });
-				}
-				else if (typeof(IDictionary<string, object>).IsAssignableFrom(pi.PropertyType))
-				{
-					yield return BuildModelTreePart(prop.Name, prop.GetValue(instance));
-				}
-				else if (pi.PropertyType.IsSequenceType())
-				{
-					yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Collection });
-				}
-				else
-				{
-					var node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Complex });
-					node.AppendRange(BuildModelTreePartForClass(prop.GetValue(instance)));
-					yield return node;
-				}
-			}
-		}
+            if (type == null)
+            {
+                yield break;
+            }
 
-		#endregion
-	}
+            foreach (var prop in FastProperty.GetProperties(type).Values)
+            {
+                var pi = prop.Property;
+
+                if (pi.PropertyType.IsPredefinedType())
+                {
+                    yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Primitive });
+                }
+                else if (typeof(IDictionary<string, object>).IsAssignableFrom(pi.PropertyType))
+                {
+                    yield return BuildModelTreePart(prop.Name, prop.GetValue(instance));
+                }
+                else if (pi.PropertyType.IsSequenceType())
+                {
+                    yield return new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Collection });
+                }
+                else
+                {
+                    var node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Complex });
+                    node.AppendRange(BuildModelTreePartForClass(prop.GetValue(instance)));
+                    yield return node;
+                }
+            }
+        }
+
+        #endregion
+    }
 }

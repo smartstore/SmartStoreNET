@@ -4,6 +4,8 @@
 }
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             @T("Admin.Orders.Address.EditAddress") @Html.ActionLink("(" + T("Admin.Orders.Address.BackToOrder") + ")", "Edit", new { id = Model.OrderId })

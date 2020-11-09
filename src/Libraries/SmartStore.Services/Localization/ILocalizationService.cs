@@ -10,10 +10,10 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Localization
 {
-	/// <summary>
-	/// Localization manager interface
-	/// </summary>
-	public partial interface ILocalizationService
+    /// <summary>
+    /// Localization manager interface
+    /// </summary>
+    public partial interface ILocalizationService
     {
         /// <summary>
         /// Deletes a locale string resource
@@ -21,12 +21,12 @@ namespace SmartStore.Services.Localization
         /// <param name="localeStringResource">Locale string resource</param>
         void DeleteLocaleStringResource(LocaleStringResource localeStringResource);
 
-		/// <summary>
-		/// Deletes all string resources with its key beginning with rootKey.
-		/// </summary>
-		/// <param name="key">e.g. Plugins.Import.Biz</param>
-		/// <returns>Number of deleted string resources</returns>
-		int DeleteLocaleStringResources(string key, bool keyIsRootKey = true);
+        /// <summary>
+        /// Deletes all string resources with its key beginning with rootKey.
+        /// </summary>
+        /// <param name="key">e.g. Plugins.Import.Biz</param>
+        /// <returns>Number of deleted string resources</returns>
+        int DeleteLocaleStringResources(string key, bool keyIsRootKey = true);
 
         /// <summary>
         /// Gets a locale string resource
@@ -58,19 +58,19 @@ namespace SmartStore.Services.Localization
         /// <returns>Locale string resources</returns>
         IQueryable<LocaleStringResource> All(int languageId);
 
-		/// <summary>
-		/// Gets all locale string resources by language identifier starting with a prefix
-		/// </summary>
-		/// <param name="pattern">Pattern</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>Locale string resources matching language id and starting with <paramref name="pattern"/></returns>
-		IList<LocaleStringResource> GetResourcesByPattern(string pattern, int languageId);
+        /// <summary>
+        /// Gets all locale string resources by language identifier starting with a prefix
+        /// </summary>
+        /// <param name="pattern">Pattern</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <returns>Locale string resources matching language id and starting with <paramref name="pattern"/></returns>
+        IList<LocaleStringResource> GetResourcesByPattern(string pattern, int languageId);
 
-		/// <summary>
-		/// Inserts a locale string resource
-		/// </summary>
-		/// <param name="localeStringResource">Locale string resource</param>
-		void InsertLocaleStringResource(LocaleStringResource localeStringResource);
+        /// <summary>
+        /// Inserts a locale string resource
+        /// </summary>
+        /// <param name="localeStringResource">Locale string resource</param>
+        void InsertLocaleStringResource(LocaleStringResource localeStringResource);
 
         /// <summary>
         /// Updates the locale string resource
@@ -128,10 +128,10 @@ namespace SmartStore.Services.Localization
         /// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
         /// <param name="filterLanguages">Import only files for particular languages</param>
         void ImportPluginResourcesFromXml(
-			PluginDescriptor pluginDescriptor,
-			IList<LocaleStringResource> targetList = null, 
-			bool updateTouchedResources = true, 
-			IList<Language> filterLanguages = null);
+            PluginDescriptor pluginDescriptor,
+            IList<LocaleStringResource> targetList = null,
+            bool updateTouchedResources = true,
+            IList<Language> filterLanguages = null);
 
         /// <summary>
         /// Flattens all nested <c>LocaleResource</c> child nodes into a new document

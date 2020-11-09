@@ -3,43 +3,43 @@ using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
-	public interface ISearchEngine
-	{
-		/// <summary>
-		/// Search query
-		/// </summary>
-		ISearchQuery Query { get; }
+    public interface ISearchEngine
+    {
+        /// <summary>
+        /// Search query
+        /// </summary>
+        ISearchQuery Query { get; }
 
-		/// <summary>
-		/// Get search hit by entity identifier
-		/// </summary>
-		/// <param name="id">Entity identifier</param>
-		/// <returns>Search hit</returns>
-		ISearchHit Get(int id);
+        /// <summary>
+        /// Get search hit by entity identifier
+        /// </summary>
+        /// <param name="id">Entity identifier</param>
+        /// <returns>Search hit</returns>
+        ISearchHit Get(int id);
 
-		/// <summary>
-		/// Get total number of search hits
-		/// </summary>
-		/// <returns>Total number of search hits</returns>
-		int Count();
+        /// <summary>
+        /// Get total number of search hits
+        /// </summary>
+        /// <returns>Total number of search hits</returns>
+        int Count();
 
-		/// <summary>
-		/// Search
-		/// </summary>
-		/// <returns>Search hits</returns>
-		IEnumerable<ISearchHit> Search();
+        /// <summary>
+        /// Search
+        /// </summary>
+        /// <returns>Search hits</returns>
+        IEnumerable<ISearchHit> Search();
 
-		/// <summary>
-		/// Gets the facet map for drilldown navigation
-		/// </summary>
-		/// <returns>The facet groups</returns>
-		IDictionary<string, FacetGroup> GetFacetMap();
+        /// <summary>
+        /// Gets the facet map for drilldown navigation
+        /// </summary>
+        /// <returns>The facet groups</returns>
+        IDictionary<string, FacetGroup> GetFacetMap();
 
-		/// <summary>
-		/// Performs spell checking ("Diy you mean?")
-		/// </summary>
-		/// <returns>Suggestions/corrections or an empty array</returns>
-		string[] CheckSpelling();
+        /// <summary>
+        /// Performs spell checking ("Diy you mean?")
+        /// </summary>
+        /// <returns>Suggestions/corrections or an empty array</returns>
+        string[] CheckSpelling();
 
         /// <summary>
         /// Highlights chosen terms in a text, extracting the most relevant sections

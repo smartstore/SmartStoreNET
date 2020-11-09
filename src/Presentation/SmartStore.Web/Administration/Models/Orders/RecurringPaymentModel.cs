@@ -1,8 +1,7 @@
-﻿using FluentValidation.Attributes;
+﻿using System;
+using System.Collections.Generic;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
 
 namespace SmartStore.Admin.Models.Orders
 {
@@ -47,7 +46,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.RecurringPayments.Fields.PaymentType")]
         public string PaymentType { get; set; }
-        
+
         public bool CanCancelRecurringPayment { get; set; }
 
 

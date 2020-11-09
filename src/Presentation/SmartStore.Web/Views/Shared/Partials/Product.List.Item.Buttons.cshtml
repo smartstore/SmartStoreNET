@@ -10,7 +10,7 @@
 }
 
 @helper RenderBuyButton(bool blockStyle) {{
-	var cssClasses = blockStyle ? "btn-block d-none d-md-block" : "x-btn-icon btn-lg art-btn col";
+	var cssClasses = blockStyle ? "btn-block d-none d-md-block" : "btn-lg art-btn col";
 	if (!blockStyle && Model.Parent.ViewMode == ProductSummaryViewMode.List)
 	{
 		cssClasses += " d-md-none";
@@ -22,7 +22,7 @@
 
 		<a data-href='@addToCartUrl'
 			href="#"
-			class="btn btn-primary ajax-cart-link @cssClasses"
+			class="btn btn-primary ajax-cart-link px-sm-2 @cssClasses"
 			title="@title"
 			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"
@@ -41,7 +41,7 @@
 	}
 	else
 	{
-		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id }, { "area", "" } })"
+		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id}, { "area", "" } })"
 			class="btn @(blockStyle ? "btn-secondary" : "btn-gray") add-to-cart-button @cssClasses"
 			data-toggle='@(!blockStyle ? "tooltip" : "")' data-placement="bottom"
 			rel="nofollow"

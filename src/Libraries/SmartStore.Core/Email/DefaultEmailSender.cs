@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.IO;
 using System.Threading.Tasks;
 using SmartStore.Core.Domain.Messages;
 
@@ -12,29 +10,29 @@ namespace SmartStore.Core.Email
 {
     public class DefaultEmailSender : IEmailSender
     {
-		private readonly EmailAccountSettings _emailAccountSettings;
-		
-		public DefaultEmailSender(EmailAccountSettings emailAccountSettings)
-		{
-			_emailAccountSettings = emailAccountSettings;
-		}
+        private readonly EmailAccountSettings _emailAccountSettings;
 
-		/// <summary>
-		/// Builds System.Net.Mail.Message
-		/// </summary>
-		/// <param name="original">SmartStore.Email.Message</param>
-		/// <returns>System.Net.Mail.Message</returns>        
-		protected virtual MailMessage BuildMailMessage(EmailMessage original)
+        public DefaultEmailSender(EmailAccountSettings emailAccountSettings)
+        {
+            _emailAccountSettings = emailAccountSettings;
+        }
+
+        /// <summary>
+        /// Builds System.Net.Mail.Message
+        /// </summary>
+        /// <param name="original">SmartStore.Email.Message</param>
+        /// <returns>System.Net.Mail.Message</returns>        
+        protected virtual MailMessage BuildMailMessage(EmailMessage original)
         {
             MailMessage msg = new MailMessage();
 
-			if (String.IsNullOrEmpty(original.Subject))
-			{
-				throw new MailSenderException("Required subject is missing!");
-			}
-				
-			msg.Subject = original.Subject;
-			msg.IsBodyHtml = original.BodyFormat == MailBodyFormat.Html;
+            if (String.IsNullOrEmpty(original.Subject))
+            {
+                throw new MailSenderException("Required subject is missing!");
+            }
+
+            msg.Subject = original.Subject;
+            msg.IsBodyHtml = original.BodyFormat == MailBodyFormat.Html;
 
             if (original.AltText.HasValue())
             {
@@ -50,65 +48,65 @@ namespace SmartStore.Core.Email
 
             msg.From = original.From.ToMailAddress();
 
-			msg.To.AddRange(original.To.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
-			msg.CC.AddRange(original.Cc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
-			msg.Bcc.AddRange(original.Bcc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
-			msg.ReplyToList.AddRange(original.ReplyTo.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
+            msg.To.AddRange(original.To.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
+            msg.CC.AddRange(original.Cc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
+            msg.Bcc.AddRange(original.Bcc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
+            msg.ReplyToList.AddRange(original.ReplyTo.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
 
-			msg.Attachments.AddRange(original.Attachments);
+            msg.Attachments.AddRange(original.Attachments);
 
             if (original.Headers != null)
-				msg.Headers.AddRange(original.Headers);
-            
+                msg.Headers.AddRange(original.Headers);
+
 
             msg.Priority = original.Priority;
 
             return msg;
         }
 
-		#region IMailSender Members
+        #region IMailSender Members
 
-		public void SendEmail(SmtpContext context, EmailMessage message)
+        public void SendEmail(SmtpContext context, EmailMessage message)
         {
-			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(message, nameof(message));
-			
-			using (var msg = this.BuildMailMessage(message))
-			{
-				using (var client = context.ToSmtpClient())
-				{
-					ApplySettings(client);
-					client.Send(msg);
-				}
-			}
+            Guard.NotNull(context, nameof(context));
+            Guard.NotNull(message, nameof(message));
+
+            using (var msg = this.BuildMailMessage(message))
+            {
+                using (var client = context.ToSmtpClient())
+                {
+                    ApplySettings(client);
+                    client.Send(msg);
+                }
+            }
         }
 
-		public async Task SendEmailAsync(SmtpContext context, EmailMessage message)
-		{
-			Guard.NotNull(context, nameof(context));
-			Guard.NotNull(message, nameof(message));
+        public async Task SendEmailAsync(SmtpContext context, EmailMessage message)
+        {
+            Guard.NotNull(context, nameof(context));
+            Guard.NotNull(message, nameof(message));
 
-			using (var msg = this.BuildMailMessage(message))
-			{
-				using (var client = context.ToSmtpClient())
-				{
-					ApplySettings(client);
-					await client.SendMailAsync(msg);
-				}
-			}
-		}
+            using (var msg = this.BuildMailMessage(message))
+            {
+                using (var client = context.ToSmtpClient())
+                {
+                    ApplySettings(client);
+                    await client.SendMailAsync(msg);
+                }
+            }
+        }
 
-		private void ApplySettings(SmtpClient client)
-		{
-			var pickupDirLocation = _emailAccountSettings.PickupDirectoryLocation;
-			if (pickupDirLocation.HasValue() && client.DeliveryMethod != SmtpDeliveryMethod.SpecifiedPickupDirectory && Path.IsPathRooted(pickupDirLocation))
-			{
-				client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-				client.PickupDirectoryLocation = pickupDirLocation;
-				client.EnableSsl = false;
-			}
-		}
+        private void ApplySettings(SmtpClient client)
+        {
+            var pickupDirLocation = _emailAccountSettings.PickupDirectoryLocation;
+            if (pickupDirLocation.HasValue() && client.DeliveryMethod != SmtpDeliveryMethod.SpecifiedPickupDirectory && Path.IsPathRooted(pickupDirLocation))
+            {
+                client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+                client.PickupDirectoryLocation = pickupDirLocation;
+                client.EnableSsl = false;
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>Der Löwe - König der Tiere</Title>
+  <MetaTitle>Der Löwe - König der Tiere</MetaTitle>
+	<Intro>Der Löwe (Panthera leo) ist eine Art aus der Familie der Felidae (Katzen) und gehört zur Gattung der Panthera (Großkatzen). Er hat einen muskulösen, tiefbrustigen Körper, einen kurzen, abgerundeten Kopf, runde Ohren und ein behaartes Büschel am Ende des Schwanzes.</Intro>
+	<MetaDescription>Der Löwe (Panthera leo) ist eine Art aus der Familie der Felidae (Katzen) und gehört zur Gattung der Panthera (Großkatzen). Er hat einen muskulösen, tiefbrustigen Körper, einen kurzen, abgerundeten Kopf, runde Ohren und ein behaartes Büschel am Ende des Schwanzes.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				Der Löwe (Panthera leo) ist eine Art aus der Familie der Felidae (Katzen) und gehört zur Gattung der 
+				Panthera (Großkatzen). Er hat einen muskulösen, tiefbrustigen Körper, einen kurzen, abgerundeten Kopf, runde Ohren und ein 
+				behaartes Büschel am Ende des Schwanzes. Er ist geschlechtsdimorph; erwachsene männliche Löwen haben eine auffällige Mähne. 
+				Mit	einer typischen Kopf-zu-Körper-Länge von 184-208 cm (72-82 in) sind sie mit 160-184 cm (63-72 in) größer als Weibchen. 
+				Es handelt sich um eine soziale Spezies, die Gruppen bildet, die als Rudel bezeichnet werden. 
+				Ein Löwenrudel besteht aus ein paar erwachsenen Männchen,	verwandten Weibchen und Jungtieren. 
+				Gruppen von Löwenweibchen jagen gewöhnlich gemeinsam und erbeuten meist große Huftiere. 
+				Der	Löwe ist ein Spitzen- und Schlusssteinräuber; obwohl einige Löwen bei Gelegenheit flüchten und bekanntermaßen Menschen jagen, jagt die Spezies diese normalerweise nicht.
+      </p>
+      <p>
+				Typischerweise bewohnt der Löwe Grasland und Savannen, ist aber in dichten Wäldern nicht anzutreffen. 
+				Er ist normalerweise tagaktiv, aber wenn er verfolgt wird, passt er sich an, auch nachts und in der Dämmerung aktiv zu sein. 
+				Im Pleistozän verbreitete sich der Löwe in ganz Eurasien, Afrika und Nordamerika, aber heute ist er auf zersplitterte Populationen in Afrika 
+				südlich der Sahara und eine kritisch gefährdete Population in Westindien reduziert. 
+				Seit 1996 wird er auf der Roten Liste der IUCN als gefährdet eingestuft, da die Populationen in den afrikanischen Ländern seit Anfang der 1990er Jahre um 
+				etwa 43% zurückgegangen sind. Löwenpopulationen sind außerhalb ausgewiesener Schutzgebiete unhaltbar. 
+				Obwohl die Ursache des Rückgangs nicht vollständig geklärt ist, geben der Verlust von Lebensraum und Konflikte mit dem Menschen den größten Anlass zur Sorge.
+      </p>
+      <p>
+				Als eines der anerkanntesten Tiersymbole in der menschlichen Kultur wurde der Löwe ausgiebig in Skulpturen und Gemälden, 
+        auf Nationalflaggen sowie in zeitgenössischen Filmen und in der Literatur dargestellt. 
+        Löwen werden seit der Zeit des Römischen Reiches in Menagerien gehalten und sind seit dem späten 18. Jahrhundert eine Schlüsselart, 
+        die in zoologischen Gärten auf der ganzen Welt zur Ausstellung gesucht wird. Kulturelle Darstellungen von Löwen waren im Jungpaläolithikum von 
+        großer Bedeutung; Schnitzereien und Malereien aus den Höhlen von Lascaux und Chauvet in Frankreich wurden auf vor 17.000 Jahren datiert, 
+        und Darstellungen gab es in praktisch allen alten und mittelalterlichen Kulturen, die mit dem früheren und heutigen Verbreitungsgebiet des Löwen zusammenfielen.
+      </p>
+		]]>
+	</Body>
+	<Tags>Natur,Löwe,Wildtiere</Tags>
+	<DisplayTags>False</DisplayTags>
+	<CreatedOn>2020-08-17</CreatedOn>
+	<DisplayType>40</DisplayType>
+	<Image>lion.jpg</Image>
+	<ImagePreview>lion-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+	<SectionBg>dark</SectionBg>
+</BlogPost>

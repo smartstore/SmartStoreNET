@@ -33,10 +33,10 @@ namespace SmartStore.Web.Controllers
     [RewriteUrl(SslRequirement.Yes)]
     public partial class CheckoutController : PublicControllerBase
     {
-		#region Fields
+        #region Fields
 
         private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
+        private readonly IStoreContext _storeContext;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ILocalizationService _localizationService;
         private readonly ITaxService _taxService;
@@ -57,39 +57,39 @@ namespace SmartStore.Web.Controllers
         private readonly AddressSettings _addressSettings;
         private readonly ShippingSettings _shippingSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly PluginMediator _pluginMediator;
+        private readonly PluginMediator _pluginMediator;
 
         #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public CheckoutController(
+        public CheckoutController(
             IWorkContext workContext,
             IStoreContext storeContext,
-            IShoppingCartService shoppingCartService, 
-            ILocalizationService localizationService, 
-            ITaxService taxService, 
-            ICurrencyService currencyService, 
-            IPriceFormatter priceFormatter, 
+            IShoppingCartService shoppingCartService,
+            ILocalizationService localizationService,
+            ITaxService taxService,
+            ICurrencyService currencyService,
+            IPriceFormatter priceFormatter,
             IOrderProcessingService orderProcessingService,
             ICustomerService customerService,
             IGenericAttributeService genericAttributeService,
             ICountryService countryService,
-            IStateProvinceService stateProvinceService, 
+            IStateProvinceService stateProvinceService,
             IShippingService shippingService,
-			IPaymentService paymentService, 
-			IOrderTotalCalculationService orderTotalCalculationService,
+            IPaymentService paymentService,
+            IOrderTotalCalculationService orderTotalCalculationService,
             IOrderService orderService,
             HttpContextBase httpContext,
-            OrderSettings orderSettings, 
+            OrderSettings orderSettings,
             PaymentSettings paymentSettings,
             AddressSettings addressSettings,
             ShoppingCartSettings shoppingCartSettings,
             ShippingSettings shippingSettings,
-			PluginMediator pluginMediator)
+            PluginMediator pluginMediator)
         {
             _workContext = workContext;
-			_storeContext = storeContext;
+            _storeContext = storeContext;
             _shoppingCartService = shoppingCartService;
             _localizationService = localizationService;
             _taxService = taxService;
@@ -110,7 +110,7 @@ namespace SmartStore.Web.Controllers
             _addressSettings = addressSettings;
             _shippingSettings = shippingSettings;
             _shoppingCartSettings = shoppingCartSettings;
-			_pluginMediator = pluginMediator;
+            _pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -118,7 +118,7 @@ namespace SmartStore.Web.Controllers
         #region Utilities
 
         [NonAction]
-		protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
+        protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
         {
             // Check whether order total equals zero
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, ignoreRewardPoints);
@@ -126,8 +126,8 @@ namespace SmartStore.Web.Controllers
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
                 return false;
 
-			if (_httpContext.GetCheckoutState().IsPaymentSelectionSkipped)
-				return false;
+            if (_httpContext.GetCheckoutState().IsPaymentSelectionSkipped)
+                return false;
 
             return true;
         }
@@ -137,7 +137,7 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _workContext.CurrentCustomer;
             var model = new CheckoutBillingAddressModel();
-            
+
             // Existing addresses.
             var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsBilling).ToList();
             foreach (var address in addresses)
@@ -165,7 +165,7 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _workContext.CurrentCustomer;
             var model = new CheckoutShippingAddressModel();
-            
+
             // Existing addresses.
             var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsShipping).ToList();
             foreach (var address in addresses)
@@ -188,93 +188,93 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-		[NonAction]
-		protected CheckoutShippingMethodModel PrepareShippingMethodModel(IList<OrganizedShoppingCartItem> cart)
-		{
-			var model = new CheckoutShippingMethodModel();
+        [NonAction]
+        protected CheckoutShippingMethodModel PrepareShippingMethodModel(IList<OrganizedShoppingCartItem> cart)
+        {
+            var model = new CheckoutShippingMethodModel();
 
-			var store = _storeContext.CurrentStore;
-			var customer = _workContext.CurrentCustomer;
-			var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
 
-			if (getShippingOptionResponse.Success)
-			{
-				// Performance optimization. cache returned shipping options.
-				// We'll use them later (after a customer has selected an option).
-				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, store.Id);
+            if (getShippingOptionResponse.Success)
+            {
+                // Performance optimization. cache returned shipping options.
+                // We'll use them later (after a customer has selected an option).
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, store.Id);
 
-				var shippingMethods = _shippingService.GetAllShippingMethods(null, store.Id);
+                var shippingMethods = _shippingService.GetAllShippingMethods(null, store.Id);
 
-				foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
-				{
-					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel
-					{
-						ShippingMethodId = shippingOption.ShippingMethodId,
-						Name = shippingOption.Name,
-						Description = shippingOption.Description,
-						ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
-					};
+                foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
+                {
+                    var soModel = new CheckoutShippingMethodModel.ShippingMethodModel
+                    {
+                        ShippingMethodId = shippingOption.ShippingMethodId,
+                        Name = shippingOption.Name,
+                        Description = shippingOption.Description,
+                        ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
+                    };
 
-					var srcmProvider = _shippingService.LoadShippingRateComputationMethodBySystemName(shippingOption.ShippingRateComputationMethodSystemName);
-					if (srcmProvider != null)
-					{
-						soModel.BrandUrl = _pluginMediator.GetBrandImageUrl(srcmProvider.Metadata);
-					}
+                    var srcmProvider = _shippingService.LoadShippingRateComputationMethodBySystemName(shippingOption.ShippingRateComputationMethodSystemName);
+                    if (srcmProvider != null)
+                    {
+                        soModel.BrandUrl = _pluginMediator.GetBrandImageUrl(srcmProvider.Metadata);
+                    }
 
-					// Adjust rate.
-					Discount appliedDiscount = null;
-					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
-					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, customer);
-					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-					soModel.FeeRaw = rate;
-					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
+                    // Adjust rate.
+                    Discount appliedDiscount = null;
+                    var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
+                    decimal rateBase = _taxService.GetShippingPrice(shippingTotal, customer);
+                    decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
+                    soModel.FeeRaw = rate;
+                    soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
 
-					model.ShippingMethods.Add(soModel);
-				}
+                    model.ShippingMethods.Add(soModel);
+                }
 
-				// Find a selected (previously) shipping method.
-				var selectedShippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
-				if (selectedShippingOption != null)
-				{
-					var shippingOptionToSelect = model.ShippingMethods
-						.ToList()
-						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
-						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+                // Find a selected (previously) shipping method.
+                var selectedShippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
+                if (selectedShippingOption != null)
+                {
+                    var shippingOptionToSelect = model.ShippingMethods
+                        .ToList()
+                        .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                        !String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
+                        so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
 
-					if (shippingOptionToSelect != null)
-					{
-						shippingOptionToSelect.Selected = true;
-					}
-				}
+                    if (shippingOptionToSelect != null)
+                    {
+                        shippingOptionToSelect.Selected = true;
+                    }
+                }
 
-				// If no option has been selected, let's do it for the first one.
-				if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
-				{
-					var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
-					if (shippingOptionToSelect != null)
-					{
-						shippingOptionToSelect.Selected = true;
-					}
-				}
-			}
-			else
-			{
-				foreach (var error in getShippingOptionResponse.Errors)
-				{
-					model.Warnings.Add(error);
-				}
-			}
+                // If no option has been selected, let's do it for the first one.
+                if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
+                {
+                    var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
+                    if (shippingOptionToSelect != null)
+                    {
+                        shippingOptionToSelect.Selected = true;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var error in getShippingOptionResponse.Errors)
+                {
+                    model.Warnings.Add(error);
+                }
+            }
 
-			return model;
-		}
+            return model;
+        }
 
         [NonAction]
-		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
+        protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
-			var store = _storeContext.CurrentStore;
-			var customer = _workContext.CurrentCustomer;
-			var model = new CheckoutPaymentMethodModel();
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var model = new CheckoutPaymentMethodModel();
 
             // Was shipping skipped.
             var shippingOptions = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id).ShippingOptions;
@@ -284,61 +284,61 @@ namespace SmartStore.Web.Controllers
                 model.SkippedSelectShipping = true;
             }
 
-			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
+            var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
 
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(customer, cart, store.Id, paymentTypes)
+                .LoadActivePaymentMethods(customer, cart, store.Id, paymentTypes)
                 .ToList();
 
-			var allPaymentMethods = _paymentService.GetAllPaymentMethods(store.Id);
+            var allPaymentMethods = _paymentService.GetAllPaymentMethods(store.Id);
 
             foreach (var pm in boundPaymentMethods)
             {
-				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
+                if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
                     continue;
-                
+
                 var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel
                 {
-					Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
-					Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
+                    Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
+                    Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
                     PaymentMethodSystemName = pm.Metadata.SystemName,
-					PaymentInfoRoute = pm.Value.GetPaymentInfoRoute(),
-					RequiresInteraction = pm.Value.RequiresInteraction
+                    PaymentInfoRoute = pm.Value.GetPaymentInfoRoute(),
+                    RequiresInteraction = pm.Value.RequiresInteraction
                 };
 
-				if (allPaymentMethods.TryGetValue(pm.Metadata.SystemName, out var paymentMethod))
-				{
-					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
-				}
-				
-				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
+                if (allPaymentMethods.TryGetValue(pm.Metadata.SystemName, out var paymentMethod))
+                {
+                    pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
+                }
+
+                pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
                 // Payment method additional fee.
-				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
+                decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
                 decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, customer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                
-				if (rate != decimal.Zero)
-					pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
+
+                if (rate != decimal.Zero)
+                    pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
 
                 model.PaymentMethods.Add(pmModel);
             }
 
-			// Find a selected (previously) payment method.
-			var selected = false;
-			var selectedPaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
-			if (selectedPaymentMethodSystemName.HasValue())
+            // Find a selected (previously) payment method.
+            var selected = false;
+            var selectedPaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
+            if (selectedPaymentMethodSystemName.HasValue())
             {
                 var paymentMethodToSelect = model.PaymentMethods.Find(pm => pm.PaymentMethodSystemName.IsCaseInsensitiveEqual(selectedPaymentMethodSystemName));
-				if (paymentMethodToSelect != null)
-				{
-					paymentMethodToSelect.Selected = true;
-					selected = true;
-				}
+                if (paymentMethodToSelect != null)
+                {
+                    paymentMethodToSelect.Selected = true;
+                    selected = true;
+                }
             }
 
             // If no option has been selected, let's do it for the first one.
-			if (!selected)
+            if (!selected)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
                 if (paymentMethodToSelect != null)
@@ -349,58 +349,79 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-		protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
+        protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutConfirmModel();
 
-            //min order amount validation
-            bool minOrderTotalAmountOk = _orderProcessingService.ValidateMinOrderTotalAmount(cart);
-            if (!minOrderTotalAmountOk)
+            // Minimum order totals validation
+            var customerRoleIds = _workContext.CurrentCustomer.GetRoleIds();
+            var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(cart, customerRoleIds);
+            if (!isAboveMinimumOrderTotal)
             {
-                decimal minOrderTotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderTotalAmount, _workContext.WorkingCurrency);
-                model.MinOrderTotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderTotalAmount"), _priceFormatter.FormatPrice(minOrderTotalAmount, true, false));
+                orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                    orderTotalMinimum,
+                    _workContext.WorkingCurrency);
+
+                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
+                model.OrderAmountWarning = string.Format(
+                    _localizationService.GetResource(resource),
+                    _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
+            }
+
+            // Maximum order totals validation
+            var (isBelowOrderTotalMaximum, orderTotalMaximum) = _orderProcessingService.IsBelowOrderTotalMaximum(cart, customerRoleIds);
+            if (isAboveMinimumOrderTotal && !isBelowOrderTotalMaximum)
+            {
+                orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(
+                    orderTotalMaximum,
+                    _workContext.WorkingCurrency);
+
+                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";
+                model.OrderAmountWarning = string.Format(
+                    _localizationService.GetResource(resource),
+                    _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
             }
 
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
-			model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
-			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
-			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
-			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
+            model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
+            model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
+            model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+            model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
 
-			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
-			{
-				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, true, false);
+            if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+            {
+                model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalizedSetting(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, _storeContext.CurrentStore.Id, true, false);
 
-				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
-					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
-			}
+                if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+                    model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+            }
 
-			return model;
+            return model;
         }
 
-		private bool IsValidPaymentForm(IPaymentMethod paymentMethod, FormCollection form)
-		{
-			var paymentControllerType = paymentMethod.GetControllerType();
-			var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
-			var warnings = paymentController.ValidatePaymentForm(form);
-				
-			foreach (var warning in warnings)
-			{
-				ModelState.AddModelError("", warning);
-			}
+        private bool IsValidPaymentForm(IPaymentMethod paymentMethod, FormCollection form)
+        {
+            var paymentControllerType = paymentMethod.GetControllerType();
+            var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
+            var warnings = paymentController.ValidatePaymentForm(form);
 
-			if (ModelState.IsValid)
-			{
-				var paymentInfo = paymentController.GetPaymentInfo(form);
-				_httpContext.Session["OrderPaymentInfo"] = paymentInfo;
+            foreach (var warning in warnings)
+            {
+                ModelState.AddModelError("", warning);
+            }
 
-				_httpContext.GetCheckoutState().PaymentSummary = paymentController.GetPaymentSummary(form);
+            if (ModelState.IsValid)
+            {
+                var paymentInfo = paymentController.GetPaymentInfo(form);
+                _httpContext.Session["OrderPaymentInfo"] = paymentInfo;
 
-				return true;
-			}
+                _httpContext.GetCheckoutState().PaymentSummary = paymentController.GetPaymentSummary(form);
 
-			return false;
-		}
+                return true;
+            }
+
+            return false;
+        }
 
         #endregion
 
@@ -408,29 +429,29 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-			var store = _storeContext.CurrentStore;
-			var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
-			if (!cart.Any())
-			{
-				return RedirectToRoute("ShoppingCart");
-			}
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+            if (!cart.Any())
+            {
+                return RedirectToRoute("ShoppingCart");
+            }
 
-			if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-			{
-				return new HttpUnauthorizedResult();
-			}
+            if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             _customerService.ResetCheckoutData(customer, store.Id);
 
             // Validate checkout attributes.
-			var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
-			var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
-			if (scWarnings.Any())
-			{
-				NotifyError(string.Join(Environment.NewLine, scWarnings));
-				return RedirectToRoute("ShoppingCart");
-			}
+            var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
+            if (scWarnings.Any())
+            {
+                NotifyWarning(string.Join(Environment.NewLine, scWarnings.Take(3)));
+                return RedirectToRoute("ShoppingCart");
+            }
 
             // Valiadate each shopping cart item.
             foreach (var sci in cart)
@@ -438,17 +459,18 @@ namespace SmartStore.Web.Controllers
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer,
                     sci.Item.ShoppingCartType,
                     sci.Item.Product,
-					sci.Item.StoreId,
+                    sci.Item.StoreId,
                     sci.Item.AttributesXml,
                     sci.Item.CustomerEnteredPrice,
                     sci.Item.Quantity,
                     false,
-					childItems: sci.ChildItems);
+                    childItems: sci.ChildItems);
 
-				if (sciWarnings.Any())
-				{
-					return RedirectToRoute("ShoppingCart");
-				}
+                if (sciWarnings.Any())
+                {
+                    NotifyWarning(string.Join(Environment.NewLine, sciWarnings.Take(3)));
+                    return RedirectToRoute("ShoppingCart");
+                }
             }
 
             return RedirectToAction("BillingAddress");
@@ -457,9 +479,9 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BillingAddress()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
@@ -472,21 +494,21 @@ namespace SmartStore.Web.Controllers
         {
             var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
             if (address == null)
-				return RedirectToAction("BillingAddress");
+                return RedirectToAction("BillingAddress");
 
             _workContext.CurrentCustomer.BillingAddress = address;
             _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-			return RedirectToAction("ShippingAddress");
+            return RedirectToAction("ShippingAddress");
         }
         [HttpPost, ActionName("BillingAddress")]
         [FormValueRequired("nextstep")]
         public ActionResult NewBillingAddress(CheckoutBillingAddressModel model)
         {
             //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
@@ -505,7 +527,7 @@ namespace SmartStore.Web.Controllers
                 _workContext.CurrentCustomer.BillingAddress = address;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-				return RedirectToAction("ShippingAddress");
+                return RedirectToAction("ShippingAddress");
             }
 
 
@@ -516,9 +538,9 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ShippingAddress()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
@@ -539,12 +561,12 @@ namespace SmartStore.Web.Controllers
         {
             var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
             if (address == null)
-				return RedirectToAction("ShippingAddress");
+                return RedirectToAction("ShippingAddress");
 
             _workContext.CurrentCustomer.ShippingAddress = address;
             _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-			return RedirectToAction("ShippingMethod");
+            return RedirectToAction("ShippingMethod");
         }
 
         [HttpPost, ActionName("ShippingAddress")]
@@ -552,9 +574,9 @@ namespace SmartStore.Web.Controllers
         public ActionResult NewShippingAddress(CheckoutShippingAddressModel model)
         {
             //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
@@ -564,7 +586,7 @@ namespace SmartStore.Web.Controllers
             {
                 _workContext.CurrentCustomer.ShippingAddress = null;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-				return RedirectToAction("ShippingMethod");
+                return RedirectToAction("ShippingMethod");
             }
 
             if (ModelState.IsValid)
@@ -580,7 +602,7 @@ namespace SmartStore.Web.Controllers
                 _workContext.CurrentCustomer.ShippingAddress = address;
                 _customerService.UpdateCustomer(_workContext.CurrentCustomer);
 
-				return RedirectToAction("ShippingMethod");
+                return RedirectToAction("ShippingMethod");
             }
 
 
@@ -588,7 +610,7 @@ namespace SmartStore.Web.Controllers
             model = PrepareShippingAddressModel(model.NewAddress.CountryId);
             return View(model);
         }
-        
+
         public ActionResult ShippingMethod()
         {
             var store = _storeContext.CurrentStore;
@@ -607,7 +629,7 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, store.Id);
+                _genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, store.Id);
 
                 return RedirectToAction("PaymentMethod");
             }
@@ -624,18 +646,18 @@ namespace SmartStore.Web.Controllers
             {
                 state.CustomProperties.Add("HasOnlyOneActiveShippingMethod", options.Count == 1);
             }
-            
+
             if (options.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption && response.Success)
             {
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedShippingOption, options.FirstOrDefault(), store.Id);
 
-				var referrer = Services.WebHelper.GetUrlReferrer();
-				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
-				{
-					return RedirectToAction("ShippingAddress");
-				}
+                var referrer = Services.WebHelper.GetUrlReferrer();
+                if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
+                {
+                    return RedirectToAction("ShippingAddress");
+                }
 
-				return RedirectToAction("PaymentMethod");
+                return RedirectToAction("PaymentMethod");
             }
 
             var model = PrepareShippingMethodModel(cart);
@@ -647,9 +669,9 @@ namespace SmartStore.Web.Controllers
         public ActionResult SelectShippingMethod(string shippingoption)
         {
             //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
@@ -657,30 +679,30 @@ namespace SmartStore.Web.Controllers
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
-					 SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
-				return RedirectToAction("PaymentMethod");
+                _genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer,
+                     SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
+                return RedirectToAction("PaymentMethod");
             }
 
             //parse selected method 
             if (String.IsNullOrEmpty(shippingoption))
                 return ShippingMethod();
-            
-			var splittedOption = shippingoption.Split(new string[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
+
+            var splittedOption = shippingoption.Split(new string[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
             if (splittedOption.Length != 2)
                 return ShippingMethod();
 
             string selectedName = splittedOption[0];
             string shippingRateComputationMethodSystemName = splittedOption[1];
-            
+
             //find it
             //performance optimization. try cache first
-			var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions, _storeContext.CurrentStore.Id);
+            var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions, _storeContext.CurrentStore.Id);
             if (shippingOptions == null || shippingOptions.Count == 0)
             {
                 //not found? let's load them using shipping service
                 shippingOptions = _shippingService
-					.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
+                    .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
                     .ShippingOptions
                     .ToList();
             }
@@ -697,59 +719,52 @@ namespace SmartStore.Web.Controllers
                 return ShippingMethod();
 
             //save
-			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
+            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
 
-			return RedirectToAction("PaymentMethod");
+            return RedirectToAction("PaymentMethod");
         }
-        
-        
+
+
         public ActionResult PaymentMethod()
         {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
-
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
-
-			// Check whether payment workflow is required. We ignore reward points during cart total calculation.
-			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, true);
-			var isPaymentWorkflowRequired = !(shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero);
-
-			var model = PreparePaymentMethodModel(cart);
-			var onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
-
-            var checkoutState = _httpContext.GetCheckoutState();
-            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActivePaymentMethod"))
-                checkoutState.CustomProperties["HasOnlyOneActivePaymentMethod"] = model.PaymentMethods.Count == 1;
-            else
-                checkoutState.CustomProperties.Add("HasOnlyOneActivePaymentMethod", model.PaymentMethods.Count == 1);
-            
-            if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod))
+            if (!cart.Any())
             {
-                // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
-				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
-
-				_genericAttributeService.SaveAttribute<string>(
-					_workContext.CurrentCustomer,
-					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					!model.PaymentMethods.Any() ? null : model.PaymentMethods[0].PaymentMethodSystemName,
-					_storeContext.CurrentStore.Id);
-
-                checkoutState.IsPaymentSelectionSkipped = true;
-
-				var referrer = Services.WebHelper.GetUrlReferrer();
-				if (referrer.EndsWith("/Confirm"))
-				{
-					return RedirectToAction("ShippingMethod");
-				}
-
-				return RedirectToAction("Confirm");
+                return RedirectToRoute("ShoppingCart");
+            }
+            if (!_orderSettings.AnonymousCheckoutAllowed && customer.IsGuest())
+            {
+                return new HttpUnauthorizedResult();
             }
 
-            checkoutState.IsPaymentSelectionSkipped = false;
+            // Check whether payment workflow is required. We ignore reward points during cart total calculation.
+            decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, true);
+            var isPaymentWorkflowRequired = !(shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero);
+
+            var model = PreparePaymentMethodModel(cart);
+            var onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
+
+            var checkoutState = _httpContext.GetCheckoutState();
+            checkoutState.CustomProperties["HasOnlyOneActivePaymentMethod"] = model.PaymentMethods.Count == 1;
+            checkoutState.IsPaymentSelectionSkipped = !isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod);
+
+            if (checkoutState.IsPaymentSelectionSkipped)
+            {
+                // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
+                // or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, model.PaymentMethods?.FirstOrDefault()?.PaymentMethodSystemName, store.Id);
+
+                var referrer = Services.WebHelper.GetUrlReferrer();
+                if (referrer.EndsWith("/Confirm"))
+                {
+                    return RedirectToAction("ShippingMethod");
+                }
+
+                return RedirectToAction("Confirm");
+            }
 
             return View(model);
         }
@@ -758,12 +773,12 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("nextstep")]
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
-			// validation
-			var storeId = _storeContext.CurrentStore.Id;
-			var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+            // validation
+            var storeId = _storeContext.CurrentStore.Id;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
@@ -773,50 +788,50 @@ namespace SmartStore.Web.Controllers
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
-			var paymentMethodProvider = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, storeId);
-			if (paymentMethodProvider == null)
+            var paymentMethodProvider = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, storeId);
+            if (paymentMethodProvider == null)
                 return PaymentMethod();
 
             // save
-			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, storeId);
+            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, storeId);
 
-			// validate info
-			if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
-				return PaymentMethod();
+            // validate info
+            if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
+                return PaymentMethod();
 
-			// save payment data so that the user must not re-enter it
-			form.CopyTo(_httpContext.GetCheckoutState().PaymentData, true);
+            // save payment data so that the user must not re-enter it
+            form.CopyTo(_httpContext.GetCheckoutState().PaymentData, true);
 
-			return RedirectToAction("Confirm");
+            return RedirectToAction("Confirm");
         }
 
-		[HttpPost]
-		public ActionResult PaymentInfoAjax(string paymentMethodSystemName)
-		{
-			if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
-				return Content("");
+        [HttpPost]
+        public ActionResult PaymentInfoAjax(string paymentMethodSystemName)
+        {
+            if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+                return Content("");
 
-			if (paymentMethodSystemName.IsEmpty())
-				return new HttpStatusCodeResult(404);
+            if (paymentMethodSystemName.IsEmpty())
+                return new HttpStatusCodeResult(404);
 
-			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
-			if (paymentMethod == null)
-				return new HttpStatusCodeResult(404);
+            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
+            if (paymentMethod == null)
+                return new HttpStatusCodeResult(404);
 
-			var infoRoute = paymentMethod.Value.GetPaymentInfoRoute();
+            var infoRoute = paymentMethod.Value.GetPaymentInfoRoute();
 
-			if (infoRoute == null)
-				return Content("");
+            if (infoRoute == null)
+                return Content("");
 
-			return RedirectToAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
-		}
+            return RedirectToAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
+        }
 
         public ActionResult Confirm()
         {
             //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
@@ -824,8 +839,8 @@ namespace SmartStore.Web.Controllers
 
             var model = PrepareConfirmOrderModel(cart);
 
-			//if (TempData["ConfirmOrderWarnings"] != null)
-			//	model.Warnings.AddRange(TempData["ConfirmOrderWarnings"] as IList<string>);
+            //if (TempData["ConfirmOrderWarnings"] != null)
+            //	model.Warnings.AddRange(TempData["ConfirmOrderWarnings"] as IList<string>);
 
             return View(model);
         }
@@ -833,9 +848,9 @@ namespace SmartStore.Web.Controllers
         [HttpPost, ActionName("Confirm")]
         public ActionResult ConfirmOrder(FormCollection form)
         {
-			var store = _storeContext.CurrentStore;
-			var customer = _workContext.CurrentCustomer;
-			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
             if (cart.Count == 0)
             {
@@ -848,10 +863,10 @@ namespace SmartStore.Web.Controllers
             }
 
             var model = new CheckoutConfirmModel();
-			PlaceOrderResult placeOrderResult = null;
-			PostProcessPaymentRequest postProcessPaymentRequest = null;
+            PlaceOrderResult placeOrderResult = null;
+            PostProcessPaymentRequest postProcessPaymentRequest = null;
 
-			try
+            try
             {
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
@@ -862,7 +877,7 @@ namespace SmartStore.Web.Controllers
                         return RedirectToAction("PaymentMethod");
                     }
 
-					processPaymentRequest = new ProcessPaymentRequest();
+                    processPaymentRequest = new ProcessPaymentRequest();
                 }
 
                 // Prevent 2 orders being placed within an X seconds time frame.
@@ -872,63 +887,63 @@ namespace SmartStore.Web.Controllers
                 }
 
                 // Place order.
-				processPaymentRequest.StoreId = store.Id;
+                processPaymentRequest.StoreId = store.Id;
                 processPaymentRequest.CustomerId = customer.Id;
-				processPaymentRequest.PaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
+                processPaymentRequest.PaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
 
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
-				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetter"];
-				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOver"];
+                placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetter"];
+                placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOver"];
 
-				placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
+                placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 
                 if (!placeOrderResult.Success)
                 {
-					model.Warnings.AddRange(placeOrderResult.Errors.Select(x => HtmlUtils.ConvertPlainTextToHtml(x)));
+                    model.Warnings.AddRange(placeOrderResult.Errors.Select(x => HtmlUtils.ConvertPlainTextToHtml(x)));
                 }
             }
             catch (Exception ex)
             {
-				Logger.Warn(ex, ex.Message);
+                Logger.Warn(ex, ex.Message);
 
-				if (!model.Warnings.Any(x => x == ex.Message))
-				{
-					model.Warnings.Add(ex.Message);
-				}
+                if (!model.Warnings.Any(x => x == ex.Message))
+                {
+                    model.Warnings.Add(ex.Message);
+                }
             }
 
-			if (placeOrderResult == null || !placeOrderResult.Success || model.Warnings.Any())
-			{
-				return View(model);
-			}
+            if (placeOrderResult == null || !placeOrderResult.Success || model.Warnings.Any())
+            {
+                return View(model);
+            }
 
-			try
-			{
-				postProcessPaymentRequest = new PostProcessPaymentRequest
-				{
-					Order = placeOrderResult.PlacedOrder
-				};
+            try
+            {
+                postProcessPaymentRequest = new PostProcessPaymentRequest
+                {
+                    Order = placeOrderResult.PlacedOrder
+                };
 
-				_paymentService.PostProcessPayment(postProcessPaymentRequest);
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex);
-			}
-			finally
-			{
-				_httpContext.Session["OrderPaymentInfo"] = null;
-				_httpContext.RemoveCheckoutState();
-			}
+                _paymentService.PostProcessPayment(postProcessPaymentRequest);
+            }
+            catch (Exception ex)
+            {
+                NotifyError(ex);
+            }
+            finally
+            {
+                _httpContext.Session["OrderPaymentInfo"] = null;
+                _httpContext.RemoveCheckoutState();
+            }
 
-			if (postProcessPaymentRequest != null && postProcessPaymentRequest.RedirectUrl.HasValue())
-			{
-				return Redirect(postProcessPaymentRequest.RedirectUrl);
-			}
+            if (postProcessPaymentRequest != null && postProcessPaymentRequest.RedirectUrl.HasValue())
+            {
+                return Redirect(postProcessPaymentRequest.RedirectUrl);
+            }
 
-			return RedirectToAction("Completed");
-		}
+            return RedirectToAction("Completed");
+        }
 
 
         public ActionResult Completed()
@@ -940,26 +955,26 @@ namespace SmartStore.Web.Controllers
             //model
             var model = new CheckoutCompletedModel();
 
-			var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
+            var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
+                null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 
-			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
-			{
-				return HttpNotFound();
-			}
+            if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+            {
+                return HttpNotFound();
+            }
 
-			//disable "order completed" page?
-			if (_orderSettings.DisableOrderCompletedPage)
-			{
-				return RedirectToAction("Details", "Order", new { id = order.Id });
-			}
+            //disable "order completed" page?
+            if (_orderSettings.DisableOrderCompletedPage)
+            {
+                return RedirectToAction("Details", "Order", new { id = order.Id });
+            }
 
-			model.OrderId = order.Id;
+            model.OrderId = order.Id;
             model.OrderNumber = order.GetOrderNumber();
 
             return View(model);
         }
-        
+
         [ChildActionOnly]
         public ActionResult CheckoutProgress(CheckoutProgressStep step)
         {
@@ -970,7 +985,7 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(model);
         }
-        
+
         #endregion
     }
 }

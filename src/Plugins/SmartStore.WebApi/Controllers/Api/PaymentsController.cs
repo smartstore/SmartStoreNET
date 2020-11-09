@@ -11,27 +11,27 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.Api
 {
     public class PaymentsController : ApiController
-	{
-		private readonly Lazy<IProviderManager> _providerManager;
+    {
+        private readonly Lazy<IProviderManager> _providerManager;
 
-		public PaymentsController(Lazy<IProviderManager> providerManager)
-		{
-			_providerManager = providerManager;
-		}
+        public PaymentsController(Lazy<IProviderManager> providerManager)
+        {
+            _providerManager = providerManager;
+        }
 
-		[WebApiQueryable(PagingOptional = true)]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Configuration.PaymentMethod.Read)]
-		public IQueryable<ProviderMetadata> GetMethods()
-		{
-			if (!ModelState.IsValid)
-				throw this.ExceptionInvalidModelState();
+        public IQueryable<ProviderMetadata> GetMethods()
+        {
+            if (!ModelState.IsValid)
+                throw this.InvalidModelStateException();
 
-			var query = _providerManager.Value
-				.GetAllProviders<IPaymentMethod>()
-				.Select(x => x.Metadata)
-				.AsQueryable();
+            var query = _providerManager.Value
+                .GetAllProviders<IPaymentMethod>()
+                .Select(x => x.Metadata)
+                .AsQueryable();
 
-			return query;
-		}
-	}
+            return query;
+        }
+    }
 }

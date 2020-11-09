@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Customers;
@@ -139,7 +138,7 @@ namespace SmartStore.PayPal.Services
                             .OrderBy(x => x.Term)
                             .ThenBy(x => x.MonthlyPayment.Amount)
                             .ToList();
-                        
+
                         result.Qualified.Each(x => x.Index = ++index);
                     }
                 }

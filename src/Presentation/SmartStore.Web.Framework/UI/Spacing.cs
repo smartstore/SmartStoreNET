@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.Utilities;
+﻿using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -65,7 +64,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 return Left == other.Left && Right == other.Right && Top == other.Top && Bottom == other.Bottom;
             }
-            
+
             return false;
         }
 

@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Blogs;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Html;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -25,44 +26,59 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class BlogController : AdminControllerBase
     {
-        #region Fields
-
         private readonly IBlogService _blogService;
         private readonly ILanguageService _languageService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerContentService _customerContentService;
-        private readonly ILocalizationService _localizationService;
+        private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IStoreService _storeService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly ICustomerService _customerService;
+        private readonly AdminAreaSettings _adminAreaSettings;
 
-        #endregion
-
-        #region Constructors
-
-        public BlogController(IBlogService blogService, ILanguageService languageService,
-            IDateTimeHelper dateTimeHelper, ICustomerContentService customerContentService,
-            ILocalizationService localizationService, IUrlRecordService urlRecordService,
-            IStoreService storeService, IStoreMappingService storeMappingService,
-            ICustomerService customerService)
+        public BlogController(
+            IBlogService blogService,
+            ILanguageService languageService,
+            IDateTimeHelper dateTimeHelper,
+            ICustomerContentService customerContentService,
+            ILocalizedEntityService localizedEntityService,
+            IUrlRecordService urlRecordService,
+            IStoreService storeService,
+            IStoreMappingService storeMappingService,
+            ICustomerService customerService,
+            AdminAreaSettings adminAreaSettings)
         {
-            this._blogService = blogService;
-            this._languageService = languageService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._customerContentService = customerContentService;
-            this._localizationService = localizationService;
-            this._urlRecordService = urlRecordService;
-            this._storeService = storeService;
-            this._storeMappingService = storeMappingService;
-            this._customerService = customerService;
+            _blogService = blogService;
+            _languageService = languageService;
+            _dateTimeHelper = dateTimeHelper;
+            _customerContentService = customerContentService;
+            _localizedEntityService = localizedEntityService;
+            _urlRecordService = urlRecordService;
+            _storeService = storeService;
+            _storeMappingService = storeMappingService;
+            _customerService = customerService;
+            _adminAreaSettings = adminAreaSettings;
         }
-
-        #endregion
 
         #region Utilities
 
-        [NonAction]
+        private void UpdateLocales(BlogPost blogPost, BlogPostModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.Title, localized.Title, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.Intro, localized.Intro, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.Body, localized.Body, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(blogPost, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
+
+                var seName = blogPost.ValidateSeName(localized.SeName, localized.Title, false, localized.LanguageId);
+                _urlRecordService.SaveSlug(blogPost, seName, localized.LanguageId);
+            }
+        }
+
         private void PrepareStoresMappingModel(BlogPostModel model, BlogPost blogPost, bool excludeProperties)
         {
             Guard.NotNull(model, nameof(model));
@@ -77,6 +93,42 @@ namespace SmartStore.Admin.Controllers
 
         #region Blog posts
 
+        // AJAX.
+        public ActionResult AllBlogPosts(string selectedIds)
+        {
+            var query = _blogService.GetAllBlogPosts(0, null, null, 0, int.MaxValue, true).SourceQuery;
+            var pager = new FastPager<BlogPost>(query, 500);
+            var allBlogPosts = new List<dynamic>();
+            var ids = selectedIds.ToIntArray().ToList();
+
+            while (pager.ReadNextPage(out var blogPosts))
+            {
+                foreach (var blogPost in blogPosts)
+                {
+                    dynamic obj = new
+                    {
+                        blogPost.Id,
+                        blogPost.CreatedOnUtc,
+                        Title = blogPost.GetLocalized(x => x.Title).Value
+                    };
+
+                    allBlogPosts.Add(obj);
+                }
+            }
+
+            var data = allBlogPosts
+                .OrderByDescending(x => x.CreatedOnUtc)
+                .Select(x => new ChoiceListItem
+                {
+                    Id = x.Id.ToString(),
+                    Text = x.Title,
+                    Selected = ids.Contains(x.Id)
+                })
+                .ToList();
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -85,60 +137,91 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult List()
         {
-            return View();
+            var allTags = _blogService.GetAllBlogPostTags(0, true)
+                .Select(x => x.Name)
+                .ToList();
+
+            var model = new BlogListModel
+            {
+                GridPageSize = _adminAreaSettings.GridPageSize,
+                IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                SearchEndDate = DateTime.UtcNow,
+                SearchAvailableTags = new MultiSelectList(allTags)
+            };
+
+            return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Cms.Blog.Read)]
-        public ActionResult List(GridCommand command)
+        public ActionResult List(GridCommand command, BlogListModel model)
         {
-            var model = new GridModel<BlogPostModel>();
+            var blogPosts = _blogService.GetAllBlogPosts(
+                model.SearchStoreId, 
+                model.SearchStartDate,
+                model.SearchEndDate, 
+                command.Page - 1, 
+                command.PageSize,
+                !model.SearchIsPublished ?? true,
+                null,
+                model.SearchTitle,
+                model.SearchIntro,
+                model.SearchBody,
+                model.SearchTags);
 
-            var blogPosts = _blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true);
+            var gridModel = new GridModel<BlogPostModel>
+            {
+                Total = blogPosts.TotalCount
+            };
 
-            model.Data = blogPosts.Select(x =>
+            gridModel.Data = blogPosts.Select(x =>
             {
                 var m = x.ToModel();
+
                 if (x.StartDateUtc.HasValue)
+                {
                     m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
+                }
                 if (x.EndDateUtc.HasValue)
+                {
                     m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
+                }
+
                 m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                m.LanguageName = x.Language.Name;
                 m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
+
                 return m;
             });
 
-            model.Total = blogPosts.TotalCount;
-
             return new JsonResult
             {
-                Data = model
+                Data = gridModel
             };
         }
 
         [Permission(Permissions.Cms.Blog.Create)]
         public ActionResult Create()
         {
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+            var model = new BlogPostModel
+            {
+                CreatedOnUtc = DateTime.UtcNow,
+                AllowComments = true
+            };
 
-            var model = new BlogPostModel();
-            model.CreatedOnUtc = DateTime.UtcNow;
+            var allTags = _blogService.GetAllBlogPostTags(0, true)
+                .Select(x => x.Name)
+                .ToList();
 
-            // Tags
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
 
-            //Stores
+            AddLocales(_languageService, model.Locales);
             PrepareStoresMappingModel(model, null, false);
-
-            //default values
-            model.AllowComments = true;
 
             return View(model);
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Create)]
         public ActionResult Create(BlogPostModel model, bool continueEditing, FormCollection form)
         {
@@ -149,12 +232,13 @@ namespace SmartStore.Admin.Controllers
                 blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
-                
+
                 _blogService.InsertBlogPost(blogPost);
 
-                // Search engine name.
-                var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
-                _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
+                model.SeName = blogPost.ValidateSeName(model.SeName, blogPost.Title, true);
+                _urlRecordService.SaveSlug(blogPost, model.SeName, 0);
+
+                UpdateLocales(blogPost, model);
 
                 SaveStoreMappings(blogPost, model.SelectedStoreIds);
 
@@ -164,12 +248,9 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
-            // Tags
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            
+
             PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -180,32 +261,46 @@ namespace SmartStore.Admin.Controllers
         {
             var blogPost = _blogService.GetBlogPostById(id);
             if (blogPost == null)
+            {
                 return RedirectToAction("List");
-
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+            }
 
             var model = blogPost.ToModel();
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Title = blogPost.GetLocalized(x => x.Title, languageId, false, false);
+                locale.Intro = blogPost.GetLocalized(x => x.Intro, languageId, false, false);
+                locale.Body = blogPost.GetLocalized(x => x.Body, languageId, false, false);
+                locale.MetaKeywords = blogPost.GetLocalized(x => x.MetaKeywords, languageId, false, false);
+                locale.MetaDescription = blogPost.GetLocalized(x => x.MetaDescription, languageId, false, false);
+                locale.MetaTitle = blogPost.GetLocalized(x => x.MetaTitle, languageId, false, false);
+                locale.SeName = blogPost.GetSeName(languageId, false, false);
+            });
+
             model.CreatedOnUtc = blogPost.CreatedOnUtc;
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
 
-            // Tags
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select( x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            model.Tags = blogPost.Tags.SplitSafe(",");
+            model.Tags = blogPost.Tags.SplitSafe(",").Select(x => x = x.Trim()).ToArray();
 
-            // Store
             PrepareStoresMappingModel(model, blogPost, false);
+
             return View(model);
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Update)]
         public ActionResult Edit(BlogPostModel model, bool continueEditing, FormCollection form)
         {
             var blogPost = _blogService.GetBlogPostById(model.Id);
             if (blogPost == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -215,11 +310,12 @@ namespace SmartStore.Admin.Controllers
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
 
-                _blogService.UpdateBlogPost(blogPost);
+                model.SeName = blogPost.ValidateSeName(model.SeName, blogPost.Title, true);
+                _urlRecordService.SaveSlug(blogPost, model.SeName, 0);
 
-                // Search engine name.
-                var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
-                _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
+                UpdateLocales(blogPost, model);
+
+                _blogService.UpdateBlogPost(blogPost);
 
                 SaveStoreMappings(blogPost, model.SelectedStoreIds);
 
@@ -229,10 +325,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
-            // Tags
-            var allTags = _blogService.GetAllBlogPostTags(0, 0, true).Select(x => x.Name).ToList();
+            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
             model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
             model.Tags = blogPost.Tags.SplitSafe(",");
 
@@ -242,16 +335,19 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Blog.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
             var blogPost = _blogService.GetBlogPostById(id);
             if (blogPost == null)
+            {
                 return RedirectToAction("List");
+            }
 
             _blogService.DeleteBlogPost(blogPost);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
+            NotifySuccess(T("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -263,51 +359,57 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Comments(int? filterByBlogPostId)
         {
             ViewBag.FilterByBlogPostId = filterByBlogPostId;
-            var model = new GridModel<BlogCommentModel>();
-            return View(model);
+            ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
+
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult Comments(int? filterByBlogPostId, GridCommand command)
         {
-            var model = new GridModel<BlogCommentModel>();
+            IPagedList<BlogComment> comments;
 
-            IList<BlogComment> comments;
             if (filterByBlogPostId.HasValue)
             {
-                //filter comments by blog
-                var blogPost = _blogService.GetBlogPostById(filterByBlogPostId.Value);
-                comments = blogPost.BlogComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+                // Filter comments by blog.
+                var query = _customerContentService.GetAllCustomerContent<BlogComment>(0, null).SourceQuery;
+                query = query.Where(x => x.BlogPostId == filterByBlogPostId.Value);
+
+                comments = new PagedList<BlogComment>(query, command.Page - 1, command.PageSize);
             }
             else
             {
-                //load all blog comments
-                comments = _customerContentService.GetAllCustomerContent<BlogComment>(0, null);
+                // Load all blog comments.
+                comments = _customerContentService.GetAllCustomerContent<BlogComment>(0, null, null, null, command.Page - 1, command.PageSize);
             }
 
-            model.Data = comments.PagedForCommand(command).Select(blogComment =>
+            var customerIds = comments.Select(x => x.CustomerId).Distinct().ToArray();
+            var customers = _customerService.GetCustomersByIds(customerIds).ToDictionarySafe(x => x.Id);
+
+            var model = new GridModel<BlogCommentModel>
             {
-                var commentModel = new BlogCommentModel();
-                var customer = _customerService.GetCustomerById(blogComment.CustomerId);
+                Total = comments.TotalCount
+            };
 
-                commentModel.Id = blogComment.Id;
-                commentModel.BlogPostId = blogComment.BlogPostId;
-                commentModel.BlogPostTitle = blogComment.BlogPost.Title;
-                commentModel.CustomerId = blogComment.CustomerId;
-                commentModel.IpAddress = blogComment.IpAddress;
-                commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
-                commentModel.Comment = HtmlUtils.ConvertPlainTextToHtml(blogComment.CommentText.HtmlEncode());
+            model.Data = comments.Select(blogComment =>
+            {
+                customers.TryGetValue(blogComment.CustomerId, out var customer);
 
-                if (customer == null)
-                    commentModel.CustomerName = "".NaIfEmpty();
-                else
-                    commentModel.CustomerName = customer.GetFullName();
+                var commentModel = new BlogCommentModel
+                {
+                    Id = blogComment.Id,
+                    BlogPostId = blogComment.BlogPostId,
+                    BlogPostTitle = blogComment.BlogPost.GetLocalized(x => x.Title),
+                    CustomerId = blogComment.CustomerId,
+                    IpAddress = blogComment.IpAddress,
+                    CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc),
+                    Comment = HtmlUtils.ConvertPlainTextToHtml(blogComment.CommentText.HtmlEncode()),
+                    CustomerName = customer.GetDisplayName(T)
+                };
 
                 return commentModel;
             });
-
-            model.Total = comments.Count;
 
             return new JsonResult
             {

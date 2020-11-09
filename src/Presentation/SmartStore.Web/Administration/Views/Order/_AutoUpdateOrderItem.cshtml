@@ -6,6 +6,9 @@
 		.Content(
 			@<text>
 			<form id="AutoUpdateOrderItemForm" method="POST" action="@(Model.PostUrl ?? "#")">
+
+				@Html.AntiForgeryToken()
+
 				<input type="hidden" name="Id" value="@Model.Id" />
 				<input type="hidden" name="NewQuantity" />
 				<input type="hidden" name="NewUnitPriceInclTax" />

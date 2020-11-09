@@ -8,14 +8,14 @@ namespace SmartStore.Services.Media
     {
         private readonly static IDictionary<string, string[]> _defaultExtensionsMap = new Dictionary<string, string[]>
         {
-            ["image"] = new[] { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg" },
+            ["image"] = new[] { "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "ico" },
             ["video"] = new[] { "mp4", "m4v", "mkv", "wmv", "avi", "asf", "mpg", "mpeg", "webm", "flv", "ogv", "mov", "3gp" },
             ["audio"] = new[] { "mp3", "wav", "wma", "aac", "flac", "oga", "wav", "m4a", "ogg" },
             ["document"] = new[] { "pdf", "doc", "docx", "ppt", "pptx", "pps", "ppsx", "docm", "odt", "ods", "dot", "dotx", "dotm", "psd", "xls", "xlsx", "rtf" },
             ["text"] = new[] { "txt", "xml", "csv", "htm", "html", "json", "css", "js" },
             ["bin"] = new string[0]
         };
-        
+
         private readonly static IDictionary<string, MediaType> _map = new Dictionary<string, MediaType>(StringComparer.OrdinalIgnoreCase);
 
         public readonly static MediaType Image = new MediaType("image", _defaultExtensionsMap["image"]);
@@ -28,7 +28,7 @@ namespace SmartStore.Services.Media
         protected MediaType(string name, params string[] defaultExtensions)
         {
             Guard.NotEmpty(name, nameof(name));
-            
+
             Name = name;
             DefaultExtensions = defaultExtensions.OrderBy(x => x).ToArray();
 
@@ -39,19 +39,22 @@ namespace SmartStore.Services.Media
 
         public string[] DefaultExtensions { get; private set; }
 
-        public static IEnumerable<string> AllExtensions
+        public static IEnumerable<string> AllExtensions => _defaultExtensionsMap.SelectMany(x => x.Value);
+
+        public override string ToString()
         {
-            get
-            {
-                return _defaultExtensionsMap.SelectMany(x => x.Value);
-            }
+            return Name;
         }
 
-        public override string ToString() => Name;
+        public static implicit operator string(MediaType obj)
+        {
+            return obj?.Name;
+        }
 
-        public static implicit operator string(MediaType obj) => obj?.Name;
-
-        public static implicit operator MediaType(string obj) => GetMediaType(obj);
+        public static implicit operator MediaType(string obj)
+        {
+            return GetMediaType(obj);
+        }
 
         internal static MediaType GetMediaType(string name)
         {

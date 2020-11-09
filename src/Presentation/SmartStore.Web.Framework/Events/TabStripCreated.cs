@@ -1,10 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartStore.Web.Framework.UI;
-using System.Collections;
-using System.Collections.Generic;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Events
 {
@@ -22,7 +20,7 @@ namespace SmartStore.Web.Framework.Events
             this.Model = model;
             this.ItemFactory = itemFactory;
         }
- 
+
         public string TabStripName { get; private set; }
         public HtmlHelper Html { get; private set; }
         public object Model { get; private set; }
@@ -41,7 +39,7 @@ namespace SmartStore.Web.Framework.Events
             {
                 _widgets = new List<RouteInfo>();
                 Html.ViewContext.ViewData["Tab.{0}.Widgets".FormatInvariant(this.TabStripName)] = _widgets;
-                
+
                 CreateWidgetsTab();
             }
 

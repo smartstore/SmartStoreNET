@@ -22,7 +22,7 @@ namespace SmartStore.Services.Polls
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Poll</returns>
 		Poll GetPollBySystemKeyword(string systemKeyword, int languageId, bool showHidden = false);
-        
+
         /// <summary>
         /// Gets poll collection
         /// </summary>
@@ -51,14 +51,14 @@ namespace SmartStore.Services.Polls
         /// </summary>
         /// <param name="poll">Poll</param>
         void UpdatePoll(Poll poll);
-        
+
         /// <summary>
         /// Gets a poll answer
         /// </summary>
         /// <param name="pollAnswerId">Poll answer identifier</param>
         /// <returns>Poll answer</returns>
         PollAnswer GetPollAnswerById(int pollAnswerId);
-        
+
         /// <summary>
         /// Deletes a poll answer
         /// </summary>

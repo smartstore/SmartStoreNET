@@ -46,13 +46,15 @@
 
 					var cartBody = $(".cart-body");
 					var totals = $("#order-totals");
+					var coupon = $(".cart-action-coupon");
 
                     if (response.success) {
-                        $("#start-checkout-buttons").toggleClass("d-none", !response.showCheckoutButtons);
+                        $("#start-checkout-buttons").toggleClass("d-none", !response.displayCheckoutButtons);
 
 						// Replace HTML.
 						cartBody.html(response.cartHtml);
 						totals.html(response.totalsHtml);
+						coupon.html(response.discountHtml);
 					}
 
 					displayNotification(response.message, response.success ? "success" : "error");

@@ -1,36 +1,73 @@
-﻿using System.Web.Http;
-using SmartStore.Core.Domain.Customers;
+﻿using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Security;
 using SmartStore.Services.Orders;
-using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class ReturnRequestsController : WebApiEntityController<ReturnRequest, IOrderService>
-	{
-        [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Delete)]
-		protected override void Delete(ReturnRequest entity)
-		{
-			Service.DeleteReturnRequest(entity);
-		}
-
-		[WebApiQueryable]
+    {
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
-        public SingleResult<ReturnRequest> GetReturnRequest(int key)
-		{
-			return GetSingleResult(key);
-		}
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-		// Navigation properties.
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
+        public IHttpActionResult Get(int key)
+        {
+            return Ok(GetByKey(key));
+        }
 
-		[WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Read)]
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Create)]
+        public IHttpActionResult Post()
+        {
+            return StatusCode(HttpStatusCode.NotImplemented);
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+        public IHttpActionResult Put()
+        {
+            return StatusCode(HttpStatusCode.NotImplemented);
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+        public IHttpActionResult Patch()
+        {
+            return StatusCode(HttpStatusCode.NotImplemented);
+        }
+
+        [WebApiAuthenticate(Permission = Permissions.Order.ReturnRequest.Delete)]
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity => Service.DeleteReturnRequest(entity));
+            return result;
+        }
+
+        #region Navigation properties
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Customer> GetCustomer(int key)
-		{
-			return GetRelatedEntity(key, x => x.Customer);
-		}
-	}
+        public IHttpActionResult GetCustomer(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.Customer));
+        }
+
+        #endregion
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -63,10 +62,7 @@ namespace SmartStore.Utilities.ObjectPools
 
         public int MaxCapacity { get; private set; }
 
-        public int Length
-        {
-            get { return this.Builder.Length; }
-        }
+        public int Length => this.Builder.Length;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StringBuilder Append(string value)

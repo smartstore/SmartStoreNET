@@ -60,21 +60,21 @@ namespace SmartStore.Web.Framework.UI
             return new PagerBuilder<TModel>(new Pager(), this.HtmlHelper).Model(model);
         }
 
-		public virtual EntityPickerBuilder<TModel> EntityPicker()
-		{
-			return new EntityPickerBuilder<TModel>(new EntityPicker(), this.HtmlHelper);
-		}
+        public virtual EntityPickerBuilder<TModel> EntityPicker()
+        {
+            return new EntityPickerBuilder<TModel>(new EntityPicker(), this.HtmlHelper);
+        }
 
-		public virtual FileUploaderBuilder<TModel> FileUploader()
-		{
-			return new FileUploaderBuilder<TModel>(new FileUploader(), this.HtmlHelper);
-		}
+        public virtual FileUploaderBuilder<TModel> FileUploader()
+        {
+            return new FileUploaderBuilder<TModel>(new FileUploader(), this.HtmlHelper);
+        }
 
         public virtual MenuBuilder<TModel> Menu()
         {
             return new MenuBuilder<TModel>(new Menu(), this.HtmlHelper).WithRenderer(new MenuRenderer());
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }

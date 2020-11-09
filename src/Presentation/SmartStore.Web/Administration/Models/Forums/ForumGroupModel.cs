@@ -14,21 +14,21 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Forums
 {
     [Validator(typeof(ForumGroupValidator))]
-	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>
+    public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>
     {
         public ForumGroupModel()
         {
             ForumModels = new List<ForumModel>();
-			Locales = new List<ForumGroupLocalizedModel>();
+            Locales = new List<ForumGroupLocalizedModel>();
         }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.SeName")]
-		[AllowHtml]
-		public string SeName { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        [AllowHtml]
+        public string SeName { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Description")]
         [AllowHtml]
@@ -59,25 +59,25 @@ namespace SmartStore.Admin.Models.Forums
         public bool SubjectToAcl { get; set; }
 
         public IList<ForumModel> ForumModels { get; set; }
-		public IList<ForumGroupLocalizedModel> Locales { get; set; }
+        public IList<ForumGroupLocalizedModel> Locales { get; set; }
     }
 
-	public class ForumGroupLocalizedModel : ILocalizedModelLocal
-	{
-		public int LanguageId { get; set; }
+    public class ForumGroupLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Name")]
-		[AllowHtml]
-		public string Name { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Name")]
+        [AllowHtml]
+        public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.SeName")]
-		[AllowHtml]
-		public string SeName { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        [AllowHtml]
+        public string SeName { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Description")]
-		[AllowHtml]
-		public string Description { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.Description")]
+        [AllowHtml]
+        public string Description { get; set; }
+    }
 
     public partial class ForumGroupValidator : AbstractValidator<ForumGroupModel>
     {

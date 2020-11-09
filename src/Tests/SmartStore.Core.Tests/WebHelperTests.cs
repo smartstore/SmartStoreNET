@@ -1,8 +1,8 @@
 ﻿using System.Collections.Specialized;
 using System.Web;
+using NUnit.Framework;
 using SmartStore.Core.Fakes;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests
 {
@@ -57,15 +57,15 @@ namespace SmartStore.Core.Tests
             _webHelper.GetStoreLocation(false).ShouldEqual("http://www.example.com/");
         }
 
-		//[Test]
-		//public void Can_get_storeLocation_with_ssl()
-		//{
-		//	var serverVariables = new NameValueCollection();
-		//	serverVariables.Add("HTTP_HOST", "www.example.com");
-		//	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
-		//	_webHelper = new WebHelper(_httpContext);
-		//	_webHelper.GetStoreLocation(true).ShouldEqual("https://www.example.com/");
-		//}
+        //[Test]
+        //public void Can_get_storeLocation_with_ssl()
+        //{
+        //	var serverVariables = new NameValueCollection();
+        //	serverVariables.Add("HTTP_HOST", "www.example.com");
+        //	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
+        //	_webHelper = new WebHelper(_httpContext);
+        //	_webHelper.GetStoreLocation(true).ShouldEqual("https://www.example.com/");
+        //}
 
         [Test]
         public void Can_get_storeLocation_in_virtual_directory()
@@ -77,16 +77,16 @@ namespace SmartStore.Core.Tests
             _webHelper.GetStoreLocation(false).ShouldEqual("http://www.example.com/SmartStoreNETpath/");
         }
 
-		//[Test]
-		//public void Get_storeLocation_should_return_lowerCased_result()
-		//{
-		//	var serverVariables = new NameValueCollection();
-		//	serverVariables.Add("HTTP_HOST", "www.Example.com");
-		//	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
-		//	_webHelper = new WebHelper(_httpContext);
-		//	_webHelper.GetStoreLocation(false).ShouldEqual("http://www.Example.com/");
-		//}
-        
+        //[Test]
+        //public void Get_storeLocation_should_return_lowerCased_result()
+        //{
+        //	var serverVariables = new NameValueCollection();
+        //	serverVariables.Add("HTTP_HOST", "www.Example.com");
+        //	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, serverVariables);
+        //	_webHelper = new WebHelper(_httpContext);
+        //	_webHelper.GetStoreLocation(false).ShouldEqual("http://www.Example.com/");
+        //}
+
         [Test]
         public void Can_get_queryString()
         {
@@ -99,7 +99,7 @@ namespace SmartStore.Core.Tests
             _webHelper.QueryString<string>("Key2").ShouldEqual("Value2");
             _webHelper.QueryString<string>("Key3").ShouldEqual(null);
         }
-        
+
         [Test]
         public void Can_remove_queryString()
         {
@@ -116,14 +116,14 @@ namespace SmartStore.Core.Tests
                 .ShouldEqual("http://www.example.com/?param1=value1&param2=value2");
         }
 
-		//[Test]
-		//public void Can_remove_queryString_should_return_lowerCased_result()
-		//{
-		//	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, null);
-		//	_webHelper = new WebHelper(_httpContext);
-		//	_webHelper.RemoveQueryString("htTp://www.eXAmple.com/?param1=value1&parAm2=value2", "paRAm1")
-		//					.ShouldEqual("http://www.example.com/?param2=value2");
-		//}
+        //[Test]
+        //public void Can_remove_queryString_should_return_lowerCased_result()
+        //{
+        //	_httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, null);
+        //	_webHelper = new WebHelper(_httpContext);
+        //	_webHelper.RemoveQueryString("htTp://www.eXAmple.com/?param1=value1&parAm2=value2", "paRAm1")
+        //					.ShouldEqual("http://www.example.com/?param2=value2");
+        //}
 
         [Test]
         public void Can_remove_queryString_should_ignore_input_parameter_case()
@@ -131,7 +131,7 @@ namespace SmartStore.Core.Tests
             _httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, null);
             _webHelper = new WebHelper(_httpContext);
             _webHelper.RemoveQueryString("http://www.example.com/?param1=value1&parAm2=value2", "paRAm1")
-							.ShouldEqual("http://www.example.com/?parAm2=value2");
+                            .ShouldEqual("http://www.example.com/?parAm2=value2");
         }
 
         [Test]
@@ -141,13 +141,13 @@ namespace SmartStore.Core.Tests
             _webHelper = new WebHelper(_httpContext);
             //first param (?)
             _webHelper.ModifyQueryString("http://www.example.com/?param1=value1&param2=value2", "param1=value3", null)
-							.ShouldEqual("http://www.example.com/?param1=value3&param2=value2");
+                            .ShouldEqual("http://www.example.com/?param1=value3&param2=value2");
             //second param (&)
             _webHelper.ModifyQueryString("http://www.example.com/?param1=value1&param2=value2", "param2=value3", null)
-							.ShouldEqual("http://www.example.com/?param1=value1&param2=value3");
+                            .ShouldEqual("http://www.example.com/?param1=value1&param2=value3");
             //non-existing param
             _webHelper.ModifyQueryString("http://www.example.com/?param1=value1&param2=value2", "param3=value3", null)
-							.ShouldEqual("http://www.example.com/?param1=value1&param2=value2&param3=value3");
+                            .ShouldEqual("http://www.example.com/?param1=value1&param2=value2&param3=value3");
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace SmartStore.Core.Tests
             _httpContext = new FakeHttpContext("~/", "GET", null, null, null, null, null, null);
             _webHelper = new WebHelper(_httpContext);
             _webHelper.ModifyQueryString("http://www.example.com/?param1=value1&param2=value2#test1", "param1=value3", "Test2")
-							.ShouldEqual("http://www.example.com/?param1=value3&param2=value2#Test2");
+                            .ShouldEqual("http://www.example.com/?param1=value3&param2=value2#Test2");
         }
     }
 }

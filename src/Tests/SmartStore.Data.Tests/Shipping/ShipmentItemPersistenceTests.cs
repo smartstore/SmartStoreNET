@@ -1,11 +1,11 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Shipping
 {
@@ -19,7 +19,7 @@ namespace SmartStore.Data.Tests.Shipping
             {
                 Shipment = GetTestShipment(),
                 OrderItemId = 2,
-                Quantity = 3, 
+                Quantity = 3,
             };
 
             var fromDb = SaveAndLoadEntity(shipmentItem);
@@ -71,8 +71,8 @@ namespace SmartStore.Data.Tests.Shipping
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

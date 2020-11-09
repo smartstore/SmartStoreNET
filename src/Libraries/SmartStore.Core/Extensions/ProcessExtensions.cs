@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +26,7 @@ namespace SmartStore.Core
             {
                 tcs.TrySetResult(process.ExitCode);
             };
-            
+
             if (process.HasExited)
             {
                 return process.ExitCode;
@@ -39,7 +35,7 @@ namespace SmartStore.Core
             using (var registration = cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken)))
             {
                 return await tcs.Task.ConfigureAwait(false);
-            }        
+            }
         }
     }
 }

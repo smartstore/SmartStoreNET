@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SmartStoreNetWebApiClient.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SmartStore.WebApi.Client.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="ApiPublicKey" Type="System.String" Scope="User">
@@ -24,6 +24,12 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ApiVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ApiHeaders" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FileUpload" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

@@ -37,9 +37,6 @@ namespace SmartStore.Rules.Domain
         public int DisplayOrder { get; set; }
 
         [NotMapped]
-        public bool IsGroup
-        {
-            get => RuleType.IsCaseInsensitiveEqual("Group");
-        }
+        public bool IsGroup => RuleType.IsCaseInsensitiveEqual("Group");
     }
 }

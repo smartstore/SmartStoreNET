@@ -32,6 +32,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <table class="adminContent configure-paypal-direct">        
         <tr>
             <td class="adminTitle">

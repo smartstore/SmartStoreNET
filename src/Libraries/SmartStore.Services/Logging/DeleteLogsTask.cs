@@ -21,11 +21,11 @@ namespace SmartStore.Services.Logging
             _commonSettings = commonSettings;
         }
 
-		public void Execute(TaskExecutionContext ctx)
+        public void Execute(TaskExecutionContext ctx)
         {
             var toUtc = DateTime.UtcNow.AddDays(-_commonSettings.MaxLogAgeInDays);
 
-			_logService.ClearLog(toUtc, LogLevel.Error);
+            _logService.ClearLog(toUtc, LogLevel.Error);
         }
     }
 }

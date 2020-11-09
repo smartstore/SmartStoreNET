@@ -40,7 +40,7 @@ namespace SmartStore.Services.Cms
         /// <returns>Menu entities.</returns>
         IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
-            int storeId = 0, 
+            int storeId = 0,
             bool includeHidden = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue);

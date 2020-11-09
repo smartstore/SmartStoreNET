@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Customers
@@ -20,9 +20,15 @@ namespace SmartStore.Services.Customers
         /// </summary>
         /// <param name="customerId">Customer identifier; 0 to load all records</param>
         /// <param name="approved">A value indicating whether to content is approved; null to load all records</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
         /// <returns>Customer content</returns>
-        IList<CustomerContent> GetAllCustomerContent(int customerId, bool? approved);
-        
+        IPagedList<CustomerContent> GetAllCustomerContent(
+            int customerId,
+            bool? approved,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue);
+
         /// <summary>
         /// Gets all customer content
         /// </summary>
@@ -31,9 +37,16 @@ namespace SmartStore.Services.Customers
         /// <param name="approved">A value indicating whether to content is approved; null to load all records</param>
         /// <param name="fromUtc">Item creation from; null to load all records</param>
         /// <param name="toUtc">Item item creation to; null to load all records</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
         /// <returns>Customer content</returns>
-        IList<T> GetAllCustomerContent<T>(int customerId, bool? approved,
-            DateTime? fromUtc = null, DateTime? toUtc = null) where T : CustomerContent;
+        IPagedList<T> GetAllCustomerContent<T>(
+            int customerId,
+            bool? approved,
+            DateTime? fromUtc = null,
+            DateTime? toUtc = null,
+            int pageIndex = 0,
+            int pageSize = int.MaxValue) where T : CustomerContent;
 
         /// <summary>
         /// Gets a customer content

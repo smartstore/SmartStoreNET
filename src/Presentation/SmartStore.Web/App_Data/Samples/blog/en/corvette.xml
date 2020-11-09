@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>America's Sports Car: Chevrolet Corvette</Title>
+  <MetaTitle>America's Sports Car: Chevrolet Corvette</MetaTitle>
+	<Intro>The Chevrolet Corvette, colloquially known as the "Vette", is a two-door, two-passenger sports car manufactured and marketed by Chevrolet across more than 60 years of production and eight design generations. The Corvette has since become widely known as "America's Sports Car."</Intro>
+	<MetaDescription>The Chevrolet Corvette, colloquially known as the "Vette", is a two-door, two-passenger sports car manufactured and marketed by Chevrolet across more than 60 years of production and eight design generations. The Corvette has since become widely known as "America's Sports Car."</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				The Chevrolet Corvette, colloquially known as the "Vette", is a two-door, two-passenger sports car manufactured and marketed by
+				Chevrolet across more than 60 years of production and eight design generations. From 1953 to 2019, it was front-engined, and since 2020,
+				it is mid-engined. With its generations noted sequentially from C1 to C8, the Corvette serves as Chevrolet's halo vehicle and is widely
+				noted for its performance and distinctive plastic—either fiberglass or composite—bodywork.
+			</p>
+			<p>
+				In 1953, when GM executives were looking to name the new Chevrolet sports car, assistant director for the Public Relations department
+				Myron Scott suggested Corvette after the small maneuverable warship—and the name was approved. The first model, a convertible, was
+				introduced at the GM Motorama in 1953 as a concept and was followed ten years later by the 1963 second generation, in coupe and
+				convertible styles. Originally manufactured in Flint, Michigan and St. Louis, Missouri, the Corvette has been manufactured in Bowling
+				Green, Kentucky since 1981.
+			</p>
+			<p>
+				The Corvette has since become widely known as "America's Sports Car." Automotive News said that after 'starring' in the early 1960s
+				television show Route 66, the Corvette became synonymous with freedom and adventure," ultimately becoming both "the most successful
+				concept car in history and the most popular sports car in history."
+			</p>	
+		]]>
+	</Body>
+	<Tags>Car,Sport,Oldtimer,Chevrolet,Corvette</Tags>
+	<DisplayTags>False</DisplayTags>
+	<CreatedOn>2020-05-29</CreatedOn>
+	<DisplayType>10</DisplayType>
+  <Image>sportscar.jpg</Image>
+	<Comments>True</Comments>
+	<SectionBg>dark</SectionBg>
+</BlogPost>

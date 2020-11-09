@@ -10,7 +10,7 @@ namespace SmartStore.Web.Models.Common
         public bool ShowLegalInfo { get; set; }
         public bool ShowThemeSelector { get; set; }
         public string NewsletterEmail { get; set; }
-		public string SmartStoreHint { get; set; }
+        public string SmartStoreHint { get; set; }
         public bool HideNewsletterBlock { get; set; }
 
         public bool ShowSocialLinks { get; set; }
@@ -18,6 +18,6 @@ namespace SmartStore.Web.Models.Common
         public string TwitterLink { get; set; }
         public string PinterestLink { get; set; }
         public string YoutubeLink { get; set; }
-		public string InstagramLink { get; set; }
-	}
+        public string InstagramLink { get; set; }
+    }
 }

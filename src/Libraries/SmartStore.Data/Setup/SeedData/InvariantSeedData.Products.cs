@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
 
@@ -658,6 +659,7 @@ namespace SmartStore.Data.Setup
             var productTemplateSimple = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
             var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(x => x.DisplayOrder == 2);
             var taxCategoryIdElectronics = _ctx.Set<TaxCategory>().First(x => x.Name.Equals(TaxNameElectronics)).Id;
+            var discounts = _ctx.Set<Discount>().Where(x => x.DiscountTypeId == (int)DiscountType.AssignedToSkus && !x.RequiresCouponCode).ToList();
 
             #region Category Sofas
 
@@ -718,6 +720,15 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2,
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 14)
             });
+
+            if (discounts.Any())
+            {
+                corbusierSofa.HasDiscountsApplied = true;
+                corbusierSofa.AppliedDiscounts.Add(discounts.First());
+
+                // Add the mapping manually. We do not want to wait for the schedule task to do this automatically.
+                corbusierSofa.ProductCategories.Add(new ProductCategory { Category = categories["Sale"], IsSystemMapping = true });
+            }
 
             #endregion Le Corbusier LC2 Sofa
 
@@ -994,7 +1005,7 @@ namespace SmartStore.Data.Setup
                 ShortDescription = "Table Barcelona, Designer: Mies van der Rohe, width 90 cm, height 46 cm, depth 90 cm, base: chromed flat steel, table top: glass (12 mm)",
                 FullDescription = "<p>This table by Mies van der Rohe matches the famous Barcelona series of armchair and stool, which was designed for the King of Spain and presented at the World Fair in 1929. " +
                 "Although the coffee table was not made until some time later by Mies van der Rohe for the house 'Tugendhat', it forms an attractive sitting area for offices and living rooms with the furniture of the Barcelona series. " +
-                "The table by Mies van der Rohe consists of a flat steel frame and a 12 mm thick glass plate, under the transparent plate a chromed 'X' appears through the construction.</p>"+
+                "The table by Mies van der Rohe consists of a flat steel frame and a 12 mm thick glass plate, under the transparent plate a chromed 'X' appears through the construction.</p>" +
                 "<p>dimensions: width 90 cm, height 46 cm, depth 90 cm, glass plate thickness: 12 mm </p>",
                 Sku = "LM T/98",
                 ProductTemplateId = productTemplateSimple.Id,
@@ -1125,7 +1136,6 @@ namespace SmartStore.Data.Setup
                 Published = true,
                 ShowOnHomePage = true,
                 Price = 1799.00M,
-                OldPrice = 1999.00M,
                 HasTierPrices = true,
                 ManageInventoryMethod = ManageInventoryMethod.ManageStock,
                 OrderMinimumQuantity = 1,
@@ -1231,6 +1241,15 @@ namespace SmartStore.Data.Setup
                 SpecificationAttributeOption = specAttributes[8].SpecificationAttributeOptions.FirstOrDefault(x => x.DisplayOrder == 5)
             });
 
+            if (discounts.Any())
+            {
+                cubeChair.HasDiscountsApplied = true;
+                cubeChair.AppliedDiscounts.Add(discounts.First());
+
+                // Add the mapping manually. We do not want to wait for the schedule task to do this automatically.
+                cubeChair.ProductCategories.Add(new ProductCategory { Category = categories["Sale"], IsSystemMapping = true });
+            }
+
             #endregion Josef Hoffmann Cube Chair
 
             #endregion Category Armchairs
@@ -1241,7 +1260,7 @@ namespace SmartStore.Data.Setup
                miesBarcelonaSofa, corbusierSofa, josefHoffmannSofa
             };
         }
-                
+
         public IList<Product> Products()
         {
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
@@ -2073,7 +2092,6 @@ namespace SmartStore.Data.Setup
                 ShowOnHomePage = true,
                 MetaTitle = "9,7' iPad",
                 Price = 319.00M,
-                OldPrice = 349.00M,
                 SpecialPrice = 299.00M,
                 SpecialPriceStartDateTimeUtc = new DateTime(2017, 5, 1, 0, 0, 0),
                 SpecialPriceEndDateTimeUtc = specialPriceEndDate,
@@ -2812,7 +2830,6 @@ namespace SmartStore.Data.Setup
                 MetaTitle = "TRANSOCEAN CHRONOGRAPH",
                 ShowOnHomePage = true,
                 Price = 24110.00M,
-                OldPrice = 26230.00M,
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
@@ -3010,7 +3027,6 @@ namespace SmartStore.Data.Setup
                 MetaTitle = "Seiko Mechanical Automatic SRPA49K1",
                 ShowOnHomePage = true,
                 Price = 269.00M,
-                OldPrice = 329.00M,
                 ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
                 OrderMinimumQuantity = 1,
                 OrderMaximumQuantity = 10000,
@@ -3581,7 +3597,7 @@ namespace SmartStore.Data.Setup
                 Sku = "Microsoft-xbox1s",
                 Name = "Xbox One S 500 GB Konsole",
                 ShortDescription = "Genieße über 100 Spiele, die es nur für die Konsole gibt, sowie eine ständig größer werdende Bibliothek an Xbox 360-Spielen auf der Xbox One S im neuen Design – der einzigen Konsole mit 4K Ultra HD Blu-ray, 4K-Videostreaming und HDR. Streame deine Lieblingsfilme und -sendungen in atemberaubendem 4K Ultra HD. Spiele Blockbuster wie Gears of War 4 und Battlefield 1 mit Freunden auf Xbox Live, dem schnellsten und zuverlässigsten Gaming-Netzwerk.",
-                FullDescription = "<ul><li>Die ultimativen Spiele und 4K-Entertainment-System.</li> <li><b>40 % kompaktere Konsole<b> <br/> Lasse dich nicht von der Größe täuschen. Mit integriertem Netzteil und bis zu 2 TB Speicherplatz ist die Xbox One S die fortschrittlichste Xbox überhaupt.</li><li><b>Der beste Controller - jetzt noch besser</b> <br/> Der neue Xbox Wireless Controller bietet ein schlankes, optimiertes Design, texturierte Grip - Fläche und Bluetooth zum Spielen auf Windows 10 Geräten. Genieße individuelle Tastenbelegung und verbesserte drahtlose Reichweite und stecke jeden kompatiblen Kopfhörer mit der 3, 5 mm Stereo - Headset - Buchse ein.</li></ul>",
+                FullDescription = "<ul><li>Die ultimativen Spiele und 4K-Entertainment-System.</li> <li><b>40 % kompaktere Konsole</b> <br/> Lasse dich nicht von der Größe täuschen. Mit integriertem Netzteil und bis zu 2 TB Speicherplatz ist die Xbox One S die fortschrittlichste Xbox überhaupt.</li><li><b>Der beste Controller - jetzt noch besser</b> <br/> Der neue Xbox Wireless Controller bietet ein schlankes, optimiertes Design, texturierte Grip - Fläche und Bluetooth zum Spielen auf Windows 10 Geräten. Genieße individuelle Tastenbelegung und verbesserte drahtlose Reichweite und stecke jeden kompatiblen Kopfhörer mit der 3, 5 mm Stereo - Headset - Buchse ein.</li></ul>",
                 ProductTemplateId = productTemplate.Id,
                 AllowCustomerReviews = true,
                 Published = true,

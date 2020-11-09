@@ -23,51 +23,83 @@
             break;
     }
 }
+<div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+    <meta itemprop="itemCondition" content="@conditionContent" />
+    <link itemprop="url" href="@Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme)" />
+    @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)
+    {
+        if (Model.AddToCart.CustomerEntersPrice && !Model.ProductPrice.HidePrices)
+        {
+            var dataDictCustomerPrice = new ViewDataDictionary();
+            dataDictCustomerPrice.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+            Html.RenderPartial("Product.CustomerPrice", Model, dataDictCustomerPrice);
+        }
+        else
+        {
+            <div class="pd-offer-price-container" data-partial="Price">
+                @{ Html.RenderPartial("Product.Offer.Price", Model); }
+            </div>
+        }
+    }
 
-<div class="pd-offer" @Html.Raw(!Model.ProductPrice.CallForPrice ? "itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\"" : "")>
-	<meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition" content="@conditionContent" />
-	<link itemprop="url" href="@Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme)" />
-	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)
-	{
-		if (Model.AddToCart.CustomerEntersPrice && !Model.ProductPrice.HidePrices)
-		{
-			var dataDictCustomerPrice = new ViewDataDictionary();
-			dataDictCustomerPrice.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-			Html.RenderPartial("Product.CustomerPrice", Model, dataDictCustomerPrice);
-		}
-		else
-		{
-			<div class="pd-offer-price-container" data-partial="Price">
-				@{ Html.RenderPartial("Product.Offer.Price", Model); }
-			</div>
-		}
-	}
+    <meta itemprop="availability" content="@(Model.IsAvailable ? "http://schema.org/InStock" : "http://schema.org/SoldOut")" />
 
-	<div class="pd-stock-info-container" data-partial="Stock">
-		@{ Html.RenderPartial("Product.StockInfo", Model); }
-	</div>
+    @if (Model.ProductPrice.PriceValidUntilUtc.HasValue())
+    {
+        <meta itemprop="priceValidUntil" content="@Model.ProductPrice.PriceValidUntilUtc" />
+    }
 
-	@if (Model.GiftCard.IsGiftCard)
-	{
-		var dataDictGiftCard = new ViewDataDictionary();
-		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
-		Html.RenderPartial("Product.GiftCard", Model.GiftCard, dataDictGiftCard);
-	}
+    <div class="pd-stock-info-container" data-partial="Stock">
+        @{ Html.RenderPartial("Product.StockInfo", Model); }
+    </div>
 
-	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
-	{
-		var dataDictVariants = new ViewDataDictionary();
-		dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
-		Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
-	}
+    @if (Model.GiftCard.IsGiftCard)
+    {
+        var dataDictGiftCard = new ViewDataDictionary();
+        dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
+        Html.RenderPartial("Product.GiftCard", Model.GiftCard, dataDictGiftCard);
+    }
 
-	<div class="pd-offer-actions-container" data-partial="OfferActions">
-	@{ 
-		var dataDictAddToCart = new ViewDataDictionary();
-		dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-		Html.RenderPartial("Product.Offer.Actions", Model, dataDictAddToCart);
-	}
-	</div>
-	
-	@{ Html.RenderPartial("Product.Offer.Actions.Misc", Model);	}
+    @if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
+    {
+        <div class="pd-variants-container" data-partial="Variants">
+            @{
+                var dataDictVariants = new ViewDataDictionary();
+                dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+                Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
+            }
+        </div>
+    }
+
+    <div class="pd-offer-actions-container" data-partial="OfferActions">
+        @{
+            var dataDictAddToCart = new ViewDataDictionary();
+            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+            Html.RenderPartial("Product.Offer.Actions", Model, dataDictAddToCart);
+        }
+    </div>
+
+    @{ Html.RenderPartial("Product.Offer.Actions.Misc", Model); }
 </div>
+
+<script>
+    // Ask question
+    $(document).on('click', '.action-ask-question', function (e) {
+        e.preventDefault();
+        const el = $(this);
+		const form = el.data('form-selector');
+		if (form) {  
+			const href = el.data('href');
+            $.ajax({
+				cache: false,
+                url: href,
+                data: $(form).serialize(),
+				success: function (response) {
+					// Redirect to ask question get action
+					if (response.redirect)
+						location.href = response.redirect;
+				}
+            });
+        }
+    });
+</script>

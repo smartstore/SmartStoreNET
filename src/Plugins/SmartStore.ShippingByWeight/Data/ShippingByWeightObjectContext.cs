@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using SmartStore.Core;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.ShippingByWeight.Data.Migrations;
@@ -15,23 +11,23 @@ namespace SmartStore.ShippingByWeight.Data
     public class ShippingByWeightObjectContext : ObjectContextBase
     {
         public const string ALIASKEY = "sm_object_context_shipping_weight_zip";
-        
-		static ShippingByWeightObjectContext()
-		{
-			var initializer = new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>
-			{
-				TablesToCheck = new[] { "ShippingByWeight" }
-			};
-			Database.SetInitializer(initializer);
-		}
 
-		/// <summary>
-		/// For tooling support, e.g. EF Migrations
-		/// </summary>
-		public ShippingByWeightObjectContext()
-			: base()
-		{
-		}
+        static ShippingByWeightObjectContext()
+        {
+            var initializer = new MigrateDatabaseInitializer<ShippingByWeightObjectContext, Configuration>
+            {
+                TablesToCheck = new[] { "ShippingByWeight" }
+            };
+            Database.SetInitializer(initializer);
+        }
+
+        /// <summary>
+        /// For tooling support, e.g. EF Migrations
+        /// </summary>
+        public ShippingByWeightObjectContext()
+            : base()
+        {
+        }
 
         public ShippingByWeightObjectContext(string nameOrConnectionString)
             : base(nameOrConnectionString, ALIASKEY)
@@ -46,6 +42,6 @@ namespace SmartStore.ShippingByWeight.Data
             //modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
             base.OnModelCreating(modelBuilder);
         }
-       
+
     }
 }

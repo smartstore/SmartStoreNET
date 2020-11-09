@@ -338,7 +338,7 @@ body {
         margin: 0;
         padding-top: 0;
 
-        .section-header{
+        .section-header {
             display: none;
         }
     }
@@ -711,19 +711,6 @@ legend {
 
     .adminTitle {
         margin-bottom: 0;
-    }
-
-    .adminData {
-        > .switch,
-        .multi-store-setting-control > .switch {
-            padding-top: calc(#{$input-padding-y} + #{$input-border-width});
-            padding-bottom: calc(#{$input-padding-y} + #{$input-border-width});
-        }
-
-        > .switch {
-            margin-bottom: 0;
-            line-height: $input-line-height;
-        }
     }
 
     > tbody > tr > td:only-child:not(.adminData):not(.adminTitle),
@@ -1410,11 +1397,8 @@ table.payment-method-features td {
     }
 }
 
-
-
 // Warning panel message
 // --------------------------------------------------------------
-
 .warning-panel-message {
     $bgColor: darken($primary, 15%);
     z-index: 1031;

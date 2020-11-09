@@ -15,14 +15,14 @@ namespace SmartStore.Core.Domain.Security
         /// </summary>
         [Index]
         public string SystemName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets permission role mappings.
         /// </summary>
         public virtual ICollection<PermissionRoleMapping> PermissionRoleMappings
         {
-            get { return _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>()); }
-            protected set { _permissionRoleMappings = value; }
+            get => _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>());
+            protected set => _permissionRoleMappings = value;
         }
     }
 }

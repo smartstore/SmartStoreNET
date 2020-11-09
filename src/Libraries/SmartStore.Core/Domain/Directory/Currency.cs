@@ -12,78 +12,73 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a currency
     /// </summary>
 	[DataContract]
-	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported, ICloneable<Currency>
+    public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported, ICloneable<Currency>
     {
-        public Currency()
-        {
-            RoundNumDecimals = 2;
-        }
-
         /// <summary>
         /// Gets or sets the name
         /// </summary>
 		[DataMember]
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the ISO currency code
         /// </summary>
 		[DataMember]
-		public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; }
 
         /// <summary>
         /// Gets or sets the rate
         /// </summary>
 		[DataMember]
-		public decimal Rate { get; set; }
+        public decimal Rate { get; set; }
 
         /// <summary>
         /// Gets or sets the display locale
         /// </summary>
 		[DataMember]
-		public string DisplayLocale { get; set; }
+        public string DisplayLocale { get; set; }
 
         /// <summary>
         /// Gets or sets the custom formatting
         /// </summary>
 		[DataMember]
-		public string CustomFormatting { get; set; }
+        public string CustomFormatting { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-		/// </summary>
-		[DataMember]
-		public bool LimitedToStores { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        [DataMember]
+        public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
 		[DataMember]
-		public bool Published { get; set; }
+        public bool Published { get; set; }
 
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
 		[DataMember]
-		public int DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of instance creation
         /// </summary>
 		[DataMember]
-		public DateTime CreatedOnUtc { get; set; }
+        public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of instance update
         /// </summary>
 		[DataMember]
-		public DateTime UpdatedOnUtc { get; set; }
+        public DateTime UpdatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the (comma separated) list of domain endings (e.g. country code top-level domains) to which this currency is the default one
-		/// </summary>
-		[DataMember]
-		public string DomainEndings { get; set; }
+        /// <summary>
+        /// Gets or sets the (comma separated) list of domain endings (e.g. country code top-level domains) to which this currency is the default one
+        /// </summary>
+        [DataMember]
+        public string DomainEndings { get; set; }
 
         #region Rounding
 
@@ -97,7 +92,7 @@ namespace SmartStore.Core.Domain.Directory
         /// Gets or sets the number of decimal places to round to
         /// </summary>
         [DataMember]
-        public int RoundNumDecimals { get; set; }
+        public int RoundNumDecimals { get; set; } = 2;
 
         /// <summary>
         /// Gets or sets a value indicating whether to round the order total
@@ -133,29 +128,29 @@ namespace SmartStore.Core.Domain.Directory
 
         private NumberFormatInfo _numberFormat;
 
-		[NotMapped, JsonIgnore, IgnoreDataMember]
-		public NumberFormatInfo NumberFormat
-		{
-			get
-			{
-				if (_numberFormat == null && DisplayLocale.HasValue())
-				{
-					try
-					{
-						_numberFormat = CultureInfo.CreateSpecificCulture(DisplayLocale).NumberFormat;
-					}
-					catch { }
-				}
+        [NotMapped, JsonIgnore, IgnoreDataMember]
+        public NumberFormatInfo NumberFormat
+        {
+            get
+            {
+                if (_numberFormat == null && DisplayLocale.HasValue())
+                {
+                    try
+                    {
+                        _numberFormat = CultureInfo.CreateSpecificCulture(DisplayLocale).NumberFormat;
+                    }
+                    catch { }
+                }
 
-				if (_numberFormat == null)
-				{
-					_numberFormat = NumberFormatInfo.CurrentInfo;
-				}
+                if (_numberFormat == null)
+                {
+                    _numberFormat = NumberFormatInfo.CurrentInfo;
+                }
 
-				return _numberFormat;
-			}
-		}
+                return _numberFormat;
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

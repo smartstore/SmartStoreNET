@@ -1,8 +1,8 @@
 ﻿@model OrderModel.UploadLicenseModel
-@using Telerik.Web.Mvc.UI;
-@{    
-	Layout = "_AdminPopupLayout";
-	ViewBag.Title = T("Admin.Orders.Products.License.UploadFile").Text;
+
+@{
+    Layout = "_AdminPopupLayout";
+    ViewBag.Title = T("Admin.Orders.Products.License.UploadFile").Text;
 }
 
 @using (Html.BeginForm())
@@ -15,17 +15,31 @@
         <div class="options">
         </div>
     </div>
-    
+
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.HiddenFor(model => model.OrderId)
     @Html.HiddenFor(model => model.OrderItemId)
-    @Html.EditorFor(model => model.LicenseDownloadId)
-    
-	<input type="submit" name="uploadlicense" value="@T("Admin.Common.Save")" id="uploadlicense" class="btn btn-secondary" />
+    @Html.HiddenFor(model => model.OldLicenseDownloadId)
 
-	if (Model.LicenseDownloadId > 0)
-	{
-	    <input type="submit" name="deletelicense" value="@T("Admin.Common.Delete")" id="deletelicense" class="btn btn-secondary" />    
-    }
+    <div class="adminContent">
+        <div class="adminRow">
+            @Html.EditorFor(model => model.LicenseDownloadId, new { @class = "w-100" })
+        </div>
+        <div class="adminRow pl-5">
+            <button type="submit" name="uploadlicense" id="uploadlicense" value="uploadlicense" class="btn btn-warning mr-2">
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
+
+            @if (Model.LicenseDownloadId > 0)
+            {
+                <button type="submit" name="deletelicense" id="deletelicense" value="deletelicense" class="btn btn-danger">
+                    <i class="far fa-trash-alt"></i>
+                    <span>@T("Admin.Common.Delete")</span>
+                </button>
+            }
+        </div>
+    </div>
 }

@@ -1,0 +1,22 @@
+﻿@model CookieInfoModel
+@using SmartStore.Admin.Models.Settings;
+@{
+    ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.EditCookieInfo.Title").Text;
+    Layout = "_AdminPopupLayout";
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.EditCookieInfo.Title")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" id="save" value="save" class="btn btn-warning">
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
+        </div>
+    </div>
+
+    Html.RenderPartial("_CreateOrUpdateCookieInfo", Model);
+}

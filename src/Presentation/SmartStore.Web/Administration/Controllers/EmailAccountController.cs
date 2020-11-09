@@ -50,13 +50,13 @@ namespace SmartStore.Admin.Controllers
 
         #endregion
 
-        #region List
+        #region List / Create / Edit / Delete
 
         [Permission(Permissions.Configuration.EmailAccount.Read)]
         public ActionResult List(string id)
         {
             // Mark as default email account (if selected).
-            if (!string.IsNullOrEmpty(id))
+            if (id.HasValue())
             {
                 int defaultEmailAccountId = Convert.ToInt32(id);
                 var defaultEmailAccount = _emailAccountService.GetEmailAccountById(defaultEmailAccountId);
@@ -109,10 +109,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-        #endregion
-
-        #region Create
-
         [Permission(Permissions.Configuration.EmailAccount.Create)]
         public ActionResult Create()
         {
@@ -123,6 +119,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.EmailAccount.Create)]
         public ActionResult Create(EmailAccountModel model, bool continueEditing)
         {
@@ -139,10 +136,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        #endregion
-
-        #region Edit
-
         [Permission(Permissions.Configuration.EmailAccount.Read)]
         public ActionResult Edit(int id)
         {
@@ -156,6 +149,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.EmailAccount.Update)]
         public ActionResult Edit(EmailAccountModel model, bool continueEditing)
         {
@@ -177,11 +171,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        #endregion
-
-        #region Delete
-
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.EmailAccount.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -201,6 +192,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("sendtestemail")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.EmailAccount.Update)]
         public ActionResult SendTestEmail(EmailAccountModel model)
         {
@@ -220,8 +212,12 @@ namespace SmartStore.Admin.Controllers
                 {
                     var to = new EmailAddress(model.SendTestEmailTo);
                     var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
-                    var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"));
                     var body = T("Admin.Common.EmailSuccessfullySent");
+
+                    // Avoid System.ArgumentException: "The specified string is not in the form required for a subject" when testing mails.
+                    var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"))
+                        .RegexReplace(@"\p{C}+", " ")
+                        .TrimSafe();
 
                     var msg = new EmailMessage(to, subject, body, from);
 

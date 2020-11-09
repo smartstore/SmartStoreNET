@@ -13,8 +13,8 @@
     
         @Html.DropDownList("themeName", themes, new { @class = "store-theme-list form-control noskin" })
     }
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script>
+        $(function () {
             $("#themeName").change(onStoreThemeChanged);
         });
 

@@ -18,42 +18,42 @@ namespace SmartStore.Services.Common
         private readonly IRepository<Address> _addressRepository;
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
-		private readonly ICommonServices _services;
+        private readonly ICommonServices _services;
         private readonly AddressSettings _addressSettings;
-		private readonly ITemplateEngine _templateEngine;
-		private readonly IMessageModelProvider _messageModelProvider;
+        private readonly ITemplateEngine _templateEngine;
+        private readonly IMessageModelProvider _messageModelProvider;
 
-		public AddressService(
-			IRepository<Address> addressRepository,
-            ICountryService countryService, 
-			IStateProvinceService stateProvinceService,
-			ICommonServices services, 
-			AddressSettings addressSettings,
-			ITemplateEngine templateEngine,
-			IMessageModelProvider messageModelProvider)
+        public AddressService(
+            IRepository<Address> addressRepository,
+            ICountryService countryService,
+            IStateProvinceService stateProvinceService,
+            ICommonServices services,
+            AddressSettings addressSettings,
+            ITemplateEngine templateEngine,
+            IMessageModelProvider messageModelProvider)
         {
             _addressRepository = addressRepository;
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
             _services = services;
             _addressSettings = addressSettings;
-			_templateEngine = templateEngine;
-			_messageModelProvider = messageModelProvider;
+            _templateEngine = templateEngine;
+            _messageModelProvider = messageModelProvider;
         }
 
         public virtual void DeleteAddress(Address address)
         {
-			Guard.NotNull(address, nameof(address));
+            Guard.NotNull(address, nameof(address));
 
             _addressRepository.Delete(address);
         }
 
-		public virtual void DeleteAddress(int id)
-		{
-			var address = GetAddressById(id);
-			if (address != null)
-				DeleteAddress(address);
-		}
+        public virtual void DeleteAddress(int id)
+        {
+            var address = GetAddressById(id);
+            if (address != null)
+                DeleteAddress(address);
+        }
 
         public virtual int GetAddressTotalByCountryId(int countryId)
         {
@@ -86,23 +86,23 @@ namespace SmartStore.Services.Common
             return address;
         }
 
-		public virtual IList<Address> GetAddressByIds(int[] addressIds)
-		{
-			Guard.NotNull(addressIds, nameof(addressIds));
+        public virtual IList<Address> GetAddressByIds(int[] addressIds)
+        {
+            Guard.NotNull(addressIds, nameof(addressIds));
 
-			var query =
-				from x in _addressRepository.TableUntracked.Expand(x => x.Country).Expand(x => x.StateProvince)
-				where addressIds.Contains(x.Id)
-				select x;
+            var query =
+                from x in _addressRepository.TableUntracked.Expand(x => x.Country).Expand(x => x.StateProvince)
+                where addressIds.Contains(x.Id)
+                select x;
 
-			return query.ToList();
-		}
+            return query.ToList();
+        }
 
         public virtual void InsertAddress(Address address)
         {
-			Guard.NotNull(address, nameof(address));
+            Guard.NotNull(address, nameof(address));
 
-			address.CreatedOnUtc = DateTime.UtcNow;
+            address.CreatedOnUtc = DateTime.UtcNow;
 
             //some validation
             if (address.CountryId == 0)
@@ -115,10 +115,10 @@ namespace SmartStore.Services.Common
 
         public virtual void UpdateAddress(Address address)
         {
-			Guard.NotNull(address, nameof(address));
+            Guard.NotNull(address, nameof(address));
 
-			//some validation
-			if (address.CountryId == 0)
+            //some validation
+            if (address.CountryId == 0)
                 address.CountryId = null;
             if (address.StateProvinceId == 0)
                 address.StateProvinceId = null;
@@ -128,9 +128,9 @@ namespace SmartStore.Services.Common
 
         public virtual bool IsAddressValid(Address address)
         {
-			Guard.NotNull(address, nameof(address));
+            Guard.NotNull(address, nameof(address));
 
-			if (String.IsNullOrWhiteSpace(address.FirstName))
+            if (String.IsNullOrWhiteSpace(address.FirstName))
                 return false;
 
             if (String.IsNullOrWhiteSpace(address.LastName))
@@ -184,10 +184,10 @@ namespace SmartStore.Services.Common
                 }
             }
 
-			if (_addressSettings.CityEnabled &&
-				_addressSettings.CityRequired &&
-				String.IsNullOrWhiteSpace(address.City))
-				return false;
+            if (_addressSettings.CityEnabled &&
+                _addressSettings.CityRequired &&
+                String.IsNullOrWhiteSpace(address.City))
+                return false;
 
             if (_addressSettings.PhoneEnabled &&
                 _addressSettings.PhoneRequired &&
@@ -202,63 +202,63 @@ namespace SmartStore.Services.Common
             return true;
         }
 
-		public virtual string FormatAddress(CompanyInformationSettings settings, bool newLineToBr = false)
-		{
-			Guard.NotNull(settings, nameof(settings));
+        public virtual string FormatAddress(CompanyInformationSettings settings, bool newLineToBr = false)
+        {
+            Guard.NotNull(settings, nameof(settings));
 
-			var address = new Address
-			{
-				Address1 = settings.Street,
-				Address2 = settings.Street2,
-				City = settings.City,
-				Company = settings.CompanyName,
-				FirstName = settings.Firstname,
-				LastName = settings.Lastname,
-				Salutation = settings.Salutation,
-				Title = settings.Title,
-				ZipPostalCode = settings.ZipCode,
-				CountryId = settings.CountryId,
-				Country = _countryService.GetCountryById(settings.CountryId)
-			};
+            var address = new Address
+            {
+                Address1 = settings.Street,
+                Address2 = settings.Street2,
+                City = settings.City,
+                Company = settings.CompanyName,
+                FirstName = settings.Firstname,
+                LastName = settings.Lastname,
+                Salutation = settings.Salutation,
+                Title = settings.Title,
+                ZipPostalCode = settings.ZipCode,
+                CountryId = settings.CountryId,
+                Country = _countryService.GetCountryById(settings.CountryId)
+            };
 
-			return FormatAddress(address, newLineToBr);
-		}
+            return FormatAddress(address, newLineToBr);
+        }
 
-		public virtual string FormatAddress(Address address, bool newLineToBr = false)
-		{
-			Guard.NotNull(address, nameof(address));
+        public virtual string FormatAddress(Address address, bool newLineToBr = false)
+        {
+            Guard.NotNull(address, nameof(address));
 
-			var messageContext = new MessageContext
-			{
-				Language = _services.WorkContext.WorkingLanguage,
-				Store = _services.StoreContext.CurrentStore,
-				Model = new TemplateModel()
-			};
-			
-			_messageModelProvider.AddModelPart(address, messageContext, "Address");
-			var model = messageContext.Model["Address"];
+            var messageContext = new MessageContext
+            {
+                Language = _services.WorkContext.WorkingLanguage,
+                Store = _services.StoreContext.CurrentStore,
+                Model = new TemplateModel()
+            };
 
-			var result = FormatAddress(model, address?.Country?.AddressFormat, messageContext.FormatProvider);
+            _messageModelProvider.AddModelPart(address, messageContext, "Address");
+            var model = messageContext.Model["Address"];
 
-			if (newLineToBr)
-			{
-				result = HtmlUtils.ConvertPlainTextToHtml(result);
-			}
+            var result = FormatAddress(model, address?.Country?.AddressFormat, messageContext.FormatProvider);
 
-			return result;
-		}
+            if (newLineToBr)
+            {
+                result = HtmlUtils.ConvertPlainTextToHtml(result);
+            }
 
-		public virtual string FormatAddress(object address, string template = null, IFormatProvider formatProvider = null)
-		{
-			Guard.NotNull(address, nameof(address));
+            return result;
+        }
 
-			template = template.NullEmpty() ?? Address.DefaultAddressFormat;
+        public virtual string FormatAddress(object address, string template = null, IFormatProvider formatProvider = null)
+        {
+            Guard.NotNull(address, nameof(address));
 
-			var result = _templateEngine
-				.Render(template, address, formatProvider ?? CultureInfo.CurrentCulture)
-				.Compact(true);
+            template = template.NullEmpty() ?? Address.DefaultAddressFormat;
 
-			return result;
-		}
-	}
+            var result = _templateEngine
+                .Render(template, address, formatProvider ?? CultureInfo.CurrentCulture)
+                .Compact(true);
+
+            return result;
+        }
+    }
 }

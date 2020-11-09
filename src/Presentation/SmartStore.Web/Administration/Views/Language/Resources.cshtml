@@ -22,7 +22,7 @@
                 <td class="adminData">
                     @Html.DropDownList("localeresource-language", (IEnumerable<SelectListItem>)ViewBag.AllLanguages, new { onchange = "onLocaleResourceLanguageSelected(this.value);" })
 
-                    <script type="text/javascript">
+                    <script>
                         function onLocaleResourceLanguageSelected(languageid) {
                             window.location = '@(Url.Action("Resources") + "?languageId=")' + languageid;
                         }
@@ -81,7 +81,7 @@
 		.ClientEvents(x => x.OnError("Grid_onError")))
 </div>
 
-<script type="text/javascript">
+<script>
     function onResourceEdit(e) {
         if (e.mode == "insert") {
             $(e.form).find("td:first").html("@ViewBag.LanguageName");

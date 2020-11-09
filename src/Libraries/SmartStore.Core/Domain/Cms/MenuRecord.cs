@@ -22,8 +22,8 @@ namespace SmartStore.Core.Domain.Cms
         /// </summary>
         public virtual ICollection<MenuItemRecord> Items
         {
-            get { return _items ?? (_items = new HashSet<MenuItemRecord>()); }
-            protected set { _items = value; }
+            get => _items ?? (_items = new HashSet<MenuItemRecord>());
+            protected set => _items = value;
         }
 
         /// <summary>

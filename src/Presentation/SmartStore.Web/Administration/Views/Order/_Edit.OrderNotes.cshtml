@@ -37,6 +37,9 @@
 	.Content(
 	@<text>
 		<form method="post">
+			
+			@Html.AntiForgeryToken()
+
 			<table class="adminContent">
 				<tr>
 					<td class="adminTitle">
@@ -80,17 +83,23 @@
 	</a>
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function() {
         $('#addOrderNote').click(function () {
+			var token = $('input[name="__RequestVerificationToken"]').val();
             var orderNoteMessage = $("#@Html.FieldIdFor(model => model.AddOrderNoteMessage)").val();
             var orderNoteDisplayToCustomer = $("#@Html.FieldIdFor(model => model.AddOrderNoteDisplayToCustomer)").is(':checked');
-			
+
             $.ajax({
                 cache:false,
                 type: "POST",
                 url: "@(Url.Action("OrderNoteAdd", "Order"))",
-                data: { "DisplayToCustomer": orderNoteDisplayToCustomer, "message": orderNoteMessage, "orderId": @Model.Id },
+                data: {
+                    "DisplayToCustomer": orderNoteDisplayToCustomer,
+                    "message": orderNoteMessage,
+                    "orderId": @Model.Id,
+					"__RequestVerificationToken": token
+				},
                 success: function (data) {
                         var ordernotesGrid = $("#ordernotes-grid");
                         ordernotesGrid.data('tGrid').ajaxRequest();

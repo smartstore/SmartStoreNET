@@ -49,8 +49,18 @@
 
 <script>
     $(function () {
+        const data = @Html.Raw(jsonData);
+        if (document.documentElement.getAttribute('dir') == 'rtl') {
+            data.forEach(x => {
+                x.DataSets[0].Amount = x.DataSets[0].Amount.reverse();
+                x.DataSets[0].AmountFormatted = x.DataSets[0].AmountFormatted.reverse();
+                x.DataSets[0].Quantity = x.DataSets[0].Quantity.reverse();
+                x.DataSets[0].QuantityFormatted = x.DataSets[0].QuantityFormatted.reverse();
+                x.Labels = x.Labels.reverse();
+            });
+        }
         SmartStore.Admin.Charts.Create.CustomersChart(
-        @Html.Raw(jsonData),
+            data,
             '@T("Admin.Report.CustomerRegistrations")',
             '@T("Admin.Report.Registrations")'
         );

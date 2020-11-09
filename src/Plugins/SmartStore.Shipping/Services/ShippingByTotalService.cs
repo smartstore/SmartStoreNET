@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Shipping.Domain;
-using SmartStore.Shipping.Models;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
+using SmartStore.Shipping.Domain;
+using SmartStore.Shipping.Models;
 using SmartStore.Utilities;
 
 namespace SmartStore.Shipping.Services
@@ -20,10 +20,10 @@ namespace SmartStore.Shipping.Services
         #region Fields
 
         private readonly IRepository<ShippingByTotalRecord> _sbtRepository;
-		private readonly IStoreService _storeService;
-		private readonly IShippingService _shippingService;
-		private readonly ICountryService _countryService;
-		private readonly IStateProvinceService _stateProvinceService;
+        private readonly IStoreService _storeService;
+        private readonly IShippingService _shippingService;
+        private readonly ICountryService _countryService;
+        private readonly IStateProvinceService _stateProvinceService;
 
         #endregion
 
@@ -34,92 +34,92 @@ namespace SmartStore.Shipping.Services
         /// </summary>
         public ShippingByTotalService(
             IRepository<ShippingByTotalRecord> sbtRepository,
-			IStoreService storeService,
-			IShippingService shippingService,
-			ICountryService countryService,
-			IStateProvinceService stateProvinceService)
+            IStoreService storeService,
+            IShippingService shippingService,
+            ICountryService countryService,
+            IStateProvinceService stateProvinceService)
         {
             _sbtRepository = sbtRepository;
-			_storeService = storeService;
-			_shippingService = shippingService;
-			_countryService = countryService;
-			_stateProvinceService = stateProvinceService;
+            _storeService = storeService;
+            _shippingService = shippingService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
         }
 
         #endregion
 
         #region Methods
 
-		/// <summary>
-		/// Get queryable shipping by total records
-		/// </summary>
-		public virtual IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords()
-		{
-			var query =
-				from x in _sbtRepository.Table
-				orderby x.StoreId, x.CountryId, x.StateProvinceId, x.Zip, x.ShippingMethodId, x.From
-				select x;
+        /// <summary>
+        /// Get queryable shipping by total records
+        /// </summary>
+        public virtual IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords()
+        {
+            var query =
+                from x in _sbtRepository.Table
+                orderby x.StoreId, x.CountryId, x.StateProvinceId, x.Zip, x.ShippingMethodId, x.From
+                select x;
 
-			return query;
-		}
+            return query;
+        }
 
-		/// <summary>
-		/// Get paged shipping by total records
-		/// </summary>
-		public virtual IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize)
-		{
-			var result = new PagedList<ShippingByTotalRecord>(GetShippingByTotalRecords(), pageIndex, pageSize);
-			return result;
-		}
+        /// <summary>
+        /// Get paged shipping by total records
+        /// </summary>
+        public virtual IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize)
+        {
+            var result = new PagedList<ShippingByTotalRecord>(GetShippingByTotalRecords(), pageIndex, pageSize);
+            return result;
+        }
 
-		/// <summary>
-		/// Get models for shipping by total records
-		/// </summary>
-		public virtual IList<ByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount)
-		{
-			// data join would be much better but not possible here cause ShippingByTotalObjectContext cannot be shared across repositories
-			var records = GetShippingByTotalRecords(pageIndex, pageSize);
-			totalCount = records.TotalCount;
+        /// <summary>
+        /// Get models for shipping by total records
+        /// </summary>
+        public virtual IList<ByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount)
+        {
+            // data join would be much better but not possible here cause ShippingByTotalObjectContext cannot be shared across repositories
+            var records = GetShippingByTotalRecords(pageIndex, pageSize);
+            totalCount = records.TotalCount;
 
-			if (records.Count <= 0)
-				return new List<ByTotalModel>();
+            if (records.Count <= 0)
+                return new List<ByTotalModel>();
 
-			var allStores = _storeService.GetAllStores();
+            var allStores = _storeService.GetAllStores();
 
-			var result = records.Select(x =>
-				{
-					var store = allStores.FirstOrDefault(y => y.Id == x.StoreId);
-					var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
-					var country = _countryService.GetCountryById(x.CountryId ?? 0);
-					var stateProvince = _stateProvinceService.GetStateProvinceById(x.StateProvinceId ?? 0);
+            var result = records.Select(x =>
+                {
+                    var store = allStores.FirstOrDefault(y => y.Id == x.StoreId);
+                    var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
+                    var country = _countryService.GetCountryById(x.CountryId ?? 0);
+                    var stateProvince = _stateProvinceService.GetStateProvinceById(x.StateProvinceId ?? 0);
 
-					var model = new ByTotalModel()
-					{
-						Id = x.Id,
-						StoreId = x.StoreId,
-						ShippingMethodId = x.ShippingMethodId,
-						CountryId = x.CountryId,
-						StateProvinceId = x.StateProvinceId,
-						Zip = (x.Zip.HasValue() ? x.Zip : "*"),
-						From = x.From,
-						To = x.To,
-						UsePercentage = x.UsePercentage,
-						ShippingChargePercentage = x.ShippingChargePercentage,
-						ShippingChargeAmount = x.ShippingChargeAmount,
-						BaseCharge = x.BaseCharge,
-						MaxCharge = x.MaxCharge,
-						StoreName = (store == null ? "*" : store.Name),
-						ShippingMethodName = (shippingMethod == null ? "".NaIfEmpty() : shippingMethod.Name),
-						CountryName = (country == null ? "*" : country.Name),
-						StateProvinceName = (stateProvince ==null ? "*" : stateProvince.Name)
-					};
+                    var model = new ByTotalModel()
+                    {
+                        Id = x.Id,
+                        StoreId = x.StoreId,
+                        ShippingMethodId = x.ShippingMethodId,
+                        CountryId = x.CountryId,
+                        StateProvinceId = x.StateProvinceId,
+                        Zip = (x.Zip.HasValue() ? x.Zip : "*"),
+                        From = x.From,
+                        To = x.To,
+                        UsePercentage = x.UsePercentage,
+                        ShippingChargePercentage = x.ShippingChargePercentage,
+                        ShippingChargeAmount = x.ShippingChargeAmount,
+                        BaseCharge = x.BaseCharge,
+                        MaxCharge = x.MaxCharge,
+                        StoreName = (store == null ? "*" : store.Name),
+                        ShippingMethodName = (shippingMethod == null ? "".NaIfEmpty() : shippingMethod.Name),
+                        CountryName = (country == null ? "*" : country.Name),
+                        StateProvinceName = (stateProvince == null ? "*" : stateProvince.Name)
+                    };
 
-					return model;
-				})
-				.ToList();
+                    return model;
+                })
+                .ToList();
 
-			return result;
-		}
+            return result;
+        }
 
         /// <summary>
         /// Finds the ShippingByTotalRecord by its identifier

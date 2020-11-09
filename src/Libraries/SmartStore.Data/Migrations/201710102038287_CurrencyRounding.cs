@@ -15,7 +15,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Currency", "RoundOrderTotalRule", c => c.Int(nullable: false));
             AddColumn("dbo.PaymentMethod", "RoundOrderTotalEnabled", c => c.Boolean(nullable: false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.PaymentMethod", "RoundOrderTotalEnabled");
@@ -27,10 +27,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.Order", "OrderTotalRounding");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {
@@ -105,11 +102,11 @@ namespace SmartStore.Data.Migrations
                 "The number of decimal digits must be between 0 and 8.",
                 "Die Anzahl der Dezimalstellen muss zwischen 0 und 8 liegen.");
 
-			builder.Delete(
-				"Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation",
-				"Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation.Hint");
+            builder.Delete(
+                "Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation",
+                "Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation.Hint");
 
-			builder.AddOrUpdate("Admin.Orders.Fields.OrderTotalRounding",
+            builder.AddOrUpdate("Admin.Orders.Fields.OrderTotalRounding",
                 "Rounding",
                 "Rundung",
                 "The amount by which the order total was rounded up or down.",

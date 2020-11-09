@@ -7,6 +7,7 @@
 	@if(Model.AvailableProviders.Count > 0)
 	{
 		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
+			@Html.AntiForgeryToken()
 			<table class="adminContent">
 				<tr class="wide">
 					<td class="adminTitle">

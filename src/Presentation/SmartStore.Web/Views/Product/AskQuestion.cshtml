@@ -2,91 +2,92 @@
 @using SmartStore.Web.Models.Catalog;
 @{
     Layout = "_Layout";
-
     Html.AddTitleParts(Model.ProductName);
-    Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
+    var title = Model.IsQuoteRequest ? T("Products.AskQuestion.TitleQuoteRequest") : T("Products.AskQuestion.Title");
+    Html.AddTitleParts(title.Text);
     Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 <div class="page ask-question-page">
     <div class="page-title">
-        <h1>@T("Products.AskQuestion.Title")</h1>
+        <h1>@title</h1>
     </div>
     <div class="page-body">
 
         @using (Html.BeginForm("AskQuestion", null, FormMethod.Post, new { @class = "form-horizontal" }))
-		{
+        {
+            <fieldset>
+                <legend>
+                    <a href="@Model.ProductUrl" class="product">
+                        <span @Html.LanguageAttributes(Model.ProductName)>@Model.ProductName</span>
+                    </a>
+                    <input type="hidden" class="form-control " id="SelectedAttributes" name="SelectedAttributes" value="@Html.Raw(Model.SelectedAttributes)">
+                    <input type="hidden" class="form-control " id="ProductUrl" name="ProductUrl" value="@Html.Raw(Model.ProductUrl)">
+                    <input type="hidden" class="form-control " id="IsQuoteRequest" name="IsQuoteRequest" value="@Html.Raw(Model.IsQuoteRequest)">
+                </legend>
+                <p class="fwm fs-h5">@Html.Raw(Model.SelectedAttributes)</p>
 
-        <fieldset>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @Html.ValidationSummary(true)
+                }
 
-            <legend>
-                <a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">
-					<span @Html.LanguageAttributes(Model.ProductName)>@Model.ProductName</span>
-				</a>
-            </legend>
+                @if (this.EnableHoneypotProtection)
+                {
+                    <div class="d-none">
+                        @Html.HoneypotField()
+                    </div>
+                }
 
-            @if (!ViewData.ModelState.IsValid)
-			{
-                @Html.ValidationSummary(true)
-			}
-			
-			@if (this.EnableHoneypotProtection)
-			{
-				<div class="d-none">
-					@Html.HoneypotField()
-				</div>
-			}
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.SenderEmail, new { @class = "col-form-label required", @for = "SenderEmail" })
-                @Html.TextBoxFor(model => model.SenderEmail, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SenderEmail, null, new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.SenderName, new { @class = "col-form-label{0}".FormatWith(Model.SenderNameRequired ? " required" : ""), @for = "SenderName" })
-                @Html.TextBoxFor(model => model.SenderName, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SenderName, null, new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.SenderPhone, new { @class = "col-form-label", @for = "SenderPhone" })
-                @Html.TextBoxFor(model => model.SenderPhone, new { placeholder = T("Common.Optional"), @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SenderPhone, null, new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Question, new { @class = "col-form-label required", @for = "Question" })
-                @Html.TextAreaFor(model => model.Question, new { @class = "personal-message form-control" })
-                @Html.ValidationMessageFor(model => model.Question, null, new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group row">
-                <div class="col-12 text-muted">
-                    @T("Common.FormFields.Required.Hint")
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SenderEmail, new { @class = "col-form-label required", @for = "SenderEmail" })
+                    @Html.TextBoxFor(model => model.SenderEmail, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SenderEmail, null, new { @class = "text-danger" })
                 </div>
-            </div>
 
-			@{ Html.RenderWidget("gdpr_consent"); }
-
-            @if (Model.DisplayCaptcha)
-            {
-				<div class="form-group">
-					<div class="captcha-box">
-						@Html.Raw(Html.GenerateCaptcha())
-					</div>
-				</div>
-            }
-
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" name="send-email" class="btn btn-primary">
-                        <i class="fa fa-caret-right"></i>
-						<span>@T("Common.Send")</span>
-                    </button>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SenderName, new { @class = "col-form-label{0}".FormatWith(Model.SenderNameRequired ? " required" : ""), @for = "SenderName" })
+                    @Html.TextBoxFor(model => model.SenderName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SenderName, null, new { @class = "text-danger" })
                 </div>
-            </div>
 
-        </fieldset>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SenderPhone, new { @class = "col-form-label", @for = "SenderPhone" })
+                    @Html.TextBoxFor(model => model.SenderPhone, new { placeholder = T("Common.Optional"), @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SenderPhone, null, new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Question, new { @class = "col-form-label required", @for = "Question" })
+                    @Html.TextAreaFor(model => model.Question, new { @class = "personal-message form-control" })
+                    @Html.ValidationMessageFor(model => model.Question, null, new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-12 text-muted">
+                        @T("Common.FormFields.Required.Hint")
+                    </div>
+                </div>
+
+                @{ Html.RenderWidget("gdpr_consent"); }
+
+                @if (Model.DisplayCaptcha)
+                {
+                    <div class="form-group">
+                        <div class="captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    </div>
+                }
+
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" name="send-email" class="btn btn-primary">
+                            <i class="fa fa-caret-right"></i>
+                            <span>@T("Common.Send")</span>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
         }
 
     </div>

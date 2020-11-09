@@ -986,7 +986,7 @@ namespace SmartStore.Data.Setup
                 PriceAdjustment = 15.00M
                 //LinkedProductId = _ctx.Set<Product>().First(x => x.Sku == "Ubi-princepersia").Id
             });
-            
+
             entities.Add(attributeEvopower);
 
             #endregion Evopower 5.3 Trainer HS Ball

@@ -21,31 +21,32 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Rules.Domain;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public class DeDESeedData : InvariantSeedData
+    public class DeDESeedData : InvariantSeedData
     {
-		private readonly IDictionary<string, TaxCategory> _taxCategories = new Dictionary<string, TaxCategory>();
-		private DeliveryTime _defaultDeliveryTime;
+        private readonly IDictionary<string, TaxCategory> _taxCategories = new Dictionary<string, TaxCategory>();
+        private DeliveryTime _defaultDeliveryTime;
 
-		protected override void Alter(Customer entity)
+        protected override void Alter(Customer entity)
         {
             base.Alter(entity);
 
-			if (entity.SystemName == SystemCustomerNames.SearchEngine)
+            if (entity.SystemName == SystemCustomerNames.SearchEngine)
             {
                 entity.AdminComment = "System-Gastkonto für Suchmaschinenanfragen.";
             }
-			else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
+            else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
             {
                 entity.AdminComment = "Systemkonto für geplante Aufgaben.";
             }
-			else if (entity.SystemName == SystemCustomerNames.PdfConverter)
-			{
-				entity.AdminComment = "Systemkonto für den PDF-Konverter.";
-			}
+            else if (entity.SystemName == SystemCustomerNames.PdfConverter)
+            {
+                entity.AdminComment = "Systemkonto für den PDF-Konverter.";
+            }
         }
 
         protected override void Alter(IList<MeasureDimension> entities)
@@ -126,6 +127,7 @@ namespace SmartStore.Web.Infrastructure.Installation
         protected override void Alter(IList<ShippingMethod> entities)
         {
             base.Alter(entities);
+
             entities.WithKey(x => x.DisplayOrder)
                 .Alter(0, x =>
                 {
@@ -136,6 +138,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.Name = "Versand";
                     x.Description = "Ihre Bestellung wird Ihnen durch unsere Versandpartner zugestellt.";
+                })
+                .Alter(2, x =>
+                {
+                    x.Name = "Kostenloser Versand";
                 });
         }
 
@@ -190,7 +196,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                {
                    x.Name = "Gäste";
                })
-               ;
+               .Alter("Inactive new customers", x =>
+               {
+                   x.Name = "Inaktive Neukunden";
+               });
         }
 
         protected override void Alter(Address entity)
@@ -210,38 +219,14 @@ namespace SmartStore.Web.Infrastructure.Installation
         }
 
 
-        protected override string TaxNameBooks
-        {
-            get => "Ermäßigt";
-        }
-        protected override string TaxNameDigitalGoods
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameJewelry
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameApparel
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameFood
-        {
-            get => "Ermäßigt";
-        }
-        protected override string TaxNameElectronics
-        {
-            get => "Normal";
-        }
-        protected override string TaxNameTaxFree
-        {
-            get => "Befreit";
-        }
-        public override decimal[] FixedTaxRates
-        {
-            get => new decimal[] { 19, 7, 0 };
-        }
+        protected override string TaxNameBooks => "Ermäßigt";
+        protected override string TaxNameDigitalGoods => "Normal";
+        protected override string TaxNameJewelry => "Normal";
+        protected override string TaxNameApparel => "Normal";
+        protected override string TaxNameFood => "Ermäßigt";
+        protected override string TaxNameElectronics => "Normal";
+        protected override string TaxNameTaxFree => "Befreit";
+        public override decimal[] FixedTaxRates => new decimal[] { 19, 7, 0 };
 
         protected override void Alter(IList<TaxCategory> entities)
         {
@@ -272,123 +257,123 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 .Alter(276, x =>
                 {
-                x.Name = "Deutschland";
-                x.DisplayOrder = -10;
-                x.Published = true;
-                #region Provinces
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Baden-Württemberg",
-                    Abbreviation = "BW",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Bayern",
-                    Abbreviation = "BY",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Berlin",
-                    Abbreviation = "BE",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Brandenburg",
-                    Abbreviation = "BB",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Bremen",
-                    Abbreviation = "HB",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Hamburg",
-                    Abbreviation = "HH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Hessen",
-                    Abbreviation = "HE",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Mecklenburg-Vorpommern",
-                    Abbreviation = "MV",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Niedersachsen",
-                    Abbreviation = "NI",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Nordrhein-Westfalen",
-                    Abbreviation = "NW",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Rheinland-Pfalz",
-                    Abbreviation = "RP",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Saarland",
-                    Abbreviation = "SL",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Sachsen",
-                    Abbreviation = "SN",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Sachsen-Anhalt",
-                    Abbreviation = "ST",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Schleswig-Holstein",
-                    Abbreviation = "SH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                x.StateProvinces.Add(new StateProvince()
-                {
-                    Name = "Thüringen",
-                    Abbreviation = "TH",
-                    Published = true,
-                    DisplayOrder = 1,
-                });
-                #endregion Provinces
+                    x.Name = "Deutschland";
+                    x.DisplayOrder = -10;
+                    x.Published = true;
+                    #region Provinces
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Baden-Württemberg",
+                        Abbreviation = "BW",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Bayern",
+                        Abbreviation = "BY",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Berlin",
+                        Abbreviation = "BE",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Brandenburg",
+                        Abbreviation = "BB",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Bremen",
+                        Abbreviation = "HB",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Hamburg",
+                        Abbreviation = "HH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Hessen",
+                        Abbreviation = "HE",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Mecklenburg-Vorpommern",
+                        Abbreviation = "MV",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Niedersachsen",
+                        Abbreviation = "NI",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Nordrhein-Westfalen",
+                        Abbreviation = "NW",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Rheinland-Pfalz",
+                        Abbreviation = "RP",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Saarland",
+                        Abbreviation = "SL",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Sachsen",
+                        Abbreviation = "SN",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Sachsen-Anhalt",
+                        Abbreviation = "ST",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Schleswig-Holstein",
+                        Abbreviation = "SH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    x.StateProvinces.Add(new StateProvince()
+                    {
+                        Name = "Thüringen",
+                        Abbreviation = "TH",
+                        Published = true,
+                        DisplayOrder = 1,
+                    });
+                    #endregion Provinces
                 })
                 .Alter(40, x =>
                 {
@@ -1975,7 +1960,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter<SeoSettings>(x =>
                 {
-                    x.DefaultTitle = "Mein Shop";
+                    x.MetaTitle = "Mein Shop";
                 })
                 .Alter<OrderSettings>(x =>
                 {
@@ -2752,87 +2737,41 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.MetaTitle)
-                .Alter("Furniture", x =>
-                {
-                    x.Name = "Möbel";
-                })
-                .Alter("Lounger", x =>
-                {
-                    x.Name = "Liegen";
-                })
-                .Alter("Chairs", x =>
-                {
-                    x.Name = "Sessel";
-                })
-                .Alter("Lamps", x =>
-                {
-                    x.Name = "Lampen";
-                })
-                .Alter("Fashion", x =>
-                {
-                    x.Name = "Mode";
-                })
-                .Alter("Sports", x =>
-                {
-                    x.Name = "Sport";
-                })
-                .Alter("Sunglasses", x =>
-                {
-                    x.Name = "Sonnenbrillen";
-                })
-                .Alter("Soccer", x =>
-                {
-                    x.Name = "Fußball";
-                })
-                .Alter("Books", x =>
-                {
-                    x.Name = "Bücher";
-                })
-                .Alter("Cook and enjoy", x =>
-                {
-                    x.Name = "Kochen und Genießen";
-                })
-                .Alter("Computers", x =>
-                {
-                    x.Name = "Computer";
-                })
-                .Alter("Desktops", x =>
-                {
-                    x.Name = "Desktop Computer";
-                })
-                .Alter("Notebooks", x =>
-                {
-                    x.Name = "Notebook";
-                })
-                .Alter("Software", x =>
-                {
-                    x.Name = "Software";
-                })
-                .Alter("Cell phones", x =>
-                {
-                    x.Name = "Smartphones";
-                })
-                .Alter("Digital Products", x =>
-                {
-                    x.Name = "Digitale Produkte";
-                })
-                .Alter("Gift cards", x =>
-                {
-                    x.Name = "Geschenkgutscheine";
-                })
-                .Alter("Watches", x =>
-                {
-                    x.Name = "Uhren";
-                })
-                .Alter("Gaming Accessories", x =>
-                {
-                    x.Name = "Zubehör";
-                })
-                .Alter("Games", x =>
-                {
-                    x.Name = "Spiele";
-                });
+            var names = new Dictionary<string, string>
+            {
+                { "Books", "Bücher" },
+                { "Cell phones", "Smartphones" },
+                { "Chairs", "Sessel" },
+                { "Cook and enjoy", "Kochen und Genießen" },
+                { "Computers", "Computer" },
+                { "Desktops", "Desktop Computer" },
+                { "Digital Products", "Digitale Produkte" },
+                { "Fashion", "Mode" },
+                { "Furniture", "Möbel" },
+                { "Games", "Spiele" },
+                { "Gaming Accessories", "Zubehör" },
+                { "Gift cards", "Geschenkgutscheine" },
+                { "Jackets", "Jacken" },
+                { "Lounger", "Liegen" },
+                { "Lamps", "Lampen" },
+                { "Notebooks", "Notebook" },
+                { "Shoes", "Schuhe" },
+                { "Sports", "Sport" },
+                { "Soccer", "Fußball" },
+                { "Sunglasses", "Sonnenbrillen" },
+                { "Tables", "Tische" },
+                { "Trousers", "Hosen" },
+                { "Watches", "Uhren" }
+            };
+
+            var alterer = entities.WithKey(x => x.MetaTitle);
+
+            foreach (var kvp in names)
+            {
+                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
+            }
+
+            entities.Where(x => x.BadgeText.IsCaseInsensitiveEqual("NEW")).Each(x => x.BadgeText = "NEU");
         }
 
         private void AlterFashionProducts(IList<Product> entities)
@@ -3435,15 +3374,22 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-                .Alter("Sample discount with coupon code", x =>
-                {
-                    x.Name = "Beispiel Rabatt mit Coupon-Code";
-                })
-                .Alter("20% order total' discount", x =>
-                {
-                    x.Name = "20% vom Gesamteinkauf";
-                });
+            var names = new Dictionary<string, string>
+            {
+                { "10% for certain manufacturers", "10% bei bestimmten Herstellern" },
+                { "20% order total discount", "20% auf den Bestellwert" },
+                { "20% for certain categories", "20% bei bestimmten Warengruppen" },
+                { "25% on certain products", "25% auf bestimmte Produkte" },
+                { "5% on weekend orders", "5% bei Bestellungen am Wochenende" },
+                { "Sample discount with coupon code", "Beispiel Rabatt mit Coupon-Code" },
+            };
+
+            var alterer = entities.WithKey(x => x.Name);
+
+            foreach (var kvp in names)
+            {
+                alterer.Alter(kvp.Key, x => x.Name = kvp.Value);
+            }
         }
 
         protected override void Alter(IList<DeliveryTime> entities)
@@ -3664,47 +3610,11 @@ namespace SmartStore.Web.Infrastructure.Installation
         protected override void Alter(IList<BlogPost> entities)
         {
             base.Alter(entities);
-
-            entities.WithKey(x => x.Title)
-                .Alter("Online Discount Coupons", x =>
-                {
-                    x.Title = "Online Rabatt Coupon";
-                    x.Body = "<p><p>Sparen Sie mit unseren Online-Coupons bares Geld!</p></p>";
-                    x.Tags = "Geld, Rabatt, Coupon";
-                    x.Language = base.DbContext.Set<Language>().FirstOrDefault();
-                })
-                .Alter("Customer Service - Client Service", x =>
-                {
-                    x.Title = "Kundendienst - Unser Service";
-                    x.Body = "<p>Bei uns wird Service GROSS geschrieben! Auch nach Ihrem Einkauf bei uns können Sie mit uns Rechnen!<br></p>";
-                    x.Tags = "Shopsystem, Smartstore, asp.net, sample tag, Service";
-                    x.Language = base.DbContext.Set<Language>().FirstOrDefault();
-                });
         }
 
         protected override void Alter(IList<NewsItem> entities)
         {
-            var defaultLanguage = base.DbContext.Set<Language>().FirstOrDefault();
             base.Alter(entities);
-
-            entities.WithKey(x => x.MetaTitle)
-                .Alter("Smartstore new release!", x =>
-                {
-                    x.Title = "Smartstore - das clevere Shopsystem!";
-                    x.Short = "Smartstore ist die neue dynamische E-Commerce Lösung der SmartStore AG. Smartstore bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";
-                    x.Full = "<p>Mit Smartstore haben Sie alles im Griff. Verwalten Sie Ihren Lagerbestand, Ihre Aufträge und alle kundenspezifischen Funktionen, wie kundenindividuelle Rabatte, Gutscheine oder Zugriffsrechte für spezielle Kundengruppen.</p>" +
-                    "<p>Durch sprechende URL's und eine durchdachte HTML-Struktur ist Smartstore perfekt für Suchmaschinen optimiert.</p><p>Smartstore erkennt automatisch, ob Ihre Shopbesucher mit einem mobilen Endgerät auf Ihren Shop zugreifen und zeigt den Shop in einer Ansicht, die für geringe Auflösungen optimiert ist.</p>" +
-                    "<p>Steigern sie Ihren Umsatz und animieren Sie mehr Kunden zum Kauf mit Produkt-Rezensionen und -Bewertungen.</p><p>Smartstore wird bereits mit Sprachpaketen für Deutsch und Englisch ausgeliefert und unterstützt die Verwaltung unendlich vieler weiterer Sprachen.</p><p>Starten Sie sofort durch!<br>Importieren Sie Ihren Smartstore.biz Shop mit nur einem Klick nach Smartstore.</p>";
-                    x.Language = defaultLanguage;
-                })
-                .Alter("Smartstore 3.2", x =>
-                {
-                    x.Title = "Smartstore 3.2 jetzt mit dem neuen CMS Page Builder";
-                    x.Short = "Erstellen Sie faszinierende Inhalte mit dem neuen Page Builder.";
-                    x.Full = "<p>Mit dem neuen Smartstore Page Builder gestalten Sie faszinierende Inhalte aus Produkten, Warengruppen, Bildern, Videos und Texten. Designelemente wie Animationen, Übergänge, Verläufe, Hover-Effekte, Overlays und die Bedienung über den WYSIWYG Editor lassen in Bezug auf Design und Flexibilität keine Wünsche offen.<br/>" +
-                    "Mehr Informationen über Smartstore 3.2 und Smartstore Page Builder finden Sie unter <a href=\"http://www.smartstore.com\">www.smartstore.com</a></p>";
-                    x.Language = defaultLanguage;
-                });
         }
 
         protected override void Alter(IList<Poll> entities)
@@ -3803,6 +3713,44 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter(8, x =>
                 {
                     x.Name = "Einmal im Monat";
+                });
+        }
+
+        protected override void Alter(IList<Campaign> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.Name)
+                .Alter("Reminder of inactive new customers", x =>
+                {
+                    x.Name = "Erinnerung von inaktiven Neukunden";
+                    x.Subject = "Neue, aufregende Produkte warten auf Sie entdeckt zu werden.";
+                });
+        }
+
+        protected override void Alter(IList<RuleSetEntity> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.Name)
+                .Alter("Weekends", x =>
+                {
+                    x.Name = "Wochenenden";
+                })
+                .Alter("Major customers", x =>
+                {
+                    x.Name = "Wichtige Kunden";
+                    x.Description = "3 oder mehr Bestellungen und aktueller Bestellwert mindestens 200,- Euro.";
+                })
+                .Alter("Sale", x =>
+                {
+                    x.Name = "Sale";
+                    x.Description = "Produkte mit angewendeten Rabatten.";
+                })
+                .Alter("Inactive new customers", x =>
+                {
+                    x.Name = "Inaktive Neukunden";
+                    x.Description = "Eine abgeschlossene, mindestens 90 Tage zurückliegende Bestellung.";
                 });
         }
     }

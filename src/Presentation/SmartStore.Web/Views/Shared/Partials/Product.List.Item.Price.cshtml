@@ -3,10 +3,12 @@
 @using SmartStore.Services.Localization;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Directory;
 
 @{ 
     var list = Model.Parent;
     var artPriceClasses = "art-price";
+	var deliveryPresentation = list.DeliveryTimesPresentation;
 
     if (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll || (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeFreeProductsOnly && Model.Price.PriceValue == 0))
     {
@@ -20,7 +22,7 @@
         }
     }
 
-    if (Model.DisplayTextForZeroPrices && Model.Price.PriceValue == 0)
+    if (Model.DisplayTextForZeroPrices && Model.Price.PriceValue == 0 && !Model.Price.CallForPrice)
     {
         Model.Price.Price = T("Products.Free").Text;
     }
@@ -36,23 +38,45 @@
     }
 }
 
-@if (list.ShowDeliveryTimes)
+@if (deliveryPresentation != DeliveryTimesPresentation.None)
 {
 	<div class="art-delivery-info">
 		@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
-		{
-			var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
-			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
-				<i class="fa fa-circle delivery-time-status"></i>
-				<span dir="auto">@statusLabel</span>
-			</span>
-		}
+        {
+            var showStatusLabel =
+                deliveryPresentation == DeliveryTimesPresentation.LabelOnly ||
+                deliveryPresentation == DeliveryTimesPresentation.LabelAndDate ||
+                !Model.DeliveryTimeDate.HasValue();
+
+            var showDeliveryDate =
+                (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate) &&
+                Model.DeliveryTimeDate.HasValue();
+
+            var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
+
+            if (showStatusLabel)
+            {
+				<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+					<i class="fa fa-circle delivery-time-status"></i>
+					<span dir="auto">@statusLabel</span>
+				</span>
+            }
+			if (showDeliveryDate)
+            {
+				<span class="delivery-date-block" title="@T("Products.DeliveryDate") @Model.DeliveryTimeDate.RemoveHtml()">
+					@if (!showStatusLabel)
+					{
+						<span>@T("Products.DeliveryDate")</span>
+					}
+					<span class="delivery-date" dir="auto">@Html.Raw(Model.DeliveryTimeDate)</span>
+				</span>
+            }
+        }
 	</div>
 }
 
 @if (list.ShowPrice)
 {
-
 	<div class="art-price-block">
 		<span class="@artPriceClasses">
             @(Model.Price.SavingAmount.HasValue() ? "% " : "")@Model.Price.Price

@@ -50,7 +50,7 @@
 									<i class="fa fa-cog"></i>
 								</button>
 								<div class="dropdown-menu">
-									<a class="dropdown-item plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
+									<a class="dropdown-item plugin-update-resources" href="@Url.Action("UpdateStringResources")" data-system-name="@plugin.SystemName">
 										<i class="fa fa-fw fa-language"></i>
 										<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
 									</a>
@@ -131,6 +131,8 @@
 
 @using (Html.BeginForm("ExecuteTasks", null, FormMethod.Post, new { id = "plugins-form" }))
 {
+	@Html.AntiForgeryToken()
+
     @Html.DropDownList("pluginsToInstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
     @Html.DropDownList("pluginsToUninstall", allPluginsSelectList, new { @class = "d-none noskin", multiple = "multiple" })
 
@@ -216,10 +218,10 @@
     .Render();
 }
 
-<script type="text/javascript">
-	$(document).ready(function () {
-
+<script>
+    $(function() {
 		var stores = @Html.Raw(availableStores);
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
 		// Multistore
 		$(".store-limiter").editable({
@@ -398,8 +400,7 @@
 			});
 		});
 
-		// Update (all) plugin resources
-		$('#plugins-form').on('click', 'a.plugin-update-resources, a.plugin-update-allresources', function (e) {
+		$('#plugins-form').on('click', '.plugin-update-resources, .plugin-update-allresources', function (e) {
 			e.preventDefault();
 			var el = $(this);
 
@@ -407,14 +408,30 @@
                 confirmAllText = @T("Admin.Configuration.Plugins.Resources.UpdateAllConfirm").JsText,
                 progressText = @T("Admin.Configuration.Plugins.Resources.UpdateProgress").JsText;
 
-			if (!confirm(_.str.unescapeHTML(el.hasClass('plugin-update-allresources') ? confirmAllText : confirmText))) {
+            var isSingleUpdateRequest = !el.hasClass('plugin-update-allresources');
+
+			if (!confirm(_.str.unescapeHTML(isSingleUpdateRequest ? confirmText : confirmAllText))) {
 				return false;
-			}
+            }
 
 			$.throbber.show({
 				message: progressText,
 				callback: function () {
-					setLocation(el.attr("href"));
+					$({}).doAjax({
+						type: 'POST',
+						url: el.attr("href"),
+						data: {
+							"__RequestVerificationToken": token,
+							"systemName": el.attr("data-system-name"),
+							"returnUrl": '@Request.RawUrl'
+                        },
+                        callbackSuccess: function (data) {
+                            if (data.Success) {
+                                displayNotification(data.Message, 'success');
+                            }
+                            $.throbber.hide();
+						}
+					});
 				}
 			});
 		});
@@ -441,7 +458,8 @@
 
     		$(this).doAjax({
     			type: 'GET',
-    			smallIcon: dialog.find('.modal-body'),
+                smallIcon: dialog.find('.modal-body'),
+				data: { __RequestVerificationToken: token },
     			callbackSuccess: function (resp) {
     				dialog = $('#plugin-licence-modal');
     				dialog.find('.modal-body').html(resp);
@@ -468,9 +486,11 @@
 		// reset license status
 		$('#plugin-licence-modal').on('click', '.licensing-reset-status-check', function() {
 			var licenseForm = $('#plugin-licence-modal').find('.modal-body form:first');
+			
 			$({}).doAjax({
 				type: 'POST',
-				url: licenseForm.attr('data-resetcheckurl'),
+                url: licenseForm.attr('data-resetcheckurl'),
+                data: { __RequestVerificationToken: token },
 				callbackSuccess: function (resp) {
 					if (resp.length > 0) {
 						var systemName = licenseForm.attr('data-systemname');

@@ -1,7 +1,7 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -12,24 +12,24 @@ namespace SmartStore.Data.Tests.Orders
         public void Can_save_and_load_checkoutAttributeValue()
         {
             var cav = new CheckoutAttributeValue()
-                    {
-                        Name = "Name 2",
-                        PriceAdjustment = 1.1M,
-                        WeightAdjustment = 2.1M,
-                        IsPreSelected = true,
-                        DisplayOrder = 3,
-                        CheckoutAttribute = new CheckoutAttribute
-                        {
-                            Name = "Name 1",
-                            TextPrompt = "TextPrompt 1",
-                            IsRequired = true,
-                            ShippableProductRequired = true,
-                            IsTaxExempt = true,
-                            TaxCategoryId = 1,
-                            AttributeControlType = AttributeControlType.Datepicker,
-                            DisplayOrder = 2
-                        }
-                    };
+            {
+                Name = "Name 2",
+                PriceAdjustment = 1.1M,
+                WeightAdjustment = 2.1M,
+                IsPreSelected = true,
+                DisplayOrder = 3,
+                CheckoutAttribute = new CheckoutAttribute
+                {
+                    Name = "Name 1",
+                    TextPrompt = "TextPrompt 1",
+                    IsRequired = true,
+                    ShippableProductRequired = true,
+                    IsTaxExempt = true,
+                    TaxCategoryId = 1,
+                    AttributeControlType = AttributeControlType.Datepicker,
+                    DisplayOrder = 2
+                }
+            };
 
             var fromDb = SaveAndLoadEntity(cav);
             fromDb.ShouldNotBeNull();

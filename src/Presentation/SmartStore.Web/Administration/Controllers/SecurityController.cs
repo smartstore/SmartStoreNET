@@ -4,32 +4,33 @@ using SmartStore.Core;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public class SecurityController : AdminControllerBase
-	{
+    {
         private readonly IWorkContext _workContext;
 
         public SecurityController(IWorkContext workContext)
-		{
+        {
             _workContext = workContext;
-		}
+        }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllAccessPermissions(string selected)
         {
             var systemNames = Services.Permissions.GetAllSystemNames();
             var selectedArr = selected.SplitSafe(",");
 
             var data = systemNames
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Key,
-                    text = x.Value,
-                    selected = selectedArr.Contains(x.Key)
+                    Id = x.Key,
+                    Text = x.Value,
+                    Selected = selectedArr.Contains(x.Key)
                 })
                 .ToList();
 
@@ -42,12 +43,12 @@ namespace SmartStore.Admin.Controllers
 
             if (customer == null || customer.IsGuest())
             {
-				Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
+                Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
                 return View();
             }
 
-			Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
-				customer.Email.NaIfEmpty(), customer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
+            Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
+                customer.Email.NaIfEmpty(), customer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
 
             return View();
         }

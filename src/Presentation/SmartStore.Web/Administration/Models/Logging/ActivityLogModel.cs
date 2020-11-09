@@ -23,10 +23,10 @@ namespace SmartStore.Admin.Models.Logging
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.IsSystemAccount")]
-		public bool IsSystemAccount { get; set; }
-		public string SystemAccountName { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.IsSystemAccount")]
+        public bool IsSystemAccount { get; set; }
+        public string SystemAccountName { get; set; }
+    }
 
     public class ActivityLogMapper :
         IMapper<ActivityLog, ActivityLogModel>

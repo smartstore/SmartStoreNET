@@ -12,10 +12,10 @@ namespace SmartStore.Core.Domain.Tasks
         Normal = 0,
         High = 1
     }
-    
+
     [DebuggerDisplay("{Name} (Type: {Type})")]
-	[Hookable(false)]
-	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
+    [Hookable(false)]
+    public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
     {
         private ICollection<ScheduleTaskHistory> _scheduleTaskHistory;
 
@@ -29,10 +29,10 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         public string Alias { get; set; }
 
-		/// <summary>
-		/// Gets or sets the CRON expression used to calculate future schedules
-		/// </summary>
-		public string CronExpression { get; set; }
+        /// <summary>
+        /// Gets or sets the CRON expression used to calculate future schedules
+        /// </summary>
+        public string CronExpression { get; set; }
 
         /// <summary>
         /// Gets or sets the type of appropriate ITask class
@@ -69,17 +69,17 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         public bool RunPerMachine { get; set; }
 
-		/// <summary>
-		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow and is not running).
-		/// </summary>
-		public bool IsPending
-		{
-			get
-			{
+        /// <summary>
+        /// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow and is not running).
+        /// </summary>
+        public bool IsPending
+        {
+            get
+            {
                 var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow && (LastHistoryEntry == null || !LastHistoryEntry.IsRunning);
-				return result;
-			}
-		}
+                return result;
+            }
+        }
 
         public ScheduleTaskHistory LastHistoryEntry { get; set; }
 
@@ -88,18 +88,12 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         public virtual ICollection<ScheduleTaskHistory> ScheduleTaskHistory
         {
-            get
-            {
-                return _scheduleTaskHistory ?? (_scheduleTaskHistory = new HashSet<ScheduleTaskHistory>());
-            }
-            protected set
-            {
-                _scheduleTaskHistory = value;
-            }
+            get => _scheduleTaskHistory ?? (_scheduleTaskHistory = new HashSet<ScheduleTaskHistory>());
+            protected set => _scheduleTaskHistory = value;
         }
 
         public ScheduleTask Clone()
-		{
+        {
             var task = new ScheduleTask
             {
                 Name = Name,
@@ -114,11 +108,11 @@ namespace SmartStore.Core.Domain.Tasks
             };
 
             return task;
-		}
+        }
 
-		object ICloneable.Clone()
-		{
-			return this.Clone();
-		}
-	}
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+    }
 }

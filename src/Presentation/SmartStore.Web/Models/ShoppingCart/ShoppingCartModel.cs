@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.UI.Choices;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Models.Media;
-using SmartStore.Web.Models.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI.Choices;
+using SmartStore.Web.Models.Catalog;
+using SmartStore.Web.Models.Common;
+using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -26,12 +26,12 @@ namespace SmartStore.Web.Models.ShoppingCart
             CheckoutAttributes = new List<CheckoutAttributeModel>();
             OrderReviewData = new OrderReviewDataModel();
 
-			ButtonPaymentMethods = new ButtonPaymentMethodModel();
+            ButtonPaymentMethods = new ButtonPaymentMethodModel();
         }
 
         public bool ShowSku { get; set; }
         public bool ShowProductImages { get; set; }
-		public bool ShowProductBundleImages { get; set; }
+        public bool ShowProductBundleImages { get; set; }
         public bool IsEditable { get; set; }
         public IList<ShoppingCartItemModel> Items { get; set; }
 
@@ -39,7 +39,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<CheckoutAttributeModel> CheckoutAttributes { get; set; }
 
         public IList<string> Warnings { get; set; }
-		public bool IsValidMinOrderSubtotal { get; set; }
+        public bool IsInOrderTotalsRange { get; set; }
         public bool TermsOfServiceEnabled { get; set; }
         public EstimateShippingModel EstimateShipping { get; set; }
         public DiscountBoxModel DiscountBox { get; set; }
@@ -48,19 +48,19 @@ namespace SmartStore.Web.Models.ShoppingCart
         public OrderReviewDataModel OrderReviewData { get; set; }
 
         public int MediaDimensions { get; set; }
-		public int BundleThumbSize { get; set; }
-        public bool DisplayDeliveryTime { get; set; }
+        public int BundleThumbSize { get; set; }
+        public DeliveryTimesPresentation DeliveryTimesPresentation { get; set; }
         public bool DisplayShortDesc { get; set; }
         public bool DisplayWeight { get; set; }
         public bool DisplayBasePrice { get; set; }
 
-		public ButtonPaymentMethodModel ButtonPaymentMethods { get; set; }
+        public ButtonPaymentMethodModel ButtonPaymentMethods { get; set; }
 
         public bool DisplayCommentBox { get; set; }
         public string CustomerComment { get; set; }
         public string MeasureUnitName { get; set; }
 
-		public bool DisplayEsdRevocationWaiverBox { get; set; }
+        public bool DisplayEsdRevocationWaiverBox { get; set; }
         public bool DisplayMoveToWishlistButton { get; set; }
 
         #region Nested Classes
@@ -72,8 +72,8 @@ namespace SmartStore.Web.Models.ShoppingCart
                 Picture = new PictureModel();
                 AllowedQuantities = new List<SelectListItem>();
                 Warnings = new List<string>();
-				ChildItems = new List<ShoppingCartItemModel>();
-				BundleItem = new BundleItemModel();
+                ChildItems = new List<ShoppingCartItemModel>();
+                BundleItem = new BundleItemModel();
             }
             public string Sku { get; set; }
 
@@ -85,11 +85,11 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string ProductSeName { get; set; }
 
-			public string ProductUrl { get; set; }
+            public string ProductUrl { get; set; }
 
-			public bool VisibleIndividually { get; set; }
+            public bool VisibleIndividually { get; set; }
 
-			public ProductType ProductType { get; set; }
+            public ProductType ProductType { get; set; }
 
             public string UnitPrice { get; set; }
 
@@ -101,7 +101,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public LocalizedValue<string> QuantityUnitName { get; set; }
 
-			public List<SelectListItem> AllowedQuantities { get; set; }
+            public List<SelectListItem> AllowedQuantities { get; set; }
 
             public int MinOrderAmount { get; set; }
 
@@ -122,77 +122,77 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool IsShipEnabled { get; set; }
 
             public LocalizedValue<string> DeliveryTimeName { get; set; }
-            
             public string DeliveryTimeHexValue { get; set; }
+            public string DeliveryTimeDate { get; set; }
 
             public LocalizedValue<string> ShortDesc { get; set; }
-            
+
             public string BasePrice { get; set; }
 
-			public bool IsDownload { get; set; }
-			public bool HasUserAgreement { get; set; }
+            public bool IsDownload { get; set; }
+            public bool HasUserAgreement { get; set; }
 
-			public bool IsEsd { get; set; }
+            public bool IsEsd { get; set; }
 
-			public bool BundlePerItemPricing { get; set; }
-			public bool BundlePerItemShoppingCart { get; set; }
-			public BundleItemModel BundleItem { get; set; }
-			public IList<ShoppingCartItemModel> ChildItems { get; set; }
+            public bool BundlePerItemPricing { get; set; }
+            public bool BundlePerItemShoppingCart { get; set; }
+            public BundleItemModel BundleItem { get; set; }
+            public IList<ShoppingCartItemModel> ChildItems { get; set; }
 
-			public bool DisableWishlistButton { get; set; }
+            public bool DisableWishlistButton { get; set; }
 
-			public DateTime CreatedOnUtc { get; set; }
+            public DateTime CreatedOnUtc { get; set; }
         }
 
-		public partial class BundleItemModel : EntityModelBase
-		{
-			public string PriceWithDiscount { get; set; }
-			public int DisplayOrder { get; set; }
-			public bool HideThumbnail { get; set; }
-		}
+        public partial class BundleItemModel : EntityModelBase
+        {
+            public string PriceWithDiscount { get; set; }
+            public int DisplayOrder { get; set; }
+            public bool HideThumbnail { get; set; }
+        }
 
         public partial class CheckoutAttributeModel : ChoiceModel
         {
-			public override string BuildControlId()
-			{
-				return CheckoutAttributeQueryItem.CreateKey(Id);
-			}
+            public override string BuildControlId()
+            {
+                return CheckoutAttributeQueryItem.CreateKey(Id);
+            }
 
-			public override string GetFileUploadUrl(UrlHelper url)
-			{
-				return url.Action("UploadFileCheckoutAttribute", "ShoppingCart", new { controlId = BuildControlId() });
-			}
-		}
+            public override string GetFileUploadUrl(UrlHelper url)
+            {
+                return url.Action("UploadFileCheckoutAttribute", "ShoppingCart", new { controlId = BuildControlId() });
+            }
+        }
 
         public partial class CheckoutAttributeValueModel : ChoiceItemModel
         {
-			public override string GetItemLabel()
-			{
-				var label = Name;
+            public override string GetItemLabel()
+            {
+                var label = Name;
 
-				if (PriceAdjustment.HasValue())
-				{
-					label += " ({0})".FormatWith(PriceAdjustment);
-				}
+                if (PriceAdjustment.HasValue())
+                {
+                    label += " ({0})".FormatWith(PriceAdjustment);
+                }
 
-				return label;
-			}
-		}
+                return label;
+            }
+        }
 
-        public partial class DiscountBoxModel: ModelBase
+        public partial class DiscountBoxModel : ModelBase
         {
             public bool Display { get; set; }
             public string Message { get; set; }
             public string CurrentCode { get; set; }
-			public bool IsWarning { get; set; }
-		}
+            public bool IsWarning { get; set; }
+        }
 
         public partial class GiftCardBoxModel : ModelBase
         {
             public bool Display { get; set; }
             public string Message { get; set; }
-			public bool IsWarning { get; set; }
-		}
+            public bool IsWarning { get; set; }
+        }
 
         public partial class RewardPointsBoxModel : ModelBase
         {
@@ -219,11 +219,11 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool DisplayShippingMethodChangeOption { get; set; }
 
             public string PaymentMethod { get; set; }
-			public string PaymentSummary { get; set; }
+            public string PaymentSummary { get; set; }
             public bool DisplayPaymentMethodChangeOption { get; set; }
 
             public bool IsPaymentSelectionSkipped { get; set; }
         }
-		#endregion
+        #endregion
     }
 }

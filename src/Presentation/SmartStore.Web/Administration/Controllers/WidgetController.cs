@@ -12,28 +12,28 @@ namespace SmartStore.Admin.Controllers
 {
     [AdminAuthorize]
     public partial class WidgetController : AdminControllerBase
-	{
+    {
         private readonly IWidgetService _widgetService;
         private readonly WidgetSettings _widgetSettings;
-		private readonly PluginMediator _pluginMediator;
+        private readonly PluginMediator _pluginMediator;
 
         public WidgetController(
-			IWidgetService widgetService,
-            WidgetSettings widgetSettings, 
-			PluginMediator pluginMediator)
-		{
+            IWidgetService widgetService,
+            WidgetSettings widgetSettings,
+            PluginMediator pluginMediator)
+        {
             _widgetService = widgetService;
             _widgetSettings = widgetSettings;
-			_pluginMediator = pluginMediator;
-		}
-        
+            _pluginMediator = pluginMediator;
+        }
+
         public ActionResult Index()
         {
             return RedirectToAction("Providers");
         }
 
         [Permission(Permissions.Cms.Widget.Read)]
-		public ActionResult Providers()
+        public ActionResult Providers()
         {
             var widgetsModel = new List<WidgetModel>();
             var widgets = _widgetService.LoadAllWidgets();
@@ -45,33 +45,35 @@ namespace SmartStore.Admin.Controllers
                 widgetsModel.Add(model);
             }
 
-			return View(widgetsModel);
+            return View(widgetsModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Widget.Activate)]
         public ActionResult ActivateProvider(string systemName, bool activate)
-		{		
-			var widget = _widgetService.LoadWidgetBySystemName(systemName);
-			if (widget.IsWidgetActive(_widgetSettings))
-			{
-				if (!activate)
-				{
-					// Mark as disabled.
-					_widgetSettings.ActiveWidgetSystemNames.Remove(widget.Metadata.SystemName);
+        {
+            var widget = _widgetService.LoadWidgetBySystemName(systemName);
+            if (widget.IsWidgetActive(_widgetSettings))
+            {
+                if (!activate)
+                {
+                    // Mark as disabled.
+                    _widgetSettings.ActiveWidgetSystemNames.Remove(widget.Metadata.SystemName);
                     Services.Settings.SaveSetting(_widgetSettings);
-				}
-			}
-			else
-			{
-				if (activate)
-				{
-					// Mark as active.
-					_widgetSettings.ActiveWidgetSystemNames.Add(widget.Metadata.SystemName);
-					Services.Settings.SaveSetting(_widgetSettings);
-				}
-			}
+                }
+            }
+            else
+            {
+                if (activate)
+                {
+                    // Mark as active.
+                    _widgetSettings.ActiveWidgetSystemNames.Add(widget.Metadata.SystemName);
+                    Services.Settings.SaveSetting(_widgetSettings);
+                }
+            }
 
-			return RedirectToAction("Providers");
-		}
+            return RedirectToAction("Providers");
+        }
     }
 }

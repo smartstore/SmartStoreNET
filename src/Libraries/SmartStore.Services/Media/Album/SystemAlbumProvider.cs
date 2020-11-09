@@ -12,13 +12,14 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Media
 {
     public partial class SystemAlbumProvider : IAlbumProvider, IMediaTrackDetector
     {
         private readonly IDbContext _dbContext;
-        
+
         public SystemAlbumProvider(IDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -126,6 +127,7 @@ namespace SmartStore.Services.Media
                 table.Register<ProductMediaFile>(x => x.MediaFileId);
                 table.Register<ProductAttributeOption>(x => x.MediaFileId);
                 table.Register<ProductVariantAttributeValue>(x => x.MediaFileId);
+                table.Register<CheckoutAttributeValue>(x => x.MediaFileId);
                 table.Register<SpecificationAttributeOption>(x => x.MediaFileId);
                 table.Register<Category>(x => x.MediaFileId);
                 table.Register<Manufacturer>(x => x.MediaFileId);
@@ -137,6 +139,10 @@ namespace SmartStore.Services.Media
                 table.Register<NewsItem>(x => x.MediaFileId);
                 table.Register<NewsItem>(x => x.PreviewMediaFileId);
                 table.Register<Store>(x => x.LogoMediaFileId);
+                table.Register<Store>(x => x.FavIconMediaFileId);
+                table.Register<Store>(x => x.PngIconMediaFileId);
+                table.Register<Store>(x => x.AppleTouchIconMediaFileId);
+                table.Register<Store>(x => x.MsTileImageMediaFileId);
             }
             else if (albumName == Downloads)
             {
@@ -198,6 +204,20 @@ namespace SmartStore.Services.Media
                         foreach (var x in list)
                         {
                             yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId, Property = nameof(x.MediaFileId) };
+                        }
+                        list.Clear();
+                    }
+                }
+
+                // CheckoutAttributeValue
+                {
+                    var name = nameof(CheckoutAttributeValue);
+                    var p = new FastPager<CheckoutAttributeValue>(ctx.Set<CheckoutAttributeValue>().AsNoTracking().Where(x => x.MediaFileId.HasValue), 5000);
+                    while (p.ReadNextPage(x => new { x.Id, x.MediaFileId }, x => x.Id, out var list))
+                    {
+                        foreach (var x in list)
+                        {
+                            yield return new MediaTrack { EntityId = x.Id, EntityName = name, MediaFileId = x.MediaFileId.Value, Property = nameof(x.MediaFileId) };
                         }
                         list.Clear();
                     }

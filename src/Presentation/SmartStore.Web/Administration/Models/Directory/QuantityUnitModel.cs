@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -26,7 +26,7 @@ namespace SmartStore.Admin.Models.Directory
         [AllowHtml]
         public string Description { get; set; }
 
-		[SmartResourceDisplayName("Common.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.IsDefault")]

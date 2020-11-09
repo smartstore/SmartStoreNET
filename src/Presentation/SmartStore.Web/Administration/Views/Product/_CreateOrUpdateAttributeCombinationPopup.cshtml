@@ -1,34 +1,37 @@
 ﻿@model ProductVariantAttributeCombinationModel
 
+@using SmartStore.Core.Domain.Media;
+
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 
 <div class="well">
-	@if (ViewBag.IsEdit)
+    @if (ViewBag.IsEdit)
     {
-		@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
+        @Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
     }
     else
     {
-		<div id="ProductVariantAttributeContainer">
-			@{ Html.RenderPartial("_ProductAttributes", Model); }
-		</div>
-	}
+        <div id="ProductVariantAttributeContainer">
+            @{ Html.RenderPartial("_ProductAttributes", Model); }
+        </div>
+    }
 </div>
 
 @if (!ViewBag.IsEdit)
 {
-	<div id="CombinationExistenceNote">
-		@if (Model.Warnings.Count > 0)
-		{
-			<div class="alert alert-warning">
-				@foreach (var warning in Model.Warnings)
-				{
-					<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
-				}
-			</div>
-		}
-	</div>
+    <div id="CombinationExistenceNote">
+        @if (Model.Warnings.Count > 0)
+        {
+            <div class="alert alert-warning">
+                @foreach (var warning in Model.Warnings)
+                {
+                    <p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
+                }
+            </div>
+        }
+    </div>
 }
 
 <div>
@@ -45,24 +48,24 @@
         <tr class="adminSeparator">
             <td colspan="2"><hr /></td>
         </tr>
-		<tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AssignedPictureIds)
             </td>
             <td class="adminData">
-				<ul class="choice-box-group choice-box-group-xl mb-1" id="assigned-pictures">
-					@foreach (var x in Model.AssignablePictures)
-					{
-						<li class="choice-box">
-							<label class="choice-box-label">
-								<input type="checkbox" class="choice-box-control-native" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned)>
-								<span class="choice-box-content">
-									<span class="choice-box-element" style="background-image:url('@x.PictureUrl')"></span>
-								</span>
-							</label>
-						</li>
-					}
-				</ul>
+                <ul class="choice-box-group choice-box-group-xl mb-1" id="assigned-pictures">
+                    @foreach (var x in Model.AssignablePictures)
+                    {
+                        <li class="choice-box choice-box-mediafile">
+                            <label class="choice-box-label">
+                                <input type="checkbox" class="choice-box-control-native" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned)>
+                                <span class="choice-box-content">
+                                    @Html.MediaThumbnail(x.Media, MediaSettings.ThumbnailSizeMd, new { @class = "choice-box-element" })
+                                </span>
+                            </label>
+                        </li>
+                    }
+                </ul>
             </td>
         </tr>
         <tr>
@@ -101,15 +104,15 @@
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DeliveryTimeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.DeliveryTimeId, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
-				@Html.ValidationMessageFor(model => model.DeliveryTimeId)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DeliveryTimeId)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DeliveryTimeId)
+                @Html.ValidationMessageFor(model => model.DeliveryTimeId)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
@@ -119,7 +122,7 @@
                 @Html.ValidationMessageFor(model => model.BasePriceBaseAmount)
             </td>
         </tr>
-		<tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceAmount)
             </td>
@@ -182,12 +185,14 @@
     </table>
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
 		var container = $('#ProductVariantAttributeContainer'),
 			note = $('#CombinationExistenceNote');
 
-		container.find('select').selectWrapper();
+        container.find('select').selectWrapper();
+
+        SmartStore.media.lazyLoadThumbnails($("#assigned-pictures"));
 
 		container.change(function() {
 			note.empty();

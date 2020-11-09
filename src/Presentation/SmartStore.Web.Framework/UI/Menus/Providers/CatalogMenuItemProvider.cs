@@ -11,8 +11,8 @@ using SmartStore.Utilities;
 namespace SmartStore.Web.Framework.UI
 {
     [MenuItemProvider("catalog", AppendsMultipleItems = true)]
-	public class CatalogMenuItemProvider : MenuItemProviderBase
-	{
+    public class CatalogMenuItemProvider : MenuItemProviderBase
+    {
         private readonly ICommonServices _services;
         private readonly ICategoryService _categoryService;
         private readonly ILinkResolver _linkResolver;
@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.UI
         public Localizer T { get; set; }
 
         public override TreeNode<MenuItem> Append(MenuItemProviderRequest request)
-		{
+        {
             if (request.IsEditMode)
             {
                 var item = ConvertToMenuItem(request);
@@ -70,10 +70,10 @@ namespace SmartStore.Web.Framework.UI
             // invalidate all containing menus also.
         }
 
-		protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
-		{
-			// Void, does nothing here.
-		}
+        protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
+        {
+            // Void, does nothing here.
+        }
 
         private TreeNode<MenuItem> ConvertNode(
             MenuItemProviderRequest request,
@@ -119,7 +119,7 @@ namespace SmartStore.Web.Framework.UI
                     menuItem.RouteName = "HomePage";
                 }
             }
-            
+
             // Picture
             if (node.Id > 0 && node.ParentCategoryId == 0 && node.Published && node.MediaFileId != null)
             {

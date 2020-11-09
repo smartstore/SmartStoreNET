@@ -1,10 +1,10 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -18,7 +18,7 @@ namespace SmartStore.Data.Tests.Orders
             {
                 Order = GetTestOrder(),
                 Note = "Note1",
-                DisplayToCustomer= true,
+                DisplayToCustomer = true,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
             };
 
@@ -30,7 +30,7 @@ namespace SmartStore.Data.Tests.Orders
 
             fromDb.Order.ShouldNotBeNull();
         }
-        
+
         protected Customer GetTestCustomer()
         {
             return new Customer
@@ -61,8 +61,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

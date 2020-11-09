@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class ManufacturerBottomDescription : DbMigration
     {
         public override void Up()
@@ -10,7 +9,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Manufacturer", "BottomDescription", c => c.String());
             CreateIndex("dbo.PermissionRecord", "SystemName");
         }
-        
+
         public override void Down()
         {
             DropIndex("dbo.PermissionRecord", new[] { "SystemName" });

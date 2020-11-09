@@ -240,4 +240,4 @@
         return result;
     }
 
-})( jQuery, this, document );
+})(jQuery, this, document);

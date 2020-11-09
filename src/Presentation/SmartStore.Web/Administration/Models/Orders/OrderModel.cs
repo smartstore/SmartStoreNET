@@ -15,14 +15,14 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-	public class OrderModel : TabbableModel
+    public class OrderModel : TabbableModel
     {
         public OrderModel()
         {
             TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
-			AutoUpdateOrderItem = new AutoUpdateOrderItemModel();
+            AutoUpdateOrderItem = new AutoUpdateOrderItemModel();
         }
 
         //identifiers
@@ -33,17 +33,17 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderGuid")]
         public Guid OrderGuid { get; set; }
 
-		//store
-		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
-		public string StoreName { get; set; }
-		public string FromStore { get; set; }
+        //store
+        [SmartResourceDisplayName("Admin.Orders.Fields.Store")]
+        public string StoreName { get; set; }
+        public string FromStore { get; set; }
 
-		//customer info
-		[SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
+        //customer info
+        [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
-		public string CustomerName { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
+        public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
         public string CustomerEmail { get; set; }
@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.Orders.Fields.Affiliate")]
         public int AffiliateId { get; set; }
-		public string AffiliateFullName { get; set; }
+        public string AffiliateFullName { get; set; }
 
         //totals
         public bool AllowCustomersToSelectTaxDisplayType { get; set; }
@@ -86,18 +86,23 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.RedeemedRewardPoints")]
         public string RedeemedRewardPointsAmount { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
-		public string CreditBalance { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
+        public string CreditBalance { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
         public string OrderTotalRounding { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
         public string OrderTotal { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
         public string RefundedAmount { get; set; }
 
-		//edit totals
-		[SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
+        // Quantity is only filled in context of product details (orders) to display an additional column
+        // It is empty (null) in orders list
+        [SmartResourceDisplayName("Admin.Orders.Products.Quantity")]
+        public int? Quantity { get; set; }
+
+        //edit totals
+        [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalInclTaxValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalExclTaxValue { get; set; }
@@ -120,10 +125,10 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotalDiscount")]
         public decimal OrderTotalDiscountValue { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
-		public decimal CreditBalanceValue { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
+        public decimal CreditBalanceValue { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
         public decimal OrderTotalRoundingValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotal")]
         public decimal OrderTotalValue { get; set; }
@@ -135,67 +140,67 @@ namespace SmartStore.Admin.Models.Orders
         //order status
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderStatus")]
         public string OrderStatus { get; set; }
-		public OrderStatus StatusOrder { get; set; }
+        public OrderStatus StatusOrder { get; set; }
 
-		public string OrderStatusLabelClass
-		{
-			get
-			{
-				switch (StatusOrder)
-				{
-					case Core.Domain.Orders.OrderStatus.Pending:
-						return "fw-600";
-					case Core.Domain.Orders.OrderStatus.Processing:
-						return "";
-					case Core.Domain.Orders.OrderStatus.Complete:
-						return "text-success";
-					case Core.Domain.Orders.OrderStatus.Cancelled:
-						return "muted";
-					default:
-						return "";
-				}
-			}
-		}
+        public string OrderStatusLabelClass
+        {
+            get
+            {
+                switch (StatusOrder)
+                {
+                    case Core.Domain.Orders.OrderStatus.Pending:
+                        return "fw-600";
+                    case Core.Domain.Orders.OrderStatus.Processing:
+                        return "";
+                    case Core.Domain.Orders.OrderStatus.Complete:
+                        return "text-success";
+                    case Core.Domain.Orders.OrderStatus.Cancelled:
+                        return "muted";
+                    default:
+                        return "";
+                }
+            }
+        }
 
-		//payment info
-		[SmartResourceDisplayName("Admin.Orders.Fields.PaymentStatus")]
+        //payment info
+        [SmartResourceDisplayName("Admin.Orders.Fields.PaymentStatus")]
         public string PaymentStatus { get; set; }
-		public PaymentStatus StatusPayment { get; set; }
+        public PaymentStatus StatusPayment { get; set; }
 
-		public bool HasPaymentMethod { get; set; }
-		[SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
+        public bool HasPaymentMethod { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
-		public string WithPaymentMethod { get; set; }
-		public string PaymentMethodSystemName { get; set; }
+        public string WithPaymentMethod { get; set; }
+        public string PaymentMethodSystemName { get; set; }
 
-		public bool HasNewPaymentNotification { get; set; }
+        public bool HasNewPaymentNotification { get; set; }
 
-		public string PaymentStatusLabelClass
-		{
-			get
-			{
-				switch (StatusPayment)
-				{
-					case Core.Domain.Payments.PaymentStatus.Pending:
-						return "fa fa-fw fa-circle text-danger";
-					case Core.Domain.Payments.PaymentStatus.Authorized:
-						return "fa fa-fw fa-circle text-warning";
-					case Core.Domain.Payments.PaymentStatus.Paid:
-						return "fa fa-fw fa-check text-success";
-					case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
-						return "fa fa-fw fa-exchange-alt text-warning";
-					case Core.Domain.Payments.PaymentStatus.Refunded:
-						return "fa fa-fw fa-exchange-alt text-success";
-					case Core.Domain.Payments.PaymentStatus.Voided:
-						return "fa fa-fw fa-ban muted";
-					default:
-						return "";
-				}
-			}
-		}
+        public string PaymentStatusLabelClass
+        {
+            get
+            {
+                switch (StatusPayment)
+                {
+                    case Core.Domain.Payments.PaymentStatus.Pending:
+                        return "fa fa-fw fa-circle text-danger";
+                    case Core.Domain.Payments.PaymentStatus.Authorized:
+                        return "fa fa-fw fa-circle text-warning";
+                    case Core.Domain.Payments.PaymentStatus.Paid:
+                        return "fa fa-fw fa-check text-success";
+                    case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
+                        return "fa fa-fw fa-exchange-alt text-warning";
+                    case Core.Domain.Payments.PaymentStatus.Refunded:
+                        return "fa fa-fw fa-exchange-alt text-success";
+                    case Core.Domain.Payments.PaymentStatus.Voided:
+                        return "fa fa-fw fa-ban muted";
+                    default:
+                        return "";
+                }
+            }
+        }
 
-		//credit card info
-		public bool AllowStoringCreditCardNumber { get; set; }
+        //credit card info
+        public bool AllowStoringCreditCardNumber { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.CardType")]
         [AllowHtml]
         public string CardType { get; set; }
@@ -244,9 +249,9 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string DirectDebitIban { get; set; }
 
-		//misc payment info
-		public bool DisplayCompletePaymentNote { get; set; }
-		public bool DisplayPurchaseOrderNumber { get; set; }
+        //misc payment info
+        public bool DisplayCompletePaymentNote { get; set; }
+        public bool DisplayPurchaseOrderNumber { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.PurchaseOrderNumber")]
         public string PurchaseOrderNumber { get; set; }
@@ -257,59 +262,59 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.SubscriptionTransactionID")]
         public string SubscriptionTransactionId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionResult")]
-		public string AuthorizationTransactionResult { get; set; }
-		[SmartResourceDisplayName("Admin.Orders.Fields.CaptureTransactionResult")]
-		public string CaptureTransactionResult { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionResult")]
+        public string AuthorizationTransactionResult { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.CaptureTransactionResult")]
+        public string CaptureTransactionResult { get; set; }
 
         //shipping info
         public bool IsShippable { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.ShippingStatus")]
         public string ShippingStatus { get; set; }
-		public ShippingStatus StatusShipping { get; set; }
+        public ShippingStatus StatusShipping { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.ShippingAddress")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.ShippingAddress")]
         public AddressModel ShippingAddress { get; set; }
-		public string ShippingAddressString { get; set; }
+        public string ShippingAddressString { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderWeight")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderWeight")]
         public decimal OrderWeight { get; set; }
         public string BaseWeightIn { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.ShippingMethod")]
         public string ShippingMethod { get; set; }
-		public string ViaShippingMethod { get; set; }
-		public string ShippingAddressGoogleMapsUrl { get; set; }
+        public string ViaShippingMethod { get; set; }
+        public string ShippingAddressGoogleMapsUrl { get; set; }
         public bool CanAddNewShipments { get; set; }
 
-		public string ShippingStatusLabelClass
-		{
-			get
-			{
-				switch (StatusShipping)
-				{
-					case Core.Domain.Shipping.ShippingStatus.ShippingNotRequired:
-						return "fa fa-fw fa-download muted";
-					case Core.Domain.Shipping.ShippingStatus.NotYetShipped:
-						return "fa fa-fw fa-circle text-danger";
-					case Core.Domain.Shipping.ShippingStatus.PartiallyShipped:
-						return "fa fa-fw fa-truck fa-flip-horizontal text-warning";
-					case Core.Domain.Shipping.ShippingStatus.Shipped:
-						return "fa fa-fw fa-truck fa-flip-horizontal text-success";
-					case Core.Domain.Shipping.ShippingStatus.Delivered:
-						return "fa fa-fw fa-check text-success";
-					default:
-						return "";
-				}
-			}
-		}
+        public string ShippingStatusLabelClass
+        {
+            get
+            {
+                switch (StatusShipping)
+                {
+                    case Core.Domain.Shipping.ShippingStatus.ShippingNotRequired:
+                        return "fa fa-fw fa-download muted";
+                    case Core.Domain.Shipping.ShippingStatus.NotYetShipped:
+                        return "fa fa-fw fa-circle text-danger";
+                    case Core.Domain.Shipping.ShippingStatus.PartiallyShipped:
+                        return "fa fa-fw fa-truck fa-flip-horizontal text-warning";
+                    case Core.Domain.Shipping.ShippingStatus.Shipped:
+                        return "fa fa-fw fa-truck fa-flip-horizontal text-success";
+                    case Core.Domain.Shipping.ShippingStatus.Delivered:
+                        return "fa fa-fw fa-check text-success";
+                    default:
+                        return "";
+                }
+            }
+        }
 
-		//billing info
-		[SmartResourceDisplayName("Admin.Orders.Fields.BillingAddress")]
+        //billing info
+        [SmartResourceDisplayName("Admin.Orders.Fields.BillingAddress")]
         public AddressModel BillingAddress { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.VatNumber")]
         public string VatNumber { get; set; }
-        
+
         //gift cards
         public IList<GiftCard> GiftCards { get; set; }
 
@@ -319,15 +324,15 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
-		public string CreatedOnString { get; set; }
+        public string CreatedOnString { get; set; }
 
-		[SmartResourceDisplayName("Common.UpdatedOn")]
-		public DateTime UpdatedOn { get; set; }
+        [SmartResourceDisplayName("Common.UpdatedOn")]
+        public DateTime UpdatedOn { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.AcceptThirdPartyEmailHandOver")]
-		public bool AcceptThirdPartyEmailHandOver { get; set; }
+        [SmartResourceDisplayName("Admin.Orders.Fields.AcceptThirdPartyEmailHandOver")]
+        public bool AcceptThirdPartyEmailHandOver { get; set; }
 
-		public string CustomerComment { get; set; }
+        public string CustomerComment { get; set; }
 
         //checkout attributes
         public string CheckoutAttributeInfo { get; set; }
@@ -347,11 +352,11 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.PartialRefund.AmountToRefund")]
         public decimal AmountToRefund { get; set; }
         public decimal MaxAmountToRefund { get; set; }
-		public string MaxAmountToRefundFormatted { get; set; }
+        public string MaxAmountToRefundFormatted { get; set; }
 
         //workflow info
         public bool CanCancelOrder { get; set; }
-		public bool CanCompleteOrder { get; set; }
+        public bool CanCompleteOrder { get; set; }
         public bool CanCapture { get; set; }
         public bool CanMarkOrderAsPaid { get; set; }
         public bool CanRefund { get; set; }
@@ -360,13 +365,13 @@ namespace SmartStore.Admin.Models.Orders
         public bool CanPartiallyRefundOffline { get; set; }
         public bool CanVoid { get; set; }
         public bool CanVoidOffline { get; set; }
-        
+
         public string AggregatorProfit { get; set; }
         public string AggregatorTax { get; set; }
         public string AggregatorTotal { get; set; }
 
-		public AutoUpdateOrderItemModel AutoUpdateOrderItem { get; set; }
-		public string AutoUpdateOrderItemInfo { get; set; }
+        public AutoUpdateOrderItemModel AutoUpdateOrderItem { get; set; }
+        public string AutoUpdateOrderItemInfo { get; set; }
 
         #region Nested Classes
 
@@ -375,21 +380,21 @@ namespace SmartStore.Admin.Models.Orders
             public OrderItemModel()
             {
                 PurchasedGiftCardIds = new List<int>();
-				ReturnRequests = new List<ReturnRequestModel>();
-				BundleItems = new List<BundleItemModel>();
+                ReturnRequests = new List<ReturnRequestModel>();
+                BundleItems = new List<BundleItemModel>();
             }
-			public int ProductId { get; set; }
-			public string ProductName { get; set; }
+            public int ProductId { get; set; }
+            public string ProductName { get; set; }
             public string Sku { get; set; }
-			public ProductType ProductType { get; set; }
-			public string ProductTypeName { get; set; }
-			public string ProductTypeLabelHint { get; set; }
+            public ProductType ProductType { get; set; }
+            public string ProductTypeName { get; set; }
+            public string ProductTypeLabelHint { get; set; }
 
             public string UnitPriceInclTax { get; set; }
             public string UnitPriceExclTax { get; set; }
             public decimal UnitPriceInclTaxValue { get; set; }
             public decimal UnitPriceExclTaxValue { get; set; }
-			public decimal TaxRate { get; set; }
+            public decimal TaxRate { get; set; }
 
             public int Quantity { get; set; }
 
@@ -413,63 +418,63 @@ namespace SmartStore.Admin.Models.Orders
             public bool IsDownloadActivated { get; set; }
             public int? LicenseDownloadId { get; set; }
 
-			public bool BundlePerItemPricing { get; set; }
-			public bool BundlePerItemShoppingCart { get; set; }
+            public bool BundlePerItemPricing { get; set; }
+            public bool BundlePerItemShoppingCart { get; set; }
 
-			public IList<BundleItemModel> BundleItems { get; set; }
-			public IList<ReturnRequestModel> ReturnRequests { get; set; }
+            public IList<BundleItemModel> BundleItems { get; set; }
+            public IList<ReturnRequestModel> ReturnRequests { get; set; }
 
-			public bool IsReturnRequestPossible
-			{
-				get
-				{
-					if (ReturnRequests != null && ReturnRequests.Count > 0)
-					{
-						return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
-					}
-					return true;
-				}
-			}
+            public bool IsReturnRequestPossible
+            {
+                get
+                {
+                    if (ReturnRequests != null && ReturnRequests.Count > 0)
+                    {
+                        return (ReturnRequests.Sum(x => x.Quantity) < Quantity);
+                    }
+                    return true;
+                }
+            }
         }
 
-		public class ReturnRequestModel : EntityModelBase
-		{
-			public ReturnRequestStatus Status { get; set; }
-			public int Quantity { get; set; }
-			public string StatusString { get; set; }
-			public string StatusLabel
-			{
-				get
-				{
-					if (Status >= ReturnRequestStatus.RequestRejected)
-						return "warning";
+        public class ReturnRequestModel : EntityModelBase
+        {
+            public ReturnRequestStatus Status { get; set; }
+            public int Quantity { get; set; }
+            public string StatusString { get; set; }
+            public string StatusLabel
+            {
+                get
+                {
+                    if (Status >= ReturnRequestStatus.RequestRejected)
+                        return "warning";
 
-					if (Status >= ReturnRequestStatus.ReturnAuthorized)
-						return "success";
+                    if (Status >= ReturnRequestStatus.ReturnAuthorized)
+                        return "success";
 
-					if (Status == ReturnRequestStatus.Received)
-						return "info";
+                    if (Status == ReturnRequestStatus.Received)
+                        return "info";
 
-					if (Status == ReturnRequestStatus.Pending)
-						return "danger";
+                    if (Status == ReturnRequestStatus.Pending)
+                        return "danger";
 
-					return "light";
-				}
-			}
-		}
+                    return "light";
+                }
+            }
+        }
 
-		public class BundleItemModel : ModelBase
-		{
-			public int ProductId { get; set; }
-			public string Sku { get; set; }
-			public string ProductName { get; set; }
-			public string ProductSeName { get; set; }
-			public bool VisibleIndividually { get; set; }
-			public int Quantity { get; set; }
-			public int DisplayOrder { get; set; }
-			public string PriceWithDiscount { get; set; }
-			public string AttributeInfo { get; set; }
-		}
+        public class BundleItemModel : ModelBase
+        {
+            public int ProductId { get; set; }
+            public string Sku { get; set; }
+            public string ProductName { get; set; }
+            public string ProductSeName { get; set; }
+            public bool VisibleIndividually { get; set; }
+            public int Quantity { get; set; }
+            public int DisplayOrder { get; set; }
+            public string PriceWithDiscount { get; set; }
+            public string AttributeInfo { get; set; }
+        }
 
         public class TaxRate : ModelBase
         {
@@ -507,6 +512,7 @@ namespace SmartStore.Admin.Models.Orders
             [UIHint("Download")]
             public int LicenseDownloadId { get; set; }
 
+            public int OldLicenseDownloadId { get; set; }
         }
 
         public class AddOrderProductModel : ModelBase
@@ -515,27 +521,27 @@ namespace SmartStore.Admin.Models.Orders
             {
                 AvailableCategories = new List<SelectListItem>();
                 AvailableManufacturers = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
+                AvailableProductTypes = new List<SelectListItem>();
             }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
+            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
             [AllowHtml]
             public string SearchProductName { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
             public int SearchCategoryId { get; set; }
             [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
             public int SearchManufacturerId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
+            public int SearchProductTypeId { get; set; }
 
             public IList<SelectListItem> AvailableCategories { get; set; }
             public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
+            public IList<SelectListItem> AvailableProductTypes { get; set; }
 
             public int OrderId { get; set; }
 
             #region Nested classes
-            
+
             public class ProductModel : EntityModelBase
             {
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.Name")]
@@ -546,8 +552,8 @@ namespace SmartStore.Admin.Models.Orders
                 [AllowHtml]
                 public string Sku { get; set; }
 
-				public string ProductTypeName { get; set; }
-				public string ProductTypeLabelHint { get; set; }
+                public string ProductTypeName { get; set; }
+                public string ProductTypeLabelHint { get; set; }
             }
 
             public class ProductDetailsModel : ModelBase
@@ -563,25 +569,19 @@ namespace SmartStore.Admin.Models.Orders
 
                 public int OrderId { get; set; }
 
-				public ProductType ProductType { get; set; }
+                public ProductType ProductType { get; set; }
 
                 public string Name { get; set; }
 
-				public string GiftCardFieldPrefix
-				{
-					get
-					{
-						return GiftCardQueryItem.CreateKey(ProductId, 0, null);
-					}
-				}
+                public string GiftCardFieldPrefix => GiftCardQueryItem.CreateKey(ProductId, 0, null);
 
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceInclTax")]
                 public decimal UnitPriceInclTax { get; set; }
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceExclTax")]
                 public decimal UnitPriceExclTax { get; set; }
 
-				[SmartResourceDisplayName("Admin.Orders.Products.AddNew.TaxRate")]
-				public decimal TaxRate { get; set; }
+                [SmartResourceDisplayName("Admin.Orders.Products.AddNew.TaxRate")]
+                public decimal TaxRate { get; set; }
 
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.Quantity")]
                 public int Quantity { get; set; }
@@ -598,13 +598,13 @@ namespace SmartStore.Admin.Models.Orders
 
                 public List<string> Warnings { get; set; }
 
-				public bool ShowUpdateTotals { get; set; }
+                public bool ShowUpdateTotals { get; set; }
 
-				[SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.AdjustInventory")]
-				public bool AdjustInventory { get; set; }
+                [SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.AdjustInventory")]
+                public bool AdjustInventory { get; set; }
 
-				[SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.UpdateTotals")]
-				public bool UpdateTotals { get; set; }
+                [SmartResourceDisplayName("Admin.Orders.OrderItem.AutoUpdate.UpdateTotals")]
+                public bool UpdateTotals { get; set; }
             }
 
             public class ProductVariantAttributeModel : EntityModelBase
@@ -626,11 +626,11 @@ namespace SmartStore.Admin.Models.Orders
 
                 public IList<ProductVariantAttributeValueModel> Values { get; set; }
 
-				public string GetControlId(int productId, int bundleItemId)
-				{
-					return ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, Id);
-				}
-			}
+                public string GetControlId(int productId, int bundleItemId)
+                {
+                    return ProductVariantQueryItem.CreateKey(productId, bundleItemId, ProductAttributeId, Id);
+                }
+            }
 
             public class ProductVariantAttributeValueModel : EntityModelBase
             {

@@ -23,13 +23,13 @@ namespace SmartStore.Services.Discounts
         /// <returns>Discount</returns>
         Discount GetDiscountById(int discountId);
 
-		/// <summary>
-		/// Gets all discounts
-		/// </summary>
-		/// <param name="discountType">Discount type; null to load all discount</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <returns>Discount collection</returns>
-		IEnumerable<Discount> GetAllDiscounts(DiscountType? discountType, string couponCode = "", bool showHidden = false);
+        /// <summary>
+        /// Gets all discounts
+        /// </summary>
+        /// <param name="discountType">Discount type; null to load all discount</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>Discount collection</returns>
+        IEnumerable<Discount> GetAllDiscounts(DiscountType? discountType, string couponCode = "", bool showHidden = false);
 
         /// <summary>
         /// Inserts a discount
@@ -74,7 +74,7 @@ namespace SmartStore.Services.Discounts
         /// <param name="discountUsageHistoryId">Discount usage history record identifier</param>
         /// <returns>Discount usage history</returns>
         DiscountUsageHistory GetDiscountUsageHistoryById(int discountUsageHistoryId);
-        
+
         /// <summary>
         /// Gets all discount usage history records
         /// </summary>
@@ -83,7 +83,7 @@ namespace SmartStore.Services.Discounts
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Discount usage history records</returns>
-        IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId, 
+        IPagedList<DiscountUsageHistory> GetAllDiscountUsageHistory(int? discountId,
             int? customerId, int pageIndex, int pageSize);
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SmartStore.Services.Discounts
         /// </summary>
         /// <param name="discountUsageHistory">Discount usage history record</param>
         void InsertDiscountUsageHistory(DiscountUsageHistory discountUsageHistory);
-        
+
         /// <summary>
         /// Update discount usage history record
         /// </summary>

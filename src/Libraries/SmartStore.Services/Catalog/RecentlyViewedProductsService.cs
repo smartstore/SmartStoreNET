@@ -3,27 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Recently viewed products service
-	/// </summary>
-	public partial class RecentlyViewedProductsService : IRecentlyViewedProductsService
+    /// <summary>
+    /// Recently viewed products service
+    /// </summary>
+    public partial class RecentlyViewedProductsService : IRecentlyViewedProductsService
     {
         #region Fields
 
         private readonly ICommonServices _services;
         private readonly HttpContextBase _httpContext;
         private readonly IProductService _productService;
-		private readonly IAclService _aclService;
-		private readonly CatalogSettings _catalogSettings;
+        private readonly IAclService _aclService;
+        private readonly CatalogSettings _catalogSettings;
+        private readonly PrivacySettings _privacySettings;
 
         #endregion
 
         #region Ctor
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -33,15 +35,17 @@ namespace SmartStore.Services.Catalog
         public RecentlyViewedProductsService(
             ICommonServices services,
             HttpContextBase httpContext,
-			IProductService productService,
-			IAclService aclService,
-			CatalogSettings catalogSettings)
+            IProductService productService,
+            IAclService aclService,
+            CatalogSettings catalogSettings,
+            PrivacySettings privacySettings)
         {
             _services = services;
             _httpContext = httpContext;
             _productService = productService;
-			_aclService = aclService;
+            _aclService = aclService;
             _catalogSettings = catalogSettings;
+            _privacySettings = privacySettings;
         }
 
         #endregion
@@ -90,10 +94,10 @@ namespace SmartStore.Services.Catalog
         public virtual IList<Product> GetRecentlyViewedProducts(int number)
         {
             var productIds = GetRecentlyViewedProductsIds(number);
-			var recentlyViewedProducts = _productService
-				.GetProductsByIds(productIds.ToArray())
-				.Where(x => x.Published && !x.Deleted && !x.IsSystemProduct && _aclService.Authorize(x))
-				.ToList();
+            var recentlyViewedProducts = _productService
+                .GetProductsByIds(productIds.ToArray())
+                .Where(x => x.Published && !x.Deleted && !x.IsSystemProduct && _aclService.Authorize(x))
+                .ToList();
 
             return recentlyViewedProducts;
         }
@@ -113,7 +117,7 @@ namespace SmartStore.Services.Catalog
             var newProductIds = new List<int>(oldProductIds);
 
             newProductIds.Remove(productId);
-            newProductIds.Insert(0, productId);           
+            newProductIds.Insert(0, productId);
 
             var recentlyViewedCookie = _httpContext.Request.Cookies.Get("SmartStore.RecentlyViewedProducts") ?? new HttpCookie("SmartStore.RecentlyViewedProducts");
             recentlyViewedCookie.Values.Clear();
@@ -133,10 +137,11 @@ namespace SmartStore.Services.Catalog
             recentlyViewedCookie.Expires = DateTime.Now.AddDays(10.0);
             recentlyViewedCookie.HttpOnly = true;
             recentlyViewedCookie.Secure = _services.WebHelper.IsCurrentConnectionSecured();
+            recentlyViewedCookie.SameSite = recentlyViewedCookie.Secure ? (SameSiteMode)_privacySettings.SameSiteMode : SameSiteMode.Lax;
 
             _httpContext.Response.Cookies.Set(recentlyViewedCookie);
         }
-        
+
         #endregion
     }
 }

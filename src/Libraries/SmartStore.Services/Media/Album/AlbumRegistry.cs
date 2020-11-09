@@ -14,7 +14,7 @@ namespace SmartStore.Services.Media
         private readonly IDbContext _dbContext;
         private readonly ICacheManager _cache;
         private readonly IEnumerable<Lazy<IAlbumProvider>> _albumProviders;
-        
+
         public AlbumRegistry(
             IDbContext dbContext,
             ICacheManager cache,
@@ -105,7 +105,7 @@ namespace SmartStore.Services.Media
         public virtual AlbumInfo GetAlbumByName(string name)
         {
             Guard.NotEmpty(name, nameof(name));
-            
+
             return GetAlbumDictionary().Get(name);
         }
 

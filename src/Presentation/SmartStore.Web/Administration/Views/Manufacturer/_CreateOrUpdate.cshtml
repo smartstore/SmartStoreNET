@@ -1,6 +1,6 @@
 ﻿@using Telerik.Web.Mvc.UI;
 @model ManufacturerModel
-
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("manufacturer-edit").Style(TabsStyle.Material).Items(x =>
@@ -227,14 +227,14 @@
         @<table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
                 </td>
                 <td class="adminData">
-					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                    @Html.EditorFor(model => model.Locales[item].MetaKeywords)
-                    @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+                    @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
                 </td>
             </tr>
             <tr>
@@ -248,11 +248,11 @@
             </tr>
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                    @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
-                    @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+                    @Html.EditorFor(model => model.Locales[item].MetaKeywords)
+                    @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
                 </td>
             </tr>
             <tr>
@@ -269,11 +269,11 @@
         @<table class="adminContent">
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.MetaKeywords)
+                    @Html.SmartLabelFor(model => model.MetaTitle)
                 </td>
                 <td class="adminData">
-                    @Html.EditorFor(x => x.MetaKeywords)
-                    @Html.ValidationMessageFor(model => model.MetaKeywords)
+                    @Html.TextAreaFor(x => x.MetaTitle)
+                    @Html.ValidationMessageFor(model => model.MetaTitle)
                 </td>
             </tr>
             <tr>
@@ -287,11 +287,11 @@
             </tr>
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.MetaTitle)
+                    @Html.SmartLabelFor(model => model.MetaKeywords)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(x => x.MetaTitle)
-                    @Html.ValidationMessageFor(model => model.MetaTitle)
+                    @Html.EditorFor(x => x.MetaKeywords)
+                    @Html.ValidationMessageFor(model => model.MetaKeywords)
                 </td>
             </tr>
             <tr>
@@ -380,10 +380,14 @@
 		.OnSelectionCompleted("PickProducts_Completed"))
 }
 
-<script type="text/javascript">
-	$(function () {
+<script>
+    var token;
+
+    $(function () {
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(togglePageSize);
         togglePageSize();
+
+        token = $('input[name="__RequestVerificationToken"]').val();
 
 		// Toggle top\bottom description.
 		$('.description-toggle-button').click(function() {
@@ -395,7 +399,11 @@
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("ProductAdd")',
-			data: { "manufacturerId": @Model.Id, "selectedProductIds": ids },
+            data: {
+                "manufacturerId": @Model.Id,
+                "selectedProductIds": ids,
+                "__RequestVerificationToken": token
+            },
 			callbackSuccess: function () {
 				$('#products-grid').data('tGrid').ajaxRequest();
 			}

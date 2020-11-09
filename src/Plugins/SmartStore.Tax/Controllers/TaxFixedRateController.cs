@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Web.Mvc;
-using SmartStore.Tax.Models;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Tax;
+using SmartStore.Tax.Models;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -13,16 +11,16 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class TaxFixedRateController : PluginControllerBase
     {
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly ISettingService _settingService;
 
-		public TaxFixedRateController(ITaxCategoryService taxCategoryService, ISettingService settingService)
+        public TaxFixedRateController(ITaxCategoryService taxCategoryService, ISettingService settingService)
         {
-            this._taxCategoryService = taxCategoryService;
-            this._settingService = settingService;
+            _taxCategoryService = taxCategoryService;
+            _settingService = settingService;
         }
 
         public ActionResult Configure()
@@ -105,7 +103,7 @@ namespace SmartStore.Tax.Controllers
         [NonAction]
         protected decimal GetTaxRate(int taxCategoryId)
         {
-            decimal rate = this._settingService.GetSettingByKey<decimal>(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", taxCategoryId));
+            decimal rate = _settingService.GetSettingByKey<decimal>(string.Format("Tax.TaxProvider.FixedRate.TaxCategoryId{0}", taxCategoryId));
             return rate;
         }
     }

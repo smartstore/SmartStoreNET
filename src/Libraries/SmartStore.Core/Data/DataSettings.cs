@@ -9,356 +9,348 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Data
-{  
-	public partial class DataSettings
+{
+    public partial class DataSettings
     {
-		private static readonly ReaderWriterLockSlim s_rwLock = new ReaderWriterLockSlim();
-		private static DataSettings s_current = null;
-		private static Func<DataSettings> s_settingsFactory = new Func<DataSettings>(() => new DataSettings());
-		private static bool? s_installed = null;
-		private static bool s_TestMode = false;
+        private static readonly ReaderWriterLockSlim s_rwLock = new ReaderWriterLockSlim();
+        private static DataSettings s_current = null;
+        private static Func<DataSettings> s_settingsFactory = new Func<DataSettings>(() => new DataSettings());
+        private static bool? s_installed = null;
+        private static bool s_TestMode = false;
 
-		protected const char SEPARATOR = ':';
-		protected const string FILENAME = "Settings.txt";
+        protected const char SEPARATOR = ':';
+        protected const string FILENAME = "Settings.txt";
 
-		private DataSettings()
+        private DataSettings()
         {
             RawDataSettings = new Dictionary<string, string>();
         }
 
-		#region Static members
+        #region Static members
 
-		public static void SetDefaultFactory(Func<DataSettings> factory) 
-		{
-			Guard.NotNull(factory, nameof(factory));
+        public static void SetDefaultFactory(Func<DataSettings> factory)
+        {
+            Guard.NotNull(factory, nameof(factory));
 
-			lock (s_rwLock.GetWriteLock())
-			{
-				s_settingsFactory = factory;
-			}
-		}
+            lock (s_rwLock.GetWriteLock())
+            {
+                s_settingsFactory = factory;
+            }
+        }
 
-		public static DataSettings Current
-		{
-			get
-			{
-				using (s_rwLock.GetUpgradeableReadLock())
-				{
-					if (s_current == null)
-					{
-						using (s_rwLock.GetWriteLock())
-						{
-							if (s_current == null)
-							{
-								s_current = s_settingsFactory();
-								s_current.Load();
-							}
-						}
-					}
-				}
+        public static DataSettings Current
+        {
+            get
+            {
+                using (s_rwLock.GetUpgradeableReadLock())
+                {
+                    if (s_current == null)
+                    {
+                        using (s_rwLock.GetWriteLock())
+                        {
+                            if (s_current == null)
+                            {
+                                s_current = s_settingsFactory();
+                                s_current.Load();
+                            }
+                        }
+                    }
+                }
 
-				return s_current;
-			}
-		}
+                return s_current;
+            }
+        }
 
-		public static bool DatabaseIsInstalled()
-		{
-			if (s_TestMode)
-				return false;
-			
-			if (!s_installed.HasValue)
-			{
-				s_installed = Current.IsValid();
-			}
+        public static bool DatabaseIsInstalled()
+        {
+            if (s_TestMode)
+                return false;
 
-			return s_installed.Value;
-		}
+            if (!s_installed.HasValue)
+            {
+                s_installed = Current.IsValid();
+            }
 
-		internal static void SetTestMode(bool isTestMode)
-		{
-			s_TestMode = isTestMode;
-		}
+            return s_installed.Value;
+        }
 
-		public static void Reload()
-		{
-			using (s_rwLock.GetWriteLock())
-			{
-				s_current = null;
-				s_installed = null;
-			}
-		}
+        internal static void SetTestMode(bool isTestMode)
+        {
+            s_TestMode = isTestMode;
+        }
 
-		public static void Delete()
-		{
-			if (s_current?.TenantPath != null)
-			{
-				using (s_rwLock.GetWriteLock())
-				{
-					string filePath = Path.Combine(CommonHelper.MapPath(s_current.TenantPath), FILENAME);
-					try
-					{
-						File.Delete(filePath);
-					}
-					finally
-					{
-						s_current = null;
-						s_installed = null;
-					}			
-				}
-			}
-		}
+        public static void Reload()
+        {
+            using (s_rwLock.GetWriteLock())
+            {
+                s_current = null;
+                s_installed = null;
+            }
+        }
 
-		#endregion
+        public static void Delete()
+        {
+            if (s_current?.TenantPath != null)
+            {
+                using (s_rwLock.GetWriteLock())
+                {
+                    string filePath = Path.Combine(CommonHelper.MapPath(s_current.TenantPath), FILENAME);
+                    try
+                    {
+                        File.Delete(filePath);
+                    }
+                    finally
+                    {
+                        s_current = null;
+                        s_installed = null;
+                    }
+                }
+            }
+        }
 
-		#region Instance members
+        #endregion
 
-		public string TenantName
-		{
-			get;
-			private set;
-		}
+        #region Instance members
 
-		public string TenantPath
-		{
-			get;
-			private set;
-		}
+        public string TenantName
+        {
+            get;
+            private set;
+        }
 
-		public Version AppVersion
-		{
-			get;
-			set;
-		}
+        public string TenantPath
+        {
+            get;
+            private set;
+        }
 
-		public string DataProvider 
-		{ 
-			get; 
-			set; 
-		}
+        public Version AppVersion
+        {
+            get;
+            set;
+        }
 
-		public string ProviderInvariantName
-		{
-			get
-			{
-				if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
-					return "System.Data.SqlClient";
+        public string DataProvider
+        {
+            get;
+            set;
+        }
 
-				// SqlCe should always be the default provider
-				return "System.Data.SqlServerCe.4.0";
-			}
-		}
+        public string ProviderInvariantName
+        {
+            get
+            {
+                if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
+                    return "System.Data.SqlClient";
 
-		public string ProviderFriendlyName
-		{
-			get
-			{
-				if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
-					return "SQL Server";
+                // SqlCe should always be the default provider
+                return "System.Data.SqlServerCe.4.0";
+            }
+        }
 
-				// SqlCe should always be the default provider
-				return "SQL Server Compact (SQL CE)";
-			}
-		}
+        public string ProviderFriendlyName
+        {
+            get
+            {
+                if (this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver"))
+                    return "SQL Server";
 
-		public bool IsSqlServer
-		{
-			get
-			{
-				return this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver");
-			}
-		}
+                // SqlCe should always be the default provider
+                return "SQL Server Compact (SQL CE)";
+            }
+        }
 
-        public string DataConnectionString 
-		{ 
-			get; 
-			set; 
-		}
+        public bool IsSqlServer => this.DataProvider.HasValue() && this.DataProvider.IsCaseInsensitiveEqual("sqlserver");
 
-		public string DataConnectionType
-		{
-			get;
-			set;
-		}
+        public string DataConnectionString
+        {
+            get;
+            set;
+        }
 
-		public IDictionary<string, string> RawDataSettings 
-		{ 
-			get; 
-			private set; 
-		}
+        public string DataConnectionType
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<string, string> RawDataSettings
+        {
+            get;
+            private set;
+        }
 
         public bool IsValid()
         {
             return this.DataProvider.HasValue() && this.DataConnectionString.HasValue();
-		}
+        }
 
-		public virtual bool Load()
-		{
-			using (s_rwLock.GetWriteLock())
-			{
-				this.Reset();
+        public virtual bool Load()
+        {
+            using (s_rwLock.GetWriteLock())
+            {
+                this.Reset();
 
-				var curTenant = ResolveTenant();
-				var tenantPath = "~/App_Data/Tenants/" + curTenant;
-				string filePath = Path.Combine(CommonHelper.MapPath(tenantPath), FILENAME);
+                var curTenant = ResolveTenant();
+                var tenantPath = "~/App_Data/Tenants/" + curTenant;
+                string filePath = Path.Combine(CommonHelper.MapPath(tenantPath), FILENAME);
 
-				this.TenantName = curTenant;
-				this.TenantPath = tenantPath;
+                this.TenantName = curTenant;
+                this.TenantPath = tenantPath;
 
-				if (File.Exists(filePath) && !s_TestMode)
-				{
-					string text = File.ReadAllText(filePath);
-					var settings = ParseSettings(text);
-					if (settings.Any())
-					{
-						this.RawDataSettings.AddRange(settings);
-						if (settings.ContainsKey("AppVersion"))
-						{
-							this.AppVersion = new Version(settings["AppVersion"]);
-						}
-						if (settings.ContainsKey("DataProvider"))
-						{
-							this.DataProvider = settings["DataProvider"];
-							this.DataConnectionType = this.IsSqlServer 
-								? typeof(SqlConnection).AssemblyQualifiedName 
-								: typeof(SqlCeConnection).AssemblyQualifiedName;
-						}
-						if (settings.ContainsKey("DataConnectionString"))
-						{
-							this.DataConnectionString = settings["DataConnectionString"];
-						}
+                if (File.Exists(filePath) && !s_TestMode)
+                {
+                    string text = File.ReadAllText(filePath);
+                    var settings = ParseSettings(text);
+                    if (settings.Any())
+                    {
+                        this.RawDataSettings.AddRange(settings);
+                        if (settings.ContainsKey("AppVersion"))
+                        {
+                            this.AppVersion = new Version(settings["AppVersion"]);
+                        }
+                        if (settings.ContainsKey("DataProvider"))
+                        {
+                            this.DataProvider = settings["DataProvider"];
+                            this.DataConnectionType = this.IsSqlServer
+                                ? typeof(SqlConnection).AssemblyQualifiedName
+                                : typeof(SqlCeConnection).AssemblyQualifiedName;
+                        }
+                        if (settings.ContainsKey("DataConnectionString"))
+                        {
+                            this.DataConnectionString = settings["DataConnectionString"];
+                        }
 
-						return this.IsValid();
-					}
-				}
+                        return this.IsValid();
+                    }
+                }
 
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
-		public void Reset()
-		{
-			using (s_rwLock.GetWriteLock())
-			{
-				this.RawDataSettings.Clear();
-				this.TenantName = null;
-				this.TenantPath = null;
-				this.AppVersion = null;
-				this.DataProvider = null;
-				this.DataConnectionString = null;
-				this.DataConnectionType = null;
+        public void Reset()
+        {
+            using (s_rwLock.GetWriteLock())
+            {
+                this.RawDataSettings.Clear();
+                this.TenantName = null;
+                this.TenantPath = null;
+                this.AppVersion = null;
+                this.DataProvider = null;
+                this.DataConnectionString = null;
+                this.DataConnectionType = null;
 
-				s_installed = null;
-			}
-		}
+                s_installed = null;
+            }
+        }
 
-		public virtual bool Save()
-		{
-			if (!this.IsValid())
-				return false;
+        public virtual bool Save()
+        {
+            if (!this.IsValid())
+                return false;
 
-			using (s_rwLock.GetWriteLock())
-			{
-				string filePath = Path.Combine(CommonHelper.MapPath(this.TenantPath), FILENAME);
-				if (!File.Exists(filePath))
-				{
-					using (File.Create(filePath))
-					{
-						// we use 'using' to close the file after it's created
-					}
-				}
+            using (s_rwLock.GetWriteLock())
+            {
+                string filePath = Path.Combine(CommonHelper.MapPath(this.TenantPath), FILENAME);
+                if (!File.Exists(filePath))
+                {
+                    using (File.Create(filePath))
+                    {
+                        // we use 'using' to close the file after it's created
+                    }
+                }
 
-				var text = SerializeSettings();
-				File.WriteAllText(filePath, text);
+                var text = SerializeSettings();
+                File.WriteAllText(filePath, text);
 
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Instance helpers
+        #region Instance helpers
 
-		protected virtual string ResolveTenant()
-		{
-			var tenantsBaseDir = CommonHelper.MapPath("~/App_Data/Tenants");
-			var curTenantFile = Path.Combine(tenantsBaseDir, "current.txt");
+        protected virtual string ResolveTenant()
+        {
+            var tenantsBaseDir = CommonHelper.MapPath("~/App_Data/Tenants");
+            var curTenantFile = Path.Combine(tenantsBaseDir, "current.txt");
 
-			string curTenant = null;
+            string curTenant = null;
 
-			if (File.Exists(curTenantFile))
-			{
-				curTenant = File.ReadAllText(curTenantFile).EmptyNull().Trim().NullEmpty();
-				if (curTenant != curTenant.EmptyNull().ToValidPath())
-				{
-					// File contains invalid path string
-					curTenant = null;
-				}
+            if (File.Exists(curTenantFile))
+            {
+                curTenant = File.ReadAllText(curTenantFile).EmptyNull().Trim().NullEmpty();
+                if (curTenant != curTenant.EmptyNull().ToValidPath())
+                {
+                    // File contains invalid path string
+                    curTenant = null;
+                }
 
-				if (curTenant != null && !Directory.Exists(Path.Combine(tenantsBaseDir, curTenant)))
-				{
-					// Specified Tenant directory does not exist
-					curTenant = null;
-				}
-			}
+                if (curTenant != null && !Directory.Exists(Path.Combine(tenantsBaseDir, curTenant)))
+                {
+                    // Specified Tenant directory does not exist
+                    curTenant = null;
+                }
+            }
 
-			curTenant = curTenant ?? "Default";
+            curTenant = curTenant ?? "Default";
 
-			var tenantPath = Path.Combine(tenantsBaseDir, curTenant);
+            var tenantPath = Path.Combine(tenantsBaseDir, curTenant);
 
-			if (curTenant.IsCaseInsensitiveEqual("Default") && !Directory.Exists(tenantPath))
-			{
-				// The Default tenant dir should be created if it doesn't exist
-				Directory.CreateDirectory(tenantPath);
-			}
+            if (curTenant.IsCaseInsensitiveEqual("Default") && !Directory.Exists(tenantPath))
+            {
+                // The Default tenant dir should be created if it doesn't exist
+                Directory.CreateDirectory(tenantPath);
+            }
 
-			return curTenant.TrimEnd('/');
-		}
+            return curTenant.TrimEnd('/');
+        }
 
-		protected virtual IDictionary<string, string> ParseSettings(string text)
-		{
-			var result =  new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			
-			if (text.IsEmpty())
-				return result;
+        protected virtual IDictionary<string, string> ParseSettings(string text)
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-			var settings = new List<string>();
-			using (var reader = new StringReader(text))
-			{
-				string str;
-				while ((str = reader.ReadLine()) != null)
-					settings.Add(str);
-			}
+            if (text.IsEmpty())
+                return result;
 
-			foreach (var setting in settings)
-			{
-				var separatorIndex = setting.IndexOf(SEPARATOR);
-				if (separatorIndex == -1)
-				{
-					continue;
-				}
-				string key = setting.Substring(0, separatorIndex).Trim();
-				string value = setting.Substring(separatorIndex + 1).Trim();
+            var settings = new List<string>();
+            using (var reader = new StringReader(text))
+            {
+                string str;
+                while ((str = reader.ReadLine()) != null)
+                    settings.Add(str);
+            }
 
-				if (key.HasValue() && value.HasValue())
-				{
-					result.Add(key, value);
-				}
-			}
+            foreach (var setting in settings)
+            {
+                var separatorIndex = setting.IndexOf(SEPARATOR);
+                if (separatorIndex == -1)
+                {
+                    continue;
+                }
+                string key = setting.Substring(0, separatorIndex).Trim();
+                string value = setting.Substring(separatorIndex + 1).Trim();
 
-			return result;
-		}
+                if (key.HasValue() && value.HasValue())
+                {
+                    result.Add(key, value);
+                }
+            }
 
-		protected virtual string SerializeSettings()
-		{
-			return string.Format("AppVersion: {0}{3}DataProvider: {1}{3}DataConnectionString: {2}{3}",
-				this.AppVersion.ToString(), 
-				this.DataProvider,
-				this.DataConnectionString,
-				Environment.NewLine);
-		}
+            return result;
+        }
 
-		#endregion
+        protected virtual string SerializeSettings()
+        {
+            return string.Format("AppVersion: {0}{3}DataProvider: {1}{3}DataConnectionString: {2}{3}",
+                this.AppVersion.ToString(),
+                this.DataProvider,
+                this.DataConnectionString,
+                Environment.NewLine);
+        }
 
-	}
-
+        #endregion
+    }
 }

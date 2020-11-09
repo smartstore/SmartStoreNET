@@ -1,8 +1,7 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Linq;
     using System.Data.Entity.Migrations;
+    using System.Linq;
     using SmartStore.Core.Domain.Tasks;
     using SmartStore.Data.Setup;
 
@@ -22,13 +21,13 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-            var highPriorityTaskTypes = new[] 
+            var highPriorityTaskTypes = new[]
             {
                 "SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services",
                 "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
                 //"SmartStore.MegaSearch.IndexingTask, SmartStore.MegaSearch",
             };
-            
+
             context.MigrateLocaleResources(MigrateLocaleResources);
 
             var tasks = context.Set<ScheduleTask>().Where(x => highPriorityTaskTypes.Contains(x.Type)).ToList();

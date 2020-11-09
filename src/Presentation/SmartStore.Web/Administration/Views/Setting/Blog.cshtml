@@ -1,5 +1,4 @@
 ﻿@model BlogSettingsModel
-@using Telerik.Web.Mvc.UI;
 
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Blog").Text;
@@ -15,82 +14,99 @@
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
         </div>
     </div>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
-	@Html.ValidationSummary(false)
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(false)
 
-	<div class="adminContent">
-		<div class="adminRow">
-			<div class="adminTitle">
-				@Html.SmartLabelFor(model => model.Enabled)
-			</div>
-			<div class="adminData">
-				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlBlogEnabled" }))
-				@Html.ValidationMessageFor(model => model.Enabled)
-			</div>
-		</div>
-	</div>
+    @Html.SmartStore().TabStrip().Name("blogsettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+    {
+        x.Add().Text(T("Admin.Configuration.Settings.Blog").Text).Content(TabBlogSettings()).Selected(true);
+        x.Add().Text(T("Admin.Configuration.SeoTab.Title").Text).Content(TabSeoSettings().ToHtmlString());
 
-	<table id="pnlBlogEnabled" class="adminContent">	
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PostsPageSize)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.PostsPageSize)
-                @Html.ValidationMessageFor(model => model.PostsPageSize)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-                @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NotifyAboutNewBlogComments)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NotifyAboutNewBlogComments)
-                @Html.ValidationMessageFor(model => model.NotifyAboutNewBlogComments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NumberOfTags)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NumberOfTags)
-                @Html.ValidationMessageFor(model => model.NumberOfTags)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MaxAgeInDays)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MaxAgeInDays)
-				@Html.ValidationMessageFor(model => model.MaxAgeInDays)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
-                @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
-            </td>
-        </tr>
-    </table>
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "blogsettings-edit", this.Html, this.Model));
+    })
+
+    @helper TabBlogSettings()
+    {
+        <div class="adminContent">
+            <div class="adminRow">
+                <div class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Enabled)
+                </div>
+                <div class="adminData">
+                    @Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlBlogEnabled" }))
+                    @Html.ValidationMessageFor(model => model.Enabled)
+                </div>
+            </div>
+        </div>
+
+        <table id="pnlBlogEnabled" class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.PostsPageSize)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.PostsPageSize)
+                    @Html.ValidationMessageFor(model => model.PostsPageSize)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+                    @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NotifyAboutNewBlogComments)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.NotifyAboutNewBlogComments)
+                    @Html.ValidationMessageFor(model => model.NotifyAboutNewBlogComments)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.NumberOfTags)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.NumberOfTags)
+                    @Html.ValidationMessageFor(model => model.NumberOfTags)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MaxAgeInDays)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.MaxAgeInDays)
+                    @Html.ValidationMessageFor(model => model.MaxAgeInDays)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
+                    @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
+                </td>
+            </tr>
+        </table>
+    }
+
+    @helper TabSeoSettings()
+    {
+        @Html.EditorFor(model => model, "SeoModel")
+    }
 }

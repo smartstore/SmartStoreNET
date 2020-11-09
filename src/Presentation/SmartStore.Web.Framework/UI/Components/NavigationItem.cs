@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 
 namespace SmartStore.Web.Framework.UI
 {
-	[Serializable]
-	public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
+    [Serializable]
+    public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
     {
         private bool _selected;
         private bool _enabled;
@@ -48,23 +48,23 @@ namespace SmartStore.Web.Framework.UI
             {
                 combined.Merge(LinkHtmlAttributes);
             }
-            
+
             return combined;
         }
 
         public string ImageUrl { get; set; }
 
-		public int? ImageId { get; set; }
+        public int? ImageId { get; set; }
 
-		public string Icon { get; set; }
+        public string Icon { get; set; }
 
         public string Text { get; set; }
 
-		public bool Rtl { get; set; }
+        public bool Rtl { get; set; }
 
-		public string Summary { get; set; }
+        public string Summary { get; set; }
 
-		public string BadgeText { get; set; }
+        public string BadgeText { get; set; }
 
         public BadgeStyle BadgeStyle { get; set; }
 
@@ -74,10 +74,7 @@ namespace SmartStore.Web.Framework.UI
 
         public bool Selected
         {
-            get
-            {
-                return _selected;
-            }
+            get => _selected;
             set
             {
                 _selected = value;
@@ -90,10 +87,7 @@ namespace SmartStore.Web.Framework.UI
 
         public bool Enabled
         {
-            get
-            {
-                return _enabled;
-            }
+            get => _enabled;
             set
             {
                 _enabled = value;
@@ -105,78 +99,66 @@ namespace SmartStore.Web.Framework.UI
         }
 
 
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public string ActionName
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ActionName
         {
-            get
-            {
-                return _actionName;
-            }
+            get => _actionName;
             set
             {
-				if (_actionName != value)
-				{
-					_actionName = value;
-					_routeName = (string)(_url = null);
-				}
+                if (_actionName != value)
+                {
+                    _actionName = value;
+                    _routeName = (string)(_url = null);
+                }
             }
         }
 
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public string ControllerName
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ControllerName
         {
-            get
-            {
-                return _controllerName;
-            }
+            get => _controllerName;
             set
             {
-				if (_controllerName != value)
-				{
-					_controllerName = value;
-					_routeName = (string)(_url = null);
-				}
+                if (_controllerName != value)
+                {
+                    _controllerName = value;
+                    _routeName = (string)(_url = null);
+                }
             }
         }
 
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public string RouteName
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string RouteName
         {
-            get
-            {
-                return _routeName;
-            }
+            get => _routeName;
             set
             {
-				if (_routeName != value)
-				{
-					_routeName = value;
-					_controllerName = _actionName = (string)(_url = null);
-				}
+                if (_routeName != value)
+                {
+                    _routeName = value;
+                    _controllerName = _actionName = (string)(_url = null);
+                }
             }
         }
 
         public RouteValueDictionary RouteValues { get; set; }
 
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Url
         {
-            get
-            {
-                return _url;
-            }
+            get => _url;
             set
             {
-				if (_url != value)
-				{
-					_url = value;
-					_routeName = _controllerName = (string)(_actionName = null);
-					this.RouteValues.Clear();
-				}
+                if (_url != value)
+                {
+                    _url = value;
+                    _routeName = _controllerName = (string)(_actionName = null);
+                    this.RouteValues.Clear();
+                }
             }
         }
 
-		[JsonIgnore]
+        [JsonIgnore]
         public ModifiedParameter ModifiedParam
         {
             get;
@@ -187,9 +169,9 @@ namespace SmartStore.Web.Framework.UI
         /// Checks whether action/controller or routeName or url has been specified.
         /// </summary>
 		public bool HasRoute()
-		{
-			return _actionName != null || _routeName != null || _url != null;
-		}
+        {
+            return _actionName != null || _routeName != null || _url != null;
+        }
 
         /// <summary>
         /// Checks whether url has been specified with '#' or 'javascript:void()' or empty string.
@@ -218,7 +200,7 @@ namespace SmartStore.Web.Framework.UI
             this.ContentHtmlAttributes = new RouteValueDictionary();
         }
 
-		public bool Ajax { get; set; }
+        public bool Ajax { get; set; }
 
         public IDictionary<string, object> ContentHtmlAttributes { get; set; }
 

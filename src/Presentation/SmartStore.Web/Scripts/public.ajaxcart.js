@@ -39,7 +39,7 @@ var AjaxCart = (function ($, window, document, undefined) {
 
         if (el.data("form-selector")) {
             str = $(el.data("form-selector")).serialize();
-            
+
             // HACK (MC)!
             // we changed the ModelType of the _AddToCart
             // from ...ProductModel.AddToCart to .ProductModel.
@@ -100,7 +100,7 @@ var AjaxCart = (function ($, window, document, undefined) {
                         location.href = response.redirect;
                         return false;
                     }
-                    
+
                     // success is optional and therefore true by default
                     isSuccess = response.success === undefined ? true : response.success;
 
@@ -146,4 +146,4 @@ var AjaxCart = (function ($, window, document, undefined) {
 
     }
 
-})( jQuery, this, document );
+})(jQuery, this, document);

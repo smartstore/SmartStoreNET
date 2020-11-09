@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
+using SmartStore.Data.Tests.Blogs;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Customers
 {
@@ -16,13 +16,13 @@ namespace SmartStore.Data.Tests.Customers
         public void Can_save_and_load_customerContent()
         {
             var customerContent = new CustomerContent
-                               {
-                                   IpAddress = "192.168.1.1",
-                                   IsApproved = true,
-                                   CreatedOnUtc = new DateTime(2010, 01, 01),
-                                   UpdatedOnUtc = new DateTime(2010, 01, 02),
-                                   Customer = GetTestCustomer()
-                               };
+            {
+                IpAddress = "192.168.1.1",
+                IsApproved = true,
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 02),
+                Customer = GetTestCustomer()
+            };
 
             var fromDb = SaveAndLoadEntity(customerContent);
             fromDb.ShouldNotBeNull();
@@ -30,7 +30,7 @@ namespace SmartStore.Data.Tests.Customers
             fromDb.IsApproved.ShouldEqual(true);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));
             fromDb.UpdatedOnUtc.ShouldEqual(new DateTime(2010, 01, 02));
-            
+
             fromDb.Customer.ShouldNotBeNull();
         }
 
@@ -51,7 +51,7 @@ namespace SmartStore.Data.Tests.Customers
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 UpdatedOnUtc = new DateTime(2010, 01, 02),
             };
-            
+
             var productReviewHelpfulness = new ProductReviewHelpfulness
             {
                 Customer = customer,
@@ -70,22 +70,11 @@ namespace SmartStore.Data.Tests.Customers
                 IsApproved = true,
                 CreatedOnUtc = new DateTime(2010, 01, 03),
                 UpdatedOnUtc = new DateTime(2010, 01, 04),
-                BlogPost = new BlogPost()
-                {
-                    Title = "Title 1",
-                    Body = "Body 1",
-                    AllowComments = true,
-                    CreatedOnUtc = new DateTime(2010, 01, 01),
-                    Language = new Language()
-                    {
-                        Name = "English",
-                        LanguageCulture = "en-Us",
-                    }
-                }
+                BlogPost = BlogPostPersistenceTests.GetTestBlogPost()
             };
 
-			var table = context.Set<CustomerContent>();
-			table.RemoveRange(table.ToList());
+            var table = context.Set<CustomerContent>();
+            table.RemoveRange(table.ToList());
 
             table.Add(productReview);
             table.Add(productReviewHelpfulness);
@@ -97,7 +86,7 @@ namespace SmartStore.Data.Tests.Customers
             context = new SmartObjectContext(GetTestDbName());
 
             var query = context.Set<CustomerContent>();
-			query.ToList().Count.ShouldEqual(3);
+            query.ToList().Count.ShouldEqual(3);
 
             var dbReviews = query.OfType<ProductReview>().ToList();
             dbReviews.Count().ShouldEqual(1);
@@ -138,7 +127,7 @@ namespace SmartStore.Data.Tests.Customers
                         IsApproved = true,
                         CreatedOnUtc = new DateTime(2010, 01, 03),
                         UpdatedOnUtc = new DateTime(2010, 01, 04)
-                    } 
+                    }
                 );
             var fromDb = SaveAndLoadEntity(productReview);
             fromDb.ShouldNotBeNull();

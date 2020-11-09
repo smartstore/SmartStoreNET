@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -20,9 +20,9 @@ namespace SmartStore.Data.Tests.Orders
             {
                 CycleLength = 1,
                 CyclePeriod = RecurringProductCyclePeriod.Days,
-                TotalCycles= 3, 
+                TotalCycles = 3,
                 StartDateUtc = new DateTime(2010, 01, 01),
-                IsActive= true,
+                IsActive = true,
                 Deleted = true,
                 CreatedOnUtc = new DateTime(2010, 01, 02),
                 InitialOrder = GetTestOrder()
@@ -101,8 +101,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

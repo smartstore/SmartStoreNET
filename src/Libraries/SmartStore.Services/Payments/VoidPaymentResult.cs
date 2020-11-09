@@ -11,17 +11,14 @@ namespace SmartStore.Services.Payments
         private PaymentStatus _newPaymentStatus = PaymentStatus.Pending;
         public IList<string> Errors { get; set; }
 
-        public VoidPaymentResult() 
+        public VoidPaymentResult()
         {
             this.Errors = new List<string>();
         }
 
-        public bool Success
-        {
-            get { return (this.Errors.Count == 0); }
-        }
+        public bool Success => (this.Errors.Count == 0);
 
-        public void AddError(string error) 
+        public void AddError(string error)
         {
             this.Errors.Add(error);
         }
@@ -33,14 +30,8 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public PaymentStatus NewPaymentStatus
         {
-            get
-            {
-                return _newPaymentStatus;
-            }
-            set
-            {
-                _newPaymentStatus = value;
-            }
+            get => _newPaymentStatus;
+            set => _newPaymentStatus = value;
         }
 
         #endregion

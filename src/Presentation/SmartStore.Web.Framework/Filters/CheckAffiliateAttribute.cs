@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Services.Affiliates;
@@ -9,11 +8,11 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class CheckAffiliateAttribute : FilterAttribute, IActionFilter
     {
-		public Lazy<IAffiliateService> AffiliateService { get; set; }
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<ICustomerService> CustomerService { get; set; }
-		
-		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        public Lazy<IAffiliateService> AffiliateService { get; set; }
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<ICustomerService> CustomerService { get; set; }
+
+        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext?.HttpContext?.Request == null)
                 return;
@@ -35,16 +34,16 @@ namespace SmartStore.Web.Framework.Filters
                         var customer = WorkContext.Value.CurrentCustomer;
                         if (customer != null && !customer.IsSystemAccount && customer.AffiliateId != affiliate.Id)
                         {
-							customer.AffiliateId = affiliate.Id;
-							CustomerService.Value.UpdateCustomer(customer);
+                            customer.AffiliateId = affiliate.Id;
+                            CustomerService.Value.UpdateCustomer(customer);
                         }
                     }
                 }
             }
         }
 
-		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
-		{
-		}
-	}
+        public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+        }
+    }
 }

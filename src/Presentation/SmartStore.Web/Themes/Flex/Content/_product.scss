@@ -1,7 +1,4 @@
-/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="../../../Content/shared/_mixins.scss" />
-/// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="theme.scss" />
 
 $pd-offer-bg:                   $product-detail-addtocart-box-bg;
 $pd-price-color:                $product-price-color;
@@ -79,7 +76,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 // =====================================================
 
 .pd-name {
-    font-size: 1.75rem;
+    @include font-size(1.75rem);
     font-weight: $font-weight-bold;
 }
 
@@ -184,7 +181,19 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
         padding-right: 0.2rem;
     }
 
-    .pd-offer-action-qty { max-width: 120px; min-width: 90px; }
+    .pd-offer-action-qty {
+        max-width: 120px;
+        min-width: 90px;
+    }
+
+    .quote-request {
+        width: 100%;
+
+        .quote-request-hotline {
+            text-align: center;
+            padding-top: .75rem;
+        }
+    }
 }
 
 
@@ -408,17 +417,23 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 	padding-left: 0.4rem;
 }
 
-.delivery-time {
+.delivery-time,
+.delivery-date-block {
     display: inline-block;
     vertical-align: middle;
     max-width: 100%;
     @include text-truncate();
-
-    .delivery-time-status {
-        font-size: 0.85em;
-		padding-right: 0.2rem;
-		margin-left: 0.025rem;
-    }
+}
+.delivery-time .delivery-time-status {
+    font-size: 0.85em;
+    padding-right: 0.2rem;
+    margin-left: 0.025rem;
+}
+.pd-offer .delivery-date-block {
+    padding-top: 0.5rem;
+}
+.delivery-date > b {
+    font-weight: $font-weight-medium;
 }
 
 

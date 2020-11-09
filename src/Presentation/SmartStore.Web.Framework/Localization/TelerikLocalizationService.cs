@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Caching;
 
 namespace SmartStore.Web.Framework.Localization
@@ -9,42 +7,39 @@ namespace SmartStore.Web.Framework.Localization
     {
         private readonly string _componentName;
         private readonly SmartStore.Services.Localization.ILocalizationService _localizationService;
-		private readonly IRequestCache _requestCache;
+        private readonly IRequestCache _requestCache;
         private readonly int _currentLanguageId;
 
         public TelerikLocalizationService(
-			string componentName, 
-			int currentLanguageId, 
-			Services.Localization.ILocalizationService localizationService,
-			IRequestCache requestCache)
+            string componentName,
+            int currentLanguageId,
+            Services.Localization.ILocalizationService localizationService,
+            IRequestCache requestCache)
         {
             _componentName = componentName;
             _currentLanguageId = currentLanguageId;
             _localizationService = localizationService;
-			_requestCache = requestCache;
+            _requestCache = requestCache;
         }
 
         public IDictionary<string, string> All()
         {
-			var scope = "Admin.Telerik." + _componentName;
+            var scope = "Admin.Telerik." + _componentName;
 
-			var cacheKey = scope + ".Resources";
+            var cacheKey = scope + ".Resources";
 
-			return _requestCache.Get(cacheKey, () =>
-			{
-				var resources = _localizationService.GetResourcesByPattern(scope, _currentLanguageId);
-				var dict = resources.ToDictionarySafe(
-					x => x.ResourceName.Substring(scope.Length).ToLowerInvariant(),
-					x => x.ResourceValue);
+            return _requestCache.Get(cacheKey, () =>
+            {
+                var resources = _localizationService.GetResourcesByPattern(scope, _currentLanguageId);
+                var dict = resources.ToDictionarySafe(
+                    x => x.ResourceName.Substring(scope.Length).ToLowerInvariant(),
+                    x => x.ResourceValue);
 
-				return dict;
-			});
-		}
-
-        public bool IsDefault
-        {
-            get { return true; }
+                return dict;
+            });
         }
+
+        public bool IsDefault => true;
 
         public string One(string key)
         {

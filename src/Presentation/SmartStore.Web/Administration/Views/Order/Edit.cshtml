@@ -1,7 +1,5 @@
 ﻿@model OrderModel
 @using Telerik.Web.Mvc.UI;
-@using SmartStore.Core.Domain.Tax;
-@using SmartStore.Core.Domain.Catalog;
 @{
     ViewBag.Title = T("Admin.Orders.EditOrderDetails").Text;
 }
@@ -36,6 +34,7 @@
         </div>
     </div>
 
+	@Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     @Html.SmartStore().TabStrip().Name("order-edit").Style(TabsStyle.Material).Items(x =>
@@ -46,7 +45,6 @@
 		x.Add().Text(T("Admin.Orders.OrderNotes").Text).Content(TabOrderNotes());
 		x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabOrderAttributes());
 	
-		//generate an event
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "order-edit", this.Html, this.Model));
 	})
 }

@@ -85,9 +85,9 @@ namespace SmartStore.Services.Media
         }
 
         protected void TrackSetting<TSetting>(
-            TSetting settings, 
+            TSetting settings,
             string propertyName,
-            int? prevMediaFileId, 
+            int? prevMediaFileId,
             int? currentMediaFileId) where TSetting : ISettings, new()
         {
             Guard.NotNull(settings, nameof(settings));
@@ -199,13 +199,13 @@ namespace SmartStore.Services.Media
 
             var ctx = _dbContext;
 
-            using (var scope = new DbContextScope(ctx, 
-                validateOnSave: false, 
-                hooksEnabled: false, 
+            using (var scope = new DbContextScope(ctx,
+                validateOnSave: false,
+                hooksEnabled: false,
                 autoDetectChanges: false))
             {
                 // Get the album (necessary later to set FolderId)...
-                MediaFolderNode albumNode = albumName.HasValue() 
+                MediaFolderNode albumNode = albumName.HasValue()
                     ? _folderService.GetNodeByPath(albumName)?.Value
                     : null;
 
@@ -268,7 +268,7 @@ namespace SmartStore.Services.Media
                             {
                                 file.Tracks.Remove(track);
                                 _dbContext.ChangeState(dbTrack, System.Data.Entity.EntityState.Deleted);
-                            } 
+                            }
                         }
 
                         if (file.Tracks.Count > 0)
@@ -287,15 +287,18 @@ namespace SmartStore.Services.Media
                 // Save whole batch to database
                 int num = ctx.SaveChanges();
 
-                // Breathe
-                ctx.DetachEntities<MediaFile>(deep: true);
+                if (num > 0)
+                {
+                    // Breathe
+                    ctx.DetachEntities<MediaFile>(deep: true);
+                }
             }
         }
 
         public int DeleteAllTracks(string albumName)
         {
             Guard.NotEmpty(albumName, nameof(albumName));
-            
+
             string sql = "DELETE FROM [MediaTrack] WHERE [Album] = '{0}'".FormatCurrent(albumName);
             return _dbContext.ExecuteSqlCommand(sql);
         }

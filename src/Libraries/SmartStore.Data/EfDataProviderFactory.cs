@@ -1,28 +1,26 @@
-﻿using System;
-using SmartStore.Core;
-using SmartStore.Core.Data;
+﻿using SmartStore.Core.Data;
 
 namespace SmartStore.Data
 {
     public partial class EfDataProviderFactory : DataProviderFactory
     {
-		public EfDataProviderFactory()
-			: this(DataSettings.Current)
-		{
-		}
-		
-		public EfDataProviderFactory(DataSettings settings)
-			: base(settings)
+        public EfDataProviderFactory()
+            : this(DataSettings.Current)
+        {
+        }
+
+        public EfDataProviderFactory(DataSettings settings)
+            : base(settings)
         {
         }
 
         public override IDataProvider LoadDataProvider()
         {
             var providerName = Settings.DataProvider;
-			if (providerName.IsEmpty())
-			{
-				throw new SmartException("Data Settings doesn't contain a providerName");
-			}
+            if (providerName.IsEmpty())
+            {
+                throw new SmartException("Data Settings doesn't contain a providerName");
+            }
 
             switch (providerName.ToLowerInvariant())
             {

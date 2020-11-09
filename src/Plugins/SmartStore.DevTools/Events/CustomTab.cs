@@ -6,7 +6,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.DevTools.Events
 {
-	public class CustomTab : IConsumer
+    public class CustomTab : IConsumer
     {
         private readonly ICommonServices _services;
 
@@ -50,7 +50,7 @@ namespace SmartStore.DevTools.Events
             var model = eventMessage.BoundModel.CustomProperties["DevTools"] as BackendExtensionModel;
             if (model == null)
                 return;
-            
+
             // Do something with the model now: e.g. store it ;-)
         }
     }

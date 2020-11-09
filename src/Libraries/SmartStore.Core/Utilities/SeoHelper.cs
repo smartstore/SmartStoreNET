@@ -8,25 +8,25 @@ using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Utilities
 {
-	public static class SeoHelper
-	{
-		private static readonly object _lock = new object();
-		private static Dictionary<char, string> _userSeoCharacterTable;
+    public static class SeoHelper
+    {
+        private static readonly object _lock = new object();
+        private static Dictionary<char, string> _userSeoCharacterTable;
 
-		/// <summary>
-		/// Get SEO friendly string
-		/// </summary>
-		/// <param name="name">String to be converted</param>
-		/// <param name="convertNonWesternChars">A value indicating whether non western chars should be converted</param>
-		/// <param name="allowUnicodeChars">A value indicating whether Unicode chars are allowed</param>
-		/// <param name="charConversions">Raw data of semicolon separated char conversions</param>
-		/// <returns>SEO friendly string</returns>
-		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        /// <summary>
+        /// Get SEO friendly string
+        /// </summary>
+        /// <param name="name">String to be converted</param>
+        /// <param name="convertNonWesternChars">A value indicating whether non western chars should be converted</param>
+        /// <param name="allowUnicodeChars">A value indicating whether Unicode chars are allowed</param>
+        /// <param name="charConversions">Raw data of semicolon separated char conversions</param>
+        /// <returns>SEO friendly string</returns>
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeChars, string charConversions = null)
-		{
+        {
             return GetSeName(name, convertNonWesternChars, allowUnicodeChars, true, charConversions);
-		}
+        }
 
         /// <summary>
         /// Get SEO friendly string
@@ -39,10 +39,10 @@ namespace SmartStore.Utilities
         /// <returns>SEO friendly string</returns>
         [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public static string GetSeName(
-            string name, 
-            bool convertNonWesternChars, 
-            bool allowUnicodeChars, 
-            bool allowForwardSlash, 
+            string name,
+            bool convertNonWesternChars,
+            bool allowUnicodeChars,
+            bool allowForwardSlash,
             string charConversions = null)
         {
             // Return empty value if text is null
@@ -136,31 +136,31 @@ namespace SmartStore.Utilities
         }
 
         public static void ResetUserSeoCharacterTable()
-		{
-			if (_userSeoCharacterTable != null)
-			{
-				_userSeoCharacterTable.Clear();
-				_userSeoCharacterTable = null;
-			}
-		}
+        {
+            if (_userSeoCharacterTable != null)
+            {
+                _userSeoCharacterTable.Clear();
+                _userSeoCharacterTable = null;
+            }
+        }
 
-		private static void InitializeUserSeoCharacterTable(string charConversions)
-		{
-			lock (_lock)
-			{
-				if (_userSeoCharacterTable == null)
-				{
-					_userSeoCharacterTable = new Dictionary<char, string>();
+        private static void InitializeUserSeoCharacterTable(string charConversions)
+        {
+            lock (_lock)
+            {
+                if (_userSeoCharacterTable == null)
+                {
+                    _userSeoCharacterTable = new Dictionary<char, string>();
 
-					foreach (var conversion in charConversions.SplitSafe(Environment.NewLine))
-					{
-						if (conversion.SplitToPair(out var strLeft, out var strRight, ";") && strLeft.HasValue() && !_userSeoCharacterTable.ContainsKey(strLeft[0]))
-						{
-							_userSeoCharacterTable.Add(strLeft[0], strRight);
-						}
-					}
-				}
-			}
-		}
-	}
+                    foreach (var conversion in charConversions.SplitSafe(Environment.NewLine))
+                    {
+                        if (conversion.SplitToPair(out var strLeft, out var strRight, ";") && strLeft.HasValue() && !_userSeoCharacterTable.ContainsKey(strLeft[0]))
+                        {
+                            _userSeoCharacterTable.Add(strLeft[0], strRight);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

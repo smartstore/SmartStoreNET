@@ -8,7 +8,7 @@ namespace SmartStore.Web.Models.Profile
         public ProfilePostsModel(IPageable pageable) : base(pageable)
         {
         }
-        
+
         public IList<PostsModel> Posts { get; set; }
     }
 }

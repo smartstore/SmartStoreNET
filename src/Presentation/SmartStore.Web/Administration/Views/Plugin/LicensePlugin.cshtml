@@ -6,6 +6,8 @@
 <form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })" data-systemname="@Model.SystemName"
 	data-resetcheckurl="@Url.Action("LicenseResetStatusCheck", "Plugin", new { systemName = Model.SystemName })">
 
+	@Html.AntiForgeryToken()
+
 	@if (Model.InvalidDataStoreId == 0)
 	{
 		<table class="adminContent">

@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
     using SmartStore.Core.Data;
@@ -12,21 +11,18 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {
-			using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false))
-			{
-				var widgetTopics = new[] 
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false))
+            {
+                var widgetTopics = new[]
                 {
                     "CheckoutAsGuestOrRegister",
                     "ContactUs",
@@ -36,14 +32,14 @@ namespace SmartStore.Data.Migrations
                 };
 
                 var topics = context.Set<Topic>().Where(x => widgetTopics.Contains(x.SystemName)).ToList();
-                topics.Each(x => 
-				{
+                topics.Each(x =>
+                {
                     x.RenderAsWidget = true;
                     x.WidgetWrapContent = false;
                 });
 
                 context.SaveChanges();
-			}
-		}
+            }
+        }
     }
 }

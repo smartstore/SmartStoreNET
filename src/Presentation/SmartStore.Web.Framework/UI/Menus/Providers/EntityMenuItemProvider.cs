@@ -7,8 +7,8 @@ namespace SmartStore.Web.Framework.UI
     // INFO: The provider's SystemName is also the edit template name > Views/Shared/EditorTemplates/MenuItem.{SystemName}.cshtml.
     // Model is: string
     [MenuItemProvider("entity")]
-	public class EntityMenuItemProvider : MenuItemProviderBase
-	{
+    public class EntityMenuItemProvider : MenuItemProviderBase
+    {
         private readonly ILinkResolver _linkResolver;
 
         public EntityMenuItemProvider(ILinkResolver linkResolver)
@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.UI
         public Localizer T { get; set; }
 
         protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
-		{
+        {
             // Always resolve against current store, current customer and working language.
             var result = _linkResolver.Resolve(request.Entity.Model);
             var item = node.Value;

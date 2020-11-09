@@ -7,12 +7,12 @@ namespace SmartStore.Web.Framework.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public class UnitOfWorkAttribute : ActionFilterAttribute
     {
-        public UnitOfWorkAttribute() 
+        public UnitOfWorkAttribute()
             : this(null, int.MaxValue)
         {
         }
 
-        public UnitOfWorkAttribute(int ordinal) 
+        public UnitOfWorkAttribute(int ordinal)
             : this(null, ordinal)
         {
         }
@@ -28,7 +28,7 @@ namespace SmartStore.Web.Framework.Filters
             base.Order = ordinal;
         }
 
-		public Func<string, IDbContext> DbContext { get; set; }
+        public Func<string, IDbContext> DbContext { get; set; }
 
         public string Alias { get; set; }
 
@@ -37,8 +37,8 @@ namespace SmartStore.Web.Framework.Filters
             if (filterContext.Exception != null)
                 return;
 
-			var context = DbContext(this.Alias);
-            
+            var context = DbContext(this.Alias);
+
             if (context != null && context.HasChanges)
             {
                 try

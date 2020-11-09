@@ -16,42 +16,42 @@ namespace SmartStore.Services.Media
     {
         private readonly IMediaService _mediaService;
         private readonly IDownloadService _downloadService;
-		private readonly IRepository<MediaFile> _fileRepository;
-		private readonly IRepository<Download> _downloadRepository;
+        private readonly IRepository<MediaFile> _fileRepository;
+        private readonly IRepository<Download> _downloadRepository;
 
-		public TransientMediaClearTask(
+        public TransientMediaClearTask(
             IMediaService mediaService,
             IDownloadService downloadService,
-            IRepository<MediaFile> fileRepository, 
-			IRepository<Download> downloadRepository)
+            IRepository<MediaFile> fileRepository,
+            IRepository<Download> downloadRepository)
         {
             _mediaService = mediaService;
             _downloadService = downloadService;
-			_fileRepository = fileRepository;
-			_downloadRepository = downloadRepository;
+            _fileRepository = fileRepository;
+            _downloadRepository = downloadRepository;
         }
 
-		public override async Task ExecuteAsync(TaskExecutionContext ctx)
+        public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
-			// Delete all media records which are in transient state since at least 3 hours.
-			var olderThan = DateTime.UtcNow.AddHours(-3);
-			var fileAutoCommit = _fileRepository.AutoCommitEnabled;
+            // Delete all media records which are in transient state since at least 3 hours.
+            var olderThan = DateTime.UtcNow.AddHours(-3);
+            var fileAutoCommit = _fileRepository.AutoCommitEnabled;
             var downloadAutoCommit = _downloadRepository.AutoCommitEnabled;
-			
+
             _fileRepository.AutoCommitEnabled = false;
             _downloadRepository.AutoCommitEnabled = false;
 
-			try
-			{
-				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
-				{
-					var files = await _fileRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
-					foreach (var file in files)
-					{
+            try
+            {
+                using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
+                {
+                    var files = await _fileRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
+                    foreach (var file in files)
+                    {
                         _mediaService.DeleteFile(file, true);
-					}
+                    }
 
-					await _fileRepository.Context.SaveChangesAsync();
+                    await _fileRepository.Context.SaveChangesAsync();
 
                     var downloads = await _downloadRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
                     foreach (var download in downloads)
@@ -72,10 +72,10 @@ namespace SmartStore.Services.Media
                 }
             }
             finally
-			{
-				_fileRepository.AutoCommitEnabled = fileAutoCommit;
+            {
+                _fileRepository.AutoCommitEnabled = fileAutoCommit;
                 _downloadRepository.AutoCommitEnabled = downloadAutoCommit;
-			}
+            }
         }
     }
 }

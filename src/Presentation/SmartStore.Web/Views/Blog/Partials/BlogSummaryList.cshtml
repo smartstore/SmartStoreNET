@@ -29,6 +29,10 @@
     {
         cssClass.Add("has-image");
     }
+    if (!item.IsPublished)
+    {
+        cssClass.Add("unpublished");
+    }
 
     <article class="@string.Join(" ", cssClass)" itemscope itemtype="http://schema.org/BlogPosting">
         <div class="bloglist-item d-flex flex-row flex-nowrap d-md-block">
@@ -37,8 +41,8 @@
                 @RenderTags(item, false)
                 @RenderComments(item)
 
-                <div class="card-img">
-                    <img class="card-img box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
+                <div class="card-img h-100">
+                    <img class="card-img h-100 box-scale" src="@imageUrl" alt="@item.PreviewPictureModel.AlternateText" title="@item.PreviewPictureModel.Title" itemprop="image">
                 </div>
                 <div class="bg-overlay bg-@(item.SectionBg)"></div>
                 <div class="bg-overlay gradient-black scrim-linear-gradient bg-shade-@(item.SectionBg)" style="--cendpos: 50%"></div>
@@ -62,14 +66,18 @@
 
             <div class="@(hasBgImage ? "card-img-overlay d-flex flex-column justify-content-end p-0" : "bloglist-item-body")">
                 <div class="blogpost-text text-left w-100 p-4">
-                    <div class="blogpost-date rfs mb-2 text-muted" itemprop="dateCreated">
+                    <div class="blogpost-date rfs mb-2 text-muted">
                         @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
                     </div>
+                    <meta itemprop="datePublished" content="@item.CreatedOn.ToString("u")" />
+                    <meta itemprop="author" content="@CommonServices.StoreContext.CurrentStore.Name" />
+                    <meta itemprop="publisher" content="@CommonServices.StoreContext.CurrentStore.Name" />
 
                     <h3 class="fs-h6 mb-3 mt-1 font-weight-medium">
-                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title" itemprop="headline">
+                        <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" class="blogpost-title">
                             @item.Title
                         </a>
+                        <meta itemprop="headline" content="@item.Title" />
                     </h3>
 
                     @if (item.Intro.HasValue())

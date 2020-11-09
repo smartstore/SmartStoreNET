@@ -22,16 +22,16 @@ namespace SmartStore.Services.Tests.Shipping
     public class ShippingServiceTests : ServiceTest
     {
         IRepository<ShippingMethod> _shippingMethodRepository;
-		IRepository<StoreMapping> _storeMappingRepository;
-		IProductAttributeParser _productAttributeParser;
-		IProductService _productService;
+        IRepository<StoreMapping> _storeMappingRepository;
+        IProductAttributeParser _productAttributeParser;
+        IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
-		ICommonServices _services;
-		ShippingSettings _shippingSettings;
+        ICommonServices _services;
+        ShippingSettings _shippingSettings;
         IEventPublisher _eventPublisher;
-		IGenericAttributeService _genericAttributeService;
+        IGenericAttributeService _genericAttributeService;
         IShippingService _shippingService;
-		ISettingService _settingService;
+        ISettingService _settingService;
         ICartRuleProvider _cartRuleProvider;
 
         [SetUp]
@@ -42,30 +42,30 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
 
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
-			_productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
-			_productService = MockRepository.GenerateMock<IProductService>();
+            _storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+            _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+            _productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
+            _services = MockRepository.GenerateMock<ICommonServices>();
 
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
-			_settingService = MockRepository.GenerateMock<ISettingService>();
+            _genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
+            _settingService = MockRepository.GenerateMock<ISettingService>();
             _cartRuleProvider = MockRepository.GenerateMock<ICartRuleProvider>();
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
-				_storeMappingRepository,
-				_productAttributeParser,
-				_productService,
+                _storeMappingRepository,
+                _productAttributeParser,
+                _productService,
                 _checkoutAttributeParser,
-				_genericAttributeService,
+                _genericAttributeService,
                 _shippingSettings,
-				_settingService, 
-				this.ProviderManager,
-				_services,
+                _settingService,
+                this.ProviderManager,
+                _services,
                 _cartRuleProvider);
         }
 
@@ -99,7 +99,7 @@ namespace SmartStore.Services.Tests.Shipping
             {
                 AttributesXml = "",
                 Quantity = 3,
-				Product = new Product()
+                Product = new Product()
                 {
                     Weight = 1.5M,
                     Height = 2.5M,
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Tests.Shipping
                 }
             };
 
-			var item = new OrganizedShoppingCartItem(sci);
+            var item = new OrganizedShoppingCartItem(sci);
 
             _shippingService.GetShoppingCartItemTotalWeight(item).ShouldEqual(4.5M);
         }
@@ -120,7 +120,7 @@ namespace SmartStore.Services.Tests.Shipping
             {
                 AttributesXml = "",
                 Quantity = 3,
-				Product = new Product()
+                Product = new Product()
                 {
                     Weight = 1.5M,
                     Height = 2.5M,
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Tests.Shipping
             {
                 AttributesXml = "",
                 Quantity = 4,
-				Product = new Product()
+                Product = new Product()
                 {
                     Weight = 11.5M,
                     Height = 12.5M,
@@ -141,9 +141,9 @@ namespace SmartStore.Services.Tests.Shipping
                 }
             };
 
-			var cart = new List<OrganizedShoppingCartItem>();
-			cart.Add(new OrganizedShoppingCartItem(sci1));
-			cart.Add(new OrganizedShoppingCartItem(sci2));
+            var cart = new List<OrganizedShoppingCartItem>();
+            cart.Add(new OrganizedShoppingCartItem(sci1));
+            cart.Add(new OrganizedShoppingCartItem(sci2));
 
             _shippingService.GetShoppingCartTotalWeight(cart).ShouldEqual(50.5M);
         }

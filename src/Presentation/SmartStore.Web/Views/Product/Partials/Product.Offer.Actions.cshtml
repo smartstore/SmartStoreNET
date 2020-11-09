@@ -4,44 +4,52 @@
 @using SmartStore.Core.Domain.Orders;
 
 @{
-	var addModel = Model.AddToCart;
-	var showBuyAction = Model.IsAvailable && !Model.AddToCart.DisableBuyButton;
+    var addModel = Model.AddToCart;
+    var showBuyAction = Model.IsAvailable && !Model.AddToCart.DisableBuyButton;
 }
 
 <div class="row pd-offer-actions">
-	@if (showBuyAction)
-	{
-		if (Model.ProductPrice.CallForPrice)
-		{
-			<div class="col">
-				<a class="btn btn-secondary btn-lg btn-block" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
-					<i class="fa fa-envelope"></i>
-					<span>@T("Products.CallForPrice.GoToForm")</span>
-				</a>
-			</div>
-		}
-		else
-		{
-			if (!Model.AddToCart.HideQuantityControl)
-			{
-				<div class="col pd-offer-action-qty">
-					@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
-				</div>
-			}
+    @if (showBuyAction)
+    {
+        if (Model.ProductPrice.CallForPrice)
+        {
+            <div class="quote-request">
+                <a class="btn btn-secondary btn-lg btn-block action-ask-question" href="javascript:void(0)" 
+                   data-href="@Url.Action("AskQuestionAjax", "Product", new { id = Model.Id })" 
+                   data-form-selector="#pd-form" rel="nofollow">
+                    <i class="fa fa-envelope"></i>
+                    <span>@T("Products.CallForPrice.GoToForm")</span>
+                </a>                
+                @if (Model.HotlineTelephoneNumber.HasValue())
+                {
+                    <div class="quote-request-hotline">
+                        <div>@T("Products.AskQuestion.CallHotline")<i class="fas fa-phone-alt px-1"></i><span class="fwm">@Model.HotlineTelephoneNumber</span></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            if (!Model.AddToCart.HideQuantityControl)
+            {
+                <div class="col pd-offer-action-qty">
+                    @Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
+                </div>
+            }
 
-			<div class="col flex-grow-1">
-				<a class="btn btn-primary btn-lg btn-block btn-add-to-cart ajax-cart-link"
-					href="#"
-					rel="nofollow"
-					data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
-					data-form-selector="#pd-form"
-					data-type="cart"
-					data-action="add"
-					data-toggle="offcanvas" data-target="#offcanvas-cart">
-					<i class="fa fa-cart-arrow-down d-none d-sm-inline-block d-md-none d-xl-inline-block"></i>
-					<span>@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))</span>
-				</a>
-			</div>
-		}
-	}
+            <div class="col flex-grow-1">
+                <a class="btn btn-primary btn-lg btn-block btn-add-to-cart ajax-cart-link"
+                   href="#"
+                   rel="nofollow"
+                   data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
+                   data-form-selector="#pd-form"
+                   data-type="cart"
+                   data-action="add"
+                   data-toggle="offcanvas" data-target="#offcanvas-cart">
+                    <i class="fa fa-cart-arrow-down d-none d-sm-inline-block d-md-none d-xl-inline-block"></i>
+                    <span>@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))</span>
+                </a>
+            </div>
+        }
+    }
 </div>

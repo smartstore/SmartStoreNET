@@ -7,104 +7,104 @@ using SmartStore.Core.Search;
 namespace SmartStore.Services.Search
 {
     public partial class CatalogSearchQuery : SearchQuery<CatalogSearchQuery>, ICloneable<CatalogSearchQuery>
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CatalogSearchQuery"/> class without a search term being set
-		/// </summary>
-		public CatalogSearchQuery()
-			: base((string[])null, null)
-		{
-		}
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CatalogSearchQuery"/> class without a search term being set
+        /// </summary>
+        public CatalogSearchQuery()
+            : base((string[])null, null)
+        {
+        }
 
-		public CatalogSearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
-			: base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
-		{
-		}
+        public CatalogSearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
+            : base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
+        {
+        }
 
-		public CatalogSearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
-			: base(fields, term, mode, escape, isFuzzySearch)
-		{
-		}
+        public CatalogSearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
+            : base(fields, term, mode, escape, isFuzzySearch)
+        {
+        }
 
-		public CatalogSearchQuery Clone()
-		{
-			return (CatalogSearchQuery)this.MemberwiseClone();
-		}
+        public CatalogSearchQuery Clone()
+        {
+            return (CatalogSearchQuery)this.MemberwiseClone();
+        }
 
-		object ICloneable.Clone()
-		{
-			return this.MemberwiseClone();
-		}
+        object ICloneable.Clone()
+        {
+            return this.MemberwiseClone();
+        }
 
-		public bool IsSubPage
-		{
-			get
-			{
-				if (PageIndex > 0)
-				{
-					return true;
-				}
-				
-				var hasActiveFilter = FacetDescriptors.Values.Any(x => x.Values.Any(y => y.IsSelected));
-				return hasActiveFilter;
-			}
-		}
+        public bool IsSubPage
+        {
+            get
+            {
+                if (PageIndex > 0)
+                {
+                    return true;
+                }
 
-		#region Fluent builder
+                var hasActiveFilter = FacetDescriptors.Values.Any(x => x.Values.Any(y => y.IsSelected));
+                return hasActiveFilter;
+            }
+        }
 
-		public CatalogSearchQuery SortBy(ProductSortingEnum sort)
-		{
-			switch (sort)
-			{
-				case ProductSortingEnum.CreatedOnAsc:
-				case ProductSortingEnum.CreatedOn:
-					return SortBy(SearchSort.ByDateTimeField("createdon", sort == ProductSortingEnum.CreatedOn));
+        #region Fluent builder
 
-				case ProductSortingEnum.NameAsc:
-				case ProductSortingEnum.NameDesc:
-					return SortBy(SearchSort.ByStringField("name", sort == ProductSortingEnum.NameDesc));
+        public CatalogSearchQuery SortBy(ProductSortingEnum sort)
+        {
+            switch (sort)
+            {
+                case ProductSortingEnum.CreatedOnAsc:
+                case ProductSortingEnum.CreatedOn:
+                    return SortBy(SearchSort.ByDateTimeField("createdon", sort == ProductSortingEnum.CreatedOn));
 
-				case ProductSortingEnum.PriceAsc:
-				case ProductSortingEnum.PriceDesc:
-					return SortBy(SearchSort.ByDoubleField("price", sort == ProductSortingEnum.PriceDesc));
+                case ProductSortingEnum.NameAsc:
+                case ProductSortingEnum.NameDesc:
+                    return SortBy(SearchSort.ByStringField("name", sort == ProductSortingEnum.NameDesc));
 
-				case ProductSortingEnum.Relevance:
-					return SortBy(SearchSort.ByRelevance());
+                case ProductSortingEnum.PriceAsc:
+                case ProductSortingEnum.PriceDesc:
+                    return SortBy(SearchSort.ByDoubleField("price", sort == ProductSortingEnum.PriceDesc));
 
-				default:
-					return this;
-			}			
-		}
+                case ProductSortingEnum.Relevance:
+                    return SortBy(SearchSort.ByRelevance());
 
-		/// <summary>
-		/// Only products that are visible in frontend.
-		/// </summary>
-		/// <param name="customer">Customer whose customer roles are to be checked. Can be <c>null</c>.</param>
-		/// <returns>Catalog search query</returns>
-		public CatalogSearchQuery VisibleOnly(Customer customer)
-		{
-			if (customer != null)
-			{
+                default:
+                    return this;
+            }
+        }
+
+        /// <summary>
+        /// Only products that are visible in frontend.
+        /// </summary>
+        /// <param name="customer">Customer whose customer roles are to be checked. Can be <c>null</c>.</param>
+        /// <returns>Catalog search query</returns>
+        public CatalogSearchQuery VisibleOnly(Customer customer)
+        {
+            if (customer != null)
+            {
                 var allowedCustomerRoleIds = customer.GetRoleIds();
 
-				return VisibleOnly(allowedCustomerRoleIds);
-			}
+                return VisibleOnly(allowedCustomerRoleIds);
+            }
 
-			return VisibleOnly(new int[0]);
-		}
+            return VisibleOnly(new int[0]);
+        }
 
-		/// <summary>
-		/// Only products that are visible in frontend.
-		/// </summary>
-		/// <param name="allowedCustomerRoleIds">List of allowed customer role ids. Can be <c>null</c>.</param>
-		public CatalogSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
-		{
+        /// <summary>
+        /// Only products that are visible in frontend.
+        /// </summary>
+        /// <param name="allowedCustomerRoleIds">List of allowed customer role ids. Can be <c>null</c>.</param>
+        public CatalogSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
+        {
             PublishedOnly(true);
             AvailableByDate(true);
             AllowedCustomerRoles(allowedCustomerRoleIds);
 
-			return this;
-		}
+            return this;
+        }
 
         public CatalogSearchQuery AllowedCustomerRoles(params int[] customerRoleIds)
         {
@@ -122,9 +122,9 @@ namespace SmartStore.Services.Search
         }
 
         public CatalogSearchQuery PublishedOnly(bool value)
-		{
-			return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
-		}
+        {
+            return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
+        }
 
         /// <summary>
         /// Filters products based on their stock level.
@@ -160,109 +160,109 @@ namespace SmartStore.Services.Search
             return WithFilter(SearchFilter.ByField("visibility", (int)value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
-		public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
-		{
+        public CatalogSearchQuery HasParentGroupedProduct(params int[] parentProductIds)
+        {
             return CreateFilter("parentid", parentProductIds);
-		}
+        }
 
-		public override CatalogSearchQuery HasStoreId(int id)
-		{
-			base.HasStoreId(id);
+        public override CatalogSearchQuery HasStoreId(int id)
+        {
+            base.HasStoreId(id);
 
-			if (id == 0)
-			{
+            if (id == 0)
+            {
                 // 0 is ignored in queries, i.e. no filtering takes place. 
                 // This should be kept here so that search engines do not provide different results.
                 //WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
             }
-			else
-			{
-				WithFilter(SearchFilter.Combined(
-					SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
-					SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
-				);
-			}
+            else
+            {
+                WithFilter(SearchFilter.Combined(
+                    SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
+                    SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
+                );
+            }
 
-			return this;
-		}
+            return this;
+        }
 
-		public CatalogSearchQuery IsProductType(ProductType type)
-		{
-			return WithFilter(SearchFilter.ByField("typeid", (int)type).Mandatory().ExactMatch().NotAnalyzed());
-		}
+        public CatalogSearchQuery IsProductType(ProductType type)
+        {
+            return WithFilter(SearchFilter.ByField("typeid", (int)type).Mandatory().ExactMatch().NotAnalyzed());
+        }
 
-		public CatalogSearchQuery WithProductIds(params int[] ids)
-		{
+        public CatalogSearchQuery WithProductIds(params int[] ids)
+        {
             return CreateFilter("id", ids);
-		}
+        }
 
-		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
-		{
-			if (fromId == null && toId == null)
-			{
-				return this;
-			}
+        public CatalogSearchQuery WithProductId(int? fromId, int? toId)
+        {
+            if (fromId == null && toId == null)
+            {
+                return this;
+            }
 
-			return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory().ExactMatch().NotAnalyzed());
-		}
+            return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+        }
 
-		/// <summary>
-		/// Filter by category identifiers.
-		/// </summary>
-		/// <param name="featuredOnly">
-		/// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 
-		/// <c>false</c> to load featured products only, <c>true</c> to load unfeatured products only, <c>null</c> to load all products.
-		/// </param>
-		/// <param name="ids">The category identifiers.</param>
-		/// <returns>Search query.</returns>
-		public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
-		{
-			var fieldName = featuredOnly.HasValue
+        /// <summary>
+        /// Filter by category identifiers.
+        /// </summary>
+        /// <param name="featuredOnly">
+        /// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 
+        /// <c>false</c> to load featured products only, <c>true</c> to load unfeatured products only, <c>null</c> to load all products.
+        /// </param>
+        /// <param name="ids">The category identifiers.</param>
+        /// <returns>Search query.</returns>
+        public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
+        {
+            var fieldName = featuredOnly.HasValue
                 ? featuredOnly.Value ? "featuredcategoryid" : "notfeaturedcategoryid"
                 : "categoryid";
 
             return CreateFilter(fieldName, ids);
-		}
+        }
 
-		/// <remarks>Includes only published categories.</remarks>
-		public CatalogSearchQuery HasAnyCategory(bool value)
-		{
-			if (value)
-			{
-				return WithFilter(SearchFilter.ByRange("categoryid", 1, int.MaxValue, true, true).Mandatory().NotAnalyzed());
-			}
-			else
-			{
-				return WithFilter(SearchFilter.ByField("categoryid", 0).Mandatory().ExactMatch().NotAnalyzed());
-			}
-		}
+        /// <remarks>Includes only published categories.</remarks>
+        public CatalogSearchQuery HasAnyCategory(bool value)
+        {
+            if (value)
+            {
+                return WithFilter(SearchFilter.ByRange("categoryid", 1, int.MaxValue, true, true).Mandatory().NotAnalyzed());
+            }
+            else
+            {
+                return WithFilter(SearchFilter.ByField("categoryid", 0).Mandatory().ExactMatch().NotAnalyzed());
+            }
+        }
 
-		public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
-		{
-			var fieldName = featuredOnly.HasValue
+        public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
+        {
+            var fieldName = featuredOnly.HasValue
                 ? featuredOnly.Value ? "featuredmanufacturerid" : "notfeaturedmanufacturerid"
                 : "manufacturerid";
 
             return CreateFilter(fieldName, ids);
-		}
+        }
 
-		/// <remarks>Includes only published manufacturers.</remarks>
-		public CatalogSearchQuery HasAnyManufacturer(bool value)
-		{
-			if (value)
-			{
-				return WithFilter(SearchFilter.ByRange("manufacturerid", 1, int.MaxValue, true, true).Mandatory().NotAnalyzed());
-			}
-			else
-			{
-				return WithFilter(SearchFilter.ByField("manufacturerid", 0).Mandatory().ExactMatch().NotAnalyzed());
-			}
-		}
+        /// <remarks>Includes only published manufacturers.</remarks>
+        public CatalogSearchQuery HasAnyManufacturer(bool value)
+        {
+            if (value)
+            {
+                return WithFilter(SearchFilter.ByRange("manufacturerid", 1, int.MaxValue, true, true).Mandatory().NotAnalyzed());
+            }
+            else
+            {
+                return WithFilter(SearchFilter.ByField("manufacturerid", 0).Mandatory().ExactMatch().NotAnalyzed());
+            }
+        }
 
-		public CatalogSearchQuery WithProductTagIds(params int[] ids)
-		{
+        public CatalogSearchQuery WithProductTagIds(params int[] ids)
+        {
             return CreateFilter("tagid", ids);
-		}
+        }
 
         public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)
         {
@@ -330,16 +330,16 @@ namespace SmartStore.Services.Search
             int? toQuantity,
             bool? includeFrom = null,
             bool? includeTo = null)
-		{
-			if (fromQuantity == null && toQuantity == null)
-			{
-				return this;
-			}
+        {
+            if (fromQuantity == null && toQuantity == null)
+            {
+                return this;
+            }
 
             if (fromQuantity.HasValue && toQuantity.HasValue && fromQuantity == toQuantity)
             {
                 var forbidden = includeFrom.HasValue && includeTo.HasValue && !includeFrom.Value && !includeTo.Value;
-                
+
                 return WithFilter(SearchFilter.ByField("stockquantity", fromQuantity.Value).Mandatory(!forbidden).ExactMatch().NotAnalyzed());
             }
             else
@@ -353,22 +353,22 @@ namespace SmartStore.Services.Search
 
                 return WithFilter(filter.Mandatory().ExactMatch().NotAnalyzed());
             }
-		}
+        }
 
         public CatalogSearchQuery PriceBetween(
             decimal? fromPrice,
             decimal? toPrice,
             bool? includeFrom = null,
             bool? includeTo = null)
-		{
-			if (fromPrice == null && toPrice == null)
-			{
-				return this;
-			}
+        {
+            if (fromPrice == null && toPrice == null)
+            {
+                return this;
+            }
 
-			Guard.NotEmpty(CurrencyCode, nameof(CurrencyCode));
+            Guard.NotEmpty(CurrencyCode, nameof(CurrencyCode));
 
-			var fieldName = "price_c-" + CurrencyCode.EmptyNull().ToLower();
+            var fieldName = "price_c-" + CurrencyCode.EmptyNull().ToLower();
 
             if (fromPrice.HasValue && toPrice.HasValue && fromPrice == toPrice)
             {
@@ -386,18 +386,18 @@ namespace SmartStore.Services.Search
 
                 return WithFilter(filter.Mandatory().ExactMatch().NotAnalyzed());
             }
-		}
+        }
 
-		public CatalogSearchQuery CreatedBetween(
+        public CatalogSearchQuery CreatedBetween(
             DateTime? fromUtc,
             DateTime? toUtc,
             bool? includeFrom = null,
             bool? includeTo = null)
-		{
-			if (fromUtc == null && toUtc == null)
-			{
-				return this;
-			}
+        {
+            if (fromUtc == null && toUtc == null)
+            {
+                return this;
+            }
 
             if (fromUtc.HasValue && toUtc.HasValue && fromUtc == toUtc)
             {
@@ -416,26 +416,26 @@ namespace SmartStore.Services.Search
 
                 return WithFilter(filter.Mandatory().ExactMatch().NotAnalyzed());
             }
-		}
+        }
 
-		public CatalogSearchQuery WithRating(
+        public CatalogSearchQuery WithRating(
             double? fromRate,
             double? toRate,
             bool? includeFrom = null,
             bool? includeTo = null)
-		{
-			if (fromRate == null && toRate == null)
-			{
-				return this;
-			}
-			if (fromRate.HasValue)
-			{
-				Guard.InRange(fromRate.Value, 0.0, 5.0, nameof(fromRate.Value));
-			}
-			if (toRate.HasValue)
-			{
-				Guard.InRange(toRate.Value, 0.0, 5.0, nameof(toRate.Value));
-			}
+        {
+            if (fromRate == null && toRate == null)
+            {
+                return this;
+            }
+            if (fromRate.HasValue)
+            {
+                Guard.InRange(fromRate.Value, 0.0, 5.0, nameof(fromRate.Value));
+            }
+            if (toRate.HasValue)
+            {
+                Guard.InRange(toRate.Value, 0.0, 5.0, nameof(toRate.Value));
+            }
 
             if (fromRate.HasValue && toRate.HasValue && fromRate == toRate)
             {
@@ -454,7 +454,7 @@ namespace SmartStore.Services.Search
 
                 return WithFilter(filter.Mandatory().ExactMatch().NotAnalyzed());
             }
-		}
+        }
 
         #endregion
     }

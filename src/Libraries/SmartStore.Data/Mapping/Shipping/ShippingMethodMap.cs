@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Data.Mapping.Shipping
 {
-	public class ShippingMethodMap : EntityTypeConfiguration<ShippingMethod>
+    public class ShippingMethodMap : EntityTypeConfiguration<ShippingMethod>
     {
         public ShippingMethodMap()
         {

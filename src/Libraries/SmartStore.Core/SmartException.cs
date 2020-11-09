@@ -31,9 +31,9 @@ namespace SmartStore
 		/// <param name="messageFormat">The exception message format.</param>
 		/// <param name="args">The exception message arguments.</param>
         public SmartException(string messageFormat, params object[] args)
-			: base(string.Format(messageFormat, args))
-		{
-		}
+            : base(string.Format(messageFormat, args))
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the Exception class with serialized data.

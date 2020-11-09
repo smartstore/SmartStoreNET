@@ -16,16 +16,16 @@ namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(ManufacturerValidator))]
     public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>
-	{
+    {
         public ManufacturerModel()
         {
             Locales = new List<ManufacturerLocalizedModel>();
             AvailableManufacturerTemplates = new List<SelectListItem>();
         }
 
-		public int GridPageSize { get; set; }
+        public int GridPageSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Name")]
+        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
@@ -42,19 +42,19 @@ namespace SmartStore.Admin.Models.Catalog
         public int ManufacturerTemplateId { get; set; }
         public IList<SelectListItem> AvailableManufacturerTemplates { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -80,12 +80,12 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Common.CreatedOn")]
-		public DateTime? CreatedOn { get; set; }
+        [SmartResourceDisplayName("Common.CreatedOn")]
+        public DateTime? CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Common.UpdatedOn")]
-		public DateTime? UpdatedOn { get; set; }
-        
+        [SmartResourceDisplayName("Common.UpdatedOn")]
+        public DateTime? UpdatedOn { get; set; }
+
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
         // ACL.
@@ -112,9 +112,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Promotions.Discounts.AppliedDiscounts")]
         public int[] SelectedDiscountIds { get; set; }
 
-		#region Nested classes
+        #region Nested classes
 
-		public class ManufacturerProductModel : EntityModelBase
+        public class ManufacturerProductModel : EntityModelBase
         {
             public int ManufacturerId { get; set; }
 
@@ -123,15 +123,15 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.Product")]
             public string ProductName { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
-			public string Sku { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+            public string Sku { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
-			public string ProductTypeName { get; set; }
-			public string ProductTypeLabelHint { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductType")]
+            public string ProductTypeName { get; set; }
+            public string ProductTypeLabelHint { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
-			public bool Published { get; set; }
+            [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
+            public bool Published { get; set; }
 
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
@@ -162,30 +162,30 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string BottomDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
     }
 
-	public partial class ManufacturerValidator : AbstractValidator<ManufacturerModel>
-	{
-		public ManufacturerValidator()
-		{
-			RuleFor(x => x.Name).NotEmpty();
-		}
-	}
+    public partial class ManufacturerValidator : AbstractValidator<ManufacturerModel>
+    {
+        public ManufacturerValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 
     public class ManufacturerMapper :
         IMapper<Manufacturer, ManufacturerModel>,

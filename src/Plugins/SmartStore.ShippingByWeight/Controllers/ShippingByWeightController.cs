@@ -23,18 +23,18 @@ namespace SmartStore.ShippingByWeight.Controllers
         private readonly IShippingByWeightService _shippingByWeightService;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
-		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly ICommonServices _services;
+        private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly ICommonServices _services;
 
         public ShippingByWeightController(
-			IShippingService shippingService,
-			ICountryService countryService,
-			ShippingByWeightSettings shippingByWeightSettings,
+            IShippingService shippingService,
+            ICountryService countryService,
+            ShippingByWeightSettings shippingByWeightSettings,
             IShippingByWeightService shippingByWeightService,
             IMeasureService measureService,
-			MeasureSettings measureSettings,
-			AdminAreaSettings adminAreaSettings,
-			ICommonServices services)
+            MeasureSettings measureSettings,
+            AdminAreaSettings adminAreaSettings,
+            ICommonServices services)
         {
             _shippingService = shippingService;
             _countryService = countryService;
@@ -42,45 +42,45 @@ namespace SmartStore.ShippingByWeight.Controllers
             _shippingByWeightService = shippingByWeightService;
             _measureService = measureService;
             _measureSettings = measureSettings;
-			_adminAreaSettings = adminAreaSettings;
-			_services = services;
+            _adminAreaSettings = adminAreaSettings;
+            _services = services;
         }
 
         public ActionResult Configure()
         {
             var shippingMethods = _shippingService.GetAllShippingMethods();
-			if (shippingMethods.Count == 0)
-			{
-				return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
-			}
+            if (shippingMethods.Count == 0)
+            {
+                return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
+            }
 
             var model = new ShippingByWeightListModel();
-			var countries = _countryService.GetAllCountries(true);
-			var allStores = _services.StoreService.GetAllStores();
+            var countries = _countryService.GetAllCountries(true);
+            var allStores = _services.StoreService.GetAllStores();
 
-			foreach (var sm in shippingMethods)
-			{
-				model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
-			}
+            foreach (var sm in shippingMethods)
+            {
+                model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
+            }
 
-			model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
-			foreach (var store in allStores)
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
-			}
+            model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
+            foreach (var store in allStores)
+            {
+                model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
+            }
 
             model.AvailableCountries.Add(new SelectListItem { Text = "*", Value = "0" });
-			foreach (var c in countries)
-			{
-				model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
-			}
+            foreach (var c in countries)
+            {
+                model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
+            }
 
             model.LimitMethodsToCreated = _shippingByWeightSettings.LimitMethodsToCreated;
             model.CalculatePerWeightUnit = _shippingByWeightSettings.CalculatePerWeightUnit;
-			model.IncludeWeightOfFreeShippingProducts = _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts;
+            model.IncludeWeightOfFreeShippingProducts = _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts;
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
             model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);
         }
@@ -88,7 +88,7 @@ namespace SmartStore.ShippingByWeight.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult RatesList(GridCommand command)
         {
-			int totalCount;
+            int totalCount;
             var data = _shippingByWeightService.GetShippingByWeightModels(command.Page - 1, command.PageSize, out totalCount);
 
             var model = new GridModel<ShippingByWeightModel>
@@ -134,11 +134,11 @@ namespace SmartStore.ShippingByWeight.Controllers
         {
             var sbw = new ShippingByWeightRecord()
             {
-				StoreId = model.AddStoreId,
+                StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
                 Zip = model.AddZip,
-				//StateProvinceId = 0,
+                //StateProvinceId = 0,
                 From = model.AddFrom,
                 To = model.AddTo,
                 UsePercentage = model.AddUsePercentage,
@@ -150,23 +150,23 @@ namespace SmartStore.ShippingByWeight.Controllers
 
             _shippingByWeightService.InsertShippingByWeightRecord(sbw);
 
-			NotifySuccess(T("Plugins.Shipping.ByWeight.AddNewRecord.Success"));
+            NotifySuccess(T("Plugins.Shipping.ByWeight.AddNewRecord.Success"));
 
-			return Json(new { Result = true });
-		}
+            return Json(new { Result = true });
+        }
 
         [HttpPost]
         public ActionResult Configure(ShippingByWeightListModel model)
         {
             _shippingByWeightSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByWeightSettings.CalculatePerWeightUnit = model.CalculatePerWeightUnit;
-			_shippingByWeightSettings.IncludeWeightOfFreeShippingProducts = model.IncludeWeightOfFreeShippingProducts;
+            _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts = model.IncludeWeightOfFreeShippingProducts;
 
             _services.Settings.SaveSetting(_shippingByWeightSettings);
 
-			NotifySuccess(T("Admin.Configuration.Updated"));
+            NotifySuccess(T("Admin.Configuration.Updated"));
 
-			return Configure();
-		}   
+            return Configure();
+        }
     }
 }

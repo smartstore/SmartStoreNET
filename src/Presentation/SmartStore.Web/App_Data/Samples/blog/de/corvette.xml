@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>Der Sportwagen Amerikas: Chevrolet Corvette</Title>
+  <MetaTitle>Der Sportwagen Amerikas: Chevrolet Corvette</MetaTitle>
+	<Intro>Die Chevrolet Corvette, umgangssprachlich als "Vette" bezeichnet, ist ein zweitüriger Sportwagen für zwei Personen, der von Chevrolet in mehr als 60 Produktionsjahren und acht Designgenerationen hergestellt und vermarktet wird. Inzwischen ist die Corvette weithin als "America's Sports Car" bekannt.</Intro>
+	<MetaDescription>Die Chevrolet Corvette, umgangssprachlich als "Vette" bezeichnet, ist ein zweitüriger Sportwagen für zwei Personen, der von Chevrolet in mehr als 60 Produktionsjahren und acht Designgenerationen hergestellt und vermarktet wird. Inzwischen ist die Corvette weithin als "America's Sports Car" bekannt.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				Die Chevrolet Corvette, umgangssprachlich als "Vette" bezeichnet, ist ein zweitüriger, für zwei Personen ausgelegter Sportwagen,
+				der von Chevrolet in mehr als 60 Produktionsjahren und acht Designgenerationen hergestellt und vermarktet wird.
+				Von 1953 bis 2019 war er mit einem Frontmotor ausgestattet, seit 2020 ist er ein Mittelmotor.
+				Die Corvette, deren Generationen von C1 bis C8 aufeinander folgen, dient als Chevrolets Halo-Fahrzeug und ist weithin bekannt für
+				ihre Leistung und ihre unverwechselbare Kunststoff-Karosserie aus Glasfaser oder Verbundwerkstoff.
+			</p>
+			<p>
+				Im Jahr 1953, als GM-Führungskräfte den neuen Chevrolet-Sportwagen benennen wollten, schlug Myron Scott, stellvertretender Direktor der
+				Abteilung für Öffentlichkeitsarbeit, nach dem kleinen, wendigen Kriegsschiff die Corvette vor - und der Name wurde genehmigt. 
+        Das erste Modell, ein Cabriolet, wurde 1953 auf dem GM Motorama als Konzept vorgestellt.
+				Zehn Jahre später folgte 1963 die zweite Generation als Coupé und Cabriolet. Ursprünglich in Flint, Michigan, und St. Louis, Missouri,
+				hergestellt, wird die Corvette seit 1981 in Bowling Green, Kentucky, produziert.
+			</p>
+		]]>
+	</Body>
+	<Tags>Auto,Sport,Oldtimer,Chevrolet,Corvette</Tags>
+	<DisplayTags>False</DisplayTags>
+	<CreatedOn>2020-05-29</CreatedOn>
+	<DisplayType>10</DisplayType>
+  <Image>sportscar.jpg</Image>
+	<Comments>True</Comments>
+	<SectionBg>dark</SectionBg>
+</BlogPost>

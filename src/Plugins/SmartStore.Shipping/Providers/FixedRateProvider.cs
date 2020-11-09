@@ -11,13 +11,13 @@ using SmartStore.Services.Shipping.Tracking;
 
 namespace SmartStore.Shipping
 {
-	/// <summary>
-	/// Fixed rate shipping computation provider
-	/// </summary>
-	[SystemName("Shipping.FixedRate")]
+    /// <summary>
+    /// Fixed rate shipping computation provider
+    /// </summary>
+    [SystemName("Shipping.FixedRate")]
     [FriendlyName("Fixed Rate Shipping")]
     [DisplayOrder(0)]
-	public class FixedRateProvider : IShippingRateComputationMethod, IConfigurable
+    public class FixedRateProvider : IShippingRateComputationMethod, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly IShippingService _shippingService;
@@ -28,18 +28,18 @@ namespace SmartStore.Shipping
             this._settingService = settingService;
             this._shippingService = shippingService;
 
-			T = NullLocalizer.Instance;
-		}
+            T = NullLocalizer.Instance;
+        }
 
-		public Localizer T { get; set; }
+        public Localizer T { get; set; }
 
-		private decimal GetRate(int shippingMethodId)
+        private decimal GetRate(int shippingMethodId)
         {
             string key = string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId);
             decimal rate = this._settingService.GetSettingByKey<decimal>(key);
             return rate;
         }
-        
+
         /// <summary>
         ///  Gets available shipping options
         /// </summary>
@@ -62,7 +62,7 @@ namespace SmartStore.Shipping
             foreach (var shippingMethod in shippingMethods)
             {
                 var shippingOption = new ShippingOption();
-				shippingOption.ShippingMethodId = shippingMethod.Id;
+                shippingOption.ShippingMethodId = shippingMethod.Id;
                 shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
                 shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
                 shippingOption.Rate = GetRate(shippingMethod.Id);
@@ -83,7 +83,7 @@ namespace SmartStore.Shipping
                 throw new ArgumentNullException("getShippingOptionRequest");
 
             var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest, getShippingOptionRequest.StoreId);
-            
+
             var rates = new List<decimal>();
             foreach (var shippingMethod in shippingMethods)
             {
@@ -115,30 +115,16 @@ namespace SmartStore.Shipping
         /// <summary>
         /// Gets a shipping rate computation method type
         /// </summary>
-        public ShippingRateComputationMethodType ShippingRateComputationMethodType
-        {
-            get
-            {
-                return ShippingRateComputationMethodType.Offline;
-            }
-        }
-        
+        public ShippingRateComputationMethodType ShippingRateComputationMethodType => ShippingRateComputationMethodType.Offline;
+
         /// <summary>
         /// Gets a shipment tracker
         /// </summary>
-        public IShipmentTracker ShipmentTracker
-        {
-            get
-            {
+        public IShipmentTracker ShipmentTracker =>
                 //uncomment a line below to return a general shipment tracker (finds an appropriate tracker by tracking number)
                 //return new GeneralShipmentTracker(EngineContext.Current.Resolve<ITypeFinder>());
-                return null;
-            }
-        }
+                null;
 
-		public bool IsActive
-		{
-			get { return true; }
-		}
+        public bool IsActive => true;
     }
 }

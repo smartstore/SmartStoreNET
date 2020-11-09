@@ -1,5 +1,6 @@
 ﻿@model ProductReviewModel
 @using Telerik.Web.Mvc.UI;
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 <table class="adminContent">

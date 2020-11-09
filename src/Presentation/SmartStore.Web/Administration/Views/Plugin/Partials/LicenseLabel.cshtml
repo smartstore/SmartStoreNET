@@ -14,10 +14,23 @@
 	else if (Model.LicenseState == LicensingState.Unlicensed && Model.TruncatedLicenseKey.HasValue())
 	{
 		<span class="badge badge-danger">@T("Admin.Common.Unlicensed")</span>
-	}
-	else
-	{
-		<span class="badge @(Model.RemainingDemoUsageDaysLabel)">
+    }
+    else
+    {
+        var remainingDaysLabel = "badge-success";
+        if (Model.RemainingDemoUsageDays.HasValue)
+        {
+            if (Model.RemainingDemoUsageDays <= 3)
+            {
+                remainingDaysLabel = "badge-dark";
+            }
+            else if (Model.RemainingDemoUsageDays <= 6)
+            {
+				remainingDaysLabel = "badge-warning";
+            }
+        }
+
+		<span class="badge @remainingDaysLabel">
 			@if (!Model.RemainingDemoUsageDays.HasValue)
 			{
 				@T("Admin.Plugins.LicensingDemoNotStarted")

@@ -8,8 +8,8 @@ namespace SmartStore.Core.Domain.Payments
         public PaymentSettings()
         {
             ActivePaymentMethodSystemNames = new List<string>();
-			AllowRePostingPayments = true;
-			BypassPaymentMethodSelectionIfOnlyOne = false;
+            AllowRePostingPayments = true;
+            BypassPaymentMethodSelectionIfOnlyOne = false;
         }
 
         /// <summary>
@@ -27,19 +27,19 @@ namespace SmartStore.Core.Domain.Payments
         /// </summary>
         public bool BypassPaymentMethodSelectionIfOnlyOne { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether we should bypass the payment method info page
-		/// </summary>
-		public bool BypassPaymentMethodInfo { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether we should bypass the payment method info page
+        /// </summary>
+        public bool BypassPaymentMethodInfo { get; set; }
 
-		/// <summary>
-		/// Gets or sets the reason for automatic payment capturing
-		/// </summary>
-		public CapturePaymentReason? CapturePaymentReason { get; set; }
+        /// <summary>
+        /// Gets or sets the reason for automatic payment capturing
+        /// </summary>
+        public CapturePaymentReason? CapturePaymentReason { get; set; }
 
-		/// <summary>
-		/// Gets or sets the identifier of the currency in which the wallet is kept.
-		/// </summary>
-		public int WalletCurrencyId { get; set; }
-	}
+        /// <summary>
+        /// Gets or sets the identifier of the currency in which the wallet is kept.
+        /// </summary>
+        public int WalletCurrencyId { get; set; }
+    }
 }

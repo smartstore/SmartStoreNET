@@ -23,7 +23,7 @@
 
         @if (Model.DownloadId == null)
         {
-            @*If there is no download yet show download template*@
+            @*If there is no download yet, show download template*@
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.DownloadId)
@@ -111,7 +111,7 @@
                 <tr>
                     <td class="adminTitle"></td>
                     <td class="adminData">
-                        <table class="table">
+                        <table class="table download-versions">
                             <thead>
                                 <tr>
                                     <th scope="col">@T("Common.Download.Version")</th>
@@ -139,8 +139,8 @@
                                             <a href="#" data-download-id="@download.DownloadId" class="btn btn-outline-secondary btn-sm btn-icon add-changelog-btn" title="@T("Admin.Catalog.Products.Download.AddChangelog")">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            <a href="@Url.Action("DeleteDownloadVersion", "Product", new { downloadId = download.DownloadId, productId = Model.Id })"
-                                               class="btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
+                                            <a data-url="@Url.Action("DeleteDownloadVersion", "Product", new { downloadId = download.DownloadId, productId = Model.Id })"
+                                               class="delete-download-version btn btn-outline-secondary btn-to-danger btn-sm btn-icon" title="@T("Common.Download.Delete")">
                                                 <i class="far fa-trash-alt"></i>
                                             </a>
                                         </td>
@@ -228,6 +228,7 @@
                 @Html.SmartLabelFor(model => model.SampleDownloadId)
             </td>
             <td class="adminData">
+                @Html.HiddenFor(model => model.OldSampleDownloadId)
                 @Html.EditorFor(model => model.SampleDownloadId)
                 @Html.ValidationMessageFor(model => model.SampleDownloadId)
             </td>
@@ -235,15 +236,13 @@
     </tbody>
 </table>
 
-<script type="text/javascript">
-
-    $(function () {
-
+<script>
+    $(function() {
         var dialog = $("#add-changelog-window");
         var form = dialog.find("form");
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
         $('.add-changelog-btn').click(function (e) {
-
             var btn = $(e.currentTarget);
             var idElem = dialog.find("#DownloadId");
             var changelogElem = dialog.find("#AddChangelog");
@@ -257,7 +256,8 @@
                 type: 'POST',
                 url: '@Url.Action("GetChangelogText", "Download")',
                 data: {
-                    downloadId: downloadId
+                    downloadId: downloadId,
+                    __RequestVerificationToken: token
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -280,6 +280,7 @@
                 data: {
                     downloadId: form.find("#DownloadId").val(),
                     changelogText: form.find("#AddChangelog").val(),
+                    __RequestVerificationToken: token
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -295,6 +296,22 @@
 
             return false;
         });
+        
+        $('.download-versions').on('click', '.delete-download-version', function () {
+            var download = $(this).closest("tr");
+
+            $(this).doAjax({
+                type: 'POST',
+                data: { "__RequestVerificationToken": token },
+				ask: @T("Admin.Common.AskToProceed").JsText,
+                callbackSuccess: function (data) {
+                    if (data.success) {
+                        displayNotification(data.Message, 'success');
+                        download.remove();
+                    }
+				}
+			});
+		});
 
         dialog.on('shown.bs.modal', function (e) {
             $(window).trigger('resize');

@@ -1,7 +1,7 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using NUnit.Framework;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -29,19 +29,19 @@ namespace SmartStore.Services.Tests.Catalog
             result[3].ShouldEqual(10);
         }
 
-		[Test]
-		public void Can_parse_required_product_ids()
-		{
-			var product = new Product
-			{
-				RequiredProductIds = "1, 4,7 ,a,"
-			};
+        [Test]
+        public void Can_parse_required_product_ids()
+        {
+            var product = new Product
+            {
+                RequiredProductIds = "1, 4,7 ,a,"
+            };
 
-			var ids = product.ParseRequiredProductIds();
-			ids.Length.ShouldEqual(3);
-			ids[0].ShouldEqual(1);
-			ids[1].ShouldEqual(4);
-			ids[2].ShouldEqual(7);
-		}
+            var ids = product.ParseRequiredProductIds();
+            ids.Length.ShouldEqual(3);
+            ids[0].ShouldEqual(1);
+            ids[1].ShouldEqual(4);
+            ids[2].ShouldEqual(7);
+        }
     }
 }

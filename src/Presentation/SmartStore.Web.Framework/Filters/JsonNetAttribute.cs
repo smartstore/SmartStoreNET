@@ -6,9 +6,9 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class JsonNetAttribute : FilterAttribute, IActionFilter
-	{
-		public Lazy<IDateTimeHelper> DateTimeHelper { get; set; }
+    public class JsonNetAttribute : FilterAttribute, IActionFilter
+    {
+        public Lazy<IDateTimeHelper> DateTimeHelper { get; set; }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {

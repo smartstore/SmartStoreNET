@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore.Utilities.ObjectPools
+﻿namespace SmartStore.Utilities.ObjectPools
 {
     public interface IPooledObject
     {

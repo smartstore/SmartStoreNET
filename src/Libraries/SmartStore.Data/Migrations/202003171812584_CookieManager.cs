@@ -1,11 +1,9 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
     using SmartStore.Core.Data;
     using SmartStore.Core.Domain.Cms;
-    using SmartStore.Core.Domain.Localization;
     using SmartStore.Data.Setup;
 
     public partial class CookieManager : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -13,7 +11,7 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }

@@ -1,25 +1,27 @@
 ﻿@model IEnumerable<AuthenticationMethodModel>
 @{
-    ViewBag.Title = T("Admin.Configuration.ExternalAuthenticationMethods").Text;
+	ViewBag.Title = T("Admin.Configuration.ExternalAuthenticationMethods").Text;
 }
 
+@Html.AntiForgeryToken()
+
 <div class="section-header">
-    <div class="title">
-        <i class="fa fa-lock"></i>
-        @T("Admin.Configuration.ExternalAuthenticationMethods")
-    </div>
+	<div class="title">
+		<i class="fa fa-lock"></i>
+		@T("Admin.Configuration.ExternalAuthenticationMethods")
+	</div>
 </div>
 
-<table class="adminContent">
+<table class="adminContent provider-list">
 	<tr>
 		<td>
 			@Html.ProviderList(Model,
-			@<div>
-				<a style="min-width: 150px" class='btn@(item.IsActive ? " btn-secondary btn-to-danger" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
-					<span>@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))</span>
-				</a>
-			</div>)
+					@<div>
+						<a class="activate-provider btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")" style="min-width: 150px"
+						   data-href='@Url.Action("ActivateProvider")' href="#" data-systemname="@item.SystemName" data-activate="@(!item.IsActive ? "true" : "false")">
+							@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+						</a>
+					</div>)
 		</td>
 	</tr>
 </table>
-

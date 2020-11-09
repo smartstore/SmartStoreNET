@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Discounts;
 
 namespace SmartStore.Data.Setup
 {
@@ -8,16 +9,14 @@ namespace SmartStore.Data.Setup
     {
         public IList<Manufacturer> Manufacturers()
         {
-            var sampleImagesPath = this._sampleImagesPath;
-            var manufacturerTemplateInGridAndLines =
-                this.ManufacturerTemplates().Where(pt => pt.ViewPath == "ManufacturerTemplate.ProductsInGridOrLines").FirstOrDefault();
-
-            #region Manufacturer
+            var imagesPath = _sampleImagesPath;
+            var gridOrLinesTemplate = ManufacturerTemplates().Where(x => x.ViewPath == "ManufacturerTemplate.ProductsInGridOrLines").FirstOrDefault();
+            var discounts = _ctx.Set<Discount>().Where(x => x.DiscountTypeId == (int)DiscountType.AssignedToManufacturers).ToList();
 
             var manufacturerJackWolfskin = new Manufacturer
             {
                 Name = "Jack-Wolfskin",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/Jack_Wolfskin.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -26,7 +25,7 @@ namespace SmartStore.Data.Setup
             var manufacturerEASports = new Manufacturer
             {
                 Name = "EA Sports",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/EA_Sports.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -35,7 +34,7 @@ namespace SmartStore.Data.Setup
             var manufacturerWarnerHome = new Manufacturer
             {
                 Name = "Warner Home Video Games",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/wb.png", GetSeName("Warner Home Video Games")),
                 Published = true,
                 DisplayOrder = 1
@@ -44,16 +43,21 @@ namespace SmartStore.Data.Setup
             var manufacturerBreitling = new Manufacturer
             {
                 Name = "Breitling",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/breitling.png"),
                 Published = true,
                 DisplayOrder = 1
             };
+            if (discounts.Any())
+            {
+                manufacturerBreitling.HasDiscountsApplied = true;
+                manufacturerBreitling.AppliedDiscounts.Add(discounts.First());
+            }
 
             var manufacturerTissot = new Manufacturer
             {
                 Name = "Tissot",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/Tissot.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -62,16 +66,21 @@ namespace SmartStore.Data.Setup
             var manufacturerSeiko = new Manufacturer
             {
                 Name = "Seiko",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/seiko.png"),
                 Published = true,
                 DisplayOrder = 1
             };
+            if (discounts.Any())
+            {
+                manufacturerSeiko.HasDiscountsApplied = true;
+                manufacturerSeiko.AppliedDiscounts.Add(discounts.First());
+            }
 
             var manufacturerTitleist = new Manufacturer
             {
                 Name = "Titleist",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/titleist.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -80,7 +89,7 @@ namespace SmartStore.Data.Setup
             var manufacturerPuma = new Manufacturer
             {
                 Name = "Puma",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/puma.jpg"),
                 Published = true,
                 DisplayOrder = 1
@@ -89,7 +98,7 @@ namespace SmartStore.Data.Setup
             var manufacturerNike = new Manufacturer
             {
                 Name = "Nike",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/nike.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -98,7 +107,7 @@ namespace SmartStore.Data.Setup
             var manufacturerAdidas = new Manufacturer
             {
                 Name = "Adidas",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/adidas.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -107,7 +116,7 @@ namespace SmartStore.Data.Setup
             var manufacturerRayban = new Manufacturer
             {
                 Name = "Ray-Ban",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/ray-ban.jpg"),
                 Published = true,
                 DisplayOrder = 1
@@ -116,7 +125,7 @@ namespace SmartStore.Data.Setup
             var manufacturerOakley = new Manufacturer
             {
                 Name = "Oakley",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/oakley.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -125,7 +134,7 @@ namespace SmartStore.Data.Setup
             var manufacturerApple = new Manufacturer
             {
                 Name = "Apple",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/apple.png"),
                 Published = true,
                 DisplayOrder = 1
@@ -134,7 +143,7 @@ namespace SmartStore.Data.Setup
             var manufacturerMicrosoft = new Manufacturer
             {
                 Name = "Microsoft",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/microsoft-icon.png", GetSeName("Microsoft")),
                 Published = true,
                 DisplayOrder = 6
@@ -143,7 +152,7 @@ namespace SmartStore.Data.Setup
             var manufacturerFestina = new Manufacturer
             {
                 Name = "Festina",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/festina.png"),
                 Published = true,
                 DisplayOrder = 17
@@ -152,7 +161,7 @@ namespace SmartStore.Data.Setup
             var manufacturerCertina = new Manufacturer
             {
                 Name = "Certina",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/certina.png"),
                 Published = true,
                 DisplayOrder = 18
@@ -161,7 +170,7 @@ namespace SmartStore.Data.Setup
             var manufacturerSony = new Manufacturer
             {
                 Name = "Sony",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/sony.png"),
                 Published = true,
                 DisplayOrder = 19
@@ -170,7 +179,7 @@ namespace SmartStore.Data.Setup
             var manufacturerUbisoft = new Manufacturer
             {
                 Name = "Ubisoft",
-                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                ManufacturerTemplateId = gridOrLinesTemplate.Id,
                 MediaFile = CreatePicture("brand/ubisoft.png"),
                 Published = true,
                 DisplayOrder = 20
@@ -319,17 +328,15 @@ namespace SmartStore.Data.Setup
             //    DisplayOrder = 16
             //};
 
-            #endregion Manufacturers
-
             var entities = new List<Manufacturer>
             {
-                manufacturerEASports, manufacturerWarnerHome, manufacturerBreitling, manufacturerTissot, manufacturerSeiko, 
+                manufacturerEASports, manufacturerWarnerHome, manufacturerBreitling, manufacturerTissot, manufacturerSeiko,
                 manufacturerTitleist, manufacturerApple, manufacturerFestina, manufacturerCertina,
                 manufacturerSony, manufacturerUbisoft, manufacturerOakley, manufacturerRayban, manufacturerAdidas,
                 manufacturerPuma, manufacturerNike,  manufacturerJackWolfskin, manufacturerMicrosoft,
             };
 
-            this.Alter(entities);
+            Alter(entities);
             return entities;
         }
     }

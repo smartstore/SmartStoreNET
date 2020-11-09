@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Forums
     /// Represents a forum post
     /// </summary>
     public partial class ForumPost : BaseEntity, IAuditable
-	{
+    {
         private ICollection<ForumPostVote> _forumPostVotes;
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace SmartStore.Core.Domain.Forums
         /// </summary>
         public virtual ICollection<ForumPostVote> ForumPostVotes
         {
-            get { return _forumPostVotes ?? (_forumPostVotes = new HashSet<ForumPostVote>()); }
-            protected set { _forumPostVotes = value; }
+            get => _forumPostVotes ?? (_forumPostVotes = new HashSet<ForumPostVote>());
+            protected set => _forumPostVotes = value;
         }
     }
 }

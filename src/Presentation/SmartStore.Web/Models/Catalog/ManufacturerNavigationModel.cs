@@ -12,7 +12,7 @@ namespace SmartStore.Web.Models.Catalog
         }
 
         public IList<ManufacturerBriefInfoModel> Manufacturers { get; set; }
-        
+
         public bool DisplayAllManufacturersLink { get; set; }
         public bool DisplayManufacturers { get; set; }
         public bool DisplayImages { get; set; }
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Models.Catalog
     {
         public LocalizedValue<string> Name { get; set; }
         public string SeName { get; set; }
-		public int? FileId { get; set; }
+        public int? FileId { get; set; }
         public int DisplayOrder { get; set; }
         public string AlternateText { get; set; }
         public string Title { get; set; }

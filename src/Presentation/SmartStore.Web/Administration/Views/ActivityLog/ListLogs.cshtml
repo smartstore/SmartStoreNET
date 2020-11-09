@@ -1,28 +1,30 @@
 ﻿@model ActivityLogSearchModel
 @using Telerik.Web.Mvc;
-@{   
-    ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
+@{
+	ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
 }
 
 @using (Html.BeginForm())
 {
-    <div class="section-header">
-        <div class="title">
-            <i class="fa fa-fire"></i>
-            @T("Admin.Configuration.ActivityLog.ActivityLog")
-        </div>
-        <div class="options">
+	@Html.AntiForgeryToken()
+
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-fire"></i>
+			@T("Admin.Configuration.ActivityLog.ActivityLog")
+		</div>
+		<div class="options">
 			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary">
 				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.DeleteSelected")</span>
 			</button>
-            <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
+			<button type="submit" name="clearall" value="clearall" class="btn btn-danger">
 				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.DeleteAll")</span>
 			</button>
-        </div>
-    </div>
-	
+		</div>
+	</div>
+
 	<div class="row mt-3 grid-filter">
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.CreatedOnFrom)
@@ -66,11 +68,13 @@
 				columns.Bound(x => x.Id)
 					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
 					.Title("<input id='mastercheckbox' type='checkbox'/>")
-					.Width(50)
+					.Width(5)
 					.HtmlAttributes(new { style = "text-align:center" })
 					.HeaderHtmlAttributes(new { style = "text-align:center" });
-				columns.Bound(x => x.ActivityLogTypeName);
-				columns.Bound(x => x.Comment);
+				columns.Bound(x => x.ActivityLogTypeName)
+					.Width("20%");
+				columns.Bound(x => x.Comment)
+					.Width("50%");
 				columns.Bound(x => x.CustomerId)
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
 				columns.Bound(x => x.IsSystemAccount)
@@ -89,11 +93,10 @@
 			.PreserveGridState()
 			.EnableCustomBinding(true))
 	</div>
-    <script type="text/javascript">
+	<script>
 		var selectedIds = [];
 
-        $(document).ready(function () {
-
+        $(function() {
             $('#btnSearch').click(function () {
             	refreshGrid();
                 return false;
@@ -101,17 +104,18 @@
 
         	//"delete selected" button
             $('#delete-selected').click(function (e) {
-            	e.preventDefault();
+                e.preventDefault();
 
-            	var postData = {
-            		selectedIds: selectedIds
-            	};
+				var token = $('input[name="__RequestVerificationToken"]').val();
 
             	$.ajax({
             		cache: false,
             		type: "POST",
             		url: "@(Url.Action("DeleteSelected", "ActivityLog"))",
-            		data: postData,
+                    data: {
+						__RequestVerificationToken: token, 
+            			selectedIds: selectedIds
+            		},
             		complete: function (data) {
             			refreshGrid();
             		},
@@ -186,5 +190,6 @@
 			var numChkBoxesChecked = $('#log-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
 			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
 		}
-   </script>    
+	</script>
+
 }

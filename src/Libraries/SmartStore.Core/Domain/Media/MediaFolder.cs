@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -47,8 +46,8 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
 		public virtual ICollection<MediaFolder> Children
         {
-            get { return _children ?? (_children = new HashSet<MediaFolder>()); }
-            protected set { _children = value; }
+            get => _children ?? (_children = new HashSet<MediaFolder>());
+            protected set => _children = value;
         }
 
         /// <summary>
@@ -68,8 +67,8 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
         public virtual ICollection<MediaFile> Files
         {
-            get { return _files ?? (_files = new HashSet<MediaFile>()); }
-            protected set { _files = value; }
+            get => _files ?? (_files = new HashSet<MediaFile>());
+            protected set => _files = value;
         }
     }
 }

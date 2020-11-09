@@ -2,9 +2,12 @@
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.ShoppingCart;
+@using SmartStore.Core.Domain.Directory;
 
 @helper SimpleProduct(ShoppingCartModel.ShoppingCartItemModel item)
 {
+    var deliveryPresentation = Model.DeliveryTimesPresentation;
+
     <div class="cart-row">
         <div class="cart-col cart-col-main">
             <div class="row sm-gutters">
@@ -18,14 +21,14 @@
                 <div class="col">
                     <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 
-                    @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
+                    @if (Model.DisplayShortDesc && item.ShortDesc.HasValue())
                     {
-                        <div class="cart-item-desc fs-sm"  @Html.LanguageAttributes(item.ShortDesc)>
+                        <div class="cart-item-desc fs-sm" @Html.LanguageAttributes(item.ShortDesc)>
                             @Html.Raw(item.ShortDesc.Value.Truncate(250, "..."))
                         </div>
                     }
 
-                    @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
+                    @if (Model.DisplayBasePrice && item.BasePrice.HasValue())
                     {
                         <div class="cart-item-base-price text-muted fs-sm lrm">
                             @item.BasePrice
@@ -33,20 +36,51 @@
                     }
 
                     <div class="cart-item-attrs fs-sm my-2">
-                        @if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
+                        @if (deliveryPresentation != DeliveryTimesPresentation.None && item.IsShipEnabled)
                         {
-                            <div class="row cart-item-attr deliverytime-group">
-                                <div class="col-3">@T("Products.DeliveryTime")</div>
-								<div class="col-9">
-									<span class="delivery-time pl-0" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
-										<i class="fa fa-circle delivery-time-status"></i>
-										<span @Html.LanguageAttributes(item.DeliveryTimeName)>@item.DeliveryTimeName</span>
-									</span>
-								</div>
-                            </div>
+                            var showDeliveryName =
+                                item.DeliveryTimeName.HasValue() && item.DeliveryTimeHexValue.HasValue() &&
+                                (deliveryPresentation == DeliveryTimesPresentation.LabelOnly ||
+                                deliveryPresentation == DeliveryTimesPresentation.LabelAndDate ||
+                                !item.DeliveryTimeDate.HasValue());
+
+                            var showDeliveryDate =
+                                (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate) &&
+                                item.DeliveryTimeDate.HasValue();
+
+                            if (showDeliveryName)
+                            {
+                                <div class="row cart-item-attr deliverytime-group">
+                                    <div class="col-3">@T("Products.DeliveryTime")</div>
+								    <div class="col-9">
+									    <span class="delivery-time pl-0" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
+										    <i class="fa fa-circle delivery-time-status"></i>
+										    <span @Html.LanguageAttributes(item.DeliveryTimeName)>@item.DeliveryTimeName</span>
+									    </span>
+								    </div>
+                                </div>
+                            }
+                            if (showDeliveryDate)
+                            {
+                                <div class="row cart-item-attr deliverytime-group">
+                                    <div class="col-3">
+                                        @if (!showDeliveryName)
+                                        {
+                                            @T("Products.DeliveryDate")
+                                        }
+                                        else
+                                        {
+                                            <text>&nbsp;</text>
+                                        }
+                                    </div>
+								    <div class="col-9">
+									    <span class="delivery-date">@Html.Raw(item.DeliveryTimeDate)</span>
+								    </div>
+                                </div>
+                            }
                         }
 
-                        @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
+                        @if (Model.ShowSku && item.Sku.HasValue())
                         {
                             <div class="row cart-item-attr text-nowrap">
                                 <div class="col-3">@T("ShoppingCart.SKU"):</div>
@@ -63,13 +97,13 @@
                         }
                     </div>
 
-                    @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                    @if (item.AttributeInfo.HasValue())
                     {
                         <div class="attributes text-muted fs-sm mb-2">
                             @Html.Raw(item.AttributeInfo)
                         </div>
                     }
-                    @if (!String.IsNullOrEmpty(item.RecurringInfo))
+                    @if (item.RecurringInfo.HasValue())
                     {
                         <div class="recurring-info">
                             @Html.Raw(item.RecurringInfo)
@@ -112,7 +146,7 @@
 				@if (Model.IsEditable)
 				{
 					<div class="col col-auto">
-						<div class="cart-row-actions btn-group-vertical shadow-sm">
+						<div class="cart-row-actions btn-group-vertical">
 							<a class="btn btn-gray btn-to-danger btn-sm btn-icon ajax-action-link" title="@T("Common.Remove")"
 							   href="#"
 							   rel="nofollow"
@@ -163,7 +197,7 @@
 
         <div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
             <span class="price">@item.SubTotal</span>
-            @if (!String.IsNullOrEmpty(item.Discount))
+            @if (item.Discount.HasValue())
             {
                 <div class="discount fs-sm text-muted pt-1">
 					<div>@T("ShoppingCart.ItemYouSave"):</div>
@@ -213,19 +247,19 @@
 								</div>
 							</div>
 
-                            @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
+                            @if (Model.DisplayShortDesc && item.ShortDesc.HasValue())
                             {
                                 <div class="cart-item-desc mt-2" @Html.LanguageAttributes(item.ShortDesc)>
                                     @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
                                 </div>
                             }
-                            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
+                            @if (Model.DisplayBasePrice && item.BasePrice.HasValue())
                             {
                                 <div class="cart-item-base-price text-muted mt-2 lrm">
                                     @item.BasePrice
                                 </div>
                             }
-                            @if (!String.IsNullOrEmpty(item.AttributeInfo))
+                            @if (item.AttributeInfo.HasValue())
                             {
                                 <div class="cart-item-attrs text-muted mt-2">
                                     @Html.Raw(item.AttributeInfo)
@@ -244,7 +278,7 @@
                     </div>
                 </div>
                 <div class="cart-col cart-col-price">
-                    @if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
+                    @if (item.BundleItem.PriceWithDiscount.HasValue())
                     {
                         @Html.Raw(item.BundleItem.PriceWithDiscount)
                     }

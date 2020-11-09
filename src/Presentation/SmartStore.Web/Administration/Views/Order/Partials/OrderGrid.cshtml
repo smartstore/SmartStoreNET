@@ -1,0 +1,181 @@
+﻿@model OrderListModel
+@using Telerik.Web.Mvc.UI
+
+<div>
+    @(Html.Telerik().Grid<OrderModel>()
+        .Name("orders-grid")
+        .TableHtmlAttributes(new { @class = "multiline-grid" })
+        .ClientEvents(events =>
+        {
+            if (Model.ProductId.GetValueOrDefault() == 0)
+            {
+                events
+                    .OnDataBinding("onDataBinding")
+                    .OnDataBound("onDataBound")
+                    .OnComplete("onComplete");
+            }
+            else
+            {
+                events
+                    .OnDataBound("onDataBoundOrdersProduct")
+                    .OnComplete("onComplete");
+            }
+        })
+        .Columns(columns =>
+        {
+            if (Model.ProductId.GetValueOrDefault() == 0)
+            {
+                columns.Bound(x => x.Id)
+                    .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+                    .Title("<input id='mastercheckbox' type='checkbox'/>")
+                    .Width(50)
+                    .HtmlAttributes(new { style = "text-align:center" })
+                    .HeaderHtmlAttributes(new { style = "text-align:center" });
+            }
+            columns.Bound(x => x.OrderNumber)
+                .Width(150)
+                .Title(T("Admin.Order"))
+                .ClientTemplate(@Html.LabeledOrderNumber());
+
+            if (Model.ProductId.HasValue)
+            {
+                columns.Bound(x => x.Quantity)
+                    .Width(100)
+                    .Title(T("Admin.Orders.Products.Quantity"))
+                    .ClientTemplate(
+                    "<div><#= Quantity #></div>");
+            }
+            columns.Bound(x => x.CustomerName)
+                .Title(T("Admin.Orders.Fields.Customer"))
+                .ClientTemplate(
+                    "<div><#= CustomerName #></div>" +
+                    "<div><#= CustomerEmail #></div>");
+            columns.Bound(x => x.ShippingStatus)
+                .Title(T("Admin.Orders.Shipment"))
+                .ClientTemplate(
+                    "<div><i class='<#= ShippingStatusLabelClass #>' title='<#= ShippingStatus #>'></i> " +
+                    "<# if(IsShippable){ #><span><#= ShippingAddressString #></span><# } #>" +
+                    "<# if(IsShippable){ #><div class='muted'><#= ViaShippingMethod #></div><# } #>" +
+                    "<# if(!IsShippable){ #><span class='muted'><#= ShippingStatus #></span><# } #>" +
+                    "</div>");
+            columns.Bound(x => x.CreatedOn)
+                .Width(200)
+                .Title(T("Order.OrderDate"))
+                .ClientTemplate(
+                    "<div><#= CreatedOnString #></div>" +
+                    "<div class='muted'><#= FromStore #></div>");
+            columns.Bound(x => x.OrderStatus)
+                .Width(100)
+                .Title(T("Admin.Orders.Fields.OrderStatus"))
+                .ClientTemplate("<span class='<#= OrderStatusLabelClass #>'><#= OrderStatus #></span>");
+            columns.Bound(x => x.OrderTotal)
+                .Width(200)
+                .RightAlign()
+                .ClientTemplate(
+                    "<div class='pr-2'><big style='font-weight:600'><#= OrderTotal #></big> <i class='<#= PaymentStatusLabelClass #>' title='<#= PaymentStatus #>'></i></div>" +
+                    "<# if(HasPaymentMethod){ #><div class='muted pr-2'><#= WithPaymentMethod #></div><# } #>")
+                .FooterTemplate(
+                    string.Format("<div class='pr-2'><div class='font-weight-medium mb-2'>{0}:</div>" +
+                    (Model.HideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"float-right\"></span></div>") +
+                    "<div>{2}: <span id=\"aggregator-tax-block\" class=\"float-right\"></span></div>" +
+                    "<div>{3}: <span id=\"aggregator-total-block\" class=\"float-right\"></span></div></div>",
+                    T("Admin.Orders.Report.Summary").Text,
+                    (Model.HideProfitReport ? "" : T("Admin.Orders.Report.Profit").Text),
+                    T("Admin.Orders.Report.Tax").Text,
+                    T("Admin.Orders.Report.Total").Text));
+        })
+        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+        .PreserveGridState()
+        .EnableCustomBinding(true))
+</div>
+
+<script>
+    $(function () {
+		$('#mastercheckbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		// Wire up checkboxes.
+		$(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(":checked") == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					// Add id to selectedIds.
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					// Remove id from selectedIds.
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+			updateMasterCheckbox();
+		});
+	});
+
+	function onDataBinding(e) {
+		var searchModel = {
+			StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+			EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
+			CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+			CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
+			OrderStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.OrderStatusIds)').val()).join(),
+			PaymentStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentStatusIds)').val()).join(),
+			ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
+			StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
+			OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
+            OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val(),
+            PaymentMethods: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentMethods)').val()).join(),
+		};
+		e.data = searchModel;
+	}
+
+	function onDataBound(e) {
+		$('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+			var currentId = $(this).val();
+			var checked = jQuery.inArray(currentId, selectedIds);
+			// Set checked based on if current checkbox's value is in selectedIds.
+			$(this).attr('checked', checked > -1);
+		});
+
+		updateMasterCheckbox();
+		reportLoaded(e);
+    }
+
+    function onDataBoundOrdersProduct(e) {
+        reportLoaded(e);
+    }
+
+	function onComplete(e) {
+		var result = e.response;
+		if (result) {
+			reportAggregates = e.response["aggregates"];
+		}
+	}
+
+	function reportLoaded(e) {
+		if (reportAggregates != "") {
+			updateAggregates(reportAggregates);
+		}
+	}
+    function updateAggregates(aggs) {
+		@if (!Model.HideProfitReport)
+        {
+            <text>$('#aggregator-profit-block').text(aggs['AggregatorProfit']);</text>
+        }
+		$('#aggregator-tax-block').text(aggs['AggregatorTax']);
+		$('#aggregator-total-block').text(aggs['AggregatorTotal']);
+	}
+
+	function updateMasterCheckbox() {
+		var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
+		var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+		$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+</script>

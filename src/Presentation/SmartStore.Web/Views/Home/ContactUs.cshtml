@@ -3,7 +3,7 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
+    Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 }

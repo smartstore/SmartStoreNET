@@ -5,22 +5,22 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Services
 {
-	public partial interface IGoogleFeedService
+    public partial interface IGoogleFeedService
     {
-		GoogleProductRecord GetGoogleProductRecord(int productId);
+        GoogleProductRecord GetGoogleProductRecord(int productId);
 
-		List<GoogleProductRecord> GetGoogleProductRecords(int[] productIds);
+        List<GoogleProductRecord> GetGoogleProductRecords(int[] productIds);
 
-		void InsertGoogleProductRecord(GoogleProductRecord record);
+        void InsertGoogleProductRecord(GoogleProductRecord record);
 
-		void UpdateGoogleProductRecord(GoogleProductRecord record);
-		
-		void DeleteGoogleProductRecord(GoogleProductRecord record);
+        void UpdateGoogleProductRecord(GoogleProductRecord record);
 
-		void Upsert(int pk, string name, string value);
+        void DeleteGoogleProductRecord(GoogleProductRecord record);
 
-		GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null, string touched = null);
+        void Upsert(int pk, string name, string value);
 
-		List<string> GetTaxonomyList(string searchTerm);
+        GridModel<GoogleProductModel> GetGridModel(GridCommand command, string searchProductName = null, string touched = null);
+
+        List<string> GetTaxonomyList(string searchTerm);
     }
 }

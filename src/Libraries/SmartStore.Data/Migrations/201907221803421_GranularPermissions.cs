@@ -12,20 +12,20 @@ namespace SmartStore.Data.Migrations
             CreateTable(
                 "dbo.PermissionRoleMapping",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Allow = c.Boolean(nullable: false),
-                        PermissionRecordId = c.Int(nullable: false),
-                        CustomerRoleId = c.Int(nullable: false),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    Allow = c.Boolean(nullable: false),
+                    PermissionRecordId = c.Int(nullable: false),
+                    CustomerRoleId = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.CustomerRole", t => t.CustomerRoleId, cascadeDelete: true)
                 .ForeignKey("dbo.PermissionRecord", t => t.PermissionRecordId, cascadeDelete: true)
                 .Index(t => t.PermissionRecordId)
                 .Index(t => t.CustomerRoleId);
-            
+
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.PermissionRoleMapping", "PermissionRecordId", "dbo.PermissionRecord");

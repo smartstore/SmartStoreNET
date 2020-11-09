@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -80,7 +80,7 @@ namespace SmartStore.Data.Tests.Orders
             (fromDb.GiftCardUsageHistory.Count == 1).ShouldBeTrue();
             fromDb.GiftCardUsageHistory.First().UsedValue.ShouldEqual(1.1M);
         }
-        
+
         [Test]
         public void Can_save_and_load_giftCard_with_associatedOrderItem()
         {
@@ -118,19 +118,19 @@ namespace SmartStore.Data.Tests.Orders
             return new OrderItem()
             {
                 Order = GetTestOrder(),
-				Product = GetTestProduct()
+                Product = GetTestProduct()
             };
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
-			};
-		}
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+            };
+        }
 
         protected Order GetTestOrder()
         {
@@ -149,8 +149,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

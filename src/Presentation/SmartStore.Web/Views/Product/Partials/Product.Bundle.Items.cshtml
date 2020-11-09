@@ -3,7 +3,6 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web;
 
-
 <div class="pd-bundle-items">
 	@foreach (var item in Model)
 	{
@@ -14,17 +13,17 @@
 			itemType = "bundleitem"
 		});
 
+		var gallery = item.MediaGalleryModel;
+		var img = gallery.Files?.FirstOrDefault();
+
 		<div class="pd-bundle-item card-body update-container" data-url="@updateUrl">
 			<div class="pd-bundle-item-top row no-gutters">
-				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
-				{
+				@if (img != null && !item.BundleItem.HideThumbnail)
+                {
 					<div class="pd-bundle-item-image col" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
-						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
-							 class="img-fluid pd-dyn-thumb" 
-							 alt="@item.DetailsPictureModel.AlternateText" 
-							 title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
+						<img class="img-fluid pd-dyn-thumb" src="@img.GetUrl(gallery.ThumbSize)" alt="@(img?.Alt)" title="@(img?.TitleAttribute)" />
 					</div>
-				}
+                }
 				<div class="pd-bundle-item-body col pl-3">
 					<div class="pd-bundle-item-name">
 						@if (item.BundleItem.Quantity > 1)
@@ -65,7 +64,7 @@
 
 			@if (item.ProductVariantAttributes.ShouldBeRendered())
 			{
-				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3">
+				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " d-none") pt-3" data-partial="BundleItemVariants">
 					@{ Html.RenderPartial("Product.Variants", item.ProductVariantAttributes, new ViewDataDictionary()); }
 				</div>
 			}

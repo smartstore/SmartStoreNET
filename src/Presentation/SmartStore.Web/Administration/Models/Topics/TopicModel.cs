@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
@@ -17,12 +16,13 @@ namespace SmartStore.Admin.Models.Topics
 {
     [Validator(typeof(TopicValidator))]
     public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
-    {       
+    {
         public TopicModel()
         {
-			WidgetWrapContent = true;
-			Locales = new List<TopicLocalizedModel>();
+            WidgetWrapContent = true;
+            Locales = new List<TopicLocalizedModel>();
             AvailableTitleTags = new List<SelectListItem>();
+            AvailableCookieTypes = new List<SelectListItem>();
             MenuLinks = new Dictionary<string, string>();
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
@@ -52,6 +52,10 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.Common.CustomerRole.LimitedTo")]
         public bool SubjectToAcl { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.CookieType")]
+        public int? CookieType { get; set; }
+        public IList<SelectListItem> AvailableCookieTypes { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
@@ -69,53 +73,53 @@ namespace SmartStore.Admin.Models.Topics
         public bool IsPasswordProtected { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Password")]
-		[DataType(DataType.Password)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.URL")]
         [AllowHtml]
         public string Url { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
-		[AllowHtml]
-		public string ShortTitle { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+        [AllowHtml]
+        public string ShortTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
-		[AllowHtml]
-		public string Intro { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+        [AllowHtml]
+        public string Intro { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
-		public string SeName { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        public string SeName { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
         public bool RenderAsWidget { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
-		[UIHint("WidgetZone")]
-		public string[] WidgetZone { get; set; }
+        [UIHint("WidgetZone")]
+        public string[] WidgetZone { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
-		public bool WidgetWrapContent { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
+        public bool WidgetWrapContent { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetShowTitle")]
         public bool WidgetShowTitle { get; set; }
@@ -131,10 +135,10 @@ namespace SmartStore.Admin.Models.Topics
 
         public bool IsSystemTopic { get; set; }
 
-		[SmartResourceDisplayName("Common.Published")]
-		public bool IsPublished { get; set; }
+        [SmartResourceDisplayName("Common.Published")]
+        public bool IsPublished { get; set; }
 
-		public IList<SelectListItem> AvailableTitleTags { get; private set; }
+        public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
 
@@ -146,37 +150,37 @@ namespace SmartStore.Admin.Models.Topics
     {
         public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
-		[AllowHtml]
-		public string ShortTitle { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+        [AllowHtml]
+        public string ShortTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
-		[AllowHtml]
-		public string Intro { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+        [AllowHtml]
+        public string Intro { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaKeywords")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
-		public string SeName { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        public string SeName { get; set; }
+    }
 
     public partial class TopicValidator : AbstractValidator<TopicModel>
     {
@@ -186,11 +190,20 @@ namespace SmartStore.Admin.Models.Topics
             RuleFor(x => x.HtmlId)
                 .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
                 .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
+
+            RuleFor(x => x.IsPasswordProtected)
+                .Equal(false)
+                .When(x => x.RenderAsWidget)
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoPasswordAllowed"));
+
+            RuleFor(x => x.Password)
+                .NotEmpty()
+                .When(x => x.IsPasswordProtected && !x.RenderAsWidget)
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoEmptyPassword"));
         }
     }
 
-    public class TopicMapper :
-        IMapper<Topic, TopicModel>
+    public class TopicMapper : IMapper<Topic, TopicModel>
     {
         public void Map(Topic from, TopicModel to)
         {

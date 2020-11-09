@@ -20,99 +20,99 @@ namespace SmartStore.OfflinePayment.Controllers
 {
     public class OfflinePaymentController : PaymentControllerBase
     {
-		private readonly IComponentContext _ctx;
-		private readonly HttpContextBase _httpContext;
+        private readonly IComponentContext _ctx;
+        private readonly HttpContextBase _httpContext;
         private readonly IMediaService _mediaService;
 
         public OfflinePaymentController(
-			HttpContextBase httpContext,
-			IComponentContext ctx,
+            HttpContextBase httpContext,
+            IComponentContext ctx,
             IMediaService mediaService)
         {
-			_httpContext = httpContext;
-			_ctx = ctx;
+            _httpContext = httpContext;
+            _ctx = ctx;
             _mediaService = mediaService;
-		}
+        }
 
-		#region Global
+        #region Global
 
-		private List<SelectListItem> GetTransactModes()
-		{
-			var list = new List<SelectListItem>
-			{
-				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Pending"), Value = ((int)TransactMode.Pending).ToString() },
-				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Authorized"), Value = ((int)TransactMode.Authorize).ToString() },
-				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Paid"), Value = ((int)TransactMode.Paid).ToString() }
-			};
+        private List<SelectListItem> GetTransactModes()
+        {
+            var list = new List<SelectListItem>
+            {
+                new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Pending"), Value = ((int)TransactMode.Pending).ToString() },
+                new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Authorized"), Value = ((int)TransactMode.Authorize).ToString() },
+                new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Paid"), Value = ((int)TransactMode.Paid).ToString() }
+            };
 
-			return list;
-		}
+            return list;
+        }
 
-		[NonAction]
-		private TModel ConfigureGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
-			where TModel : ConfigurationModelBase, new()
-			where TSetting : PaymentSettingsBase, new()
-		{
-			var model = new TModel();
+        [NonAction]
+        private TModel ConfigureGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
+            where TModel : ConfigurationModelBase, new()
+            where TSetting : PaymentSettingsBase, new()
+        {
+            var model = new TModel();
 
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
-			var store = storeScope == 0
-				? Services.StoreContext.CurrentStore
-				: Services.StoreService.GetStoreById(storeScope);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
+            var store = storeScope == 0
+                ? Services.StoreContext.CurrentStore
+                : Services.StoreService.GetStoreById(storeScope);
 
-			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
-			model.DescriptionText = settings.DescriptionText;
-			model.PaymentMethodLogo = settings.ThumbnailPictureId;
-			model.AdditionalFee = settings.AdditionalFee;
-			model.AdditionalFeePercentage = settings.AdditionalFeePercentage;
+            model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+            model.DescriptionText = settings.DescriptionText;
+            model.PaymentMethodLogo = settings.ThumbnailPictureId;
+            model.AdditionalFee = settings.AdditionalFee;
+            model.AdditionalFeePercentage = settings.AdditionalFeePercentage;
 
-			if (fn != null)
-			{
-				fn(model, settings);
-			}
+            if (fn != null)
+            {
+                fn(model, settings);
+            }
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
-			return model;
-		}
+            return model;
+        }
 
-		[NonAction]
-		private void ConfigurePost<TModel, TSetting>(TModel model, FormCollection form, Action<TSetting> fn = null)
-			where TModel : ConfigurationModelBase, new()
-			where TSetting : PaymentSettingsBase, new()
-		{
-			ModelState.Clear();
+        [NonAction]
+        private void ConfigurePost<TModel, TSetting>(TModel model, FormCollection form, Action<TSetting> fn = null)
+            where TModel : ConfigurationModelBase, new()
+            where TSetting : PaymentSettingsBase, new()
+        {
+            ModelState.Clear();
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
 
-			settings.DescriptionText = model.DescriptionText;
-			settings.ThumbnailPictureId = model.PaymentMethodLogo;
-			settings.AdditionalFee = model.AdditionalFee;
-			settings.AdditionalFeePercentage = model.AdditionalFeePercentage;
+            settings.DescriptionText = model.DescriptionText;
+            settings.ThumbnailPictureId = model.PaymentMethodLogo;
+            settings.AdditionalFee = model.AdditionalFee;
+            settings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 
-			if (fn != null)
-			{
-				fn(settings);
-			}
+            if (fn != null)
+            {
+                fn(settings);
+            }
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
+            using (Services.Settings.BeginScope())
+            {
+                storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+            }
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-		}
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+        }
 
-		[NonAction]
-		private TModel PaymentInfoGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
-			where TModel : PaymentInfoModelBase, new()
-			where TSetting : PaymentSettingsBase, new()
-		{
-			var settings = _ctx.Resolve<TSetting>();
+        [NonAction]
+        private TModel PaymentInfoGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
+            where TModel : PaymentInfoModelBase, new()
+            where TSetting : PaymentSettingsBase, new()
+        {
+            var settings = _ctx.Resolve<TSetting>();
             var model = new TModel
             {
                 DescriptionText = GetLocalizedText(settings.DescriptionText),
@@ -120,34 +120,34 @@ namespace SmartStore.OfflinePayment.Controllers
             };
 
             if (fn != null)
-			{
-				fn(model, settings);
-			}
+            {
+                fn(model, settings);
+            }
 
-			return model;
-		}
+            return model;
+        }
 
-		private string GetLocalizedText(string text)
-		{
-			if (text.EmptyNull().StartsWith("@"))
-			{
-				return T(text.Substring(1));
-			}
+        private string GetLocalizedText(string text)
+        {
+            if (text.EmptyNull().StartsWith("@"))
+            {
+                return T(text.Substring(1));
+            }
 
-			return text;
-		}
+            return text;
+        }
 
-		[NonAction]
-		public override IList<string> ValidatePaymentForm(FormCollection form)
-		{
-			var warnings = new List<string>();
-			IValidator validator;
-			ValidationResult validationResult = null;
+        [NonAction]
+        public override IList<string> ValidatePaymentForm(FormCollection form)
+        {
+            var warnings = new List<string>();
+            IValidator validator;
+            ValidationResult validationResult = null;
 
-			string type = form["OfflinePaymentMethodType"].NullEmpty();
+            string type = form["OfflinePaymentMethodType"].NullEmpty();
 
-			if (type.HasValue())
-			{
+            if (type.HasValue())
+            {
                 if (type == "Manual")
                 {
                     validator = new ManualPaymentInfoValidator(T);
@@ -185,348 +185,354 @@ namespace SmartStore.OfflinePayment.Controllers
                     validationResult = validator.Validate(model);
                 }
 
-				if (validationResult != null && !validationResult.IsValid)
-				{
-					validationResult.Errors.Each(x => warnings.Add(x.ErrorMessage));
-				}
-			}
+                if (validationResult != null && !validationResult.IsValid)
+                {
+                    validationResult.Errors.Each(x => warnings.Add(x.ErrorMessage));
+                }
+            }
 
-			return warnings;
-		}
+            return warnings;
+        }
 
-		[NonAction]
-		public override ProcessPaymentRequest GetPaymentInfo(FormCollection form)
-		{
-			var paymentInfo = new ProcessPaymentRequest();
+        [NonAction]
+        public override ProcessPaymentRequest GetPaymentInfo(FormCollection form)
+        {
+            var paymentInfo = new ProcessPaymentRequest();
 
-			string type = form["OfflinePaymentMethodType"].NullEmpty();
+            string type = form["OfflinePaymentMethodType"].NullEmpty();
 
-			if (type.HasValue())
-			{
-				if (type == "Manual")
-				{
-					paymentInfo.CreditCardType = form["CreditCardType"];
-					paymentInfo.CreditCardName = form["CardholderName"];
-					paymentInfo.CreditCardNumber = form["CardNumber"];
-					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"].SplitSafe(",")[0]);
-					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"].SplitSafe(",")[0]);
-					paymentInfo.CreditCardCvv2 = form["CardCode"];
-				}
-				else if (type == "DirectDebit")
-				{
-					paymentInfo.DirectDebitAccountHolder = form["DirectDebitAccountHolder"];
-					paymentInfo.DirectDebitAccountNumber = form["DirectDebitAccountNumber"];
-					paymentInfo.DirectDebitBankCode = form["DirectDebitBankCode"];
-					paymentInfo.DirectDebitBankName = form["DirectDebitBankName"];
-					paymentInfo.DirectDebitBic = form["DirectDebitBic"];
-					paymentInfo.DirectDebitCountry = form["DirectDebitCountry"];
-					paymentInfo.DirectDebitIban = form["DirectDebitIban"];
-				}
+            if (type.HasValue())
+            {
+                if (type == "Manual")
+                {
+                    paymentInfo.CreditCardType = form["CreditCardType"];
+                    paymentInfo.CreditCardName = form["CardholderName"];
+                    paymentInfo.CreditCardNumber = form["CardNumber"];
+                    paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"].SplitSafe(",")[0]);
+                    paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"].SplitSafe(",")[0]);
+                    paymentInfo.CreditCardCvv2 = form["CardCode"];
+                }
+                else if (type == "DirectDebit")
+                {
+                    paymentInfo.DirectDebitAccountHolder = form["DirectDebitAccountHolder"];
+                    paymentInfo.DirectDebitAccountNumber = form["DirectDebitAccountNumber"];
+                    paymentInfo.DirectDebitBankCode = form["DirectDebitBankCode"];
+                    paymentInfo.DirectDebitBankName = form["DirectDebitBankName"];
+                    paymentInfo.DirectDebitBic = form["DirectDebitBic"];
+                    paymentInfo.DirectDebitCountry = form["DirectDebitCountry"];
+                    paymentInfo.DirectDebitIban = form["DirectDebitIban"];
+                }
                 else if (type == "PurchaseOrderNumber")
                 {
                     paymentInfo.PurchaseOrderNumber = form["PurchaseOrderNumber"];
                 }
-			}
+            }
 
-			return paymentInfo;
-		}
+            return paymentInfo;
+        }
 
-		[NonAction]
-		public override string GetPaymentSummary(FormCollection form)
-		{
-			string type = form["OfflinePaymentMethodType"].NullEmpty();
+        [NonAction]
+        public override string GetPaymentSummary(FormCollection form)
+        {
+            string type = form["OfflinePaymentMethodType"].NullEmpty();
 
-			if (type.HasValue())
-			{
-				if (type == "Manual")
-				{
-					var number = form["CardNumber"];
-					return "{0}, {1}, {2}".FormatCurrent(
-						form["CreditCardType"],
-						form["CardholderName"],
-						number.Mask(4)
-					);
-				}
-				else if (type == "DirectDebit")
-				{
-					if (form["DirectDebitAccountNumber"].HasValue() && (form["DirectDebitBankCode"].HasValue()) && form["DirectDebitAccountHolder"].HasValue())
-					{
-						var number = form["DirectDebitAccountNumber"];
-						return "{0}, {1}, {2}".FormatCurrent(
-							form["DirectDebitAccountHolder"],
-							form["DirectDebitBankName"].NullEmpty() ?? form["DirectDebitBankCode"],
-							number.Mask(4)
-						);
-					}
-					else if (form["DirectDebitIban"].HasValue())
-					{
-						var number = form["DirectDebitIban"];
-						return number.Mask(8);
-					}
-				}
+            if (type.HasValue())
+            {
+                if (type == "Manual")
+                {
+                    var number = form["CardNumber"];
+                    return "{0}, {1}, {2}".FormatCurrent(
+                        form["CreditCardType"],
+                        form["CardholderName"],
+                        number.Mask(4)
+                    );
+                }
+                else if (type == "DirectDebit")
+                {
+                    if (form["DirectDebitAccountNumber"].HasValue() && (form["DirectDebitBankCode"].HasValue()) && form["DirectDebitAccountHolder"].HasValue())
+                    {
+                        var number = form["DirectDebitAccountNumber"];
+                        return "{0}, {1}, {2}".FormatCurrent(
+                            form["DirectDebitAccountHolder"],
+                            form["DirectDebitBankName"].NullEmpty() ?? form["DirectDebitBankCode"],
+                            number.Mask(4)
+                        );
+                    }
+                    else if (form["DirectDebitIban"].HasValue())
+                    {
+                        var number = form["DirectDebitIban"];
+                        return number.Mask(8);
+                    }
+                }
                 else if (type == "PurchaseOrderNumber")
                 {
                     return form["PurchaseOrderNumber"];
                 }
-			}
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		#endregion
-		
-		#region CashOnDelivery
+        #endregion
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
-		public ActionResult CashOnDeliveryConfigure()
-		{
-			var model = ConfigureGet<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>();
+        #region CashOnDelivery
 
-			return View("GenericConfigure", model);
-		}
+        [AdminAuthorize, AdminThemed, ChildActionOnly]
+        public ActionResult CashOnDeliveryConfigure()
+        {
+            var model = ConfigureGet<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>();
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult CashOnDeliveryConfigure(CashOnDeliveryConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return CashOnDeliveryConfigure();
+            return View("GenericConfigure", model);
+        }
 
-			ConfigurePost<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>(model, form);
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult CashOnDeliveryConfigure(CashOnDeliveryConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return CashOnDeliveryConfigure();
 
-			return CashOnDeliveryConfigure();
-		}
+            ConfigurePost<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>(model, form);
 
-		public ActionResult CashOnDeliveryPaymentInfo() 
-		{
-			var model = PaymentInfoGet<CashOnDeliveryPaymentInfoModel, CashOnDeliveryPaymentSettings>();
-			return PartialView("GenericPaymentInfo", model);
-		}
+            return CashOnDeliveryConfigure();
+        }
 
-		#endregion
-		
-		#region Invoice
+        public ActionResult CashOnDeliveryPaymentInfo()
+        {
+            var model = PaymentInfoGet<CashOnDeliveryPaymentInfoModel, CashOnDeliveryPaymentSettings>();
+            return PartialView("GenericPaymentInfo", model);
+        }
 
-		[ChildActionOnly, AdminThemed, AdminAuthorize]
-		public ActionResult InvoiceConfigure()
-		{
-			var model = ConfigureGet<InvoiceConfigurationModel, InvoicePaymentSettings>();
+        #endregion
 
-			return View("GenericConfigure", model);
-		}
+        #region Invoice
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult InvoiceConfigure(InvoiceConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return InvoiceConfigure();
+        [ChildActionOnly, AdminThemed, AdminAuthorize]
+        public ActionResult InvoiceConfigure()
+        {
+            var model = ConfigureGet<InvoiceConfigurationModel, InvoicePaymentSettings>();
 
-			ConfigurePost<InvoiceConfigurationModel, InvoicePaymentSettings>(model, form);
+            return View("GenericConfigure", model);
+        }
 
-			return InvoiceConfigure();
-		}
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult InvoiceConfigure(InvoiceConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return InvoiceConfigure();
 
-		public ActionResult InvoicePaymentInfo()
-		{
-			var model = PaymentInfoGet<InvoicePaymentInfoModel, InvoicePaymentSettings>();
-			return PartialView("GenericPaymentInfo", model);
-		}
+            ConfigurePost<InvoiceConfigurationModel, InvoicePaymentSettings>(model, form);
 
-		#endregion
-		
-		#region PayInStore
+            return InvoiceConfigure();
+        }
 
-		[ChildActionOnly, AdminThemed, AdminAuthorize]
-		public ActionResult PayInStoreConfigure()
-		{
-			var model = ConfigureGet<PayInStoreConfigurationModel, PayInStorePaymentSettings>();
+        public ActionResult InvoicePaymentInfo()
+        {
+            var model = PaymentInfoGet<InvoicePaymentInfoModel, InvoicePaymentSettings>();
+            return PartialView("GenericPaymentInfo", model);
+        }
 
-			return View("GenericConfigure", model);
-		}
+        #endregion
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult PayInStoreConfigure(PayInStoreConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return PayInStoreConfigure();
+        #region PayInStore
 
-			ConfigurePost<PayInStoreConfigurationModel, PayInStorePaymentSettings>(model, form);
+        [ChildActionOnly, AdminThemed, AdminAuthorize]
+        public ActionResult PayInStoreConfigure()
+        {
+            var model = ConfigureGet<PayInStoreConfigurationModel, PayInStorePaymentSettings>();
 
-			return PayInStoreConfigure();
-		}
+            return View("GenericConfigure", model);
+        }
 
-		public ActionResult PayInStorePaymentInfo()
-		{
-			var model = PaymentInfoGet<PayInStorePaymentInfoModel, PayInStorePaymentSettings>();
-			return PartialView("GenericPaymentInfo", model);
-		}
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult PayInStoreConfigure(PayInStoreConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return PayInStoreConfigure();
 
-		#endregion
-		
-		#region Prepayment
+            ConfigurePost<PayInStoreConfigurationModel, PayInStorePaymentSettings>(model, form);
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
-		public ActionResult PrepaymentConfigure()
-		{
-			var model = ConfigureGet<PrepaymentConfigurationModel, PrepaymentPaymentSettings>();
+            return PayInStoreConfigure();
+        }
 
-			return View("GenericConfigure", model);
-		}
+        public ActionResult PayInStorePaymentInfo()
+        {
+            var model = PaymentInfoGet<PayInStorePaymentInfoModel, PayInStorePaymentSettings>();
+            return PartialView("GenericPaymentInfo", model);
+        }
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult PrepaymentConfigure(PrepaymentConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return PrepaymentConfigure();
+        #endregion
 
-			ConfigurePost<PrepaymentConfigurationModel, PrepaymentPaymentSettings>(model, form);
+        #region Prepayment
 
-			return PrepaymentConfigure();
-		}
+        [AdminAuthorize, AdminThemed, ChildActionOnly]
+        public ActionResult PrepaymentConfigure()
+        {
+            var model = ConfigureGet<PrepaymentConfigurationModel, PrepaymentPaymentSettings>();
 
-		public ActionResult PrepaymentPaymentInfo()
-		{
-			var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
-			return PartialView("GenericPaymentInfo", model);
-		}
+            return View("GenericConfigure", model);
+        }
 
-		#endregion
-		
-		#region DirectDebit
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult PrepaymentConfigure(PrepaymentConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return PrepaymentConfigure();
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
-		public ActionResult DirectDebitConfigure()
-		{
-			var model = ConfigureGet<DirectDebitConfigurationModel, DirectDebitPaymentSettings>();
+            ConfigurePost<PrepaymentConfigurationModel, PrepaymentPaymentSettings>(model, form);
 
-			return View("GenericConfigure", model);
-		}
+            return PrepaymentConfigure();
+        }
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult DirectDebitConfigure(DirectDebitConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return DirectDebitConfigure();
+        public ActionResult PrepaymentPaymentInfo()
+        {
+            var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
+            return PartialView("GenericPaymentInfo", model);
+        }
 
-			ConfigurePost<DirectDebitConfigurationModel, DirectDebitPaymentSettings>(model, form);
+        #endregion
 
-			return DirectDebitConfigure();
-		}
+        #region DirectDebit
 
-		public ActionResult DirectDebitPaymentInfo()
-		{
-			var model = PaymentInfoGet<DirectDebitPaymentInfoModel, DirectDebitPaymentSettings>();
-			var paymentData = _httpContext.GetCheckoutState().PaymentData;
+        [AdminAuthorize, AdminThemed, ChildActionOnly]
+        public ActionResult DirectDebitConfigure()
+        {
+            var model = ConfigureGet<DirectDebitConfigurationModel, DirectDebitPaymentSettings>();
 
-			model.DirectDebitAccountHolder = (string)paymentData.Get("DirectDebitAccountHolder");
-			model.DirectDebitAccountNumber = (string)paymentData.Get("DirectDebitAccountNumber");
-			model.DirectDebitBankCode = (string)paymentData.Get("DirectDebitBankCode");
-			model.DirectDebitBankName = (string)paymentData.Get("DirectDebitBankName");
-			model.DirectDebitBic = (string)paymentData.Get("DirectDebitBic");
-			model.DirectDebitCountry = (string)paymentData.Get("DirectDebitCountry");
-			model.DirectDebitIban = (string)paymentData.Get("DirectDebitIban");
+            return View("GenericConfigure", model);
+        }
 
-			return PartialView(model);
-		}
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult DirectDebitConfigure(DirectDebitConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return DirectDebitConfigure();
 
-		#endregion
-		
-		#region Manual
+            ConfigurePost<DirectDebitConfigurationModel, DirectDebitPaymentSettings>(model, form);
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
-		public ActionResult ManualConfigure()
-		{
-			var model = ConfigureGet<ManualConfigurationModel, ManualPaymentSettings>((m, s) => 
-			{
-				m.TransactMode = s.TransactMode;
-				m.TransactModeValues = GetTransactModes();
-				m.ExcludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");		
+            return DirectDebitConfigure();
+        }
 
-				m.AvailableCreditCards = ManualProvider.CreditCardTypes
-					.Select(x => new SelectListItem
-					{
-						Text = x.Text,
-						Value = x.Value,
-						Selected = m.ExcludedCreditCards.Contains(x.Value)
-					})
-					.ToList();
-			});
+        public ActionResult DirectDebitPaymentInfo()
+        {
+            var model = PaymentInfoGet<DirectDebitPaymentInfoModel, DirectDebitPaymentSettings>();
+            var paymentData = _httpContext.GetCheckoutState().PaymentData;
 
-			return View(model);
-		}
+            model.DirectDebitAccountHolder = (string)paymentData.Get("DirectDebitAccountHolder");
+            model.DirectDebitAccountNumber = (string)paymentData.Get("DirectDebitAccountNumber");
+            model.DirectDebitBankCode = (string)paymentData.Get("DirectDebitBankCode");
+            model.DirectDebitBankName = (string)paymentData.Get("DirectDebitBankName");
+            model.DirectDebitBic = (string)paymentData.Get("DirectDebitBic");
+            model.DirectDebitCountry = (string)paymentData.Get("DirectDebitCountry");
+            model.DirectDebitIban = (string)paymentData.Get("DirectDebitIban");
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
-		public ActionResult ManualConfigure(ManualConfigurationModel model, FormCollection form)
-		{
-			if (!ModelState.IsValid)
-				return ManualConfigure();
+            return PartialView(model);
+        }
 
-			ConfigurePost<ManualConfigurationModel, ManualPaymentSettings>(model, form, s =>
-			{
-				s.TransactMode = model.TransactMode;
-				s.ExcludedCreditCards = string.Join(",", model.ExcludedCreditCards ?? new string[0]);
-			});
+        #endregion
 
-			return ManualConfigure();
-		}
+        #region Manual
 
-		public ActionResult ManualPaymentInfo()
-		{
-			var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>((m, s) =>
-			{
-				var excludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");
+        [AdminAuthorize, AdminThemed, ChildActionOnly]
+        public ActionResult ManualConfigure()
+        {
+            var model = ConfigureGet<ManualConfigurationModel, ManualPaymentSettings>((m, s) =>
+            {
+                m.TransactMode = s.TransactMode;
+                m.TransactModeValues = GetTransactModes();
+                m.ExcludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");
 
-				foreach (var creditCard in ManualProvider.CreditCardTypes)
-				{
-					if (!excludedCreditCards.Any(x => x.IsCaseInsensitiveEqual(creditCard.Value)))
-					{
-						m.CreditCardTypes.Add(new SelectListItem
-						{
-							Text = creditCard.Text,
-							Value = creditCard.Value
-						});
-					}
-				}
-			});
+                m.AvailableCreditCards = ManualProvider.CreditCardTypes
+                    .Select(x => new SelectListItem
+                    {
+                        Text = x.Text,
+                        Value = x.Value,
+                        Selected = m.ExcludedCreditCards.Contains(x.Value)
+                    })
+                    .ToList();
+            });
 
-			// years
-			for (int i = 0; i < 15; i++)
-			{
-				string year = Convert.ToString(DateTime.Now.Year + i);
-				model.ExpireYears.Add(new SelectListItem { Text = year,	Value = year });
-			}
+            return View(model);
+        }
 
-			// months
-			for (int i = 1; i <= 12; i++)
-			{
-				string text = (i < 10) ? "0" + i.ToString() : i.ToString();
-				model.ExpireMonths.Add(new SelectListItem { Text = text, Value = i.ToString() });
-			}
+        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public ActionResult ManualConfigure(ManualConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return ManualConfigure();
 
-			// set postback values
-			var paymentData = _httpContext.GetCheckoutState().PaymentData;
-			model.CardholderName = (string)paymentData.Get("CardholderName");
-			model.CardNumber = (string)paymentData.Get("CardNumber");
-			model.CardCode = (string)paymentData.Get("CardCode");
+            ConfigurePost<ManualConfigurationModel, ManualPaymentSettings>(model, form, s =>
+            {
+                s.TransactMode = model.TransactMode;
+                s.ExcludedCreditCards = string.Join(",", model.ExcludedCreditCards ?? new string[0]);
+            });
 
-			var creditCardType = (string)paymentData.Get("CreditCardType");
-			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(creditCardType, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-			if (selectedCcType != null)
-				selectedCcType.Selected = true;
+            return ManualConfigure();
+        }
 
-			var expireMonth = (string)paymentData.Get("ExpireMonth");
-			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(expireMonth, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-			if (selectedMonth != null)
-				selectedMonth.Selected = true;
+        public ActionResult ManualPaymentInfo()
+        {
+            var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>((m, s) =>
+            {
+                var excludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");
 
-			var expireYear = (string)paymentData.Get("ExpireYear");
-			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(expireYear, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-			if (selectedYear != null)
-				selectedYear.Selected = true;
+                foreach (var creditCard in ManualProvider.CreditCardTypes)
+                {
+                    if (!excludedCreditCards.Any(x => x.IsCaseInsensitiveEqual(creditCard.Value)))
+                    {
+                        m.CreditCardTypes.Add(new SelectListItem
+                        {
+                            Text = creditCard.Text,
+                            Value = creditCard.Value
+                        });
+                    }
+                }
+            });
 
-			return PartialView(model);
-		}
+            // years
+            for (int i = 0; i < 15; i++)
+            {
+                string year = Convert.ToString(DateTime.Now.Year + i);
+                model.ExpireYears.Add(new SelectListItem { Text = year, Value = year });
+            }
 
-		#endregion
+            // months
+            for (int i = 1; i <= 12; i++)
+            {
+                string text = (i < 10) ? "0" + i.ToString() : i.ToString();
+                model.ExpireMonths.Add(new SelectListItem { Text = text, Value = i.ToString() });
+            }
+
+            // set postback values
+            var paymentData = _httpContext.GetCheckoutState().PaymentData;
+            model.CardholderName = (string)paymentData.Get("CardholderName");
+            model.CardNumber = (string)paymentData.Get("CardNumber");
+            model.CardCode = (string)paymentData.Get("CardCode");
+
+            var creditCardType = (string)paymentData.Get("CreditCardType");
+            var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(creditCardType, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (selectedCcType != null)
+                selectedCcType.Selected = true;
+
+            var expireMonth = (string)paymentData.Get("ExpireMonth");
+            var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(expireMonth, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (selectedMonth != null)
+                selectedMonth.Selected = true;
+
+            var expireYear = (string)paymentData.Get("ExpireYear");
+            var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(expireYear, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (selectedYear != null)
+                selectedYear.Selected = true;
+
+            return PartialView(model);
+        }
+
+        #endregion
 
         #region PurchaseOrderNumber
 
@@ -539,12 +545,13 @@ namespace SmartStore.OfflinePayment.Controllers
         }
 
         [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult PurchaseOrderNumberConfigure(PurchaseOrderNumberConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
-				return PurchaseOrderNumberConfigure();
+                return PurchaseOrderNumberConfigure();
 
-			ConfigurePost<PurchaseOrderNumberConfigurationModel, PurchaseOrderNumberPaymentSettings>(model, form);
+            ConfigurePost<PurchaseOrderNumberConfigurationModel, PurchaseOrderNumberPaymentSettings>(model, form);
 
             return PurchaseOrderNumberConfigure();
         }
@@ -552,7 +559,7 @@ namespace SmartStore.OfflinePayment.Controllers
         public ActionResult PurchaseOrderNumberPaymentInfo()
         {
             var model = PaymentInfoGet<PurchaseOrderNumberPaymentInfoModel, InvoicePaymentSettings>();
-			var paymentData = _httpContext.GetCheckoutState().PaymentData;
+            var paymentData = _httpContext.GetCheckoutState().PaymentData;
 
             model.PurchaseOrderNumber = (string)paymentData.Get("PurchaseOrderNumber");
 

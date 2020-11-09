@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
 
@@ -19,61 +18,61 @@ namespace SmartStore.Data.Migrations
             CreateTable(
                 "dbo.MediaFolder",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        ParentId = c.Int(),
-                        Name = c.String(nullable: false, maxLength: 255),
-                        Slug = c.String(maxLength: 255),
-                        CanDetectTracks = c.Boolean(nullable: false),
-                        Metadata = c.String(),
-                        FilesCount = c.Int(nullable: false),
-                        ResKey = c.String(maxLength: 255),
-                        IncludePath = c.Boolean(),
-                        Order = c.Int(),
-                        Discriminator = c.String(nullable: false, maxLength: 128),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    ParentId = c.Int(),
+                    Name = c.String(nullable: false, maxLength: 255),
+                    Slug = c.String(maxLength: 255),
+                    CanDetectTracks = c.Boolean(nullable: false),
+                    Metadata = c.String(),
+                    FilesCount = c.Int(nullable: false),
+                    ResKey = c.String(maxLength: 255),
+                    IncludePath = c.Boolean(),
+                    Order = c.Int(),
+                    Discriminator = c.String(nullable: false, maxLength: 128),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MediaFolder", t => t.ParentId)
                 .Index(t => new { t.ParentId, t.Name }, unique: true, name: "IX_NameParentId");
-            
+
             CreateTable(
                 "dbo.MediaTag",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(nullable: false, maxLength: 100),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    Name = c.String(nullable: false, maxLength: 100),
+                })
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.Name, name: "IX_MediaTag_Name");
-            
+
             CreateTable(
                 "dbo.MediaTrack",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        MediaFileId = c.Int(nullable: false),
-                        Album = c.String(nullable: false, maxLength: 50),
-                        EntityId = c.Int(nullable: false),
-                        EntityName = c.String(nullable: false, maxLength: 255),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    MediaFileId = c.Int(nullable: false),
+                    Album = c.String(nullable: false, maxLength: 50),
+                    EntityId = c.Int(nullable: false),
+                    EntityName = c.String(nullable: false, maxLength: 255),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MediaFile", t => t.MediaFileId, cascadeDelete: true)
                 .Index(t => new { t.MediaFileId, t.EntityId, t.EntityName }, unique: true, name: "IX_MediaTrack_Composite")
                 .Index(t => t.Album);
-            
+
             CreateTable(
                 "dbo.MediaFile_Tag_Mapping",
                 c => new
-                    {
-                        MediaFile_Id = c.Int(nullable: false),
-                        MediaTag_Id = c.Int(nullable: false),
-                    })
+                {
+                    MediaFile_Id = c.Int(nullable: false),
+                    MediaTag_Id = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => new { t.MediaFile_Id, t.MediaTag_Id })
                 .ForeignKey("dbo.MediaFile", t => t.MediaFile_Id, cascadeDelete: true)
                 .ForeignKey("dbo.MediaTag", t => t.MediaTag_Id, cascadeDelete: true)
                 .Index(t => t.MediaFile_Id)
                 .Index(t => t.MediaTag_Id);
-            
+
             AddColumn("dbo.MediaFile", "FolderId", c => c.Int());
             AddColumn("dbo.MediaFile", "Alt", c => c.String(maxLength: 400));
             AddColumn("dbo.MediaFile", "Title", c => c.String(maxLength: 400));
@@ -111,7 +110,7 @@ namespace SmartStore.Data.Migrations
             AddForeignKey("dbo.News", "MediaFileId", "dbo.MediaFile", "Id");
             AddForeignKey("dbo.News", "PreviewMediaFileId", "dbo.MediaFile", "Id");
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.News", "PreviewMediaFileId", "dbo.MediaFile");

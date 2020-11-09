@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>100 Jahre Bauhaus</Title>
+	<MetaTitle>100 Jahre Bauhaus</MetaTitle>
+	<Intro>Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. Nach Art und Konzeption war es damals etwas völlig Neues, da das Bauhaus eine Zusammenführung von Kunst und Handwerk darstellte.</Intro>
+	<MetaDescription>Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. Art und Konzeption war es damals etwas völlig Neues, da das Bauhaus eine Zusammenführung von Kunst und Handwerk darstellte.</MetaDescription>
+	<Body>
+		<![CDATA[
+      <p>
+        Das Staatliche Bauhaus, inzwischen meist nur Bauhaus, war eine 1919 von Walter Gropius in Weimar gegründete Kunstschule. 
+        Nach Art und Konzeption war es damals etwas völlig Neues, da das Bauhaus eine Zusammenführung von Kunst und Handwerk darstellte. 
+        Das historische Bauhaus stellt heute die einflussreichste Bildungsstätte im Bereich der Architektur, der Kunst und des Designs im 20. Jahrhundert dar. 
+        Das Bauhaus bestand zeitlich parallel mit und in der Weimarer Republik von 1919 bis 1933 und gilt heute weltweit als Heimstätte der 
+        Avantgarde der Klassischen Moderne auf allen Gebieten der freien und angewandten Kunst und Architektur. Die Resonanz des Bauhauses 
+        hält bis heute an und prägt wesentlich das Bild modernistischer Strömungen.
+      </p>
+			<h4 class="fs-h4">
+				Bauhaus gründung 
+      </h4>
+      <p>
+				Das Bauhaus entstand in Weimar durch die Vereinigung der Großherzoglich-Sächsischen Kunstschule Weimar mit der 1907 von Henry van de Velde 
+        gegründeten Großherzoglich-Sächsischen Kunstgewerbeschule Weimar. 
+        Sie wurde zum direkten Vorläufer des Bauhauses, das dann in van de Veldes Schulgebäuden seine Arbeit aufnahm. 
+        1925 erfolgte der Umzug nach Dessau – ab 1926 im Gebäude des Bauhauses Dessau. 1932 musste das Bauhaus nach Berlin umziehen; 1933 wurde es geschlossen.
+      </p>
+      <h4 class="fs-h4">
+				Einfluss von Bauhaus
+      </h4>
+      <p>
+				Der Einfluss des Bauhauses war so bedeutend, dass umgangssprachlich der Begriff Bauhaus oft auch mit der Moderne in Architektur und Design gleichgesetzt wird. 
+        Kunstgeschichtlich ist es jedoch problematisch, den sogenannten Bauhausstil und die Entwicklungen in Deutschland isoliert zu betrachten und Bauhaus 
+        als Stilbegriff, als Architekturstil oder Möbelstil, zu verwenden. 
+        Die Entwürfe und Arbeiten von Lehrern und Schülern am Bauhaus werden daher als Teil von länderübergreifenden, längerfristigen Strömungen gesehen 
+        und unter Begriffen wie Funktionalismus, Klassische Moderne, Neue Sachlichkeit, Internationaler Stil, Neues Bauen eingeordnet.
+      </p>
+      <p>
+				Im Bauhaus wurden die traditionell getrennten Bereiche der bildenden Kunst, der angewandten Kunst und der darstellenden Kunst auf der 
+        Grundlage des Konzeptes miteinander verbunden, was wiederum starke Ausstrahlung auf Malerei, darstellende Kunst und Musik hatte.
+      </p>
+		]]>
+	</Body>
+	<Tags>Bauhaus,Walter Gropius,Weimar,Kunstschule</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-05-01</CreatedOn>
+	<DisplayType>20</DisplayType>
+	<Image>bauhaus.jpg</Image>
+	<ImagePreview>bauhaus-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+</BlogPost>

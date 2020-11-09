@@ -19,53 +19,53 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class ScheduleTaskController : AdminControllerBase
     {
-		private readonly IScheduleTaskService _scheduleTaskService;
+        private readonly IScheduleTaskService _scheduleTaskService;
         private readonly ITaskScheduler _taskScheduler;
-		private readonly IAsyncState _asyncState;
+        private readonly IAsyncState _asyncState;
         private readonly AdminModelHelper _adminModelHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CommonSettings _commonSettings;
 
         public ScheduleTaskController(
-            IScheduleTaskService scheduleTaskService, 
-            ITaskScheduler taskScheduler, 
-			IAsyncState asyncState,
+            IScheduleTaskService scheduleTaskService,
+            ITaskScheduler taskScheduler,
+            IAsyncState asyncState,
             AdminModelHelper adminModelHelper,
             AdminAreaSettings adminAreaSettings,
             CommonSettings commonSettings)
         {
             _scheduleTaskService = scheduleTaskService;
-			_taskScheduler = taskScheduler;
-			_asyncState = asyncState;
+            _taskScheduler = taskScheduler;
+            _asyncState = asyncState;
             _adminModelHelper = adminModelHelper;
             _adminAreaSettings = adminAreaSettings;
             _commonSettings = commonSettings;
         }
 
-		private string GetTaskMessage(ScheduleTask task, string resourceKey)
-		{
-			string message = null;
+        private string GetTaskMessage(ScheduleTask task, string resourceKey)
+        {
+            string message = null;
 
-			var taskClassName = task.Type
-				.SplitSafe(",")
-				.SafeGet(0)
-				.SplitSafe(".")
-				.LastOrDefault();
+            var taskClassName = task.Type
+                .SplitSafe(",")
+                .SafeGet(0)
+                .SplitSafe(".")
+                .LastOrDefault();
 
-			if (taskClassName.HasValue())
-			{
-				message = Services.Localization.GetResource(string.Concat(resourceKey, ".", taskClassName), logIfNotFound: false, returnEmptyIfNotFound: true);
-			}
+            if (taskClassName.HasValue())
+            {
+                message = Services.Localization.GetResource(string.Concat(resourceKey, ".", taskClassName), logIfNotFound: false, returnEmptyIfNotFound: true);
+            }
 
-			if (message.IsEmpty())
-			{
-				message = T(resourceKey);
-			}
+            if (message.IsEmpty())
+            {
+                message = T(resourceKey);
+            }
 
-			return message;
-		}
+            return message;
+        }
 
-		public ActionResult Index()
+        public ActionResult Index()
         {
             return RedirectToAction("List");
         }
@@ -90,9 +90,9 @@ namespace SmartStore.Admin.Controllers
             return View(models);
         }
 
-		[HttpPost]
+        [HttpPost]
         public ActionResult GetRunningTasks()
-		{
+        {
             // We better not check permission here.
             var runningHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true, true);
             if (!runningHistoryEntries.Any())
@@ -113,8 +113,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult GetTaskRunInfo(int id /* taskId */)
-		{
+        public ActionResult GetTaskRunInfo(int id /* taskId */)
+        {
             // We better not check permission here.
             var model = _adminModelHelper.CreateScheduleTaskModel(id);
             if (model == null)
@@ -122,26 +122,26 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-			return Json(new 
-			{
-				lastRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_LastRun.cshtml", model),
-				nextRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_NextRun.cshtml", model)
-			});
-		}
+            return Json(new
+            {
+                lastRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_LastRun.cshtml", model),
+                nextRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_NextRun.cshtml", model)
+            });
+        }
 
         [Permission(Permissions.System.ScheduleTask.Execute)]
         public ActionResult RunJob(int id, string returnUrl = "")
-		{
-			var taskParams = new Dictionary<string, string>
-			{
-				{ TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString() },
-				{ TaskExecutor.CurrentStoreIdParamName, Services.StoreContext.CurrentStore.Id.ToString() }
-			};
+        {
+            var taskParams = new Dictionary<string, string>
+            {
+                { TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString() },
+                { TaskExecutor.CurrentStoreIdParamName, Services.StoreContext.CurrentStore.Id.ToString() }
+            };
 
-			_taskScheduler.RunSingleTask(id, taskParams);
+            _taskScheduler.RunSingleTask(id, taskParams);
 
-			// The most tasks are completed rather quickly. Wait a while...
-			Thread.Sleep(200);
+            // The most tasks are completed rather quickly. Wait a while...
+            Thread.Sleep(200);
 
             // ...check and return suitable notifications
             var lastEntry = _scheduleTaskService.GetLastHistoryEntryByTaskId(id);
@@ -164,23 +164,23 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-			return RedirectToReferrer(returnUrl);
-		}
+            return RedirectToReferrer(returnUrl);
+        }
 
         [Permission(Permissions.System.ScheduleTask.Execute)]
         public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
-		{
-			if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
-			{
-				NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
-			}
+        {
+            if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
+            {
+                NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
+            }
 
-			return RedirectToReferrer(returnUrl);
-		}
+            return RedirectToReferrer(returnUrl);
+        }
 
         [Permission(Permissions.System.ScheduleTask.Read)]
         public ActionResult Edit(int id /* taskId */, string returnUrl = null)
-		{
+        {
             var model = _adminModelHelper.CreateScheduleTaskModel(id);
             if (model == null)
             {
@@ -189,53 +189,56 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
-            ViewBag.HistoryCleanupNote = T("Admin.System.ScheduleTasks.HistoryCleanupNote", 
-                _commonSettings.MaxNumberOfScheduleHistoryEntries, 
+            ViewBag.HistoryCleanupNote = T("Admin.System.ScheduleTasks.HistoryCleanupNote",
+                _commonSettings.MaxNumberOfScheduleHistoryEntries,
                 _commonSettings.MaxScheduleHistoryAgeInDays).Text;
 
             return View(model);
-		}
+        }
 
-		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		[ValidateAntiForgeryToken]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.ScheduleTask.Update)]
         public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
-		{
-			ViewBag.ReturnUrl = returnUrl;
+        {
+            ViewBag.ReturnUrl = returnUrl;
 
-			if (!ModelState.IsValid)
-			{
-				return View(model);
-			}
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl });
-			var returnResult = returnUrl.HasValue() ? (ActionResult)Redirect(returnUrl) : (ActionResult)RedirectToAction("List");
+            var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
+            if (scheduleTask == null)
+            {
+                NotifyError("Schedule task cannot be loaded");
+                return RedirectToAction("Edit", new { id = model.Id, returnUrl });
+            }
 
-			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
-			if (scheduleTask == null)
-			{
-				NotifyError("Schedule task cannot be loaded");
-				return reloadResult;
-			}
-
-			scheduleTask.Name = model.Name;
-			scheduleTask.Enabled = model.Enabled;
-			scheduleTask.StopOnError = model.StopOnError;
-			scheduleTask.CronExpression = model.CronExpression;
+            scheduleTask.Name = model.Name;
+            scheduleTask.Enabled = model.Enabled;
+            scheduleTask.StopOnError = model.StopOnError;
+            scheduleTask.CronExpression = model.CronExpression;
             scheduleTask.Priority = model.Priority;
-			scheduleTask.NextRunUtc = model.Enabled 
-				? _scheduleTaskService.GetNextSchedule(scheduleTask) 
-				: null;
+            scheduleTask.NextRunUtc = model.Enabled
+                ? _scheduleTaskService.GetNextSchedule(scheduleTask)
+                : null;
 
-			_scheduleTaskService.UpdateTask(scheduleTask);
+            _scheduleTaskService.UpdateTask(scheduleTask);
 
-			NotifySuccess(T("Admin.System.ScheduleTasks.UpdateSuccess"));
+            NotifySuccess(T("Admin.System.ScheduleTasks.UpdateSuccess"));
 
-			if (continueEditing)
-				return reloadResult;
+            if (continueEditing)
+            {
+                return RedirectToAction("Edit", new { id = model.Id, returnUrl });
+            }
+            else if (returnUrl.HasValue())
+            {
+                return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
+            }
 
-			return returnResult;
-		}
+            return RedirectToAction("List");
+        }
 
         [GridAction(EnableCustomBinding = true)]
         [Permission(Permissions.System.ScheduleTask.Read)]
@@ -269,24 +272,24 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         [Permission(Permissions.System.ScheduleTask.Read)]
         public ActionResult FutureSchedules(string expression)
-		{
-			try
-			{
-				var now = DateTime.Now;
-				var model = CronExpression.GetFutureSchedules(expression, now, now.AddYears(1), 20);
-				ViewBag.Description = CronExpression.GetFriendlyDescription(expression);
-				return PartialView(model);
-			}
-			catch (Exception ex)
-			{
-				ViewBag.CronScheduleParseError = ex.Message;
-				return PartialView(Enumerable.Empty<DateTime>());
-			}
-		}
+        {
+            try
+            {
+                var now = DateTime.Now;
+                var model = CronExpression.GetFutureSchedules(expression, now, now.AddYears(1), 20);
+                ViewBag.Description = CronExpression.GetFriendlyDescription(expression);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.CronScheduleParseError = ex.Message;
+                return PartialView(Enumerable.Empty<DateTime>());
+            }
+        }
 
-		[ChildActionOnly]
-		public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true, bool reloadPage = false)
-		{
+        [ChildActionOnly]
+        public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true, bool reloadPage = false)
+        {
             var model = _adminModelHelper.CreateScheduleTaskModel(taskId);
             if (model == null)
             {
@@ -300,11 +303,11 @@ namespace SmartStore.Admin.Controllers
             ViewBag.ReloadPage = reloadPage;
 
             return PartialView(model);
-		}
+        }
 
-		[HttpPost]
-		public ActionResult GetMinimalTaskWidget(int taskId, string returnUrl /* mandatory on purpose */)
-		{
+        [HttpPost]
+        public ActionResult GetMinimalTaskWidget(int taskId, string returnUrl /* mandatory on purpose */)
+        {
             var model = _adminModelHelper.CreateScheduleTaskModel(taskId);
             if (model == null)
             {
@@ -316,6 +319,6 @@ namespace SmartStore.Admin.Controllers
             ViewBag.ReturnUrl = returnUrl;
 
             return PartialView("_MinimalTaskWidget", model);
-		}
+        }
     }
 }

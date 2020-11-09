@@ -161,6 +161,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.GiftCard.Create)]
         public ActionResult Create(GiftCardModel model, bool continueEditing)
         {
@@ -203,6 +204,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.GiftCard.Update)]
         public ActionResult Edit(GiftCardModel model, bool continueEditing)
         {
@@ -231,6 +233,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.GiftCard.Read)]
         public ActionResult GenerateCouponCode()
         {
@@ -238,6 +241,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.GiftCard.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -251,10 +255,11 @@ namespace SmartStore.Admin.Controllers
 
             NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
-        }               
+        }
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("notifyRecipient")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Order.GiftCard.Notify)]
         public ActionResult NotifyRecipient(GiftCardModel model)
         {

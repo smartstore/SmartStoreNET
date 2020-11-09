@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>Fußball, der beliebteste Sport der Welt</Title>
+	<MetaTitle>Fußball, der beliebteste Sport der Welt</MetaTitle>
+	<Intro>Der Erfolg des Fußballs beruht zum Ersten auf seiner Einfachheit. Der Aufwand für Mittel und Ausrüstung ist relativ gering (siehe z. B.	Straßenfußball), wodurch er auch in vielen Entwicklungsländern sehr populär wurde, und er ist für Neulinge und Zuschauer leicht- oder gar selbstverständlich.</Intro>
+	<MetaDescription>Fußball ist eine Ballsportart, bei der zwei Mannschaften mit dem Ziel gegeneinander antreten, mehr Tore als der Gegner zu erzielen und so das Spiel zu gewinnen.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				Fußball ist eine Ballsportart, bei der zwei Mannschaften mit dem Ziel gegeneinander antreten, 
+        mehr Tore als der Gegner zu erzielen und so das Spiel zu gewinnen. 
+        Die Spielzeit ist üblicherweise zweimal 45 Minuten, zuzüglich Nachspielzeit sowie gegebenenfalls Verlängerung und/oder Elfmeterschießen. 
+        Eine Mannschaft besteht in der Regel aus elf Spielern, von denen einer der Torwart ist. 
+        Der Ball darf mit dem ganzen Körper gespielt werden mit Ausnahme der Arme und Hände; vorwiegend wird er mit dem Fuß getreten. 
+        Nur der Torwart (innerhalb des eigenen Strafraums) – bzw. die Feldspieler beim Einwurf – dürfen den Ball mit den Händen berühren.
+      </p>
+      <p>
+				Der Erfolg des Fußballs beruht zum Ersten auf seiner Einfachheit. Der Aufwand für Mittel und Ausrüstung ist relativ gering (siehe z. B. Straßenfußball), 
+        wodurch er auch in vielen Entwicklungsländern sehr populär wurde, und er ist für Neulinge und Zuschauer leicht verständlich oder gar selbstverständlich. 
+        Zum Zweiten fallen vergleichsweise wenig Tore, was den Wert eines Tores erhöht und die Spiele spannender macht, da überlegene bzw. 
+        besser platzierte Mannschaften nicht so oft gewinnen bzw. frühzeitig als Sieger feststehen können wie in anderen Ballsportarten. 
+        Diesen Besonderheiten wird allerdings in neuerer Zeit entgegengewirkt, indem kompliziertere Regularien (u. a. Änderung der Abseitsregel) 
+        und im Spitzenfußball immer größerer (technischer) Aufwand (u. a. der Videobeweis) zu einem "gerechteren" Fußball führen sollen.
+      </p>
+      <p>
+				Fußball entstand in der zweiten Hälfte des 19. Jahrhunderts in Großbritannien und breitete sich ab den 1880er und 1890er 
+        Jahren in Kontinentaleuropa und anderen Kontinenten aus. Er gilt als weltweit beliebteste Mannschaftssportart. 
+        Im Gegensatz zu anderen Sportarten (wie z. B. Handball) entwickelten sich Spitzenklubs im Fußball in der Regel nur in großen Städten, 
+        welche die sehr aufwendige Infrastruktur mit zuletzt immer höheren Anforderungen aufweisen können.
+      </p>
+		]]>
+	</Body>
+	<Tags>Sport,Fußball,Unterhaltung</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-07-02</CreatedOn>
+	<DisplayType>20</DisplayType>
+	<Image>football.jpg</Image>
+	<ImagePreview>football-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+</BlogPost>

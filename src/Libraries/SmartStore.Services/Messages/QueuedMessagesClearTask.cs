@@ -19,16 +19,16 @@ namespace SmartStore.Services.Messages
             IRepository<QueuedEmail> qeRepository,
             CommonSettings commonSettings)
         {
-			_qeRepository = qeRepository;
+            _qeRepository = qeRepository;
             _commonSettings = commonSettings;
         }
 
-		public override async Task ExecuteAsync(TaskExecutionContext ctx)
+        public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
-			var olderThan = DateTime.UtcNow.AddDays(-Math.Abs(_commonSettings.MaxQueuedMessagesAgeInDays));
-			await _qeRepository.DeleteAllAsync(x => x.SentOnUtc.HasValue && x.CreatedOnUtc < olderThan);
+            var olderThan = DateTime.UtcNow.AddDays(-Math.Abs(_commonSettings.MaxQueuedMessagesAgeInDays));
+            await _qeRepository.DeleteAllAsync(x => x.SentOnUtc.HasValue && x.CreatedOnUtc < olderThan);
 
-			_qeRepository.Context.ShrinkDatabase();
+            _qeRepository.Context.ShrinkDatabase();
         }
     }
 }

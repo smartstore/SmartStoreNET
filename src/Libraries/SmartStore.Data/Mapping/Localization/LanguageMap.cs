@@ -13,7 +13,7 @@ namespace SmartStore.Data.Mapping.Localization
             this.Property(l => l.LanguageCulture).IsRequired().HasMaxLength(20);
             this.Property(l => l.UniqueSeoCode).HasMaxLength(2);
             this.Property(l => l.FlagImageFileName).HasMaxLength(50);
-        
+
         }
     }
 }

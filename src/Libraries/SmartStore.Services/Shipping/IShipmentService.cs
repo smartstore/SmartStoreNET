@@ -26,9 +26,9 @@ namespace SmartStore.Services.Shipping
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Customer collection</returns>
-		IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo, 
+		IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo,
             int pageIndex, int pageSize);
-        
+
         /// <summary>
         /// Get shipments by identifiers
         /// </summary>
@@ -36,12 +36,12 @@ namespace SmartStore.Services.Shipping
         /// <returns>Shipments</returns>
         IList<Shipment> GetShipmentsByIds(int[] shipmentIds);
 
-		/// <summary>
-		/// Get shipments by order identifiers
-		/// </summary>
-		/// <param name="orderIds">Order identifiers</param>
-		/// <returns>Shipments</returns>
-		Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds);
+        /// <summary>
+        /// Get shipments by order identifiers
+        /// </summary>
+        /// <param name="orderIds">Order identifiers</param>
+        /// <returns>Shipments</returns>
+        Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds);
 
         /// <summary>
         /// Gets a shipment

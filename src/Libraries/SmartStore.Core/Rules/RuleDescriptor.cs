@@ -20,13 +20,7 @@ namespace SmartStore.Rules
         public string Description { get; set; }
         public string GroupKey { get; set; }
 
-        public bool IsValid
-        {
-            get
-            {
-                return false == (this is InvalidRuleDescriptor);
-            }
-        }
+        public bool IsValid => false == (this is InvalidRuleDescriptor);
 
         public RuleType RuleType { get; set; }
         public RuleValueSelectList SelectList { get; set; }
@@ -49,7 +43,7 @@ namespace SmartStore.Rules
 
     public class InvalidRuleDescriptor : RuleDescriptor
     {
-        public InvalidRuleDescriptor(RuleScope scope) 
+        public InvalidRuleDescriptor(RuleScope scope)
             : base(scope)
         {
             RuleType = RuleType.String;

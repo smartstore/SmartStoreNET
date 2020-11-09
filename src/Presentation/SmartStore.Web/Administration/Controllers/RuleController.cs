@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Customers;
@@ -28,6 +27,7 @@ using SmartStore.Services.Payments;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -75,7 +75,7 @@ namespace SmartStore.Admin.Controllers
             _mediaSettings = mediaSettings;
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllRuleSets(string selectedIds, RuleScope? scope)
         {
             var ruleSets = _ruleStorage.GetAllRuleSets(false, false, scope, includeHidden: true);
@@ -84,13 +84,13 @@ namespace SmartStore.Admin.Controllers
             ruleSets.Add(new RuleSetEntity { Id = -1, Name = T("Admin.Rules.AddRule").Text + "…" });
 
             var data = ruleSets
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = selectedArr.Contains(x.Id),
-                    urlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
-                    url = x.Id == -1
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = selectedArr.Contains(x.Id),
+                    UrlTitle = x.Id == -1 ? string.Empty : T("Admin.Rules.OpenRule").Text,
+                    Url = x.Id == -1
                         ? Url.Action("Create", "Rule", new { area = "admin", scope })
                         : Url.Action("Edit", "Rule", new { id = x.Id, area = "admin" })
                 })
@@ -150,6 +150,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult Create(RuleSetModel model, bool continueEditing)
         {
@@ -186,6 +187,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult Edit(RuleSetModel model, bool continueEditing)
         {
@@ -213,6 +215,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -333,16 +336,17 @@ namespace SmartStore.Admin.Controllers
                     }
             }
 
-            return new JsonResult { Data = null };            
+            return new JsonResult { Data = null };
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddRule(int ruleSetId, RuleScope scope, string ruleType)
         {
             var provider = _ruleProvider(scope);
             var descriptor = provider.RuleDescriptors.FindDescriptor(ruleType);
-            
+
             RuleOperator op;
             if (descriptor.RuleType == RuleType.NullableInt || descriptor.RuleType == RuleType.NullableFloat)
             {
@@ -382,6 +386,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult UpdateRules(RuleEditItem[] ruleData, RuleScope ruleScope)
         {
@@ -398,6 +403,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteRule(int ruleId)
         {
@@ -414,6 +420,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Update)]
         public ActionResult ChangeOperator(int ruleSetId, string op)
         {
@@ -434,6 +441,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Create)]
         public ActionResult AddGroup(int ruleSetId, RuleScope scope)
         {
@@ -463,6 +471,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Delete)]
         public ActionResult DeleteGroup(int refRuleId)
         {
@@ -483,6 +492,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.System.Rule.Execute)]
         public ActionResult Execute(int ruleSetId)
         {

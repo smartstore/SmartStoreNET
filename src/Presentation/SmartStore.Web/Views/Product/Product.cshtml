@@ -3,150 +3,136 @@
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
-@using SmartStore.Web;
 
 @{
-	Layout = "_Layout";
+    Layout = "_Layout";
 
-	Html.AddTitleParts(Model.MetaTitle.Value.NullEmpty() ?? Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription.Value);
-	Html.AddMetaKeywordParts(Model.MetaKeywords.Value);
+    Html.AddTitleParts(Model.MetaTitle.Value.NullEmpty() ?? Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription.Value);
+    Html.AddMetaKeywordParts(Model.MetaKeywords.Value);
 
-	var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-	if (Model.CanonicalUrlsEnabled)
-	{
-		Html.AddCanonicalUrlParts(canonicalUrl);
-	}
+    var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+    if (Model.CanonicalUrlsEnabled)
+    {
+        Html.AddCanonicalUrlParts(canonicalUrl);
+    }
 
-	string updateUrl = Url.Action("UpdateProductDetails", "Product", new
-	{
-		productId = Model.Id,
-		bundleItemId = Model.BundleItem.Id,
-		itemType = (string)null // TODO: (mc) WTF!?
-	});
+    string updateUrl = Url.Action("UpdateProductDetails", "Product", new
+    {
+        productId = Model.Id,
+        bundleItemId = Model.BundleItem.Id,
+        itemType = (string)null // TODO: (mc) WTF!?
+    });
 
-	var shortDescription = Model.ShortDescription.Value.HasValue() ? Model.ShortDescription : Model.MetaDescription;
-
-	// FB OpenGraph og:* & Twitter card
-	Html.AddCustomHeadParts("<meta property='og:site_name' content='{0}' />".FormatInvariant(Html.Encode(CommonServices.StoreContext.CurrentStore.Name)));
-	Html.AddCustomHeadParts("<meta property='og:type' content='{0}' />".FormatInvariant(Model.ProductType == ProductType.SimpleProduct ? "product" : "product.group"));
-	Html.AddCustomHeadParts("<meta property='og:url' content='{0}' />".FormatInvariant(canonicalUrl));
-	Html.AddCustomHeadParts("<meta property='og:site' content='{0}' />".FormatInvariant(Url.RouteUrl("HomePage", null, this.Request.Url.Scheme)));
-	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Name.Value)));
-	Html.AddCustomHeadParts("<meta property='twitter:card' content='product' />");
-	Html.AddCustomHeadParts("<meta property='twitter:title' content='{0}' />".FormatInvariant(Html.Encode(Model.Name)));
-	if (shortDescription.Value.HasValue())
-	{
-        Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(Html.Encode(shortDescription.Value)));
-		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(Html.Encode(shortDescription.Value)));
-	}
-
-	/* TODO: (mc)
-	 * - Badges
-	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
-	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
-	 */
+    /* TODO: (mc)
+     * - Badges
+     * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
+     * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
+     */
 }
 
-<div class="page product-details-page">
-	@{ Html.RenderWidget("productdetails_top"); }
+@{ Html.RenderAction("MetaPropertiesProduct", "Common", new { product = Model }); }
 
-	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
-		<div id="main-update-container" class="update-container" data-url="@updateUrl">
-			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
+<div class="page product-details-page" itemscope itemtype="http://schema.org/Product">
+    @{ Html.RenderWidget("productdetails_top"); }
+
+    <article class="pd page-body">
+
+        <div id="main-update-container" class="update-container" data-url="@updateUrl">
+            @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
             {
-			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
-				<section class="row pd-section pd-section-top">
-					<!-- Picture -->
-					<div class="col-12 col-md-6 col-lg-7 pd-data-col">
+                <!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
+                <section class="row pd-section pd-section-top">
+                    <!-- Picture -->
+                    <div class="col-12 col-md-6 col-lg-7 pd-data-col">
                         @{ Html.RenderWidget("productdetails_pictures_top"); }
-						
+
                         <div id="pd-gallery-container">
-							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
-						</div>
-                        
+                            @{ Html.RenderPartial("Product.Media", Model.MediaGalleryModel); }
+                        </div>
+
                         @{ Html.RenderWidget("productdetails_pictures_bottom"); }
+                    </div>
 
-					</div>
-					<!-- Sidebar: Info, Price, Buttons etc. -->
-					<aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
-
+                    <!-- Sidebar: Info, Price, Buttons etc. -->
+                    <aside class="col-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
                         @{ Html.RenderWidget("productdetails_info_top"); }
-						<!-- Title/Brand/ReviewSummary -->
-						@{ Html.RenderPartial("Product.Info", Model); }
 
-						<!-- Bundle Items -->
-						@if (Model.ProductType == ProductType.BundledProduct)
-						{
-							<div class="pd-bundle-container pd-group card shadow-sm">
-								@{ Html.RenderPartial("Product.Bundle", Model); }
-							</div>
-						}
+                        <!-- Title/Brand/ReviewSummary -->
+                        @{ Html.RenderPartial("Product.Info", Model); }
 
-						@if (Model.ProductType != ProductType.GroupedProduct)
+                        <!-- Bundle Items -->
+                        @if (Model.ProductType == ProductType.BundledProduct)
+                        {
+                            <div class="pd-bundle-container pd-group card shadow-sm">
+                                @{ Html.RenderPartial("Product.Bundle", Model); }
+                            </div>
+                        }
+
+                        @if (Model.ProductType != ProductType.GroupedProduct)
                         {
                             Html.RenderWidget("productdetails_attrs_top");
 
-							<!-- Product attributes (SKU, EAN, Weight etc.) -->
-							<div class="pd-attrs-container" data-partial="Attrs">
-								@{ Html.RenderPartial("Product.Attrs", Model); }
-							</div>
+                            <!-- Product attributes (SKU, EAN, Weight etc.) -->
+                            <div class="pd-attrs-container" data-partial="Attrs">
+                                @{ Html.RenderPartial("Product.Attrs", Model); }
+                            </div>
 
-							<!-- Offer box -->
-							Html.RenderPartial("Product.Offer", Model);
-						}
+                            <!-- Offer box -->
+                            Html.RenderPartial("Product.Offer", Model);
+                        }
 
-						@if (Model.ProductType == ProductType.GroupedProduct)
-						{
-							Html.RenderPartial("Product.Offer.Actions.Misc", Model);
-						}
+                        @if (Model.ProductType == ProductType.GroupedProduct)
+                        {
+                            Html.RenderPartial("Product.Offer.Actions.Misc", Model);
+                        }
 
-						<!-- social share -->
-						@if (Model.ProductShareCode.HasValue())
-						{
-							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start mt-4" : "center mt-3")">
-								@Html.Raw(Model.ProductShareCode)
-							</div>
-						}
+                        <!-- social share -->
+                        @if (Model.ProductShareCode.HasValue())
+                        {
+                            <div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start mt-4" : "center mt-3")">
+                                @Html.Raw(Model.ProductShareCode)
+                            </div>
+                        }
 
-						@if (Model.DisplayAdminLink)
-						{
-							<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
-								<i class="fa fa-cog"></i>
-								<span>@T("Common.Catalog.EditProduct")</span>
-							</a>
-						}
+                        @if (Model.DisplayAdminLink)
+                        {
+                            <a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+                                <i class="fa fa-cog"></i>
+                                <span>@T("Common.Catalog.EditProduct")</span>
+                            </a>
+                        }
 
                         @{ Html.RenderWidget("productdetails_info_bottom"); }
-					</aside>
-				</section>
+                    </aside>
+                </section>
 
-				if (Model.ProductType == ProductType.GroupedProduct)
-				{
-					<section class="pd-section pd-section-variants">
-						@if (Model.AssociatedProducts.Count == 0)
-						{
-							<div class="pd-no-associated-products alert alert-warning">
-								@T("Products.NoAssociatedProducts")
-							</div>
-						}
-						else
-						{
-							foreach (var product in Model.AssociatedProducts)
-							{
-								var dataDictProduct = new ViewDataDictionary();
-								dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
-								Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
-							}
-						}
-					</section>
-				}
-			}
-		</div>
+                if (Model.ProductType == ProductType.GroupedProduct)
+                {
+                    <section class="pd-section pd-section-variants">
+                        @if (Model.AssociatedProducts.Count == 0)
+                        {
+                            <div class="pd-no-associated-products alert alert-warning">
+                                @T("Products.NoAssociatedProducts")
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var product in Model.AssociatedProducts)
+                            {
+                                var dataDictProduct = new ViewDataDictionary();
+                                dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+                                Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
+                            }
+                        }
+                    </section>
+                }
+            }
+        </div>
 
-		<!-- Bottom Content: Full Description, Specification, Review etc. -->
-		<section class="pd-section pd-section-bottom">
-			@{
+        <!-- Bottom Content: Full Description, Specification, Review etc. -->
+        <section class="pd-section pd-section-bottom">
+            @{
                 <!-- Tabs -->
                 Html.RenderPartial("Product.Tabs", Model);
                 Html.RenderWidget("productdetail_tabs_after");
@@ -163,22 +149,22 @@
                 Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id });
                 Html.RenderWidget("productdetail_also_purchased_after");
             }
-		</section>
-	</article>
+        </section>
+    </article>
 
-	@{ Html.RenderWidget("productdetails_bottom"); }
+    @{ Html.RenderWidget("productdetails_bottom"); }
 
-	@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
-	@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+    @* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+    @{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 </div>
 
 <script>
     $(function () {
         var settings = {
-            galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
-            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)')
+            galleryStartIndex: @(Model.MediaGalleryModel.GalleryStartIndex),
+            enableZoom: toBool('@(Model.MediaGalleryModel.ImageZoomEnabled)')
         };
-		
+
     	$('#pd-form').productDetail(settings);
     });
 </script>

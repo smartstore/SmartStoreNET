@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -13,6 +12,7 @@ namespace SmartStore.Admin.Models.Orders
         {
             AvailableOrderStatuses = new List<SelectListItem>();
             AvailablePaymentStatuses = new List<SelectListItem>();
+            AvailableShippingStatuses = new List<SelectListItem>();
             AvailableCountries = new List<SelectListItem>();
         }
 
@@ -27,11 +27,19 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.OrderStatus")]
         public int OrderStatusId { get; set; }
+
         [SmartResourceDisplayName("Admin.SalesReport.Bestsellers.PaymentStatus")]
         public int PaymentStatusId { get; set; }
 
+        [SmartResourceDisplayName("Admin.Customers.Reports.BestBy.ShippingStatus")]
+        public int ShippingStatusId { get; set; }
+
         public IList<SelectListItem> AvailableOrderStatuses { get; set; }
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }
+        public IList<SelectListItem> AvailableShippingStatuses { get; set; }
         public IList<SelectListItem> AvailableCountries { get; set; }
+
+        public int GridPageSize { get; set; }
+        public bool DisplayProductPictures { get; set; }
     }
 }

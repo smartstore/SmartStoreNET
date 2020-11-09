@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
@@ -9,8 +8,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Utilities;
 using SmartStore.Rules;
 using SmartStore.Rules.Filters;
 
@@ -110,10 +107,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
             };
         }
 
-        protected List<Customer> Customers
-        {
-            get => _customers;
-        }
+        protected List<Customer> Customers => _customers;
 
         protected void AssertEquality(List<Customer> expected, List<Customer> actual)
         {
@@ -123,7 +117,7 @@ namespace SmartStore.Core.Tests.Rules.Filters
             for (int i = 0; i < expected.Count; i++)
             {
                 Assert.AreEqual(expected[i].Id, actual[i].Id, "Item " + i);
-            } 
+            }
         }
 
         [SetUp]

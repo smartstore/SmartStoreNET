@@ -4,6 +4,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Media.Imaging;
+using SmartStore.Services.Media.Imaging.Impl;
 using SmartStore.Services.Media.Migration;
 using SmartStore.Services.Media.Storage;
 
@@ -33,8 +35,11 @@ namespace SmartStore.Services.Media
             builder.RegisterType<MediaTracker>().As<IMediaTracker>().InstancePerRequest();
             builder.RegisterType<MediaSearcher>().As<IMediaSearcher>().InstancePerRequest();
             builder.RegisterType<MediaService>().As<IMediaService>().InstancePerRequest();
-
             builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
+
+            // ImageProcessor adapter factory
+            builder.RegisterType<IPImageFactory>().As<IImageFactory>().SingleInstance();
+
             builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
             builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
             builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();

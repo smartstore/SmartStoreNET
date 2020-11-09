@@ -1,7 +1,7 @@
-﻿using SmartStore.Admin.Models.Common;
+﻿using System;
+using SmartStore.Admin.Models.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System;
 
 namespace SmartStore.Admin.Models.Affiliates
 {
@@ -17,17 +17,17 @@ namespace SmartStore.Admin.Models.Affiliates
 
         [SmartResourceDisplayName("Admin.Affiliates.Fields.URL")]
         public string Url { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.Affiliates.Fields.Active")]
         public bool Active { get; set; }
 
         public AddressModel Address { get; set; }
 
-		public int GridPageSize { get; set; }
-		public bool UsernamesEnabled { get; set; }
+        public int GridPageSize { get; set; }
+        public bool UsernamesEnabled { get; set; }
 
         #region Nested classes
-        
+
         public class AffiliatedOrderModel : EntityModelBase
         {
             [SmartResourceDisplayName("Admin.Affiliates.Orders.Order")]
@@ -51,13 +51,13 @@ namespace SmartStore.Admin.Models.Affiliates
 
         public class AffiliatedCustomerModel : EntityModelBase
         {
-			[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Email")]
-			public string Email { get; set; }
+            [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Email")]
+            public string Email { get; set; }
 
-			[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Username")]
-			public string Username { get; set; }
+            [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Username")]
+            public string Username { get; set; }
 
-			[SmartResourceDisplayName("Admin.Customers.Customers.Fields.FullName")]
+            [SmartResourceDisplayName("Admin.Customers.Customers.Fields.FullName")]
             public string FullName { get; set; }
         }
 

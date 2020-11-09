@@ -25,12 +25,12 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Specification attribute query</returns>
         IQueryable<SpecificationAttribute> GetSpecificationAttributes();
 
-		/// <summary>
-		/// Gets specification attributes by identifier
-		/// </summary>
-		/// <param name="ids">Identifiers</param>
-		/// <returns>Specification attribute query</returns>
-		IQueryable<SpecificationAttribute> GetSpecificationAttributesByIds(int[] ids);
+        /// <summary>
+        /// Gets specification attributes by identifier
+        /// </summary>
+        /// <param name="ids">Identifiers</param>
+        /// <returns>Specification attribute query</returns>
+        IQueryable<SpecificationAttribute> GetSpecificationAttributesByIds(int[] ids);
 
         /// <summary>
         /// Deletes a specification attribute

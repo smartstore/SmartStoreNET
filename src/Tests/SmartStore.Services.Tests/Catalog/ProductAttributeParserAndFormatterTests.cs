@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
@@ -22,16 +23,16 @@ namespace SmartStore.Services.Tests.Catalog
     public class ProductAttributeParserTests : ServiceTest
     {
         IRepository<ProductAttribute> _productAttributeRepo;
-		IRepository<ProductAttributeOption> _productAttributeOptionRepo;
-		IRepository<ProductAttributeOptionsSet> _productAttributeOptionsSetRepo;
-		IRepository<ProductVariantAttribute> _productVariantAttributeRepo;
+        IRepository<ProductAttributeOption> _productAttributeOptionRepo;
+        IRepository<ProductAttributeOptionsSet> _productAttributeOptionsSetRepo;
+        IRepository<ProductVariantAttribute> _productVariantAttributeRepo;
         IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepo;
         IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepo;
-		IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilter;
-		ILocalizedEntityService _localizedEntityService;
-		IProductAttributeService _productAttributeService;
+        IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilter;
+        ILocalizedEntityService _localizedEntityService;
+        IProductAttributeService _productAttributeService;
         IProductAttributeParser _productAttributeParser;
-		IPriceCalculationService _priceCalculationService;
+        IPriceCalculationService _priceCalculationService;
 
         IWorkContext _workContext;
         ICurrencyService _currencyService;
@@ -41,10 +42,11 @@ namespace SmartStore.Services.Tests.Catalog
         IDownloadService _downloadService;
         IWebHelper _webHelper;
         IProductAttributeFormatter _productAttributeFormatter;
-		ShoppingCartSettings _shoppingCartSettings;
-		CatalogSettings _catalogSettings;
+        ShoppingCartSettings _shoppingCartSettings;
+        CatalogSettings _catalogSettings;
+        PerformanceSettings _performanceSettings;
 
-		ProductAttribute pa1, pa2, pa3;
+        ProductAttribute pa1, pa2, pa3;
         ProductVariantAttribute pva1_1, pva2_1, pva3_1;
         ProductVariantAttributeValue pvav1_1, pvav1_2, pvav2_1, pvav2_2;
 
@@ -152,10 +154,10 @@ namespace SmartStore.Services.Tests.Catalog
             _productAttributeRepo.Expect(x => x.GetById(pa2.Id)).Return(pa2);
             _productAttributeRepo.Expect(x => x.GetById(pa3.Id)).Return(pa3);
 
-			_productAttributeOptionRepo = MockRepository.GenerateMock<IRepository<ProductAttributeOption>>();
-			_productAttributeOptionsSetRepo = MockRepository.GenerateMock<IRepository<ProductAttributeOptionsSet>>();
+            _productAttributeOptionRepo = MockRepository.GenerateMock<IRepository<ProductAttributeOption>>();
+            _productAttributeOptionsSetRepo = MockRepository.GenerateMock<IRepository<ProductAttributeOptionsSet>>();
 
-			_productVariantAttributeRepo = MockRepository.GenerateMock<IRepository<ProductVariantAttribute>>();
+            _productVariantAttributeRepo = MockRepository.GenerateMock<IRepository<ProductVariantAttribute>>();
             _productVariantAttributeRepo.Expect(x => x.Table).Return(new List<ProductVariantAttribute> { pva1_1, pva2_1, pva3_1 }.AsQueryable());
             _productVariantAttributeRepo.Expect(x => x.GetById(pva1_1.Id)).Return(pva1_1);
             _productVariantAttributeRepo.Expect(x => x.GetById(pva2_1.Id)).Return(pva2_1);
@@ -171,25 +173,24 @@ namespace SmartStore.Services.Tests.Catalog
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_1.Id)).Return(pvav2_1);
             _productVariantAttributeValueRepo.Expect(x => x.GetById(pvav2_2.Id)).Return(pvav2_2);
 
-			_productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
-			_localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
+            _productBundleItemAttributeFilter = MockRepository.GenerateMock<IRepository<ProductBundleItemAttributeFilter>>();
+            _localizedEntityService = MockRepository.GenerateMock<ILocalizedEntityService>();
 
-            var cacheManager = new NullCache();
+            _performanceSettings = MockRepository.GenerateMock<PerformanceSettings>();
 
             _productAttributeService = new ProductAttributeService(
-				NullRequestCache.Instance,
+                NullRequestCache.Instance,
                 _productAttributeRepo,
-				_productAttributeOptionRepo,
-				_productAttributeOptionsSetRepo,
-				_productVariantAttributeRepo,
+                _productAttributeOptionRepo,
+                _productAttributeOptionsSetRepo,
+                _productVariantAttributeRepo,
                 _productVariantAttributeCombinationRepo,
                 _productVariantAttributeValueRepo,
-				_productBundleItemAttributeFilter,
-				_localizedEntityService);
-			
-            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullRequestCache.Instance);
+                _productBundleItemAttributeFilter,
+                _localizedEntityService);
 
-
+            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(),
+                NullRequestCache.Instance, NullCache.Instance, _performanceSettings);
 
             var workingLanguage = new Language();
             _workContext = MockRepository.GenerateMock<IWorkContext>();
@@ -204,22 +205,22 @@ namespace SmartStore.Services.Tests.Catalog
             _priceFormatter = MockRepository.GenerateMock<IPriceFormatter>();
             _downloadService = MockRepository.GenerateMock<IDownloadService>();
             _webHelper = MockRepository.GenerateMock<IWebHelper>();
-			_priceCalculationService = MockRepository.GenerateMock<IPriceCalculationService>();
-			_shoppingCartSettings = MockRepository.GenerateMock<ShoppingCartSettings>();
-			_catalogSettings = MockRepository.GenerateMock<CatalogSettings>();
+            _priceCalculationService = MockRepository.GenerateMock<IPriceCalculationService>();
+            _shoppingCartSettings = MockRepository.GenerateMock<ShoppingCartSettings>();
+            _catalogSettings = MockRepository.GenerateMock<CatalogSettings>();
 
-			_productAttributeFormatter = new ProductAttributeFormatter(_workContext,
+            _productAttributeFormatter = new ProductAttributeFormatter(_workContext,
                 _productAttributeService,
                 _productAttributeParser,
-				_priceCalculationService,
+                _priceCalculationService,
                 _currencyService,
                 _localizationService,
                 _taxService,
                 _priceFormatter,
                 _downloadService,
                 _webHelper,
-				_shoppingCartSettings,
-				_catalogSettings);
+                _shoppingCartSettings,
+                _catalogSettings);
         }
 
         //[Test]

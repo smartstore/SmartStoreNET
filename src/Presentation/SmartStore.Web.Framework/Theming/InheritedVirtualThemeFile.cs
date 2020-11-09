@@ -8,41 +8,38 @@ namespace SmartStore.Web.Framework.Theming
 {
     internal class InheritedVirtualThemeFile : VirtualFile, IFileDependencyProvider
     {
-		public InheritedVirtualThemeFile(InheritedThemeFileResult resolveResult)
-			: base(DetermineVirtualPath(resolveResult))
+        public InheritedVirtualThemeFile(InheritedThemeFileResult resolveResult)
+            : base(DetermineVirtualPath(resolveResult))
         {
             ResolveResult = resolveResult;
         }
 
-		public InheritedThemeFileResult ResolveResult { get; }
+        public InheritedThemeFileResult ResolveResult { get; }
 
-		public string ResultVirtualPath
-		{
-			get { return ResolveResult.ResultVirtualPath ?? ResolveResult.OriginalVirtualPath; }
-		}
+        public string ResultVirtualPath => ResolveResult.ResultVirtualPath ?? ResolveResult.OriginalVirtualPath;
 
-		public override Stream Open()
+        public override Stream Open()
         {
-			return new FileStream(ResolveResult.ResultPhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return new FileStream(ResolveResult.ResultPhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
-		private static string DetermineVirtualPath(InheritedThemeFileResult resolveResult)
-		{
-			if (resolveResult.RelativePath.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase))
-			{
-				// ASP.NET BuildManager requires the original path for razor views,
-				// otherwise an exception is thrown
-				return resolveResult.OriginalVirtualPath;
-			}
-			else
-			{
-				return resolveResult.ResultVirtualPath;
-			}
-		}
+        private static string DetermineVirtualPath(InheritedThemeFileResult resolveResult)
+        {
+            if (resolveResult.RelativePath.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase))
+            {
+                // ASP.NET BuildManager requires the original path for razor views,
+                // otherwise an exception is thrown
+                return resolveResult.OriginalVirtualPath;
+            }
+            else
+            {
+                return resolveResult.ResultVirtualPath;
+            }
+        }
 
-		public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
-		{
-			mappedPaths.Add(ResolveResult.ResultPhysicalPath);
-		}
-	}
+        public void AddFileDependencies(ICollection<string> mappedPaths, ICollection<string> cacheKeys)
+        {
+            mappedPaths.Add(ResolveResult.ResultPhysicalPath);
+        }
+    }
 }

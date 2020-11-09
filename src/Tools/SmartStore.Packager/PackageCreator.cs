@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using SmartStore.Core;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -9,104 +7,104 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 
 namespace SmartStore.Packager
-{	
-	internal class PackageCreator
-	{
-		private readonly IVirtualPathProvider _vpp;
-		private readonly IPackageBuilder _packageBuilder;
-		private readonly string _rootPath;
-		private readonly string _outputPath;
-		
-		public PackageCreator(string rootPath, string outputPath)
-		{
-			_rootPath = rootPath;
-			_outputPath = outputPath;
+{
+    internal class PackageCreator
+    {
+        private readonly IVirtualPathProvider _vpp;
+        private readonly IPackageBuilder _packageBuilder;
+        private readonly string _rootPath;
+        private readonly string _outputPath;
 
-			_vpp = new RootedVirtualPathProvider(rootPath);
-			_packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, NullLogger.Instance));
-		}
+        public PackageCreator(string rootPath, string outputPath)
+        {
+            _rootPath = rootPath;
+            _outputPath = outputPath;
 
-		public FileInfo CreatePluginPackage(string path)
-		{
-			string virtualPath = _vpp.Combine(path, "Description.txt");
+            _vpp = new RootedVirtualPathProvider(rootPath);
+            _packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, NullLogger.Instance));
+        }
 
-			if (!_vpp.FileExists(virtualPath))
-			{
-				return null;
-			}
+        public FileInfo CreatePluginPackage(string path)
+        {
+            string virtualPath = _vpp.Combine(path, "Description.txt");
 
-			var descriptor = PluginFileParser.ParsePluginDescriptionFile(_vpp.MapPath(virtualPath));
+            if (!_vpp.FileExists(virtualPath))
+            {
+                return null;
+            }
 
-			if (descriptor != null)
-			{
-				return CreatePluginPackage(descriptor);
-			}
+            var descriptor = PluginFileParser.ParsePluginDescriptionFile(_vpp.MapPath(virtualPath));
 
-			return null;
-		}
+            if (descriptor != null)
+            {
+                return CreatePluginPackage(descriptor);
+            }
 
-		public FileInfo CreatePluginPackage(PluginDescriptor descriptor)
-		{
-			var result = new PackagingResult
-			{
-				ExtensionType = "Plugin",
-				PackageName = descriptor.FolderName,
-				PackageVersion = descriptor.Version.ToString(),
-				PackageStream = _packageBuilder.BuildPackage(descriptor)
-			};
+            return null;
+        }
 
-			return SavePackageFile(result);
-		}
+        public FileInfo CreatePluginPackage(PluginDescriptor descriptor)
+        {
+            var result = new PackagingResult
+            {
+                ExtensionType = "Plugin",
+                PackageName = descriptor.FolderName,
+                PackageVersion = descriptor.Version.ToString(),
+                PackageStream = _packageBuilder.BuildPackage(descriptor)
+            };
 
-		public FileInfo CreateThemePackage(string virtualPath)
-		{
-			//string virtualPath = "~/Themes/{0}".FormatInvariant(themeName);
+            return SavePackageFile(result);
+        }
 
-			var manifest = ThemeManifest.Create(_vpp.MapPath(virtualPath));
+        public FileInfo CreateThemePackage(string virtualPath)
+        {
+            //string virtualPath = "~/Themes/{0}".FormatInvariant(themeName);
 
-			if (manifest != null)
-			{
-				return CreateThemePackage(manifest);
-			}
+            var manifest = ThemeManifest.Create(_vpp.MapPath(virtualPath));
 
-			return null;
-		}
+            if (manifest != null)
+            {
+                return CreateThemePackage(manifest);
+            }
 
-		public FileInfo CreateThemePackage(ThemeManifest manifest)
-		{
-			var result = new PackagingResult
-			{
-				ExtensionType = "Theme",
-				PackageName = manifest.ThemeName,
-				PackageVersion = manifest.Version,
-				PackageStream = _packageBuilder.BuildPackage(manifest)
-			};
+            return null;
+        }
 
-			return SavePackageFile(result);
-		}
+        public FileInfo CreateThemePackage(ThemeManifest manifest)
+        {
+            var result = new PackagingResult
+            {
+                ExtensionType = "Theme",
+                PackageName = manifest.ThemeName,
+                PackageVersion = manifest.Version,
+                PackageStream = _packageBuilder.BuildPackage(manifest)
+            };
 
-		private FileInfo SavePackageFile(PackagingResult result)
-		{
-			var fileName = string.Format("{0}{1}.{2}.nupkg",
-				PackagingUtils.GetExtensionPrefix(result.ExtensionType),
-				result.PackageName,
-				result.PackageVersion);
+            return SavePackageFile(result);
+        }
 
-			if (!Directory.Exists(_outputPath))
-			{
-				Directory.CreateDirectory(_outputPath);
-			}
+        private FileInfo SavePackageFile(PackagingResult result)
+        {
+            var fileName = string.Format("{0}{1}.{2}.nupkg",
+                PackagingUtils.GetExtensionPrefix(result.ExtensionType),
+                result.PackageName,
+                result.PackageVersion);
 
-			fileName = Path.Combine(_outputPath, fileName);
+            if (!Directory.Exists(_outputPath))
+            {
+                Directory.CreateDirectory(_outputPath);
+            }
 
-			using (var stream = File.Create(fileName))
-			{
-				result.PackageStream.CopyTo(stream);
-			}
+            fileName = Path.Combine(_outputPath, fileName);
 
-			var fileInfo = new FileInfo(fileName);
+            using (var stream = File.Create(fileName))
+            {
+                result.PackageStream.CopyTo(stream);
+            }
 
-			return fileInfo;
-		}
-	}
+            var fileInfo = new FileInfo(fileName);
+
+            return fileInfo;
+        }
+    }
 }

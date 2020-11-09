@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace SmartStore.Core.Plugins
+﻿namespace SmartStore.Core.Plugins
 {
-	public interface IUserEditable
-	{
-	}
+    public interface IUserEditable
+    {
+    }
 }

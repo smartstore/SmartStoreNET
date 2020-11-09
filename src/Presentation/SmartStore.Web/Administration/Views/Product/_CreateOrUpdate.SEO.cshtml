@@ -4,14 +4,14 @@
     @<table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
+                @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
             </td>
             <td class="adminData">
-				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+                @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-                @Html.TextBoxFor(model => model.Locales[item].MetaKeywords)
-                @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
+                @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
             </td>
         </tr>
         <tr>
@@ -25,11 +25,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
+                @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
-                @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
+                @Html.TextBoxFor(model => model.Locales[item].MetaKeywords)
+                @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
             </td>
         </tr>
         <tr>
@@ -46,11 +46,11 @@
     @<table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaKeywords)
+                @Html.SmartLabelFor(model => model.MetaTitle)
             </td>
             <td class="adminData">
-                @Html.TextBoxFor(x => x.MetaKeywords)
-                @Html.ValidationMessageFor(model => model.MetaKeywords)
+                @Html.TextAreaFor(x => x.MetaTitle)
+                @Html.ValidationMessageFor(model => model.MetaTitle)
             </td>
         </tr>
         <tr>
@@ -64,11 +64,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MetaTitle)
+                @Html.SmartLabelFor(model => model.MetaKeywords)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(x => x.MetaTitle)
-                @Html.ValidationMessageFor(model => model.MetaTitle)
+                @Html.TextBoxFor(x => x.MetaKeywords)
+                @Html.ValidationMessageFor(model => model.MetaKeywords)
             </td>
         </tr>
         <tr>

@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Xml;
 using System.Globalization;
-using TimeZone = System.TimeZoneInfo;
-using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 
 namespace SmartStore
 {
     public static class DateTimeExtensions
     {
-		public static readonly DateTime BeginOfEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public static readonly DateTime BeginOfEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Converts a nullable date/time value to UTC.
@@ -105,7 +102,7 @@ namespace SmartStore
         public static long ToJavaScriptTicks(this DateTime value)
         {
             DateTimeOffset utcDateTime = value.ToUniversalTime();
-			long javaScriptTicks = (utcDateTime.Ticks - BeginOfEpoch.Ticks) / (long)10000;
+            long javaScriptTicks = (utcDateTime.Ticks - BeginOfEpoch.Ticks) / (long)10000;
             return javaScriptTicks;
         }
 
@@ -136,71 +133,79 @@ namespace SmartStore
             return dtTo;
         }
 
-		public static DateTime ToEndOfTheDay(this DateTime value)
-		{
-			if (value != null)
-				return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);
-			return value;
-		}
+        public static DateTime ToEndOfTheDay(this DateTime value)
+        {
+            if (value != null)
+                return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);
+            return value;
+        }
 
-		public static DateTime? ToEndOfTheDay(this DateTime? value)
-		{
-			return (value.HasValue ? value.Value.ToEndOfTheDay() : value);
-		}
+        public static DateTime? ToEndOfTheDay(this DateTime? value)
+        {
+            return (value.HasValue ? value.Value.ToEndOfTheDay() : value);
+        }
 
         /// <summary>
         /// Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ToUnixTime(this DateTime value)
-		{
-			return Convert.ToInt64((value.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
-		}
+        {
+            return Convert.ToInt64((value.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
+        }
 
         /// <summary>
         /// UTC date based on number of seconds since midnight (UTC) on 1st January 1970.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime FromUnixTime(this long unixTime)
-		{
-			return BeginOfEpoch.AddSeconds(unixTime);
-		}
+        {
+            return BeginOfEpoch.AddSeconds(unixTime);
+        }
 
         /// <summary>
         /// Converts a DateTime to a string with native digits
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToNativeString(this DateTime value)
-		{
-			return value.ToNativeString(null, null);
-		}
+        {
+            return value.ToNativeString(null, null);
+        }
 
         /// <summary>
         /// Converts a DateTime to a string with native digits
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToNativeString(this DateTime value, IFormatProvider provider)
-		{
-			return value.ToNativeString(null, provider);
-		}
+        {
+            return value.ToNativeString(null, provider);
+        }
 
         /// <summary>
         /// Converts a DateTime to a string with native digits
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToNativeString(this DateTime value, string format)
-		{
-			return value.ToNativeString(format, null);
-		}
+        {
+            return value.ToNativeString(format, null);
+        }
 
         /// <summary>
         /// Converts a DateTime to a string with native digits
         /// </summary>
         public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
-		{
-			provider = provider ?? CultureInfo.CurrentCulture;
-			return value.ToString(format, provider).ReplaceNativeDigits(provider);
-		}
+        {
+            provider = provider ?? CultureInfo.CurrentCulture;
+            return value.ToString(format, provider).ReplaceNativeDigits(provider);
+        }
+
+        /// <summary>
+        /// Converts a DateTime to ISO 8601 string
+        /// </summary>
+        public static string ToIso8601String(this DateTime value)
+        {
+            return value.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        }
     }
 
 }

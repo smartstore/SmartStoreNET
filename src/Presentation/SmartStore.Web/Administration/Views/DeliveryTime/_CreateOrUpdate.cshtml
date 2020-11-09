@@ -1,9 +1,9 @@
 ﻿@model DeliveryTimeModel
-@using Telerik.Web.Mvc.UI;
 @{
     var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
 }
 
+@Html.AntiForgeryToken()
 @Html.HiddenFor(model => model.Id)
 @(Html.LocalizedEditor<DeliveryTimeModel, DeliveryTimeLocalizedModel>("delivery-time-info-localized",
     @<table class="adminContent">
@@ -60,6 +60,24 @@
         <td class="adminData">
             @Html.EditorFor(model => model.DisplayOrder)
             @Html.ValidationMessageFor(model => model.DisplayOrder)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MinDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MinDays, new { postfix = T("Time.Days").Text })
+            @Html.ValidationMessageFor(model => model.MinDays)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MaxDays)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MaxDays, new { postfix = T("Time.Days").Text })
+            @Html.ValidationMessageFor(model => model.MaxDays)
         </td>
     </tr>
 </table>

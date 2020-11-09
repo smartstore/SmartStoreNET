@@ -9,19 +9,13 @@ namespace SmartStore.GoogleAnalytics
         public void RegisterRoutes(RouteCollection routes)
         {
             routes.MapRoute("SmartStore.GoogleAnalytics",
-				 "Plugins/SmartStore.GoogleAnalytics/{action}",
+                 "Plugins/SmartStore.GoogleAnalytics/{action}",
                  new { controller = "WidgetsGoogleAnalytics", action = "Configure" },
                  new[] { "SmartStore.GoogleAnalytics.Controllers" }
             )
-			.DataTokens["area"] = "SmartStore.GoogleAnalytics";
+            .DataTokens["area"] = "SmartStore.GoogleAnalytics";
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

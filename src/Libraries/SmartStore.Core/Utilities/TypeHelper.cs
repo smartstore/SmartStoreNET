@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Collections;
-using System.ComponentModel;
-using System.Linq;
-using System.Globalization;
-using System.IO;
 using System.Linq.Expressions;
 
 namespace SmartStore.Utilities
@@ -37,25 +30,25 @@ namespace SmartStore.Utilities
             return type;
         }
 
-		/// <summary>
-		/// Exctracts and returns the name of a property accessor lambda
-		/// </summary>
-		/// <typeparam name="T">The containing type</typeparam>
-		/// <param name="propertyAccessor">The accessor lambda</param>
-		/// <param name="includeTypeName">When <c>true</c>, returns the result as '[TyoeName].[PropertyName]'.</param>
-		/// <returns>The property name</returns>
-		public static string NameOf<T>(Expression<Func<T, object>> propertyAccessor, bool includeTypeName = false)
-		{
-			Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
+        /// <summary>
+        /// Exctracts and returns the name of a property accessor lambda
+        /// </summary>
+        /// <typeparam name="T">The containing type</typeparam>
+        /// <param name="propertyAccessor">The accessor lambda</param>
+        /// <param name="includeTypeName">When <c>true</c>, returns the result as '[TyoeName].[PropertyName]'.</param>
+        /// <returns>The property name</returns>
+        public static string NameOf<T>(Expression<Func<T, object>> propertyAccessor, bool includeTypeName = false)
+        {
+            Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
 
-			var name = propertyAccessor.ExtractPropertyInfo().Name;
+            var name = propertyAccessor.ExtractPropertyInfo().Name;
 
-			if (includeTypeName)
-			{
-				return typeof(T).Name + "." + name;
-			}
+            if (includeTypeName)
+            {
+                return typeof(T).Name + "." + name;
+            }
 
-			return name;
-		}
+            return name;
+        }
     }
 }

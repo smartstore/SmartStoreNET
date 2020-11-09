@@ -1,6 +1,4 @@
-﻿using SmartStore.Core.Infrastructure;
-using SmartStore.Web.Framework.Theming;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -17,10 +15,10 @@ namespace SmartStore.Web.Framework.UI
         {
             if (items == null)
                 return new HtmlString("");
-            
+
             var spanClassPrefix = "col-md-";
             var rowClass = "row";
-            
+
             Guard.Against<ArgumentOutOfRangeException>(gridColumns % columns != 0, "Wrong column count. Ensure that gridColumns is divisible by columns.");
 
             var sb = new StringBuilder();
@@ -57,7 +55,7 @@ namespace SmartStore.Web.Framework.UI
 
             return new HtmlString(sb.ToString());
         }
-        
+
         //public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
         //    Func<T, HelperResult> template) 
         //    where T : class
@@ -77,7 +75,7 @@ namespace SmartStore.Web.Framework.UI
 
         //        sb.Append("<td");
         //        sb.Append(">");
-                
+
         //        sb.Append(template(item).ToHtmlString());
         //        sb.Append("</td>");
 

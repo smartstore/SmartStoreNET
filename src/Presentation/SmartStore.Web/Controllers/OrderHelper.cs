@@ -39,6 +39,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly IPaymentService _paymentService;
         private readonly ICurrencyService _currencyService;
+        private readonly ICountryService _countryService;
         private readonly IQuantityUnitService _quantityUnitService;
         private readonly IMediaService _mediaService;
         private readonly IProductService _productService;
@@ -55,6 +56,7 @@ namespace SmartStore.Web.Controllers
             IOrderProcessingService orderProcessingService,
             IPaymentService paymentService,
             ICurrencyService currencyService,
+            ICountryService countryService,
             IQuantityUnitService quantityUnitService,
             IMediaService mediaService,
             IProductService productService,
@@ -70,6 +72,7 @@ namespace SmartStore.Web.Controllers
             _orderProcessingService = orderProcessingService;
             _paymentService = paymentService;
             _currencyService = currencyService;
+            _countryService = countryService;
             _quantityUnitService = quantityUnitService;
             _mediaService = mediaService;
             _productService = productService;
@@ -78,10 +81,7 @@ namespace SmartStore.Web.Controllers
 
         public Localizer T { get; set; } = NullLocalizer.Instance;
 
-        public static string OrderDetailsPrintViewPath
-        {
-            get { return "~/Views/Order/Details.Print.cshtml"; }
-        }
+        public static string OrderDetailsPrintViewPath => "~/Views/Order/Details.Print.cshtml";
 
         private PictureModel PrepareOrderItemPictureModel(
             Product product,
@@ -107,17 +107,27 @@ namespace SmartStore.Web.Controllers
             // No attribute combination image, then load product picture.
             if (file == null)
             {
-                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.Id, 1)
+                var mediaFile = _productService.GetProductPicturesByProductId(product.Id, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault());
+                    .FirstOrDefault();
+
+                if (mediaFile != null)
+                {
+                    file = _mediaService.ConvertMediaFile(mediaFile);
+                }
             }
 
             if (file == null && product.Visibility == ProductVisibility.Hidden && product.ParentGroupedProductId > 0)
             {
                 // Let's check whether this product has some parent "grouped" product.
-                file = _mediaService.ConvertMediaFile(_productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
+                var mediaFile = _productService.GetProductPicturesByProductId(product.ParentGroupedProductId, 1)
                     .Select(x => x.MediaFile)
-                    .FirstOrDefault());
+                    .FirstOrDefault();
+
+                if (mediaFile != null)
+                {
+                    file = _mediaService.ConvertMediaFile(mediaFile);
+                }
             }
 
             return new PictureModel
@@ -125,7 +135,7 @@ namespace SmartStore.Web.Controllers
                 PictureId = file?.Id ?? 0,
                 Size = pictureSize,
                 ImageUrl = _mediaService.GetUrl(file, pictureSize, null, !catalogSettings.HideProductDefaultPictures),
-                Title = T("Media.Product.ImageLinkTitleFormat", productName),
+                Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? T("Media.Product.ImageLinkTitleFormat", productName),
                 AlternateText = file?.File?.GetLocalized(x => x.Alt)?.Value.NullEmpty() ?? T("Media.Product.ImageAlternateTextFormat", productName),
                 File = file
             };
@@ -262,10 +272,13 @@ namespace SmartStore.Web.Controllers
 
             var model = new OrderDetailsModel();
 
+            // TODO: refactor modelling for multi-order processing.
             model.MerchantCompanyInfo = companyInfoSettings;
+            model.MerchantCompanyCountryName = _countryService.GetCountryById(companyInfoSettings.CountryId)?.GetLocalized(x => x.Name);
+
             model.Id = order.Id;
             model.StoreId = order.StoreId;
-			model.CustomerLanguageId = order.CustomerLanguageId;
+            model.CustomerLanguageId = order.CustomerLanguageId;
             model.CustomerComment = order.CustomerOrderComment;
 
             model.OrderNumber = order.GetOrderNumber();
@@ -343,7 +356,7 @@ namespace SmartStore.Web.Controllers
                 model.DirectDebitCountry = _encryptionService.DecryptText(order.DirectDebitCountry);
                 model.DirectDebitIban = _encryptionService.DecryptText(order.DirectDebitIban);
             }
-            
+
             // Totals.
             switch (order.CustomerTaxDisplayType)
             {
@@ -430,7 +443,7 @@ namespace SmartStore.Web.Controllers
                     {
                         var rate = _priceFormatter.FormatTaxRate(tr.Key);
                         //var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
-                        var labelKey = (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "ShoppingCart.Totals.TaxRateLineIncl" : "ShoppingCart.Totals.TaxRateLineExcl");
+                        var labelKey = _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "ShoppingCart.Totals.TaxRateLineIncl" : "ShoppingCart.Totals.TaxRateLineExcl";
 
                         model.TaxRates.Add(new OrderDetailsModel.TaxRate
                         {
@@ -477,12 +490,12 @@ namespace SmartStore.Web.Controllers
                     true, order.CustomerCurrencyCode, false, language);
             }
 
-			// Credit balance.
-			if (order.CreditBalance > decimal.Zero)
-			{
-				var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
-				model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
-			}
+            // Credit balance.
+            if (order.CreditBalance > decimal.Zero)
+            {
+                var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
+                model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
+            }
 
             // Total.
             var roundingAmount = decimal.Zero;

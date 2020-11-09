@@ -115,7 +115,7 @@
 			</thead>
 			<tbody>
 				@foreach (var item in Model.Items)
-			{
+				{
 					<tr>
 						<td style="width: 25%;" class="align-top">
 							<div>
@@ -123,16 +123,16 @@
 									@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 								</div>
 
-								@if (!String.IsNullOrEmpty(item.AttributeInfo))
+								@if (item.AttributeInfo.HasValue())
 								{
 									@Html.Raw(item.AttributeInfo)
 								}
-								@if (!String.IsNullOrEmpty(item.RecurringInfo))
+								@if (item.RecurringInfo.HasValue())
 								{
 									<br />
 									@Html.Raw(item.RecurringInfo)
 								}
-								@if (!String.IsNullOrEmpty(item.Sku))
+								@if (item.Sku.HasValue())
 								{
 									<br />
 									<span class="font-weight-medium">@T("Admin.Orders.Products.SKU")</span><text>:</text>
@@ -386,7 +386,7 @@
 	</div>
 </div>
 
-@if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
+@if (Model.CheckoutAttributeInfo.HasValue())
 {
 	<div class="alert alert-info checkout-attributes">
 		@Html.Raw(Model.CheckoutAttributeInfo)
@@ -410,13 +410,13 @@
 							</text>
 						}
 					</div>
-					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+					@if (item.PriceWithDiscount.HasValue())
 					{
 						<div class="bundle-item-price">
 							@Html.Raw(item.PriceWithDiscount)
 						</div>
 					}
-					@if (!String.IsNullOrEmpty(item.AttributeInfo))
+					@if (item.AttributeInfo.HasValue())
 					{
 						<div class="bundle-item-attribute-info text-muted fs-sm">
 							@Html.Raw(item.AttributeInfo)

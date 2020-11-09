@@ -6,7 +6,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
-	[Validator(typeof(WishlistEmailAFriendValidator))]
+    [Validator(typeof(WishlistEmailAFriendValidator))]
     public partial class WishlistEmailAFriendModel : ModelBase
     {
         [SmartResourceDisplayName("Wishlist.EmailAFriend.FriendEmail")]

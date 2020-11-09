@@ -31,21 +31,21 @@ namespace SmartStore.Services.Tax
 
         public virtual IList<TaxCategory> GetAllTaxCategories()
         {
-			var query = from tc in _taxCategoryRepository.Table
-						orderby tc.DisplayOrder
-						select tc;
+            var query = from tc in _taxCategoryRepository.Table
+                        orderby tc.DisplayOrder
+                        select tc;
 
-			var taxCategories = query.ToListCached("db.taxcategory.all");
-			return taxCategories;
-		}
+            var taxCategories = query.ToListCached("db.taxcategory.all");
+            return taxCategories;
+        }
 
         public virtual TaxCategory GetTaxCategoryById(int taxCategoryId)
         {
             if (taxCategoryId == 0)
                 return null;
 
-			return _taxCategoryRepository.GetByIdCached(taxCategoryId, "db.taxcategory.id-" + taxCategoryId);
-		}
+            return _taxCategoryRepository.GetByIdCached(taxCategoryId, "db.taxcategory.id-" + taxCategoryId);
+        }
 
         public virtual void InsertTaxCategory(TaxCategory taxCategory)
         {

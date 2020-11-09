@@ -8,6 +8,7 @@ using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Admin.Models.Tasks;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -30,7 +31,6 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -129,21 +129,9 @@ namespace SmartStore.Admin.Controllers
 
         private void ModelToEntity(ExportDeploymentModel model, ExportDeployment deployment)
         {
-            deployment.ProfileId = model.ProfileId;
-            deployment.Name = model.Name;
-            deployment.Enabled = model.Enabled;
-            deployment.DeploymentType = model.DeploymentType;
-            deployment.Username = model.Username;
-            deployment.Password = model.Password;
-            deployment.Url = model.Url;
-            deployment.HttpTransmissionType = model.HttpTransmissionType;
-            deployment.FileSystemPath = model.FileSystemPath;
-            deployment.SubFolder = model.SubFolder;
+            MiniMapper.Map(model, deployment);
+
             deployment.EmailAddresses = string.Join(",", model.EmailAddresses ?? new string[0]);
-            deployment.EmailSubject = model.EmailSubject;
-            deployment.EmailAccountId = model.EmailAccountId;
-            deployment.PassiveMode = model.PassiveMode;
-            deployment.UseSsl = model.UseSsl;
         }
 
         private ActionResult SmartRedirect(bool continueEditing, int profileId, int deploymentId)
@@ -299,27 +287,12 @@ namespace SmartStore.Admin.Controllers
 
         private ExportDeploymentModel CreateDeploymentModel(ExportProfile profile, ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
         {
-            var model = new ExportDeploymentModel
-            {
-                Id = deployment.Id,
-                ProfileId = deployment.ProfileId,
-                Name = deployment.Name,
-                Enabled = deployment.Enabled,
-                DeploymentType = deployment.DeploymentType,
-                DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(Services.Localization, Services.WorkContext),
-                Username = deployment.Username,
-                Password = deployment.Password,
-                Url = deployment.Url,
-                HttpTransmissionType = deployment.HttpTransmissionType,
-                FileSystemPath = deployment.FileSystemPath,
-                SubFolder = deployment.SubFolder,
-                EmailAddresses = deployment.EmailAddresses.SplitSafe(","),
-                EmailSubject = deployment.EmailSubject,
-                EmailAccountId = deployment.EmailAccountId,
-                PassiveMode = deployment.PassiveMode,
-                UseSsl = deployment.UseSsl
-            };
+            var model = new ExportDeploymentModel();
 
+            MiniMapper.Map(deployment, model);
+
+            model.EmailAddresses = deployment.EmailAddresses.SplitSafe(",");
+            model.DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
             model.PublicFolderUrl = deployment.GetPublicFolderUrl(Services);
 
             if (forEdit)
@@ -356,16 +329,8 @@ namespace SmartStore.Admin.Controllers
             Provider<IExportProvider> provider,
             ScheduleTaskHistory lastHistoryEntry)
         {
-            model.Id = profile.Id;
-            model.Name = profile.Name;
-            model.SystemName = profile.SystemName;
-            model.IsSystemProfile = profile.IsSystemProfile;
-            model.ProviderSystemName = profile.ProviderSystemName;
-            model.FolderName = profile.FolderName;
-            model.FileNamePattern = profile.FileNamePattern;
-            model.Enabled = profile.Enabled;
-            model.ExportRelatedData = profile.ExportRelatedData;
-            model.ScheduleTaskId = profile.SchedulingTaskId;
+            MiniMapper.Map(profile, model);
+
             model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
             model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
             model.IsTaskEnabled = profile.ScheduleTask.Enabled;
@@ -427,32 +392,13 @@ namespace SmartStore.Admin.Controllers
             model.AvailableCompletedEmailAddresses = new MultiSelectList(profile.CompletedEmailAddresses.SplitSafe(","));
 
             // Projection.
-            model.Projection = new ExportProjectionModel
-            {
-                StoreId = projection.StoreId,
-                LanguageId = projection.LanguageId,
-                CurrencyId = projection.CurrencyId,
-                CustomerId = projection.CustomerId,
-                NumberOfPictures = projection.NumberOfMediaFiles,
-                DescriptionMergingId = projection.DescriptionMergingId,
-                DescriptionToPlainText = projection.DescriptionToPlainText,
-                AppendDescriptionText = projection.AppendDescriptionText.SplitSafe(","),
-                RemoveCriticalCharacters = projection.RemoveCriticalCharacters,
-                CriticalCharacters = projection.CriticalCharacters.SplitSafe(","),
-                PriceType = projection.PriceType,
-                ConvertNetToGrossPrices = projection.ConvertNetToGrossPrices,
-                Brand = projection.Brand,
-                PictureSize = projection.PictureSize,
-                ShippingTime = projection.ShippingTime,
-                ShippingCosts = projection.ShippingCosts,
-                FreeShippingThreshold = projection.FreeShippingThreshold,
-                AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
-                AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
-                NoGroupedProducts = projection.NoGroupedProducts,
-                OnlyIndividuallyVisibleAssociated = projection.OnlyIndividuallyVisibleAssociated,
-                OrderStatusChangeId = projection.OrderStatusChangeId,
-                NoBundleProducts = projection.NoBundleProducts
-            };
+            model.Projection = new ExportProjectionModel();
+
+            MiniMapper.Map(projection, model.Projection);
+
+            model.Projection.NumberOfPictures = projection.NumberOfMediaFiles;
+            model.Projection.AppendDescriptionText = projection.AppendDescriptionText.SplitSafe(",");
+            model.Projection.CriticalCharacters = projection.CriticalCharacters.SplitSafe(",");
 
             if (profile.Projection.IsEmpty())
             {
@@ -468,46 +414,13 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             model.Projection.AvailableCurrencies = allCurrencies
-                .Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+                .Select(y => new SelectListItem { Text = y.GetLocalized(z => z.Name), Value = y.Id.ToString() })
                 .ToList();
 
             // Filtering.
-            model.Filter = new ExportFilterModel
-            {
-                StoreId = filter.StoreId,
-                CreatedFrom = filter.CreatedFrom,
-                CreatedTo = filter.CreatedTo,
-                PriceMinimum = filter.PriceMinimum,
-                PriceMaximum = filter.PriceMaximum,
-                AvailabilityMinimum = filter.AvailabilityMinimum,
-                AvailabilityMaximum = filter.AvailabilityMaximum,
-                IsPublished = filter.IsPublished,
-                CategoryIds = filter.CategoryIds,
-                WithoutCategories = filter.WithoutCategories,
-                ManufacturerId = filter.ManufacturerId,
-                WithoutManufacturers = filter.WithoutManufacturers,
-                ProductTagId = filter.ProductTagId,
-                FeaturedProducts = filter.FeaturedProducts,
-                IsActiveCustomer = filter.IsActiveCustomer,
-                IsTaxExempt = filter.IsTaxExempt,
-                BillingCountryIds = filter.BillingCountryIds,
-                ShippingCountryIds = filter.ShippingCountryIds,
-                LastActivityFrom = filter.LastActivityFrom,
-                LastActivityTo = filter.LastActivityTo,
-                HasSpentAtLeastAmount = filter.HasSpentAtLeastAmount,
-                HasPlacedAtLeastOrders = filter.HasPlacedAtLeastOrders,
-                ProductType = filter.ProductType,
-				Visibility = filter.Visibility,
-                IdMinimum = filter.IdMinimum,
-                IdMaximum = filter.IdMaximum,
-                OrderStatusIds = filter.OrderStatusIds,
-                PaymentStatusIds = filter.PaymentStatusIds,
-                ShippingStatusIds = filter.ShippingStatusIds,
-                CustomerRoleIds = filter.CustomerRoleIds,
-                IsActiveSubscriber = filter.IsActiveSubscriber,
-                WorkingLanguageId = filter.WorkingLanguageId,
-                ShoppingCartTypeId = filter.ShoppingCartTypeId
-            };
+            model.Filter = new ExportFilterModel();
+
+            MiniMapper.Map(filter, model.Filter);
 
             model.Filter.AvailableLanguages = new List<SelectListItem>();
             model.Filter.AvailableLanguages.Add(new SelectListItem { Text = T("Common.Unspecified"), Value = "" });
@@ -581,9 +494,9 @@ namespace SmartStore.Admin.Controllers
                         model.Filter.SelectedCategories = new List<SelectListItem>();
                     }
 
-					model.Filter.AvailableManufacturers = allManufacturers
-						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-						.ToList();
+                    model.Filter.AvailableManufacturers = allManufacturers
+                        .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                        .ToList();
 
                     model.Filter.AvailableManufacturers = allManufacturers
                         .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
@@ -777,6 +690,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Create)]
         public ActionResult Create(ExportProfileModel model)
         {
@@ -821,6 +735,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Update)]
         public ActionResult Edit(ExportProfileModel model, bool continueEditing)
         {
@@ -839,20 +754,13 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
 
-            profile.Name = model.Name;
-            profile.FileNamePattern = model.FileNamePattern;
-            profile.FolderName = model.FolderName;
-            profile.Enabled = model.Enabled;
-            profile.ExportRelatedData = model.ExportRelatedData;
-            profile.Offset = model.Offset;
+            MiniMapper.Map(profile, model);
+
             profile.Limit = model.Limit ?? 0;
             profile.BatchSize = model.BatchSize ?? 0;
-            profile.PerStore = model.PerStore;
             profile.CompletedEmailAddresses = string.Join(",", model.CompletedEmailAddresses ?? new string[0]);
             profile.EmailAccountId = model.EmailAccountId ?? 0;
-            profile.CreateZipArchive = model.CreateZipArchive;
-            profile.Cleanup = model.Cleanup;
-
+            
             if (profile.Name.IsEmpty())
                 profile.Name = provider.Metadata.FriendlyName;
 
@@ -862,76 +770,26 @@ namespace SmartStore.Admin.Controllers
             // Projection.
             if (model.Projection != null)
             {
-                var projection = new ExportProjection
-                {
-                    StoreId = model.Projection.StoreId,
-                    LanguageId = model.Projection.LanguageId,
-                    CurrencyId = model.Projection.CurrencyId,
-                    CustomerId = model.Projection.CustomerId,
-                    NumberOfMediaFiles = model.Projection.NumberOfPictures,
-                    DescriptionMergingId = model.Projection.DescriptionMergingId,
-                    DescriptionToPlainText = model.Projection.DescriptionToPlainText,
-                    AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText ?? new string[0]),
-                    RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
-                    CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters ?? new string[0]),
-                    PriceType = model.Projection.PriceType,
-                    ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
-                    Brand = model.Projection.Brand,
-                    PictureSize = model.Projection.PictureSize,
-                    ShippingTime = model.Projection.ShippingTime,
-                    ShippingCosts = model.Projection.ShippingCosts,
-                    FreeShippingThreshold = model.Projection.FreeShippingThreshold,
-                    AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
-                    AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
-                    NoGroupedProducts = model.Projection.NoGroupedProducts,
-                    OnlyIndividuallyVisibleAssociated = model.Projection.OnlyIndividuallyVisibleAssociated,
-                    OrderStatusChangeId = model.Projection.OrderStatusChangeId,
-                    NoBundleProducts = model.Projection.NoBundleProducts
-                };
+                var projection = new ExportProjection();
 
+                MiniMapper.Map(model.Projection, projection);
+
+                projection.NumberOfMediaFiles = model.Projection.NumberOfPictures;
+                projection.AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText ?? new string[0]);
+                projection.RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters;
+                projection.CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters ?? new string[0]);
                 profile.Projection = XmlHelper.Serialize(projection);
             }
 
-			// Filtering.
-			if (model.Filter != null)
-			{
-				var filter = new ExportFilter
-				{
-					StoreId = model.Filter.StoreId ?? 0,
-					CreatedFrom = model.Filter.CreatedFrom,
-					CreatedTo = model.Filter.CreatedTo,
-					PriceMinimum = model.Filter.PriceMinimum,
-					PriceMaximum = model.Filter.PriceMaximum,
-					AvailabilityMinimum = model.Filter.AvailabilityMinimum,
-					AvailabilityMaximum = model.Filter.AvailabilityMaximum,
-					IsPublished = model.Filter.IsPublished,
-					CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0],
-					WithoutCategories = model.Filter.WithoutCategories,
-					ManufacturerId = model.Filter.ManufacturerId,
-					WithoutManufacturers = model.Filter.WithoutManufacturers,
-					ProductTagId = model.Filter.ProductTagId,
-					FeaturedProducts = model.Filter.FeaturedProducts,
-					IsActiveCustomer = model.Filter.IsActiveCustomer,
-					IsTaxExempt = model.Filter.IsTaxExempt,
-					BillingCountryIds = model.Filter.BillingCountryIds,
-					ShippingCountryIds = model.Filter.ShippingCountryIds,
-					LastActivityFrom = model.Filter.LastActivityFrom,
-					LastActivityTo = model.Filter.LastActivityTo,
-					HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
-					HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
-					ProductType = model.Filter.ProductType,
-                    Visibility = model.Filter.Visibility,
-					IdMinimum = model.Filter.IdMinimum,
-					IdMaximum = model.Filter.IdMaximum,
-					OrderStatusIds = model.Filter.OrderStatusIds,
-					PaymentStatusIds = model.Filter.PaymentStatusIds,
-					ShippingStatusIds = model.Filter.ShippingStatusIds,
-					CustomerRoleIds = model.Filter.CustomerRoleIds,
-					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
-                    WorkingLanguageId = model.Filter.WorkingLanguageId,
-                    ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
-                };
+            // Filtering.
+            if (model.Filter != null)
+            {
+                var filter = new ExportFilter();
 
+                MiniMapper.Map(model.Filter, filter);
+
+                filter.StoreId = model.Filter.StoreId ?? 0;
+                filter.CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0];
                 profile.Filtering = XmlHelper.Serialize(filter);
             }
 
@@ -977,6 +835,7 @@ namespace SmartStore.Admin.Controllers
         #region Delete / Execute
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -1005,6 +864,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Execute)]
         public ActionResult Execute(int id, string selectedIds)
         {
@@ -1036,13 +896,7 @@ namespace SmartStore.Admin.Controllers
 
             NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataExportTask"));
 
-            var referrer = Services.WebHelper.GetUrlReferrer();
-            if (referrer.HasValue())
-            {
-                return Redirect(referrer);
-            }
-
-            return RedirectToAction("List");
+            return RedirectToReferrer(null, () => RedirectToAction("List"));
         }
 
         #endregion
@@ -1395,6 +1249,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Update)]
         public ActionResult CreateDeployment(ExportDeploymentModel model, bool continueEditing, ExportDeploymentType deploymentType)
         {
@@ -1440,6 +1295,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Update)]
         public ActionResult EditDeployment(ExportDeploymentModel model, bool continueEditing)
         {
@@ -1468,6 +1324,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Export.Update)]
         public ActionResult DeleteDeployment(int id)
         {

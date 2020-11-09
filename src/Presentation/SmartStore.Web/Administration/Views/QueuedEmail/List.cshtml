@@ -6,6 +6,8 @@
 }
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="far fa-envelope"></i>
@@ -116,7 +118,7 @@
 			.EnableCustomBinding(true))
 	</div>
 
-    <script type="text/javascript">
+    <script>
 
 		// Filter toggler
 		$('.btn-toggle-filter').on('click', function (e) {
@@ -125,9 +127,7 @@
 
         var selectedIds = [];
 
-        $(document).ready(function () {
-			
-            //search button
+        $(function() {
             $('#btnSearch').click(function () {
                 //search
                 var grid = $('#queuedEmails-grid').data('tGrid');
@@ -143,15 +143,16 @@
             $('#delete-selected').click(function (e) {
                 e.preventDefault();
 
-                var postData = {
-                    selectedIds: selectedIds
-                };
+				var token = $('input[name="__RequestVerificationToken"]').val();
 
                 $.ajax({
                     cache:false,
                     type: "POST",
                     url: "@(Url.Action("DeleteSelected", "QueuedEmail"))",
-                    data: postData,
+                    data: {
+                        selectedIds: selectedIds,
+						__RequestVerificationToken: token
+					},
                     complete: function (data) {
                         //reload grid
                         var grid = $('#queuedEmails-grid').data('tGrid');

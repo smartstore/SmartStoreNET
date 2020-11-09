@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Core.Security;
@@ -16,80 +17,127 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     public class AddressesController : WebApiEntityController<Address, IAddressService>
-	{
-		private readonly Lazy<IRepository<Order>> _orderRepository;
-		private readonly Lazy<IEventPublisher> _eventPublisher;
+    {
+        private readonly Lazy<IRepository<Order>> _orderRepository;
+        private readonly Lazy<IEventPublisher> _eventPublisher;
 
-		public AddressesController(
-			Lazy<IRepository<Order>> orderRepository,
-			Lazy<IEventPublisher> eventPublisher)
-		{
-			_orderRepository = orderRepository;
-			_eventPublisher = eventPublisher;
-		}
+        public AddressesController(
+            Lazy<IRepository<Order>> orderRepository,
+            Lazy<IEventPublisher> eventPublisher)
+        {
+            _orderRepository = orderRepository;
+            _eventPublisher = eventPublisher;
+        }
 
-		private void PublishOrderUpdated(int addressId)
-		{
-			this.ProcessEntity(() =>
-			{
-				if (addressId != 0)
-				{
-					var orders = _orderRepository.Value.TableUntracked
-						.Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
-						.ToList();
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+        public IHttpActionResult Get()
+        {
+            return Ok(GetEntitySet());
+        }
 
-					foreach (var order in orders)
-					{
-						_eventPublisher.Value.PublishOrderUpdated(order);
-					}
-				}
-			});
-		}
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+        public IHttpActionResult Get(int key)
+        {
+            return Ok(GetByKey(key));
+        }
 
+        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
+        public IHttpActionResult GetProperty(int key, string propertyName)
+        {
+            return GetPropertyValue(key, propertyName);
+        }
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Create)]
-		protected override void Insert(Address entity)
-		{
-			Service.InsertAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
+        public IHttpActionResult Post(Address entity)
+        {
+            var result = Insert(entity, () =>
+            {
+                Service.InsertAddress(entity);
+                PublishOrderUpdated(entity.Id);
+            });
 
+            return result;
+        }
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
-        protected override void Update(Address entity)
-		{
-			Service.UpdateAddress(entity);
-			PublishOrderUpdated(entity.Id);
-		}
+        public async Task<IHttpActionResult> Put(int key, Address entity)
+        {
+            var result = await UpdateAsync(entity, key, () =>
+            {
+                Service.UpdateAddress(entity);
+                PublishOrderUpdated(entity.Id);
+            });
+
+            return result;
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Customer.Update)]
+        public async Task<IHttpActionResult> Patch(int key, Delta<Address> model)
+        {
+            var result = await PartiallyUpdateAsync(key, model, entity =>
+            {
+                Service.UpdateAddress(entity);
+                PublishOrderUpdated(entity.Id);
+            });
+
+            return result;
+        }
 
         [WebApiAuthenticate(Permission = Permissions.Customer.Delete)]
-        protected override void Delete(Address entity)
-		{
-			int entityId = (entity == null ? 0 : entity.Id);
+        public async Task<IHttpActionResult> Delete(int key)
+        {
+            var result = await DeleteAsync(key, entity =>
+            {
+                var entityId = entity?.Id ?? 0;
 
-			Service.DeleteAddress(entity);
-			PublishOrderUpdated(entityId);
-		}
+                Service.DeleteAddress(entity);
+                PublishOrderUpdated(entityId);
+            });
 
-		[WebApiQueryable]
+            return result;
+        }
+
+        #region Navigation properties
+
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Address> GetAddress(int key)
-		{
-			return GetSingleResult(key);
-		}
+        public IHttpActionResult GetCountry(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.Country));
+        }
 
-		// Navigation properties.
-
-		[WebApiQueryable]
+        [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<Country> GetCountry(int key)
-		{
-			return GetRelatedEntity(key, x => x.Country);
-		}
+        public IHttpActionResult GetStateProvince(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.StateProvince));
+        }
 
-		[WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Customer.Read)]
-        public SingleResult<StateProvince> GetStateProvince(int key)
-		{
-			return GetRelatedEntity(key, x => x.StateProvince);
-		}
-	}
+        #endregion
+
+        private void PublishOrderUpdated(int addressId)
+        {
+            if (addressId == 0)
+            {
+                return;
+            }
+
+            this.ProcessEntity(() =>
+            {
+                var orders = _orderRepository.Value.TableUntracked
+                    .Where(x => x.BillingAddressId == addressId || x.ShippingAddressId == addressId)
+                    .ToList();
+
+                foreach (var order in orders)
+                {
+                    _eventPublisher.Value.PublishOrderUpdated(order);
+                }
+            });
+        }
+    }
 }

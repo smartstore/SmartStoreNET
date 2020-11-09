@@ -2,6 +2,7 @@
 @using Telerik.Web.Mvc.UI;
 @model ProductAttributeOptionModel
 
+@Html.AntiForgeryToken()
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProductVariantAttributeId)

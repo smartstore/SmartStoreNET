@@ -11,11 +11,11 @@ namespace SmartStore.ShippingByWeight.Models
         {
             AvailableCountries = new List<SelectListItem>();
             AvailableShippingMethods = new List<SelectListItem>();
-			AvailableStores = new List<SelectListItem>();
+            AvailableStores = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
-		public int AddStoreId { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
+        public int AddStoreId { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Country")]
         public int AddCountryId { get; set; }
@@ -44,16 +44,16 @@ namespace SmartStore.ShippingByWeight.Models
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.CalculatePerWeightUnit")]
         public bool CalculatePerWeightUnit { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.IncludeWeightOfFreeShippingProducts")]
-		public bool IncludeWeightOfFreeShippingProducts { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.IncludeWeightOfFreeShippingProducts")]
+        public bool IncludeWeightOfFreeShippingProducts { get; set; }
 
-		public string PrimaryStoreCurrencyCode { get; set; }
+        public string PrimaryStoreCurrencyCode { get; set; }
         public string BaseWeightIn { get; set; }
 
-		public int GridPageSize { get; set; }
+        public int GridPageSize { get; set; }
 
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableShippingMethods { get; set; }
-		public IList<SelectListItem> AvailableStores { get; set; }
+        public IList<SelectListItem> AvailableStores { get; set; }
     }
 }

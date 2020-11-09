@@ -1,8 +1,10 @@
 using System;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
+using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
@@ -12,8 +14,10 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Localization
 {
-	public static class LocalizationExtensions
+    public static class LocalizationExtensions
     {
+        #region GetLocalized BaseEntity
+
         /// <summary>
         /// Get localized property of an entity
         /// </summary>
@@ -28,6 +32,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, string>)invoker,
@@ -46,17 +51,18 @@ namespace SmartStore.Services.Localization
         /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
         /// <param name="detectEmptyHtml">When <c>true</c>, additionally checks whether the localized value contains empty HTML only and falls back to the default value if so.</param>
         /// <returns>Localized property</returns>
-        public static LocalizedValue<string> GetLocalized<T>(this T entity, 
-            Expression<Func<T, string>> keySelector, 
-            int languageId, 
-            bool returnDefaultValue = true, 
+        public static LocalizedValue<string> GetLocalized<T>(this T entity,
+            Expression<Func<T, string>> keySelector,
+            int languageId,
+            bool returnDefaultValue = true,
             bool ensureTwoPublishedLanguages = true,
-            bool detectEmptyHtml = false) 
+            bool detectEmptyHtml = false)
             where T : BaseEntity, ILocalizedEntity
         {
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 invoker,
@@ -88,6 +94,7 @@ namespace SmartStore.Services.Localization
         {
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, TProp>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 localeKey,
                 x => fallback,
@@ -119,6 +126,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue<T, string>(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 invoker,
@@ -151,11 +159,12 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, TProp>)invoker,
                 languageId,
-                returnDefaultValue, 
+                returnDefaultValue,
                 ensureTwoPublishedLanguages,
                 detectEmptyHtml);
         }
@@ -183,6 +192,7 @@ namespace SmartStore.Services.Localization
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
                 entity,
+                entity.Id,
                 entity.GetEntityName(),
                 invoker.Property.Name,
                 (Func<T, TProp>)invoker,
@@ -192,22 +202,27 @@ namespace SmartStore.Services.Localization
                 detectEmptyHtml);
         }
 
-		/// <summary>
-		/// Get localized property of an <see cref="ICategoryNode"/> instance
-		/// </summary>
-		/// <param name="node">Node</param>
-		/// <param name="keySelector">Key selector</param>
-		/// <returns>Localized property</returns>
-		public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
-		{
+        #endregion
+
+        #region GetLocalized ICategoryNode
+
+        /// <summary>
+        /// Get localized property of an <see cref="ICategoryNode"/> instance
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalized(this ICategoryNode node, Expression<Func<ICategoryNode, string>> keySelector)
+        {
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-				node,
-				"Category",
+                node,
+                node.Id,
+                "Category",
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
-				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage);
-		}
+                null);
+        }
 
         /// <summary>
         /// Get localized property of an <see cref="ICategoryNode"/> instance
@@ -220,11 +235,12 @@ namespace SmartStore.Services.Localization
         {
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-	            node,
-	            "Category",
+                node,
+                node.Id,
+                nameof(Category),
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
-	            languageId);
+                languageId);
         }
 
         /// <summary>
@@ -238,12 +254,88 @@ namespace SmartStore.Services.Localization
         {
             var invoker = keySelector.CompileFast();
             return EngineContext.Current.Resolve<LocalizedEntityHelper>().GetLocalizedValue(
-		        node,
-		        "Category",
+                node,
+                node.Id,
+                nameof(Category),
                 invoker.Property.Name,
                 (Func<ICategoryNode, string>)invoker,
-		        language);
+                language);
         }
+
+        #endregion
+
+        #region GetLocalized ISettings
+
+        /// <summary>
+        /// Get localized property of an <see cref="ISettings"/> implementation
+        /// </summary>
+        /// <param name="settings">The settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <returns>Localized property</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings,
+            Expression<Func<TSetting, string>> keySelector,
+            int? storeId = null,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where TSetting : class, ISettings
+        {
+            return GetLocalizedSetting(settings, keySelector, null, storeId, returnDefaultValue, ensureTwoPublishedLanguages, detectEmptyHtml);
+        }
+
+        /// <summary>
+        /// Get localized property of an <see cref="ISettings"/> implementation
+        /// </summary>
+        /// <param name="settings">The settings instance</param>
+        /// <param name="keySelector">Key selector</param>
+        /// <param name="requestLanguageIdOrObj">Language id, <see cref="Language"/> object instance or <c>null</c></param>
+        /// <returns>Localized property</returns>
+        public static LocalizedValue<string> GetLocalizedSetting<TSetting>(this TSetting settings,
+            Expression<Func<TSetting, string>> keySelector,
+            object requestLanguageIdOrObj, // Id or Language
+            int? storeId = null,
+            bool returnDefaultValue = true,
+            bool ensureTwoPublishedLanguages = true,
+            bool detectEmptyHtml = false)
+            where TSetting : class, ISettings
+        {
+            var helper = EngineContext.Current.Resolve<LocalizedEntityHelper>();
+            var invoker = keySelector.CompileFast();
+
+            if (storeId == null)
+            {
+                storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+            }
+
+            // Make fallback only when storeId is 0 and the paramter says so.
+            var localizedValue = GetValue(storeId.Value, storeId == 0 && returnDefaultValue);
+
+            if (storeId > 0 && string.IsNullOrEmpty(localizedValue.Value))
+            {
+                localizedValue = GetValue(0, returnDefaultValue);
+            }
+
+            return localizedValue;
+
+            LocalizedValue<string> GetValue(int id /* storeId */, bool doFallback)
+            {
+                return helper.GetLocalizedValue(
+                    settings,
+                    id,
+                    typeof(TSetting).Name,
+                    invoker.Property.Name,
+                    (Func<TSetting, string>)invoker,
+                    requestLanguageIdOrObj,
+                    doFallback,
+                    ensureTwoPublishedLanguages,
+                    detectEmptyHtml);
+            }
+        }
+
+        #endregion
+
+        #region GetLocalizedEnum
 
         /// <summary>
         /// Get localized value of enum
@@ -259,7 +351,7 @@ namespace SmartStore.Services.Localization
         {
             Guard.NotNull(workContext, nameof(workContext));
 
-			return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id, hint);
+            return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id, hint);
         }
 
         /// <summary>
@@ -281,8 +373,8 @@ namespace SmartStore.Services.Localization
                 throw new ArgumentException("T must be an enumerated type.");
             }
 
-            var resourceName = string.Format("Enums.{0}.{1}", 
-                typeof(T).ToString(), 
+            var resourceName = string.Format("Enums.{0}.{1}",
+                typeof(T).ToString(),
                 enumValue.ToString());
 
             if (hint)
@@ -300,6 +392,10 @@ namespace SmartStore.Services.Localization
 
             return result;
         }
+
+        #endregion
+
+        #region Plugin Localization
 
         /// <summary>
         /// Delete a locale resource
@@ -320,9 +416,9 @@ namespace SmartStore.Services.Localization
         /// <param name="localizationService">Localization service</param>
         /// <param name="languageService">Language service</param>
         /// <param name="resourceName">Resource name</param>
-        public static void DeletePluginLocaleResource(this BasePlugin plugin, 
-			ILocalizationService localizationService, 
-			ILanguageService languageService,
+        public static void DeletePluginLocaleResource(this BasePlugin plugin,
+            ILocalizationService localizationService,
+            ILanguageService languageService,
             string resourceName)
         {
             // actually plugin instance is not required
@@ -354,8 +450,8 @@ namespace SmartStore.Services.Localization
         {
             var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
             var languageService = EngineContext.Current.Resolve<ILanguageService>();
-             AddOrUpdatePluginLocaleResource(plugin, localizationService,
-                 languageService, resourceName, resourceValue);
+            AddOrUpdatePluginLocaleResource(plugin, localizationService,
+                languageService, resourceName, resourceValue);
         }
 
         /// <summary>
@@ -366,11 +462,11 @@ namespace SmartStore.Services.Localization
         /// <param name="languageService">Language service</param>
         /// <param name="resourceName">Resource name</param>
         /// <param name="resourceValue">Resource value</param>
-        public static void AddOrUpdatePluginLocaleResource(this BasePlugin plugin, 
-            ILocalizationService localizationService, 
-			ILanguageService languageService, 
-            string resourceName, 
-			string resourceValue)
+        public static void AddOrUpdatePluginLocaleResource(this BasePlugin plugin,
+            ILocalizationService localizationService,
+            ILanguageService languageService,
+            string resourceName,
+            string resourceValue)
         {
             // Actually plugin instance is not required
             if (plugin == null)
@@ -379,7 +475,7 @@ namespace SmartStore.Services.Localization
                 throw new ArgumentNullException("localizationService");
             if (languageService == null)
                 throw new ArgumentNullException("languageService");
-            
+
             foreach (var lang in languageService.GetAllLanguages(true))
             {
                 var lsr = localizationService.GetLocaleStringResourceByName(resourceName, lang.Id, false);
@@ -416,63 +512,63 @@ namespace SmartStore.Services.Localization
             }
         }
 
-		/// <summary>
-		/// Get localized property value of a plugin
-		/// </summary>
-		/// <typeparam name="T">Plugin</typeparam>
-		/// <param name="plugin">Plugin</param>
-		/// <param name="localizationService">Localization service</param>
-		/// <param name="propertyName">Name of the property</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <returns>Localized value</returns>
-		public static string GetLocalizedValue<T>(this T plugin, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
-			where T : IPlugin
-		{
-			if (plugin == null)
-				throw new ArgumentNullException(nameof(plugin));
+        /// <summary>
+        /// Get localized property value of a plugin
+        /// </summary>
+        /// <typeparam name="T">Plugin</typeparam>
+        /// <param name="plugin">Plugin</param>
+        /// <param name="localizationService">Localization service</param>
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <returns>Localized value</returns>
+        public static string GetLocalizedValue<T>(this T plugin, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+            where T : IPlugin
+        {
+            if (plugin == null)
+                throw new ArgumentNullException(nameof(plugin));
 
-			if (plugin.PluginDescriptor == null)
-				throw new ArgumentNullException("PluginDescriptor cannot be loaded");
+            if (plugin.PluginDescriptor == null)
+                throw new ArgumentNullException("PluginDescriptor cannot be loaded");
 
-			return plugin.PluginDescriptor.GetLocalizedValue(localizationService, propertyName, languageId, returnDefaultValue);
-		}
+            return plugin.PluginDescriptor.GetLocalizedValue(localizationService, propertyName, languageId, returnDefaultValue);
+        }
 
-		/// <summary>
-		/// Get localized property value of a plugin
-		/// </summary>
-		/// <param name="descriptor">Plugin descriptor</param>
-		/// <param name="localizationService">Localization service</param>
-		/// <param name="propertyName">Name of the property</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
-		/// <returns>Localized value</returns>
-		public static string GetLocalizedValue(this PluginDescriptor descriptor, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
-		{
-			if (localizationService == null)
-				throw new ArgumentNullException(nameof(localizationService));
+        /// <summary>
+        /// Get localized property value of a plugin
+        /// </summary>
+        /// <param name="descriptor">Plugin descriptor</param>
+        /// <param name="localizationService">Localization service</param>
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="languageId">Language identifier</param>
+        /// <param name="returnDefaultValue">A value indicating whether to return default value (if localized is not found)</param>
+        /// <returns>Localized value</returns>
+        public static string GetLocalizedValue(this PluginDescriptor descriptor, ILocalizationService localizationService, string propertyName, int languageId = 0, bool returnDefaultValue = true)
+        {
+            if (localizationService == null)
+                throw new ArgumentNullException(nameof(localizationService));
 
-			if (descriptor == null)
-				throw new ArgumentNullException(nameof(descriptor));
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
 
-			if (propertyName == null)
-				throw new ArgumentNullException(nameof(propertyName));
+            if (propertyName == null)
+                throw new ArgumentNullException(nameof(propertyName));
 
-			string systemName = descriptor.SystemName;
-			string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
-			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
+            string systemName = descriptor.SystemName;
+            string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
+            string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
-			if (String.IsNullOrEmpty(result) && returnDefaultValue)
-			{
-				var fastProp = FastProperty.GetProperty(descriptor.GetType(), propertyName);
-				if (fastProp != null)
-				{
-					result = fastProp.GetValue(descriptor) as string;
-				}
-			}
+            if (String.IsNullOrEmpty(result) && returnDefaultValue)
+            {
+                var fastProp = FastProperty.GetProperty(descriptor.GetType(), propertyName);
+                if (fastProp != null)
+                {
+                    result = fastProp.GetValue(descriptor) as string;
+                }
+            }
 
-			return result;
-		}
+            return result;
+        }
 
         /// <summary>
         /// Save localized plugin descriptor value
@@ -484,7 +580,7 @@ namespace SmartStore.Services.Localization
 		/// <param name="propertyName">Name of the property</param>
         /// <param name="value">Localized value</param>
         public static void SaveLocalizedValue<T>(this T plugin, ILocalizationService localizationService, int languageId,
-			string propertyName, string value) where T : IPlugin
+            string propertyName, string value) where T : IPlugin
         {
             if (plugin == null)
                 throw new ArgumentNullException("plugin");
@@ -492,7 +588,7 @@ namespace SmartStore.Services.Localization
             if (plugin.PluginDescriptor == null)
                 throw new ArgumentNullException("PluginDescriptor cannot be loaded");
 
-			plugin.PluginDescriptor.SaveLocalizedValue(localizationService, languageId, propertyName, value);
+            plugin.PluginDescriptor.SaveLocalizedValue(localizationService, languageId, propertyName, value);
         }
 
         /// <summary>
@@ -504,7 +600,7 @@ namespace SmartStore.Services.Localization
 		/// <param name="propertyName">Name of the property</param>
         /// <param name="value">Localized value</param>
         public static void SaveLocalizedValue(this PluginDescriptor descriptor, ILocalizationService localizationService, int languageId,
-			string propertyName, string value)
+            string propertyName, string value)
         {
             if (localizationService == null)
                 throw new ArgumentNullException(nameof(localizationService));
@@ -515,8 +611,8 @@ namespace SmartStore.Services.Localization
             if (descriptor == null)
                 throw new ArgumentNullException(nameof(descriptor));
 
-			if (propertyName == null)
-				throw new ArgumentNullException(nameof(propertyName));
+            if (propertyName == null)
+                throw new ArgumentNullException(nameof(propertyName));
 
             string systemName = descriptor.SystemName;
             string resourceName = string.Format("Plugins.{0}.{1}", propertyName, systemName);
@@ -557,8 +653,8 @@ namespace SmartStore.Services.Localization
         /// </summary>
         /// <param name="language">Language</param>
         /// <param name="xml">XML</param>
-        public static void ImportResourcesFromXml(this ILocalizationService service, 
-            Language language, 
+        public static void ImportResourcesFromXml(this ILocalizationService service,
+            Language language,
             string xml,
             string rootKey = null,
             bool sourceIsPlugin = false,
@@ -576,5 +672,7 @@ namespace SmartStore.Services.Localization
 
             service.ImportResourcesFromXml(language, xmlDoc, rootKey, sourceIsPlugin, mode, updateTouchedResources);
         }
+
+        #endregion
     }
 }

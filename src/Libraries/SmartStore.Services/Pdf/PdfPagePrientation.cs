@@ -2,10 +2,10 @@
 
 namespace SmartStore.Services.Pdf
 {
-	public enum PdfPagePrientation
-	{
-		Default,
-		Landscape,
-		Portrait
-	}
+    public enum PdfPagePrientation
+    {
+        Default,
+        Landscape,
+        Portrait
+    }
 }

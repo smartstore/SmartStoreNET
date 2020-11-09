@@ -6,18 +6,17 @@ using SmartStore.Core.Domain.Directory;
 namespace SmartStore
 {
     public static class NumericExtensions
-	{
-		#region int
+    {
+        #region int
 
-		public static int GetRange(this int id, int size, out int lower)
-		{
-            // max 1000 values per cache item
-            var range = (int)Math.Ceiling((decimal)id / size) * size;
+        public static (int lower, int upper) GetRange(this int id, int size = 500)
+        {
+            // Max [size] values per cache item
+            var lower = (int)Math.Floor((decimal)id / size) * size;
+            var upper = lower + (size - 1);
 
-			lower = range - (size - 1);
-
-			return range;
-		}
+            return (lower, upper);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int? ZeroToNull(this int? value)
@@ -37,16 +36,16 @@ namespace SmartStore
         /// <param name="decimals">Rounding decimal number</param>
         /// <returns>Tax percentage</returns>
         public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
-		{
-			if (exclTax == decimal.Zero)
-			{
-				return decimal.Zero;
-			}
+        {
+            if (exclTax == decimal.Zero)
+            {
+                return decimal.Zero;
+            }
 
-			var result = ((inclTax / exclTax) - 1.0M) * 100.0M;
+            var result = ((inclTax / exclTax) - 1.0M) * 100.0M;
 
-			return (decimals.HasValue ? Math.Round(result, decimals.Value) : result);
-		}
+            return (decimals.HasValue ? Math.Round(result, decimals.Value) : result);
+        }
 
         /// <summary>
         /// Converts to smallest currency uint, e.g. cents
@@ -55,9 +54,9 @@ namespace SmartStore
         /// <returns>Smallest currency unit</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ToSmallestCurrencyUnit(this decimal value, MidpointRounding midpoint = MidpointRounding.AwayFromZero)
-		{
-			return Convert.ToInt32(Math.Round(value * 100, 0, midpoint));
-		}
+        {
+            return Convert.ToInt32(Math.Round(value * 100, 0, midpoint));
+        }
 
         /// <summary>
         /// Round decimal to the nearest multiple of denomination
@@ -68,14 +67,14 @@ namespace SmartStore
         /// <returns>Rounded value</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal RoundToNearest(this decimal value, decimal denomination, MidpointRounding midpoint = MidpointRounding.AwayFromZero)
-		{
-			if (denomination == decimal.Zero)
-			{
-				return value;
-			}
+        {
+            if (denomination == decimal.Zero)
+            {
+                return value;
+            }
 
-			return Math.Round(value / denomination, midpoint) * denomination;
-		}
+            return Math.Round(value / denomination, midpoint) * denomination;
+        }
 
         /// <summary>
         /// Round decimal up or down to the nearest multiple of denomination
@@ -140,10 +139,10 @@ namespace SmartStore
         /// <returns>Rounded value</returns>
         public static decimal RoundIfEnabledFor(this decimal value, Currency currency)
         {
-			if (currency == null)
-				throw new ArgumentNullException(nameof(currency));
+            if (currency == null)
+                throw new ArgumentNullException(nameof(currency));
 
-			if (currency.RoundOrderItemsEnabled)
+            if (currency.RoundOrderItemsEnabled)
             {
                 return Math.Round(value, currency.RoundNumDecimals);
             }
@@ -159,10 +158,10 @@ namespace SmartStore
         /// <returns>Rounded and formated value</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant(this decimal value, int decimals = 2)
-		{
-			return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);
-		}
+        {
+            return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

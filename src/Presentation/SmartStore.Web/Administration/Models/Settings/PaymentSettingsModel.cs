@@ -6,10 +6,10 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class PaymentSettingsModel : ModelBase
-	{
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Payment.CapturePaymentReason")]
-		public CapturePaymentReason? CapturePaymentReason { get; set; }
-		public IList<SelectListItem> AvailableCapturePaymentReasons { get; set; }
-	}
+    public class PaymentSettingsModel : ModelBase
+    {
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Payment.CapturePaymentReason")]
+        public CapturePaymentReason? CapturePaymentReason { get; set; }
+        public IList<SelectListItem> AvailableCapturePaymentReasons { get; set; }
+    }
 }

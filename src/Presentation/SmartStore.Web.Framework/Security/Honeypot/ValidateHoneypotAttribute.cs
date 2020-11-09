@@ -7,32 +7,32 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Security
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-	public class ValidateHoneypotAttribute : FilterAttribute, IAuthorizationFilter
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
+    public class ValidateHoneypotAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public ValidateHoneypotAttribute()
-		{
-			Logger = NullLogger.Instance;
-		}
+        public ValidateHoneypotAttribute()
+        {
+            Logger = NullLogger.Instance;
+        }
 
-		public SecuritySettings SecuritySettings { get; set; }
-		public ILogger Logger { get; set; }
-		public Localizer T { get; set; }
-		public Lazy<IWebHelper> WebHelper { get; set; }
+        public SecuritySettings SecuritySettings { get; set; }
+        public ILogger Logger { get; set; }
+        public Localizer T { get; set; }
+        public Lazy<IWebHelper> WebHelper { get; set; }
 
-		public void OnAuthorization(AuthorizationContext filterContext)
-		{
-			if (!SecuritySettings.EnableHoneypotProtection)
-				return;
+        public void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if (!SecuritySettings.EnableHoneypotProtection)
+                return;
 
-			var isBot = Honeypot.IsBot(filterContext.HttpContext);
-			if (!isBot)
-				return;
-			
-			Logger.Warn("Honeypot detected a bot and rejected the request.");
+            var isBot = Honeypot.IsBot(filterContext.HttpContext);
+            if (!isBot)
+                return;
 
-			var redirectUrl = WebHelper.Value.GetThisPageUrl(true);
-			filterContext.Result = new RedirectResult(redirectUrl);
-		}
-	}
+            Logger.Warn("Honeypot detected a bot and rejected the request.");
+
+            var redirectUrl = WebHelper.Value.GetThisPageUrl(true);
+            filterContext.Result = new RedirectResult(redirectUrl);
+        }
+    }
 }

@@ -13,9 +13,9 @@ namespace SmartStore.Data.Tests.Forums
         [Test]
         public void Can_save_and_load_privatemessage()
         {
-			var store = StorePersistenceTests.GetTestStore();
-			var storeFromDb = SaveAndLoadEntity(store);
-			storeFromDb.ShouldNotBeNull();
+            var store = StorePersistenceTests.GetTestStore();
+            var storeFromDb = SaveAndLoadEntity(store);
+            storeFromDb.ShouldNotBeNull();
 
             var customer1 = GetTestCustomer();
             var customer1FromDb = SaveAndLoadEntity(customer1);
@@ -35,7 +35,7 @@ namespace SmartStore.Data.Tests.Forums
                 CreatedOnUtc = DateTime.UtcNow,
                 FromCustomerId = customer1FromDb.Id,
                 ToCustomerId = customer2FromDb.Id,
-				StoreId = store.Id
+                StoreId = store.Id
             };
 
             var fromDb = SaveAndLoadEntity(privateMessage);

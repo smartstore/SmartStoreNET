@@ -6,8 +6,10 @@
 
 	Html.SmartStore().Window()
 		.Name("cookie-manager-window")
-		.CloseOnEscapePress(false)
-		.CloseOnBackdropClick(false)
+		.BodyHtmlAttributes(new { @class = "p-1 pb-md-0 px-md-3" })
+		.CloseOnEscapePress(!Model.ModalCookieConsent)
+		.CloseOnBackdropClick(!Model.ModalCookieConsent)
+		.ShowClose(!Model.ModalCookieConsent)
 		.RenderAtPageEnd(false)
 		.Content(DialogBody())
 		.FooterContent(Footer())
@@ -16,7 +18,7 @@
 
 @helper DialogBody()
 {
-    var requiredCookieInfos = new List<CookieInfo>();
+	var requiredCookieInfos = new List<CookieInfo>();
 	var analyticsCookieInfos = new List<CookieInfo>();
 	var thirdPartyCookieInfos = new List<CookieInfo>();
 
@@ -27,127 +29,124 @@
 		thirdPartyCookieInfos = Model.CookiesInfos.Where(x => x.CookieType == CookieType.ThirdParty).ToList();
 	}
 
-    using (Ajax.BeginForm("SetCookieManagerConsent", "Common", null, new AjaxOptions
-    {
-        HttpMethod = "POST",
-        OnComplete = "OnConsented"
-    }, new
-    {
-        id = "cookie-manager-consent"
-    }))
-    {
+	using (Ajax.BeginForm("SetCookieManagerConsent", "Common", null, new AjaxOptions
+	{
+		HttpMethod = "POST",
+		OnComplete = "OnConsented"
+	}, new
+	{
+		id = "cookie-manager-consent"
+	}))
+	{
 		@Html.HiddenFor(x => x.AcceptAll)
 
+		if (!Model.ModalCookieConsent)
+		{
+			<button type="button" class="cm-close close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+		}
+
 		<div id="cookie-manager" class="container mt-3">
-			<div class="row mb-2">
+			<div class="cm-header row mb-2">
 				<div class="col">
-					<h4>
+					<h4 class="cm-title">
 						@T("CookieManager.Dialog.Heading")
 					</h4>
-					<p>
+					<p class="cm-intro">
 						@T("CookieManager.Dialog.Intro", Url.Action("Info", "Customer"), Url.Topic("PrivacyInfo"))
 					</p>
 				</div>
 			</div>
 
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
-					<label class="switch">
-						@Html.CheckBoxFor(x => x.RequiredConsent, new { disabled = "disabled" })
-						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
-					</label>
-				</div>
-				<div class="col">
-					<h5>
+			<div class="cm-consent">
+				<div class="row nav-toggler align-items-center no-gutters px-0">
+					<div class="cm-consent-switch col col-auto">
+						<label class="switch">
+							@Html.CheckBoxFor(x => x.RequiredConsent, new { disabled = "disabled" })
+							<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
+						</label>
+					</div>
+					<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#required-cookies" aria-controls="required-cookies" aria-expanded="false">
 						@T("CookieManager.Dialog.Required.Heading")
+						<i class="fas fa-angle-down collapse-chevron"></i>
 					</h5>
-					<p class="mb-1">
+				</div>
+
+				<div id="required-cookies" class="collapse nav-collapse" data-parent="#cookie-manager">
+					<p class="cm-consent-intro">
 						@T("CookieManager.Dialog.Required.Intro")
 					</p>
-					<div>
-						@if (requiredCookieInfos.Count > 0)
-						{
-							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-required" aria-expanded="false" aria-controls="collapse-required">@T("CookieManager.Dialog.Show")</a>
-                        }
-					</div>
+
 					@if (requiredCookieInfos.Count > 0)
 					{
-						<div id="collapse-required" class="collapse" data-parent="#cookie-manager">
-							<table class="table table-striped mt-2">
-								@foreach(var info in requiredCookieInfos)
-								{
-									<tr>
-										<th scope="row">@info.Name</th>
-										<td>@info.Description</td>
-									</tr>
-								}
-							</table>
-						</div>
+						<table class="cm-info-table table table-light">
+							@foreach (var info in requiredCookieInfos)
+							{
+								<tr>
+									<th scope="row">@info.Name</th>
+									<td>@info.Description</td>
+								</tr>
+							}
+						</table>
 					}
 				</div>
 			</div>
 
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
-					<label class="switch">
-						@Html.EditorFor(x => x.AnalyticsConsent)
-						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
-					</label>
-				</div>
-				<div class="col">
-					<h5>
+			<div class="cm-consent">
+				<div class="row nav-toggler align-items-center no-gutters px-0">
+					<div class="cm-consent-switch col col-auto">
+						<label class="switch">
+							@Html.EditorFor(x => x.AnalyticsConsent)
+							<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
+						</label>
+					</div>
+					<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#analytics-cookies" aria-controls="analytics-cookies" aria-expanded="false">
 						@T("CookieManager.Dialog.Analytics.Heading")
+						<i class="fas fa-angle-down collapse-chevron"></i>
 					</h5>
-					<p class="mb-1">
+				</div>
+
+				<div id="analytics-cookies" class="collapse nav-collapse" data-parent="#cookie-manager">
+					<p class="cm-consent-intro">
 						@T("CookieManager.Dialog.Analytics.Intro")
 					</p>
-					<div>
-						@if (analyticsCookieInfos.Count > 0)
-						{
-							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-analytics" aria-expanded="false" aria-controls="collapse-analytics">@T("CookieManager.Dialog.Show")</a>
-						}
-					</div>
+
 					@if (analyticsCookieInfos.Count > 0)
 					{
-						<div id="collapse-analytics" class="collapse" data-parent="#cookie-manager">
-							<table class="table table-striped mt-2">
-								@foreach (var info in analyticsCookieInfos)
-                                {
-									<tr>
-										<th scope="row">@info.Name</th>
-										<td>@info.Description</td>
-									</tr>
-                                }
-							</table>
-						</div>
-                    }
+						<table class="cm-info-table table table-light">
+							@foreach (var info in analyticsCookieInfos)
+							{
+								<tr>
+									<th scope="row">@info.Name</th>
+									<td>@info.Description</td>
+								</tr>
+							}
+						</table>
+					}
 				</div>
 			</div>
-
-			<div class="row no-gutters mb-3">
-				<div class="col col-auto mr-3">
-					<label class="switch">
-						@Html.EditorFor(x => x.ThirdPartyConsent)
-						<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
-					</label>
-				</div>
-				<div class="col">
-					<h5>
-						@T("CookieManager.Dialog.ThirdParty.Heading")
-					</h5>
-					<p class="mb-1">
-						@T("CookieManager.Dialog.ThirdParty.Intro")
-					</p>
-					<div id="">
-						@if (thirdPartyCookieInfos.Count > 0)
-						{
-							<a href="#" class="mr-2" data-toggle="collapse" data-target="#collapse-third-party" aria-expanded="false" aria-controls="collapse-third-party">@T("CookieManager.Dialog.Show")</a>
-						}
+			@if (thirdPartyCookieInfos.Count > 0)
+			{
+				<div class="cm-consent">
+					<div class="row nav-toggler align-items-center no-gutters px-0">
+						<div class="cm-consent-switch col col-auto">
+							<label class="switch">
+								@Html.EditorFor(x => x.ThirdPartyConsent)
+								<span class="switch-toggle" data-on="@T("Common.On")" data-off="@T("Common.Off")"></span>
+							</label>
+						</div>
+						<h5 class="cm-consent-title collapsed col pl-3" data-toggle="collapse" data-target="#third-party-cookies" aria-controls="third-party-cookies" aria-expanded="false">
+							@T("CookieManager.Dialog.ThirdParty.Heading")
+							<i class="fas fa-angle-down collapse-chevron"></i>
+						</h5>
 					</div>
-					@if (thirdPartyCookieInfos.Count > 0)
-					{
-						<div id="collapse-third-party" class="collapse" data-parent="#cookie-manager">
-							<table class="table table-striped mt-2">
+
+					<div id="third-party-cookies" class="collapse nav-collapse" data-parent="#cookie-manager">
+						<p class="cm-consent-intro">
+							@T("CookieManager.Dialog.ThirdParty.Intro")
+						</p>
+
+
+							<table class="cm-info-table table table-light">
 								@foreach (var info in thirdPartyCookieInfos)
 								{
 									<tr>
@@ -155,25 +154,25 @@
 										<td>@info.Description</td>
 									</tr>
 								}
-							</table>
-						</div>
-                    }
+							</table>		
+					 
+					</div>
 				</div>
-			</div>
+			}
 		</div>
 	}
 }
 
 @helper Footer()
 {
-	<div class="container">
-		<div class="row sm-gutters">
-			<div class="col-6">
+	<div class="cm-footer container">
+		<div class="row">
+			<div class="col-6 pr-1">
 				<button type="submit" id="accept-selected" name="accept-selected" class="btn btn-block btn-secondary submit-consent">
 					@T("CookieManager.Dialog.Button.AcceptSelected")
 				</button>
 			</div>
-			<div class="col-6">
+			<div class="col-6 pl-1">
 				<button type="submit" id="accept-all" name="accept-all" class="btn btn-block btn-primary submit-consent">
 					@T("CookieManager.Dialog.Button.AcceptAll")
 				</button>
@@ -187,7 +186,6 @@
         $('#cookie-manager-window').modal('show');
 
         $(".submit-consent").on("click", function () {
-
             var acceptAll = $(this).attr("id") == "accept-all";
             var elem = $("#@Html.IdFor(x => x.AcceptAll)");
 			elem.val(acceptAll ? "True" : "False");

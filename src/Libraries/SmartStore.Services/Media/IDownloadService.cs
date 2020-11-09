@@ -17,27 +17,27 @@ namespace SmartStore.Services.Media
         /// <returns>Download</returns>
         Download GetDownloadById(int downloadId);
 
-		/// <summary>
-		/// Gets downloads by identifiers
-		/// </summary>
-		/// <param name="downloadIds">Download identifiers</param>
-		/// <returns>List of download entities</returns>
-		IList<Download> GetDownloadsByIds(int[] downloadIds);
+        /// <summary>
+        /// Gets downloads by identifiers
+        /// </summary>
+        /// <param name="downloadIds">Download identifiers</param>
+        /// <returns>List of download entities</returns>
+        IList<Download> GetDownloadsByIds(int[] downloadIds);
 
-		/// <summary>
-		/// Gets downloads assigned to an entity
-		/// </summary>
-		/// <param name="entity">Entity to get download for</param>
-		/// <returns>List of download entities sorted by FileVersion</returns>
-		IList<Download> GetDownloadsFor<TEntity>(TEntity entity) where TEntity : BaseEntity;
+        /// <summary>
+        /// Gets downloads assigned to an entity
+        /// </summary>
+        /// <param name="entity">Entity to get download for</param>
+        /// <returns>List of download entities sorted by FileVersion</returns>
+        IList<Download> GetDownloadsFor<TEntity>(TEntity entity, bool versionedFilesOnly = false) where TEntity : BaseEntity;
 
-		/// <summary>
-		/// Gets downloads by entity identifier
-		/// </summary>
-		/// <param name="entityId">Entity identifier</param>
-		/// <param name="entityName">Entity name</param>
-		/// <returns>List of download entities</returns>
-		IList<Download> GetDownloadsFor(int entityId, string entityName);
+        /// <summary>
+        /// Gets downloads by entity identifier
+        /// </summary>
+        /// <param name="entityId">Entity identifier</param>
+        /// <param name="entityName">Entity name</param>
+        /// <returns>List of download entities</returns>
+        IList<Download> GetDownloadsFor(int entityId, string entityName, bool versionedFilesOnly = false);
 
         /// <summary>
 		/// Gets downloads by entity identifier & fileversion
@@ -81,13 +81,14 @@ namespace SmartStore.Services.Media
         /// <param name="download">Download entity.</param>
         /// <param name="stream">Data stream.</param>
         /// <param name="fileName">File name.</param>
-        void InsertDownload(Download download, Stream stream, string fileName);
+        /// <returns>The inserted <see cref="MediaFileInfo"/> object instance.</returns>
+        MediaFileInfo InsertDownload(Download download, Stream stream, string fileName);
 
-		/// <summary>
-		/// Updates the download.
-		/// </summary>
-		/// <param name="download">Download.</param>
-		void UpdateDownload(Download download);
+        /// <summary>
+        /// Updates the download.
+        /// </summary>
+        /// <param name="download">Download.</param>
+        void UpdateDownload(Download download);
 
         /// <summary>
         /// Gets a value indicating whether download is allowed
@@ -103,11 +104,11 @@ namespace SmartStore.Services.Media
         /// <returns>True if license download is allowed; otherwise, false.</returns>
         bool IsLicenseDownloadAllowed(OrderItem orderItem);
 
-		/// <summary>
-		/// Load binary data of a download
-		/// </summary>
-		/// <param name="download">Download</param>
-		/// <returns>Binary data</returns>
-		byte[] LoadDownloadBinary(Download download);
-	}
+        /// <summary>
+        /// Load binary data of a download
+        /// </summary>
+        /// <param name="download">Download</param>
+        /// <returns>Binary data</returns>
+        byte[] LoadDownloadBinary(Download download);
+    }
 }

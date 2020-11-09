@@ -42,7 +42,7 @@
 					sortUrl = Url.Action("SortPictures", "Product", "Admin"),
 					entityAssignmentUrl = Url.Action("ProductMediaFilesAdd", "Product", "Admin"),
 					uploadedFiles = Model.ProductMediaFiles as IEnumerable<IMediaFile>,
-					typeFilter = "image"
+					typeFilter = "image,video"
 				})
 				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
 			</td>
@@ -57,17 +57,19 @@ else
 }
 
 <script>
-		$(function () {
-			// Set MainPictureId for product
-            $(document).on("click", ".set-main-picture", function (e) {
-				var el = $(this).closest('.dz-image-preview');
-                var previewContainer = $(this).closest(".preview-container");
+    $(function () {
+		SmartStore.media.lazyLoadThumbnails($(".preview-container"));
 
-				// Insert choosen media file at beginning of the list
-				el.insertBefore(previewContainer.find('.dz-image-preview').first());
-				previewContainer.trigger("sort", { item: el });
+		// Set MainPictureId for product
+        $(document).on("click", ".set-main-picture", function (e) {
+			var el = $(this).closest('.dz-image-preview');
+            var previewContainer = $(this).closest(".preview-container");
 
-                return false;
-			});
+			// Insert choosen media file at beginning of the list
+			el.insertBefore(previewContainer.find('.dz-image-preview').first());
+			previewContainer.trigger("sort", { item: el });
+
+            return false;
 		});
+	});
 </script>

@@ -39,15 +39,9 @@ namespace SmartStore.Data.Utilities
             _currentPage = null;
         }
 
-        public int? MaxId
-        {
-            get => _maxId;
-        }
+        public int? MaxId => _maxId;
 
-        public int? CurrentPage 
-        {
-            get => _currentPage; 
-        }
+        public int? CurrentPage => _currentPage;
 
         public bool ReadNextPage(out IList<T> page)
         {
@@ -55,8 +49,8 @@ namespace SmartStore.Data.Utilities
         }
 
         public bool ReadNextPage<TShape>(
-            Expression<Func<T, TShape>> shaper, 
-            Func<TShape, int> idSelector, 
+            Expression<Func<T, TShape>> shaper,
+            Func<TShape, int> idSelector,
             out IList<TShape> page)
         {
             Guard.NotNull(shaper, nameof(shaper));

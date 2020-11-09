@@ -7,6 +7,8 @@
     var hasSystemProfiles = Model.Any(x => x.IsSystemProfile);
 }
 
+@Html.AntiForgeryToken()
+
 <div class="section-header">
     <div class="title">
 		<i class="fa fa-upload"></i>
@@ -48,9 +50,8 @@
 	.Render();
 }
 
-<script type="text/javascript">
-
-	jQuery(document).ready(function () {
+<script>
+    $(function() {
 		var dialog = $('#export-profile-dialog');
 
 		// show profile dialog
@@ -129,7 +130,7 @@
 
 
 		function showPrimaryButton(display) {
-			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);
+			$('#export-profile-dialog').find('.btn-primary').toggle(display);
 		}
 
 		function toggleProviderDescription() {
@@ -198,12 +199,14 @@
 			return item.text;
 		}
 
+        var token = $('input[name="__RequestVerificationToken"]').val();
 
 		// start export task
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
-			$(this).doPostData({
-				ask: @T("Admin.Common.AskToProceed").JsText
+            $(this).doPostData({
+                ask: @T("Admin.Common.AskToProceed").JsText,
+				data: { "__RequestVerificationToken": token }
 			});
 			return false;
 		});

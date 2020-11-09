@@ -2,7 +2,7 @@
 
 @using SmartStore.Web.Framework.Modelling;
 
-<img src="@(Model.RenderViewer ? Model.File.Url : Model.File.ThumbUrl)"
-     class="@("file-img".Grow(Model.ExtraCssClasses, " "))"
-     alt="@Model.Alt"
-     title="@Model.Title" />
+<img src="@Model.File.GetUrl(Model.RenderViewer ? 0 : Model.ThumbSize)"
+     @Html.Attrs(Model.HtmlAttributes.AppendCssClass("file-img"))
+     alt="@Model.Alt.NullEmpty()"
+     title="@Model.Title.NullEmpty()" />

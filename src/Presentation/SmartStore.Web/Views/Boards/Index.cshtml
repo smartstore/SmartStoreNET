@@ -3,7 +3,9 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(T("Forum.PageTitle.Default").Text);
+    Html.AddTitleParts(Model.MetaTitle);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 <div class="page forums-main">
     <div class="forums-main-header">

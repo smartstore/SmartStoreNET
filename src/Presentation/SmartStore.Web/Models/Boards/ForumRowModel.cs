@@ -12,8 +12,8 @@ namespace SmartStore.Web.Models.Boards
 
         public LocalizedValue<string> Name { get; set; }
         public LocalizedValue<string> Description { get; set; }
-		public string SeName { get; set; }
-		public int NumTopics { get; set; }
+        public string SeName { get; set; }
+        public int NumTopics { get; set; }
         public int NumPosts { get; set; }
         public int LastPostId { get; set; }
 

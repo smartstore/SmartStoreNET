@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Web.Mvc;
-using System.Web;
 using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using System.Web.Mvc;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework
@@ -52,7 +52,7 @@ namespace SmartStore.Web.Framework
                     foreach (var previouslyUsedId in previouslyUsedIds.Split(','))
                     {
                         queue.Enqueue(previouslyUsedId);
-                    }   
+                    }
                 }
             }
             return queue;

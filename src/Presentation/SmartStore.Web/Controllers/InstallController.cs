@@ -30,44 +30,44 @@ using SmartStore.Web.Models.Install;
 
 namespace SmartStore.Web.Controllers
 {
-	[SessionState(SessionStateBehavior.ReadOnly)]
+    [SessionState(SessionStateBehavior.ReadOnly)]
     public partial class InstallController : Controller
     {
         private readonly IInstallationLocalizationService _locService;
-		private readonly IAsyncState _asyncState;
+        private readonly IAsyncState _asyncState;
 
-		public InstallController(
+        public InstallController(
             IInstallationLocalizationService locService,
-			IAsyncState asyncState)
+            IAsyncState asyncState)
         {
-			_locService = locService;
-			_asyncState = asyncState;
+            _locService = locService;
+            _asyncState = asyncState;
 
-			Logger = NullLogger.Instance;
+            Logger = NullLogger.Instance;
         }
 
-		public ILogger Logger
-		{
-			get;
-			set;
-		}
+        public ILogger Logger
+        {
+            get;
+            set;
+        }
 
         private InstallationResult GetInstallResult()
         {
-			var result = _asyncState.Get<InstallationResult>();
-			if (result == null)
-			{
-				result = new InstallationResult();
-				_asyncState.Set<InstallationResult>(result);
-			}
-			return result;
+            var result = _asyncState.Get<InstallationResult>();
+            if (result == null)
+            {
+                result = new InstallationResult();
+                _asyncState.Set<InstallationResult>(result);
+            }
+            return result;
         }
 
         private InstallationResult UpdateResult(Action<InstallationResult> fn)
         {
             var result = GetInstallResult();
             fn(result);
-			_asyncState.Set<InstallationResult>(result);
+            _asyncState.Set<InstallationResult>(result);
 
             return result;
         }
@@ -91,7 +91,7 @@ namespace SmartStore.Web.Controllers
             }
             catch
             {
-				return false;
+                return false;
             }
         }
 
@@ -104,7 +104,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected string CreateDatabase(string connectionString, string collation)
         {
-			try
+            try
             {
                 //parse database name
                 var builder = new SqlConnectionStringBuilder(connectionString);
@@ -120,19 +120,19 @@ namespace SmartStore.Web.Controllers
                     conn.Open();
                     using (var command = new SqlCommand(query, conn))
                     {
-                        command.ExecuteNonQuery();  
-                    } 
+                        command.ExecuteNonQuery();
+                    }
                 }
 
                 return string.Empty;
             }
             catch (Exception ex)
             {
-				Logger.Error(ex);
-				return string.Format(_locService.GetResource("DatabaseCreationError"), ex.Message);
+                Logger.Error(ex);
+                return string.Format(_locService.GetResource("DatabaseCreationError"), ex.Message);
             }
         }
-        
+
         /// <summary>
         /// Create contents of connection strings used by the SqlConnection class
         /// </summary>
@@ -146,7 +146,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected string CreateConnectionString(
             bool trustedConnection,
-            string serverName, string databaseName, 
+            string serverName, string databaseName,
             string userName, string password, int timeout = 15)
         {
             var builder = new SqlConnectionStringBuilder();
@@ -189,7 +189,7 @@ namespace SmartStore.Web.Controllers
                 //ConfirmPassword = "admin",
                 InstallSampleData = false,
                 DatabaseConnectionString = "",
-                DataProvider = "sqlce", // "sqlserver",
+                DataProvider = "sqlserver", // "sqlce"
                 SqlAuthenticationType = "sqlauthentication",
                 SqlConnectionInfo = "sqlconnectioninfo_values",
                 SqlServerCreateDatabase = false,
@@ -197,40 +197,40 @@ namespace SmartStore.Web.Controllers
                 Collation = "SQL_Latin1_General_CP1_CI_AS",
             };
 
-			var curLanguage = _locService.GetCurrentLanguage();
-			var availableLanguages = _locService.GetAvailableLanguages();
+            var curLanguage = _locService.GetCurrentLanguage();
+            var availableLanguages = _locService.GetAvailableLanguages();
 
-			foreach (var lang in availableLanguages)
+            foreach (var lang in availableLanguages)
             {
                 model.AvailableLanguages.Add(new SelectListItem
                 {
-                    Value = Url.Action("ChangeLanguage", "Install", new { language = lang.Code}),
+                    Value = Url.Action("ChangeLanguage", "Install", new { language = lang.Code }),
                     Text = lang.Name,
-					Selected = curLanguage.Code == lang.Code,
+                    Selected = curLanguage.Code == lang.Code,
                 });
             }
-            
+
             foreach (var lang in _locService.GetAvailableAppLanguages())
             {
                 model.AvailableAppLanguages.Add(new SelectListItem
                 {
                     Value = lang.Culture,
                     Text = lang.Name,
-					Selected = lang.UniqueSeoCode.IsCaseInsensitiveEqual(curLanguage.Code)
+                    Selected = lang.UniqueSeoCode.IsCaseInsensitiveEqual(curLanguage.Code)
                 });
             }
 
-			if (!model.AvailableAppLanguages.Any(x => x.Selected))
-			{
-				model.AvailableAppLanguages.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual("en")).Selected = true;
-			}
+            if (!model.AvailableAppLanguages.Any(x => x.Selected))
+            {
+                model.AvailableAppLanguages.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual("en")).Selected = true;
+            }
 
-			model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS"), Selected = true });
-			model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB") });
+            model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS"), Selected = true });
+            model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB") });
 
             return View(model);
         }
-        
+
         [HttpPost]
         public JsonResult Progress()
         {
@@ -240,458 +240,458 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public async Task<JsonResult> Install(InstallModel model)
         {
-			var t = AsyncRunner.Run((c, ct, state) => InstallCore(c, (InstallModel)state), model);
-			return Json(await t);
+            var t = AsyncRunner.Run((c, ct, state) => InstallCore(c, (InstallModel)state), model);
+            return Json(await t);
         }
 
-		[NonAction]
-		protected virtual InstallationResult InstallCore(ILifetimeScope scope, InstallModel model)
-		{
-			UpdateResult(x =>
-			{
-				x.ProgressMessage = _locService.GetResource("Progress.CheckingRequirements");
-				x.Completed = false;
-				Logger.Info(x.ProgressMessage);
-			});
+        [NonAction]
+        protected virtual InstallationResult InstallCore(ILifetimeScope scope, InstallModel model)
+        {
+            UpdateResult(x =>
+            {
+                x.ProgressMessage = _locService.GetResource("Progress.CheckingRequirements");
+                x.Completed = false;
+                Logger.Info(x.ProgressMessage);
+            });
 
-			if (DataSettings.DatabaseIsInstalled())
-			{
-				return UpdateResult(x =>
-				{
-					x.Success = true;
-					x.RedirectUrl = Url.Action("Index", "Home");
-					Logger.Info("Application already installed");
-				});
-			}
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                return UpdateResult(x =>
+                {
+                    x.Success = true;
+                    x.RedirectUrl = Url.Action("Index", "Home");
+                    Logger.Info("Application already installed");
+                });
+            }
 
-			// set page timeout to 5 minutes
-			this.Server.ScriptTimeout = 300;
+            // set page timeout to 5 minutes
+            this.Server.ScriptTimeout = 300;
 
-			if (model.DatabaseConnectionString != null)
-			{
-				model.DatabaseConnectionString = model.DatabaseConnectionString.Trim();
-			}
+            if (model.DatabaseConnectionString != null)
+            {
+                model.DatabaseConnectionString = model.DatabaseConnectionString.Trim();
+            }
 
-			// SQL Server
-			if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
-			{
-				if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
-				{
-					// raw connection string
-					if (string.IsNullOrEmpty(model.DatabaseConnectionString))
-					{
-						UpdateResult(x => 
-						{
-							x.Errors.Add(_locService.GetResource("ConnectionStringRequired"));
-							Logger.Error(x.Errors.Last());
-						});
-					}
+            // SQL Server
+            if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // raw connection string
+                    if (string.IsNullOrEmpty(model.DatabaseConnectionString))
+                    {
+                        UpdateResult(x =>
+                        {
+                            x.Errors.Add(_locService.GetResource("ConnectionStringRequired"));
+                            Logger.Error(x.Errors.Last());
+                        });
+                    }
 
-					try
-					{
-						// try to create connection string
-						new SqlConnectionStringBuilder(model.DatabaseConnectionString);
-					}
-					catch (Exception ex)
-					{
-						UpdateResult(x => 
-						{
-							x.Errors.Add(_locService.GetResource("ConnectionStringWrongFormat"));
-							Logger.Error(ex, x.Errors.Last());
-						});
-					}
-				}
-				else
-				{
-					// values
-					if (string.IsNullOrEmpty(model.SqlServerName))
-					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("SqlServerNameRequired"));
-							Logger.Error(x.Errors.Last());
-						});
-					}
+                    try
+                    {
+                        // try to create connection string
+                        new SqlConnectionStringBuilder(model.DatabaseConnectionString);
+                    }
+                    catch (Exception ex)
+                    {
+                        UpdateResult(x =>
+                        {
+                            x.Errors.Add(_locService.GetResource("ConnectionStringWrongFormat"));
+                            Logger.Error(ex, x.Errors.Last());
+                        });
+                    }
+                }
+                else
+                {
+                    // values
+                    if (string.IsNullOrEmpty(model.SqlServerName))
+                    {
+                        UpdateResult(x =>
+                        {
+                            x.Errors.Add(_locService.GetResource("SqlServerNameRequired"));
+                            Logger.Error(x.Errors.Last());
+                        });
+                    }
 
-					if (string.IsNullOrEmpty(model.SqlDatabaseName))
-					{
-						UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("DatabaseNameRequired"));
-							Logger.Error(x.Errors.Last());
-						});
-					}
+                    if (string.IsNullOrEmpty(model.SqlDatabaseName))
+                    {
+                        UpdateResult(x =>
+                        {
+                            x.Errors.Add(_locService.GetResource("DatabaseNameRequired"));
+                            Logger.Error(x.Errors.Last());
+                        });
+                    }
 
-					// authentication type
-					if (model.SqlAuthenticationType.Equals("sqlauthentication", StringComparison.InvariantCultureIgnoreCase))
-					{
-						// SQL authentication
-						if (string.IsNullOrEmpty(model.SqlServerUsername))
-						{
-							UpdateResult(x =>
-							{
-								x.Errors.Add(_locService.GetResource("SqlServerUsernameRequired"));
-								Logger.Error(x.Errors.Last());
-							});
-						}
+                    // authentication type
+                    if (model.SqlAuthenticationType.Equals("sqlauthentication", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // SQL authentication
+                        if (string.IsNullOrEmpty(model.SqlServerUsername))
+                        {
+                            UpdateResult(x =>
+                            {
+                                x.Errors.Add(_locService.GetResource("SqlServerUsernameRequired"));
+                                Logger.Error(x.Errors.Last());
+                            });
+                        }
 
-						if (string.IsNullOrEmpty(model.SqlServerPassword))
-						{
-							UpdateResult(x =>
-							{
-								x.Errors.Add(_locService.GetResource("SqlServerPasswordRequired"));
-								Logger.Error(x.Errors.Last());
-							});
-						}
-					}
-				}
-			}
+                        if (string.IsNullOrEmpty(model.SqlServerPassword))
+                        {
+                            UpdateResult(x =>
+                            {
+                                x.Errors.Add(_locService.GetResource("SqlServerPasswordRequired"));
+                                Logger.Error(x.Errors.Last());
+                            });
+                        }
+                    }
+                }
+            }
 
 
-			// Consider granting access rights to the resource to the ASP.NET request identity. 
-			// ASP.NET has a base process identity 
-			// (typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
-			// and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
-			// If the application is impersonating via <identity impersonate="true"/>, 
-			// the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
-			var webHelper = scope.Resolve<IWebHelper>();
-			// validate permissions
-			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(webHelper);
-			foreach (string dir in dirsToCheck)
-			{
-				if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
-				{
-					UpdateResult(x =>
-					{
-						x.Errors.Add(string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), WindowsIdentity.GetCurrent().Name, dir));
-						Logger.Error(x.Errors.Last());
-					});
-				}
-			}
+            // Consider granting access rights to the resource to the ASP.NET request identity. 
+            // ASP.NET has a base process identity 
+            // (typically {MACHINE}\ASPNET on IIS 5 or Network Service on IIS 6 and IIS 7, 
+            // and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
+            // If the application is impersonating via <identity impersonate="true"/>, 
+            // the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
+            var webHelper = scope.Resolve<IWebHelper>();
+            // validate permissions
+            var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(webHelper);
+            foreach (string dir in dirsToCheck)
+            {
+                if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
+                {
+                    UpdateResult(x =>
+                    {
+                        x.Errors.Add(string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), WindowsIdentity.GetCurrent().Name, dir));
+                        Logger.Error(x.Errors.Last());
+                    });
+                }
+            }
 
-			var filesToCheck = FilePermissionHelper.GetFilesWrite(webHelper);
-			foreach (string file in filesToCheck)
-			{
-				if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
-				{
-					UpdateResult(x =>
-					{
-						x.Errors.Add(string.Format(_locService.GetResource("ConfigureFilePermissions"), WindowsIdentity.GetCurrent().Name, file));
-						Logger.Error(x.Errors.Last());
-					});
-				}
-			}
+            var filesToCheck = FilePermissionHelper.GetFilesWrite(webHelper);
+            foreach (string file in filesToCheck)
+            {
+                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
+                {
+                    UpdateResult(x =>
+                    {
+                        x.Errors.Add(string.Format(_locService.GetResource("ConfigureFilePermissions"), WindowsIdentity.GetCurrent().Name, file));
+                        Logger.Error(x.Errors.Last());
+                    });
+                }
+            }
 
-			if (GetInstallResult().HasErrors)
-			{
-				return UpdateResult(x =>
-				{
-					x.Completed = true;
-					x.Success = false;
-					x.RedirectUrl = null;
-					Logger.Error("Aborting installation.");
-				});
-			}
-			else
-			{
-				SmartObjectContext dbContext = null;
-				var shouldDeleteDbOnFailure = false;
+            if (GetInstallResult().HasErrors)
+            {
+                return UpdateResult(x =>
+                {
+                    x.Completed = true;
+                    x.Success = false;
+                    x.RedirectUrl = null;
+                    Logger.Error("Aborting installation.");
+                });
+            }
+            else
+            {
+                SmartObjectContext dbContext = null;
+                var shouldDeleteDbOnFailure = false;
 
-				try
-				{
-					string connectionString = null;
-					if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
-					{
-						//SQL Server
+                try
+                {
+                    string connectionString = null;
+                    if (model.DataProvider.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //SQL Server
 
-						if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
-						{
-							//raw connection string
+                        if (model.SqlConnectionInfo.Equals("sqlconnectioninfo_raw", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            //raw connection string
 
-							//we know that MARS option is required when using Entity Framework
-							//let's ensure that it's specified
-							var sqlCsb = new SqlConnectionStringBuilder(model.DatabaseConnectionString);
-							sqlCsb.MultipleActiveResultSets = true;
-							connectionString = sqlCsb.ToString();
-						}
-						else
-						{
-							// values
-							connectionString = CreateConnectionString(
-								model.SqlAuthenticationType == "windowsauthentication",
-								model.SqlServerName, model.SqlDatabaseName,
-								model.SqlServerUsername, model.SqlServerPassword);
-						}
+                            //we know that MARS option is required when using Entity Framework
+                            //let's ensure that it's specified
+                            var sqlCsb = new SqlConnectionStringBuilder(model.DatabaseConnectionString);
+                            sqlCsb.MultipleActiveResultSets = true;
+                            connectionString = sqlCsb.ToString();
+                        }
+                        else
+                        {
+                            // values
+                            connectionString = CreateConnectionString(
+                                model.SqlAuthenticationType == "windowsauthentication",
+                                model.SqlServerName, model.SqlDatabaseName,
+                                model.SqlServerUsername, model.SqlServerPassword);
+                        }
 
-						if (model.SqlServerCreateDatabase)
-						{
-							if (!SqlServerDatabaseExists(connectionString))
-							{
-								//create database
-								var collation = model.UseCustomCollation ? model.Collation : "";
-								var errorCreatingDatabase = CreateDatabase(connectionString, collation);
-								if (errorCreatingDatabase.HasValue())
-								{
-									return UpdateResult(x =>
-									{
-										x.Errors.Add(errorCreatingDatabase);
-										x.Completed = true;
-										x.Success = false;
-										x.RedirectUrl = null;
-										Logger.Error(errorCreatingDatabase);
-									});
-								}
-								else
-								{
-									// Database cannot be created sometimes. Weird! Seems to be Entity Framework issue
-									// that's just wait 3 seconds
-									Thread.Sleep(3000);
+                        if (model.SqlServerCreateDatabase)
+                        {
+                            if (!SqlServerDatabaseExists(connectionString))
+                            {
+                                //create database
+                                var collation = model.UseCustomCollation ? model.Collation : "";
+                                var errorCreatingDatabase = CreateDatabase(connectionString, collation);
+                                if (errorCreatingDatabase.HasValue())
+                                {
+                                    return UpdateResult(x =>
+                                    {
+                                        x.Errors.Add(errorCreatingDatabase);
+                                        x.Completed = true;
+                                        x.Success = false;
+                                        x.RedirectUrl = null;
+                                        Logger.Error(errorCreatingDatabase);
+                                    });
+                                }
+                                else
+                                {
+                                    // Database cannot be created sometimes. Weird! Seems to be Entity Framework issue
+                                    // that's just wait 3 seconds
+                                    Thread.Sleep(3000);
 
-									shouldDeleteDbOnFailure = true;
-								}
-							}
-						}
-						else
-						{
-							// check whether database exists
-							if (!SqlServerDatabaseExists(connectionString))
-							{
-								return UpdateResult(x =>
-								{
-									x.Errors.Add(_locService.GetResource("DatabaseNotExists"));
-									x.Completed = true;
-									x.Success = false;
-									x.RedirectUrl = null;
-									Logger.Error(x.Errors.Last());
-								});
-							}
-						}
-					}
-					else
-					{
-						// SQL CE
-						string databaseFileName = "SmartStore.Db.sdf";
-						string databasePath = @"|DataDirectory|\Tenants\{0}\{1}".FormatInvariant(DataSettings.Current.TenantName, databaseFileName);
-						connectionString = "Data Source=" + databasePath + "; Persist Security Info=False";
+                                    shouldDeleteDbOnFailure = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // check whether database exists
+                            if (!SqlServerDatabaseExists(connectionString))
+                            {
+                                return UpdateResult(x =>
+                                {
+                                    x.Errors.Add(_locService.GetResource("DatabaseNotExists"));
+                                    x.Completed = true;
+                                    x.Success = false;
+                                    x.RedirectUrl = null;
+                                    Logger.Error(x.Errors.Last());
+                                });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // SQL CE
+                        string databaseFileName = "SmartStore.Db.sdf";
+                        string databasePath = @"|DataDirectory|\Tenants\{0}\{1}".FormatInvariant(DataSettings.Current.TenantName, databaseFileName);
+                        connectionString = "Data Source=" + databasePath + "; Persist Security Info=False";
 
-						// drop database if exists
-						string databaseFullPath = HostingEnvironment.MapPath(DataSettings.Current.TenantPath.EnsureEndsWith("/")) + databaseFileName;
-						if (System.IO.File.Exists(databaseFullPath))
-						{
-							System.IO.File.Delete(databaseFullPath);
-						}
+                        // drop database if exists
+                        string databaseFullPath = HostingEnvironment.MapPath(DataSettings.Current.TenantPath.EnsureEndsWith("/")) + databaseFileName;
+                        if (System.IO.File.Exists(databaseFullPath))
+                        {
+                            System.IO.File.Delete(databaseFullPath);
+                        }
 
-						shouldDeleteDbOnFailure = true;
-					}
+                        shouldDeleteDbOnFailure = true;
+                    }
 
-					// save settings
-					var dataProvider = model.DataProvider;
-					var settings = DataSettings.Current;
-					settings.AppVersion = SmartStoreVersion.Version;
-					settings.DataProvider = dataProvider;
-					settings.DataConnectionString = connectionString;
-					settings.Save();
+                    // save settings
+                    var dataProvider = model.DataProvider;
+                    var settings = DataSettings.Current;
+                    settings.AppVersion = SmartStoreVersion.Version;
+                    settings.DataProvider = dataProvider;
+                    settings.DataConnectionString = connectionString;
+                    settings.Save();
 
-					// init data provider
-					var dataProviderInstance = scope.Resolve<IEfDataProvider>();
+                    // init data provider
+                    var dataProviderInstance = scope.Resolve<IEfDataProvider>();
 
-					// Although obsolete we have no other chance than using this here.
-					// Delegating this to DbConfiguration is not possible during installation.
+                    // Although obsolete we have no other chance than using this here.
+                    // Delegating this to DbConfiguration is not possible during installation.
 #pragma warning disable 618
-					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
+                    Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
 #pragma warning restore 618
 
-					// resolve SeedData instance from primary language
-					var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);
-					if (lazyLanguage == null)
-					{
-						return UpdateResult(x =>
-						{
-							x.Errors.Add(_locService.GetResource("Install.LanguageNotRegistered").FormatInvariant(model.PrimaryLanguage));
-							x.Completed = true;
-							x.Success = false;
-							x.RedirectUrl = null;
-							Logger.Error(x.Errors.Last());
-						});
-					}
+                    // resolve SeedData instance from primary language
+                    var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);
+                    if (lazyLanguage == null)
+                    {
+                        return UpdateResult(x =>
+                        {
+                            x.Errors.Add(_locService.GetResource("Install.LanguageNotRegistered").FormatInvariant(model.PrimaryLanguage));
+                            x.Completed = true;
+                            x.Success = false;
+                            x.RedirectUrl = null;
+                            Logger.Error(x.Errors.Last());
+                        });
+                    }
 
-					// create the DataContext
-					dbContext = new SmartObjectContext();
+                    // create the DataContext
+                    dbContext = new SmartObjectContext();
 
-					// AuditableHook must run during install
-					dbContext.DbHookHandler = new DefaultDbHookHandler(new[] 
-					{
-						new Lazy<IDbHook, HookMetadata>(() => new AuditableHook(), HookMetadata.Create<AuditableHook>(typeof(IAuditable), true), false)
-					});
+                    // AuditableHook must run during install
+                    dbContext.DbHookHandler = new DefaultDbHookHandler(new[]
+                    {
+                        new Lazy<IDbSaveHook, HookMetadata>(() => new AuditableHook(), HookMetadata.Create<AuditableHook, SmartObjectContext>(typeof(IAuditable), true), false)
+                    });
 
-					// IMPORTANT: Migration would run way too early otherwise
-					Database.SetInitializer<SmartObjectContext>(null);
+                    // IMPORTANT: Migration would run way too early otherwise
+                    Database.SetInitializer<SmartObjectContext>(null);
 
-					// create Language domain object from lazyLanguage
-					var languages = dbContext.Set<Language>();
-					var primaryLanguage = languages.Create(); // create a proxied type, resources cannot be saved otherwise
-					primaryLanguage.Name = lazyLanguage.Metadata.Name;
-					primaryLanguage.LanguageCulture = lazyLanguage.Metadata.Culture;
-					primaryLanguage.UniqueSeoCode = lazyLanguage.Metadata.UniqueSeoCode;
-					primaryLanguage.FlagImageFileName = lazyLanguage.Metadata.FlagImageFileName;
+                    // create Language domain object from lazyLanguage
+                    var languages = dbContext.Set<Language>();
+                    var primaryLanguage = languages.Create(); // create a proxied type, resources cannot be saved otherwise
+                    primaryLanguage.Name = lazyLanguage.Metadata.Name;
+                    primaryLanguage.LanguageCulture = lazyLanguage.Metadata.Culture;
+                    primaryLanguage.UniqueSeoCode = lazyLanguage.Metadata.UniqueSeoCode;
+                    primaryLanguage.FlagImageFileName = lazyLanguage.Metadata.FlagImageFileName;
 
-					// Build the seed configuration model
-					var seedConfiguration = new SeedDataConfiguration
-					{
-						DefaultUserName = model.AdminEmail,
-						DefaultUserPassword = model.AdminPassword,
-						SeedSampleData = model.InstallSampleData,
-						Data = lazyLanguage.Value,
-						Language = primaryLanguage,
-						StoreMediaInDB = model.MediaStorage == "db",
-						ProgressMessageCallback = msg => UpdateResult(x => x.ProgressMessage = _locService.GetResource(msg))
-					};
+                    // Build the seed configuration model
+                    var seedConfiguration = new SeedDataConfiguration
+                    {
+                        DefaultUserName = model.AdminEmail,
+                        DefaultUserPassword = model.AdminPassword,
+                        SeedSampleData = model.InstallSampleData,
+                        Data = lazyLanguage.Value,
+                        Language = primaryLanguage,
+                        StoreMediaInDB = model.MediaStorage == "db",
+                        ProgressMessageCallback = msg => UpdateResult(x => x.ProgressMessage = _locService.GetResource(msg))
+                    };
 
-					var seeder = new InstallDataSeeder(seedConfiguration, Logger);
-					Database.SetInitializer(new InstallDatabaseInitializer() { DataSeeders = new[] { seeder } });
+                    var seeder = new InstallDataSeeder(seedConfiguration, Logger);
+                    Database.SetInitializer(new InstallDatabaseInitializer() { DataSeeders = new[] { seeder } });
 
-					UpdateResult(x => 
-					{
-						x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase");
-						Logger.Info(x.ProgressMessage);
-					});
-					// ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally.
-					dbContext.Database.Initialize(true);
+                    UpdateResult(x =>
+                    {
+                        x.ProgressMessage = _locService.GetResource("Progress.BuildingDatabase");
+                        Logger.Info(x.ProgressMessage);
+                    });
+                    // ===>>> actually performs the installation by calling "InstallDataSeeder.Seed()" internally.
+                    dbContext.Database.Initialize(true);
 
                     // Install plugins.
                     PluginManager.MarkAllPluginsAsUninstalled();
-					var pluginFinder = scope.Resolve<IPluginFinder>();
-					var plugins = pluginFinder.GetPlugins<IPlugin>(false)
-						//.ToList()
-						.OrderBy(x => x.PluginDescriptor.Group)
-						.ThenBy(x => x.PluginDescriptor.DisplayOrder)
-						.ToList();
+                    var pluginFinder = scope.Resolve<IPluginFinder>();
+                    var plugins = pluginFinder.GetPlugins<IPlugin>(false)
+                        //.ToList()
+                        .OrderBy(x => x.PluginDescriptor.Group)
+                        .ThenBy(x => x.PluginDescriptor.DisplayOrder)
+                        .ToList();
 
-					var ignoredPluginsSetting = CommonHelper.GetAppSetting<string>("sm:PluginsIgnoredDuringInstallation");
-					var pluginsIgnoredDuringInstallation = String.IsNullOrEmpty(ignoredPluginsSetting) ?
-						new List<string>() :
-						ignoredPluginsSetting
-							.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-							.Select(x => x.Trim())
-						.ToList();
+                    var ignoredPluginsSetting = CommonHelper.GetAppSetting<string>("sm:PluginsIgnoredDuringInstallation");
+                    var pluginsIgnoredDuringInstallation = String.IsNullOrEmpty(ignoredPluginsSetting) ?
+                        new List<string>() :
+                        ignoredPluginsSetting
+                            .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim())
+                        .ToList();
 
-					if (pluginsIgnoredDuringInstallation.Count > 0)
-					{
-						plugins = plugins.Where(x => !pluginsIgnoredDuringInstallation.Contains(x.PluginDescriptor.SystemName, StringComparer.OrdinalIgnoreCase)).ToList();
-					}
-
-					var pluginsCount = plugins.Count;
-					var idx = 0;
-
-					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false))
+                    if (pluginsIgnoredDuringInstallation.Count > 0)
                     {
-						foreach (var plugin in plugins)
-						{
-							try
-							{
-								idx++;
-								UpdateResult(x => 
-								{
-									x.ProgressMessage = _locService.GetResource("Progress.InstallingPlugins").FormatInvariant(idx, pluginsCount);
-									Logger.InfoFormat("Installing plugin '{0}'.", plugin.PluginDescriptor.FriendlyName ?? plugin.PluginDescriptor.SystemName);
-								});
-								plugin.Install();
-								dbScope.Commit();
-							}
-							catch (Exception ex)
-							{
-								Logger.Error(ex);
+                        plugins = plugins.Where(x => !pluginsIgnoredDuringInstallation.Contains(x.PluginDescriptor.SystemName, StringComparer.OrdinalIgnoreCase)).ToList();
+                    }
 
-								if (plugin.PluginDescriptor.Installed)
-								{
-									PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
-								}
-							}
-						}
-					}
+                    var pluginsCount = plugins.Count;
+                    var idx = 0;
 
-					// Detect media file tracks (must come after plugins installation)
-					UpdateResult(x =>
-					{
-						x.ProgressMessage = _locService.GetResource("Progress.ProcessingMedia");
-						Logger.Info(x.ProgressMessage);
-					});
-					var mediaTracker = scope.Resolve<IMediaTracker>();
-					foreach (var album in scope.Resolve<IAlbumRegistry>().GetAlbumNames(true))
-					{
-						mediaTracker.DetectAllTracks(album, true);
-					}
+                    using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false))
+                    {
+                        foreach (var plugin in plugins)
+                        {
+                            try
+                            {
+                                idx++;
+                                UpdateResult(x =>
+                                {
+                                    x.ProgressMessage = _locService.GetResource("Progress.InstallingPlugins").FormatInvariant(idx, pluginsCount);
+                                    Logger.InfoFormat("Installing plugin '{0}'.", plugin.PluginDescriptor.FriendlyName ?? plugin.PluginDescriptor.SystemName);
+                                });
+                                plugin.Install();
+                                dbScope.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
 
-					UpdateResult(x => 
-					{
-						x.ProgressMessage = _locService.GetResource("Progress.Finalizing");
-						Logger.Info(x.ProgressMessage);
-					});
+                                if (plugin.PluginDescriptor.Installed)
+                                {
+                                    PluginManager.MarkPluginAsUninstalled(plugin.PluginDescriptor.SystemName);
+                                }
+                            }
+                        }
+                    }
 
-					// Do not ignore settings migrated by data seeder (e.g. default media storage provider).
-					scope.Resolve<ISettingService>().ClearCache();
+                    // Detect media file tracks (must come after plugins installation)
+                    UpdateResult(x =>
+                    {
+                        x.ProgressMessage = _locService.GetResource("Progress.ProcessingMedia");
+                        Logger.Info(x.ProgressMessage);
+                    });
+                    var mediaTracker = scope.Resolve<IMediaTracker>();
+                    foreach (var album in scope.Resolve<IAlbumRegistry>().GetAlbumNames(true))
+                    {
+                        mediaTracker.DetectAllTracks(album, true);
+                    }
 
-					// SUCCESS: Redirect to home page
-					return UpdateResult(x =>
-					{
-						x.Completed = true;
-						x.Success = true;
-						x.RedirectUrl = Url.Action("Index", "Home");
-						Logger.Info("Installation completed successfully");
-					});
-				}
-				catch (Exception ex)
-				{
-					Logger.Error(ex);
-					
-					// Clear provider settings if something got wrong
-					DataSettings.Delete();
+                    UpdateResult(x =>
+                    {
+                        x.ProgressMessage = _locService.GetResource("Progress.Finalizing");
+                        Logger.Info(x.ProgressMessage);
+                    });
 
-					// Delete Db if it was auto generated
-					if (dbContext != null && shouldDeleteDbOnFailure)
-					{
-						try
-						{
-							Logger.Debug("Deleting database");
-							dbContext.Database.Delete();
-						}
-						catch { }
-					}
+                    // Do not ignore settings migrated by data seeder (e.g. default media storage provider).
+                    scope.Resolve<ISettingService>().ClearCache();
 
-					var msg = ex.Message;
-					var realException = ex;
-					while (realException.InnerException != null)
-					{
-						realException = realException.InnerException;
-					}
+                    // SUCCESS: Redirect to home page
+                    return UpdateResult(x =>
+                    {
+                        x.Completed = true;
+                        x.Success = true;
+                        x.RedirectUrl = Url.Action("Index", "Home");
+                        Logger.Info("Installation completed successfully");
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
 
-					if (!Object.Equals(ex, realException))
-					{
-						msg += " (" + realException.Message + ")";
-					}
+                    // Clear provider settings if something got wrong
+                    DataSettings.Delete();
 
-					return UpdateResult(x =>
-					{
-						x.Errors.Add(string.Format(_locService.GetResource("SetupFailed"), msg));
-						x.Success = false;
-						x.Completed = true;
-						x.RedirectUrl = null;
-					});
-				}
-				finally
-				{
-					if (dbContext != null)
-					{
-						dbContext.Dispose();
-					}
-				}
-			}
-		}
+                    // Delete Db if it was auto generated
+                    if (dbContext != null && shouldDeleteDbOnFailure)
+                    {
+                        try
+                        {
+                            Logger.Debug("Deleting database");
+                            dbContext.Database.Delete();
+                        }
+                        catch { }
+                    }
+
+                    var msg = ex.Message;
+                    var realException = ex;
+                    while (realException.InnerException != null)
+                    {
+                        realException = realException.InnerException;
+                    }
+
+                    if (!Object.Equals(ex, realException))
+                    {
+                        msg += " (" + realException.Message + ")";
+                    }
+
+                    return UpdateResult(x =>
+                    {
+                        x.Errors.Add(string.Format(_locService.GetResource("SetupFailed"), msg));
+                        x.Success = false;
+                        x.Completed = true;
+                        x.RedirectUrl = null;
+                    });
+                }
+                finally
+                {
+                    if (dbContext != null)
+                    {
+                        dbContext.Dispose();
+                    }
+                }
+            }
+        }
 
         [HttpPost]
         public ActionResult Finalize(bool restart)
         {
-			_asyncState.Remove<InstallationResult>();
+            _asyncState.Remove<InstallationResult>();
 
             if (restart)
             {
@@ -717,7 +717,7 @@ namespace SmartStore.Web.Controllers
         {
             if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
-            
+
             // Restart application
             var webHelper = EngineContext.Current.Resolve<IWebHelper>();
             webHelper.RestartAppDomain();
@@ -734,34 +734,31 @@ namespace SmartStore.Web.Controllers
             this.Errors = new List<string>();
         }
 
-		public string ProgressMessage { get; set; }
+        public string ProgressMessage { get; set; }
         public bool Completed { get; set; }
         public bool Success { get; set; }
         public string RedirectUrl { get; set; }
         public IList<string> Errors { get; private set; }
-        public bool HasErrors
+        public bool HasErrors => this.Errors.Count > 0;
+
+        public InstallationResult Clone()
         {
-            get { return this.Errors.Count > 0; }
+            var clone = new InstallationResult
+            {
+                ProgressMessage = this.ProgressMessage,
+                Completed = this.Completed,
+                RedirectUrl = this.RedirectUrl,
+                Success = this.Success
+            };
+
+            clone.Errors.AddRange(this.Errors);
+
+            return clone;
         }
 
-		public InstallationResult Clone()
-		{
-			var clone = new InstallationResult 
-			{ 
-				ProgressMessage = this.ProgressMessage,
-				Completed = this.Completed,
-				RedirectUrl = this.RedirectUrl,
-				Success = this.Success
-			};
-
-			clone.Errors.AddRange(this.Errors);
-
-			return clone;
-		}
-
-		object ICloneable.Clone()
-		{
-			return this.Clone();
-		}
-	}
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+    }
 }

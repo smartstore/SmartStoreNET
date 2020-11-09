@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Security
     /// </summary>
     public class DefaultPermissionRecord
     {
-        public DefaultPermissionRecord() 
+        public DefaultPermissionRecord()
         {
             PermissionRecords = new List<PermissionRecord>();
         }

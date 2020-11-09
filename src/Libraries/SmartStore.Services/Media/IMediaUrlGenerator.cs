@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {
@@ -26,8 +27,8 @@ namespace SmartStore.Services.Media
         /// </param>
         /// <returns>The passed file's public URL.</returns>
         string GenerateUrl(
-            MediaFileInfo file, 
-            ProcessImageQuery imageQuery, 
+            MediaFileInfo file,
+            ProcessImageQuery imageQuery,
             string host = null,
             bool doFallback = true);
     }

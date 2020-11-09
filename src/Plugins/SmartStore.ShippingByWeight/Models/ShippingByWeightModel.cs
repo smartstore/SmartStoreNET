@@ -5,10 +5,10 @@ namespace SmartStore.ShippingByWeight.Models
 {
     public class ShippingByWeightModel : EntityModelBase
     {
-		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
-		public int StoreId { get; set; }
-		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
-		public string StoreName { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
+        public int StoreId { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Store")]
+        public string StoreName { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Country")]
         public int CountryId { get; set; }

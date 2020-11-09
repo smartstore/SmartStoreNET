@@ -8,13 +8,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Catalog
     public class ProductEmailAFriendValidatorTests : BaseValidatorTests
     {
         private ProductEmailAFriendValidator _validator;
-        
+
         [SetUp]
         public new void Setup()
         {
             _validator = new ProductEmailAFriendValidator();
         }
-        
+
         [Test]
         public void Should_have_error_when_friendEmail_is_null_or_empty()
         {

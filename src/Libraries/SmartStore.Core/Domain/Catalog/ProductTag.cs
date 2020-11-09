@@ -9,15 +9,15 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product tag.
     /// </summary>
 	[DataContract]
-	public partial class ProductTag : BaseEntity, ILocalizedEntity
+    public partial class ProductTag : BaseEntity, ILocalizedEntity
     {
-		private ICollection<Product> _products;
+        private ICollection<Product> _products;
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
 		[DataMember]
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published.
@@ -30,9 +30,9 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the products.
         /// </summary>
         public virtual ICollection<Product> Products
-		{
-			get { return _products ?? (_products = new HashSet<Product>()); }
-			protected set { _products = value; }
-		}
+        {
+            get => _products ?? (_products = new HashSet<Product>());
+            protected set => _products = value;
+        }
     }
 }

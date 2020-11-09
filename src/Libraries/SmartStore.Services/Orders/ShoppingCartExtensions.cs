@@ -61,11 +61,11 @@ namespace SmartStore.Services.Orders
         /// <param name="cyclePeriod">Cycle period</param>
         /// <param name="totalCycles">Total cycles</param>
         /// <returns>Error (if exists); otherwise, empty string</returns>
-		public static string GetRecurringCycleInfo(this IList<OrganizedShoppingCartItem> shoppingCart, 
-			ILocalizationService localizationService,
-            out int cycleLength, 
-			out RecurringProductCyclePeriod cyclePeriod, 
-			out int totalCycles)
+		public static string GetRecurringCycleInfo(this IList<OrganizedShoppingCartItem> shoppingCart,
+            ILocalizationService localizationService,
+            out int cycleLength,
+            out RecurringProductCyclePeriod cyclePeriod,
+            out int totalCycles)
         {
             string error = "";
 
@@ -85,7 +85,7 @@ namespace SmartStore.Services.Orders
                     throw new SmartException(string.Format("Product (Id={0}) cannot be loaded", sci.Item.ProductId));
                 }
 
-				string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
+                string conflictError = localizationService.GetResource("ShoppingCart.ConflictingShipmentSchedules");
                 if (product.IsRecurring)
                 {
                     // cycle length
@@ -123,7 +123,7 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-			if (_cycleLength.HasValue && _cyclePeriod.HasValue && _totalCycles.HasValue)
+            if (_cycleLength.HasValue && _cyclePeriod.HasValue && _totalCycles.HasValue)
             {
                 cycleLength = _cycleLength.Value;
                 cyclePeriod = _cyclePeriod.Value;
@@ -146,14 +146,14 @@ namespace SmartStore.Services.Orders
             return shoppingCart[0].Item.Customer;
         }
 
-		public static IEnumerable<ShoppingCartItem> Filter(this IEnumerable<ShoppingCartItem> shoppingCart, ShoppingCartType type, int? storeId = null)
-		{
-			var enumerable = shoppingCart.Where(x => x.ShoppingCartType == type);
+        public static IEnumerable<ShoppingCartItem> Filter(this IEnumerable<ShoppingCartItem> shoppingCart, ShoppingCartType type, int? storeId = null)
+        {
+            var enumerable = shoppingCart.Where(x => x.ShoppingCartType == type);
 
-			if (storeId.HasValue)
-				enumerable = enumerable.Where(x => x.StoreId == storeId.Value);
+            if (storeId.HasValue)
+                enumerable = enumerable.Where(x => x.StoreId == storeId.Value);
 
-			return enumerable;
-		}
+            return enumerable;
+        }
     }
 }

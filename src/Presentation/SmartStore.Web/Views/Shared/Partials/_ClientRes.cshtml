@@ -56,5 +56,7 @@
 <script>
 	window.Res = {
 		@foreach (var key in clientResKeys) { <text>"@(Html.Raw(key))": @(T(key).JsText),</text> }
-	};
+    };
+
+    window.ClientId = "@WorkContext.CurrentCustomer.CustomerGuid";
 </script>

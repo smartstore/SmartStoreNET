@@ -62,24 +62,18 @@ namespace SmartStore.Core
 
         public int PageNumber
         {
-            get 
-            {
-                return this.PageIndex + 1;
-            }
-            set
-            {
-                this.PageIndex = value - 1;
-            }
+            get => this.PageIndex + 1;
+            set => this.PageIndex = value - 1;
         }
 
         public int TotalPages
         {
-            get 
+            get
             {
-				if (this.PageSize == 0)
-					return 0;
+                if (this.PageSize == 0)
+                    return 0;
 
-				var total = this.TotalCount / this.PageSize;
+                var total = this.TotalCount / this.PageSize;
 
                 if (this.TotalCount % this.PageSize > 0)
                     total++;
@@ -88,53 +82,17 @@ namespace SmartStore.Core
             }
         }
 
-        public bool HasPreviousPage
-        {
-            get 
-            {
-                return this.PageIndex > 0; 
-            }
-        }
+        public bool HasPreviousPage => this.PageIndex > 0;
 
-        public bool HasNextPage
-        {
-            get 
-            {
-                return (this.PageIndex < (this.TotalPages - 1));
-            }
-        }
+        public bool HasNextPage => (this.PageIndex < (this.TotalPages - 1));
 
-        public int FirstItemIndex
-        {
-            get 
-            {
-                return (this.PageIndex * this.PageSize) + 1; 
-            }
-        }
+        public int FirstItemIndex => (this.PageIndex * this.PageSize) + 1;
 
-        public int LastItemIndex
-        {
-            get 
-            {
-                return Math.Min(this.TotalCount, ((this.PageIndex * this.PageSize) + this.PageSize));
-            }
-        }
+        public int LastItemIndex => Math.Min(this.TotalCount, ((this.PageIndex * this.PageSize) + this.PageSize));
 
-        public bool IsFirstPage
-        {
-            get 
-            { 
-                return (this.PageIndex <= 0);
-            }
-        }
+        public bool IsFirstPage => (this.PageIndex <= 0);
 
-        public bool IsLastPage
-        {
-            get 
-            {
-                return (this.PageIndex >= (this.TotalPages - 1)); 
-            }
-        }
+        public bool IsLastPage => (this.PageIndex >= (this.TotalPages - 1));
 
         public virtual IEnumerator GetEnumerator()
         {
@@ -145,19 +103,19 @@ namespace SmartStore.Core
     public class PagedList : PagedListBase
     {
         public PagedList(int pageIndex, int pageSize, int totalItemsCount)
-			: base(pageIndex, pageSize, totalItemsCount)
+            : base(pageIndex, pageSize, totalItemsCount)
         {
         }
 
-		public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize)
-		{
-			return new PagedList<T>(source, pageIndex, pageSize);
-		}
+        public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize)
+        {
+            return new PagedList<T>(source, pageIndex, pageSize);
+        }
 
-		public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
-		{
-			return new PagedList<T>(source, pageIndex, pageSize, totalCount);
-		}
-	}
+        public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
+        {
+            return new PagedList<T>(source, pageIndex, pageSize, totalCount);
+        }
+    }
 
 }

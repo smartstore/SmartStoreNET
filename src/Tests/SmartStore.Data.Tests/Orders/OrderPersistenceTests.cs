@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Affiliates;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -11,7 +12,6 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Orders
 {
@@ -24,7 +24,7 @@ namespace SmartStore.Data.Tests.Orders
             var order = new Order
             {
                 OrderGuid = Guid.NewGuid(),
-				StoreId = 1,
+                StoreId = 1,
                 Customer = GetTestCustomer(),
                 OrderStatus = OrderStatus.Complete,
                 ShippingStatus = ShippingStatus.Shipped,
@@ -46,40 +46,40 @@ namespace SmartStore.Data.Tests.Orders
                 OrderTax = 10.1M,
                 OrderDiscount = 11.1M,
                 OrderTotal = 12.1M,
-                RefundedAmount  = 13.1M,
+                RefundedAmount = 13.1M,
                 RewardPointsWereAdded = true,
                 CheckoutAttributeDescription = "CheckoutAttributeDescription1",
                 CheckoutAttributesXml = "CheckoutAttributesXml1",
                 CustomerLanguageId = 14,
-                CustomerIp="CustomerIp1",
-                AllowStoringCreditCardNumber= true,
-                CardType= "Visa",
+                CustomerIp = "CustomerIp1",
+                AllowStoringCreditCardNumber = true,
+                CardType = "Visa",
                 CardName = "John Smith",
                 CardNumber = "4111111111111111",
-                MaskedCreditCardNumber= "************1111",
-                CardCvv2= "123",
-                CardExpirationMonth= "12",
+                MaskedCreditCardNumber = "************1111",
+                CardCvv2 = "123",
+                CardExpirationMonth = "12",
                 CardExpirationYear = "2010",
                 AuthorizationTransactionId = "AuthorizationTransactionId1",
-                AuthorizationTransactionCode="AuthorizationTransactionCode1",
-                AuthorizationTransactionResult="AuthorizationTransactionResult1",
-                CaptureTransactionId= "CaptureTransactionId1",
+                AuthorizationTransactionCode = "AuthorizationTransactionCode1",
+                AuthorizationTransactionResult = "AuthorizationTransactionResult1",
+                CaptureTransactionId = "CaptureTransactionId1",
                 CaptureTransactionResult = "CaptureTransactionResult1",
                 SubscriptionTransactionId = "SubscriptionTransactionId1",
-                PurchaseOrderNumber= "PurchaseOrderNumber1",
-                PaidDateUtc= new DateTime(2010, 01, 01),
+                PurchaseOrderNumber = "PurchaseOrderNumber1",
+                PaidDateUtc = new DateTime(2010, 01, 01),
                 BillingAddress = GetTestBillingAddress(),
                 ShippingAddress = null,
                 ShippingMethod = "ShippingMethod1",
-                ShippingRateComputationMethodSystemName="ShippingRateComputationMethodSystemName1",
+                ShippingRateComputationMethodSystemName = "ShippingRateComputationMethodSystemName1",
                 Deleted = false,
-				CreatedOnUtc = new DateTime(2010, 01, 04),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 04),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
 
             var fromDb = SaveAndLoadEntity(order);
             fromDb.ShouldNotBeNull();
-			fromDb.StoreId.ShouldEqual(1);
+            fromDb.StoreId.ShouldEqual(1);
             fromDb.Customer.ShouldNotBeNull();
             fromDb.OrderStatus.ShouldEqual(OrderStatus.Complete);
             fromDb.ShippingStatus.ShouldEqual(ShippingStatus.Shipped);
@@ -141,8 +141,8 @@ namespace SmartStore.Data.Tests.Orders
                 Customer = GetTestCustomer(),
                 BillingAddress = GetTestBillingAddress(),
                 ShippingAddress = GetTestShippingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 04),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 04),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
 
             var fromDb = SaveAndLoadEntity(order);
@@ -168,8 +168,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01)
                 },
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
 
             var fromDb = SaveAndLoadEntity(order);
@@ -190,8 +190,8 @@ namespace SmartStore.Data.Tests.Orders
                 OrderGuid = Guid.NewGuid(),
                 Customer = testCustomer,
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
             order.DiscountUsageHistory.Add
                 (
@@ -219,8 +219,8 @@ namespace SmartStore.Data.Tests.Orders
                 OrderGuid = Guid.NewGuid(),
                 Customer = testCustomer,
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
             order.GiftCardUsageHistory.Add
                 (
@@ -247,8 +247,8 @@ namespace SmartStore.Data.Tests.Orders
                 OrderGuid = Guid.NewGuid(),
                 Customer = GetTestCustomer(),
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
             order.OrderNotes.Add
                 (
@@ -274,14 +274,14 @@ namespace SmartStore.Data.Tests.Orders
                 OrderGuid = Guid.NewGuid(),
                 Customer = GetTestCustomer(),
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
             order.OrderItems.Add
                 (
                     new OrderItem()
                     {
-						Product = GetTestProduct(),
+                        Product = GetTestProduct(),
                         Quantity = 1
                     }
                 );
@@ -292,7 +292,7 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.OrderItems.Count.ShouldEqual(1);
             fromDb.OrderItems.First().Quantity.ShouldEqual(1);
         }
-        
+
         [Test]
         public void Can_save_and_load_order_with_shipments()
         {
@@ -301,8 +301,8 @@ namespace SmartStore.Data.Tests.Orders
                 OrderGuid = Guid.NewGuid(),
                 Customer = GetTestCustomer(),
                 BillingAddress = GetTestBillingAddress(),
-				CreatedOnUtc = new DateTime(2010, 01, 01),
-				UpdatedOnUtc = new DateTime(2010, 01, 01)
+                CreatedOnUtc = new DateTime(2010, 01, 01),
+                UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
             order.Shipments.Add
                 (
@@ -322,16 +322,16 @@ namespace SmartStore.Data.Tests.Orders
             fromDb.Shipments.First().TrackingNumber.ShouldEqual("TrackingNumber 1");
         }
 
-		protected Product GetTestProduct()
-		{
-			return new Product
-			{
-				Name = "Product name 1",
-				CreatedOnUtc = new DateTime(2010, 01, 03),
-				UpdatedOnUtc = new DateTime(2010, 01, 04),
-			};
-		}
-        
+        protected Product GetTestProduct()
+        {
+            return new Product
+            {
+                Name = "Product name 1",
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+            };
+        }
+
         protected Affiliate GetTestAffiliate()
         {
             return new Affiliate
@@ -398,7 +398,7 @@ namespace SmartStore.Data.Tests.Orders
                 Country = GetTestCountry()
             };
         }
-        
+
         protected Country GetTestCountry()
         {
             return new Country

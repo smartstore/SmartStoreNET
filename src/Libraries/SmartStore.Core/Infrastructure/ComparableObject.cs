@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using SmartStore.Utilities;
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using SmartStore.ComponentModel;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public sealed class ObjectSignatureAttribute : Attribute
+    {
+    }
+
     /// <summary>
     /// Provides a standard base class for facilitating sophisticated comparison of objects.
     /// </summary>
@@ -18,7 +23,7 @@ namespace SmartStore
     {
         private readonly HashSet<string> _extraSignatureProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-		private static readonly ConcurrentDictionary<Type, string[]> _signaturePropertyNames = new ConcurrentDictionary<Type, string[]>();
+        private static readonly ConcurrentDictionary<Type, string[]> _signaturePropertyNames = new ConcurrentDictionary<Type, string[]>();
 
         public override bool Equals(object obj)
         {
@@ -46,19 +51,19 @@ namespace SmartStore
                 var signatureProperties = GetSignatureProperties().ToArray();
                 Type t = this.GetType();
 
-				var combiner = HashCodeCombiner.Start();
+                var combiner = HashCodeCombiner.Start();
 
-				// It's possible for two objects to return the same hash code based on
-				// identically valued properties, even if they're of two different types,
-				// so we include the object's type in the hash calculation
-				combiner.Add(t.GetHashCode());
+                // It's possible for two objects to return the same hash code based on
+                // identically valued properties, even if they're of two different types,
+                // so we include the object's type in the hash calculation
+                combiner.Add(t.GetHashCode());
 
                 foreach (var prop in signatureProperties)
                 {
                     var value = prop.GetValue(this);
 
                     if (value != null)
-						combiner.Add(value.GetHashCode());
+                        combiner.Add(value.GetHashCode());
                 }
 
                 if (signatureProperties.Length > 0)
@@ -113,17 +118,17 @@ namespace SmartStore
         /// </summary>
         public IEnumerable<FastProperty> GetSignatureProperties()
         {
-			var type = GetType();
-			var propertyNames = GetSignaturePropertyNamesCore();
+            var type = GetType();
+            var propertyNames = GetSignaturePropertyNamesCore();
 
-			foreach (var name in propertyNames)
-			{
-				var fastProperty = FastProperty.GetProperty(type, name);
-				if (fastProperty != null)
-				{
-					yield return fastProperty;
-				}
-			}
+            foreach (var name in propertyNames)
+            {
+                var fastProperty = FastProperty.GetProperty(type, name);
+                if (fastProperty != null)
+                {
+                    yield return fastProperty;
+                }
+            }
         }
 
         /// <summary>
@@ -133,22 +138,22 @@ namespace SmartStore
         protected virtual string[] GetSignaturePropertyNamesCore()
         {
             Type type = this.GetType();
-			string[] names;
+            string[] names;
 
-			if (!_signaturePropertyNames.TryGetValue(type, out names))
-			{
-				names = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-					.Where(p => Attribute.IsDefined(p, typeof(ObjectSignatureAttribute), true))
-					.Select(p => p.Name)
-					.ToArray();
+            if (!_signaturePropertyNames.TryGetValue(type, out names))
+            {
+                names = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => Attribute.IsDefined(p, typeof(ObjectSignatureAttribute), true))
+                    .Select(p => p.Name)
+                    .ToArray();
 
-				_signaturePropertyNames.TryAdd(type, names);
-			}
+                _signaturePropertyNames.TryAdd(type, names);
+            }
 
-			if (_extraSignatureProperties.Count == 0)
-			{
-				return names;
-			}
+            if (_extraSignatureProperties.Count == 0)
+            {
+                return names;
+            }
 
             return names.Union(_extraSignatureProperties).ToArray();
         }
@@ -163,11 +168,10 @@ namespace SmartStore
         {
             Guard.NotEmpty(propertyName, nameof(propertyName));
 
-			_extraSignatureProperties.Add(propertyName);
+            _extraSignatureProperties.Add(propertyName);
         }
 
     }
-
 
     /// <summary>
     /// Generic version of <see cref="ComparableObject" />.
@@ -198,5 +202,4 @@ namespace SmartStore
             return base.Equals(other);
         }
     }
-
 }

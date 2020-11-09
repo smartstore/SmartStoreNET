@@ -1,8 +1,6 @@
 namespace SmartStore.Data.Migrations
 {
     using System.Data.Entity.Migrations;
-    using System.Web.Hosting;
-    using Core.Data;
     using Setup;
 
     public partial class Wallet : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -12,33 +10,33 @@ namespace SmartStore.Data.Migrations
             CreateTable(
                 "dbo.WalletHistory",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        StoreId = c.Int(nullable: false),
-                        CustomerId = c.Int(nullable: false),
-                        OrderId = c.Int(),
-                        Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
-                        AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
-                        AmountBalancePerStore = c.Decimal(nullable: false, precision: 18, scale: 4),
-                        CreatedOnUtc = c.DateTime(nullable: false),
-                        Reason = c.Int(),
-                        Message = c.String(maxLength: 1000),
-                        AdminComment = c.String(maxLength: 4000),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    StoreId = c.Int(nullable: false),
+                    CustomerId = c.Int(nullable: false),
+                    OrderId = c.Int(),
+                    Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
+                    AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
+                    AmountBalancePerStore = c.Decimal(nullable: false, precision: 18, scale: 4),
+                    CreatedOnUtc = c.DateTime(nullable: false),
+                    Reason = c.Int(),
+                    Message = c.String(maxLength: 1000),
+                    AdminComment = c.String(maxLength: 4000),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Customer", t => t.CustomerId, cascadeDelete: true)
                 .ForeignKey("dbo.Order", t => t.OrderId)
                 .Index(t => new { t.StoreId, t.CreatedOnUtc }, name: "IX_StoreId_CreatedOn")
                 .Index(t => t.CustomerId)
                 .Index(t => t.OrderId);
-            
+
             AddColumn("dbo.Product", "IsSystemProduct", c => c.Boolean(nullable: false));
             AddColumn("dbo.Product", "SystemName", c => c.String(maxLength: 500));
             AddColumn("dbo.Order", "CreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.Order", "RefundedCreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             CreateIndex("dbo.Product", new[] { "SystemName", "IsSystemProduct" }, name: "Product_SystemName_IsSystemProduct");
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.WalletHistory", "OrderId", "dbo.Order");
@@ -54,10 +52,7 @@ namespace SmartStore.Data.Migrations
             DropTable("dbo.WalletHistory");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

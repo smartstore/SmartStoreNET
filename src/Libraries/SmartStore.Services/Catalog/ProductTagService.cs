@@ -21,39 +21,39 @@ namespace SmartStore.Services.Catalog
         /// </remarks>
         private const string PRODUCTTAG_COUNT_KEY = "producttag:count-{0}-{1}";
 
-		/// <summary>
-		/// Key pattern to clear cache
-		/// </summary>
-		private const string PRODUCTTAG_PATTERN_KEY = "producttag:*";
+        /// <summary>
+        /// Key pattern to clear cache
+        /// </summary>
+        private const string PRODUCTTAG_PATTERN_KEY = "producttag:*";
 
         private readonly IRepository<ProductTag> _productTagRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly IDataProvider _dataProvider;
-		private readonly IDbContext _dbContext;
-		private readonly CommonSettings _commonSettings;
-		private readonly ICacheManager _cacheManager;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IDataProvider _dataProvider;
+        private readonly IDbContext _dbContext;
+        private readonly CommonSettings _commonSettings;
+        private readonly ICacheManager _cacheManager;
 
         public ProductTagService(
-			IRepository<ProductTag> productTagRepository,
-			IRepository<StoreMapping> storeMappingRepository,
-			IDataProvider dataProvider,
-			IDbContext dbContext,
-			CommonSettings commonSettings,
-			ICacheManager cacheManager)
+            IRepository<ProductTag> productTagRepository,
+            IRepository<StoreMapping> storeMappingRepository,
+            IDataProvider dataProvider,
+            IDbContext dbContext,
+            CommonSettings commonSettings,
+            ICacheManager cacheManager)
         {
             _productTagRepository = productTagRepository;
-			_storeMappingRepository = storeMappingRepository;
-			_dataProvider = dataProvider;
-			_dbContext = dbContext;
-			_commonSettings = commonSettings;
-			_cacheManager = cacheManager;
+            _storeMappingRepository = storeMappingRepository;
+            _dataProvider = dataProvider;
+            _dbContext = dbContext;
+            _commonSettings = commonSettings;
+            _cacheManager = cacheManager;
 
-			QuerySettings = DbQuerySettings.Default;
-		}
+            QuerySettings = DbQuerySettings.Default;
+        }
 
-		public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
-		public virtual IList<ProductTag> GetAllProductTags(bool includeHidden = false)
+        public virtual IList<ProductTag> GetAllProductTags(bool includeHidden = false)
         {
             var query = _productTagRepository.Table;
 
@@ -233,16 +233,16 @@ namespace SmartStore.Services.Catalog
         }
 
         public virtual int GetProductCount(int productTagId, int storeId, bool includeHidden = false)
-		{
-			var dictionary = GetProductCount(storeId, includeHidden);
+        {
+            var dictionary = GetProductCount(storeId, includeHidden);
 
             if (dictionary.TryGetValue(productTagId, out var count))
             {
                 return count;
             }
 
-			return 0;
-		}
+            return 0;
+        }
 
         protected virtual Dictionary<int, int> GetProductCount(int storeId, bool includeHidden)
         {

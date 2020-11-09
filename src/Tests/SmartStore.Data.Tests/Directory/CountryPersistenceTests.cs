@@ -5,7 +5,7 @@ using SmartStore.Tests;
 
 namespace SmartStore.Data.Tests.Directory
 {
-	[TestFixture]
+    [TestFixture]
     public class CountryPersistenceTests : PersistenceTest
     {
         [Test]
@@ -22,7 +22,7 @@ namespace SmartStore.Data.Tests.Directory
                 SubjectToVat = true,
                 Published = true,
                 DisplayOrder = 1,
-				LimitedToStores = true
+                LimitedToStores = true
             };
 
             var fromDb = SaveAndLoadEntity(country);
@@ -36,7 +36,7 @@ namespace SmartStore.Data.Tests.Directory
             fromDb.SubjectToVat.ShouldEqual(true);
             fromDb.Published.ShouldEqual(true);
             fromDb.DisplayOrder.ShouldEqual(1);
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
         }
 
         [Test]

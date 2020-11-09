@@ -13,6 +13,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -86,7 +87,7 @@ namespace SmartStore.Admin.Controllers
 
         #region Discounts
 
-        // Ajax.
+        // AJAX.
         public ActionResult AllDiscounts(string label, string selectedIds, DiscountType? type)
         {
             var discounts = _discountService.GetAllDiscounts(type, null, true).ToList();
@@ -98,11 +99,11 @@ namespace SmartStore.Admin.Controllers
             }
 
             var data = discounts
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = selectedArr.Contains(x.Id)
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = selectedArr.Contains(x.Id)
                 })
                 .ToList();
 
@@ -162,6 +163,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Create)]
         public ActionResult Create(DiscountModel model, bool continueEditing)
         {
@@ -203,6 +205,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Update)]
         public ActionResult Edit(DiscountModel model, bool continueEditing)
         {
@@ -262,6 +265,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Discount.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -297,9 +301,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult UsageHistoryList(int discountId, GridCommand command)
         {
             var model = new GridModel<DiscountModel.DiscountUsageHistoryModel>();
-
             var discount = _discountService.GetDiscountById(discountId);
-
             var discountHistories = _discountService.GetAllDiscountUsageHistory(discount.Id, null, command.Page - 1, command.PageSize);
 
             model.Data = discountHistories.Select(x => new DiscountModel.DiscountUsageHistoryModel

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
-using SmartStore.PayPal.Settings;
-using SmartStore.Web.Framework.UI;
-
-namespace SmartStore.PayPal.Filters
+﻿namespace SmartStore.PayPal.Filters
 {
     //public class PayPalFilter : IActionFilter
     //{

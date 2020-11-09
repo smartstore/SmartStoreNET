@@ -5,7 +5,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Messages
 {
-	public class QueuedEmailListModel : ModelBase
+    public class QueuedEmailListModel : ModelBase
     {
         public QueuedEmailListModel()
         {
@@ -30,8 +30,8 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.System.QueuedEmails.List.LoadNotSent")]
         public bool SearchLoadNotSent { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.QueuedEmails.List.SendManually")]
-		public bool? SearchSendManually { get; set; }
+        [SmartResourceDisplayName("Admin.System.QueuedEmails.List.SendManually")]
+        public bool? SearchSendManually { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.List.MaxSentTries")]
         public int SearchMaxSentTries { get; set; }

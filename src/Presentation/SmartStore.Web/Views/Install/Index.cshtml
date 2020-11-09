@@ -90,7 +90,7 @@
 						OnComplete = "Installation.onComplete",
 						OnFailure = "Installation.onFailure",
 						OnSuccess = "Installation.onSuccess"
-					}, new { @class = "form-horizontal", autocomplete = "on" }))
+					}, new { @class = "form-horizontal", autocomplete = "on", id = "install-form" }))
 					{
 						<div class="install-panel">
 							<div class="install-content">
@@ -137,10 +137,10 @@
 									<div class="form-group row">
 										<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Database")</label>
 										<div class="col-md-9">
-											<select name="DataProvider" id="DataProvider" class="form-control remember">
-												<option value="sqlce">@ILS.GetResource("SqlCompact")</option>
-												<option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
-											</select>
+                                            <select name="DataProvider" id="DataProvider" class="form-control remember">
+                                                <option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
+                                                <option value="sqlce">@ILS.GetResource("SqlCompact")</option>
+                                            </select>
 											@Html.ValidationMessageFor(x => x.DataProvider)
 										</div>
 									</div>
@@ -361,7 +361,6 @@
 			}
 		}
 
-
 		function toggleCollation(e) {
 			if ($('#UseCustomCollation').is(':checked')) {
 				$('#Collation').removeAttr("disabled");
@@ -377,20 +376,7 @@
 			$('#SqlAuthenticationType').on('change', toggleSqlAuthenticationType).trigger('change');
 			$("#UseCustomCollation").on('click', toggleCollation);
 
-			var installPrefs = localStorage.getItem('installPrefs');
-			if (installPrefs) {
-				installPrefs = JSON.parse(installPrefs);
-				$.each(installPrefs, function (key, val) {
-					if (val !== null && val !== undefined) {
-                        var el = $('#' + key);
-						if (el.is('.form-check-input'))
-                            el.prop('checked', true);
-						else
-                            el.val(val);
-                        el.trigger('change');
-                    }
-				});
-            }
+            setRememberedFormFields("installPrefs");
 		});
 
         var Installation = (function () {
@@ -455,14 +441,8 @@
 
             return {
 
-				onStart: function (context) {
-					var rememberFields = $('.form-control.remember, .form-check-input.remember')
-					var installPrefs = {};
-					rememberFields.each(function () {
-						var el = $(this);
-						installPrefs[el.attr('id')] = el.is('.form-check-input') ? el.is(':checked') : el.val();
-					});
-					localStorage.setItem('installPrefs', JSON.stringify(installPrefs));
+                onStart: function (context) {
+                    rememberFormFields("install-form", "installPrefs");
 
                     $.throbber.show({
                         //message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>',
@@ -473,7 +453,6 @@
                     progressIntervall = window.setInterval(checkProgress, 1500);
 
                     $("#install-button").attr("disabled", "disabled");
-
                 },
 
                 onSuccess: function (data) {

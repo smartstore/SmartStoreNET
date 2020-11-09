@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.Localization
@@ -64,7 +62,7 @@ namespace SmartStore.Web.Framework.Localization
             if (add)
             {
                 routes.Add(name, route);
-            }          
+            }
 
             return route;
         }

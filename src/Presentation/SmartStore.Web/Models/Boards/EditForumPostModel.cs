@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Boards
 {
-	[Validator(typeof(EditForumPostValidator))]
+    [Validator(typeof(EditForumPostValidator))]
     public partial class EditForumPostModel : EntityModelBase
     {
         public int ForumTopicId { get; set; }

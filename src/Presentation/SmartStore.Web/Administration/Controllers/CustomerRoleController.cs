@@ -17,6 +17,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -72,17 +73,22 @@ namespace SmartStore.Admin.Controllers
 
             var list = customerRoles
                 .OrderBy(x => x.Name)
-                .Select(x => new
+                .Select(x => new ChoiceListItem
                 {
-                    id = x.Id.ToString(),
-                    text = x.Name,
-                    selected = ids.Contains(x.Id)
+                    Id = x.Id.ToString(),
+                    Text = x.Name,
+                    Selected = ids.Contains(x.Id)
                 })
                 .ToList();
 
             if (label.HasValue())
             {
-                list.Insert(0, new { id = "0", text = label, selected = false });
+                list.Insert(0, new ChoiceListItem
+                {
+                    Id = "0",
+                    Text = label,
+                    Selected = false
+                });
             }
 
             return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
@@ -133,6 +139,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Create)]
         public ActionResult Create(CustomerRoleModel model, bool continueEditing)
         {
@@ -170,11 +177,13 @@ namespace SmartStore.Admin.Controllers
             PrepareModel(model, customerRole);
 
             model.PermissionTree = Services.Permissions.GetPermissionTree(customerRole, true);
+            model.PrimaryStoreCurrencyCode = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Update)]
         public ActionResult Edit(CustomerRoleModel model, bool continueEditing, FormCollection form)
         {
@@ -275,6 +284,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Customer.Role.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -336,6 +346,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ApplyRules(int id)
         {
             var customerRole = _customerService.GetCustomerRoleById(id);

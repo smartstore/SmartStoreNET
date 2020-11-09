@@ -6,88 +6,88 @@ using StackExchange.Profiling;
 
 namespace SmartStore.DevTools
 {
-	public class ProfilerHttpModule : IHttpModule
-	{
-		private const string MP_KEY = "sm.miniprofiler.started";
-		
-		public void Init(HttpApplication context)
-		{
-			if (DevToolsPlugin.HasPendingMigrations())
-			{
-				return;
-			}
+    public class ProfilerHttpModule : IHttpModule
+    {
+        private const string MP_KEY = "sm.miniprofiler.started";
 
-			context.AcquireRequestState += OnAcquireRequestState;
-			context.EndRequest += OnEndRequest;
-		}
+        public void Init(HttpApplication context)
+        {
+            if (DevToolsPlugin.HasPendingMigrations())
+            {
+                return;
+            }
 
-		private static void OnAcquireRequestState(object sender, EventArgs e)
-		{
-			var app = (HttpApplication)sender;
-			if (!MiniProfilerStarted(app) && ShouldProfile(app))
-			{
-				MiniProfiler.Start();
-				if (app.Context != null && app.Context.Items != null)
-				{
-					app.Context.Items[MP_KEY] = true;
-				}
-			}
-		}
+            context.AcquireRequestState += OnAcquireRequestState;
+            context.EndRequest += OnEndRequest;
+        }
 
-		private static void OnEndRequest(object sender, EventArgs e)
-		{
-			var app = (HttpApplication)sender;
-			if (MiniProfilerStarted(app))
-			{
-				MiniProfiler.Stop();
-			}
-		}
+        private static void OnAcquireRequestState(object sender, EventArgs e)
+        {
+            var app = (HttpApplication)sender;
+            if (!MiniProfilerStarted(app) && ShouldProfile(app))
+            {
+                MiniProfiler.StartNew();
+                if (app.Context != null && app.Context.Items != null)
+                {
+                    app.Context.Items[MP_KEY] = true;
+                }
+            }
+        }
 
-		internal static bool MiniProfilerStarted(HttpApplication app)
-		{
-			return app?.Context?.Items != null && app.Context.Items.Contains(MP_KEY);
-		}
+        private static void OnEndRequest(object sender, EventArgs e)
+        {
+            var app = (HttpApplication)sender;
+            if (MiniProfilerStarted(app))
+            {
+                MiniProfiler.Current?.Stop();
+            }
+        }
 
-		private static bool ShouldProfile(HttpApplication app)
-		{
-			if (app?.Context?.Request == null)
-				return false;
+        internal static bool MiniProfilerStarted(HttpApplication app)
+        {
+            return app?.Context?.Items != null && app.Context.Items.Contains(MP_KEY);
+        }
 
-			if (!DataSettings.DatabaseIsInstalled())
-			{
-				return false;
-			}
+        private static bool ShouldProfile(HttpApplication app)
+        {
+            if (app?.Context?.Request == null)
+                return false;
 
-			var url = app.Context.Request.AppRelativeCurrentExecutionFilePath;
-			if (url.StartsWith("~/admin", StringComparison.InvariantCultureIgnoreCase) 
-				|| url.StartsWith("~/mini-profiler", StringComparison.InvariantCultureIgnoreCase)
-				|| url.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase)
-				|| url.StartsWith("~/plugin/", StringComparison.InvariantCultureIgnoreCase)
-				|| url.StartsWith("~/taskscheduler", StringComparison.InvariantCultureIgnoreCase))
-			{
-				return false;
-			}
+            if (!DataSettings.DatabaseIsInstalled())
+            {
+                return false;
+            }
 
-			ProfilerSettings settings = null;
+            var url = app.Context.Request.AppRelativeCurrentExecutionFilePath;
+            if (url.StartsWith("~/admin", StringComparison.InvariantCultureIgnoreCase)
+                || url.StartsWith("~/mini-profiler", StringComparison.InvariantCultureIgnoreCase)
+                || url.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase)
+                || url.StartsWith("~/plugin/", StringComparison.InvariantCultureIgnoreCase)
+                || url.StartsWith("~/taskscheduler", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
 
-			if (EngineContext.Current.IsFullyInitialized)
-			{
-				try
-				{
-					settings = EngineContext.Current.Resolve<ProfilerSettings>();
-				}
-				catch
-				{
-					return true;
-				}
-			}
+            ProfilerSettings settings = null;
 
-			return settings == null ? true : settings.EnableMiniProfilerInPublicStore;
-		}
+            if (EngineContext.Current.IsFullyInitialized)
+            {
+                try
+                {
+                    settings = EngineContext.Current.Resolve<ProfilerSettings>();
+                }
+                catch
+                {
+                    return true;
+                }
+            }
 
-		public void Dispose()
-		{
-			// nothing to dispose
-		}
-	}
+            return settings == null ? true : settings.EnableMiniProfilerInPublicStore;
+        }
+
+        public void Dispose()
+        {
+            // nothing to dispose
+        }
+    }
 }

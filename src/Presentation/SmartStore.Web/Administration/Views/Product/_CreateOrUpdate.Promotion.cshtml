@@ -132,11 +132,31 @@
 }
 
 <script>
+    var token = "";
+
+    $(function () {
+		token = $('input[name="__RequestVerificationToken"]').val();
+
+		// mutually create related or cross sell products
+		$('#btnCreateMutuallyRelatedProducts, #btnCreateMutuallyCrossSellProducts').click(function () {
+            $(this).doAjax({
+				data: { "__RequestVerificationToken": token },
+				callbackSuccess: function (resp) {
+					alert(resp.Message);
+				}
+			});
+		});
+    });
+
 	function PickRelatedProducts_Completed(ids) {
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("RelatedProductAdd")',
-			data: { "productId": @Model.Id, "selectedProductIds": ids },
+            data: {
+                "productId": @Model.Id,
+                "selectedProductIds": ids,
+				"__RequestVerificationToken": token 
+            },
 			callbackSuccess: function () {
 				$('#relatedproducts-grid').data('tGrid').ajaxRequest();
 			}
@@ -148,22 +168,15 @@
 		$({}).doAjax({
 			type: 'POST',
 			url: '@Url.Action("CrossSellProductAdd")',
-			data: { "productId": @Model.Id, "selectedProductIds": ids },
+            data: {
+                "productId": @Model.Id,
+                "selectedProductIds": ids,
+				"__RequestVerificationToken": token 
+            },
 			callbackSuccess: function () {
 				$('#crosssellproducts-grid').data('tGrid').ajaxRequest();
 			}
 		});
 		return true;
 	}
-
-	$(function() {
-		// mutually create related or cross sell products
-		$('#btnCreateMutuallyRelatedProducts, #btnCreateMutuallyCrossSellProducts').click(function () {
-			$(this).doAjax({
-				callbackSuccess: function (resp) {
-					alert(resp.Message);
-				}
-			});
-		});
-	});
 </script>

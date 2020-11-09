@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -37,7 +36,6 @@ namespace SmartStore.WebApi.Services
 
         private ControllerContext CreateControllerContext()
         {
-            var writer = new StringWriter();
             var context = new HttpContextWrapper(HttpContext.Current);
             var fakeController = new FakeController();
 
@@ -52,17 +50,17 @@ namespace SmartStore.WebApi.Services
             return controllerContext;
         }
 
-        private string Render(ControllerContext controllerContext, RazorView view, object model)
-        {
-            //http://forums.asp.net/t/1888849.aspx?Render+PartialView+without+ControllerContext
-            //https://weblog.west-wind.com/posts/2012/May/30/Rendering-ASPNET-MVC-Views-to-String
+        //private string Render(ControllerContext controllerContext, RazorView view, object model)
+        //{
+        //    //http://forums.asp.net/t/1888849.aspx?Render+PartialView+without+ControllerContext
+        //    //https://weblog.west-wind.com/posts/2012/May/30/Rendering-ASPNET-MVC-Views-to-String
 
-            using (var writer = new StringWriter())
-            {
-                view.Render(new ViewContext(controllerContext, view, new ViewDataDictionary(model), new TempDataDictionary(), writer), writer);
-                return writer.ToString();
-            }
-        }
+        //    using (var writer = new StringWriter())
+        //    {
+        //        view.Render(new ViewContext(controllerContext, view, new ViewDataDictionary(model), new TempDataDictionary(), writer), writer);
+        //        return writer.ToString();
+        //    }
+        //}
 
         public byte[] OrderToPdf(Order order)
         {
@@ -97,7 +95,7 @@ namespace SmartStore.WebApi.Services
 
             if (fileName.HasValue())
             {
-				if (ContentDispositionHeaderValue.TryParse($"inline; filename=\"{PathHelper.SanitizeFileName(fileName)}\"", out ContentDispositionHeaderValue contentDisposition))
+                if (ContentDispositionHeaderValue.TryParse($"inline; filename=\"{PathHelper.SanitizeFileName(fileName)}\"", out ContentDispositionHeaderValue contentDisposition))
                 {
                     response.Content.Headers.ContentDisposition = contentDisposition;
                 }

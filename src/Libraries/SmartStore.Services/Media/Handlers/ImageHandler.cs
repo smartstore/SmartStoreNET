@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Media.Imaging;
 
 namespace SmartStore.Services.Media
 {
     public class ImageHandler : ImageHandlerBase
     {
         private readonly IImageProcessor _imageProcessor;
-        
+
         public ImageHandler(IImageProcessor imageProcessor, IImageCache imageCache, MediaExceptionFactory exceptionFactory)
             : base(imageCache, exceptionFactory)
         {
@@ -20,7 +21,7 @@ namespace SmartStore.Services.Media
 
         protected override bool IsProcessable(MediaHandlerContext context)
         {
-            return context.ImageQuery.NeedsProcessing(true) && _imageProcessor.IsSupportedImage(context.PathData.Extension);
+            return context.ImageQuery.NeedsProcessing(true) && _imageProcessor.Factory.IsSupportedImage(context.PathData.Extension);
         }
 
         protected override Task ProcessImageAsync(MediaHandlerContext context, CachedImage cachedImage, Stream inputStream)
@@ -37,17 +38,19 @@ namespace SmartStore.Services.Media
             {
                 Logger.DebugFormat($"Processed image '{cachedImage.FileName}' in {result.ProcessTimeMs} ms.", null);
 
-                if (!cachedImage.Extension.IsCaseInsensitiveEqual(result.FileExtension))
+                var ext = result.Image.Format.DefaultExtension;
+
+                if (!cachedImage.Extension.IsCaseInsensitiveEqual(ext))
                 {
                     // jpg <> jpeg
-                    cachedImage.Path = Path.ChangeExtension(cachedImage.Path, result.FileExtension);
-                    cachedImage.Extension = result.FileExtension;
+                    cachedImage.Path = Path.ChangeExtension(cachedImage.Path, ext);
+                    cachedImage.Extension = ext;
                 }
 
-                context.ResultStream = result.OutputStream;
+                context.ResultImage = result.Image;
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

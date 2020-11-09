@@ -8,13 +8,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
     public class PasswordRecoveryValidatorTests : BaseValidatorTests
     {
         private PasswordRecoveryValidator _validator;
-        
+
         [SetUp]
         public new void Setup()
         {
             _validator = new PasswordRecoveryValidator();
         }
-        
+
         [Test]
         public void Should_have_error_when_email_is_null_or_empty()
         {

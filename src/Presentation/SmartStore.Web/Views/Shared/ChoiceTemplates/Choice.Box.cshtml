@@ -10,25 +10,49 @@
 <div class="choice-boxes" id="choice-boxes-@Model.Id">
 	<ul class="choice-box-group">
 		@foreach (var item in items)
-		{
-			string css = null;
+        {
+            string css = null;
+            string elClass = "choice-box-element";
+            string label = item.GetItemLabel();
 
-			var hasColor = item.Color.HasValue() && item.Color != "transparent";
-			if (hasColor)
-			{
-				css = "background-color: " + item.Color + ";";
-			}
+            var hasColor = item.Color.HasValue() && item.Color != "transparent";
+            if (hasColor)
+            {
+                css = "background-color: " + item.Color + ";";
+            }
 
-			if (item.ImageUrl.HasValue())
-			{
-				css += "background-image: url('" + item.ImageUrl + "');";
-			}
+            var hasImage = item.ImageUrl.HasValue();
+            if (hasImage)
+            {
+                css += "background-image: url('" + item.ImageUrl + "');";
+            }
 
-			<li class="choice-box@(item.IsPreSelected ? " selected" : "")@(item.IsDisabled ? " disabled" : "")">
+            if (item.IsDisabled)
+            {
+                elClass += " choice-box-disabled";
+            }
+            else if (item.IsUnavailable)
+            {
+                if (hasImage)
+                {
+                    elClass += " choice-box-image-unavailable";
+                }
+                else if (hasColor)
+                {
+                    elClass += " choice-box-color-unavailable";
+                }
+            }
+
+            if (item.Title.HasValue())
+            {
+                label += " - " + item.Title;
+            }
+
+			<li class="choice-box@(item.IsPreSelected ? " selected" : "")">
 				<label class="choice-box-label">
 					<input type="radio" class="choice-box-control-native" id="@(controlId)_@(item.Id)" name="@(controlId)" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
-					<span class="choice-box-content tooltip-toggle" title="@item.GetItemLabel()">
-						<span class="choice-box-element" @Html.Attr("style", css, css.HasValue())>
+					<span class="choice-box-content tooltip-toggle tooltip-toggle-touch" title="@label">
+						<span class="@elClass" @Html.Attr("style", css, css.HasValue())>
 							@if (!css.HasValue())
 							{
 								<span class="choice-box-text">@item.Name</span>

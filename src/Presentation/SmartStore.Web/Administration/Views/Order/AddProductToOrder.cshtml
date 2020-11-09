@@ -66,8 +66,8 @@
 
 @Html.HiddenFor(model => Model.OrderId)
 
-<script type="text/javascript">
-    $(document).ready(function () {
+<script>
+    $(function() {
 		$('#btnSearch').click(function () {
             var grid = $('#products-grid').data('tGrid');
             grid.currentPage = 1; //new search. Set page size to 1

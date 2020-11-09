@@ -6,23 +6,35 @@
 -------------------------------------------------------------- */
 
 .switch {
+    @extend .col-form-label;
+}
+
+.switcher-sm > .switch {
+    @extend .col-form-label-sm;
+}
+
+.switch {
     $h: $font-size-base * $line-height-base;
     $h-sm: $font-size-sm * $line-height-sm;
-    $w: $h * 2.15;
-    $w-sm: $h-sm * 2.15;
+    $w: $h * 2;
+    $w-sm: $h-sm * 2;
+    --switcher-w: #{$w};
+    --switcher-h: #{$h};
+    --switch-size: calc(var(--switcher-h) - 4px);
+    --switch-bg-rgb: #{red($orange)}, #{green($orange)}, #{blue($orange)};
     position: relative;
     display: inline-block;
     vertical-align: bottom;
     margin: 0;
-    padding: 0;
     user-select: none;
     box-sizing: content-box;
-    font-size: 0.725em;
-    --switcher-w: #{$w};
-    --switcher-h: #{$h};
-    --switch-size: calc(var(--switcher-h) - 4px);
+    font-size: 0.725em !important;
     width: var(--switcher-w);
     height: var(--switcher-h);
+
+    &.switch-blue {
+        --switch-bg-rgb: #{red($blue)}, #{green($blue)}, #{blue($blue)};
+    }
 
     .switcher-sm > & {
         --switcher-w: #{$w-sm};
@@ -39,72 +51,49 @@
         background-color: $gray-200;
         border: 1px solid rgba(#000, 0.15);
         cursor: pointer;
-        transition: background-color 0.4s cubic-bezier(.54,1.85,.5,1);
+        transition: background-color 0.2s cubic-bezier(.54,1.85,.5,1), box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
 
         &:before {
             // The circle (off)
             position: absolute;
-            left: 1px;
-            top: 1px;
+            left: 2px;
+            top: 2px;
             content: ' ';
-            width: var(--switch-size);
-            height: var(--switch-size);
+            width: calc(var(--switch-size) - 2px);
+            height: calc(var(--switch-size) - 2px);
             border-radius: 50%;
             background-color: #fff;
             box-shadow: 0 0 3px rgba(#000, 0.2);
-            transition: left 0.4s cubic-bezier(.54,1.85,.5,1);
-        }
-
-        &:after {
-            // The label (off)
-            position: absolute;
-            display: inline-block;
-            left: var(--switch-size);
-            top: 1px;
-            right: 1px;
-            bottom: 1px;
-            line-height: calc(var(--switcher-h) - 0.4em);
-            vertical-align: middle;
-            text-align: center;
-            text-transform: lowercase;
-            content: attr(data-off);
-            color: $gray-500;
+            transition: left 0.2s cubic-bezier(.54,1.85,.5,1);
         }
     }
 
     > input[type=checkbox] {
         position: absolute;
-        z-index: 0;
+        z-index: -1;
         opacity: 0;
         margin: 0;
     }
 
     > input[type=checkbox]:checked ~ .switch-toggle {
-        background-color: $orange;
+        background-color: rgba(var(--switch-bg-rgb), 1);
+        border-color: rgba(var(--switch-bg-rgb), 1);
 
         &:before {
             // The circle (on)
-            left: 26px;
             left: calc(var(--switcher-w) - var(--switch-size) - 2px);
-        }
-
-        &:after {
-            // The label (on)
-            content: attr(data-on);
-            color: rgba(#fff, 0.75);
-            left: 1px;
-            right: var(--switch-size);
         }
     }
 
-    &.switch-blue > input[type=checkbox]:checked ~ .switch-toggle {
-        background-color: $blue;
+    > input[type=checkbox]:focus ~ .switch-toggle {
+        box-shadow: 0 0 0 0.2rem rgba(var(--switch-bg-rgb), .25);
     }
 
     > input[type=checkbox]:disabled ~ .switch-toggle, 
-      input[type=checkbox][readonly] ~ .switch-toggle {
+    > input[type=checkbox][readonly] ~ .switch-toggle {
         opacity: $btn-disabled-opacity;
         cursor: default;
         border-color: transparent;
+        box-shadow: none !important;
     }
 }

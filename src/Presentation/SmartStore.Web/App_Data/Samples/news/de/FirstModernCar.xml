@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NewsItem>
+	<Title>Das erste moderne Automobil</Title>
+  <MetaTitle>Das erste moderne Automobil</MetaTitle>
+  <Short>Autos kamen ab dem 20. Jahrhundert weltweit zum Einsatz und machten entwickelte Volkswirtschaften von ihnen abhängig. Das Jahr 1886 gilt als das Geburtsjahr des modernen Autos, als der deutsche Erfinder Karl Benz seinen Benz Patent-Motorwagen patentieren ließ.</Short>
+	<MetaDescription>Autos kamen ab dem 20. Jahrhundert weltweit zum Einsatz und machten entwickelte Volkswirtschaften von ihnen abhängig. Das Jahr 1886 gilt als das Geburtsjahr des modernen Autos, als der deutsche Erfinder Karl Benz seinen Benz Patent-Motorwagen patentieren ließ.</MetaDescription>
+  <Full>
+		<![CDATA[
+			<p>
+				Autos kamen im 20. Jahrhundert weltweit zum Einsatz, und die entwickelten Volkswirtschaften sind von ihnen abhängig. Das Jahr 1886 gilt
+				als das Geburtsjahr des modernen Autos, als der deutsche Erfinder Karl Benz seinen Benz Patent-Motorwagen patentieren ließ. Anfang des 20.
+				Jahrhunderts wurden Autos weithin verfügbar. Eines der ersten Autos, das der breiten Masse zugänglich war, war das 1908er Modell T, ein
+				amerikanisches Auto, das von der Ford Motor Company hergestellt wurde. Autos wurden in den USA schnell angenommen, wo sie von Tieren
+				gezogene Kutschen und Karren ersetzten, aber es dauerte viel länger, bis sie in Westeuropa und anderen Teilen der Welt akzeptiert wurden.
+			</p>
+			<p>
+				Im November 1881 führte der französische Erfinder Gustave Trouvé auf der Internationalen Elektrizitätsausstellung in Paris das erste
+				funktionierende (dreirädrige) Auto vor, das mit Elektrizität angetrieben wurde. Obwohl mehrere andere deutsche Ingenieure (darunter
+				Gottlieb Daimler, Wilhelm Maybach und Siegfried Marcus) etwa zur gleichen Zeit an dem Problem arbeiteten, wird Karl Benz allgemein als
+				Erfinder des modernen Autos anerkannt.
+			</p>
+			<p>
+				Der ursprüngliche Benz Patent-Motorwagen, der erstmals 1885 gebaut wurde und 1879 das Patent für das Konzept erhielt, wurde 1879 zum
+				Patent für seinen ersten Motor angemeldet, der 1878 entwickelt worden war. Viele seiner anderen Erfindungen machten den Einsatz des
+				Verbrennungsmotors für den Antrieb eines Fahrzeugs möglich. Sein erster Motorwagen wurde 1885 in Mannheim, Deutschland, gebaut. Das Patent
+				für seine Erfindung wurde ihm ab seiner Anmeldung am 29. Januar 1886 erteilt (unter der Schirmherrschaft seines 1883 gegründeten
+				Großunternehmens Benz &amp; Cie.) Benz begann mit der Förderung des Fahrzeugs am 3. Juli 1886, und etwa 25 Benz-Fahrzeuge wurden zwischen
+				1888 und 1893 verkauft, als sein erstes vierrädriges Fahrzeug zusammen mit einem billigeren Modell vorgestellt wurde. Auch sie wurden mit
+				Viertaktmotoren seiner eigenen Konstruktion angetrieben. Der Franzose Emile Roger, der bereits Benz-Motoren in Lizenz produzierte, nahm
+				nun den Benz-Wagen in seine Produktpalette auf. Da Frankreich den frühen Autos gegenüber aufgeschlossener war, wurden durch Roger in
+				Frankreich zunächst mehr gebaut und verkauft als Benz in Deutschland. Im August 1888 unternahm Bertha Benz, die Ehefrau von Karl Benz, die
+				erste Autofahrt, um die Verkehrstauglichkeit der Erfindung ihres Mannes zu beweisen.
+			</p>
+		]]>
+	</Full>
+	<CreatedOn>2020-09-07</CreatedOn>
+	<Image>benz-first-modern-car.jpg</Image>
+  <ImagePreview>benz-first-modern-car.jpg</ImagePreview>
+	<Comments>True</Comments>
+</NewsItem>

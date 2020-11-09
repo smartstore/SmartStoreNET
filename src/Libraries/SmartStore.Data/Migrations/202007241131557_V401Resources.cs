@@ -1,28 +1,19 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     using SmartStore.Data.Setup;
-    using SmartStore.Core.Domain.Media;
-    using SmartStore.Core.Domain.Configuration;
-    using System.Linq;
-    using System.Web.Hosting;
-    using SmartStore.Core.Data;
 
     public partial class V401Resources : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

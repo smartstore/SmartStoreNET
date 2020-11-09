@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartStore.Utilities
 {
-
     public class StringTokenizer : IEnumerable<string>
     {
         private const string _defaultDelim = " \t\n\r\f";
@@ -91,5 +87,4 @@ namespace SmartStore.Utilities
 
         #endregion
     }
-
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -15,9 +13,9 @@ namespace SmartStore.Web.Framework.Localization
     /// </summary>
     public class LanguageSeoCodeAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public Lazy<IWorkContext> WorkContext { get; set; }
-		public Lazy<ILanguageService> LanguageService { get; set; }
-		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
+        public Lazy<IWorkContext> WorkContext { get; set; }
+        public Lazy<ILanguageService> LanguageService { get; set; }
+        public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
 
         public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
@@ -37,30 +35,30 @@ namespace SmartStore.Web.Framework.Localization
             if (!(filterContext.RouteData?.Route is LocalizedRoute))
                 return;
 
-			if (!DataSettings.DatabaseIsInstalled())
+            if (!DataSettings.DatabaseIsInstalled())
                 return;
 
             var localizationSettings = LocalizationSettings.Value;
             if (!localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 return;
-            
+
             // Process current URL
-			var workContext = WorkContext.Value;
-			var languageService = LanguageService.Value;
+            var workContext = WorkContext.Value;
+            var languageService = LanguageService.Value;
             var workingLanguage = workContext.WorkingLanguage;
             var helper = new LocalizedUrlHelper(request, true);
-			var defaultSeoCode = languageService.GetDefaultLanguageSeoCode();
-			
-            if (helper.IsLocalizedUrl(out var seoCode)) 
+            var defaultSeoCode = languageService.GetDefaultLanguageSeoCode();
+
+            if (helper.IsLocalizedUrl(out var seoCode))
             {
-				if (!languageService.IsPublishedLanguage(seoCode))
+                if (!languageService.IsPublishedLanguage(seoCode))
                 {
-					// Language is not defined in system or not assigned to store
-					if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.ReturnHttp404)
+                    // Language is not defined in system or not assigned to store
+                    if (localizationSettings.InvalidLanguageRedirectBehaviour == InvalidLanguageRedirectBehaviour.ReturnHttp404)
                     {
                         filterContext.Result = HandleExceptionFilter.Create404Result(filterContext);
 
-                        var seoCodeReplacement = localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.PrependSeoCodeAndRedirect 
+                        var seoCodeReplacement = localizationSettings.DefaultLanguageRedirectBehaviour == DefaultLanguageRedirectBehaviour.PrependSeoCodeAndRedirect
                             ? workingLanguage.GetTwoLetterISOLanguageName()
                             : string.Empty;
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 
@@ -9,21 +8,21 @@ namespace SmartStore.Core.Domain.Orders
     /// Represents a shopping cart item
     /// </summary>
     public partial class ShoppingCartItem : BaseEntity, IAuditable
-	{
-		/// <summary>
-		/// Gets or sets the store identifier
-		/// </summary>
-		public int StoreId { get; set; }
+    {
+        /// <summary>
+        /// Gets or sets the store identifier
+        /// </summary>
+        public int StoreId { get; set; }
 
-		/// <summary>
-		/// The parent shopping cart item id
-		/// </summary>
-		public int? ParentItemId { get; set; }
+        /// <summary>
+        /// The parent shopping cart item id
+        /// </summary>
+        public int? ParentItemId { get; set; }
 
-		/// <summary>
-		/// Gets or sets ths bundle item identifier
-		/// </summary>
-		public int? BundleItemId { get; set; }
+        /// <summary>
+        /// Gets or sets ths bundle item identifier
+        /// </summary>
+        public int? BundleItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the shopping cart type identifier
@@ -65,19 +64,13 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the shopping cart type
-		/// </summary>
-		public ShoppingCartType ShoppingCartType
+        /// <summary>
+        /// Gets or sets the shopping cart type
+        /// </summary>
+        public ShoppingCartType ShoppingCartType
         {
-            get
-            {
-                return (ShoppingCartType)this.ShoppingCartTypeId;
-            }
-            set
-            {
-                this.ShoppingCartTypeId = (int)value;
-            }
+            get => (ShoppingCartType)this.ShoppingCartTypeId;
+            set => this.ShoppingCartTypeId = (int)value;
         }
 
         /// <summary>
@@ -90,10 +83,10 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual Customer Customer { get; set; }
 
-		/// <summary>
-		/// Gets or sets the product bundle item
-		/// </summary>
-		public virtual ProductBundleItem BundleItem { get; set; }
+        /// <summary>
+        /// Gets or sets the product bundle item
+        /// </summary>
+        public virtual ProductBundleItem BundleItem { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the shopping cart item is free shipping
@@ -102,9 +95,9 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-				var product = this.Product;
-				if (product != null)
-					return product.IsFreeShipping;
+                var product = this.Product;
+                if (product != null)
+                    return product.IsFreeShipping;
                 return true;
             }
         }
@@ -116,9 +109,9 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-				var product = this.Product;
-				if (product != null)
-					return product.IsShipEnabled;
+                var product = this.Product;
+                if (product != null)
+                    return product.IsShipEnabled;
                 return false;
             }
         }
@@ -130,9 +123,9 @@ namespace SmartStore.Core.Domain.Orders
         {
             get
             {
-				var product = this.Product;
-				if (product != null)
-					return product.IsTaxExempt;
+                var product = this.Product;
+                if (product != null)
+                    return product.IsTaxExempt;
                 return false;
             }
         }

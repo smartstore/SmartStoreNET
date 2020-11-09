@@ -11,7 +11,7 @@ namespace SmartStore.Web
         public static MvcHtmlString BBCodeEditor<TModel>(this HtmlHelper<TModel> html, string name)
         {
             var sb = new StringBuilder();
-            
+
             var storeLocation = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation();
             string bbEditorWebRoot = String.Format("{0}Content/", storeLocation);
 

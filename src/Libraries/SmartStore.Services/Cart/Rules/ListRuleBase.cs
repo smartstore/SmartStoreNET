@@ -13,9 +13,15 @@ namespace SmartStore.Services.Cart.Rules
             _comparer = comparer;
         }
 
-        protected virtual T GetValue(CartRuleContext context) => default;
+        protected virtual T GetValue(CartRuleContext context)
+        {
+            return default;
+        }
 
-        protected virtual IEnumerable<T> GetValues(CartRuleContext context) => default;
+        protected virtual IEnumerable<T> GetValues(CartRuleContext context)
+        {
+            return default;
+        }
 
         public virtual bool Match(CartRuleContext context, RuleExpression expression)
         {

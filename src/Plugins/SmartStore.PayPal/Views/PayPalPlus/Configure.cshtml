@@ -32,11 +32,12 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
 	@Html.HiddenFor(model => model.TransactMode)
 
-    @Html.Partial("ApiConfiguration")
+	@Html.Partial("ApiConfiguration")
 
-    <table class="adminContent">
+	<table class="adminContent">
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -93,5 +94,5 @@
 				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
 			</td>
 		</tr>
-    </table>
+	</table>
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
-using System.Web.Mvc.Filters;
 using System.Web.Mvc;
+using System.Web.Mvc.Filters;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Infrastructure
@@ -156,7 +156,7 @@ namespace SmartStore.Core.Infrastructure
                     .Select(x => new StarterModuleInfo { ModuleType = x })
                     .ToList();
             }
-            
+
             return _starterModuleInfos;
         }
 

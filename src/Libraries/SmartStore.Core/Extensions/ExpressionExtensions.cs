@@ -8,7 +8,7 @@ namespace SmartStore
     public static class ExpressionExtensions
     {
         public static FastPropertyInvoker<T, TProp> CompileFast<T, TProp>(
-            this Expression<Func<T, TProp>> expression, 
+            this Expression<Func<T, TProp>> expression,
             PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
         {
             if (!(expression.Body is MemberExpression member))

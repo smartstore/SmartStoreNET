@@ -56,7 +56,7 @@ namespace SmartStore.Services.Catalog
 
         public string FormatPrice(decimal price, bool showCurrency, string currencyCode, bool showTax, Language language)
         {
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
             var priceIncludesTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
             return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
@@ -64,15 +64,15 @@ namespace SmartStore.Services.Catalog
 
         public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-			bool showTax = _taxSettings.DisplayTaxSuffix;
-			return FormatPrice(price, showCurrency, currencyCode, language, priceIncludesTax, showTax);
+            bool showTax = _taxSettings.DisplayTaxSuffix;
+            return FormatPrice(price, showCurrency, currencyCode, language, priceIncludesTax, showTax);
         }
 
-		public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
-		{
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
-			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
-		}
+        public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+        {
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+        }
 
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax)
         {
@@ -80,29 +80,29 @@ namespace SmartStore.Services.Catalog
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-		public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
-		{
-			var formatted = new Money(price, targetCurrency).ToString(showCurrency);
+        public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
+        {
+            var formatted = new Money(price, targetCurrency).ToString(showCurrency);
 
-			if (showTax)
-			{
-				// Show tax suffix
-				var resKey = "Products." + (priceIncludesTax ? "InclTaxSuffix" : "ExclTaxSuffix");
-				var taxFormatStr = _localizationService.GetResource(resKey, language.Id, false).NullEmpty() ?? (priceIncludesTax ? "{0} incl. tax" : "{0} excl. tax");
+            if (showTax)
+            {
+                // Show tax suffix
+                var resKey = "Products." + (priceIncludesTax ? "InclTaxSuffix" : "ExclTaxSuffix");
+                var taxFormatStr = _localizationService.GetResource(resKey, language.Id, false).NullEmpty() ?? (priceIncludesTax ? "{0} incl. tax" : "{0} excl. tax");
 
-				formatted = string.Format(taxFormatStr, formatted);
-			}
+                formatted = string.Format(taxFormatStr, formatted);
+            }
 
-			return formatted;
-		}
+            return formatted;
+        }
 
 
 
-		public string FormatShippingPrice(decimal price, bool showCurrency)
+        public string FormatShippingPrice(decimal price, bool showCurrency)
         {
             var targetCurrency = _workContext.WorkingCurrency;
             var language = _workContext.WorkingLanguage;
-			var priceIncludesTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            var priceIncludesTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
             return FormatShippingPrice(price, showCurrency, targetCurrency, language, priceIncludesTax);
         }
@@ -113,20 +113,20 @@ namespace SmartStore.Services.Catalog
             return FormatShippingPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-		public string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
-		{
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
-			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
-		}
+        public string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+        {
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+        }
 
         public string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
-        
+
         public string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
             return FormatShippingPrice(price, showCurrency, currency, language, priceIncludesTax);
         }
 
@@ -136,7 +136,7 @@ namespace SmartStore.Services.Catalog
         {
             var targetCurrency = _workContext.WorkingCurrency;
             var language = _workContext.WorkingLanguage;
-			var priceIncludesTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            var priceIncludesTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
 
             return FormatPaymentMethodAdditionalFee(price, showCurrency, targetCurrency, language, priceIncludesTax);
         }
@@ -147,11 +147,11 @@ namespace SmartStore.Services.Catalog
             return FormatPaymentMethodAdditionalFee(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-		public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
-		{
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
-			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
-		}
+        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+        {
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+        }
 
         public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
@@ -160,7 +160,7 @@ namespace SmartStore.Services.Catalog
 
         public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
             return FormatPaymentMethodAdditionalFee(price, showCurrency, currency, language, priceIncludesTax);
         }
 

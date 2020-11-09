@@ -256,6 +256,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Manufacturer.Create)]
         public ActionResult Create(ManufacturerModel model, bool continueEditing, FormCollection form)
         {
@@ -334,6 +336,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Manufacturer.Update)]
         public ActionResult Edit(ManufacturerModel model, bool continueEditing, FormCollection form)
         {
@@ -391,6 +394,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Manufacturer.Delete)]
         public ActionResult Delete(int id)
         {
@@ -477,6 +481,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Manufacturer.EditProduct)]
         public ActionResult ProductAdd(int manufacturerId, int[] selectedProductIds)
         {

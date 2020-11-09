@@ -1,20 +1,33 @@
 ﻿@model ProductDetailsModel
 
 @using SmartStore.Web.Models.Catalog;
-@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Directory;
 
 @{
     var isBundleItem = Model.IsBundlePart;
-
     var displayStock = Model.StockAvailability.HasValue();
-    // Never show delivery time when product is out of stock AND stock is displayed
-    var displayDeliveryTime = !isBundleItem && (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
+    var deliveryPresentation = Model.DeliveryTimesPresentation;
 
-    var showAttrs = displayDeliveryTime || displayStock || Model.DisplayBackInStockSubscription;
+    // Never show delivery time when product is out of stock AND stock is displayed.
+    var showDeliveryInfos =
+        !isBundleItem &&
+        (Model.IsShipEnabled && deliveryPresentation != DeliveryTimesPresentation.None) &&
+        (!displayStock || (displayStock && Model.IsAvailable));
+
+    var showAttrs = showDeliveryInfos || displayStock || Model.DisplayBackInStockSubscription;
     if (!showAttrs)
     {
         return;
     }
+
+    var showStatusLabel =
+        deliveryPresentation == DeliveryTimesPresentation.LabelOnly ||
+        deliveryPresentation == DeliveryTimesPresentation.LabelAndDate ||
+        !Model.DeliveryTimeDate.HasValue();
+
+    var showDeliveryDate =
+        (deliveryPresentation == DeliveryTimesPresentation.DateOnly || deliveryPresentation == DeliveryTimesPresentation.LabelAndDate) &&
+        Model.DeliveryTimeDate.HasValue();
 
     var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
     var statusColor = Model.DisplayDeliveryTimeAccordingToStock && !displayStock ? Model.DeliveryTimeHexValue : "";
@@ -30,16 +43,31 @@
 		<div class="pd-stock @(Model.IsAvailable ? "pd-instock" : "pd-outofstock")">@Model.StockAvailability</div>
 	}
 
-	@if (displayDeliveryTime)
-	{
-		<div class="deliverytime-group d-flex">
-			<span>@T("Products.DeliveryTime")</span>
-			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
-				<i class="fa fa-circle delivery-time-status" style="color: @Model.DeliveryTimeHexValue"></i>
-				@statusLabel
-			</span>
-		</div>
-	}
+	@if (showDeliveryInfos)
+    {
+        if (showStatusLabel)
+        {
+			<div class="deliverytime-group d-flex">
+				<span>@T("Products.DeliveryTime")</span>
+				<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
+					<i class="fa fa-circle delivery-time-status" style="color: @Model.DeliveryTimeHexValue"></i>
+					@statusLabel
+				</span>
+			</div>
+        }
+        if (showDeliveryDate)
+        {
+			<div class="deliverytime-group d-flex">
+				<span class="delivery-date-block">
+                    @if (!showStatusLabel)
+                    {
+                        <span>@T("Products.DeliveryDate")</span>
+                    }
+					<span class="delivery-date">@Html.Raw(Model.DeliveryTimeDate)</span>
+				</span>
+			</div>
+        }
+    }
 
 	@if (Model.DisplayBackInStockSubscription)
 	{

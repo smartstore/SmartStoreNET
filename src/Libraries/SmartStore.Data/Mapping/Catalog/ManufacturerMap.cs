@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Catalog
             ToTable("Manufacturer");
             HasKey(m => m.Id);
             Property(m => m.Name).IsRequired().HasMaxLength(400);
-			Property(m => m.Description).IsMaxLength();
+            Property(m => m.Description).IsMaxLength();
             Property(c => c.BottomDescription).IsMaxLength();
             Property(m => m.MetaKeywords).HasMaxLength(400);
             Property(m => m.MetaTitle).HasMaxLength(400);
@@ -18,9 +18,9 @@ namespace SmartStore.Data.Mapping.Catalog
             Property(m => m.MediaFileId).HasColumnName("MediaFileId");
 
             HasOptional(p => p.MediaFile)
-				.WithMany()
-				.HasForeignKey(p => p.MediaFileId)
-				.WillCascadeOnDelete(false);
+                .WithMany()
+                .HasForeignKey(p => p.MediaFileId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

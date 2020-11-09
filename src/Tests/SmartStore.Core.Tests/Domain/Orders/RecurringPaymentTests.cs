@@ -1,8 +1,8 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests.Domain.Orders
 {
@@ -15,7 +15,7 @@ namespace SmartStore.Core.Tests.Domain.Orders
             var rp = new RecurringPayment()
             {
                 CycleLength = 7,
-                CyclePeriod = RecurringProductCyclePeriod.Days, 
+                CyclePeriod = RecurringProductCyclePeriod.Days,
                 TotalCycles = 3,
                 StartDateUtc = new DateTime(2010, 3, 1),
                 CreatedOnUtc = new DateTime(2010, 1, 1),
@@ -25,7 +25,7 @@ namespace SmartStore.Core.Tests.Domain.Orders
             rp.NextPaymentDate.ShouldEqual(new DateTime(2010, 3, 1));
 
             //add one history record
-            rp.RecurringPaymentHistory.Add(new RecurringPaymentHistory(){});
+            rp.RecurringPaymentHistory.Add(new RecurringPaymentHistory() { });
             rp.NextPaymentDate.ShouldEqual(new DateTime(2010, 3, 8));
             //add one more history record
             rp.RecurringPaymentHistory.Add(new RecurringPaymentHistory() { });

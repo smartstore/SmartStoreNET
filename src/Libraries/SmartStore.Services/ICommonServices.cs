@@ -16,59 +16,59 @@ using SmartStore.Services.Stores;
 namespace SmartStore.Services
 {
     public interface ICommonServices
-	{
-		IComponentContext Container { get; }
-		IApplicationEnvironment ApplicationEnvironment { get; }
-		ICacheManager Cache { get; }
-		IRequestCache RequestCache { get; }
-		IDisplayControl DisplayControl { get; }
-		IDbContext DbContext { get; }
-		IStoreContext StoreContext { get; }
-		IWebHelper WebHelper { get; }
-		IWorkContext WorkContext { get; }
-		IEventPublisher EventPublisher { get; }
-		ILocalizationService Localization { get; }
-		ICustomerActivityService CustomerActivity { get; }
-		IMediaService MediaService { get; }
-		INotifier Notifier { get; }
+    {
+        IComponentContext Container { get; }
+        IApplicationEnvironment ApplicationEnvironment { get; }
+        ICacheManager Cache { get; }
+        IRequestCache RequestCache { get; }
+        IDisplayControl DisplayControl { get; }
+        IDbContext DbContext { get; }
+        IStoreContext StoreContext { get; }
+        IWebHelper WebHelper { get; }
+        IWorkContext WorkContext { get; }
+        IEventPublisher EventPublisher { get; }
+        ILocalizationService Localization { get; }
+        ICustomerActivityService CustomerActivity { get; }
+        IMediaService MediaService { get; }
+        INotifier Notifier { get; }
         IPermissionService Permissions { get; }
         ISettingService Settings { get; }
-		IStoreService StoreService { get; }
-		IDateTimeHelper DateTimeHelper { get; }
-		IChronometer Chronometer { get; }
-		IMessageFactory MessageFactory { get; }
-	}
+        IStoreService StoreService { get; }
+        IDateTimeHelper DateTimeHelper { get; }
+        IChronometer Chronometer { get; }
+        IMessageFactory MessageFactory { get; }
+    }
 
-	public static class ICommonServicesExtensions
-	{
-		public static TService Resolve<TService>(this ICommonServices services)
-		{
-			return services.Container.Resolve<TService>();
-		}
+    public static class ICommonServicesExtensions
+    {
+        public static TService Resolve<TService>(this ICommonServices services)
+        {
+            return services.Container.Resolve<TService>();
+        }
 
-		public static TService Resolve<TService>(this ICommonServices services, object serviceKey)
-		{
-			return services.Container.ResolveKeyed<TService>(serviceKey);
-		}
+        public static TService Resolve<TService>(this ICommonServices services, object serviceKey)
+        {
+            return services.Container.ResolveKeyed<TService>(serviceKey);
+        }
 
-		public static TService ResolveNamed<TService>(this ICommonServices services, string serviceName)
-		{
-			return services.Container.ResolveNamed<TService>(serviceName);
-		}
+        public static TService ResolveNamed<TService>(this ICommonServices services, string serviceName)
+        {
+            return services.Container.ResolveNamed<TService>(serviceName);
+        }
 
-		public static object Resolve(this ICommonServices services, Type serviceType)
-		{
-			return services.Resolve(null, serviceType);
-		}
+        public static object Resolve(this ICommonServices services, Type serviceType)
+        {
+            return services.Resolve(null, serviceType);
+        }
 
-		public static object Resolve(this ICommonServices services, object serviceKey, Type serviceType)
-		{
-			return services.Container.ResolveKeyed(serviceKey, serviceType);
-		}
+        public static object Resolve(this ICommonServices services, object serviceKey, Type serviceType)
+        {
+            return services.Container.ResolveKeyed(serviceKey, serviceType);
+        }
 
-		public static object ResolveNamed(this ICommonServices services, string serviceName, Type serviceType)
-		{
-			return services.Container.ResolveNamed(serviceName, serviceType);
-		}
-	}
+        public static object ResolveNamed(this ICommonServices services, string serviceName, Type serviceType)
+        {
+            return services.Container.ResolveNamed(serviceName, serviceType);
+        }
+    }
 }

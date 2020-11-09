@@ -81,7 +81,7 @@ namespace SmartStore.Services.Orders
         bool CanCancelRecurringPayment(Customer customerToValidate, RecurringPayment recurringPayment);
 
 
-        
+
 
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SmartStore.Services.Orders
         /// <param name="shipment">Shipment</param>
         /// <param name="notifyCustomer">True to notify customer</param>
         void Ship(Shipment shipment, bool notifyCustomer);
-        
+
         /// <summary>
         /// Marks a shipment as delivered
         /// </summary>
@@ -114,11 +114,11 @@ namespace SmartStore.Services.Orders
         /// <param name="notifyCustomer">True to notify customer</param>
         void CancelOrder(Order order, bool notifyCustomer);
 
-		/// <summary>
-		/// Auto update order details
-		/// </summary>
-		/// <param name="context">Context parameters</param>
-		void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
+        /// <summary>
+        /// Auto update order details
+        /// </summary>
+        /// <param name="context">Context parameters</param>
+        void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
 
 
         /// <summary>
@@ -135,18 +135,18 @@ namespace SmartStore.Services.Orders
         void MarkAsAuthorized(Order order);
 
 
-		/// <summary>
-		/// Gets a value indicating whether the order can be marked as completed
-		/// </summary>
-		/// <param name="order">Order</param>
-		/// <returns>A value indicating whether the order can be marked as completed</returns>
-		bool CanCompleteOrder(Order order);
+        /// <summary>
+        /// Gets a value indicating whether the order can be marked as completed
+        /// </summary>
+        /// <param name="order">Order</param>
+        /// <returns>A value indicating whether the order can be marked as completed</returns>
+        bool CanCompleteOrder(Order order);
 
-		/// <summary>
-		/// Marks the order as completed
-		/// </summary>
-		/// <param name="order">Order</param>
-		void CompleteOrder(Order order);
+        /// <summary>
+        /// Marks the order as completed
+        /// </summary>
+        /// <param name="order">Order</param>
+        void CompleteOrder(Order order);
 
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">The order</param>
         void ReOrder(Order order);
-        
+
         /// <summary>
         /// Check whether return request is allowed
         /// </summary>
@@ -281,30 +281,42 @@ namespace SmartStore.Services.Orders
         /// <returns>Result</returns>
         bool IsReturnRequestAllowed(Order order);
 
-
         /// <summary>
-        /// Valdiate minimum order sub-total amount
+        /// Valdiate minimum order amount.
+        /// Gets min order amount from customer role.
+        /// When no min order amount is defined in customer role, default order settings are used as fallback.
         /// </summary>
         /// <param name="cart">Shopping cart</param>
-        /// <returns>true - OK; false - minimum order sub-total amount is not reached</returns>
-		bool ValidateMinOrderSubtotalAmount(IList<OrganizedShoppingCartItem> cart);
+        /// <returns>true - OK; false - minimum order amount is not reached</returns>
+        (bool valid, decimal orderTotalMinimum) IsAboveOrderTotalMinimum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
-        /// Valdiate minimum order total amount
+        /// Valdiate maximum order amount.
+        /// Gets max order amount from customer role.
+        /// When no max order amount is defined in customer role, default order settings are used as fallback.
         /// </summary>
-        /// <param name="cart">Shopping cart</param>
-        /// <returns>true - OK; false - minimum order total amount is not reached</returns>
-		bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart);
+        /// <param name="cart">Shopping cart, customer role ids</param>
+        /// <returns>true - OK; false - maximum order amount is exceeded</returns>
+        (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
-		/// <summary>
-		/// Adds a shipment to an order.
-		/// </summary>
-		/// <param name="order">Order.</param>
-		/// <param name="trackingNumber">Tracking number.</param>
+        /// <summary>
+        /// Valdiate minimum and maximum order amount.
+        /// Gets min/max order amount from customer role.
+        /// When no min or max order amount is defined in customer role, default order settings are used as fallback.
+        /// </summary>
+        /// <param name="cart">Shopping cart, customer role ids</param>
+        /// <returns>true - OK; false - minimum amount is not reached or maximum amount is exceeded</returns>
+        bool IsInOrderTotalsRange(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
+
+        /// <summary>
+        /// Adds a shipment to an order.
+        /// </summary>
+        /// <param name="order">Order.</param>
+        /// <param name="trackingNumber">Tracking number.</param>
         /// <param name="trackingUrl">Tracking URL.</param>
-		/// <param name="quantities">Quantities by order item identifiers. <c>null</c> to use the remaining total number of products for each order item.</param>
-		/// <returns>New shipment, <c>null</c> if no shipment was added.</returns>
-		Shipment AddShipment(
+        /// <param name="quantities">Quantities by order item identifiers. <c>null</c> to use the remaining total number of products for each order item.</param>
+        /// <returns>New shipment, <c>null</c> if no shipment was added.</returns>
+        Shipment AddShipment(
             Order order,
             string trackingNumber,
             string trackingUrl,

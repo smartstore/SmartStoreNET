@@ -8,12 +8,29 @@ using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Blogs
 {
-	/// <summary>
-	/// Represents a blog post
-	/// </summary>
-	[DataContract]
-	public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported
+    /// <summary>
+    /// Represents a blog post
+    /// </summary>
+    [DataContract]
+    public partial class BlogPost : BaseEntity, ISlugSupported, IStoreMappingSupported, ILocalizedEntity
     {
+        #region static
+
+        private static readonly List<string> _visibilityAffectingProps = new List<string>
+        {
+            nameof(BlogPost.IsPublished),
+            nameof(BlogPost.StartDateUtc),
+            nameof(BlogPost.EndDateUtc),
+            nameof(BlogPost.LimitedToStores)
+        };
+
+        public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
+        {
+            return _visibilityAffectingProps;
+        }
+
+        #endregion
+
         private ICollection<BlogComment> _blogComments;
 
         /// <summary>
@@ -23,16 +40,10 @@ namespace SmartStore.Core.Domain.Blogs
         public bool IsPublished { get; set; }
 
         /// <summary>
-        /// Gets or sets the language identifier
+        /// Gets or sets the blog post title
         /// </summary>
         [DataMember]
-		public int LanguageId { get; set; }
-
-		/// <summary>
-		/// Gets or sets the blog post title
-		/// </summary>
-		[DataMember]
-		public string Title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// Defines the preview display type of the picture
@@ -46,26 +57,26 @@ namespace SmartStore.Core.Domain.Blogs
         [DataMember]
         public int? MediaFileId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the media file.
-		/// </summary>
-		public virtual MediaFile MediaFile { get; set; }
+        /// <summary>
+        /// Gets or sets the media file.
+        /// </summary>
+        public virtual MediaFile MediaFile { get; set; }
 
-		/// <summary>
-		/// Gets or sets the preview media file identifier
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the preview media file identifier
+        /// </summary>
+        [DataMember]
         public int? PreviewMediaFileId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the preview media file.
-		/// </summary>
-		public virtual MediaFile PreviewMediaFile { get; set; }
+        /// <summary>
+        /// Gets or sets the preview media file.
+        /// </summary>
+        public virtual MediaFile PreviewMediaFile { get; set; }
 
-		/// <summary>
-		/// Gets or sets background for the blog post
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets background for the blog post
+        /// </summary>
+        [DataMember]
         public string SectionBg { get; set; }
 
         /// <summary>
@@ -84,94 +95,88 @@ namespace SmartStore.Core.Domain.Blogs
         /// Gets or sets the blog post title
         /// </summary>
         [DataMember]
-		public string Body { get; set; }
+        public string Body { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the blog post comments are allowed 
-		/// </summary>
-		[DataMember]
-		public bool AllowComments { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the blog post comments are allowed 
+        /// </summary>
+        [DataMember]
+        public bool AllowComments { get; set; }
 
-		/// <summary>
-		/// Gets or sets the total number of approved comments
-		/// <remarks>The same as if we run newsItem.NewsComments.Where(n => n.IsApproved).Count()
-		/// We use this property for performance optimization (no SQL command executed)
-		/// </remarks>
-		/// </summary>
-		[DataMember]
-		public int ApprovedCommentCount { get; set; }
+        /// <summary>
+        /// Gets or sets the total number of approved comments
+        /// <remarks>The same as if we run newsItem.NewsComments.Where(n => n.IsApproved).Count()
+        /// We use this property for performance optimization (no SQL command executed)
+        /// </remarks>
+        /// </summary>
+        [DataMember]
+        public int ApprovedCommentCount { get; set; }
 
-		/// <summary>
-		/// Gets or sets the total number of not approved comments
-		/// <remarks>The same as if we run newsItem.NewsComments.Where(n => !n.IsApproved).Count()
-		/// We use this property for performance optimization (no SQL command executed)</remarks>
-		/// </summary>
-		[DataMember]
-		public int NotApprovedCommentCount { get; set; }
+        /// <summary>
+        /// Gets or sets the total number of not approved comments
+        /// <remarks>The same as if we run newsItem.NewsComments.Where(n => !n.IsApproved).Count()
+        /// We use this property for performance optimization (no SQL command executed)</remarks>
+        /// </summary>
+        [DataMember]
+        public int NotApprovedCommentCount { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog tags
-		/// </summary>
-		[DataMember]
-		public string Tags { get; set; }
+        /// <summary>
+        /// Gets or sets the blog tags
+        /// </summary>
+        [DataMember]
+        public string Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the blog post start date and time
         /// </summary>
         [DataMember]
-		public DateTime? StartDateUtc { get; set; }
+        public DateTime? StartDateUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog post end date and time
-		/// </summary>
-		[DataMember]
-		public DateTime? EndDateUtc { get; set; }
+        /// <summary>
+        /// Gets or sets the blog post end date and time
+        /// </summary>
+        [DataMember]
+        public DateTime? EndDateUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the meta keywords
-		/// </summary>
-		[DataMember]
-		public string MetaKeywords { get; set; }
+        /// <summary>
+        /// Gets or sets the meta keywords
+        /// </summary>
+        [DataMember]
+        public string MetaKeywords { get; set; }
 
-		/// <summary>
-		/// Gets or sets the meta description
-		/// </summary>
-		[DataMember]
-		public string MetaDescription { get; set; }
+        /// <summary>
+        /// Gets or sets the meta description
+        /// </summary>
+        [DataMember]
+        public string MetaDescription { get; set; }
 
-		/// <summary>
-		/// Gets or sets the meta title
-		/// </summary>
-		[DataMember]
-		public string MetaTitle { get; set; }
+        /// <summary>
+        /// Gets or sets the meta title
+        /// </summary>
+        [DataMember]
+        public string MetaTitle { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-		/// </summary>
-		[DataMember]
-		public bool LimitedToStores { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+        /// </summary>
+        [DataMember]
+        public bool LimitedToStores { get; set; }
 
-		/// <summary>
-		/// Gets or sets the date and time of entity creation
-		/// </summary>
-		[DataMember]
-		public virtual DateTime CreatedOnUtc { get; set; }
+        /// <summary>
+        /// Gets or sets the date and time of entity creation
+        /// </summary>
+        [DataMember]
+        public virtual DateTime CreatedOnUtc { get; set; }
 
-		/// <summary>
-		/// Gets or sets the blog comments
-		/// </summary>
-		[DataMember]
-		public virtual ICollection<BlogComment> BlogComments
+        /// <summary>
+        /// Gets or sets the blog comments
+        /// </summary>
+        [DataMember]
+        public virtual ICollection<BlogComment> BlogComments
         {
-			get { return _blogComments ?? (_blogComments = new HashSet<BlogComment>()); }
-            protected set { _blogComments = value; }
+            get => _blogComments ?? (_blogComments = new HashSet<BlogComment>());
+            protected set => _blogComments = value;
         }
-
-		/// <summary>
-		/// Gets or sets the language
-		/// </summary>
-		[DataMember]
-		public virtual Language Language { get; set; }
     }
 
     public enum PreviewDisplayType

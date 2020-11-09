@@ -16,16 +16,16 @@ namespace SmartStore.Services.Tasks
         private readonly IEventPublisher _eventPublisher;
 
         public TaskSchedulerStarter(
-            ITaskScheduler taskScheduler, 
-            IScheduleTaskService taskService, 
-            IStoreService storeService, 
+            ITaskScheduler taskScheduler,
+            IScheduleTaskService taskService,
+            IStoreService storeService,
             IEventPublisher eventPublisher)
         {
             _taskScheduler = taskScheduler;
             _taskService = taskService;
             _storeService = storeService;
             _eventPublisher = eventPublisher;
-            
+
             Logger = NullLogger.Instance;
         }
 

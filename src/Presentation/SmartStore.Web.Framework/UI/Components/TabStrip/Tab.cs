@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web.Routing;
-using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-	[Serializable]
-	public class SelectedTabInfo
-	{
-		public string TabId { get; set; }
-		public string Path { get; set; }
-	}
+    [Serializable]
+    public class SelectedTabInfo
+    {
+        public string TabId { get; set; }
+        public string Path { get; set; }
+    }
 
     public enum TabPull
     {
@@ -22,8 +19,8 @@ namespace SmartStore.Web.Framework.UI
     {
         public Tab()
         {
-			// [...]
-		}
+            // [...]
+        }
 
         public string Name
         {
@@ -36,5 +33,5 @@ namespace SmartStore.Web.Framework.UI
             get;
             set;
         }
-	}
+    }
 }

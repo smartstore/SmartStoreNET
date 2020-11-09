@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore.Core.Themes
+﻿namespace SmartStore.Core.Themes
 {
     public enum ThemeVariableType
     {

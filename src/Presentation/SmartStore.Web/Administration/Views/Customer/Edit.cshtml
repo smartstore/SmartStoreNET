@@ -51,6 +51,7 @@
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
+
 @Html.DeleteConfirmation("customer-delete")
 
 @{Html.SmartStore().Window()
@@ -58,6 +59,7 @@
     .Title(T("Admin.Customers.Customers.SendEmail"))
     .Content(@<text>
 		<form method="POST" action="@Url.Action("SendEmail", "Customer", new { id = Model.Id })">
+			@Html.AntiForgeryToken()
 			<table class="adminContent p-0">
 				<tr class="wide">
 					<td class="adminTitle">
@@ -97,6 +99,7 @@
         .Title(T("Admin.Customers.Customers.SendPM"))
         .Content(@<text>
 			<form method="POST" action="@Url.Action("SendPm", "Customer", new { id = Model.Id })">
+				@Html.AntiForgeryToken()
 				<table class="adminContent p-0">
 					<tr class="wide">
 						<td class="adminTitle">
@@ -129,8 +132,8 @@
 	</text>)
 	.Render();
 }
-<script type="text/javascript">
-	$(document).ready(function () {
+<script>
+    $(function() {
 
 		$("#sendemail").click(function (e) {
 			e.preventDefault();

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore.Core
+﻿namespace SmartStore.Core
 {
     public enum HttpSecurityMode
     {

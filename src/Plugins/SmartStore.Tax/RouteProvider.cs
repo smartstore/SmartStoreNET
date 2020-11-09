@@ -8,27 +8,21 @@ namespace SmartStore.Tax
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-			routes.MapRoute("SmartStore.Tax.FixedRate",
-				 "Plugins/SmartStore.Tax/FixedRate/{action}",
-				 new { controller = "TaxFixedRate", action = "Configure" },
-				 new[] { "SmartStore.Tax.Controllers" }
+            routes.MapRoute("SmartStore.Tax.FixedRate",
+                 "Plugins/SmartStore.Tax/FixedRate/{action}",
+                 new { controller = "TaxFixedRate", action = "Configure" },
+                 new[] { "SmartStore.Tax.Controllers" }
             )
-			.DataTokens["area"] = "SmartStore.Tax";
+            .DataTokens["area"] = "SmartStore.Tax";
 
-			routes.MapRoute("SmartStore.Tax.ByRegion",
-				 "Plugins/SmartStore.Tax/ByRegion/{action}",
-				 new { controller = "TaxByRegion", action = "Configure" },
-				 new[] { "SmartStore.Tax.Controllers" }
-			)
-			.DataTokens["area"] = "SmartStore.Tax";
+            routes.MapRoute("SmartStore.Tax.ByRegion",
+                 "Plugins/SmartStore.Tax/ByRegion/{action}",
+                 new { controller = "TaxByRegion", action = "Configure" },
+                 new[] { "SmartStore.Tax.Controllers" }
+            )
+            .DataTokens["area"] = "SmartStore.Tax";
         }
 
-        public int Priority
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Priority => 0;
     }
 }

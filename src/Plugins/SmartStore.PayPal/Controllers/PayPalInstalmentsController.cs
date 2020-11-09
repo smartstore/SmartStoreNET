@@ -45,7 +45,7 @@ namespace SmartStore.PayPal.Controllers
             ICurrencyService currencyService,
             Lazy<IPaymentService> paymentService,
             IPriceFormatter priceFormatter,
-            Lazy<IPluginFinder> pluginFinder) 
+            Lazy<IPluginFinder> pluginFinder)
             : base(payPalService)
         {
             _httpContext = httpContext;
@@ -316,8 +316,9 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost, ChildActionOnly, AdminAuthorize, AdminThemed]
+        [ValidateAntiForgeryToken]
         public ActionResult Configure(PayPalInstalmentsConfigModel model, FormCollection form)
-        {           
+        {
             Action<PayPalInstalmentsSettings> additionalMapping = (x) =>
             {
                 //x.PromotionWidgetZones = string.Join(",", model.PromotionWidgetZones ?? new string[0]).NullEmpty();

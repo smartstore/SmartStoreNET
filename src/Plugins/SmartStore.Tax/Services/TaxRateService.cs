@@ -26,13 +26,13 @@ namespace SmartStore.Tax.Services
 
         public virtual IList<TaxRate> GetAllTaxRates()
         {
-			var query = from tr in _taxRateRepository.Table
-						orderby tr.CountryId, tr.StateProvinceId, tr.Zip, tr.TaxCategoryId
-						select tr;
+            var query = from tr in _taxRateRepository.Table
+                        orderby tr.CountryId, tr.StateProvinceId, tr.Zip, tr.TaxCategoryId
+                        select tr;
 
-			var taxRates = query.ToListCached("db.taxrate.all");
-			return taxRates;
-		}
+            var taxRates = query.ToListCached("db.taxrate.all");
+            return taxRates;
+        }
 
         public virtual IList<TaxRate> GetAllTaxRates(int taxCategoryId, int countryId,
             int stateProvinceId, string zip)
@@ -67,7 +67,7 @@ namespace SmartStore.Tax.Services
                 foreach (var taxRate in matchedByStateProvince)
                     if (String.IsNullOrWhiteSpace(taxRate.Zip))
                         matchedByZip.Add(taxRate);
-                
+
             return matchedByZip;
         }
 
@@ -76,9 +76,9 @@ namespace SmartStore.Tax.Services
             if (taxRateId == 0)
                 return null;
 
-			var taxRate = _taxRateRepository.GetByIdCached(taxRateId, "db.taxrate.id-" + taxRateId);
-			return taxRate;
-		}
+            var taxRate = _taxRateRepository.GetByIdCached(taxRateId, "db.taxrate.id-" + taxRateId);
+            return taxRate;
+        }
 
         public virtual void InsertTaxRate(TaxRate taxRate)
         {

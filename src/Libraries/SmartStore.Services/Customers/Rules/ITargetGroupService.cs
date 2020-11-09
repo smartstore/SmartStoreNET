@@ -15,8 +15,8 @@ namespace SmartStore.Services.Customers
         FilterExpressionGroup CreateExpressionGroup(int ruleSetId);
 
         IPagedList<Customer> ProcessFilter(
-            FilterExpression filter, 
-            int pageIndex = 0, 
+            FilterExpression filter,
+            int pageIndex = 0,
             int pageSize = int.MaxValue);
 
         IPagedList<Customer> ProcessFilter(

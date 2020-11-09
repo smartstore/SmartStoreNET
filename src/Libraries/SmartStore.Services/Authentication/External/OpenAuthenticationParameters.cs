@@ -14,9 +14,6 @@ namespace SmartStore.Services.Authentication.External
         public string OAuthToken { get; set; }
         public string OAuthAccessToken { get; set; }
 
-        public virtual IList<UserClaims> UserClaims
-        {
-            get { return new List<UserClaims>(0); }
-        }
+        public virtual IList<UserClaims> UserClaims => new List<UserClaims>(0);
     }
 }

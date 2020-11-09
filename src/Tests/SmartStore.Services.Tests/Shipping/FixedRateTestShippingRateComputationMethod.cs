@@ -27,19 +27,19 @@ namespace SmartStore.Services.Tests.Shipping
 
             var response = new GetShippingOptionResponse();
             response.ShippingOptions.Add(new ShippingOption()
-                {
-					ShippingMethodId = 1,
-                    Name = "Shipping option 1",
-                    Description = "",
-                    Rate = GetRate()
-                }); 
+            {
+                ShippingMethodId = 1,
+                Name = "Shipping option 1",
+                Description = "",
+                Rate = GetRate()
+            });
             response.ShippingOptions.Add(new ShippingOption()
-                {
-					ShippingMethodId = 2,
-                    Name = "Shipping option 2",
-                    Description = "",
-                    Rate = GetRate()
-                });
+            {
+                ShippingMethodId = 2,
+                Name = "Shipping option 2",
+                Description = "",
+                Rate = GetRate()
+            });
 
             return response;
         }
@@ -58,18 +58,12 @@ namespace SmartStore.Services.Tests.Shipping
         }
 
         #region Properties
-        
+
 
         /// <summary>
         /// Gets a shipping rate computation method type
         /// </summary>
-        public ShippingRateComputationMethodType ShippingRateComputationMethodType
-        {
-            get
-            {
-                return ShippingRateComputationMethodType.Offline;
-            }
-        }
+        public ShippingRateComputationMethodType ShippingRateComputationMethodType => ShippingRateComputationMethodType.Offline;
 
         /// <summary>
         /// Gets a route for provider configuration
@@ -87,15 +81,9 @@ namespace SmartStore.Services.Tests.Shipping
         /// <summary>
         /// Gets a shipment tracker
         /// </summary>
-        public IShipmentTracker ShipmentTracker
-        {
-            get { return null; }
-        }
+        public IShipmentTracker ShipmentTracker => null;
 
-		public bool IsActive
-		{
-			get { return true; }
-		}
+        public bool IsActive => true;
 
         #endregion
     }

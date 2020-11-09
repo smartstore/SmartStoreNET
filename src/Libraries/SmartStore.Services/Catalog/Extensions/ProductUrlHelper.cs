@@ -14,7 +14,7 @@ using SmartStore.Services.Search.Modelling;
 
 namespace SmartStore.Services.Catalog.Extensions
 {
-	public class ProductUrlHelper
+    public class ProductUrlHelper
     {
         private readonly HttpRequestBase _httpRequest;
         private readonly ICommonServices _services;

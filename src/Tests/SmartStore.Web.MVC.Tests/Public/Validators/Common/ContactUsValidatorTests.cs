@@ -9,15 +9,15 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
     public class ContactUsValidatorTests : BaseValidatorTests
     {
         private ContactUsValidator _validator;
-		private PrivacySettings _privacySettings;
+        private PrivacySettings _privacySettings;
 
-		[SetUp]
+        [SetUp]
         public new void Setup()
         {
-			_privacySettings = new PrivacySettings();
-			_validator = new ContactUsValidator(_privacySettings);
+            _privacySettings = new PrivacySettings();
+            _validator = new ContactUsValidator(_privacySettings);
         }
-        
+
         [Test]
         public void Should_have_error_when_email_is_null_or_empty()
         {

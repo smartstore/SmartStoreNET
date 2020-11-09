@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Directory;
-using SmartStore.Core.Events;
-using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Events;
+using SmartStore.Services.Directory;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Directory
 {
@@ -22,7 +21,7 @@ namespace SmartStore.Services.Tests.Directory
 
         MeasureDimension measureDimension1, measureDimension2, measureDimension3, measureDimension4;
         MeasureWeight measureWeight1, measureWeight2, measureWeight3, measureWeight4;
-        
+
         [SetUp]
         public new void SetUp()
         {
@@ -119,7 +118,7 @@ namespace SmartStore.Services.Tests.Directory
             _measureService = new MeasureService(
                 _measureDimensionRepository,
                 _measureWeightRepository,
-                _measureSettings, _eventPublisher);
+                _measureSettings);
         }
 
         [Test]

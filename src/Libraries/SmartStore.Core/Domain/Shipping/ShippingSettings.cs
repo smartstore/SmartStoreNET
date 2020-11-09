@@ -7,9 +7,11 @@ namespace SmartStore.Core.Domain.Shipping
     {
         public ShippingSettings()
         {
-			ActiveShippingRateComputationMethodSystemNames = new List<string>() { "Shipping.FixedRate" };
-			EstimateShippingEnabled = true;
-			ReturnValidOptionsIfThereAreAny = true;
+            ActiveShippingRateComputationMethodSystemNames = new List<string> { "Shipping.FixedRate" };
+            EstimateShippingEnabled = true;
+            ReturnValidOptionsIfThereAreAny = true;
+            TodayShipmentHour = 14;
+            DeliveryOnWorkweekDaysOnly = true;
         }
 
         /// <summary>
@@ -62,5 +64,24 @@ namespace SmartStore.Core.Domain.Shipping
         /// Gets or sets a value indicating whether to charge only the highest shipping surcharge of products
         /// </summary>
         public bool ChargeOnlyHighestProductShippingSurcharge { get; set; }
+
+        #region Delivery Time
+
+        /// <summary>
+        /// Specifies a custom formatting pattern for delivery time dates (e.g. "M").
+        /// </summary>
+        public string DeliveryTimesDateFormat { get; set; }
+
+        /// <summary>
+        /// Specifies the hour (value between 1 and 24) by which the order will be shipped the same day.
+        /// </summary>
+        public int? TodayShipmentHour { get; set; }
+
+        /// <summary>
+        /// Specifies whether delivery takes place only on workweek days.
+        /// </summary>
+        public bool DeliveryOnWorkweekDaysOnly { get; set; }
+
+        #endregion
     }
 }

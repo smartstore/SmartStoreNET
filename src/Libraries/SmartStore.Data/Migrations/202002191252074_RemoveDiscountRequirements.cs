@@ -16,7 +16,7 @@ namespace SmartStore.Data.Migrations
             //DropIndex("dbo.DiscountRequirement", new[] { "DiscountId" });
             //DropTable("dbo.DiscountRequirement");
         }
-        
+
         public override void Down()
         {
             //CreateTable(
@@ -37,7 +37,7 @@ namespace SmartStore.Data.Migrations
             //            ExtraData = c.String(),
             //        })
             //    .PrimaryKey(t => t.Id);
-            
+
             //CreateIndex("dbo.DiscountRequirement", "DiscountId");
             //AddForeignKey("dbo.DiscountRequirement", "DiscountId", "dbo.Discount", "Id", cascadeDelete: true);
         }

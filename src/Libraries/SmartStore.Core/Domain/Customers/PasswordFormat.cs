@@ -1,6 +1,6 @@
 ﻿
-namespace SmartStore.Core.Domain.Customers 
-{ 
+namespace SmartStore.Core.Domain.Customers
+{
     public enum PasswordFormat
     {
         Clear = 0,

@@ -10,16 +10,16 @@ using SmartStore.Utilities;
 namespace SmartStore.Web.Framework.UI
 {
     public abstract class MenuBase : IMenu
-	{
-		/// <summary>
-		/// Key for Menu caching
-		/// </summary>
-		/// <remarks>
-		/// {0} : Menu name
-		/// {1} : Menu specific key suffix
-		/// </remarks>
-		internal const string MENU_KEY = "pres:menu:{0}-{1}";
-		internal const string MENU_PATTERN_KEY = "pres:menu:{0}*";
+    {
+        /// <summary>
+        /// Key for Menu caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : Menu name
+        /// {1} : Menu specific key suffix
+        /// </remarks>
+        internal const string MENU_KEY = "pres:menu:{0}-{1}";
+        internal const string MENU_PATTERN_KEY = "pres:menu:{0}*";
 
         private TreeNode<MenuItem> _currentNode;
         private bool _currentNodeResolved;
@@ -29,66 +29,66 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual bool ApplyPermissions => true;
 
-		public TreeNode<MenuItem> Root
-		{
-			get
-			{
-				var cacheKey = MENU_KEY.FormatInvariant(Name, GetCacheKey());
-				var rootNode = Services.Cache.Get(cacheKey, () =>
-				{
-					using (Services.Chronometer.Step($"Build menu '{Name}'"))
-					{
-						var root = Build();
+        public TreeNode<MenuItem> Root
+        {
+            get
+            {
+                var cacheKey = MENU_KEY.FormatInvariant(Name, GetCacheKey());
+                var rootNode = Services.Cache.Get(cacheKey, () =>
+                {
+                    using (Services.Chronometer.Step($"Build menu '{Name}'"))
+                    {
+                        var root = Build();
 
-						MenuPublisher.RegisterMenus(root, Name);
+                        MenuPublisher.RegisterMenus(root, Name);
 
-						if (ApplyPermissions)
-						{
-							DoApplyPermissions(root);
-						}
+                        if (ApplyPermissions)
+                        {
+                            DoApplyPermissions(root);
+                        }
 
                         Services.EventPublisher.Publish(new MenuBuiltEvent(Name, root));
 
                         return root;
-					}
-				});
+                    }
+                });
 
                 return rootNode;
-			}
-		}
+            }
+        }
 
-		protected virtual void DoApplyPermissions(TreeNode<MenuItem> root)
-		{
-			// Hide based on permissions
-			root.Traverse(x =>
+        protected virtual void DoApplyPermissions(TreeNode<MenuItem> root)
+        {
+            // Hide based on permissions
+            root.Traverse(x =>
             {
-				if (!MenuItemAccessPermitted(x.Value))
-				{
-					x.Value.Visible = false;
-				}
-			});
+                if (!MenuItemAccessPermitted(x.Value))
+                {
+                    x.Value.Visible = false;
+                }
+            });
 
-			// Hide dropdown nodes when no child is visible
-			root.Traverse(x =>
-			{
-				var item = x.Value;
-				if (!item.IsGroupHeader && !item.HasRoute())
-				{
-					if (!x.Children.Any(child => child.Value.Visible))
-					{
-						item.Visible = false;
-					}
-				}
-			});
-		}
+            // Hide dropdown nodes when no child is visible
+            root.Traverse(x =>
+            {
+                var item = x.Value;
+                if (!item.IsGroupHeader && !item.HasRoute())
+                {
+                    if (!x.Children.Any(child => child.Value.Visible))
+                    {
+                        item.Visible = false;
+                    }
+                }
+            });
+        }
 
-		protected abstract string GetCacheKey();
+        protected abstract string GetCacheKey();
 
-		protected abstract TreeNode<MenuItem> Build();
+        protected abstract TreeNode<MenuItem> Build();
 
-		public virtual void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
-		{
-		}
+        public virtual void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
+        {
+        }
 
         public virtual TreeNode<MenuItem> ResolveCurrentNode(ControllerContext context)
         {
@@ -102,34 +102,34 @@ namespace SmartStore.Web.Framework.UI
         }
 
         public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
-		{
-			var cache = Services.Cache;
-			var keys = cache.Keys(MENU_PATTERN_KEY.FormatInvariant(this.Name));
+        {
+            var cache = Services.Cache;
+            var keys = cache.Keys(MENU_PATTERN_KEY.FormatInvariant(this.Name));
 
-			var trees = new Dictionary<string, TreeNode<MenuItem>>(keys.Count());
+            var trees = new Dictionary<string, TreeNode<MenuItem>>(keys.Count());
 
-			foreach (var key in keys)
-			{
-				var tree = cache.Get<TreeNode<MenuItem>>(key);
-				if (tree != null)
-				{
-					trees[key] = tree;
-				}
-			}
+            foreach (var key in keys)
+            {
+                var tree = cache.Get<TreeNode<MenuItem>>(key);
+                if (tree != null)
+                {
+                    trees[key] = tree;
+                }
+            }
 
-			return trees;
-		}
+            return trees;
+        }
 
-		public void ClearCache()
-		{
-			Services.Cache.RemoveByPattern(MENU_PATTERN_KEY.FormatInvariant(this.Name));
-		}
+        public void ClearCache()
+        {
+            Services.Cache.RemoveByPattern(MENU_PATTERN_KEY.FormatInvariant(this.Name));
+        }
 
-		#region Dependencies
+        #region Dependencies
 
-		public ICommonServices Services { get; set; }
+        public ICommonServices Services { get; set; }
 
-		public IMenuPublisher MenuPublisher { get; set; }
+        public IMenuPublisher MenuPublisher { get; set; }
 
         #endregion
 

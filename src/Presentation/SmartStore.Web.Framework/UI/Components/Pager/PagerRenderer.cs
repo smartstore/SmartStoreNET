@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.UI;
+﻿using System.Collections.Generic;
 using System.Web.Routing;
+using System.Web.UI;
 
 namespace SmartStore.Web.Framework.UI
-{   
+{
     public class PagerRenderer : ComponentRenderer<Pager>
     {
         public PagerRenderer()
@@ -175,20 +174,20 @@ namespace SmartStore.Web.Framework.UI
 
             var items = CreateItemList();
 
-			// Alignment
-			if (pager.Alignment == PagerAlignment.Right)
-			{
-				pager.HtmlAttributes.AppendCssClass("text-right");
-			}
-			else if (pager.Alignment == PagerAlignment.Centered)
-			{
-				pager.HtmlAttributes.AppendCssClass("text-center");
-			}
+            // Alignment
+            if (pager.Alignment == PagerAlignment.Right)
+            {
+                pager.HtmlAttributes.AppendCssClass("text-right");
+            }
+            else if (pager.Alignment == PagerAlignment.Centered)
+            {
+                pager.HtmlAttributes.AppendCssClass("text-center");
+            }
 
-			writer.AddAttributes(pager.HtmlAttributes);
+            writer.AddAttributes(pager.HtmlAttributes);
             writer.AddAttribute("id", pager.Id);
-			writer.AddAttribute("aria-label", "Page navigation");
-			writer.RenderBeginTag("nav");
+            writer.AddAttribute("aria-label", "Page navigation");
+            writer.RenderBeginTag("nav");
 
             if (pager.ShowSummary && pager.Model.TotalPages > 1)
             {
@@ -198,36 +197,36 @@ namespace SmartStore.Web.Framework.UI
                 writer.RenderEndTag(); // div
             }
 
-			var ulAttrs = new RouteValueDictionary();
+            var ulAttrs = new RouteValueDictionary();
 
-			ulAttrs.AppendCssClass(pager.Style == PagerStyle.Pagination ? "pagination" : "pagination" /* formerly "pager" */); // TODO: (mc) Seems there's no "pager" in BS4 anymore
+            ulAttrs.AppendCssClass(pager.Style == PagerStyle.Pagination ? "pagination" : "pagination" /* formerly "pager" */); // TODO: (mc) Seems there's no "pager" in BS4 anymore
 
-			// Size
-			if (pager.Size == PagerSize.Large)
-			{
-				ulAttrs.AppendCssClass("pagination-lg");
-			}
-			else if (pager.Size == PagerSize.Small)
-			{
-				ulAttrs.AppendCssClass("pagination-sm");
-			}
-			else if (pager.Size == PagerSize.Mini)
-			{
-				ulAttrs.AppendCssClass("pagination-xs");
-			}
+            // Size
+            if (pager.Size == PagerSize.Large)
+            {
+                ulAttrs.AppendCssClass("pagination-lg");
+            }
+            else if (pager.Size == PagerSize.Small)
+            {
+                ulAttrs.AppendCssClass("pagination-sm");
+            }
+            else if (pager.Size == PagerSize.Mini)
+            {
+                ulAttrs.AppendCssClass("pagination-xs");
+            }
 
-			// BS 4 alignment
-			if (pager.Alignment == PagerAlignment.Centered)
-			{
-				ulAttrs.AppendCssClass("justify-content-center");
-			}
-			else if (pager.Alignment == PagerAlignment.Right)
-			{
-				ulAttrs.AppendCssClass("justify-content-end");
-			}
+            // BS 4 alignment
+            if (pager.Alignment == PagerAlignment.Centered)
+            {
+                ulAttrs.AppendCssClass("justify-content-center");
+            }
+            else if (pager.Alignment == PagerAlignment.Right)
+            {
+                ulAttrs.AppendCssClass("justify-content-end");
+            }
 
-			writer.AddAttributes(ulAttrs);
-			writer.RenderBeginTag("ul");
+            writer.AddAttributes(ulAttrs);
+            writer.RenderBeginTag("ul");
 
             foreach (var item in items)
             {
@@ -244,26 +243,26 @@ namespace SmartStore.Web.Framework.UI
 
             if (item.State == PagerItemState.Disabled)
             {
-				attrs.AppendCssClass("disabled");
+                attrs.AppendCssClass("disabled");
             }
             else if (item.State == PagerItemState.Selected)
             {
-				attrs.AppendCssClass("active");
+                attrs.AppendCssClass("active");
             }
 
             if (item.Type == PagerItemType.Text)
             {
-				attrs.AppendCssClass("shrinked");
+                attrs.AppendCssClass("shrinked");
             }
 
             if (Component.Style == PagerStyle.Blog && item.IsNavButton)
             {
-				// TODO: (mg) BS4 doesn't seem to support this anymore
-				attrs.AppendCssClass((item.Type == PagerItemType.PreviousPage || item.Type == PagerItemType.FirstPage) ? "previous" : "next");
+                // TODO: (mg) BS4 doesn't seem to support this anymore
+                attrs.AppendCssClass((item.Type == PagerItemType.PreviousPage || item.Type == PagerItemType.FirstPage) ? "previous" : "next");
             }
 
-			attrs.AppendCssClass("page-item");
-            
+            attrs.AppendCssClass("page-item");
+
             writer.AddAttributes(attrs);
             writer.RenderBeginTag("li");
 
@@ -274,9 +273,9 @@ namespace SmartStore.Web.Framework.UI
                 if (item.IsNavButton)
                 {
                     writer.AddAttribute("title", item.Text.AttributeEncode());
-					writer.AddAttribute("aria-label", item.Text.AttributeEncode());
-					writer.AddAttribute("tab-index", "-1");
-					if (Component.Style != PagerStyle.Blog)
+                    writer.AddAttribute("aria-label", item.Text.AttributeEncode());
+                    writer.AddAttribute("tab-index", "-1");
+                    if (Component.Style != PagerStyle.Blog)
                     {
                         writer.AddAttribute("rel", "tooltip");
                         writer.AddAttribute("class", "page-link page-nav");
@@ -298,9 +297,9 @@ namespace SmartStore.Web.Framework.UI
             }
             else
             {
-				// write span
-				writer.AddAttribute("class", "page-link");
-				writer.RenderBeginTag("span");
+                // write span
+                writer.AddAttribute("class", "page-link");
+                writer.RenderBeginTag("span");
             }
 
             this.RenderItemInnerContent(writer, item);
@@ -320,13 +319,13 @@ namespace SmartStore.Web.Framework.UI
                     writer.AddAttribute("class", "fa fa-angle-double-left");
                     break;
                 case PagerItemType.PreviousPage:
-					writer.AddAttribute("class", "fa fa-angle-left");
+                    writer.AddAttribute("class", "fa fa-angle-left");
                     break;
                 case PagerItemType.NextPage:
-					writer.AddAttribute("class", "fa fa-angle-right");
+                    writer.AddAttribute("class", "fa fa-angle-right");
                     break;
                 case PagerItemType.LastPage:
-					writer.AddAttribute("class", "fa fa-angle-double-right");
+                    writer.AddAttribute("class", "fa fa-angle-double-right");
                     break;
                 default:
                     writer.WriteEncodedText(item.Text);

@@ -26,16 +26,19 @@
 @import "_fonts.scss";
 
 //
-// Bootstrap 4
+// Bootstrap 4 + variables reset
 // --------------------------------------------------
 
-@import "../../../Content/bs4/scss/bootstrap.scss"; 
+@import "../../../Content/bs4/scss/bootstrap-head.scss"; 
+@import '_variables-reset.scss';
+@import "../../../Content/bs4/scss/bootstrap-main.scss";
 
 
 //
-// Vendors
+// Vendor components (neutral)
 // --------------------------------------------------
 
+@import "../../../Content/vendors/rfs/_rfs.scss";
 @import "../../../Content/vendors/photoswipe/photoswipe.scss";
 @import "../../../Content/vendors/slick/slick.scss";
 @import "../../../Content/vendors/select2/scss/core.scss";
@@ -58,8 +61,9 @@
 /*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
 @import '../../../Content/shared/_variables-shared.scss'; 
 @import '../../../Content/shared/_mixins.scss';
-@import '../../../Content/shared/_fa.scss'; 
+@import '../../../Content/shared/_spacing.scss';
 @import '../../../Content/shared/_typo.scss';
+@import '../../../Content/shared/_fa.scss'; 
 @import '../../../Content/shared/_alert.scss';
 @import '../../../Content/shared/_buttons.scss'; 
 @import "../../../Content/shared/_dropdown.scss";
@@ -86,7 +90,7 @@
 
 
 //
-// Component skinning
+// Vendor component (skinning)
 // --------------------------------------------------
 
 @import "../../../Content/skinning/_select2.scss";
@@ -122,6 +126,7 @@
 @import "_cart.scss";
 @import "_checkout.scss";
 @import "_accordion.scss";
+@import "_cookie-manager.scss";
 @import "_misc.scss";
 @import "_print.scss";
 

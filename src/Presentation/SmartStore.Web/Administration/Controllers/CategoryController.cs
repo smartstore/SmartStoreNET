@@ -250,8 +250,8 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-		// Ajax
-		public ActionResult AllCategories(string label, string selectedIds)
+        // Ajax
+        public ActionResult AllCategories(string label, string selectedIds)
         {
             var categoryTree = _categoryService.GetCategoryTree(includeHidden: true);
             var categories = categoryTree.Flatten(false);
@@ -263,14 +263,14 @@ namespace SmartStore.Admin.Controllers
 
             }
 
-			var query = 
-				from c in categories
-				select new
-				{ 
-					id = c.Id.ToString(),
-					text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"), 
-					selected = selectedArr.Contains(c.Id)
-				};
+            var query =
+                from c in categories
+                select new
+                {
+                    id = c.Id.ToString(),
+                    text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"),
+                    selected = selectedArr.Contains(c.Id)
+                };
 
             var mainList = query.ToList();
 
@@ -450,6 +450,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Create)]
         public ActionResult Create(CategoryModel model, bool continueEditing, FormCollection form)
         {
@@ -555,8 +556,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save")]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
         public ActionResult Edit(CategoryModel model, bool continueEditing, FormCollection form)
         {
@@ -632,24 +634,31 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ValidateInput(false)]
+        [HttpPost]
+        [ActionName("Edit"), FormValueRequired("inherit-acl-into-children")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
-        public ActionResult InheritAclIntoChildren(int categoryId)
+        public ActionResult InheritAclIntoChildren(CategoryModel model)
         {
-            _categoryService.InheritAclIntoChildren(categoryId, false, true, false);
+            _categoryService.InheritAclIntoChildren(model.Id, false, true, false);
 
-            return RedirectToAction("Edit", "Category", new { id = categoryId });
+            return RedirectToAction("Edit", "Category", new { id = model.Id });
         }
 
         [ValidateInput(false)]
+        [HttpPost]
+        [ActionName("Edit"), FormValueRequired("inherit-stores-into-children")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Update)]
-        public ActionResult InheritStoresIntoChildren(int categoryId)
+        public ActionResult InheritStoresIntoChildren(CategoryModel model)
         {
-            _categoryService.InheritStoresIntoChildren(categoryId, false, true, false);
+            _categoryService.InheritStoresIntoChildren(model.Id, false, true, false);
 
-            return RedirectToAction("Edit", "Category", new { id = categoryId });
+            return RedirectToAction("Edit", "Category", new { id = model.Id });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.Delete)]
         public ActionResult Delete(int id, string deleteType)
         {
@@ -724,7 +733,6 @@ namespace SmartStore.Admin.Controllers
 
             _categoryService.UpdateProductCategory(productCategory);
 
-
             return ProductList(command, productCategory.CategoryId);
         }
 
@@ -741,6 +749,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Category.EditProduct)]
         public ActionResult ProductAdd(int categoryId, int[] selectedProductIds)
         {
@@ -773,6 +782,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ApplyRules(int id)
         {
             var category = _categoryService.GetCategoryById(id);

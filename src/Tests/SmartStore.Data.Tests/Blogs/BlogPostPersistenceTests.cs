@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Blogs
 {
@@ -14,27 +13,7 @@ namespace SmartStore.Data.Tests.Blogs
         [Test]
         public void Can_save_and_load_blogPost()
         {
-            var blogPost = new BlogPost
-            {
-                Title = "Title 1",
-                Body = "Body 1",
-                AllowComments = true,
-                ApprovedCommentCount = 1,
-                NotApprovedCommentCount = 2,
-                Tags = "Tags 1",
-                StartDateUtc = new DateTime(2010, 01, 01),
-                EndDateUtc = new DateTime(2010, 01, 02),
-                CreatedOnUtc = new DateTime(2010, 01, 03),
-                MetaTitle = "MetaTitle 1",
-                MetaDescription = "MetaDescription 1",
-                MetaKeywords = "MetaKeywords 1",
-				LimitedToStores = true,
-                Language = new Language()
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
-            };
+            var blogPost = GetTestBlogPost();
 
             var fromDb = SaveAndLoadEntity(blogPost);
             fromDb.ShouldNotBeNull();
@@ -50,41 +29,25 @@ namespace SmartStore.Data.Tests.Blogs
             fromDb.MetaTitle.ShouldEqual("MetaTitle 1");
             fromDb.MetaDescription.ShouldEqual("MetaDescription 1");
             fromDb.MetaKeywords.ShouldEqual("MetaKeywords 1");
-			fromDb.LimitedToStores.ShouldEqual(true);
-
-            fromDb.Language.ShouldNotBeNull();
-            fromDb.Language.Name.ShouldEqual("English");
+            fromDb.LimitedToStores.ShouldEqual(true);
         }
 
         [Test]
         public void Can_save_and_load_blogPost_with_blogComments()
         {
-            var blogPost = new BlogPost
+            var blogPost = GetTestBlogPost();
+
+            blogPost.BlogComments.Add(new BlogComment
             {
-                Title = "Title 1",
-                Body = "Body 1",
-                AllowComments = true,
-                CreatedOnUtc = new DateTime(2010, 01, 01),
-                Language = new Language()
-                {
-                    Name = "English",
-                    LanguageCulture = "en-Us",
-                }
-            };
-            blogPost.BlogComments.Add
-                (
-                    new BlogComment
-                    {
-                        IpAddress = "192.168.1.1",
-                        IsApproved = true,
-                        CreatedOnUtc = new DateTime(2010, 01, 03),
-                        UpdatedOnUtc = new DateTime(2010, 01, 04),
-                        Customer = GetTestCustomer()
-                    }
-                );
+                IpAddress = "192.168.1.1",
+                IsApproved = true,
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                UpdatedOnUtc = new DateTime(2010, 01, 04),
+                Customer = GetTestCustomer()
+            });
+
             var fromDb = SaveAndLoadEntity(blogPost);
             fromDb.ShouldNotBeNull();
-
 
             fromDb.BlogComments.ShouldNotBeNull();
             (fromDb.BlogComments.Count == 1).ShouldBeTrue();
@@ -99,6 +62,28 @@ namespace SmartStore.Data.Tests.Blogs
                 CreatedOnUtc = new DateTime(2010, 01, 01),
                 LastActivityDateUtc = new DateTime(2010, 01, 02)
             };
+        }
+
+        internal static BlogPost GetTestBlogPost()
+        {
+            var blogPost = new BlogPost
+            {
+                Title = "Title 1",
+                Body = "Body 1",
+                AllowComments = true,
+                ApprovedCommentCount = 1,
+                NotApprovedCommentCount = 2,
+                Tags = "Tags 1",
+                StartDateUtc = new DateTime(2010, 01, 01),
+                EndDateUtc = new DateTime(2010, 01, 02),
+                CreatedOnUtc = new DateTime(2010, 01, 03),
+                MetaTitle = "MetaTitle 1",
+                MetaDescription = "MetaDescription 1",
+                MetaKeywords = "MetaKeywords 1",
+                LimitedToStores = true
+            };
+
+            return blogPost;
         }
     }
 }

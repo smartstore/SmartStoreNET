@@ -16,7 +16,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.Product", new[] { "SystemName", "IsSystemProduct" }, name: "Product_SystemName_IsSystemProduct");
             DropColumn("dbo.Order", "RefundedCreditBalance");
         }
-        
+
         public override void Down()
         {
             AddColumn("dbo.Order", "RefundedCreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
@@ -26,10 +26,7 @@ namespace SmartStore.Data.Migrations
             CreateIndex("dbo.Product", new[] { "SystemName", "IsSystemProduct" }, name: "Product_SystemName_IsSystemProduct");
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {

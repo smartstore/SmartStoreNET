@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Web;
-using System.Web.WebPages;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using System.Web.Routing;
+using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Utilities;
-using System.Web.Hosting;
-using System.Web.Routing;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities.ObjectPools;
 
 namespace SmartStore.Web.Framework.UI
@@ -29,19 +28,19 @@ namespace SmartStore.Web.Framework.UI
         private List<string> _metaDescriptionParts;
         private List<string> _metaKeywordParts;
         private List<string> _canonicalUrlParts;
-		private List<string> _customHeadParts;
+        private List<string> _customHeadParts;
         private List<RouteValueDictionary> _linkParts;
         private Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
-        private Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts; 
-        private string _htmlId;    
+        private Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
+        private string _htmlId;
 
-		private static readonly ConcurrentDictionary<string, string> s_minFiles = new ConcurrentDictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly ConcurrentDictionary<string, string> s_minFiles = new ConcurrentDictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         public PageAssetsBuilder(
-            SeoSettings seoSettings, 
+            SeoSettings seoSettings,
             ThemeSettings themeSettings,
             HttpContextBase httpContext,
-			IStoreContext storeContext,
+            IStoreContext storeContext,
             IBundleBuilder bundleBuilder)
         {
             _httpContext = httpContext;
@@ -59,12 +58,12 @@ namespace SmartStore.Web.Framework.UI
         private bool IsValidPart<T>(T part)
         {
             bool isValid = part != null;
-            if (isValid) 
+            if (isValid)
             {
                 if (part is string str)
                 {
                     isValid = str.HasValue();
-                }      
+                }
             }
 
             return isValid;
@@ -105,13 +104,13 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddBodyCssClass(string className)
         {
-			if (className.IsEmpty())
-				return;
+            if (className.IsEmpty())
+                return;
 
             if (className.HasValue())
             {
                 BodyAttributes.PrependCssClass(className);
-            }           
+            }
         }
 
         public void SetHtmlId(string htmlId)
@@ -136,42 +135,41 @@ namespace SmartStore.Web.Framework.UI
         {
             if (_titleParts == null)
                 return string.Empty;
-            
+
             var result = string.Empty;
             var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
-
-            if (!String.IsNullOrEmpty(specificTitle))
+            if (specificTitle.HasValue())
             {
                 if (addDefaultTitle)
                 {
-                    //store name + page title
+                    // Store name + page title
                     switch (_seoSettings.PageTitleSeoAdjustment)
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.DefaultTitle, specificTitle);
+                                result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value, specificTitle);
                             }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
                             {
-                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.DefaultTitle);
+                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value);
                             }
                             break;
-
                     }
                 }
                 else
                 {
-                    //page title only
+                    // Page title only
                     result = specificTitle;
                 }
             }
             else
             {
-                //store name only
-                result = _seoSettings.DefaultTitle;
+                // Store name only
+                result = _seoSettings.GetLocalizedSetting(x => x.MetaTitle).Value;
             }
+
             return result;
         }
 
@@ -183,7 +181,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaDescription()
         {
-            var result = _seoSettings.DefaultMetaDescription;
+            var result = _seoSettings.GetLocalizedSetting(x => x.MetaDescription).Value;
 
             if (_metaDescriptionParts == null)
                 return result;
@@ -205,7 +203,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual string GenerateMetaKeywords()
         {
-            var result = _seoSettings.DefaultMetaKeywords;
+            var result = _seoSettings.GetLocalizedSetting(x => x.MetaKeywords).Value;
 
             if (_metaKeywordParts == null)
                 return result;
@@ -228,10 +226,10 @@ namespace SmartStore.Web.Framework.UI
         {
             if (_canonicalUrlParts == null)
                 return string.Empty;
-            
+
             var result = PooledStringBuilder.Rent();
-			var parts = _canonicalUrlParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
-			foreach (var part in parts)
+            var parts = _canonicalUrlParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
+            foreach (var part in parts)
             {
                 result.AppendFormat("<link rel=\"canonical\" href=\"{0}\" />", part);
                 result.AppendLine();
@@ -240,25 +238,25 @@ namespace SmartStore.Web.Framework.UI
             return result.ToStringAndReturn();
         }
 
-		public void AddCustomHeadParts(IEnumerable<string> parts, bool append = false)
-		{
-			AddPartsCore(ref _customHeadParts, parts, append);
-		}
+        public void AddCustomHeadParts(IEnumerable<string> parts, bool append = false)
+        {
+            AddPartsCore(ref _customHeadParts, parts, append);
+        }
 
-		public string GenerateCustomHead()
-		{
+        public string GenerateCustomHead()
+        {
             if (_customHeadParts == null)
                 return string.Empty;
-            
-            var result = PooledStringBuilder.Rent();
-			var parts = _customHeadParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
-			foreach (var part in parts)
-			{
-				result.AppendLine(part);
-			}
 
-			return result.ToStringAndReturn();
-		}
+            var result = PooledStringBuilder.Rent();
+            var parts = _customHeadParts.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
+            foreach (var part in parts)
+            {
+                result.AppendLine(part);
+            }
+
+            return result.ToStringAndReturn();
+        }
 
         public void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
         {
@@ -266,17 +264,17 @@ namespace SmartStore.Web.Framework.UI
             {
                 _scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             }
-            
+
             if (!_scriptParts.TryGetValue(location, out var assetDescriptors))
             {
                 assetDescriptors = new List<WebAssetDescriptor>();
                 _scriptParts.Add(location, assetDescriptors);
-            }                
+            }
 
-            var descriptors = parts.Select(x => new WebAssetDescriptor 
-            { 
-                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null, 
-                Part = x 
+            var descriptors = parts.Select(x => new WebAssetDescriptor
+            {
+                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null,
+                Part = x
             });
 
             AddPartsCore(ref assetDescriptors, descriptors, append);
@@ -297,7 +295,7 @@ namespace SmartStore.Web.Framework.UI
 
             var bundledParts = parts.Where(x => !x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
             var nonBundledParts = parts.Where(x => x.ExcludeFromBundling && x.Part.HasValue()).Select(x => x.Part).Distinct(StringComparer.OrdinalIgnoreCase);
-            
+
             var sb = PooledStringBuilder.Rent();
 
             if (bundledParts.Any())
@@ -309,7 +307,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var path in nonBundledParts)
                 {
-					sb.AppendFormat("<script src=\"{0}\" type=\"text/javascript\"></script>", Scripts.Url(TryFindMinFile(path)).ToString());
+                    sb.AppendFormat("<script src=\"{0}\" type=\"text/javascript\"></script>", Scripts.Url(TryFindMinFile(path)).ToString());
                     sb.Append(Environment.NewLine);
                 }
             }
@@ -319,50 +317,50 @@ namespace SmartStore.Web.Framework.UI
             return sb.ToStringAndReturn();
         }
 
-		private string TryFindMinFile(string path)
-		{
-			if (_httpContext.IsDebuggingEnabled)
-			{
-				// return path as is in debug mode
-				return path;
-			}
+        private string TryFindMinFile(string path)
+        {
+            if (_httpContext.IsDebuggingEnabled)
+            {
+                // return path as is in debug mode
+                return path;
+            }
 
-			return s_minFiles.GetOrAdd(path, key => 
-			{
-				try
-				{
-					if (!_httpContext.Request.IsUrlLocalToHost(key))
-					{
-						// no need to look for external files
-						return key;
-					}
+            return s_minFiles.GetOrAdd(path, key =>
+            {
+                try
+                {
+                    if (!_httpContext.Request.IsUrlLocalToHost(key))
+                    {
+                        // no need to look for external files
+                        return key;
+                    }
 
-					if (BundleTable.Bundles.GetBundleFor(key) != null)
-					{
-						// no need to seek min files for real bundles.
-						return key;
-					}
+                    if (BundleTable.Bundles.GetBundleFor(key) != null)
+                    {
+                        // no need to seek min files for real bundles.
+                        return key;
+                    }
 
-					var extension = Path.GetExtension(key);
-					if (key.EndsWith(".min" + extension, StringComparison.InvariantCultureIgnoreCase))
-					{
-						// is already a debug file, get out!
-						return key;
-					}
+                    var extension = Path.GetExtension(key);
+                    if (key.EndsWith(".min" + extension, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // is already a debug file, get out!
+                        return key;
+                    }
 
-					var minPath = "{0}.min{1}".FormatInvariant(key.Substring(0, key.Length - extension.Length), extension);
-					if (HostingEnvironment.VirtualPathProvider.FileExists(minPath))
-					{
-						return minPath;
-					}
-					return key;
-				}
-				catch 
-				{
-					return key;
-				}
-			});
-		}
+                    var minPath = "{0}.min{1}".FormatInvariant(key.Substring(0, key.Length - extension.Length), extension);
+                    if (HostingEnvironment.VirtualPathProvider.FileExists(minPath))
+                    {
+                        return minPath;
+                    }
+                    return key;
+                }
+                catch
+                {
+                    return key;
+                }
+            });
+        }
 
 
         public void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
@@ -371,16 +369,16 @@ namespace SmartStore.Web.Framework.UI
             {
                 _cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             }
-            
+
             if (!_cssParts.TryGetValue(location, out var assetDescriptors))
             {
                 assetDescriptors = new List<WebAssetDescriptor>();
                 _cssParts.Add(location, assetDescriptors);
-            }              
+            }
 
             var descriptors = parts.Select(x => new WebAssetDescriptor
             {
-				ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null,
+                ExcludeFromBundling = excludeFromBundling || !x.StartsWith("~") || BundleTable.Bundles.GetBundleFor(x) != null,
                 Part = x
             });
 
@@ -414,7 +412,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var path in nonBundledParts)
                 {
-					sb.AppendFormat("<link href=\"{0}\" rel=\"stylesheet\" type=\"text/css\" />", Styles.Url(TryFindMinFile(path)).ToString());
+                    sb.AppendFormat("<link href=\"{0}\" rel=\"stylesheet\" type=\"text/css\" />", Styles.Url(TryFindMinFile(path)).ToString());
                     sb.Append(Environment.NewLine);
                 }
             }
@@ -437,59 +435,59 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-		public void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes)
-		{
-			Guard.NotEmpty(rel, nameof(rel));
-			Guard.NotEmpty(href, nameof(href));
+        public void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes)
+        {
+            Guard.NotEmpty(rel, nameof(rel));
+            Guard.NotEmpty(href, nameof(href));
 
-			if (htmlAttributes == null)
-			{
-				htmlAttributes = new RouteValueDictionary();
-			}
+            if (htmlAttributes == null)
+            {
+                htmlAttributes = new RouteValueDictionary();
+            }
 
-			htmlAttributes["rel"] = rel;
-			htmlAttributes["href"] = href;
+            htmlAttributes["rel"] = rel;
+            htmlAttributes["href"] = href;
 
             if (_linkParts == null)
             {
                 _linkParts = new List<RouteValueDictionary>();
             }
 
-			_linkParts.Add(htmlAttributes);
-		}
+            _linkParts.Add(htmlAttributes);
+        }
 
-		public string GenerateLinkRels()
-		{
+        public string GenerateLinkRels()
+        {
             if (_linkParts == null)
                 return string.Empty;
-            
+
             var sb = PooledStringBuilder.Rent();
-			
-			foreach (var part in _linkParts)
-			{
-				var tag = new TagBuilder("link");
-				tag.MergeAttributes(part, true);
 
-				sb.AppendLine(tag.ToString(TagRenderMode.SelfClosing));
-			}
+            foreach (var part in _linkParts)
+            {
+                var tag = new TagBuilder("link");
+                tag.MergeAttributes(part, true);
 
-			return sb.ToStringAndReturn();
-		}
+                sb.AppendLine(tag.ToString(TagRenderMode.SelfClosing));
+            }
 
-		public string GenerateMetaRobots()
-		{
-			if (_seoSettings.MetaRobotsContent.HasValue())
-			{
-				return "<meta name=\"robots\" content=\"{0}\" />".FormatInvariant(_seoSettings.MetaRobotsContent);
-			}
-			return null;
-		}
+            return sb.ToStringAndReturn();
+        }
 
-		public class WebAssetDescriptor
+        public string GenerateMetaRobots()
+        {
+            if (_seoSettings.MetaRobotsContent.HasValue())
+            {
+                return "<meta name=\"robots\" content=\"{0}\" />".FormatInvariant(_seoSettings.MetaRobotsContent);
+            }
+            return null;
+        }
+
+        public class WebAssetDescriptor
         {
             public bool ExcludeFromBundling { get; set; }
             public string Part { get; set; }
         }
 
-	}
+    }
 }

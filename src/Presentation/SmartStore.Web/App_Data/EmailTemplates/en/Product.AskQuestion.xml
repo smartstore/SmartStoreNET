@@ -2,17 +2,21 @@
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
 	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
-	<Subject>{{ Store.Name }} - Question concerning '{{ Product.Name | Truncate:30 }}' from {{ Message.SenderName }}</Subject>
+	<Subject>{{ Store.Name }} - {% if Message.IsQuoteRequest %} Quote request regarding {% else %} Question concerning {% endif %}'{{ Product.Name | Truncate:30 }}' from {{ Message.SenderName }}</Subject>
 	<ModelTypes>Customer, Product</ModelTypes>
 	<Body>
 	  <![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
-  Product inquiry,
+  {% if Message.IsQuoteRequest %}
+    Quote request
+  {% else %}
+    Product inquiry
+  {% endif %}
 </h1>
 
-<p>
+<p class="mb-1">
   {% if Customer.IsRegistered %}
   	<b>{{ Customer.FullName }}</b>
   {% elsif Message.SenderName %}
@@ -20,7 +24,16 @@
   {% else %}
   	<b>{{ Message.SenderEmail }}</b>
   {% endif %}
-  has asked a question concerning the product <a href="{{ Product.Url }}">{{ Product.Name }}</a>.
+  
+  {% if Message.IsQuoteRequest %}
+    has sent a quote request for the following product:
+  {% else %}
+    has asked a question concerning the product:
+{% endif %}
+</p>
+<p>
+  <a href="{{ Message.ProductUrl }}">{{ Product.Name }}</a>
+  <span class="ml-1 small">{{ Message.ProductAttributes }}</span>
 </p>
 
 <p>

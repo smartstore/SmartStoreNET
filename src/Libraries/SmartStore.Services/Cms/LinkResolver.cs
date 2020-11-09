@@ -7,8 +7,10 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -20,18 +22,18 @@ namespace SmartStore.Services.Cms
 {
     public partial class LinkResolver : ILinkResolver
     {
-		/// <remarks>
-		/// {0} : Expression w/o q
-		/// {1} : LanguageId
-		/// {2} : Store
-		/// {3} : RolesIdent
-		/// </remarks>
-		internal const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}-{2}-{3}";
+        /// <remarks>
+        /// {0} : Expression w/o q
+        /// {1} : LanguageId
+        /// {2} : Store
+        /// {3} : RolesIdent
+        /// </remarks>
+        internal const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}-{2}-{3}";
 
-		// 0: Expression
-		internal const string LINKRESOLVER_PATTERN_KEY = "linkresolver:{0}-*";
+        // 0: Expression
+        internal const string LINKRESOLVER_PATTERN_KEY = "linkresolver:{0}-*";
 
-		protected readonly ICommonServices _services;
+        protected readonly ICommonServices _services;
         protected readonly IUrlRecordService _urlRecordService;
         protected readonly ILocalizedEntityService _localizedEntityService;
         protected readonly IAclService _aclService;
@@ -55,20 +57,18 @@ namespace SmartStore.Services.Cms
             _storeMappingService = storeMappingService;
             _topicService = topicService;
             _urlHelper = urlHelper;
-
-            QuerySettings = DbQuerySettings.Default;
         }
 
-        public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; } = DbQuerySettings.Default;
 
         public virtual LinkResolverResult Resolve(string linkExpression, IEnumerable<CustomerRole> roles = null, int languageId = 0, int storeId = 0)
         {
-			if (linkExpression.IsEmpty())
-			{
-				return new LinkResolverResult { Type = LinkType.Url, Status = LinkStatus.NotFound };
-			}
+            if (linkExpression.IsEmpty())
+            {
+                return new LinkResolverResult { Type = LinkType.Url, Status = LinkStatus.NotFound };
+            }
 
-			if (roles == null)
+            if (roles == null)
             {
                 roles = _services.WorkContext.CurrentCustomer.CustomerRoleMappings.Select(x => x.CustomerRole);
             }
@@ -83,78 +83,96 @@ namespace SmartStore.Services.Cms
                 storeId = _services.StoreContext.CurrentStore.Id;
             }
 
-			var d = Parse(linkExpression);
+            var d = Parse(linkExpression);
             var queryString = d.QueryString;
 
-			if (d.Type == LinkType.Url)
-			{
-				var url = d.Value.ToString();
-				if (url.EmptyNull().StartsWith("~"))
-				{
-					url = VirtualPathUtility.ToAbsolute(url);
-				}
-				d.Link = d.Label = url;
-			}
-			else if (d.Type == LinkType.File)
-			{
-				d.Link = d.Label = d.Value.ToString();
-			}
-			else
-			{
-				var cacheKey = LINKRESOLVER_KEY.FormatInvariant(
-					d.Expression.EmptyNull().ToLower(),
-					languageId,
-					storeId,
-					string.Join(",", roles.Where(x => x.Active).Select(x => x.Id)));
+            if (d.Type == LinkType.Url)
+            {
+                var url = d.Value.ToString();
+                if (url.EmptyNull().StartsWith("~"))
+                {
+                    url = VirtualPathUtility.ToAbsolute(url);
+                }
+                d.Link = d.Label = url;
+            }
+            else if (d.Type == LinkType.File)
+            {
+                d.Link = d.Label = d.Value.ToString();
+            }
+            else
+            {
+                var cacheKey = LINKRESOLVER_KEY.FormatInvariant(
+                    d.Expression.EmptyNull().ToLower(),
+                    languageId,
+                    storeId,
+                    string.Join(",", roles.Where(x => x.Active).Select(x => x.Id)));
 
-				d = _services.Cache.Get(cacheKey, () =>
-				{
-					var d2 = d.Clone();
+                d = _services.Cache.Get(cacheKey, () =>
+                {
+                    var d2 = d.Clone();
 
-					switch (d2.Type)
-					{
-						case LinkType.Product:
-							GetEntityData<Product>(d2, storeId, languageId, x => new ResolverEntitySummary
-							{
-								Name = x.Name,
-								Published = x.Published,
-								Deleted = x.Deleted,
-								SubjectToAcl = x.SubjectToAcl,
-								LimitedToStores = x.LimitedToStores,
+                    switch (d2.Type)
+                    {
+                        case LinkType.Product:
+                            GetEntityData<Product>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
+                                Published = x.Published,
+                                Deleted = x.Deleted,
+                                SubjectToAcl = x.SubjectToAcl,
+                                LimitedToStores = x.LimitedToStores,
                                 PictureId = x.MainPictureId
-							});
-							break;
-						case LinkType.Category:
-							GetEntityData<Category>(d2, storeId, languageId, x => new ResolverEntitySummary
-							{
-								Name = x.Name,
+                            });
+                            break;
+                        case LinkType.Category:
+                            GetEntityData<Category>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
                                 Published = x.Published,
-								Deleted = x.Deleted,
-								SubjectToAcl = x.SubjectToAcl,
-								LimitedToStores = x.LimitedToStores,
+                                Deleted = x.Deleted,
+                                SubjectToAcl = x.SubjectToAcl,
+                                LimitedToStores = x.LimitedToStores,
                                 PictureId = x.MediaFileId
-							});
-							break;
-						case LinkType.Manufacturer:
-							GetEntityData<Manufacturer>(d2, storeId, languageId, x => new ResolverEntitySummary
-							{
-								Name = x.Name,
+                            });
+                            break;
+                        case LinkType.Manufacturer:
+                            GetEntityData<Manufacturer>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
                                 Published = x.Published,
-								Deleted = x.Deleted,
-								LimitedToStores = x.LimitedToStores,
+                                Deleted = x.Deleted,
+                                LimitedToStores = x.LimitedToStores,
                                 PictureId = x.MediaFileId
-							});
-							break;
-						case LinkType.Topic:
-							GetEntityData<Topic>(d2, storeId, languageId, x => null);
-							break;
-						default:
-							throw new SmartException("Unknown link builder type.");
-					}
+                            });
+                            break;
+                        case LinkType.Topic:
+                            GetEntityData<Topic>(d2, storeId, languageId, x => null);
+                            break;
+                        case LinkType.BlogPost:
+                            GetEntityData<BlogPost>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Title,
+                                Published = x.IsPublished,
+                                LimitedToStores = x.LimitedToStores,
+                                PictureId = x.MediaFileId
+                            });
+                            break;
+                        case LinkType.NewsItem:
+                            GetEntityData<NewsItem>(d2, storeId, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Title,
+                                Published = x.Published,
+                                LimitedToStores = x.LimitedToStores,
+                                PictureId = x.MediaFileId
+                            });
+                            break;
+                        default:
+                            throw new SmartException("Unknown link builder type.");
+                    }
 
-					return d2;
-				});
-			}
+                    return d2;
+                });
+            }
 
             var result = new LinkResolverResult
             {
@@ -175,19 +193,21 @@ namespace SmartStore.Services.Cms
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
+                case LinkType.BlogPost:
+                case LinkType.NewsItem:
                     var entityName = d.Type.ToString();
 
-                    if (d.CheckLimitedToStores && 
-                        d.LimitedToStores && 
-                        d.Status == LinkStatus.Ok && 
-                        !QuerySettings.IgnoreMultiStore && 
+                    if (d.CheckLimitedToStores &&
+                        d.LimitedToStores &&
+                        d.Status == LinkStatus.Ok &&
+                        !QuerySettings.IgnoreMultiStore &&
                         !_storeMappingService.Authorize(entityName, d.Id, storeId))
                     {
                         result.Status = LinkStatus.NotFound;
                     }
-                    else if (d.SubjectToAcl && 
-                        d.Status == LinkStatus.Ok && 
-                        !QuerySettings.IgnoreAcl && 
+                    else if (d.SubjectToAcl &&
+                        d.Status == LinkStatus.Ok &&
+                        !QuerySettings.IgnoreAcl &&
                         !_aclService.Authorize(entityName, d.Id, roles))
                     {
                         result.Status = LinkStatus.Forbidden;
@@ -200,38 +220,38 @@ namespace SmartStore.Services.Cms
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TokenizeExpression(string expression, out string type, out string path, out string query)
-		{
-			type = null;
-			path = null;
-			query = null;
+        {
+            type = null;
+            path = null;
+            query = null;
 
-			if (string.IsNullOrWhiteSpace(expression))
-			{
-				return false;
-			}
+            if (string.IsNullOrWhiteSpace(expression))
+            {
+                return false;
+            }
 
-			var colonIndex = expression.IndexOf(':');
-			if (colonIndex > -1)
-			{
-				type = expression.Substring(0, colonIndex);
-				if (type.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-				{
-					type = null;
-					colonIndex = -1;
-				}	
-			}
+            var colonIndex = expression.IndexOf(':');
+            if (colonIndex > -1)
+            {
+                type = expression.Substring(0, colonIndex);
+                if (type.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = null;
+                    colonIndex = -1;
+                }
+            }
 
-			path = expression.Substring(colonIndex + 1);
+            path = expression.Substring(colonIndex + 1);
 
-			var qmIndex = path.IndexOf('?');
-			if (qmIndex > -1)
-			{
-				query = path.Substring(qmIndex + 1);
-				path = path.Substring(0, qmIndex);
-			}
+            var qmIndex = path.IndexOf('?');
+            if (qmIndex > -1)
+            {
+                query = path.Substring(qmIndex + 1);
+                path = path.Substring(0, qmIndex);
+            }
 
-			return true;
-		}
+            return true;
+        }
 
         protected virtual string GetLocalized(int entityId, string localeKeyGroup, string localeKey, int languageId, string defaultValue)
         {
@@ -240,46 +260,48 @@ namespace SmartStore.Services.Cms
 
         protected virtual LinkResolverData Parse(string linkExpression)
         {
-			if (TokenizeExpression(linkExpression, out var type, out var path, out var query))
-			{
-				if (!string.IsNullOrWhiteSpace(type) && Enum.TryParse(type, true, out LinkType linkType))
-				{
-					var result = new LinkResolverData { Type = linkType, Expression = string.Concat(type, ":", path) };
+            if (TokenizeExpression(linkExpression, out var type, out var path, out var query))
+            {
+                if (!string.IsNullOrWhiteSpace(type) && Enum.TryParse(type, true, out LinkType linkType))
+                {
+                    var result = new LinkResolverData { Type = linkType, Expression = string.Concat(type, ":", path) };
 
-					switch (linkType)
-					{
-						case LinkType.Product:
-						case LinkType.Category:
-						case LinkType.Manufacturer:
-						case LinkType.Topic:
-							if (int.TryParse(path, out var id))
-							{
-								// Reduce thrown exceptions in console
-								result.Value = id;
-							}
-							else
-							{
-								result.Value = path;
-							}
+                    switch (linkType)
+                    {
+                        case LinkType.Product:
+                        case LinkType.Category:
+                        case LinkType.Manufacturer:
+                        case LinkType.Topic:
+                        case LinkType.BlogPost:
+                        case LinkType.NewsItem:
+                            if (int.TryParse(path, out var id))
+                            {
+                                // Reduce thrown exceptions in console
+                                result.Value = id;
+                            }
+                            else
+                            {
+                                result.Value = path;
+                            }
 
-							result.QueryString = query;
-							break;
-						case LinkType.Url:
-							result.Value = path + (query.HasValue() ? "?" + query : "");
-							break;
-						case LinkType.File:
-							result.Value = path;
-							result.QueryString = query;
-							break;
-						default:
-							throw new SmartException("Unknown link builder type.");
-					}
+                            result.QueryString = query;
+                            break;
+                        case LinkType.Url:
+                            result.Value = path + (query.HasValue() ? "?" + query : "");
+                            break;
+                        case LinkType.File:
+                            result.Value = path;
+                            result.QueryString = query;
+                            break;
+                        default:
+                            throw new SmartException("Unknown link builder type.");
+                    }
 
-					return result;
-				}
-			}
+                    return result;
+                }
+            }
 
-			return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
+            return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
         }
 
         internal void GetEntityData<T>(
@@ -351,18 +373,23 @@ namespace SmartStore.Services.Cms
                 data.Status = summary.Deleted
                     ? LinkStatus.NotFound
                     : summary.Published ? LinkStatus.Ok : LinkStatus.Hidden;
-				
-                if (data.Type == LinkType.Topic)
+
+                switch (data.Type)
                 {
-                    data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
-                        ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
-                        ?? summary.ShortTitle.NullEmpty()
-                        ?? summary.Title.NullEmpty()
-                        ?? summary.Name;
-                }
-                else
-                {
-                    data.Label = GetLocalized(data.Id, entityName, "Name", languageId, summary.Name);
+                    case LinkType.Topic:
+                        data.Label = GetLocalized(data.Id, entityName, nameof(Topic.ShortTitle), languageId, null)
+                            ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
+                            ?? summary.ShortTitle.NullEmpty()
+                            ?? summary.Title.NullEmpty()
+                            ?? summary.Name;
+                        break;
+                    case LinkType.BlogPost:
+                    case LinkType.NewsItem:
+                        data.Label = GetLocalized(data.Id, entityName, "Title", languageId, summary.Name);
+                        break;
+                    default:
+                        data.Label = GetLocalized(data.Id, entityName, "Name", languageId, summary.Name);
+                        break;
                 }
 
                 data.Slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>100 years of Bauhaus</Title>
+	<MetaTitle>100 years of Bauhaus</MetaTitle>
+	<Intro>The Staatliches Bauhaus, now mostly just Bauhaus, was an art school founded by Walter Gropius in Weimar in 1919. In terms of type and concept, it was something completely new at the time, as the Bauhaus represented a fusion of art and craftsmanship.</Intro>
+	<MetaDescription>The Staatliches Bauhaus, now mostly just Bauhaus, was an art school founded by Walter Gropius in Weimar in 1919. In terms of type and concept, it was something completely new at the time, as the Bauhaus represented a fusion of art and craftsmanship.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				The Staatliches Bauhaus, now mostly just Bauhaus, was an art school founded by Walter Gropius in Weimar in 1919.
+				In terms of type and concept, it was something completely new at the time, as the Bauhaus represented a fusion of art and craftsmanship.
+				Today, the historic Bauhaus represents the most influential educational institution in the field of architecture, art and design in the
+				20th century.
+				The Bauhaus existed at the same time as and during the Weimar Republic from 1919 to 1933 and is today considered worldwide to be the home
+				of the avant-garde of
+				Classic Modernism in all areas of free and applied art and architecture. The resonance of the Bauhaus continues to this day and
+				significantly shapes the image of modernist trends.
+			</p>
+			<h4 class="fs-h4">Foundation of the Bauhaus</h4>
+			<p>
+				The Bauhaus came into being in Weimar through the merger of the Grand Ducal-Saxon School of Art Weimar with the Grand Ducal-Saxon
+				School of Arts and Crafts Weimar, founded in 1907 by Henry van de Velde. 
+        It became the direct predecessor of the Bauhaus, which then began its work in van de Velde's school buildings.
+				In 1925 the school moved to Dessau - from 1926 in the building of the Bauhaus Dessau. In 1932 the Bauhaus had to move to Berlin; in 1933 it was closed.
+			</p>
+			<h4 class="fs-h4">Influence of Bauhaus</h4>
+			<p>
+				The influence of the Bauhaus was so significant that the term Bauhaus is often colloquially equated with modernism in architecture and
+				design.
+				From an art historical perspective, however, it is problematic to view the so-called Bauhaus style and developments in Germany in
+				isolation and to use Bauhaus as a style term, as an architectural style or furniture style. 
+        The designs and works of teachers and students at the Bauhaus are therefore seen as part of transnational, long-term currents 
+        and classified under terms such as Functionalism, Classic Modernism, New Objectivity, International Style, New Building.
+			</p>
+			<p>
+				At the Bauhaus, the traditionally separate areas of the visual arts, applied arts and performing arts were combined on the basis of the
+				concept, which in turn had a strong impact on painting, the performing arts and music.
+			</p>
+		]]>
+	</Body>
+	<Tags>Bauhaus,Walter Gropius,Weimar,School of Arts</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-05-01</CreatedOn>
+	<DisplayType>20</DisplayType>
+	<Image>bauhaus.jpg</Image>
+	<ImagePreview>bauhaus-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+</BlogPost>

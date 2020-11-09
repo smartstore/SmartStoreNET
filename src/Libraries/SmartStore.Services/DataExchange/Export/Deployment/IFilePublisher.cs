@@ -6,37 +6,37 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Export.Deployment
 {
-	public interface IFilePublisher
-	{
-		void Publish(ExportDeploymentContext context, ExportDeployment deployment);
+    public interface IFilePublisher
+    {
+        void Publish(ExportDeploymentContext context, ExportDeployment deployment);
     }
 
 
-	public class ExportDeploymentContext
-	{
-		public Localizer T { get; set; }
-		public ILogger Log { get; set; }
+    public class ExportDeploymentContext
+    {
+        public Localizer T { get; set; }
+        public ILogger Log { get; set; }
 
-		public string FolderContent { get; set; }
+        public string FolderContent { get; set; }
 
-		public string ZipPath { get; set; }
-		public bool CreateZipArchive { get; set; }
+        public string ZipPath { get; set; }
+        public bool CreateZipArchive { get; set; }
 
-		public DataDeploymentResult Result { get; set; }
+        public DataDeploymentResult Result { get; set; }
 
-		public IEnumerable<string> GetDeploymentFiles()
-		{
-			if (!CreateZipArchive)
-			{
-				return System.IO.Directory.EnumerateFiles(FolderContent, "*", SearchOption.AllDirectories);
-			}
+        public IEnumerable<string> GetDeploymentFiles()
+        {
+            if (!CreateZipArchive)
+            {
+                return System.IO.Directory.EnumerateFiles(FolderContent, "*", SearchOption.AllDirectories);
+            }
 
-			if (File.Exists(ZipPath))
-			{
-				return new string[] { ZipPath };
-			}
+            if (File.Exists(ZipPath))
+            {
+                return new string[] { ZipPath };
+            }
 
-			return new string[0];
-		}
-	}
+            return new string[0];
+        }
+    }
 }

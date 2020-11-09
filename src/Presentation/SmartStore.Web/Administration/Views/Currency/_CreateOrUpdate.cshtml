@@ -15,23 +15,21 @@
 {
     @Html.ValidationSummary(false)
 }
-
+@Html.AntiForgeryToken()
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("currency-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
-	x.Add().Text(T("Admin.Common.Info").Text)
-		//.Icon("fa fa-pencil-alt fa-lg fa-fw")
-		.Content(TabInfo())
-		.Selected(true);
+    x.Add().Text(T("Admin.Common.Info").Text)
+        .Content(TabInfo())
+        .Selected(true);
 
-	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-			
+    <script>
+        $(function() {
             $('#@(Html.FieldIdFor(x => x.RoundOrderItemsEnabled))').change(function () {
                 $('tr.round-order-items').toggle($(this).is(':checked'));
             }).trigger('change');
@@ -51,8 +49,8 @@
                     @Html.SmartLabelFor(model => model.Locales[item].Name)
                 </td>
                 <td class="adminData">
-					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+                    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                    @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
                     @Html.EditorFor(model => Model.Locales[item].Name)
                     @Html.ValidationMessageFor(model => model.Locales[item].Name)
@@ -73,136 +71,136 @@
         </table>
     ))
 
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CurrencyCode)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.CurrencyCode)
-            @Html.ValidationMessageFor(model => model.CurrencyCode)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Rate)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Rate)
-            @Html.ValidationMessageFor(model => model.Rate)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayLocale)
-        </td>
-        <td class="adminData">
-            @Html.DropDownListFor(x => x.DisplayLocale, cultures.Select(x => 
-                new SelectListItem { Value = x.IetfLanguageTag, Text = string.Format("{0} [{1}]", x.DisplayName, x.IetfLanguageTag) }))
-            @Html.ValidationMessageFor(model => model.DisplayLocale)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CustomFormatting)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.CustomFormatting)
-            @Html.ValidationMessageFor(model => model.CustomFormatting)
-            <div id="CustomFormattingExample"></div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DomainEndings)
-        </td>
-        <td class="adminData">
-			@Html.ListBoxFor(model => model.DomainEndingsArray, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
-            @Html.ValidationMessageFor(model => model.DomainEndings)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Published)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Published)
-            @Html.ValidationMessageFor(model => model.Published)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayOrder)
-            @Html.ValidationMessageFor(model => model.DisplayOrder)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SelectedStoreIds)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.SelectedStoreIds)
-            @Html.ValidationMessageFor(model => model.SelectedStoreIds)
-        </td>
-    </tr>
-	@if (Model.Id > 0)
-	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CreatedOn)
-			</td>
-			<td class="adminData">
-				<div class="form-control-plaintext">
-					@Html.DisplayFor(model => model.CreatedOn)
-				</div>
-			</td>
-		</tr>
-	}
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CurrencyCode)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CurrencyCode)
+                @Html.ValidationMessageFor(model => model.CurrencyCode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Rate)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Rate)
+                @Html.ValidationMessageFor(model => model.Rate)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayLocale)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(x => x.DisplayLocale, cultures.Select(x =>
+                    new SelectListItem { Value = x.IetfLanguageTag, Text = string.Format("{0} [{1}]", x.DisplayName, x.IetfLanguageTag) }))
+                @Html.ValidationMessageFor(model => model.DisplayLocale)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomFormatting)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomFormatting)
+                @Html.ValidationMessageFor(model => model.CustomFormatting)
+                <div id="CustomFormattingExample"></div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DomainEndings)
+            </td>
+            <td class="adminData">
+                @Html.ListBoxFor(model => model.DomainEndingsArray, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
+                @Html.ValidationMessageFor(model => model.DomainEndings)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SelectedStoreIds)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SelectedStoreIds)
+                @Html.ValidationMessageFor(model => model.SelectedStoreIds)
+            </td>
+        </tr>
+        @if (Model.Id > 0)
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CreatedOn)
+                </td>
+                <td class="adminData">
+                    <div class="form-control-plaintext">
+                        @Html.DisplayFor(model => model.CreatedOn)
+                    </div>
+                </td>
+            </tr>
+        }
 
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.PrimaryStoreCurrencyStores)
-		</td>
-		<td class="adminData">
-			@if (Model.PrimaryStoreCurrencyStores != null && Model.PrimaryStoreCurrencyStores.Count > 0)
-			{
-				foreach (var store in Model.PrimaryStoreCurrencyStores)
-				{
-					<a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
-				}
-			}
-			else
-			{
-				<div class="form-control-plaintext">
-					@T("Common.Unspecified")
-				</div>
-			}
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.PrimaryExchangeRateCurrencyStores)
-		</td>
-		<td class="adminData">
-			@if (Model.PrimaryExchangeRateCurrencyStores != null && Model.PrimaryExchangeRateCurrencyStores.Count > 0)
-			{
-				foreach (var store in Model.PrimaryExchangeRateCurrencyStores)
-				{
-					<a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
-				}
-			}
-			else
-			{
-				<div class="form-control-plaintext">
-					@T("Common.Unspecified")
-				</div>
-			}
-		</td>
-	</tr>
-</table>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrimaryStoreCurrencyStores)
+            </td>
+            <td class="adminData">
+                @if (Model.PrimaryStoreCurrencyStores != null && Model.PrimaryStoreCurrencyStores.Count > 0)
+                {
+                    foreach (var store in Model.PrimaryStoreCurrencyStores)
+                    {
+                        <a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
+                    }
+                }
+                else
+                {
+                    <div class="form-control-plaintext">
+                        @T("Common.Unspecified")
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrimaryExchangeRateCurrencyStores)
+            </td>
+            <td class="adminData">
+                @if (Model.PrimaryExchangeRateCurrencyStores != null && Model.PrimaryExchangeRateCurrencyStores.Count > 0)
+                {
+                    foreach (var store in Model.PrimaryExchangeRateCurrencyStores)
+                    {
+                        <a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
+                    }
+                }
+                else
+                {
+                    <div class="form-control-plaintext">
+                        @T("Common.Unspecified")
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
 
     <table class="adminContent">
         <tr>
@@ -266,7 +264,7 @@
         <tr class="round-order-total">
             <td class="adminTitle">
             </td>
-            <td class="adminData">                
+            <td class="adminData">
                 @if (Model.RoundOrderTotalPaymentMethods.Any())
                 {
                     <div class="alert alert-info">
@@ -287,7 +285,6 @@
 
 <script>
     $(function () {
-
         // Show custom formatting example.
         $('#@Html.FieldIdFor(model => model.CustomFormatting)').on('change', function () {
 			$.ajax({

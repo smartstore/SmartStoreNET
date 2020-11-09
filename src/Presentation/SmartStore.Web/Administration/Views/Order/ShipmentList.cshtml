@@ -7,6 +7,8 @@
 
 @using (Html.BeginForm())
 {
+    @Html.AntiForgeryToken()
+
     <div class="section-header">
         <div class="title">
             <i class="fa fa-truck"></i>
@@ -89,13 +91,10 @@
 </div>
 
     
-    <script type="text/javascript">
-
+    <script>
         var selectedIds = [];
 
-        $(document).ready(function () {
-
-            //search button
+        $(function() {
             $('#btnSearch').click(function () {
                 //search
                 var grid = $('#shipments-grid').data('tGrid');
@@ -107,7 +106,6 @@
                 return false;
             });
 
-
             //"Print packaging slips (selected)" button
             $('#exportpackagingslips-selected').click(function (e) {
                 e.preventDefault();
@@ -116,7 +114,6 @@
                 return false;
             });
 
-            
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });
@@ -170,6 +167,5 @@
             var numChkBoxesChecked = $('#shipments-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
             $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
         }
-   </script>
-    
+   </script>   
 }

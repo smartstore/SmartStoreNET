@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Cms;
@@ -42,15 +41,15 @@ namespace SmartStore.Web.Framework.UI
             else if (entry.Entity is MenuItemRecord mir)
             {
                 var menu = mir.Menu ?? _menuStorage.Value.GetMenuById(mir.MenuId);
-				if (menu != null)
-				{
-					_menuService.Value.ClearCache(menu.SystemName);
-				}   
+                if (menu != null)
+                {
+                    _menuService.Value.ClearCache(menu.SystemName);
+                }
             }
-			else
-			{
-				throw new NotSupportedException();
-			}
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }

@@ -4,22 +4,22 @@ namespace SmartStore.Core.Domain.Tax
 {
     public class TaxSettings : ISettings
     {
-		public TaxSettings()
-		{
-			TaxBasedOn = TaxBasedOn.BillingAddress;
-			TaxDisplayType = TaxDisplayType.ExcludingTax;
-			ActiveTaxProviderSystemName = "Tax.FixedRate";
-			DisplayTaxSuffix = true;
-			PricesIncludeTax = true;
-			EuVatAllowVatExemption = true;
+        public TaxSettings()
+        {
+            TaxBasedOn = TaxBasedOn.BillingAddress;
+            TaxDisplayType = TaxDisplayType.ExcludingTax;
+            ActiveTaxProviderSystemName = "Tax.FixedRate";
+            DisplayTaxSuffix = true;
+            PricesIncludeTax = true;
+            EuVatAllowVatExemption = true;
             ShippingPriceIncludesTax = true;
-            ShowLegalHintsInFooter = true; 
-			ShowLegalHintsInProductDetails = true;
-			ShowLegalHintsInProductList = true;
-			AuxiliaryServicesTaxingType = AuxiliaryServicesTaxType.SpecifiedTaxCategory;
-		}
-		
-		/// <summary>
+            ShowLegalHintsInFooter = true;
+            ShowLegalHintsInProductDetails = true;
+            ShowLegalHintsInProductList = true;
+            AuxiliaryServicesTaxingType = AuxiliaryServicesTaxType.SpecifiedTaxCategory;
+        }
+
+        /// <summary>
         /// Tax based on
         /// </summary>
         public TaxBasedOn TaxBasedOn { get; set; }
@@ -114,15 +114,15 @@ namespace SmartStore.Core.Domain.Tax
         /// </summary>
         public int PaymentMethodAdditionalFeeTaxClassId { get; set; }
 
-		/// <summary>
-		/// Taxing type for auxiliary services like shipping and payment fees
-		/// </summary>
-		public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
+        /// <summary>
+        /// Taxing type for auxiliary services like shipping and payment fees
+        /// </summary>
+        public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether EU VAT (Eupore Union Value Added Tax) is enabled
-		/// </summary>
-		public bool EuVatEnabled { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether EU VAT (Eupore Union Value Added Tax) is enabled
+        /// </summary>
+        public bool EuVatEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a shop country identifier

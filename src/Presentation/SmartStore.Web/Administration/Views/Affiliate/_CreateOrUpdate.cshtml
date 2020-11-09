@@ -3,66 +3,67 @@
 @using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(false)
+@Html.AntiForgeryToken()
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("affiliate-edit").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.Affiliates.Info").Text)
+	x.Add().Text(T("Admin.Affiliates.Info").Text)
 		.Content(TabInfo()).Selected(true);
 
-    if (Model.Id > 0)
-    {
-        x.Add().Text(T("Admin.Affiliates.Customers").Text)
+	if (Model.Id > 0)
+	{
+		x.Add().Text(T("Admin.Affiliates.Customers").Text)
 			.Content(TabCustomers());
-        x.Add().Text(T("Admin.Affiliates.Orders").Text)
+		x.Add().Text(T("Admin.Affiliates.Orders").Text)
 			.Content(TabOrders());
-    }
-    
-    // generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "affiliate-edit", this.Html, this.Model));
+	}
+
+	// generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "affiliate-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
-{        
-    <table class="adminContent">
-        @if (Model.Id > 0)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Id)
-                </td>
-                <td class="adminData">
-                    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+{
+	<table class="adminContent">
+		@if (Model.Id > 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
 					@Html.ValidationMessageFor(model => model.Id)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.Url)
-                </td>
-                <td class="adminData">
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Url)
+				</td>
+				<td class="adminData">
 					<div class="form-control-plaintext">
 						<a href="@Model.Url">@Model.Url</a>
 					</div>
-                </td>
-            </tr>
-        }
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Active)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Active)
-                @Html.ValidationMessageFor(model => model.Active)
-            </td>
-        </tr>
-    </table>
-        
-    @Html.EditorFor(model => model.Address, "Address")
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Active)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Active)
+				@Html.ValidationMessageFor(model => model.Active)
+			</td>
+		</tr>
+	</table>
+
+	@Html.EditorFor(model => model.Address, "Address")
 }
 
 @helper TabCustomers()
 {
-    @(Html.Telerik().Grid<AffiliateModel.AffiliatedCustomerModel>()
+	@(Html.Telerik().Grid<AffiliateModel.AffiliatedCustomerModel>()
 		.Name("customers-grid")
 		.DataKeys(keys =>
 		{
@@ -95,7 +96,7 @@
 
 @helper TabOrders()
 {
-    @(Html.Telerik().Grid<AffiliateModel.AffiliatedOrderModel>()
+	@(Html.Telerik().Grid<AffiliateModel.AffiliatedOrderModel>()
 		.Name("order-grid")
 		.Columns(columns =>
 		{

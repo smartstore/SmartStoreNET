@@ -1,29 +1,27 @@
-﻿using System;
-
-namespace SmartStore.Web.Framework.UI 
-{   
+﻿namespace SmartStore.Web.Framework.UI
+{
     public enum BadgeStyle
     {
-		Secondary,
-		Primary,
-		Success,
-		Info,
-		Warning,
+        Secondary,
+        Primary,
+        Success,
+        Info,
+        Warning,
         Danger,
-		Light,
-		Dark
-	}
+        Light,
+        Dark
+    }
 
-	public enum ButtonStyle
-	{
-		Secondary,
-		Primary,
-		Success,
-		Info,
-		Warning,
-		Danger,
-		Light,
-		Dark,
-		Link
-	}
+    public enum ButtonStyle
+    {
+        Secondary,
+        Primary,
+        Success,
+        Info,
+        Warning,
+        Danger,
+        Light,
+        Dark,
+        Link
+    }
 }

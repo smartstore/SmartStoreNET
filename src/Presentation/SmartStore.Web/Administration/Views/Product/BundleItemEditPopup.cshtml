@@ -3,18 +3,19 @@
 @model ProductBundleItemModel
 
 @{
-    Layout = "_AdminPopupLayout";
+	Layout = "_AdminPopupLayout";
 }
 
 @using (Html.BeginForm(new { btnId = ViewBag.BtnId, formId = ViewBag.FormId }))
 {
-    @Html.ValidationSummary(false)
-    @Html.HiddenFor(model => model.Id)
-    @Html.HiddenFor(model => model.ProductId)
-    @Html.HiddenFor(model => model.BundleProductId)
-    
-    <div class="section-header">
-        <div class="title">@ViewBag.Title</div>
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false)
+	@Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ProductId)
+	@Html.HiddenFor(model => model.BundleProductId)
+
+	<div class="section-header">
+		<div class="title">@ViewBag.Title</div>
 		<div class="options">
 			<button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
@@ -25,10 +26,9 @@
 			</button>
 		</div>
 	</div>
-	
-	<script type="text/javascript">
-		$(document).ready(function () {
 
+	<script>
+		$(function() {
 			@foreach (var attribute in Model.Attributes)
 			{
 				<text>
@@ -37,7 +37,7 @@
 			}
 		});
 	</script>
-    	
+
 	@Html.SmartStore().TabStrip().Name("bundleitem-edit").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
@@ -50,51 +50,51 @@
 	{
 		<div id="BundleItemsLocalizedContainer">
 			@(Html.LocalizedEditor<ProductBundleItemModel, ProductBundleItemLocalizedModel>("productbundleitem-localized",
-			@<table class="adminContent">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Locales[item].Name)
-					</td>
-					<td class="adminData">
-						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+					@<table class="adminContent">
+						<tr>
+							<td class="adminTitle">
+								@Html.SmartLabelFor(model => model.Locales[item].Name)
+							</td>
+							<td class="adminData">
+								@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+								@Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-						@Html.EditorFor(model => Model.Locales[item].Name)
-						@Html.ValidationMessageFor(model => model.Locales[item].Name)
-					</td>
-				</tr>
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
-					</td>
-					<td class="adminData">
-						@Html.EditorFor(model => model.Locales[item].ShortDescription)
-						@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
-					</td>
-				</tr>
-			</table>
-			,
-			@<table class="adminContent">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Name)
-					</td>
-					<td class="adminData">
-						@Html.EditorFor(model => model.Name)
-						@Html.ValidationMessageFor(model => model.Name)
-					</td>
-				</tr>
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.ShortDescription)
-					</td>
-					<td class="adminData">
-						@Html.EditorFor(x => x.ShortDescription)
-						@Html.ValidationMessageFor(model => model.ShortDescription)
-					</td>
-				</tr>
-			</table>
-			))
+								@Html.EditorFor(model => Model.Locales[item].Name)
+								@Html.ValidationMessageFor(model => model.Locales[item].Name)
+							</td>
+						</tr>
+						<tr>
+							<td class="adminTitle">
+								@Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
+							</td>
+							<td class="adminData">
+								@Html.EditorFor(model => model.Locales[item].ShortDescription)
+								@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
+							</td>
+						</tr>
+					</table>
+,
+						@<table class="adminContent">
+							<tr>
+								<td class="adminTitle">
+									@Html.SmartLabelFor(model => model.Name)
+								</td>
+								<td class="adminData">
+									@Html.EditorFor(model => model.Name)
+									@Html.ValidationMessageFor(model => model.Name)
+								</td>
+							</tr>
+							<tr>
+								<td class="adminTitle">
+									@Html.SmartLabelFor(model => model.ShortDescription)
+								</td>
+								<td class="adminData">
+									@Html.EditorFor(x => x.ShortDescription)
+									@Html.ValidationMessageFor(model => model.ShortDescription)
+								</td>
+							</tr>
+						</table>
+	))
 		</div>
 
 		<table class="adminContent">
@@ -109,24 +109,24 @@
 			</tr>
 			@if (Model.IsPerItemPricing)
 			{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Discount)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Discount)
-					@Html.ValidationMessageFor(model => model.Discount)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DiscountPercentage)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.DiscountPercentage)
-					@Html.ValidationMessageFor(model => model.DiscountPercentage)
-				</td>
-			</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Discount)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.Discount)
+						@Html.ValidationMessageFor(model => model.Discount)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.DiscountPercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.DiscountPercentage)
+						@Html.ValidationMessageFor(model => model.DiscountPercentage)
+					</td>
+				</tr>
 			}
 			<tr>
 				<td class="adminTitle">
@@ -186,7 +186,7 @@
 			</tr>
 		</table>
 	}
-	
+
 	@helper TabAttributeFilters()
 	{
 		if (Model.Attributes.Count == 0)

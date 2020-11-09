@@ -55,10 +55,10 @@ namespace SmartStore.Core.Domain.Messages
         {
             get
             {
-				if (DisplayName.IsEmpty())
-					return Email;
+                if (DisplayName.IsEmpty())
+                    return Email;
 
-				return "{0} ({1})".FormatInvariant(DisplayName, Email);
+                return "{0} ({1})".FormatInvariant(DisplayName, Email);
             }
         }
 
@@ -72,9 +72,9 @@ namespace SmartStore.Core.Domain.Messages
             return this.MemberwiseClone();
         }
 
-		public EmailAddress ToEmailAddress()
-		{
-			return new EmailAddress(this.Email, this.DisplayName);
-		}
+        public EmailAddress ToEmailAddress()
+        {
+            return new EmailAddress(this.Email, this.DisplayName);
+        }
     }
 }

@@ -40,7 +40,7 @@ SmartStore.media = (function () {
         "misc": { name: "far fa-file", color: "#bbb", mediaType: 'bin', isFallback: true }
     };
 
-	return {
+    return {
         getIconHint: function (file) {
             return iconHints[file.ext] || iconHints[file.type] || (file.mime ? iconHints[file.mime.split('/')[0]] : null) || iconHints['misc'];
         },
@@ -52,7 +52,7 @@ SmartStore.media = (function () {
                         var src = img.data('src');
                         if (src) {
                             img.one('load', function () {
-                                img.parent().addClass('show').prev().removeClass('show');
+                                img.parent().addClass('show loaded').prev().removeClass('show');
                             });
                             img.prop('src', src);
                         }
@@ -116,11 +116,11 @@ SmartStore.media = (function () {
             // Append querystring to file manager root url
             if (opts.multiSelect) {
                 url = modifyUrl(url, "multiSelect", opts.multiSelect);
-            }           
+            }
 
             if (opts.type) {
                 url = modifyUrl(url, "typeFilter", opts.type);
-            }           
+            }
 
             opts.id = opts.id || 'modal-file-manager';
 
@@ -141,5 +141,5 @@ SmartStore.media = (function () {
 
             return popup;
         }
-	};
+    };
 })();

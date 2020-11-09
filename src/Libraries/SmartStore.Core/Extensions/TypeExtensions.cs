@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Collections;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SmartStore
@@ -15,51 +15,51 @@ namespace SmartStore
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
-			if (type == null)
-				throw new ArgumentNullException(nameof(type));
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-			if (type.AssemblyQualifiedName != null)
-	        {
-		        var strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
-		        return string.Format("{0}, {1}", strArray[0].Trim(), strArray[1].Trim());
-	        }
+            if (type.AssemblyQualifiedName != null)
+            {
+                var strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
+                return string.Format("{0}, {1}", strArray[0].Trim(), strArray[1].Trim());
+            }
 
-	        return null;
+            return null;
         }
 
-		public static bool IsNumericType(this Type type)
-		{
-			switch (Type.GetTypeCode(type))
-			{
-				case TypeCode.Byte:
-				case TypeCode.SByte:
-				case TypeCode.UInt16:
-				case TypeCode.UInt32:
-				case TypeCode.UInt64:
-				case TypeCode.Int16:
-				case TypeCode.Int32:
-				case TypeCode.Int64:
-				case TypeCode.Decimal:
-				case TypeCode.Double:
-				case TypeCode.Single:
-					return true;
-				case TypeCode.Object:
-					if (type.IsNullable(out var innerType))
-					{
-						return innerType.IsNumericType();
-					}
-					return false;
-				default:
-					return false;
-			}
-		}
-
-		public static bool IsSequenceType(this Type type)
+        public static bool IsNumericType(this Type type)
         {
-			if (type == typeof(string))
-				return false;
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                case TypeCode.Object:
+                    if (type.IsNullable(out var innerType))
+                    {
+                        return innerType.IsNumericType();
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
 
-			return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
+        public static bool IsSequenceType(this Type type)
+        {
+            if (type == typeof(string))
+                return false;
+
+            return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool IsSequenceType(this Type type, out Type elementType)
@@ -130,17 +130,17 @@ namespace SmartStore
             {
                 return (string.Compare(type.FullName, "System.Xml.Linq.XElement", StringComparison.Ordinal) == 0);
             }
-			
+
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPlainObjectType(this Type type)
-		{
-			return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
-		}
+        {
+            return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
+        }
 
-		public static bool IsInteger(this Type type)
+        public static bool IsInteger(this Type type)
         {
             switch (Type.GetTypeCode(type))
             {
@@ -174,11 +174,11 @@ namespace SmartStore
         public static bool IsNullable(this Type type, out Type elementType)
         {
             if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				elementType = type.GetGenericArguments()[0];
+                elementType = type.GetGenericArguments()[0];
             else
                 elementType = type;
 
-			return elementType != type;
+            return elementType != type;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,10 +189,10 @@ namespace SmartStore
 
         public static bool IsConstructable(this Type type)
         {
-			if (type == null)
-				throw new ArgumentNullException(nameof(type));
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-			if (type.IsAbstract || type.IsInterface || type.IsArray || type.IsGenericTypeDefinition || type == typeof(void))
+            if (type.IsAbstract || type.IsInterface || type.IsArray || type.IsGenericTypeDefinition || type == typeof(void))
                 return false;
 
             if (!HasDefaultConstructor(type))
@@ -224,10 +224,10 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool HasDefaultConstructor(this Type type)
         {
-			if (type == null)
-				throw new ArgumentNullException(nameof(type));
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-			if (type.IsValueType)
+            if (type.IsValueType)
                 return true;
 
             return type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
@@ -237,18 +237,19 @@ namespace SmartStore
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check)
         {
-			return IsSubClass(type, check, out Type _);
-		}
+            return IsSubClass(type, check, out _);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSubClass(this Type type, Type check, out Type implementingType)
         {
-			if (type == null)
-				throw new ArgumentNullException(nameof(type));
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-			if (check == null)
-				throw new ArgumentNullException(nameof(check));
+            if (check == null)
+                throw new ArgumentNullException(nameof(check));
 
-			return IsSubClassInternal(type, type, check, out implementingType);
+            return IsSubClassInternal(type, type, check, out implementingType);
         }
 
         private static bool IsSubClassInternal(Type initialType, Type currentType, Type check, out Type implementingType)
@@ -279,6 +280,7 @@ namespace SmartStore
             {
                 if (IsSubClassInternal(initialType, currentType.GetGenericTypeDefinition(), check, out implementingType))
                 {
+                    // INFO: this seems to be wrong! Don't we need the implementing base type (?!?)
                     implementingType = currentType;
                     return true;
                 }
@@ -468,15 +470,15 @@ namespace SmartStore
             return target.IsDefined(typeof(TAttribute), inherits);
         }
 
-		/// <summary>
-		/// Given a particular MemberInfo, return the custom attributes of the
-		/// given type on that member.
-		/// </summary>
-		/// <typeparam name="TAttribute">Type of attribute to retrieve.</typeparam>
-		/// <param name="target">The member to look at.</param>
-		/// <param name="inherits">True to include attributes inherited from base classes.</param>
-		/// <returns>Array of found attributes.</returns>
-		public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
+        /// <summary>
+        /// Given a particular MemberInfo, return the custom attributes of the
+        /// given type on that member.
+        /// </summary>
+        /// <typeparam name="TAttribute">Type of attribute to retrieve.</typeparam>
+        /// <param name="target">The member to look at.</param>
+        /// <param name="inherits">True to include attributes inherited from base classes.</param>
+        /// <returns>Array of found attributes.</returns>
+        public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             if (target.IsDefined(typeof(TAttribute), inherits))
             {
@@ -523,8 +525,8 @@ namespace SmartStore
             return attributes.ToArray();
         }
 
-	    [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
-	    internal static IEnumerable<TAttribute> SortAttributesIfPossible<TAttribute>(IEnumerable<TAttribute> attributes)
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
+        internal static IEnumerable<TAttribute> SortAttributesIfPossible<TAttribute>(IEnumerable<TAttribute> attributes)
             where TAttribute : Attribute
         {
             if (typeof(IOrdered).IsAssignableFrom(typeof(TAttribute)))
@@ -572,7 +574,7 @@ namespace SmartStore
 
             if (seqType.IsGenericType)
             {
-				var args = seqType.GetGenericArguments();
+                var args = seqType.GetGenericArguments();
                 foreach (var arg in args)
                 {
                     var ienum = typeof(IEnumerable<>).MakeGenericType(arg);

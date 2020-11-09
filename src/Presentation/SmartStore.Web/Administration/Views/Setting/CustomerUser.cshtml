@@ -15,26 +15,26 @@
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
         </div>
     </div>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
-	
+
     @Html.SmartStore().TabStrip().Name("customersettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
     {
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.Privacy").Text).Content(TabPrivacy());
-		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
-	})
+        x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
+        x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
+        x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
+        x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
+        x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.Privacy").Text).Content(TabPrivacy());
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
+    })
 }
 
 @helper TabCustomerSettings()
@@ -56,93 +56,84 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CustomerLoginType)
             </td>
             <td class="adminData">
-				@Html.DropDownListForEnum(model => model.CustomerSettings.CustomerLoginType)
+                @Html.DropDownListForEnum(model => model.CustomerSettings.CustomerLoginType)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerLoginType)
             </td>
         </tr>
-		<tbody id="pnlUsernamesEnabled">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-					@Html.ValidationMessageFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-					@Html.ValidationMessageFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-				</td>
-			</tr>
-		</tbody>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNameFormat)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-			</td>
-		</tr>
+        <tbody id="pnlUsernamesEnabled">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+                    @Html.ValidationMessageFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+                    @Html.ValidationMessageFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+                </td>
+            </tr>
+        </tbody>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNameFormat)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+            </td>
+        </tr>
 
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberMethod)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
-			</td>
-		</tr>
-		<tr id="pnlCustomerNumberVisibility">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberVisibility)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberMethod)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
+            </td>
+        </tr>
+        <tr id="pnlCustomerNumberVisibility">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberVisibility)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
+            </td>
+        </tr>
 
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
             <td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.CustomerSettings.UserRegistrationType)
+                @Html.EnumSettingEditorFor(model => model.CustomerSettings.UserRegistrationType)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
-				@Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.RegisterCustomerRoleId,
-					Html.EditorFor(model => model.CustomerSettings.RegisterCustomerRoleId, null, new { htmlAttributes = new { data_placeholder = T("Common.Unspecified").Text } }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.RegisterCustomerRoleId,
+                    Html.EditorFor(model => model.CustomerSettings.RegisterCustomerRoleId, null, new { htmlAttributes = new { data_placeholder = T("Common.Unspecified").Text } }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>
@@ -152,8 +143,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, 
-					Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars))
+                @Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars,
+                    Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
         </tr>
@@ -230,15 +221,69 @@
             </td>
         </tr>
     </table>
+
+    <div class="adminContent">
+        <div class="adminRow">
+            <div class="admin-config-group">
+                <div class="title">@T("Account.Fields.Password")</div>
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
+            </div>
+            <div class="adminData">
+                @*Single store scope (no SettingEditorFor).*@
+                @Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.PasswordMinLength)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.PasswordMinLength)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.PasswordMinLength)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinDigitsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinDigitsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinDigitsInPassword)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinSpecialCharsInPassword)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+            </div>
+            <div class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.MinUppercaseCharsInPassword)
+            </div>
+        </div>
+    </div>
 }
 
 @helper TabCustomerFormFields()
 {
-	<div class="alert alert-info alert-dismissible">
-		@T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description")
-		<button class="close" data-dismiss="alert">&times;</button>
-	</div>
-	
+    <div class="alert alert-info alert-dismissible">
+        @T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description")
+        <button class="close" data-dismiss="alert">&times;</button>
+    </div>
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -258,24 +303,24 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.TitleEnabled)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.FirstNameRequired)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.FirstNameRequired)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.FirstNameRequired)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.LastNameRequired)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.LastNameRequired)
-				@Html.ValidationMessageFor(model => model.CustomerSettings.LastNameRequired)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.FirstNameRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.FirstNameRequired)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.FirstNameRequired)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.LastNameRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.LastNameRequired)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.LastNameRequired)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.DateOfBirthEnabled)
@@ -290,8 +335,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.CompanyEnabled, 
-					Html.CheckBoxFor(model => model.CustomerSettings.CompanyEnabled, new { data_toggler_for = "#pnlCompanyRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.CompanyEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.CompanyEnabled, new { data_toggler_for = "#pnlCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
         </tr>
@@ -309,8 +354,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddressEnabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlStreetAddressRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.StreetAddressEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -328,8 +373,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddress2Enabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlStreetAddress2Required" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.StreetAddress2Enabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -347,8 +392,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.ZipPostalCodeEnabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlZipPostalCodeRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.ZipPostalCodeEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -366,8 +411,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CityEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.CityEnabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.CityEnabled, new { data_toggler_for = "#pnlCityRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.CityEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.CityEnabled, new { data_toggler_for = "#pnlCityRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CityEnabled)
             </td>
         </tr>
@@ -385,8 +430,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CountryEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.CountryEnabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.CountryEnabled, new { data_toggler_for = "#pnlStateProvincEnabled" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.CountryEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.CountryEnabled, new { data_toggler_for = "#pnlStateProvincEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CountryEnabled)
             </td>
         </tr>
@@ -395,8 +440,18 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StateProvinceEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceEnabled)
+                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.StateProvinceEnabled, new { data_toggler_for = "#pnlStateProvinceRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StateProvinceEnabled)
+            </td>
+        </tr>
+        <tr id="pnlStateProvinceRequired">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.StateProvinceRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.StateProvinceRequired)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.StateProvinceRequired)
             </td>
         </tr>
         <tr>
@@ -404,8 +459,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.PhoneEnabled,
-					Html.CheckBoxFor(model => model.CustomerSettings.PhoneEnabled, new { data_toggler_for = "#pnlPhoneRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.PhoneEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.PhoneEnabled, new { data_toggler_for = "#pnlPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
         </tr>
@@ -423,8 +478,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.FaxEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CustomerSettings.FaxEnabled, 
-					Html.CheckBoxFor(model => model.CustomerSettings.FaxEnabled, new { data_toggler_for = "#pnlFaxRequired" }))
+                @Html.SettingEditorFor(model => model.CustomerSettings.FaxEnabled,
+                    Html.CheckBoxFor(model => model.CustomerSettings.FaxEnabled, new { data_toggler_for = "#pnlFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.FaxEnabled)
             </td>
         </tr>
@@ -451,11 +506,11 @@
 
 @helper TabAddressFormFields()
 {
-	<div class="alert alert-info alert-dismissible">
-		@T("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description")
-		<button class="close" data-dismiss="alert">&times;</button>
-	</div>
-	
+    <div class="alert alert-info alert-dismissible">
+        @T("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description")
+        <button class="close" data-dismiss="alert">&times;</button>
+    </div>
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -471,43 +526,43 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.SalutationEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.SalutationEnabled, new { data_toggler_for = "#pnlAddressSettingsSalutations" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.SalutationEnabled, new { data_toggler_for = "#pnlAddressSettingsSalutations" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.SalutationEnabled)
             </td>
         </tr>
     </table>
 
-	<div id="pnlAddressSettingsSalutations">
-		@(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-customer-localized",
-			@<table class="adminContent pnlSalutations">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Locales[item].Salutations)
-					</td>
-					<td class="adminData">
-						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+    <div id="pnlAddressSettingsSalutations">
+        @(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-customer-localized",
+                    @<table class="adminContent pnlSalutations">
+                        <tr>
+                            <td class="adminTitle">
+                                @Html.SmartLabelFor(model => model.Locales[item].Salutations)
+                            </td>
+                            <td class="adminData">
+                                @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+                                @Html.HiddenFor(model => model.Locales[item].LanguageId)
 
-						@Html.TextBoxFor(model => Model.Locales[item].Salutations)
-						@Html.ValidationMessageFor(model => model.Locales[item].Salutations)
-					</td>
-				</tr>
-			</table>
-				,
-			@<table class="adminContent pnlSalutations">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.AddressSettings.Salutations)
-					</td>
-					<td class="adminData">
-						@Html.TextBoxFor(model => model.AddressSettings.Salutations)
-						@Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
-					</td>
-				</tr>
-			</table>
-			))
-	</div>
+                                @Html.SettingEditorFor(model => Model.Locales[item].Salutations)
+                                @Html.ValidationMessageFor(model => model.Locales[item].Salutations)
+                            </td>
+                        </tr>
+                    </table>
+,
+                            @<table class="adminContent pnlSalutations">
+                                <tr>
+                                    <td class="adminTitle">
+                                        @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
+                                    </td>
+                                    <td class="adminData">
+                                        @Html.SettingEditorFor(model => model.AddressSettings.Salutations)
+                                        @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
+                                    </td>
+                                </tr>
+                            </table>
+        ))
+    </div>
 
     <table class="adminContent">
         <tr>
@@ -524,8 +579,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.CompanyEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.CompanyEnabled, new { data_toggler_for = "#pnlAddressCompanyRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.CompanyEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.CompanyEnabled, new { data_toggler_for = "#pnlAddressCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CompanyEnabled)
             </td>
         </tr>
@@ -543,8 +598,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddressEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlAddressStreetAddressRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.StreetAddressEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlAddressStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -562,8 +617,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddress2Enabled,
-					Html.CheckBoxFor(model => model.AddressSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlAddressStreetAddress2Required" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.StreetAddress2Enabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlAddressStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -581,8 +636,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.ZipPostalCodeEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlAddressZipPostalCodeRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.ZipPostalCodeEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlAddressZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -600,8 +655,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CityEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.CityEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.CityEnabled, new { data_toggler_for = "#pnlAddressCityRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.CityEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.CityEnabled, new { data_toggler_for = "#pnlAddressCityRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CityEnabled)
             </td>
         </tr>
@@ -619,47 +674,47 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CountryEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.CountryEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.CountryEnabled, new { data_toggler_for = "#pnlAddressStateProvinceEnabled" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.CountryEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.CountryEnabled, new { data_toggler_for = "#pnlAddressStateProvinceEnabled" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CountryEnabled)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddressSettings.CountryRequired)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.CountryRequired)
-				@Html.ValidationMessageFor(model => model.AddressSettings.CountryRequired)
-			</td>
-		</tr>
-		<tbody id="pnlAddressStateProvinceEnabled">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
-					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceRequired)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceRequired)
-					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceRequired)
-				</td>
-			</tr>
-		</tbody>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AddressSettings.CountryRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AddressSettings.CountryRequired)
+                @Html.ValidationMessageFor(model => model.AddressSettings.CountryRequired)
+            </td>
+        </tr>
+        <tbody id="pnlAddressStateProvinceEnabled">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
+                    @Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddressSettings.StateProvinceRequired)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.AddressSettings.StateProvinceRequired)
+                    @Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceRequired)
+                </td>
+            </tr>
+        </tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddressSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.PhoneEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.PhoneEnabled, new { data_toggler_for = "#pnlAddressPhoneRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.PhoneEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.PhoneEnabled, new { data_toggler_for = "#pnlAddressPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.PhoneEnabled)
             </td>
         </tr>
@@ -677,8 +732,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.FaxEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.AddressSettings.FaxEnabled,
-					Html.CheckBoxFor(model => model.AddressSettings.FaxEnabled, new { data_toggler_for = "#pnlAddressFaxRequired" }))
+                @Html.SettingEditorFor(model => model.AddressSettings.FaxEnabled,
+                    Html.CheckBoxFor(model => model.AddressSettings.FaxEnabled, new { data_toggler_for = "#pnlAddressFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.FaxEnabled)
             </td>
         </tr>
@@ -689,31 +744,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.AddressSettings.FaxRequired)
                 @Html.ValidationMessageFor(model => model.AddressSettings.FaxRequired)
-            </td>
-        </tr>
-    </table>
-}
-
-@helper TabDateTimeSettings()
-{
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
-                @Html.ValidationMessageFor(model => model.DateTimeSettings.AllowCustomersToSetTimeZone)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
-            </td>
-            <td class="adminData">
-				@Html.SettingEditorFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, 
-					Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones))
-                @Html.ValidationMessageFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
             </td>
         </tr>
     </table>
@@ -736,52 +766,188 @@
 
 @helper TabPrivacy()
 {
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PrivacySettings.EnableCookieConsent)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PrivacySettings.EnableCookieConsent,
-					Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent))
-				@Html.ValidationMessageFor(model => model.PrivacySettings.EnableCookieConsent)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PrivacySettings.StoreLastIpAddress)
-				@Html.ValidationMessageFor(model => model.PrivacySettings.StoreLastIpAddress)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-				@Html.ValidationMessageFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-				@Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-				@Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
-			</td>
-		</tr>
-	</table>
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.StoreLastIpAddress)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.StoreLastIpAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnProductRequestRequired)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        Cookies
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.EnableCookieConsent)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.EnableCookieConsent,
+                    Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent, new { data_toggler_for = "#pnlModalCookieConsent" }))
+                @Html.ValidationMessageFor(model => model.PrivacySettings.EnableCookieConsent)
+            </td>
+        </tr>
+        <tr id="pnlModalCookieConsent">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.ModalCookieConsent)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PrivacySettings.ModalCookieConsent,
+                    Html.CheckBoxFor(model => model.PrivacySettings.ModalCookieConsent))
+                @Html.ValidationMessageFor(model => model.PrivacySettings.ModalCookieConsent)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PrivacySettings.SameSiteMode)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListForEnum(model => model.PrivacySettings.SameSiteMode)
+                @Html.ValidationMessageFor(model => model.PrivacySettings.SameSiteMode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+            </td>
+            <td class="adminData wide">
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @T("Admin.Configuration.Settings.CustomerUser.Privacy.SameSiteMode.AdminInstruction")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">
+                        @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title")
+                    </div>
+                    <div class="text-muted">
+                        @T("Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction")
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <form id="cookie-infos-form">
+        <div>
+            @(Html.Telerik().Grid<CookieInfoModel>()
+                .Name("cookie-infos-grid")
+                .DataKeys(keys => keys.Add(x => x.Name).RouteKey("Name"))
+                .ClientEvents(events => events
+                    .OnRowDataBound("onRowDataBound"))
+                .DataBinding(dataBinding => dataBinding
+                    .Ajax()
+                        .Select("CookieInfoList", "Setting")
+                        .Delete("CookieInfoDelete", "Setting")
+                )
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.Name)
+                        .Width("15%")
+                        .ReadOnly();
+                    columns.Bound(x => x.Description)
+                        .Width("50%")
+                        .ReadOnly();
+                    columns.Bound(x => x.CookieTypeName)
+                        .Width("15%")
+                        .ReadOnly();
+                    columns.Bound(x => x.IsPluginInfo)
+                        .Width("8%")
+                        .Template(item => @Html.SymbolForBool(item.IsPluginInfo))
+                        .ClientTemplate(@Html.SymbolForBool("IsPluginInfo"))
+                        .Centered()
+                        .ReadOnly();
+                    columns.Command(commands =>
+                    {
+                        commands.Custom("edit-cookie-infos").Text(T("Common.Edit"));
+                        commands.Delete().Localize(T);
+                    }).Width("12%").HtmlAttributes(new { align = "right" });
+                })
+                .EnableCustomBinding(true)
+                .PreserveGridState()
+                .ToolBar(commands => commands.Template(CookieInfoGridCommands)))
+        </div>
+
+        <input type="submit" id="btnRefreshCookieInfos" name="btnRefreshCookieInfos" class="d-none" />
+    </form>
 }
+
+@helper CookieInfoGridCommands(Grid<CookieInfoModel> grid)
+{
+    <button id="add-cookie-info-button" data-toggle="modal" class="t-button t-button-primary">
+        <i class="fa fa-plus"></i>
+        <span>@T("Common.AddNew")</span>
+    </button>
+}
+
+<script>
+    $(function () {
+        $("#add-cookie-info-button").on("click", function (e) {
+            openPopup('@(Url.Action("CookieInfoCreatePopup", "Setting", new { btnId = "btnRefreshCookieInfos", formId = "faq-form" }))', false);
+            return false;
+        });
+
+        $('#cookie-infos-grid').on('click', '.t-grid-edit-cookie-infos', function (e) {
+			e.preventDefault();
+			var grid = $('#cookie-infos-grid').data('tGrid');
+			var tr = $(this).closest('tr');
+			var name = grid.dataItem(tr).Name;
+			var href = '@Url.Action("CookieInfoEditPopup", "Setting")?name=' + name + '&btnId=btnRefreshCookieInfos&formId=cookie-infos-form';
+
+			openPopup(href, false);
+
+			return false;
+		});
+
+        $('#btnRefreshCookieInfos').click(function () {
+			//refresh grid
+            var optionsGrid = $("#cookie-infos-grid");
+			optionsGrid.data('tGrid').ajaxRequest();
+			return false;
+		});
+    });
+
+    function onRowDataBound(e) {
+        if (e.dataItem.IsPluginInfo) {
+            $(e.row).find('td').wrapInner('<span class="muted" />');
+            $(e.row).find('.t-button').addClass("d-none");
+		}
+    }
+</script>

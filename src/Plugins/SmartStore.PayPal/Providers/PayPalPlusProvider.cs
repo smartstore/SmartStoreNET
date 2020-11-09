@@ -6,12 +6,12 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
 {
-	[SystemName("Payments.PayPalPlus")]
+    [SystemName("Payments.PayPalPlus")]
     [FriendlyName("PayPal PLUS")]
     [DisplayOrder(1)]
     public partial class PayPalPlusProvider : PayPalRestApiProviderBase<PayPalPlusPaymentSettings>
     {
-        public PayPalPlusProvider() 
+        public PayPalPlusProvider()
             : base(SystemName)
         {
         }
@@ -20,9 +20,9 @@ namespace SmartStore.PayPal
 
         public override PaymentMethodType PaymentMethodType => PaymentMethodType.StandardAndRedirection;
 
-		public override Type GetControllerType()
-		{
-			return typeof(PayPalPlusController);
-		}
-	}
+        public override Type GetControllerType()
+        {
+            return typeof(PayPalPlusController);
+        }
+    }
 }

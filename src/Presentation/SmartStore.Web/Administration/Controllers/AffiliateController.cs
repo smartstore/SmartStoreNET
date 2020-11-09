@@ -178,6 +178,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [FormValueRequired("save", "save-continue")]
         [Permission(Permissions.Promotion.Affiliate.Create)]
         public ActionResult Create(AffiliateModel model, bool continueEditing)
@@ -220,6 +221,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Promotion.Affiliate.Update)]
         public ActionResult Edit(AffiliateModel model, bool continueEditing)
         {
@@ -250,6 +252,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [Permission(Permissions.Promotion.Affiliate.Delete)]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             var affiliate = _affiliateService.GetAffiliateById(id);

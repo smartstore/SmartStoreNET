@@ -33,6 +33,10 @@
     }
 }
 
+.newslist-item.unpublished {
+    opacity: 0.5;
+}
+
 // Generic (also used for single blog post page)
 .single-media-item-image {
     max-height: 300px;

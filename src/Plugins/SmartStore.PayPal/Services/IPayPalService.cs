@@ -10,25 +10,25 @@ using SmartStore.Services.Payments;
 namespace SmartStore.PayPal.Services
 {
     public interface IPayPalService
-	{
-		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
+    {
+        void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
 
-		PayPalPaymentInstruction ParsePaymentInstruction(dynamic json);
+        PayPalPaymentInstruction ParsePaymentInstruction(dynamic json);
 
-		string CreatePaymentInstruction(PayPalPaymentInstruction instruct);
+        string CreatePaymentInstruction(PayPalPaymentInstruction instruct);
 
-		PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
+        PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
 
-		PayPalResponse CallApi(
+        PayPalResponse CallApi(
             string method,
             string path,
             PayPalApiSettingsBase settings,
             PayPalSessionData session,
             string data);
 
-		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
+        PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
 
-		PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session);
+        PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
         Dictionary<string, object> CreatePaymentData(
             PayPalApiSettingsBase settings,
@@ -42,32 +42,32 @@ namespace SmartStore.PayPal.Services
             PayPalSessionData session,
             Dictionary<string, object> data);
 
-		PayPalResponse PatchShipping(
-			PayPalApiSettingsBase settings,
-			PayPalSessionData session,
-			List<OrganizedShoppingCartItem> cart);
+        PayPalResponse PatchShipping(
+            PayPalApiSettingsBase settings,
+            PayPalSessionData session,
+            List<OrganizedShoppingCartItem> cart);
 
-		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
+        PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
-		PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request);
+        PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request);
 
-		PayPalResponse Capture(PayPalApiSettingsBase settings, PayPalSessionData session, CapturePaymentRequest request);
+        PayPalResponse Capture(PayPalApiSettingsBase settings, PayPalSessionData session, CapturePaymentRequest request);
 
-		PayPalResponse Void(PayPalApiSettingsBase settings, PayPalSessionData session, VoidPaymentRequest request);
+        PayPalResponse Void(PayPalApiSettingsBase settings, PayPalSessionData session, VoidPaymentRequest request);
 
-		PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store);
+        PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store);
 
-		PayPalResponse DeleteCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session);
+        PayPalResponse DeleteCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session);
 
-		PayPalResponse CreateWebhook(PayPalApiSettingsBase settings, PayPalSessionData session, string url);
+        PayPalResponse CreateWebhook(PayPalApiSettingsBase settings, PayPalSessionData session, string url);
 
-		PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session);
+        PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session);
 
-		HttpStatusCode ProcessWebhook(
-			PayPalApiSettingsBase settings,
-			NameValueCollection headers,
-			string rawJson,
-			string providerSystemName);
+        HttpStatusCode ProcessWebhook(
+            PayPalApiSettingsBase settings,
+            NameValueCollection headers,
+            string rawJson,
+            string providerSystemName);
 
         #region Credit
 

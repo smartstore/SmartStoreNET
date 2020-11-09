@@ -9,6 +9,8 @@
 
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	<div class="plugin-actions">
 		<button type="submit" name="save" class="btn btn-warning" value="save">
 			<i class="fa fa-check"></i>

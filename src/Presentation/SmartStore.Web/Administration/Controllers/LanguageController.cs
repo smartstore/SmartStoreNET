@@ -399,6 +399,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Language.Create)]
         public ActionResult Create(LanguageModel model, bool continueEditing)
         {
@@ -486,6 +487,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Language.Update)]
         public ActionResult Edit(LanguageModel model, bool continueEditing)
         {
@@ -520,6 +522,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Language.Delete)]
         public ActionResult Delete(int id)
         {
@@ -718,6 +721,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Language.EditResource)]
         public async Task<ActionResult> ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched, int? availableLanguageSetId)
         {
@@ -726,7 +730,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             // Set page timeout to 5 minutes
-            this.Server.ScriptTimeout = 300;
+            Server.ScriptTimeout = 300;
 
             string tempFilePath = null;
 

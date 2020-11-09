@@ -32,12 +32,12 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Diagnostics;
 
 namespace SmartStore.ComponentModel
 {
@@ -187,25 +187,25 @@ namespace SmartStore.ComponentModel
             return true;
         }
 
-	    /// <summary>
-	    /// Serializes an object instance to a file.
-	    /// </summary>
-	    /// <param name="instance">the object instance to serialize</param>
-	    /// <param name="resultBuffer"></param>
-	    /// <param name="throwExceptions"></param>
-	    /// <returns></returns>
-	    public static bool SerializeObject(object instance, out byte[] resultBuffer, bool throwExceptions = false)
+        /// <summary>
+        /// Serializes an object instance to a file.
+        /// </summary>
+        /// <param name="instance">the object instance to serialize</param>
+        /// <param name="resultBuffer"></param>
+        /// <param name="throwExceptions"></param>
+        /// <returns></returns>
+        public static bool SerializeObject(object instance, out byte[] resultBuffer, bool throwExceptions = false)
         {
             bool retVal = true;
-		    resultBuffer = null;
+            resultBuffer = null;
 
-			var ms = new MemoryStream();
+            var ms = new MemoryStream();
             try
             {
                 var serializer = new BinaryFormatter();
                 serializer.Serialize(ms, instance);
-				resultBuffer = ms.ToArray();
-			}
+                resultBuffer = ms.ToArray();
+            }
             catch (Exception ex)
             {
                 Debug.Write("SerializeObject failed with : " + ex.GetBaseException().Message, "West Wind");
@@ -216,7 +216,7 @@ namespace SmartStore.ComponentModel
             }
             finally
             {
-				ms.Close();
+                ms.Close();
             }
 
             return retVal;

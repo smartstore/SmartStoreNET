@@ -1,13 +1,12 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -22,6 +21,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+        public string DeliveryInfo { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayLocale")]
         [AllowHtml]
@@ -36,7 +36,13 @@ namespace SmartStore.Admin.Models.Directory
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.IsDefault")]
         public bool IsDefault { get; set; }
-        
+
+        [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.MinDays")]
+        public int? MinDays { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.MaxDays")]
+        public int? MaxDays { get; set; }
+
         public IList<DeliveryTimeLocalizedModel> Locales { get; set; }
     }
 
@@ -55,13 +61,15 @@ namespace SmartStore.Admin.Models.Directory
         {
             RuleFor(x => x.Name).NotEmpty().Length(1, 50);
             RuleFor(x => x.ColorHexValue).NotEmpty().Length(1, 50);
+
             RuleFor(x => x.DisplayLocale)
                 .Must(x =>
                 {
                     try
                     {
-                        if (String.IsNullOrEmpty(x))
+                        if (string.IsNullOrEmpty(x))
                             return true;
+
                         var culture = new CultureInfo(x);
                         return culture != null;
                     }
@@ -71,6 +79,19 @@ namespace SmartStore.Admin.Models.Directory
                     }
                 })
                 .WithMessage(T("Admin.Configuration.DeliveryTimes.Fields.DisplayLocale.Validation"));
+
+            RuleFor(x => x.MinDays)
+                .GreaterThan(0)
+                .When(x => x.MinDays.HasValue);
+
+            RuleFor(x => x.MaxDays)
+                .GreaterThan(0)
+                .When(x => x.MaxDays.HasValue);
+
+            When(x => x.MinDays.HasValue && x.MaxDays.HasValue, () =>
+            {
+                RuleFor(x => x.MaxDays).GreaterThanOrEqualTo(x => x.MinDays);
+            });
         }
     }
 }

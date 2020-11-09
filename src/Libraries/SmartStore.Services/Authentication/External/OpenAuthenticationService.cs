@@ -17,34 +17,34 @@ namespace SmartStore.Services.Authentication.External
         private readonly IPluginFinder _pluginFinder;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly IRepository<ExternalAuthenticationRecord> _externalAuthenticationRecordRepository;
-		private readonly ISettingService _settingService;
-		private readonly IProviderManager _providerManager;
+        private readonly ISettingService _settingService;
+        private readonly IProviderManager _providerManager;
 
         public OpenAuthenticationService(
-			IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
+            IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
             IPluginFinder pluginFinder,
             ExternalAuthenticationSettings externalAuthenticationSettings,
             ICustomerService customerService,
-			ISettingService settingService,
-			IProviderManager providerManager)
+            ISettingService settingService,
+            IProviderManager providerManager)
         {
             this._externalAuthenticationRecordRepository = externalAuthenticationRecordRepository;
             this._pluginFinder = pluginFinder;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._customerService = customerService;
-			this._settingService = settingService;
-			this._providerManager = providerManager;
+            this._settingService = settingService;
+            this._providerManager = providerManager;
         }
 
-		/// <summary>
-		/// Load all external authentication methods
-		/// </summary>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-		/// <returns>External authentication methods</returns>
-		public virtual IEnumerable<Provider<IExternalAuthenticationMethod>> LoadAllExternalAuthenticationMethods(int storeId = 0)
-		{
-			return _providerManager.GetAllProviders<IExternalAuthenticationMethod>(storeId);
-		}
+        /// <summary>
+        /// Load all external authentication methods
+        /// </summary>
+        /// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+        /// <returns>External authentication methods</returns>
+        public virtual IEnumerable<Provider<IExternalAuthenticationMethod>> LoadAllExternalAuthenticationMethods(int storeId = 0)
+        {
+            return _providerManager.GetAllProviders<IExternalAuthenticationMethod>(storeId);
+        }
 
         /// <summary>
         /// Load active external authentication methods
@@ -53,11 +53,11 @@ namespace SmartStore.Services.Authentication.External
         /// <returns>Payment methods</returns>
 		public virtual IEnumerable<Provider<IExternalAuthenticationMethod>> LoadActiveExternalAuthenticationMethods(int storeId = 0)
         {
-			var allMethods = LoadAllExternalAuthenticationMethods(storeId);
-			var activeMethods = allMethods
-				   .Where(p => _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+            var allMethods = LoadAllExternalAuthenticationMethods(storeId);
+            var activeMethods = allMethods
+                   .Where(p => _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
 
-			return activeMethods;
+            return activeMethods;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SmartStore.Services.Authentication.External
         /// <returns>Found external authentication method</returns>
 		public virtual Provider<IExternalAuthenticationMethod> LoadExternalAuthenticationMethodBySystemName(string systemName, int storeId = 0)
         {
-			return _providerManager.GetProvider<IExternalAuthenticationMethod>(systemName, storeId);
+            return _providerManager.GetProvider<IExternalAuthenticationMethod>(systemName, storeId);
         }
 
 
@@ -83,11 +83,11 @@ namespace SmartStore.Services.Authentication.External
             if (parameters.UserClaims != null)
                 foreach (var userClaim in parameters.UserClaims
                     .Where(x => x.Contact != null && !String.IsNullOrEmpty(x.Contact.Email)))
-                    {
-                        //found
-                        email = userClaim.Contact.Email;
-                        break;
-                    }
+                {
+                    //found
+                    email = userClaim.Contact.Email;
+                    break;
+                }
 
             var externalAuthenticationRecord = new ExternalAuthenticationRecord()
             {

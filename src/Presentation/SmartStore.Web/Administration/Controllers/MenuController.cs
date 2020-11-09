@@ -26,21 +26,13 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
-
-        #region Fields
-
         private readonly IMenuStorage _menuStorage;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
-        private readonly ICustomerService _customerService;
         private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
-
-        #endregion
-
-        #region Constructors
 
         public MenuController(
             IMenuStorage menuStorage,
@@ -48,7 +40,6 @@ namespace SmartStore.Admin.Controllers
             ILocalizedEntityService localizedEntityService,
             IStoreMappingService storeMappingService,
             IAclService aclService,
-            ICustomerService customerService,
             IEnumerable<Lazy<IMenuItemProvider,
             MenuItemProviderMetadata>> menuItemProviders,
             AdminAreaSettings adminAreaSettings)
@@ -58,12 +49,9 @@ namespace SmartStore.Admin.Controllers
             _localizedEntityService = localizedEntityService;
             _storeMappingService = storeMappingService;
             _aclService = aclService;
-            _customerService = customerService;
             _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.ProviderName, x => x);
             _adminAreaSettings = adminAreaSettings;
         }
-
-        #endregion
 
         #region Menu
 
@@ -120,6 +108,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Create)]
         public ActionResult Create(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
@@ -167,6 +156,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult Edit(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
@@ -199,6 +189,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -260,6 +251,7 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
@@ -316,6 +308,7 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
@@ -355,6 +348,7 @@ namespace SmartStore.Admin.Controllers
 
         // Ajax.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Update)]
         public ActionResult MoveItem(int menuId, int sourceId, string direction)
         {
@@ -395,6 +389,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cms.Menu.Delete)]
         public ActionResult DeleteItem(int id)
         {

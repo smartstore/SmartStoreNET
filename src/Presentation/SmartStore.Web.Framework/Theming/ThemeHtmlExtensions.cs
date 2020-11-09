@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
-using System.IO;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
-using SmartStore.Services.Common;
-using SmartStore.Utilities;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Theming
-{ 
+{
     public static class ThemeHtmlExtensions
     {
 
@@ -30,110 +26,110 @@ namespace SmartStore.Web.Framework.Theming
 
             var displayName = locService.GetResource(resKey, langId, false, "", true);
 
-			if (displayName.HasValue() && hint.IsEmpty())
-			{
-				hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
-				hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
-			}
+            if (displayName.HasValue() && hint.IsEmpty())
+            {
+                hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
+                hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
+            }
 
             result.Append("<div class='ctl-label'>");
             result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "x-col-form-label" }));
-			if (hint.HasValue())
-			{
-				result.Append(html.Hint(hint).ToHtmlString());
-			}
+            if (hint.HasValue())
+            {
+                result.Append(html.Hint(hint).ToHtmlString());
+            }
             result.Append("</div>");
 
             return MvcHtmlString.Create(result.ToString());
         }
-         
+
         public static MvcHtmlString ThemeVarEditor(this HtmlHelper html, ThemeVariableInfo info, object value)
         {
             Guard.NotNull(info, "info");
 
             string expression = html.NameForThemeVar(info);
 
-			var strValue = string.Empty;
+            var strValue = string.Empty;
 
-			var arrValue = value as string[];
-			if (arrValue != null)
-			{
-				strValue = arrValue.Length > 0 ? arrValue[0] : value.ToString();
-			}
-			else
-			{
-				strValue = value.ToString();
-			}
+            var arrValue = value as string[];
+            if (arrValue != null)
+            {
+                strValue = arrValue.Length > 0 ? arrValue[0] : value.ToString();
+            }
+            else
+            {
+                strValue = value.ToString();
+            }
 
-			var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
-			var isValidColor = info.Type == ThemeVariableType.Color 
-				&& ((strValue.HasValue() && ThemeVarsRepository.IsValidColor(strValue)) || (strValue.IsEmpty() && ThemeVarsRepository.IsValidColor(info.DefaultValue)));
+            var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
+            var isValidColor = info.Type == ThemeVariableType.Color
+                && ((strValue.HasValue() && ThemeVarsRepository.IsValidColor(strValue)) || (strValue.IsEmpty() && ThemeVarsRepository.IsValidColor(info.DefaultValue)));
 
-			MvcHtmlString control;
+            MvcHtmlString control;
 
             if (isValidColor)
             {
-				control = html.ColorBox(expression, strValue, info.DefaultValue);
+                control = html.ColorBox(expression, strValue, info.DefaultValue);
             }
             else if (info.Type == ThemeVariableType.Boolean)
             {
-				var locService = EngineContext.Current.Resolve<ILocalizationService>();
-				control = html.CheckBox(expression, strValue.ToBool());
-				var custom = "<label class='switch'>{0}<span class='switch-toggle' data-on='{1}' data-off='{2}'></span></label>".FormatInvariant(
-					control.ToString(),
-					locService.GetResource("Common.On").Truncate(3),
-					locService.GetResource("Common.Off").Truncate(3));
+                var locService = EngineContext.Current.Resolve<ILocalizationService>();
+                control = html.CheckBox(expression, strValue.ToBool());
+                var custom = "<label class='switch'>{0}<span class='switch-toggle' data-on='{1}' data-off='{2}'></span></label>".FormatInvariant(
+                    control.ToString(),
+                    locService.GetResource("Common.On").Truncate(3),
+                    locService.GetResource("Common.Off").Truncate(3));
 
-				control = MvcHtmlString.Create(custom);
+                control = MvcHtmlString.Create(custom);
             }
-			else if (info.Type == ThemeVariableType.Select)
-			{
-				control = ThemeVarSelectEditor(html, info, expression, strValue);
-			}
-			else
-			{
-				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue, @class = "form-control" });
-			}
+            else if (info.Type == ThemeVariableType.Select)
+            {
+                control = ThemeVarSelectEditor(html, info, expression, strValue);
+            }
+            else
+            {
+                control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue, @class = "form-control" });
+            }
 
-			return control;
-		}
+            return control;
+        }
 
-		public static MvcHtmlString ThemeVarChainInfo(this HtmlHelper html, ThemeVariableInfo info)
-		{
-			Guard.NotNull(info, "info");
-
-			var currentTheme = ThemeHelper.ResolveCurrentTheme();
-
-			if (currentTheme != info.Manifest)
-			{
-				// the variable is inherited from a base theme: display an info badge
-				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i><span class='pl-1'>{0}</span></span>".FormatCurrent(info.Manifest.ThemeName);
-				return MvcHtmlString.Create(chainInfo);
-			}
-
-			return MvcHtmlString.Empty;
-		}
-
-		private static MvcHtmlString ThemeVarSelectEditor(HtmlHelper html, ThemeVariableInfo info, string expression, string value)
+        public static MvcHtmlString ThemeVarChainInfo(this HtmlHelper html, ThemeVariableInfo info)
         {
-            var manifest = info.Manifest; 
+            Guard.NotNull(info, "info");
+
+            var currentTheme = ThemeHelper.ResolveCurrentTheme();
+
+            if (currentTheme != info.Manifest)
+            {
+                // the variable is inherited from a base theme: display an info badge
+                var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i><span class='pl-1'>{0}</span></span>".FormatCurrent(info.Manifest.ThemeName);
+                return MvcHtmlString.Create(chainInfo);
+            }
+
+            return MvcHtmlString.Empty;
+        }
+
+        private static MvcHtmlString ThemeVarSelectEditor(HtmlHelper html, ThemeVariableInfo info, string expression, string value)
+        {
+            var manifest = info.Manifest;
 
             if (!manifest.Selects.ContainsKey(info.SelectRef))
             {
                 throw new SmartException("A select list with id '{0}' was not specified. Please specify a 'Select' element with at least one 'Option' child.", info.SelectRef);
             }
 
-			//var isDefault = value.IsCaseInsensitiveEqual(info.DefaultValue);
+            //var isDefault = value.IsCaseInsensitiveEqual(info.DefaultValue);
 
             var selectList = from x in manifest.Selects[info.SelectRef]
-                             select new SelectListItem 
-                             { 
-                                 Value = x, 
+                             select new SelectListItem
+                             {
+                                 Value = x,
                                  Text = x, // TODO: (mc) Localize
-                                 Selected = x.IsCaseInsensitiveEqual(value) 
+                                 Selected = x.IsCaseInsensitiveEqual(value)
                              };
 
-			return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue, @class = "form-control" });
+            return html.DropDownList(expression, selectList, new { placeholder = info.DefaultValue, @class = "form-control" });
         }
 
         public static string NameForThemeVar(this HtmlHelper html, ThemeVariableInfo info)
@@ -166,9 +162,9 @@ namespace SmartStore.Web.Framework.Theming
         public static string ThemeAwareContent(this UrlHelper url, ThemeManifest manifest, string path)
         {
             path = EnsurePath(path);
-            
+
             string fullPath = Path.Combine(manifest.Path, path);
-            if (File.Exists(fullPath)) 
+            if (File.Exists(fullPath))
             {
                 return url.Content(manifest.Location + "/" + Path.Combine(manifest.ThemeName, path));
             }
@@ -178,7 +174,7 @@ namespace SmartStore.Web.Framework.Theming
             {
                 return url.Content("~/" + path);
             }
-            
+
             return string.Empty;
         }
 

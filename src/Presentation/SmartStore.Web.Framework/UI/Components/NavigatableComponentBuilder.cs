@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.WebPages;
-using SmartStore.Core;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI

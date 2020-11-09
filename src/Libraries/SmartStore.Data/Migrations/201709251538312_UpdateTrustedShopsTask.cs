@@ -1,25 +1,21 @@
 namespace SmartStore.Data.Migrations
 {
-    using Core.Domain.Tasks;
-    using Setup;
-    using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Core.Domain.Tasks;
+    using Setup;
 
     public partial class UpdateTrustedShopsTask : DbMigration, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
         }
-        
+
         public override void Down()
         {
         }
 
-        public bool RollbackOnFailure
-        {
-            get { return false; }
-        }
+        public bool RollbackOnFailure => false;
 
         public void Seed(SmartObjectContext context)
         {
@@ -30,7 +26,7 @@ namespace SmartStore.Data.Migrations
             {
                 // remove old task
                 table.Remove(taskToDelete);
-                
+
                 // if task to remnove is not null we assume the plugin is currently installed and so we add the new task without any further request
                 var taskToAdd = new ScheduleTask
                 {

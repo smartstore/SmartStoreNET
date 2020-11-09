@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -7,6 +6,8 @@ namespace SmartStore.Admin.Models.Orders
 {
     public class NeverSoldReportModel : ModelBase
     {
+        public int GridPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.SalesReport.NeverSold.StartDate")]
         public DateTime? StartDate { get; set; }
 

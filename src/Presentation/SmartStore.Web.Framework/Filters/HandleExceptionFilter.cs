@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
@@ -13,29 +8,29 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class HandleExceptionFilter : IActionFilter, IExceptionFilter
+    public class HandleExceptionFilter : IActionFilter, IExceptionFilter
     {
-		private readonly ILoggerFactory _loggerFactory;
-		private readonly Lazy<IWorkContext> _workContext;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly Lazy<IWorkContext> _workContext;
 
-		public HandleExceptionFilter(ILoggerFactory loggerFactory, Lazy<IWorkContext> workContext)
-		{
-			_loggerFactory = loggerFactory;
-			_workContext = workContext;
-		}
+        public HandleExceptionFilter(ILoggerFactory loggerFactory, Lazy<IWorkContext> workContext)
+        {
+            _loggerFactory = loggerFactory;
+            _workContext = workContext;
+        }
 
         public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
         }
-        
+
         public virtual void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (filterContext.IsChildAction)
                 return;
-            
+
             if (filterContext.Result is HttpStatusCodeResult statusCodeResult && statusCodeResult.StatusCode == 404)
-			{
-				// Handle not found (404) from within the MVC pipeline (only called when HttpNotFoundResult is returned from actions)
+            {
+                // Handle not found (404) from within the MVC pipeline (only called when HttpNotFoundResult is returned from actions)
                 filterContext.Result = Create404Result(filterContext);
 
                 _workContext.Value.IsAdmin = false;
@@ -45,7 +40,7 @@ namespace SmartStore.Web.Framework.Filters
 
         public void OnException(ExceptionContext filterContext)
         {
-            if (filterContext.ExceptionHandled /*|| !filterContext.HttpContext.IsCustomErrorEnabled*/)
+            if (filterContext.ExceptionHandled || !filterContext.HttpContext.IsCustomErrorEnabled)
                 return;
 
             var exception = filterContext.Exception;
@@ -54,7 +49,7 @@ namespace SmartStore.Web.Framework.Filters
             {
                 LogException(exception, filterContext);
             }
- 
+
             if (!filterContext.IsChildAction)
             {
                 var controllerName = filterContext.RouteData.GetRequiredString("controller");
@@ -121,28 +116,28 @@ namespace SmartStore.Web.Framework.Filters
         }
 
         protected void LogException(Exception exception, ControllerContext context)
-		{
-			if (exception == null)
-				return;
+        {
+            if (exception == null)
+                return;
 
-			if (!DataSettings.DatabaseIsInstalled())
-				return;
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
 
-			//// ignore 404 HTTP errors
-			//var httpException = exception as HttpException;
-			//if (httpException != null && httpException.GetHttpCode() == 404)
-			//	return;
+            //// ignore 404 HTTP errors
+            //var httpException = exception as HttpException;
+            //if (httpException != null && httpException.GetHttpCode() == 404)
+            //	return;
 
-			try
-			{
-				var logger = _loggerFactory.GetLogger(context.Controller.GetType());
-				logger.Error(exception);
-			}
-			catch
-			{
-				// don't throw new exception
-			}
-		}
+            try
+            {
+                var logger = _loggerFactory.GetLogger(context.Controller.GetType());
+                logger.Error(exception);
+            }
+            catch
+            {
+                // don't throw new exception
+            }
+        }
     }
 
 }

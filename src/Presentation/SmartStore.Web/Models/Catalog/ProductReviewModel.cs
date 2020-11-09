@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-	public partial class ProductReviewOverviewModel : ModelBase
+    public partial class ProductReviewOverviewModel : ModelBase
     {
         public int ProductId { get; set; }
 
@@ -32,29 +32,29 @@ namespace SmartStore.Web.Models.Catalog
         public LocalizedValue<string> ProductName { get; set; }
         public string ProductSeName { get; set; }
 
-		public int TotalReviewsCount { get; set; }
+        public int TotalReviewsCount { get; set; }
         public IList<ProductReviewModel> Items { get; set; }
 
-		#region Add
+        #region Add
 
-		[SmartResourceDisplayName("Reviews.Fields.Title")]
-		public string Title { get; set; }
+        [SmartResourceDisplayName("Reviews.Fields.Title")]
+        public string Title { get; set; }
 
-		[SanitizeHtml]
-		[SmartResourceDisplayName("Reviews.Fields.ReviewText")]
-		public string ReviewText { get; set; }
+        [SanitizeHtml]
+        [SmartResourceDisplayName("Reviews.Fields.ReviewText")]
+        public string ReviewText { get; set; }
 
-		[SmartResourceDisplayName("Reviews.Fields.Rating")]
-		public int Rating { get; set; }
+        [SmartResourceDisplayName("Reviews.Fields.Rating")]
+        public int Rating { get; set; }
 
-		public bool DisplayCaptcha { get; set; }
+        public bool DisplayCaptcha { get; set; }
 
-		public bool CanCurrentCustomerLeaveReview { get; set; }
-		public bool SuccessfullyAdded { get; set; }
-		public string Result { get; set; }
+        public bool CanCurrentCustomerLeaveReview { get; set; }
+        public bool SuccessfullyAdded { get; set; }
+        public string Result { get; set; }
 
-		#endregion
-	}
+        #endregion
+    }
 
     public partial class ProductReviewModel : EntityModelBase
     {
@@ -63,7 +63,7 @@ namespace SmartStore.Web.Models.Catalog
         public string CustomerName { get; set; }
 
         public bool AllowViewingProfiles { get; set; }
-        
+
         public string Title { get; set; }
 
         public string ReviewText { get; set; }

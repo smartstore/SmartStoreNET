@@ -13,7 +13,7 @@ namespace SmartStore.Services.Media
     public partial class MediaTypeResolver : DbSaveHook<Setting>, IMediaTypeResolver
     {
         const string MapCacheKey = "media:exttypemap";
-        
+
         private readonly ICacheManager _cache;
         private readonly Lazy<MediaSettings> _mediaSettings;
 
@@ -26,7 +26,7 @@ namespace SmartStore.Services.Media
             TypeHelper.NameOf<MediaSettings>(x => x.TextTypes, true),
             TypeHelper.NameOf<MediaSettings>(x => x.BinTypes, true)
         };
-        
+
         public MediaTypeResolver(ICacheManager cache, Lazy<MediaSettings> mediaSettings)
         {
             _cache = cache;
@@ -94,7 +94,7 @@ namespace SmartStore.Services.Media
 
         public IReadOnlyDictionary<string, string> GetExtensionMediaTypeMap()
         {
-            return _cache.Get(MapCacheKey, () => 
+            return _cache.Get(MapCacheKey, () =>
             {
                 var mediaSettings = _mediaSettings.Value;
                 var map = new Dictionary<string, string>();

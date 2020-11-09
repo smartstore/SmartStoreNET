@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>Football, the most popular sport in the world</Title>
+	<MetaTitle>Football, the most popular sport in the world</MetaTitle>
+	<Intro>First of all, the success of football is based on its simplicity. It requires relatively few resources and equipment (see, for example, street football), which has made it very popular in many developing countries, and it is easy or even self-evident for newcomers and spectators.</Intro>
+	<MetaDescription>First of all, the success of football is based on its simplicity. It requires relatively few resources and equipment (see, for example, street football), which has made it very popular in many developing countries, and it is easy or even self-evident for newcomers and spectators.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				Football is a ball sport in which two teams compete against each other with the aim of scoring more goals than their opponents and thus
+				winning the game. The playing time is usually twice 45 minutes, plus injury time and, where appropriate, extra time and/or penalty
+				shoot-outs. A team usually consists of eleven players, one of whom is the goalkeeper. The ball may be played with the whole body except
+				the arms and hands; it is mainly kicked with the foot. Only the goalkeeper (inside his own penalty area) - or the field players during the
+				throw-in - may touch the ball with their hands.
+			</p>
+			<p>
+				The success of football is based first of all on its simplicity. It requires relatively few resources and equipment (see, for example,
+				street football), which has also made it very popular in many developing countries, and it is easy for newcomers and spectators to
+				understand or even take for granted. Secondly, comparatively few goals are scored, which increases the value of a goal and makes the games
+				more exciting, since superior or better placed teams do not win as often or can be determined as early winners as in other ball sports.
+				However, these peculiarities have recently been counteracted by more complicated regulations (including changes to the offside rule) and,
+				in top-level football, ever greater (technical) effort (including video evidence), which should lead to more "fair" football.
+			</p>
+			<p>
+				Football originated in Great Britain in the second half of the 19th century and spread to continental Europe and other continents from
+				the 1880s and 1890s. It is considered the most popular team sport in the world. In contrast to other sports (such as handball), top
+				football clubs generally only developed in large cities, which can boast a very elaborate infrastructure that has recently become
+				increasingly demanding.
+			</p>
+		]]>
+	</Body>
+	<Tags>Sport,Football,Entertainment</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-07-02</CreatedOn>
+	<DisplayType>20</DisplayType>
+  <Image>football.jpg</Image>
+  <ImagePreview>football-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+</BlogPost>

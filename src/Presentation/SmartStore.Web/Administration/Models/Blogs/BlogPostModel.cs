@@ -8,28 +8,27 @@ using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
-    public class BlogPostModel : TabbableModel
-	{
+    public class BlogPostModel : TabbableModel, ILocalizedModel<BlogPostLocalizedModel>
+    {
+        public BlogPostModel()
+        {
+            Locales = new List<BlogPostLocalizedModel>();
+        }
+
         [SmartResourceDisplayName("Admin.Common.IsPublished")]
         public bool IsPublished { get; set; }
-
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
-        public int LanguageId { get; set; }
-
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
-        [AllowHtml]
-        public string LanguageName { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SeName")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
         [AllowHtml]
         public string SeName { get; set; }
 
@@ -54,7 +53,7 @@ namespace SmartStore.Admin.Models.Blogs
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg")]
         public string SectionBg { get; set; }
-        
+
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.AllowComments")]
         public bool AllowComments { get; set; }
 
@@ -81,11 +80,11 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string MetaKeywords { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
         [AllowHtml]
         public string MetaDescription { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle")]
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
 
@@ -100,14 +99,50 @@ namespace SmartStore.Admin.Models.Blogs
 
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
+
+        public IList<BlogPostLocalizedModel> Locales { get; set; }
     }
+
+    public class BlogPostLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Title")]
+        [AllowHtml]
+        public string Title { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Seo.SeName")]
+        [AllowHtml]
+        public string SeName { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Intro")]
+        [AllowHtml]
+        public string Intro { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Body")]
+        [AllowHtml]
+        public string Body { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.MetaKeywords")]
+        [AllowHtml]
+        public string MetaKeywords { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaDescription")]
+        [AllowHtml]
+        public string MetaDescription { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Seo.MetaTitle")]
+        [AllowHtml]
+        public string MetaTitle { get; set; }
+    }
+
 
     public partial class BlogPostValidator : AbstractValidator<BlogPostModel>
     {
         public BlogPostValidator()
         {
-            RuleFor(x => x.Title).NotNull();
-            RuleFor(x => x.Body).NotNull();
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Body).NotEmpty();
             RuleFor(x => x.PictureId)
                 .NotNull()
                 .When(x => x.PreviewDisplayType == PreviewDisplayType.Default || x.PreviewDisplayType == PreviewDisplayType.DefaultSectionBg);
@@ -124,7 +159,7 @@ namespace SmartStore.Admin.Models.Blogs
         public void Map(BlogPost from, BlogPostModel to)
         {
             MiniMapper.Map(from, to);
-            to.SeName = from.GetSeName(from.LanguageId, true, false);
+            to.SeName = from.GetSeName(0, true, false);
             to.PictureId = from.MediaFileId;
             to.PreviewPictureId = from.PreviewMediaFileId;
         }

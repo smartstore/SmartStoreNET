@@ -1,7 +1,7 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-﻿using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.GoogleAnalytics.Models
 {
@@ -12,7 +12,7 @@ namespace SmartStore.GoogleAnalytics.Models
         {
             AvailableZones = new List<SelectListItem>();
         }
- 
+
         [SmartResourceDisplayName("Admin.ContentManagement.Widgets.ChooseZone")]
         public string ZoneId { get; set; }
         public IList<SelectListItem> AvailableZones { get; set; }

@@ -400,7 +400,7 @@ CodeMirror.defineExtension("commentRangeLiquid", function (isComment, from, to) 
 	var liquidFilters = ("Abs Append AtLeast AtMost Capitalize Ceil Compact Currency Date Default " +
 		"DividedBy Downcase Escape First Floor FormatAddress H Handleize ImgTag Join Json Last Lstrip " +
 		"Map Md5 Minus Modulo NewlineToBr Pluralize Plus Prepend Prettify Remove RemoveFirst Replace " +
-		"ReplaceFirst Reverse Round Rstrip SanitizeHtmlId ScriptTag Sha1 Size Slice Sort " +
+		"ReplaceFirst Reverse Round Rstrip SanitizeHtmlId ScriptTag Size Slice Sort " +
 		"Split Strip StripHtml StripNewlines StylesheetTag T Times Truncate TruncateWords Uniq Upcase UrlEncode UrlDecode").split(" ");
 
 	function findTreeNode(node, str) {

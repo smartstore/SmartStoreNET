@@ -1,17 +1,20 @@
 ﻿@model MaintenanceModel
 @{
-    ViewBag.Title = T("Admin.System.Maintenance").Text;
+	ViewBag.Title = T("Admin.System.Maintenance").Text;
 }
 <div class="section-header">
-    <div class="title">
-        <i class="fa fa-cogs"></i>
-        @T("Admin.System.Maintenance")
-    </div>
-    <div class="options">
-    </div>
+	<div class="title">
+		<i class="fa fa-cogs"></i>
+		@T("Admin.System.Maintenance")
+	</div>
+	<div class="options">
+	</div>
 </div>
+
 @using (Html.BeginForm())
 {
+	@Html.AntiForgeryToken()
+
 	<table class="adminContent">
 		<tr>
 			<td colspan="2" class="admin-config-group">

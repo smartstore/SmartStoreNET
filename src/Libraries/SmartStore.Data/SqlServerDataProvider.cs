@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 
 namespace SmartStore.Data
 {
-	public class SqlServerDataProvider : IEfDataProvider
+    public class SqlServerDataProvider : IEfDataProvider
     {
         /// <summary>
         /// Get connection factory
@@ -20,10 +18,7 @@ namespace SmartStore.Data
         /// <summary>
         /// A value indicating whether this data provider supports stored procedures
         /// </summary>
-        public bool StoredProceduresSupported
-        {
-            get { return true; }
-        }
+        public bool StoredProceduresSupported => true;
 
         /// <summary>
         /// Gets a support database parameter object (used by stored procedures)
@@ -34,9 +29,6 @@ namespace SmartStore.Data
             return new SqlParameter();
         }
 
-		public string ProviderInvariantName
-		{
-			get { return "System.Data.SqlClient"; }
-		}
-	}
+        public string ProviderInvariantName => "System.Data.SqlClient";
+    }
 }

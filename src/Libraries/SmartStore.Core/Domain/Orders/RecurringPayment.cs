@@ -50,7 +50,7 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the date and time of payment creation
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
-        
+
         /// <summary>
         /// Gets the next payment date
         /// </summary>
@@ -121,31 +121,31 @@ namespace SmartStore.Core.Domain.Orders
                 //}
                 //else
                 //{
-                    if (historyCollection.Count > 0)
+                if (historyCollection.Count > 0)
+                {
+                    switch (this.CyclePeriod)
                     {
-                        switch (this.CyclePeriod)
-                        {
-                            case RecurringProductCyclePeriod.Days:
-                                result = this.StartDateUtc.AddDays((double)this.CycleLength * historyCollection.Count);
-                                break;
-                            case RecurringProductCyclePeriod.Weeks:
-                                result = this.StartDateUtc.AddDays((double)(7 * this.CycleLength) * historyCollection.Count);
-                                break;
-                            case RecurringProductCyclePeriod.Months:
-                                result = this.StartDateUtc.AddMonths(this.CycleLength * historyCollection.Count);
-                                break;
-                            case RecurringProductCyclePeriod.Years:
-                                result = this.StartDateUtc.AddYears(this.CycleLength * historyCollection.Count);
-                                break;
-                            default:
-                                throw new SmartException("Not supported cycle period");
-                        }
+                        case RecurringProductCyclePeriod.Days:
+                            result = this.StartDateUtc.AddDays((double)this.CycleLength * historyCollection.Count);
+                            break;
+                        case RecurringProductCyclePeriod.Weeks:
+                            result = this.StartDateUtc.AddDays((double)(7 * this.CycleLength) * historyCollection.Count);
+                            break;
+                        case RecurringProductCyclePeriod.Months:
+                            result = this.StartDateUtc.AddMonths(this.CycleLength * historyCollection.Count);
+                            break;
+                        case RecurringProductCyclePeriod.Years:
+                            result = this.StartDateUtc.AddYears(this.CycleLength * historyCollection.Count);
+                            break;
+                        default:
+                            throw new SmartException("Not supported cycle period");
                     }
-                    else
-                    {
-                        if (this.TotalCycles > 0)
-                            result = this.StartDateUtc;
-                    }
+                }
+                else
+                {
+                    if (this.TotalCycles > 0)
+                        result = this.StartDateUtc;
+                }
                 //}
 
                 return result;
@@ -174,16 +174,10 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public RecurringProductCyclePeriod CyclePeriod
         {
-            get
-            {
-                return (RecurringProductCyclePeriod)this.CyclePeriodId;
-            }
-            set
-            {
-                this.CyclePeriodId = (int)value;
-            }
+            get => (RecurringProductCyclePeriod)this.CyclePeriodId;
+            set => this.CyclePeriodId = (int)value;
         }
-        
+
 
 
 
@@ -192,9 +186,9 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<RecurringPaymentHistory> RecurringPaymentHistory
         {
-            get { return _recurringPaymentHistory ?? (_recurringPaymentHistory = new List<RecurringPaymentHistory>()); }
-            protected set { _recurringPaymentHistory = value; }
-        }        
+            get => _recurringPaymentHistory ?? (_recurringPaymentHistory = new List<RecurringPaymentHistory>());
+            protected set => _recurringPaymentHistory = value;
+        }
 
         /// <summary>
         /// Gets the initial order

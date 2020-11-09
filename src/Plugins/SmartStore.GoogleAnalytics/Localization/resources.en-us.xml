@@ -51,4 +51,10 @@
   <LocaleResource Name="CookieInfo">
     <Value>Google Analytics helps us analyze and improve the user behavior of our website to provide you with the best possible user experience.</Value>
   </LocaleResource>
+  <LocaleResource Name="RestoreScripts">
+    <Value>Restore scripts</Value>
+  </LocaleResource>
+  <LocaleResource Name="RestoreScripts.Hint">
+    <Value>Restores the original scripts. After a store update this function should be used to make sure that the latest scripts are used.</Value>
+  </LocaleResource>
 </Language>

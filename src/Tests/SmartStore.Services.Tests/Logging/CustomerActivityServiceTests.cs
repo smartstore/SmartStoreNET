@@ -12,13 +12,13 @@ using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Logging
 {
-	[TestFixture]
+    [TestFixture]
     public class CustomerActivityServiceTests : ServiceTest
     {
         IRepository<ActivityLog> _activityLogRepository;
         IRepository<ActivityLogType> _activityLogTypeRepository;
-		IRepository<Customer> _customerRepository;
-		IWorkContext _workContext;
+        IRepository<Customer> _customerRepository;
+        IWorkContext _workContext;
         ICustomerActivityService _customerActivityService;
         ActivityLogType _activityType1, _activityType2;
         ActivityLog _activity1, _activity2;
@@ -73,7 +73,7 @@ namespace SmartStore.Services.Tests.Logging
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _activityLogRepository = MockRepository.GenerateMock<IRepository<ActivityLog>>();
             _activityLogTypeRepository = MockRepository.GenerateMock<IRepository<ActivityLogType>>();
-			_customerRepository = MockRepository.GenerateMock<IRepository<Customer>>();
+            _customerRepository = MockRepository.GenerateMock<IRepository<Customer>>();
             _activityLogTypeRepository.Expect(x => x.Table).Return(new List<ActivityLogType>() { _activityType1, _activityType2 }.AsQueryable());
             _activityLogRepository.Expect(x => x.Table).Return(new List<ActivityLog>() { _activity1, _activity2 }.AsQueryable());
 

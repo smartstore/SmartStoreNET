@@ -44,11 +44,12 @@ A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping
 
 The state-of-the-art architecture of Smartstore - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
-* **Website:** [http://www.smartstore.com/en/net](http://www.smartstore.com/en/net)
+* **Website:** [https://smartstore.com](https://smartstore.com)
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Translations:** [http://translate.smartstore.com/](http://translate.smartstore.com/)
 * **Documentation:** [Smartstore Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
+* **Developer Extension:** [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore)
 
 <p>&nbsp;</p>
 
@@ -118,8 +119,8 @@ Smartstore V4.0.0 has been released on 25 June, 2020. The highlights are:
 
 We have set up a live online demo for you so you are able to test Smartstore without local installation. Get a first impression and test all available features in the front- and in the backend. Please keep in mind that the backend demo is shared and other testers can modify data at the same time.
 
-* [**Frontend**](http://frontend.smartstore.net/en) (User: demo, PWD: 1234)
-* [**Backend**](http://backend.smartstore.net/en/login) (User: demo, PWD: 1234)
+* [**Frontend**](https://demo.smartstore.com/frontend/en) (User: demo, PWD: 1234)
+* [**Backend**](https://demo.smartstore.com/backend/en/login) (User: demo, PWD: 1234)
 
 
 
@@ -137,7 +138,7 @@ NOTE: Smartstore 4 requires [Visual C++ Redistributable für Visual Studio 2015]
 * IIS 7+
 * ASP.NET 4.5+
 * MS SQL Server 2008 Express (or higher) OR MS SQL Server Compact 4
-* Visual C++ Redistributable für Visual Studio 2015 ([Download](https://www.microsoft.com/en-US/download/details.aspx?id=52685))
+* Visual C++ Redistributable für Visual Studio 2015-2019 ([Download](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * Full Trust
 
 

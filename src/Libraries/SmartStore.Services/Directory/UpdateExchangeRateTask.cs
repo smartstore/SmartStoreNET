@@ -11,16 +11,16 @@ namespace SmartStore.Services.Directory
     {
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
-		private readonly ICommonServices _services;
+        private readonly ICommonServices _services;
 
         public UpdateExchangeRateTask(
-			ICurrencyService currencyService, 
-			CurrencySettings currencySettings,
-			ICommonServices services)
+            ICurrencyService currencyService,
+            CurrencySettings currencySettings,
+            ICommonServices services)
         {
             this._currencyService = currencyService;
             this._currencySettings = currencySettings;
-			this._services = services;
+            this._services = services;
         }
 
         /// <summary>
@@ -45,17 +45,17 @@ namespace SmartStore.Services.Directory
                     var currency = _currencyService.GetCurrencyByCode(exchageRate.CurrencyCode);
                     if (currency != null)
                     {
-						if (currency.Rate != exchageRate.Rate)
-						{
-							currency.Rate = exchageRate.Rate;
-							_currencyService.UpdateCurrency(currency);
-						}
+                        if (currency.Rate != exchageRate.Rate)
+                        {
+                            currency.Rate = exchageRate.Rate;
+                            _currencyService.UpdateCurrency(currency);
+                        }
                     }
                 }
 
                 // save new update time value
                 _currencySettings.LastUpdateTime = DateTime.UtcNow.ToBinary();
-				_services.Settings.SaveSetting(_currencySettings);
+                _services.Settings.SaveSetting(_currencySettings);
             }
         }
     }

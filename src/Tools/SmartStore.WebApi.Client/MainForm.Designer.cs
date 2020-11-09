@@ -1,4 +1,4 @@
-﻿namespace SmartStoreNetWebApiClient
+﻿namespace SmartStore.WebApi.Client
 {
 	partial class MainForm
 	{
@@ -59,20 +59,16 @@
             this.lblRequest = new System.Windows.Forms.TextBox();
             this.lblResponse = new System.Windows.Forms.TextBox();
             this.lblFile = new System.Windows.Forms.Label();
-            this.txtFile = new System.Windows.Forms.TextBox();
-            this.txtVersion = new System.Windows.Forms.TextBox();
-            this.txtUrl = new System.Windows.Forms.TextBox();
             this.btnFileOpen = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.txtIdentfier1 = new System.Windows.Forms.TextBox();
-            this.lblIdentifier1 = new System.Windows.Forms.Label();
-            this.txtIdentfier2 = new System.Windows.Forms.TextBox();
-            this.lblIdentfier2 = new System.Windows.Forms.Label();
-            this.txtPictureId = new System.Windows.Forms.TextBox();
-            this.lblPictureId = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.txtMoreData = new System.Windows.Forms.TextBox();
-            this.lblMoreData = new System.Windows.Forms.Label();
+            this.btnDeleteHeaders = new System.Windows.Forms.Button();
+            this.cboHeaders = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cboFileUpload = new System.Windows.Forms.ComboBox();
+            this.txtVersion = new System.Windows.Forms.TextBox();
+            this.txtUrl = new System.Windows.Forms.TextBox();
+            this.btnDeleteFileUpload = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -215,7 +211,7 @@
             this.btnDeletePath.Location = new System.Drawing.Point(1124, 9);
             this.btnDeletePath.Name = "btnDeletePath";
             this.btnDeletePath.Size = new System.Drawing.Size(20, 22);
-            this.btnDeletePath.TabIndex = 7;
+            this.btnDeletePath.TabIndex = 8;
             this.btnDeletePath.Text = "x";
             this.btnDeletePath.UseVisualStyleBackColor = true;
             this.btnDeletePath.Click += new System.EventHandler(this.btnDeletePath_Click);
@@ -275,7 +271,7 @@
             this.btnDeleteQuery.Location = new System.Drawing.Point(1124, 35);
             this.btnDeleteQuery.Name = "btnDeleteQuery";
             this.btnDeleteQuery.Size = new System.Drawing.Size(20, 22);
-            this.btnDeleteQuery.TabIndex = 8;
+            this.btnDeleteQuery.TabIndex = 9;
             this.btnDeleteQuery.Text = "x";
             this.btnDeleteQuery.UseVisualStyleBackColor = true;
             this.btnDeleteQuery.Click += new System.EventHandler(this.btnDeleteQuery_Click);
@@ -392,45 +388,20 @@
             // lblFile
             // 
             this.lblFile.AutoSize = true;
-            this.lblFile.Location = new System.Drawing.Point(23, 125);
+            this.lblFile.Location = new System.Drawing.Point(22, 125);
             this.lblFile.Name = "lblFile";
             this.lblFile.Size = new System.Drawing.Size(58, 13);
             this.lblFile.TabIndex = 34;
             this.lblFile.Text = "File upload";
             // 
-            // txtFile
-            // 
-            this.txtFile.Location = new System.Drawing.Point(84, 122);
-            this.txtFile.Name = "txtFile";
-            this.txtFile.Size = new System.Drawing.Size(282, 21);
-            this.txtFile.TabIndex = 33;
-            // 
-            // txtVersion
-            // 
-            this.txtVersion.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStoreNetWebApiClient.Properties.Settings.Default, "ApiVersion", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.txtVersion.Location = new System.Drawing.Point(370, 36);
-            this.txtVersion.Name = "txtVersion";
-            this.txtVersion.Size = new System.Drawing.Size(89, 21);
-            this.txtVersion.TabIndex = 4;
-            this.txtVersion.Text = global::SmartStoreNetWebApiClient.Properties.Settings.Default.ApiVersion;
-            // 
-            // txtUrl
-            // 
-            this.txtUrl.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStoreNetWebApiClient.Properties.Settings.Default, "ApiUrl", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.txtUrl.Location = new System.Drawing.Point(84, 62);
-            this.txtUrl.Name = "txtUrl";
-            this.txtUrl.Size = new System.Drawing.Size(225, 21);
-            this.txtUrl.TabIndex = 2;
-            this.txtUrl.Text = global::SmartStoreNetWebApiClient.Properties.Settings.Default.ApiUrl;
-            // 
             // btnFileOpen
             // 
             this.btnFileOpen.AutoSize = true;
-            this.btnFileOpen.Location = new System.Drawing.Point(367, 120);
+            this.btnFileOpen.Location = new System.Drawing.Point(1075, 120);
             this.btnFileOpen.Name = "btnFileOpen";
-            this.btnFileOpen.Size = new System.Drawing.Size(43, 24);
+            this.btnFileOpen.Size = new System.Drawing.Size(69, 24);
             this.btnFileOpen.TabIndex = 35;
-            this.btnFileOpen.Text = "Open";
+            this.btnFileOpen.Text = "Open file";
             this.btnFileOpen.UseVisualStyleBackColor = true;
             this.btnFileOpen.Click += new System.EventHandler(this.btnFileOpen_Click);
             // 
@@ -438,85 +409,84 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // txtIdentfier1
+            // btnDeleteHeaders
             // 
-            this.txtIdentfier1.Location = new System.Drawing.Point(450, 122);
-            this.txtIdentfier1.Name = "txtIdentfier1";
-            this.txtIdentfier1.Size = new System.Drawing.Size(51, 21);
-            this.txtIdentfier1.TabIndex = 36;
+            this.btnDeleteHeaders.AutoSize = true;
+            this.btnDeleteHeaders.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeleteHeaders.Location = new System.Drawing.Point(1124, 61);
+            this.btnDeleteHeaders.Name = "btnDeleteHeaders";
+            this.btnDeleteHeaders.Size = new System.Drawing.Size(20, 22);
+            this.btnDeleteHeaders.TabIndex = 9;
+            this.btnDeleteHeaders.Text = "x";
+            this.btnDeleteHeaders.UseVisualStyleBackColor = true;
+            this.btnDeleteHeaders.Click += new System.EventHandler(this.btnDeleteHeaders_Click);
             // 
-            // lblIdentifier1
+            // cboHeaders
             // 
-            this.lblIdentifier1.AutoSize = true;
-            this.lblIdentifier1.Location = new System.Drawing.Point(428, 125);
-            this.lblIdentifier1.Name = "lblIdentifier1";
-            this.lblIdentifier1.Size = new System.Drawing.Size(18, 13);
-            this.lblIdentifier1.TabIndex = 37;
-            this.lblIdentifier1.Text = "ID";
+            this.cboHeaders.FormattingEnabled = true;
+            this.cboHeaders.Location = new System.Drawing.Point(551, 61);
+            this.cboHeaders.Name = "cboHeaders";
+            this.cboHeaders.Size = new System.Drawing.Size(571, 21);
+            this.cboHeaders.TabIndex = 7;
             // 
-            // txtIdentfier2
+            // label10
             // 
-            this.txtIdentfier2.Location = new System.Drawing.Point(590, 123);
-            this.txtIdentfier2.Name = "txtIdentfier2";
-            this.txtIdentfier2.Size = new System.Drawing.Size(128, 21);
-            this.txtIdentfier2.TabIndex = 38;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(500, 64);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 46;
+            this.label10.Text = "Headers";
             // 
-            // lblIdentfier2
+            // cboFileUpload
             // 
-            this.lblIdentfier2.AutoSize = true;
-            this.lblIdentfier2.Location = new System.Drawing.Point(507, 126);
-            this.lblIdentfier2.Name = "lblIdentfier2";
-            this.lblIdentfier2.Size = new System.Drawing.Size(82, 13);
-            this.lblIdentfier2.TabIndex = 39;
-            this.lblIdentfier2.Text = "SKU, Name etc.";
+            this.cboFileUpload.FormattingEnabled = true;
+            this.cboFileUpload.Location = new System.Drawing.Point(84, 122);
+            this.cboFileUpload.Name = "cboFileUpload";
+            this.cboFileUpload.Size = new System.Drawing.Size(965, 21);
+            this.cboFileUpload.TabIndex = 48;
             // 
-            // txtPictureId
+            // txtVersion
             // 
-            this.txtPictureId.Location = new System.Drawing.Point(780, 123);
-            this.txtPictureId.Name = "txtPictureId";
-            this.txtPictureId.Size = new System.Drawing.Size(61, 21);
-            this.txtPictureId.TabIndex = 40;
+            this.txtVersion.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStore.WebApi.Client.Properties.Settings.Default, "ApiVersion", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtVersion.Location = new System.Drawing.Point(370, 36);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.Size = new System.Drawing.Size(89, 21);
+            this.txtVersion.TabIndex = 4;
+            this.txtVersion.Text = global::SmartStore.WebApi.Client.Properties.Settings.Default.ApiVersion;
             // 
-            // lblPictureId
+            // txtUrl
             // 
-            this.lblPictureId.AutoSize = true;
-            this.lblPictureId.Location = new System.Drawing.Point(726, 126);
-            this.lblPictureId.Name = "lblPictureId";
-            this.lblPictureId.Size = new System.Drawing.Size(50, 13);
-            this.lblPictureId.TabIndex = 41;
-            this.lblPictureId.Text = "PictureId";
+            this.txtUrl.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStore.WebApi.Client.Properties.Settings.Default, "ApiUrl", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtUrl.Location = new System.Drawing.Point(84, 62);
+            this.txtUrl.Name = "txtUrl";
+            this.txtUrl.Size = new System.Drawing.Size(225, 21);
+            this.txtUrl.TabIndex = 2;
+            this.txtUrl.Text = global::SmartStore.WebApi.Client.Properties.Settings.Default.ApiUrl;
             // 
-            // txtMoreData
+            // btnDeleteFileUpload
             // 
-            this.txtMoreData.Location = new System.Drawing.Point(910, 123);
-            this.txtMoreData.Name = "txtMoreData";
-            this.txtMoreData.Size = new System.Drawing.Size(234, 21);
-            this.txtMoreData.TabIndex = 42;
-            // 
-            // lblMoreData
-            // 
-            this.lblMoreData.AutoSize = true;
-            this.lblMoreData.Location = new System.Drawing.Point(852, 126);
-            this.lblMoreData.Name = "lblMoreData";
-            this.lblMoreData.Size = new System.Drawing.Size(56, 13);
-            this.lblMoreData.TabIndex = 43;
-            this.lblMoreData.Text = "More data";
+            this.btnDeleteFileUpload.AutoSize = true;
+            this.btnDeleteFileUpload.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDeleteFileUpload.Location = new System.Drawing.Point(1051, 121);
+            this.btnDeleteFileUpload.Name = "btnDeleteFileUpload";
+            this.btnDeleteFileUpload.Size = new System.Drawing.Size(20, 22);
+            this.btnDeleteFileUpload.TabIndex = 49;
+            this.btnDeleteFileUpload.Text = "x";
+            this.btnDeleteFileUpload.UseVisualStyleBackColor = true;
+            this.btnDeleteFileUpload.Click += new System.EventHandler(this.btnDeleteFileUpload_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1154, 811);
-            this.Controls.Add(this.txtMoreData);
-            this.Controls.Add(this.lblMoreData);
-            this.Controls.Add(this.txtPictureId);
-            this.Controls.Add(this.lblPictureId);
-            this.Controls.Add(this.txtIdentfier2);
-            this.Controls.Add(this.lblIdentfier2);
-            this.Controls.Add(this.txtIdentfier1);
-            this.Controls.Add(this.lblIdentifier1);
+            this.Controls.Add(this.btnDeleteFileUpload);
+            this.Controls.Add(this.cboFileUpload);
+            this.Controls.Add(this.btnDeleteHeaders);
+            this.Controls.Add(this.cboHeaders);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.btnFileOpen);
-            this.Controls.Add(this.txtFile);
             this.Controls.Add(this.lblFile);
             this.Controls.Add(this.lblResponse);
             this.Controls.Add(this.lblRequest);
@@ -597,19 +567,15 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.TextBox lblRequest;
 		private System.Windows.Forms.TextBox lblResponse;
-		private System.Windows.Forms.TextBox txtFile;
 		private System.Windows.Forms.Label lblFile;
 		private System.Windows.Forms.Button btnFileOpen;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
-		private System.Windows.Forms.TextBox txtIdentfier1;
-		private System.Windows.Forms.Label lblIdentifier1;
-		private System.Windows.Forms.TextBox txtIdentfier2;
-		private System.Windows.Forms.Label lblIdentfier2;
-		private System.Windows.Forms.TextBox txtPictureId;
-		private System.Windows.Forms.Label lblPictureId;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.TextBox txtMoreData;
-        private System.Windows.Forms.Label lblMoreData;
+        private System.Windows.Forms.Button btnDeleteHeaders;
+        private System.Windows.Forms.ComboBox cboHeaders;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox cboFileUpload;
+        private System.Windows.Forms.Button btnDeleteFileUpload;
     }
 }
 

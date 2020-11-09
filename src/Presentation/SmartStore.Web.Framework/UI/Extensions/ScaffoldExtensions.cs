@@ -21,91 +21,91 @@ namespace SmartStore.Web.Framework.UI
             return new HelperResult(writer => writer.Write("<i class='fa fa-fw icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
         }
 
-		public static string LabeledProductName<T>(
-			this HtmlHelper<T> helper,
-			string id,
-			string name,
-			string typeName = "ProductTypeName",
-			string typeLabelHint = "ProductTypeLabelHint",
-			string target = null)
-		{
+        public static string LabeledProductName<T>(
+            this HtmlHelper<T> helper,
+            string id,
+            string name,
+            string typeName = "ProductTypeName",
+            string typeLabelHint = "ProductTypeLabelHint",
+            string target = null)
+        {
             string namePart;
             if (id.HasValue())
-			{
-				var url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-				var targetAttr = target.HasValue() ? $" target=\"{target}\"" : string.Empty;
+            {
+                var url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
+                var targetAttr = target.HasValue() ? $" target=\"{target}\"" : string.Empty;
 
-				namePart = "<a href=\"{0}<#= {1} #>\"{2}><#= {3} #></a>".FormatInvariant(url, id, targetAttr, name);
-			}
-			else
-			{
-				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
-			}
+                namePart = "<a href=\"{0}<#= {1} #>\"{2}><#= {3} #></a>".FormatInvariant(url, id, targetAttr, name);
+            }
+            else
+            {
+                namePart = "<span><#= {0} #></span>".FormatInvariant(name);
+            }
 
-			var result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
-			
-			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
-		}
+            var result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
 
-		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
-		{
-			if (id == 0 && name.IsEmpty())
-				return null;
+            return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
+        }
 
-			string namePart = null;
+        public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
+        {
+            if (id == 0 && name.IsEmpty())
+                return null;
 
-			if (id != 0)
-			{
-				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-				namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, name);
-			}
-			else
-			{
-				namePart = "<span>{0}</span>".FormatInvariant(helper.Encode(name));
-			}
+            string namePart = null;
 
-			return new HelperResult(writer => writer.Write("<span class='badge badge-{0} mr-1'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
-		}
+            if (id != 0)
+            {
+                string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
+                namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, name);
+            }
+            else
+            {
+                namePart = "<span>{0}</span>".FormatInvariant(helper.Encode(name));
+            }
 
-		public static string LabeledOrderNumber<T>(this HtmlHelper<T> helper)
-		{
-			var localize = EngineContext.Current.Resolve<ILocalizationService>();
-			string url = UrlHelper.GenerateContentUrl("~/Admin/Order/Edit/", helper.ViewContext.RequestContext.HttpContext);
+            return new HelperResult(writer => writer.Write("<span class='badge badge-{0} mr-1'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+        }
 
-			string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
+        public static string LabeledOrderNumber<T>(this HtmlHelper<T> helper)
+        {
+            var localize = EngineContext.Current.Resolve<ILocalizationService>();
+            string url = UrlHelper.GenerateContentUrl("~/Admin/Order/Edit/", helper.ViewContext.RequestContext.HttpContext);
 
-			string label = "<span class='badge badge-warning mr-1' title='{0}'>{1}</span>".FormatInvariant(
-				localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
-				localize.GetResource("Admin.Orders.Payments.NewIpn"));
+            string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
 
-			return "<# if(HasNewPaymentNotification) {{ #>{0}<# }} #>{1}".FormatInvariant(label, link);
-		}
+            string label = "<span class='badge badge-warning mr-1' title='{0}'>{1}</span>".FormatInvariant(
+                localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
+                localize.GetResource("Admin.Orders.Payments.NewIpn"));
 
-		public static HelperResult LabeledCurrencyName<T>(this HtmlHelper<T> helper, int id, string name, bool isPrimaryStoreCurrency, bool isPrimaryExchangeRateCurrency)
-		{
-			var localize = EngineContext.Current.Resolve<ILocalizationService>();
-			var sb = new StringBuilder();
+            return "<# if(HasNewPaymentNotification) {{ #>{0}<# }} #>{1}".FormatInvariant(label, link);
+        }
 
-			if (isPrimaryStoreCurrency)
-			{
-				sb.AppendFormat("<span class='badge badge-warning{0}'>{1}</span>",
-					isPrimaryExchangeRateCurrency ? String.Empty : " mr-1",
-					localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
-			}
+        public static HelperResult LabeledCurrencyName<T>(this HtmlHelper<T> helper, int id, string name, bool isPrimaryStoreCurrency, bool isPrimaryExchangeRateCurrency)
+        {
+            var localize = EngineContext.Current.Resolve<ILocalizationService>();
+            var sb = new StringBuilder();
 
-			if (isPrimaryExchangeRateCurrency)
-			{
-				sb.AppendFormat("<span class='badge badge-info mr-1'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
-			}
+            if (isPrimaryStoreCurrency)
+            {
+                sb.AppendFormat("<span class='badge badge-warning{0}'>{1}</span>",
+                    isPrimaryExchangeRateCurrency ? String.Empty : " mr-1",
+                    localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
+            }
 
-			string url = UrlHelper.GenerateContentUrl("~/Admin/Currency/Edit/", helper.ViewContext.RequestContext.HttpContext);
+            if (isPrimaryExchangeRateCurrency)
+            {
+                sb.AppendFormat("<span class='badge badge-info mr-1'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
+            }
 
-			sb.AppendFormat("<a href=\"{0}{1}\" title=\"{2}\">{2}</a>", url, id, helper.Encode(name.NaIfEmpty()));
+            string url = UrlHelper.GenerateContentUrl("~/Admin/Currency/Edit/", helper.ViewContext.RequestContext.HttpContext);
 
-			return new HelperResult(writer => writer.Write(sb.ToString()));
-		}
+            sb.AppendFormat("<a href=\"{0}{1}\" title=\"{2}\">{2}</a>", url, id, helper.Encode(name.NaIfEmpty()));
 
-		[Obsolete]
+            return new HelperResult(writer => writer.Write(sb.ToString()));
+        }
+
+        [Obsolete]
         public static string RichEditorFlavor(this HtmlHelper helper)
         {
             return "Html";

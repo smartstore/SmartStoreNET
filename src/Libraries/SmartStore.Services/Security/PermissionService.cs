@@ -110,6 +110,7 @@ namespace SmartStore.Services.Security
         private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
         private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         public PermissionService(
             IRepository<PermissionRecord> permissionRepository,
@@ -117,7 +118,8 @@ namespace SmartStore.Services.Security
             Lazy<ICustomerService> customerService,
             ILocalizationService localizationService,
             IWorkContext workContext,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager,
+            IRequestCache requestCache)
         {
             _permissionRepository = permissionRepository;
             _permissionMappingRepository = permissionMappingRepository;
@@ -125,6 +127,7 @@ namespace SmartStore.Services.Security
             _localizationService = localizationService;
             _workContext = workContext;
             _cacheManager = cacheManager;
+            _requestCache = requestCache;
 
             T = NullLocalizer.Instance;
             Logger = NullLogger.Instance;
@@ -399,17 +402,13 @@ namespace SmartStore.Services.Security
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool Authorize(PermissionRecord permission)
         {
-            return Authorize(permission, _workContext.CurrentCustomer);
+            return Authorize(permission?.SystemName, _workContext.CurrentCustomer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual bool Authorize(PermissionRecord permission, Customer customer)
         {
-            if (permission == null || customer == null)
-            {
-                return false;
-            }
-
-            return Authorize(permission.SystemName, customer);
+            return Authorize(permission?.SystemName, customer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -425,31 +424,38 @@ namespace SmartStore.Services.Security
                 return false;
             }
 
-            var roles = customer.CustomerRoleMappings
-                .Where(x => x.CustomerRole?.Active ?? false)
-                .Select(x => x.CustomerRole)
-                .ToArray();
+            var cacheKey = "Permission." + customer.Id.ToString() + "." + permissionSystemName;
 
-            foreach (var role in roles)
+            var authorized = _requestCache.Get(cacheKey, () => 
             {
-                var tree = GetPermissionTree(role);
-                var node = tree.SelectNodeById(permissionSystemName);
-                if (node == null)
+                var roles = customer.CustomerRoleMappings
+                    .Where(x => x.CustomerRole?.Active ?? false)
+                    .Select(x => x.CustomerRole)
+                    .ToArray();
+
+                foreach (var role in roles)
                 {
-                    continue;
+                    var tree = GetPermissionTree(role);
+                    var node = tree.SelectNodeById(permissionSystemName);
+                    if (node == null)
+                    {
+                        continue;
+                    }
+
+                    while (node != null && !node.Value.Allow.HasValue)
+                    {
+                        node = node.Parent;
+                    }
+                    if (node?.Value?.Allow ?? false)
+                    {
+                        return true;
+                    }
                 }
 
-                while (node != null && !node.Value.Allow.HasValue)
-                {
-                    node = node.Parent;
-                }
-                if (node?.Value?.Allow ?? false)
-                {
-                    return true;
-                }
-            }
+                return false;
+            });
 
-            return false;
+            return authorized;
         }
 
         public virtual bool AuthorizeByAlias(string permissionSystemName)

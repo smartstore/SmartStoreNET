@@ -1,7 +1,7 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Catalog
 {
@@ -27,7 +27,7 @@ namespace SmartStore.Data.Tests.Catalog
                 HasDiscountsApplied = true,
                 Published = true,
                 SubjectToAcl = true,
-				LimitedToStores = true,
+                LimitedToStores = true,
                 Deleted = false,
                 DisplayOrder = 5,
                 CreatedOnUtc = new DateTime(2010, 01, 01),
@@ -49,7 +49,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.HasDiscountsApplied.ShouldEqual(true);
             fromDb.Published.ShouldEqual(true);
             fromDb.SubjectToAcl.ShouldEqual(true);
-			fromDb.LimitedToStores.ShouldEqual(true);
+            fromDb.LimitedToStores.ShouldEqual(true);
             fromDb.Deleted.ShouldEqual(false);
             fromDb.DisplayOrder.ShouldEqual(5);
             fromDb.CreatedOnUtc.ShouldEqual(new DateTime(2010, 01, 01));

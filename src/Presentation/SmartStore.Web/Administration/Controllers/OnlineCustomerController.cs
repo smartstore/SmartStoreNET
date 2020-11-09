@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Customer.Read)]
         public ActionResult List(GridCommand command)
         {
-			var model = new GridModel<OnlineCustomerModel>();
+            var model = new GridModel<OnlineCustomerModel>();
 
             var lastActivityFrom = DateTime.UtcNow.AddMinutes(-_customerSettings.OnlineCustomerMinutes);
             var customers = _customerService.GetOnlineCustomers(lastActivityFrom, null, command.Page - 1, command.PageSize);

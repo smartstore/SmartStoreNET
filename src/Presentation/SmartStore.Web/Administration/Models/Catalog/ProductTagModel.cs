@@ -38,11 +38,11 @@ namespace SmartStore.Admin.Models.Catalog
         public string Name { get; set; }
     }
 
-	public partial class ProductTagValidator : AbstractValidator<ProductTagModel>
-	{
-		public ProductTagValidator()
-		{
-			RuleFor(x => x.Name).NotEmpty();
-		}
-	}
+    public partial class ProductTagValidator : AbstractValidator<ProductTagModel>
+    {
+        public ProductTagValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

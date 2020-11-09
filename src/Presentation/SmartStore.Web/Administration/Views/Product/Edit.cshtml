@@ -50,6 +50,7 @@
 		.Size(WindowSize.Large)
 		.Content(@<text>
 			<form method="POST" action="@Url.Action("CopyProduct", "Product")">
+				@Html.AntiForgeryToken()	
 				@Html.HiddenFor(model => Model.CopyProductModel.Id)
 				<table class="adminContent">
 					<tr>
@@ -88,8 +89,8 @@
 	.Render();
 }
 
-<script type="text/javascript">
-	$(document).ready(function () {
+<script>
+    $(function() {
 		// Copy product
         $("#copyproduct").click(function (e) {
             e.preventDefault();
@@ -164,6 +165,7 @@
 		.Size(WindowSize.Large)
 		.Content(@<text>
 			<form id="CopyOptionsForm" method="POST" action="@Url.Action("CopyAttributeOptions", "Product")">
+				@Html.AntiForgeryToken()
 				<input type="hidden" name="productVariantAttributeId" value="" />
 				<input type="hidden" name="optionsSetId" value="" />
 

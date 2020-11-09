@@ -23,15 +23,9 @@ namespace SmartStore.Web.Models.Boards
         public int NumReplies { get; set; }
 
         public int PostsPageSize { get; set; }
-        public int TotalPostPages
-        {
-            get
-            {
-                return PostsPageSize != 0
+        public int TotalPostPages => PostsPageSize != 0
                     ? (NumPosts / PostsPageSize) + 1
                     : 1;
-            }
-        }
 
         public int CustomerId { get; set; }
         public bool AllowViewingProfiles { get; set; }
@@ -41,12 +35,6 @@ namespace SmartStore.Web.Models.Boards
         public LastPostModel LastPost { get; set; }
         public CustomerAvatarModel Avatar { get; set; }
 
-        public string AnchorTag
-        {
-            get
-            {
-                return FirstPostId == 0 ? string.Empty : string.Concat("#", FirstPostId);
-            }
-        }
+        public string AnchorTag => FirstPostId == 0 ? string.Empty : string.Concat("#", FirstPostId);
     }
 }

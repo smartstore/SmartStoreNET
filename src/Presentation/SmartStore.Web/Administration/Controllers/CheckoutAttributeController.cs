@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
 using SmartStore.Core;
@@ -14,7 +13,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -179,6 +177,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Create)]
         public ActionResult Create(CheckoutAttributeModel model, bool continueEditing)
         {
@@ -221,6 +220,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult Edit(CheckoutAttributeModel model, bool continueEditing)
         {
@@ -250,6 +250,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Delete)]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -270,12 +271,23 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cart.CheckoutAttribute.Read)]
         public ActionResult ValueList(int checkoutAttributeId, GridCommand command)
         {
-            var model = new GridModel<CheckoutAttributeValueModel>();
-
             var values = _checkoutAttributeService.GetCheckoutAttributeValues(checkoutAttributeId);
 
-            model.Data = values.Select(x => x.ToModel());
-            model.Total = values.Count();
+            var valuesModel = values
+                .Select(x =>
+                {
+                    var m = x.ToModel();
+                    m.NameString = Server.HtmlEncode(x.Color.IsEmpty() ? x.Name : $"{x.Name} - {x.Color}");
+
+                    return m;
+                })
+                .ToList();
+
+            var model = new GridModel<CheckoutAttributeValueModel>
+            {
+                Data = valuesModel,
+                Total = values.Count()
+            };
 
             return new JsonResult
             {
@@ -286,10 +298,14 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult ValueCreatePopup(int checkoutAttributeId)
         {
+            var checkoutAttribute = _checkoutAttributeService.GetCheckoutAttributeById(checkoutAttributeId);
+            if (checkoutAttribute == null)
+            {
+                return RedirectToAction("List");
+            }
+
             var model = new CheckoutAttributeValueModel();
-            model.CheckoutAttributeId = checkoutAttributeId;
-            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+            PrepareModel(model, checkoutAttribute);
 
             AddLocales(_languageService, model.Locales);
 
@@ -297,6 +313,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult ValueCreatePopup(string btnId, string formId, CheckoutAttributeValueModel model)
         {
@@ -306,8 +323,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+            PrepareModel(model, checkoutAttribute);
 
             if (ModelState.IsValid)
             {
@@ -336,8 +352,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = cav.ToModel();
-            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+            PrepareModel(model, cav.CheckoutAttribute);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -348,6 +363,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Permission(Permissions.Cart.CheckoutAttribute.Update)]
         public ActionResult ValueEditPopup(string btnId, string formId, CheckoutAttributeValueModel model)
         {
@@ -357,8 +373,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
+            PrepareModel(model, cav.CheckoutAttribute);
 
             if (ModelState.IsValid)
             {
@@ -386,6 +401,15 @@ namespace SmartStore.Admin.Controllers
             _checkoutAttributeService.DeleteCheckoutAttributeValue(cav);
 
             return ValueList(checkoutAttributeId, command);
+        }
+
+        private void PrepareModel(CheckoutAttributeValueModel model, CheckoutAttribute attribute)
+        {
+            model.CheckoutAttributeId = attribute?.Id ?? 0;
+            model.IsListTypeAttribute = attribute?.IsListTypeAttribute() ?? false;
+
+            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
+            model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.GetLocalized(x => x.Name) ?? string.Empty;
         }
 
         #endregion

@@ -6,14 +6,14 @@ namespace SmartStore.Admin.Models.ShoppingCart
 {
     public class ShoppingCartItemModel : EntityModelBase
     {
-		[SmartResourceDisplayName("Admin.Common.Store")]
-		public string Store { get; set; }
+        [SmartResourceDisplayName("Admin.Common.Store")]
+        public string Store { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]
         public int ProductId { get; set; }
         [SmartResourceDisplayName("Admin.CurrentCarts.Product")]
         public string ProductName { get; set; }
-		public string ProductTypeName { get; set; }
-		public string ProductTypeLabelHint { get; set; }
+        public string ProductTypeName { get; set; }
+        public string ProductTypeLabelHint { get; set; }
 
         [SmartResourceDisplayName("Admin.CurrentCarts.UnitPrice")]
         public string UnitPrice { get; set; }

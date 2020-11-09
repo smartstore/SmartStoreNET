@@ -8,39 +8,39 @@
 }
 
 @using (Html.BeginForm())
-{    
-<script type="text/javascript">
-	$(document).ready(function () {
-		$("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
-		$("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
-		$('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
+{
+    <script>
+        $(function() {
+		    $("#@Html.FieldIdFor(model => model.ShippingIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
+		    $("#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)").click(updateAuxiliaryServicesTaxCategories);
+		    $('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
+	    });
 
-	});
+	    function updateAuxiliaryServicesTaxCategories() {
+		    var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
+			    shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
+			    paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
 
-	function updateAuxiliaryServicesTaxCategories() {
-		var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
-			shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
-			paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
+		    $('#pnlShippingTaxClass').toggle(showCategories && shippingIsTaxable);
+		    $('#pnlPaymentMethodAdditionalFeeTaxClass').toggle(showCategories && paymentFeeIsTaxable);
+	    }
+    </script>
 
-		$('#pnlShippingTaxClass').toggle(showCategories && shippingIsTaxable);
-		$('#pnlPaymentMethodAdditionalFeeTaxClass').toggle(showCategories && paymentFeeIsTaxable);
-	}
-</script>
-    
     <div class="section-header">
         <div class="title">
             @T("Admin.Configuration.Settings.Tax")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
+            </button>
         </div>
     </div>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
+    @Html.AntiForgeryToken()
     @Html.ValidationSummary(false)
 
     <table class="adminContent">
@@ -55,24 +55,24 @@
         </tr>
 
         @*not relevant for european market but we have to deal with this option later*@
-        		@*<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AllowCustomersToSelectTaxDisplayType)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.AllowCustomersToSelectTaxDisplayType, new { data_toggler_for = "#pnlTaxDisplayType" })
-				@Html.ValidationMessageFor(model => model.AllowCustomersToSelectTaxDisplayType)
-			</td>
-		</tr>*@
+        @*<tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomersToSelectTaxDisplayType)
+            </td>
+            <td class="adminData">
+                @Html.CheckBoxFor(model => model.AllowCustomersToSelectTaxDisplayType, new { data_toggler_for = "#pnlTaxDisplayType" })
+                @Html.ValidationMessageFor(model => model.AllowCustomersToSelectTaxDisplayType)
+            </td>
+        </tr>*@
 
         <tr id="pnlTaxDisplayType">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxDisplayType)
             </td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.TaxDisplayType)
-				@Html.ValidationMessageFor(model => model.TaxDisplayType)
-			</td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.TaxDisplayType)
+                @Html.ValidationMessageFor(model => model.TaxDisplayType)
+            </td>
         </tr>
         <tr>
             <td class="adminTitle">
@@ -146,95 +146,93 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TaxBasedOn)
             </td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.TaxBasedOn)
-				@Html.ValidationMessageFor(model => model.TaxBasedOn)
-			</td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.TaxBasedOn)
+                @Html.ValidationMessageFor(model => model.TaxBasedOn)
+            </td>
         </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DefaultTaxAddress)
             </td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => Model.DefaultTaxAddress, @<div>
-					@Html.EditorFor(x => x.DefaultTaxAddress, "Address")
-				</div>)
-			</td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => Model.DefaultTaxAddress, @Html.EditorFor(x => x.DefaultTaxAddress, "Address"))
+            </td>
         </tr>
         <tr>
             <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AuxiliaryServicesTaxingType)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.AuxiliaryServicesTaxingType)
-				@Html.ValidationMessageFor(model => model.AuxiliaryServicesTaxingType)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AuxiliaryServicesTaxingType)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.AuxiliaryServicesTaxingType)
+                @Html.ValidationMessageFor(model => model.AuxiliaryServicesTaxingType)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShippingIsTaxable)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.ShippingIsTaxable, Html.CheckBoxFor(model => model.ShippingIsTaxable, new { data_toggler_for = "#pnlShippingIsTaxable" }))
+                @Html.SettingEditorFor(model => model.ShippingIsTaxable, Html.CheckBoxFor(model => model.ShippingIsTaxable, new { data_toggler_for = "#pnlShippingIsTaxable" }))
                 @Html.ValidationMessageFor(model => model.ShippingIsTaxable)
             </td>
         </tr>
-		<tbody id="pnlShippingIsTaxable">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ShippingPriceIncludesTax)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.ShippingPriceIncludesTax)
-					@Html.ValidationMessageFor(model => model.ShippingPriceIncludesTax)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ShippingTaxClassId)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.ShippingTaxClassId, Html.DropDownListFor(model => model.ShippingTaxClassId, Model.ShippingTaxCategories, T("Common.PleaseSelect")))
-					@Html.ValidationMessageFor(model => model.ShippingTaxClassId)
-				</td>
-			</tr>
-		</tbody>
+        <tbody id="pnlShippingIsTaxable">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShippingPriceIncludesTax)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ShippingPriceIncludesTax)
+                    @Html.ValidationMessageFor(model => model.ShippingPriceIncludesTax)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShippingTaxClassId)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ShippingTaxClassId, Html.DropDownListFor(model => model.ShippingTaxClassId, Model.ShippingTaxCategories, T("Common.PleaseSelect")))
+                    @Html.ValidationMessageFor(model => model.ShippingTaxClassId)
+                </td>
+            </tr>
+        </tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIsTaxable,
-					Html.CheckBoxFor(model => model.PaymentMethodAdditionalFeeIsTaxable, new { data_toggler_for = "#pnlPaymentMethodAdditionalFeeIsTaxable" }))
+                @Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIsTaxable,
+                    Html.CheckBoxFor(model => model.PaymentMethodAdditionalFeeIsTaxable, new { data_toggler_for = "#pnlPaymentMethodAdditionalFeeIsTaxable" }))
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIsTaxable)
             </td>
         </tr>
-		<tbody id="pnlPaymentMethodAdditionalFeeIsTaxable">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
-					@Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeTaxClassId, 
-						Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect")))
-					@Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
-				</td>
-			</tr>
-		</tbody>
+        <tbody id="pnlPaymentMethodAdditionalFeeIsTaxable">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
+                    @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeIncludesTax)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.PaymentMethodAdditionalFeeTaxClassId,
+                        Html.DropDownListFor(model => model.PaymentMethodAdditionalFeeTaxClassId, Model.PaymentMethodAdditionalFeeTaxCategories, T("Common.PleaseSelect")))
+                    @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
+                </td>
+            </tr>
+        </tbody>
         <tr>
             <td class="adminSeparator" colspan="2">
                 <hr />
@@ -245,56 +243,56 @@
                 @Html.SmartLabelFor(model => model.EuVatEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.EuVatEnabled, Html.CheckBoxFor(model => model.EuVatEnabled, new { data_toggler_for = "#pnlEuVat" }))
+                @Html.SettingEditorFor(model => model.EuVatEnabled, Html.CheckBoxFor(model => model.EuVatEnabled, new { data_toggler_for = "#pnlEuVat" }))
                 @Html.ValidationMessageFor(model => model.EuVatEnabled)
             </td>
         </tr>
-		<tbody id="pnlEuVat">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.EuVatShopCountryId)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.EuVatShopCountryId, Html.DropDownListFor(model => model.EuVatShopCountryId, Model.EuVatShopCountries, T("Admin.Address.SelectCountry")))
-					@Html.ValidationMessageFor(model => model.EuVatShopCountryId)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.EuVatAllowVatExemption)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.EuVatAllowVatExemption)
-					@Html.ValidationMessageFor(model => model.EuVatAllowVatExemption)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.EuVatUseWebService)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.EuVatUseWebService)
-					@Html.ValidationMessageFor(model => model.EuVatUseWebService)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
-					@Html.ValidationMessageFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.VatRequired)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.VatRequired)
-					@Html.ValidationMessageFor(model => model.VatRequired)
-				</td>
-			</tr>
-		</tbody>
+        <tbody id="pnlEuVat">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.EuVatShopCountryId)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.EuVatShopCountryId, Html.DropDownListFor(model => model.EuVatShopCountryId, Model.EuVatShopCountries, T("Admin.Address.SelectCountry")))
+                    @Html.ValidationMessageFor(model => model.EuVatShopCountryId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.EuVatAllowVatExemption)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.EuVatAllowVatExemption)
+                    @Html.ValidationMessageFor(model => model.EuVatAllowVatExemption)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.EuVatUseWebService)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.EuVatUseWebService)
+                    @Html.ValidationMessageFor(model => model.EuVatUseWebService)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
+                    @Html.ValidationMessageFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.VatRequired)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.VatRequired)
+                    @Html.ValidationMessageFor(model => model.VatRequired)
+                </td>
+            </tr>
+        </tbody>
     </table>
 }

@@ -13,81 +13,81 @@ namespace SmartStore.Services.Seo
 {
     public partial class UrlRecordService : ScopedServiceBase, IUrlRecordService
     {
-		/// <summary>
-		/// 0 = segment (EntityName.IdRange), 1 = language id
-		/// </summary>
-		const string URLRECORD_SEGMENT_KEY = "urlrecord:segment:{0}-lang-{1}";
-		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:segment:{0}*";
-		const string URLRECORD_ALL_PATTERN = "urlrecord:*";
-		const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
+        /// <summary>
+        /// 0 = segment (EntityName.IdRange), 1 = language id
+        /// </summary>
+        const string URLRECORD_SEGMENT_KEY = "urlrecord:segment:{0}-lang-{1}";
+        const string URLRECORD_SEGMENT_PATTERN = "urlrecord:segment:{0}*";
+        const string URLRECORD_ALL_PATTERN = "urlrecord:*";
+        const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
 
-		private readonly IRepository<UrlRecord> _urlRecordRepository;
+        private readonly IRepository<UrlRecord> _urlRecordRepository;
         private readonly ICacheManager _cacheManager;
-		private readonly SeoSettings _seoSettings;
-		private readonly PerformanceSettings _performanceSettings;
+        private readonly SeoSettings _seoSettings;
+        private readonly PerformanceSettings _performanceSettings;
 
-		private readonly IDictionary<string, UrlRecordCollection> _prefetchedCollections;
-		private static int _lastCacheSegmentSize = -1;
+        private readonly IDictionary<string, UrlRecordCollection> _prefetchedCollections;
+        private static int _lastCacheSegmentSize = -1;
 
-		public UrlRecordService(
-			ICacheManager cacheManager, 
-			IRepository<UrlRecord> urlRecordRepository, 
-			SeoSettings seoSettings, 
-			PerformanceSettings performanceSettings)
+        public UrlRecordService(
+            ICacheManager cacheManager,
+            IRepository<UrlRecord> urlRecordRepository,
+            SeoSettings seoSettings,
+            PerformanceSettings performanceSettings)
         {
             _cacheManager = cacheManager;
             _urlRecordRepository = urlRecordRepository;
-			_seoSettings = seoSettings;
-			_performanceSettings = performanceSettings;
+            _seoSettings = seoSettings;
+            _performanceSettings = performanceSettings;
 
-			_prefetchedCollections = new Dictionary<string, UrlRecordCollection>(StringComparer.OrdinalIgnoreCase);
+            _prefetchedCollections = new Dictionary<string, UrlRecordCollection>(StringComparer.OrdinalIgnoreCase);
 
-			ValidateCacheState();
+            ValidateCacheState();
         }
 
-		private void ValidateCacheState()
-		{
-			// Ensure that after a segment size change the cache segments are invalidated.
-			var size = _performanceSettings.CacheSegmentSize;
-			var changed = _lastCacheSegmentSize == -1;
-
-			if (size <= 0)
-			{
-				_performanceSettings.CacheSegmentSize = size = 1;
-			}
-
-			if (_lastCacheSegmentSize > 0 && _lastCacheSegmentSize != size)
-			{
-				_cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN);
-				changed = true;
-			}
-
-			if (changed)
-			{
-				Interlocked.Exchange(ref _lastCacheSegmentSize, size);
-			}
-		}
-
-		protected override void OnClearCache()
-		{
-			_cacheManager.Remove(URLRECORD_ALL_PATTERN);
-		}
-
-		public virtual void DeleteUrlRecord(UrlRecord urlRecord)
+        private void ValidateCacheState()
         {
-			Guard.NotNull(urlRecord, nameof(urlRecord));
+            // Ensure that after a segment size change the cache segments are invalidated.
+            var size = _performanceSettings.CacheSegmentSize;
+            var changed = _lastCacheSegmentSize == -1;
 
-			try
-			{
-				// cache
-				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
-				HasChanges = true;
+            if (size <= 0)
+            {
+                _performanceSettings.CacheSegmentSize = size = 1;
+            }
 
-				// db
-				_urlRecordRepository.Delete(urlRecord);
-			}
-			catch { }
-		}
+            if (_lastCacheSegmentSize > 0 && _lastCacheSegmentSize != size)
+            {
+                _cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Interlocked.Exchange(ref _lastCacheSegmentSize, size);
+            }
+        }
+
+        protected override void OnClearCache()
+        {
+            _cacheManager.Remove(URLRECORD_ALL_PATTERN);
+        }
+
+        public virtual void DeleteUrlRecord(UrlRecord urlRecord)
+        {
+            Guard.NotNull(urlRecord, nameof(urlRecord));
+
+            try
+            {
+                // cache
+                ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+                HasChanges = true;
+
+                // db
+                _urlRecordRepository.Delete(urlRecord);
+            }
+            catch { }
+        }
 
         public virtual UrlRecord GetUrlRecordById(int urlRecordId)
         {
@@ -98,267 +98,267 @@ namespace SmartStore.Services.Seo
             return urlRecord;
         }
 
-		public virtual IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds)
-		{
-			if (urlRecordIds == null || urlRecordIds.Length == 0)
-				return new List<UrlRecord>();
+        public virtual IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds)
+        {
+            if (urlRecordIds == null || urlRecordIds.Length == 0)
+                return new List<UrlRecord>();
 
-			var urlRecords = _urlRecordRepository.Table
-				.Where(x => urlRecordIds.Contains(x.Id))
-				.ToList();
+            var urlRecords = _urlRecordRepository.Table
+                .Where(x => urlRecordIds.Contains(x.Id))
+                .ToList();
 
-			return urlRecords;
-		}
+            return urlRecords;
+        }
 
         public virtual void InsertUrlRecord(UrlRecord urlRecord)
         {
-			Guard.NotNull(urlRecord, nameof(urlRecord));
+            Guard.NotNull(urlRecord, nameof(urlRecord));
 
-			try
-			{
-				// db
-				_urlRecordRepository.Insert(urlRecord);
-				HasChanges = true;
+            try
+            {
+                // db
+                _urlRecordRepository.Insert(urlRecord);
+                HasChanges = true;
 
-				// cache
-				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
-			}
-			catch { }
+                // cache
+                ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+            }
+            catch { }
         }
 
         public virtual void UpdateUrlRecord(UrlRecord urlRecord)
         {
-			Guard.NotNull(urlRecord, nameof(urlRecord));
+            Guard.NotNull(urlRecord, nameof(urlRecord));
 
-			try
-			{
-				// db
-				_urlRecordRepository.Update(urlRecord);
-				HasChanges = true;
+            try
+            {
+                // db
+                _urlRecordRepository.Update(urlRecord);
+                HasChanges = true;
 
-				// cache
-				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
-			}
-			catch { }
-		}
+                // cache
+                ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+            }
+            catch { }
+        }
 
         public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive)
         {
             var query = _urlRecordRepository.Table;
 
-			if (slug.HasValue())
-				query = query.Where(x => x.Slug.Contains(slug));
+            if (slug.HasValue())
+                query = query.Where(x => x.Slug.Contains(slug));
 
-			if (entityName.HasValue())
-				query = query.Where(x => x.EntityName == entityName);
+            if (entityName.HasValue())
+                query = query.Where(x => x.EntityName == entityName);
 
-			if (entityId.HasValue)
-				query = query.Where(x => x.EntityId == entityId.Value);
+            if (entityId.HasValue)
+                query = query.Where(x => x.EntityId == entityId.Value);
 
-			if (isActive.HasValue)
-				query = query.Where(x => x.IsActive == isActive.Value);
+            if (isActive.HasValue)
+                query = query.Where(x => x.IsActive == isActive.Value);
 
-			if (languageId.HasValue)
-				query = query.Where(x => x.LanguageId == languageId);
+            if (languageId.HasValue)
+                query = query.Where(x => x.LanguageId == languageId);
 
-			query = query.OrderBy(x => x.Slug);
+            query = query.OrderBy(x => x.Slug);
 
-			var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
-			return urlRecords;
+            var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
+            return urlRecords;
         }
 
-		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
-		{
-			Guard.NotEmpty(entityName, nameof(entityName));
+        public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
+        {
+            Guard.NotEmpty(entityName, nameof(entityName));
 
-			var query = from ur in _urlRecordRepository.Table
-						where ur.EntityId == entityId &&
-						ur.EntityName == entityName
-						select ur;
+            var query = from ur in _urlRecordRepository.Table
+                        where ur.EntityId == entityId &&
+                        ur.EntityName == entityName
+                        select ur;
 
-			if (activeOnly)
-			{
-				query = query.Where(ur => ur.IsActive);
-			}
+            if (activeOnly)
+            {
+                query = query.Where(ur => ur.IsActive);
+            }
 
-			return query.ToList();
-		}
+            return query.ToList();
+        }
 
-		public virtual void PrefetchUrlRecords(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
-		{
-			var collection = GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted); 
+        public virtual void PrefetchUrlRecords(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
+        {
+            var collection = GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted);
 
-			if (_prefetchedCollections.TryGetValue(entityName, out var existing))
-			{
-				collection.MergeWith(existing);
-			}
-			else
-			{
-				_prefetchedCollections[entityName] = collection;
-			}
-		}
+            if (_prefetchedCollections.TryGetValue(entityName, out var existing))
+            {
+                collection.MergeWith(existing);
+            }
+            else
+            {
+                _prefetchedCollections[entityName] = collection;
+            }
+        }
 
-		public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
-		{
-			return GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted);
-		}
+        public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
+        {
+            return GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted);
+        }
 
-		public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
-		{
-			Guard.NotEmpty(entityName, nameof(entityName));
+        public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
+        {
+            Guard.NotEmpty(entityName, nameof(entityName));
 
-			using (new DbContextScope(proxyCreation: false, lazyLoading: false))
-			{
-				var query = from x in _urlRecordRepository.TableUntracked
-							where x.EntityName == entityName && x.IsActive
-							select x;
+            using (new DbContextScope(proxyCreation: false, lazyLoading: false))
+            {
+                var query = from x in _urlRecordRepository.TableUntracked
+                            where x.EntityName == entityName && x.IsActive
+                            select x;
 
-				var requestedSet = entityIds;
+                var requestedSet = entityIds;
 
-				if (entityIds != null && entityIds.Length > 0)
-				{
-					if (isRange)
-					{
-						if (!isSorted)
-						{
-							Array.Sort(entityIds);
-						}
+                if (entityIds != null && entityIds.Length > 0)
+                {
+                    if (isRange)
+                    {
+                        if (!isSorted)
+                        {
+                            Array.Sort(entityIds);
+                        }
 
-						var min = entityIds[0];
-						var max = entityIds[entityIds.Length - 1];
+                        var min = entityIds[0];
+                        var max = entityIds[entityIds.Length - 1];
 
-						if (entityIds.Length == 2 && max > min + 1)
-						{
-							// Only min & max were passed, create the range sequence.
-							requestedSet = Enumerable.Range(min, max - min + 1).ToArray();
-						}
+                        if (entityIds.Length == 2 && max > min + 1)
+                        {
+                            // Only min & max were passed, create the range sequence.
+                            requestedSet = Enumerable.Range(min, max - min + 1).ToArray();
+                        }
 
-						query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
-					}
-					else
-					{
-						requestedSet = entityIds;
-						query = query.Where(x => entityIds.Contains(x.EntityId));
-					}
-				}
+                        query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
+                    }
+                    else
+                    {
+                        requestedSet = entityIds;
+                        query = query.Where(x => entityIds.Contains(x.EntityId));
+                    }
+                }
 
-				if (languageIds != null && languageIds.Length > 0)
-				{
-					if (languageIds.Length == 1)
-					{
+                if (languageIds != null && languageIds.Length > 0)
+                {
+                    if (languageIds.Length == 1)
+                    {
                         // Avoid "The LINQ expression node type 'ArrayIndex' is not supported in LINQ to Entities".
                         var languageId = languageIds[0];
                         query = query.Where(x => x.LanguageId == languageId);
-					}
-					else
-					{
-						query = query.Where(x => languageIds.Contains(x.LanguageId));
-					}
-				}
+                    }
+                    else
+                    {
+                        query = query.Where(x => languageIds.Contains(x.LanguageId));
+                    }
+                }
 
-				// Don't sort DESC, because latter items overwrite exisiting ones (it's the same as sorting DESC and taking the first)
-				return new UrlRecordCollection(entityName, requestedSet, query.OrderBy(x => x.Id).ToList());
-			}
-		}
+                // Don't sort DESC, because latter items overwrite exisiting ones (it's the same as sorting DESC and taking the first)
+                return new UrlRecordCollection(entityName, requestedSet, query.OrderBy(x => x.Id).ToList());
+            }
+        }
 
-		public virtual UrlRecord GetBySlug(string slug)
-		{
-			// INFO: (mc) Caching unnecessary here. This is not a 'bottleneck' function.
-			if (String.IsNullOrEmpty(slug))
-				return null;
+        public virtual UrlRecord GetBySlug(string slug)
+        {
+            // INFO: (mc) Caching unnecessary here. This is not a 'bottleneck' function.
+            if (String.IsNullOrEmpty(slug))
+                return null;
 
-			var query = from ur in _urlRecordRepository.Table
-						where ur.Slug == slug
-						select ur;
+            var query = from ur in _urlRecordRepository.Table
+                        where ur.Slug == slug
+                        select ur;
 
-			var urlRecord = query.FirstOrDefault();
-			return urlRecord;
-		}
+            var urlRecord = query.FirstOrDefault();
+            return urlRecord;
+        }
 
         public virtual string GetActiveSlug(int entityId, string entityName, int languageId)
         {
-			if (_prefetchedCollections.TryGetValue(entityName, out var collection))
-			{
-				var cachedItem = collection.Find(languageId, entityId);
-				if (cachedItem != null)
-				{
-					return cachedItem.Slug.EmptyNull();
-				}
-			}
+            if (_prefetchedCollections.TryGetValue(entityName, out var collection))
+            {
+                var cachedItem = collection.Find(languageId, entityId);
+                if (cachedItem != null)
+                {
+                    return cachedItem.Slug.EmptyNull();
+                }
+            }
 
-			if (IsInScope)
-			{
-				return GetActiveSlugUncached(entityId, entityName, languageId);
-			}
+            if (IsInScope)
+            {
+                return GetActiveSlugUncached(entityId, entityName, languageId);
+            }
 
-			string slug = null;
+            string slug = null;
 
-			if (_seoSettings.LoadAllUrlAliasesOnStartup)
-			{
-				var allActiveSlugs = _cacheManager.Get(URLRECORD_ALL_ACTIVESLUGS_KEY, () =>
-				{
-					using (new DbContextScope(proxyCreation: false, lazyLoading: false))
-					{
-						var query = from x in _urlRecordRepository.TableUntracked
-									where x.IsActive
-									orderby x.Id descending
-									select x;
+            if (_seoSettings.LoadAllUrlAliasesOnStartup)
+            {
+                var allActiveSlugs = _cacheManager.Get(URLRECORD_ALL_ACTIVESLUGS_KEY, () =>
+                {
+                    using (new DbContextScope(proxyCreation: false, lazyLoading: false))
+                    {
+                        var query = from x in _urlRecordRepository.TableUntracked
+                                    where x.IsActive
+                                    orderby x.Id descending
+                                    select x;
 
-						var result = query.ToDictionarySafe(
-							x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
-							x => x.Slug,
-							StringComparer.OrdinalIgnoreCase);
+                        var result = query.ToDictionarySafe(
+                            x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
+                            x => x.Slug,
+                            StringComparer.OrdinalIgnoreCase);
 
-						return result;
-					}
-				}, independent: true);
+                        return result;
+                    }
+                }, independent: true);
 
-				var key = GenerateKey(entityId, entityName, languageId);
-				if (!allActiveSlugs.TryGetValue(key, out slug))
-				{
-					return string.Empty;
-				}
-			}
-			else
-			{
-				var slugs = GetCacheSegment(entityName, entityId, languageId);
+                var key = GenerateKey(entityId, entityName, languageId);
+                if (!allActiveSlugs.TryGetValue(key, out slug))
+                {
+                    return string.Empty;
+                }
+            }
+            else
+            {
+                var slugs = GetCacheSegment(entityName, entityId, languageId);
 
-				if (!slugs.TryGetValue(entityId, out slug))
-				{
-					return string.Empty;
-				}
-			}
+                if (!slugs.TryGetValue(entityId, out slug))
+                {
+                    return string.Empty;
+                }
+            }
 
-			return slug;
+            return slug;
         }
 
-		protected string GetActiveSlugUncached(int entityId, string entityName, int languageId)
-		{
-			var query = from x in _urlRecordRepository.TableUntracked
-						where 
-							x.EntityId == entityId && 
-							x.EntityName == entityName && 
-							x.LanguageId == languageId && 
-							x.IsActive
-						orderby x.Id descending
-						select x.Slug;
-
-			return query.FirstOrDefault().EmptyNull();
-		}
-
-		public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
+        protected string GetActiveSlugUncached(int entityId, string entityName, int languageId)
         {
-			Guard.NotNull(entity, nameof(entity));
+            var query = from x in _urlRecordRepository.TableUntracked
+                        where
+                            x.EntityId == entityId &&
+                            x.EntityName == entityName &&
+                            x.LanguageId == languageId &&
+                            x.IsActive
+                        orderby x.Id descending
+                        select x.Slug;
+
+            return query.FirstOrDefault().EmptyNull();
+        }
+
+        public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
+        {
+            Guard.NotNull(entity, nameof(entity));
 
             int entityId = entity.Id;
             string entityName = entity.GetEntityName();
-			UrlRecord result = null;
+            UrlRecord result = null;
 
             var query = from ur in _urlRecordRepository.Table
                         where ur.EntityId == entityId &&
                         ur.EntityName == entityName &&
                         ur.LanguageId == languageId
-                        orderby ur.Id descending 
+                        orderby ur.Id descending
                         select ur;
             var allUrlRecords = query.ToList();
 
@@ -385,7 +385,7 @@ namespace SmartStore.Services.Seo
                         IsActive = true,
                     };
                     InsertUrlRecord(urlRecord);
-					result = urlRecord;
+                    result = urlRecord;
                 }
             }
 
@@ -421,164 +421,164 @@ namespace SmartStore.Services.Seo
                     }
                     else
                     {
-						// MC: Absolutely ensure, that we have no duplicate active record for this entity.
-						// In such case a record other than "activeUrlRecord" could have same seName
-						// and the DB would report an Index error.
-						var alreadyActiveDuplicate = allUrlRecords.FirstOrDefault(x => x.Slug.IsCaseInsensitiveEqual(slug) && x.IsActive);
-						if (alreadyActiveDuplicate != null)
-						{
-							// deactivate all
-							allUrlRecords.Each(x => x.IsActive = false);
-							// set the existing one to active again
-							alreadyActiveDuplicate.IsActive = true;
-							// update all records
-							allUrlRecords.Each(x => UpdateUrlRecord(x));
-						}
-						else
-						{
-							// insert new record
-							// we do not update the existing record because we should track all previously entered slugs
-							// to ensure that URLs will work fine
-							var urlRecord = new UrlRecord
-							{
-								EntityId = entity.Id,
-								EntityName = entityName,
-								Slug = slug,
-								LanguageId = languageId,
-								IsActive = true,
-							};
-							InsertUrlRecord(urlRecord);
-							result = urlRecord;
+                        // MC: Absolutely ensure, that we have no duplicate active record for this entity.
+                        // In such case a record other than "activeUrlRecord" could have same seName
+                        // and the DB would report an Index error.
+                        var alreadyActiveDuplicate = allUrlRecords.FirstOrDefault(x => x.Slug.IsCaseInsensitiveEqual(slug) && x.IsActive);
+                        if (alreadyActiveDuplicate != null)
+                        {
+                            // deactivate all
+                            allUrlRecords.Each(x => x.IsActive = false);
+                            // set the existing one to active again
+                            alreadyActiveDuplicate.IsActive = true;
+                            // update all records
+                            allUrlRecords.Each(x => UpdateUrlRecord(x));
+                        }
+                        else
+                        {
+                            // insert new record
+                            // we do not update the existing record because we should track all previously entered slugs
+                            // to ensure that URLs will work fine
+                            var urlRecord = new UrlRecord
+                            {
+                                EntityId = entity.Id,
+                                EntityName = entityName,
+                                Slug = slug,
+                                LanguageId = languageId,
+                                IsActive = true,
+                            };
+                            InsertUrlRecord(urlRecord);
+                            result = urlRecord;
 
-							// disable the previous active URL record
-							activeUrlRecord.IsActive = false;
-							UpdateUrlRecord(activeUrlRecord);
-						}
+                            // disable the previous active URL record
+                            activeUrlRecord.IsActive = false;
+                            UpdateUrlRecord(activeUrlRecord);
+                        }
                     }
 
                 }
             }
 
-			return result;
+            return result;
         }
 
-		public virtual UrlRecord SaveSlug<T>(T entity, Func<T, string> nameProperty) where T : BaseEntity, ISlugSupported
-		{
-			string name = nameProperty.Invoke(entity);
+        public virtual UrlRecord SaveSlug<T>(T entity, Func<T, string> nameProperty) where T : BaseEntity, ISlugSupported
+        {
+            string name = nameProperty.Invoke(entity);
 
-			string existingSeName = entity.GetSeName<T>(0, true, false);
-			existingSeName = entity.ValidateSeName(existingSeName, name, true);
+            string existingSeName = entity.GetSeName<T>(0, true, false);
+            existingSeName = entity.ValidateSeName(existingSeName, name, true);
 
-			return SaveSlug(entity, existingSeName, 0);
-		}
+            return SaveSlug(entity, existingSeName, 0);
+        }
 
-		private string GenerateKey(int entityId, string entityName, int languageId)
-		{
-			return "{0}.{1}.{2}".FormatInvariant(entityId, entityName, languageId);
-		}
+        private string GenerateKey(int entityId, string entityName, int languageId)
+        {
+            return "{0}.{1}.{2}".FormatInvariant(entityId, entityName, languageId);
+        }
 
-		public virtual Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds)
-		{
-			if (urlRecordIds == null || urlRecordIds.Length == 0)
-				return new Dictionary<int, int>();
+        public virtual Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds)
+        {
+            if (urlRecordIds == null || urlRecordIds.Length == 0)
+                return new Dictionary<int, int>();
 
-			var query =
-				from x in _urlRecordRepository.TableUntracked
-				where urlRecordIds.Contains(x.Id)
-				select new
-				{
-					Id = x.Id,
-					Count = _urlRecordRepository.TableUntracked.Where(y => y.EntityName == x.EntityName && y.EntityId == x.EntityId).Count()
-				};
+            var query =
+                from x in _urlRecordRepository.TableUntracked
+                where urlRecordIds.Contains(x.Id)
+                select new
+                {
+                    Id = x.Id,
+                    Count = _urlRecordRepository.TableUntracked.Where(y => y.EntityName == x.EntityName && y.EntityId == x.EntityId).Count()
+                };
 
-			var result = query
-				.ToList()
-				.ToDictionary(x => x.Id, x => x.Count);
+            var result = query
+                .ToList()
+                .ToDictionary(x => x.Id, x => x.Count);
 
-			return result;
-		}
+            return result;
+        }
 
-		public virtual int CountSlugsPerEntity(string entityName, int entityId)
-		{
-			var count = _urlRecordRepository.Table
-				.Where(x => x.EntityName == entityName && x.EntityId == entityId)
-				.Count();
+        public virtual int CountSlugsPerEntity(string entityName, int entityId)
+        {
+            var count = _urlRecordRepository.Table
+                .Where(x => x.EntityName == entityName && x.EntityId == entityId)
+                .Count();
 
-			return count;
-		}
+            return count;
+        }
 
-		protected virtual IDictionary<int, string> GetCacheSegment(string entityName, int entityId, int languageId)
-		{
-			Guard.NotEmpty(entityName, nameof(entityName));
+        protected virtual IDictionary<int, string> GetCacheSegment(string entityName, int entityId, int languageId)
+        {
+            Guard.NotEmpty(entityName, nameof(entityName));
 
-			var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
-			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
+            var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
+            var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
-			return _cacheManager.Get(cacheKey, () =>
-			{
-				using (new DbContextScope(proxyCreation: false, lazyLoading: false))
-				{
-					var query = from ur in _urlRecordRepository.TableUntracked
-								where
-									ur.EntityId >= minEntityId &&
-									ur.EntityId <= maxEntityId &&
-									ur.EntityName == entityName &&
-									ur.LanguageId == languageId &&
-									ur.IsActive
-								orderby ur.Id descending
-								select ur;
+            return _cacheManager.Get(cacheKey, () =>
+            {
+                using (new DbContextScope(proxyCreation: false, lazyLoading: false))
+                {
+                    var query = from ur in _urlRecordRepository.TableUntracked
+                                where
+                                    ur.EntityId >= minEntityId &&
+                                    ur.EntityId <= maxEntityId &&
+                                    ur.EntityName == entityName &&
+                                    ur.LanguageId == languageId &&
+                                    ur.IsActive
+                                orderby ur.Id descending
+                                select ur;
 
-					var urlRecords = query.ToList();
+                    var urlRecords = query.ToList();
 
-					var dict = new Dictionary<int, string>(urlRecords.Count);
+                    var dict = new Dictionary<int, string>(urlRecords.Count);
 
-					foreach (var ur in urlRecords)
-					{
-						dict[ur.EntityId] = ur.Slug.EmptyNull();
-					}
+                    foreach (var ur in urlRecords)
+                    {
+                        dict[ur.EntityId] = ur.Slug.EmptyNull();
+                    }
 
-					return dict;
-				}
-			}, independent: true);
-		}
+                    return dict;
+                }
+            }, independent: true);
+        }
 
-		/// <summary>
-		/// Clears the cached segment from the cache
-		/// </summary>
-		protected virtual void ClearCacheSegment(string entityName, int entityId, int? languageId = null)
-		{
-			if (IsInScope)
-				return;
+        /// <summary>
+        /// Clears the cached segment from the cache
+        /// </summary>
+        protected virtual void ClearCacheSegment(string entityName, int entityId, int? languageId = null)
+        {
+            if (IsInScope)
+                return;
 
-			var segmentKey = GetSegmentKeyPart(entityName, entityId);
+            var segmentKey = GetSegmentKeyPart(entityName, entityId);
 
-			if (languageId.HasValue && languageId.Value > 0)
-			{
-				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
-			}
-			else
-			{
-				_cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN.FormatInvariant(segmentKey));
-			}
+            if (languageId.HasValue && languageId.Value > 0)
+            {
+                _cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+            }
+            else
+            {
+                _cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN.FormatInvariant(segmentKey));
+            }
 
-			// always delete this (in case when LoadAllOnStartup is true)
-			_cacheManager.Remove(URLRECORD_ALL_ACTIVESLUGS_KEY);
-		}
+            // always delete this (in case when LoadAllOnStartup is true)
+            _cacheManager.Remove(URLRECORD_ALL_ACTIVESLUGS_KEY);
+        }
 
-		private string BuildCacheSegmentKey(string segment, int languageId)
-		{
-			return String.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
-		}
+        private string BuildCacheSegmentKey(string segment, int languageId)
+        {
+            return string.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
+        }
 
-		private string GetSegmentKeyPart(string entityName, int entityId)
-		{
-			return GetSegmentKeyPart(entityName, entityId, out _, out _);
-		}
+        private string GetSegmentKeyPart(string entityName, int entityId)
+        {
+            return GetSegmentKeyPart(entityName, entityId, out _, out _);
+        }
 
-		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
-		{
-			maxId = entityId.GetRange(_performanceSettings.CacheSegmentSize, out minId);
-			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
-		}
-	}
+        private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
+        {
+            (minId, maxId) = entityId.GetRange(_performanceSettings.CacheSegmentSize);
+            return (entityName + "." + minId.ToString()).ToLowerInvariant();
+        }
+    }
 }

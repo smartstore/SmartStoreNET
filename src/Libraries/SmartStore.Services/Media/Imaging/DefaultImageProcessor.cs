@@ -1,326 +1,204 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Drawing;
-using ImageProcessor;
-using ImageProcessor.Imaging;
-using ImageProcessor.Imaging.Formats;
 using SmartStore.Core.Logging;
-using ImageProcessor.Configuration;
 using SmartStore.Core.Events;
 using SmartStore.Utilities;
 using SmartStore.Core.IO;
 
-namespace SmartStore.Services.Media
+namespace SmartStore.Services.Media.Imaging
 {
-	public partial class DefaultImageProcessor : IImageProcessor
+    public class DefaultImageProcessor : IImageProcessor
     {
-		private static long _totalProcessingTime;
+        private static long _totalProcessingTime;
 
-		private readonly IEventPublisher _eventPublisher;
+        private readonly IEventPublisher _eventPublisher;
 
-		public DefaultImageProcessor(IEventPublisher eventPublisher)
-		{
-			_eventPublisher = eventPublisher;
-		}
-
-		public ILogger Logger { get; set; } = NullLogger.Instance;
-
-		public bool IsSupportedImage(string extension)
+        public DefaultImageProcessor(IImageFactory imageFactory, IEventPublisher eventPublisher)
         {
-			if (extension.IsEmpty())
-			{
-				return false;
-			}		
-			
-			if (extension[0] == '.' && extension.Length > 1)
-			{
-				extension = extension.Substring(1);
-			}
-
-            return ImageProcessorBootstrapper.Instance.SupportedImageFormats
-				.SelectMany(x => x.FileExtensions)
-				.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase));
+            Factory = imageFactory;
+            _eventPublisher = eventPublisher;
         }
 
-		public ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true)
-		{
-			Guard.NotNull(query, nameof(query));
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
-			ValidateQuery(query);
+        public IImageFactory Factory { get; }
 
-			var watch = new Stopwatch();
-			byte[] inBuffer = null;
+        public ProcessImageResult ProcessImage(ProcessImageQuery query, bool disposeOutput = true)
+        {
+            Guard.NotNull(query, nameof(query));
 
-			try
-			{
-				watch.Start();
+            ValidateQuery(query);
 
-				using (var processor = new ImageFactory(preserveExifData: false, fixGamma: false))
-				{
-					var source = query.Source;
-					
-					// Load source
-					if (source is byte[] b)
-					{
-						inBuffer = b;
-					}
-					else if (source is Stream s)
-					{
-						inBuffer = s.ToByteArray();
-					}
-					else if (source is Image img)
-					{
-						processor.Load(img);
-					}
-					else if (source is string str)
-					{
-						var path = NormalizePath(str);
-						using (var fs = File.OpenRead(path))
-						{
-							inBuffer = fs.ToByteArray();
-						}
-					}
-					else if (source is IFile file)
-					{
-						using (var fs = file.OpenRead())
-						{
-							inBuffer = fs.ToByteArray();
-						}
-					}
-					else
-					{
-						throw new ProcessImageException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), query);
-					}
+            var watch = new Stopwatch();
+            long len;
+            IProcessableImage image = null;
 
-					if (inBuffer != null)
-					{
-						processor.Load(inBuffer);
-					}
+            try
+            {
+                watch.Start();
 
-					// Pre-process event
-					_eventPublisher.Publish(new ImageProcessingEvent(query, processor));
+                var source = query.Source;
 
-					var result = new ProcessImageResult
-					{
-						Query = query,
-						SourceWidth = processor.Image.Width,
-						SourceHeight = processor.Image.Height,
-						SourceMimeType = processor.CurrentImageFormat.MimeType,
-						DisposeOutputStream = disposeOutput
-					};
+                // Load source
+                if (source is byte[] b)
+                {
+                    using var memStream = new MemoryStream(b);
+                    image = Factory.LoadImage(memStream);
+                    len = b.LongLength;
+                }
+                else if (source is Stream s)
+                {
+                    image = Factory.LoadImage(s);
+                    len = s.Length;
+                }
+                else if (source is string str)
+                {
+                    str = NormalizePath(str);
+                    image = Factory.LoadImage(str);
+                    len = (new FileInfo(str)).Length;
+                }
+                else if (source is IFile file)
+                {
+                    using (var fs = file.OpenRead())
+                    {
+                        image = Factory.LoadImage(fs);
+                        len = file.Size;
+                    }
+                }
+                else
+                {
+                    throw new ProcessImageException("Invalid source type '{0}' in query.".FormatInvariant(query.Source.GetType().FullName), query);
+                }
 
-					// Core processing
-					ProcessImageCore(query, processor, out var fxApplied);
-					
-					// Create & prepare result
-					var outStream = new MemoryStream();
-					processor.Save(outStream);
+                var sourceFormat = image.Format;
 
-					var fmt = processor.CurrentImageFormat;
-					result.FileExtension = fmt.DefaultExtension == "jpeg" ? "jpg" : fmt.DefaultExtension;
-					result.MimeType = fmt.MimeType;
+                // Pre-process event
+                _eventPublisher.Publish(new ImageProcessingEvent(query, image));
 
-					result.HasAppliedVisualEffects = fxApplied;
-					result.Width = processor.Image.Width;
-					result.Height = processor.Image.Height;
+                var result = new ProcessImageResult
+                {
+                    Query = query,
+                    SourceFormat = image.Format,
+                    Image = image,
+                    DisposeImage = disposeOutput
+                };
 
-					if (inBuffer != null)
-					{
-						// Check whether it is more beneficial to return the source instead of the result.
-						// Prefer result only if its size is smaller than the source size.
-						// Result size may be larger if a high-compressed image has been uploaded.
-						// During image processing the source compression algorithm gets lost and the image may be larger in size
-						// after encoding with default encoders.
-						var compare =
-							// only when image was not altered visually...
-							!fxApplied
-							// ...size has not changed
-							&& result.Width == result.SourceWidth
-							&& result.Height == result.SourceHeight
-							// ...and format has not changed
-							&& result.MimeType == result.SourceMimeType;
+                // Core processing
+                ProcessImageCore(query, image, out var fxApplied);
 
-						if (compare && inBuffer.LongLength <= outStream.Length)
-						{
-							// Source is smaller. Throw away result and get back to source.
-							outStream.Dispose();
-							result.OutputStream = new MemoryStream(inBuffer, 0, inBuffer.Length, true, true);
-						}
-					}
+                result.HasAppliedVisualEffects = fxApplied;
 
-					// Set output stream
-					if (result.OutputStream == null)
-					{
-						result.OutputStream = outStream;
-					}
+                // Post-process event
+                _eventPublisher.Publish(new ImageProcessedEvent(query, result));
 
-					// Post-process event
-					_eventPublisher.Publish(new ImageProcessedEvent(query, processor, result));
+                result.ProcessTimeMs = watch.ElapsedMilliseconds;
 
-					result.OutputStream.Position = 0;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new ProcessImageException(query, ex);
+            }
+            finally
+            {
+                if (query.DisposeSource && query.Source is IDisposable source)
+                {
+                    source.Dispose();
+                }
 
-					result.ProcessTimeMs = watch.ElapsedMilliseconds;				
+                watch.Stop();
+                _totalProcessingTime += watch.ElapsedMilliseconds;
+            }
+        }
 
-					return result;
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new ProcessImageException(query, ex);
-			}
-			finally
-			{
-				if (query.DisposeSource && query.Source is IDisposable source)
-				{
-					source.Dispose();
-				}
+        /// <summary>
+        /// Processes the loaded image. Inheritors should NOT save the image, this is done by the caller. 
+        /// </summary>
+        /// <param name="query">Query</param>
+        /// <param name="image">Image instance</param>
+        /// <param name="fxApplied">
+        /// Should be true if any effect has been applied that potentially changes the image visually (like background color, contrast, sharpness etc.).
+        /// Resize and compression quality does NOT count as FX.
+        /// </param>
+        protected virtual void ProcessImageCore(ProcessImageQuery query, IProcessableImage image, out bool fxApplied)
+        {
+            bool fxAppliedInternal = false;
 
-				watch.Stop();
-				_totalProcessingTime += watch.ElapsedMilliseconds;
-			}
-		}
+            // Resize
+            var size = query.MaxWidth != null || query.MaxHeight != null
+                ? new Size(query.MaxWidth ?? 0, query.MaxHeight ?? 0)
+                : Size.Empty;
 
-		/// <summary>
-		/// Processes the loaded image. Inheritors should NOT save the image, this is done by the main method. 
-		/// </summary>
-		/// <param name="query">Query</param>
-		/// <param name="processor">Processor instance</param>
-		/// <param name="fxApplied">
-		/// Should be true if any effect has been applied that potentially changes the image visually (like background color, contrast, sharpness etc.).
-		/// Resize and compression quality does NOT count as FX.
-		/// </param>
-		protected virtual void ProcessImageCore(ProcessImageQuery query, ImageFactory processor, out bool fxApplied)
-		{
-			fxApplied = false;
+            image.Transform(transformer =>
+            {
+                if (!size.IsEmpty)
+                {
+                    transformer.Resize(new ResizeOptions
+                    {
+                        Size = size,
+                        ResizeMode = ProcessImageQuery.ConvertScaleMode(query.ScaleMode),
+                        AnchorPosition = ProcessImageQuery.ConvertAnchorPosition(query.AnchorPosition)
+                    }); ;
+                }
 
-			// Resize
-			var size = query.MaxWidth != null || query.MaxHeight != null
-				? new Size(query.MaxWidth ?? 0, query.MaxHeight ?? 0)
-				: Size.Empty;
+                if (query.BackgroundColor.HasValue())
+                {
+                    transformer.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
+                    fxAppliedInternal = true;
+                }
 
-			if (!size.IsEmpty)
-			{
-				processor.Resize(new ResizeLayer(
-					size, 
-					resizeMode: ConvertScaleMode(query.ScaleMode),
-					anchorPosition: ConvertAnchorPosition(query.AnchorPosition), 
-					upscale: false));
-			}		
+                // Format
+                if (query.Format != null)
+                {
+                    var format = query.Format as IImageFormat;
 
-			if (query.BackgroundColor.HasValue())
-			{
-				processor.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
-				fxApplied = true;
-			}
+                    if (format == null && query.Format is string)
+                    {
+                        var requestedFormat = ((string)query.Format).ToLowerInvariant();
+                        format = Factory.GetImageFormat(requestedFormat);
+                    }
 
-			// Format
-			if (query.Format != null)
-			{
-				var format = query.Format as ISupportedImageFormat;
+                    if (format != null)
+                    {
+                        transformer.Format(format);
+                    }
+                }
 
-				if (format == null && query.Format is string)
-				{
-					var requestedFormat = ((string)query.Format).ToLowerInvariant();
-					switch (requestedFormat)
-					{
-						case "jpg":
-						case "jpeg":
-							format = new JpegFormat();
-							break;
-						case "png":
-							format = new PngFormat();
-							break;
-						case "gif":
-							format = new GifFormat();
-							break;
-					}
-				}
+                // QUality
+                if (query.Quality.HasValue)
+                {
+                    transformer.Quality(query.Quality.Value);
+                }
+            });
 
-				if (format != null)
-				{
-					processor.Format(format);
-				}
-			}
+            fxApplied = fxAppliedInternal;
+        }
 
-			// Set Quality
-			if (query.Quality.HasValue)
-			{
-				processor.Quality(query.Quality.Value);
-			}
-		}
+        protected virtual string NormalizePath(string path)
+        {
+            if (path.IsWebUrl())
+            {
+                throw new NotSupportedException($"Remote images cannot be processed: Path: {path}");
+            }
 
-		private string NormalizePath(string path)
-		{
-			if (path.IsWebUrl())
-			{
-				throw new NotSupportedException($"Remote images cannot be processed: Path: {path}");
-			}
+            if (!PathHelper.IsAbsolutePhysicalPath(path))
+            {
+                path = CommonHelper.MapPath(path);
+            }
 
-			if (!PathHelper.IsAbsolutePhysicalPath(path))
-			{
-				path = CommonHelper.MapPath(path);
-			}
+            return path;
+        }
 
-			return path;
-		}
+        private void ValidateQuery(ProcessImageQuery query)
+        {
+            if (query.Source == null)
+            {
+                throw new ArgumentException("During image processing 'ProcessImageQuery.Source' must not be null.", nameof(query));
+            }
+        }
 
-		private void ValidateQuery(ProcessImageQuery query)
-		{
-			if (query.Source == null)
-			{
-				throw new ArgumentException("During image processing 'ProcessImageQuery.Source' must not be null.", nameof(query));
-			}
-		}
-
-		public long TotalProcessingTimeMs
-		{
-			get { return _totalProcessingTime; }
-		}
-
-		private ResizeMode ConvertScaleMode(string mode)
-		{
-			switch (mode.EmptyNull().ToLower())
-			{
-				case "boxpad":
-					return ResizeMode.BoxPad;
-				case "crop":
-					return ResizeMode.Crop;
-				case "min":
-					return ResizeMode.Min;
-				case "pad":
-					return ResizeMode.Pad;
-				case "stretch":
-					return ResizeMode.Stretch;
-				default:
-					return ResizeMode.Max;
-			}
-		}
-
-		private AnchorPosition ConvertAnchorPosition(string anchor)
-		{
-			switch (anchor.EmptyNull().ToLower())
-			{
-				case "top":
-					return AnchorPosition.Top;
-				case "bottom":
-					return AnchorPosition.Bottom;
-				case "left":
-					return AnchorPosition.Left;
-				case "right":
-					return AnchorPosition.Right;
-				case "top-left":
-					return AnchorPosition.TopLeft;
-				case "top-right":
-					return AnchorPosition.TopRight;
-				case "bottom-left":
-					return AnchorPosition.BottomLeft;
-				case "bottom-right":
-					return AnchorPosition.BottomRight;
-				default:
-					return AnchorPosition.Center;
-			}
-		}
-	}
+        public long TotalProcessingTimeMs => _totalProcessingTime;
+    }
 }

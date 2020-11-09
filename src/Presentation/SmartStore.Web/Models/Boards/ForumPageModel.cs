@@ -12,8 +12,8 @@ namespace SmartStore.Web.Models.Boards
         }
 
         public LocalizedValue<string> Name { get; set; }
-		public LocalizedValue<string> Description { get; set; }
-		public string SeName { get; set; }
+        public LocalizedValue<string> Description { get; set; }
+        public string SeName { get; set; }
 
         public string WatchForumText { get; set; }
         public bool WatchForumSubscribed { get; set; }
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Models.Boards
         public int TopicPageIndex { get; set; }
 
         public bool IsCustomerAllowedToSubscribe { get; set; }
-        
+
         public bool ForumFeedsEnabled { get; set; }
 
         public int PostsPageSize { get; set; }

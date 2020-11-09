@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BlogPost>
+	<Title>Der höchste Berg der Erde: Mount Everest</Title>
+  <MetaTitle>Der höchste Berg der Erde: Mount Everest</MetaTitle>
+	<Intro>Der Mount Everest ist ein Berg im Himalaya und mit einer Höhe von 8848 m der höchste Berg der Erde. Er gehört zu den 14 Achttausendern und zu den Seven Summits.</Intro>
+	<MetaDescription>Der Mount Everest ist ein Berg im Himalaya und mit einer Höhe von 8848 m der höchste Berg der Erde. Er gehört zu den 14 Achttausendern und zu den Seven Summits.</MetaDescription>
+	<Body>
+		<![CDATA[
+			<p>
+				Der Mount Everest ist ein Berg im Himalaya und mit einer Höhe von 8848 m der höchste Berg der Erde. Er
+				gehört zu den 14 Achttausendern und zu den Seven Summits. Der Mount Everest ist seit 1856 nach dem britischen
+				Landvermesser George Everest benannt. Auf Nepali heißt der Berg Sagarmatha, auf Tibetisch Qomolangma (deutsche
+				Aussprache „Tschomolangma“), Chinesisch/Mandarin 珠穆朗瑪峰, Zhūmùlǎngmǎ Fēng.
+			</p>
+			<p>
+				Der Mount Everest befindet sich im Mahalangur Himal in der Region Khumbu in Nepal an der Grenze zu China
+				(Autonomes Gebiet Tibet); der westliche und südöstliche seiner drei Gipfelgrate bilden die Grenze. Auf nepalesischer Seite ist er Teil
+				des Sagarmatha-Nationalparks, der zum UNESCO-Welterbe gehört. Auf der Nordseite gehört er zum Qomolangma National Nature
+				Reserve, das mit dem von der UNESCO ausgewiesenen Qomolangma-Biosphärenreservat korrespondiert.
+			</p>
+			<p>
+				Edmund Hillary und Tenzing Norgay gelang am 29. Mai 1953 die Erstbesteigung des "dritten Pols". Am 8. Mai 1978 bestiegen
+				Reinhold Messner und Peter Habeler den Gipfel erstmals ohne zusätzlichen Sauerstoff. Bis heute (Stand Ende 2018) wurde der
+				Gipfel rund 8400 Mal von Bergsteigern erreicht. Über 300 Bergsteiger kamen auf dem Hin- oder Rückweg ums Leben.
+			</p>
+			<p>
+				Während der Mount Everest die höchste Erhebung über dem Meeresspiegel ist, existieren noch zwei weitere Berge, die den Titel
+				"höchster Berg der Erde" verdienen. Vom Fuß des Berges aus gemessen ist dies der Vulkan Mauna Kea auf Hawaii, vom
+				Erdmittelpunkt aus gerechnet der Chimborazo in Ecuador.
+			</p>
+		]]>
+	</Body>
+	<Tags>Natur,Mount Everest,Berge</Tags>
+	<DisplayTags>True</DisplayTags>
+	<CreatedOn>2020-06-17</CreatedOn>
+	<DisplayType>40</DisplayType>
+	<Image>mount-everest.jpg</Image>
+	<ImagePreview>mount-everest-preview.jpg</ImagePreview>
+	<Comments>True</Comments>
+	<SectionBg>dark</SectionBg>
+</BlogPost>

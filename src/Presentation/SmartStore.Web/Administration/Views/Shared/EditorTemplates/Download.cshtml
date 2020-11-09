@@ -3,6 +3,7 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
 @using SmartStore.Core.Domain.Media;
+@using SmartStore.Core.Domain.Catalog;
 
 @functions {
 	bool? _minimalMode = null;
@@ -90,8 +91,10 @@
 	var clientId = "download-editor-" + random;
 	var mediaService = this.CommonServices.MediaService;
 	var mediaSettings = this.CommonServices.Resolve<MediaSettings>();
-	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+	var catalogSettings = this.CommonServices.Resolve<CatalogSettings>();
+	var downloadService = this.CommonServices.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+	var additionalCssClasses = ViewData["class"] != null ? ViewData["class"].ToString() : "";
 	var fileName = string.Empty;
 	var initiallyShowUrlPanel = false;
 	var hasFile = false;
@@ -109,10 +112,12 @@
 	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
 }
 
-<div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
+<div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")@(additionalCssClasses.HasValue() ? " " + additionalCssClasses : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" })"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")">
+
+	<input type="hidden" name="is-url-download-@(Model)" id="is-url-download-@(Model)" value='@(initiallyShowUrlPanel ? "true" : "false")' />
 
 	<div @Html.Attr("class", "col-auto", !MinimalMode || hasFile)>
 		<!-- Type Chooser Dropdown -->
@@ -144,9 +149,16 @@
 		<!-- FileUpload Panel  -->
 		<div class="form-row flex-nowrap dropzone-container panel-file@(initiallyShowUrlPanel ? " hide": "")">
 
-			<div class="fu-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
-				<img class="file-img" title="icon" src="@thumbUrl">
-			</div>
+            <div class="fu-thumb" data-debug-info="@(download != null ? download.MediaFileId : 0)">
+                @if (download?.MediaFile != null)
+                {
+                    @Html.MediaThumbnail(mediaService.ConvertMediaFile(download.MediaFile), MediaSettings.ThumbnailSizeMd)
+                }
+                else
+                {
+                    <img class="file-img" title="icon" src="@thumbUrl">
+                }
+            </div>
 
 			<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
@@ -156,10 +168,12 @@
 					.DeleteUrl(Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, downloadId = Model, area = "Admin" }))
 					.Multifile(false)
 					.Path(Path)
-					.UploadText(hasFile ? T("Common.Replace").Text : T("Common.Fileuploader.Upload").Text)
+					.TypeFilter(string.Join("|", catalogSettings.FileUploadAllowedExtensions.Select(x => x.Trim()).ToList()))
+					.UploadText(hasFile ? fileName : T("Common.Fileuploader.Upload").Text)
 					.HasTemplatePreview(true)
-					.ShowRemoveButton(false)
-					.ShowRemoveButtonAfterUpload(false)
+					.ShowBrowseMedia(true)
+					.ShowRemoveButton(hasFile)
+					.ShowRemoveButtonAfterUpload(true)
 					.OnMediaSelectedHandlerName("onMediaSelected_" + random)
 				)
 			</div>
@@ -173,7 +187,8 @@
 					@{ var value = download != null ? download.DownloadUrl : ""; }
 					<input type="text" class="download-url-value form-control" value='@value' data-value='@value' />
 					<div class="input-group-append">
-						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
+						<a class="btn btn-outline-secondary save-download-url disabled" 
+						   href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
 							<i class="fa fa-check"></i>
 							<span>@T("Common.Save")</span>
 						</a>
@@ -192,7 +207,8 @@
 </div>
 
 <script>
-    window['onMediaSelected_@random'] = function (file) {
+	window['onMediaSelected_@random'] = function (file) {
+        var token = $('input[name="__RequestVerificationToken"]').val();
 		// Create download for selected MediaFile.
 		$.ajax({
 			async: true,
@@ -202,9 +218,10 @@
 			data: {
 				mediaFileId: file.id,
                 entityId: @EntityId,
-				entityName: "@EntityName"
+				entityName: "@EntityName",
+                __RequestVerificationToken: token
 			},
-			success: function (response) {
+            success: function (response) {
                 if (!response.success)
                     displayNotification("Error when trying to create a download for the selected file.", "error");
 			}
@@ -212,6 +229,8 @@
     }
 
 	$(function () {
-		$('#@clientId').downloadEditor();
+        $('#@clientId').downloadEditor();
 	});
+
+
 </script>

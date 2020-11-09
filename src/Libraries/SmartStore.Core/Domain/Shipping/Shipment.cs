@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Orders;
-using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Core.Domain.Shipping
 {
@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Shipping
     /// Represents a shipment
     /// </summary>
 	[DataContract]
-	public partial class Shipment : BaseEntity
+    public partial class Shipment : BaseEntity
     {
         private ICollection<ShipmentItem> _shipmentItems;
 
@@ -18,13 +18,13 @@ namespace SmartStore.Core.Domain.Shipping
         /// Gets or sets the order identifier
         /// </summary>
 		[DataMember]
-		public int OrderId { get; set; }
-        
+        public int OrderId { get; set; }
+
         /// <summary>
         /// Gets or sets the tracking number of this shipment
         /// </summary>
-		[DataMember]
-		public string TrackingNumber { get; set; }
+        [DataMember]
+        public string TrackingNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the tracking URL.
@@ -38,31 +38,31 @@ namespace SmartStore.Core.Domain.Shipping
         /// It's nullable for compatibility with the previous version of Smartstore where was no such property
         /// </summary>
 		[DataMember]
-		public decimal? TotalWeight { get; set; }
+        public decimal? TotalWeight { get; set; }
 
         /// <summary>
         /// Gets or sets the shipped date and time
         /// </summary>
 		[DataMember]
-		public DateTime? ShippedDateUtc { get; set; }
+        public DateTime? ShippedDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the delivery date and time
         /// </summary>
 		[DataMember]
-		public DateTime? DeliveryDateUtc { get; set; }
+        public DateTime? DeliveryDateUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the entity creation date
         /// </summary>
 		[DataMember]
-		public DateTime CreatedOnUtc { get; set; }
+        public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets the order
         /// </summary>
 		[DataMember]
-		public virtual Order Order { get; set; }
+        public virtual Order Order { get; set; }
 
         /// <summary>
 		/// Gets or sets the shipment items
@@ -70,8 +70,8 @@ namespace SmartStore.Core.Domain.Shipping
 		[DataMember]
         public virtual ICollection<ShipmentItem> ShipmentItems
         {
-			get { return _shipmentItems ?? (_shipmentItems = new HashSet<ShipmentItem>()); }
-            protected set { _shipmentItems = value; }
+            get => _shipmentItems ?? (_shipmentItems = new HashSet<ShipmentItem>());
+            protected set => _shipmentItems = value;
         }
     }
 }

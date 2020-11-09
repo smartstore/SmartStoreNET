@@ -23,7 +23,8 @@
 			var basePriceBaseAmount = SmartStore.globalization.parseInt(fieldBasePriceBaseAmount.val());
 			if (basePriceAmount > 0 && basePriceBaseAmount > 0) {
 				$.ajax({
-					cache:false,
+					cache: false,
+					global: false,
 					type: "POST",
 					url: "@(Url.Action("GetBasePrice", "Product"))",
 					data: {

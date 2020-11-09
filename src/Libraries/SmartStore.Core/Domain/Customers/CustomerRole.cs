@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Rules.Domain;
@@ -42,27 +43,44 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating whether the customer role is active
         /// </summary>
         [DataMember]
+        [Index]
         public bool Active { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the customer role is system
         /// </summary>
         [DataMember]
+        [Index]
+        [Index("IX_CustomerRole_SystemName_IsSystemRole", 2)]
         public bool IsSystemRole { get; set; }
 
         /// <summary>
         /// Gets or sets the customer role system name
         /// </summary>
         [DataMember]
+        [Index]
+        [Index("IX_CustomerRole_SystemName_IsSystemRole", 1)]
         public string SystemName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a minimum order amount
+        /// </summary>
+        [DataMember]
+        public decimal? OrderTotalMinimum { get; set; }
+
+        /// <summary>
+        /// Gets or sets a maximum order amount
+        /// </summary>
+        [DataMember]
+        public decimal? OrderTotalMaximum { get; set; }
 
         /// <summary>
         /// Gets or sets the permission role mappings.
         /// </summary>
         public virtual ICollection<PermissionRoleMapping> PermissionRoleMappings
         {
-            get { return _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>()); }
-            protected set { _permissionRoleMappings = value; }
+            get => _permissionRoleMappings ?? (_permissionRoleMappings = new HashSet<PermissionRoleMapping>());
+            protected set => _permissionRoleMappings = value;
         }
 
         /// <summary>
@@ -70,8 +88,8 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<RuleSetEntity> RuleSets
         {
-            get { return _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>()); }
-            protected set { _ruleSets = value; }
+            get => _ruleSets ?? (_ruleSets = new HashSet<RuleSetEntity>());
+            protected set => _ruleSets = value;
         }
     }
 }

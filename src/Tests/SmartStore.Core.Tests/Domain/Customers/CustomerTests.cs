@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Core.Tests.Domain.Customers
 {
@@ -27,7 +27,7 @@ namespace SmartStore.Core.Tests.Domain.Customers
             customer.Addresses.Count.ShouldEqual(1);
             customer.Addresses.First().Id.ShouldEqual(1);
         }
-        
+
         [Test]
         public void Can_remove_address_assigned_as_billing_address()
         {
@@ -35,7 +35,7 @@ namespace SmartStore.Core.Tests.Domain.Customers
             var address = new Address { Id = 1 };
 
             customer.Addresses.Add(address);
-            customer.BillingAddress  = address;
+            customer.BillingAddress = address;
 
             customer.BillingAddress.ShouldBeTheSameAs(customer.Addresses.First());
 
@@ -64,32 +64,32 @@ namespace SmartStore.Core.Tests.Domain.Customers
             customer.GetRewardPointsBalance().ShouldEqual(1);
         }
 
-		//[Test]
-		//public void Can_get_add_remove_giftCardCouponCodes()
-		//{
-		//	var customer = new Customer();
-		//	customer.ApplyGiftCardCouponCode("code1");
-		//	customer.ApplyGiftCardCouponCode("code2");
-		//	customer.RemoveGiftCardCouponCode("code2");
-		//	customer.ApplyGiftCardCouponCode("code3");
+        //[Test]
+        //public void Can_get_add_remove_giftCardCouponCodes()
+        //{
+        //	var customer = new Customer();
+        //	customer.ApplyGiftCardCouponCode("code1");
+        //	customer.ApplyGiftCardCouponCode("code2");
+        //	customer.RemoveGiftCardCouponCode("code2");
+        //	customer.ApplyGiftCardCouponCode("code3");
 
-		//	var codes = customer.ParseAppliedGiftCardCouponCodes();
-		//	codes.Length.ShouldEqual(2);
-		//	codes[0].ShouldEqual("code1");
-		//	codes[1].ShouldEqual("code3");
-		//}
-		//[Test]
-		//public void Can_not_add_duplicate_giftCardCouponCodes()
-		//{
-		//	var customer = new Customer();
-		//	customer.ApplyGiftCardCouponCode("code1");
-		//	customer.ApplyGiftCardCouponCode("code2");
-		//	customer.ApplyGiftCardCouponCode("code1");
+        //	var codes = customer.ParseAppliedGiftCardCouponCodes();
+        //	codes.Length.ShouldEqual(2);
+        //	codes[0].ShouldEqual("code1");
+        //	codes[1].ShouldEqual("code3");
+        //}
+        //[Test]
+        //public void Can_not_add_duplicate_giftCardCouponCodes()
+        //{
+        //	var customer = new Customer();
+        //	customer.ApplyGiftCardCouponCode("code1");
+        //	customer.ApplyGiftCardCouponCode("code2");
+        //	customer.ApplyGiftCardCouponCode("code1");
 
-		//	var codes = customer.ParseAppliedGiftCardCouponCodes();
-		//	codes.Length.ShouldEqual(2);
-		//	codes[0].ShouldEqual("code1");
-		//	codes[1].ShouldEqual("code2");
-		//}
+        //	var codes = customer.ParseAppliedGiftCardCouponCodes();
+        //	codes.Length.ShouldEqual(2);
+        //	codes[0].ShouldEqual("code1");
+        //	codes[1].ShouldEqual("code2");
+        //}
     }
 }

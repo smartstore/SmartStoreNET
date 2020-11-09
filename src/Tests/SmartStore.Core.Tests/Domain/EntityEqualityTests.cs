@@ -1,6 +1,6 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
-using System.Collections.Generic;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Tests.Domain
 {
@@ -8,8 +8,9 @@ namespace SmartStore.Core.Tests.Domain
     public class EntityEqualityTests
     {
         [Test]
-        public void Two_transient_entities_should_not_be_equal() {
-            
+        public void Two_transient_entities_should_not_be_equal()
+        {
+
             var p1 = new Product();
             var p2 = new Product();
 
@@ -17,8 +18,9 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Two_references_to_same_transient_entity_should_be_equal() {
-            
+        public void Two_references_to_same_transient_entity_should_be_equal()
+        {
+
             var p1 = new Product();
             var p2 = p1;
 
@@ -26,8 +28,9 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Two_references_with_the_same_id_should_be_equal() {
-            
+        public void Two_references_with_the_same_id_should_be_equal()
+        {
+
             int id = 10;
             var p1 = new Product { Id = id };
             var p2 = new Product { Id = id };
@@ -36,8 +39,9 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Entities_with_different_id_should_not_be_equal() {
-            
+        public void Entities_with_different_id_should_not_be_equal()
+        {
+
             var p1 = new Product { Id = 2 };
             var p2 = new Product { Id = 5 };
 
@@ -45,8 +49,9 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Entity_should_not_equal_transient_entity() {
-            
+        public void Entity_should_not_equal_transient_entity()
+        {
+
             var p1 = new Product { Id = 1 };
             var p2 = new Product();
 
@@ -54,7 +59,8 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Entities_with_same_id_but_different_type_should_not_be_equal() {
+        public void Entities_with_same_id_but_different_type_should_not_be_equal()
+        {
             int id = 10;
             var p1 = new Product { Id = id };
 
@@ -64,7 +70,8 @@ namespace SmartStore.Core.Tests.Domain
         }
 
         [Test]
-        public void Equality_works_using_operators() {
+        public void Equality_works_using_operators()
+        {
 
             var p1 = new Product { Id = 1 };
             var p2 = new Product { Id = 1 };
@@ -76,23 +83,23 @@ namespace SmartStore.Core.Tests.Domain
             Assert.IsTrue(p1 != p3);
         }
 
-		[Test]
-		public void Equality_works_with_HashSets()
-		{
+        [Test]
+        public void Equality_works_with_HashSets()
+        {
 
-			var p1 = new Product { Id = 1 };
-			var p2 = new Product { Id = 1 };
+            var p1 = new Product { Id = 1 };
+            var p2 = new Product { Id = 1 };
 
-			var hset = new HashSet<Product>();
-			hset.UnionWith(new[] { p1, p2 });
+            var hset = new HashSet<Product>();
+            hset.UnionWith(new[] { p1, p2 });
 
-			Assert.AreEqual(hset.Count, 1);
+            Assert.AreEqual(hset.Count, 1);
 
-			var p3 = new Product { Id = 2 };
-			hset.Add(p3);
+            var p3 = new Product { Id = 2 };
+            hset.Add(p3);
 
-			Assert.AreEqual(hset.Count, 2);
-		}
-	}
+            Assert.AreEqual(hset.Count, 2);
+        }
+    }
 
 }

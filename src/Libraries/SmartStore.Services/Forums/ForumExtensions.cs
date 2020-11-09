@@ -23,12 +23,12 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-			text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+            text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
 
-			if (EngineContext.Current.Resolve<ForumSettings>().ForumEditor == EditorType.BBCodeEditor)
-			{
-				text = BBCodeHelper.ToHtml(text);
-			}
+            if (EngineContext.Current.Resolve<ForumSettings>().ForumEditor == EditorType.BBCodeEditor)
+            {
+                text = BBCodeHelper.ToHtml(text);
+            }
 
             return text;
         }
@@ -74,8 +74,8 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-			return HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
-		}
+            return HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+        }
 
         /// <summary>
         /// Formats the private message text
@@ -92,10 +92,10 @@ namespace SmartStore.Services.Forums
                 return string.Empty;
             }
 
-			text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
+            text = HtmlUtils.ConvertPlainTextToHtml(text.HtmlEncode());
             return BBCodeHelper.ToHtml(text);
         }
-        
+
         /// <summary>
         /// Get forum last topic
         /// </summary>

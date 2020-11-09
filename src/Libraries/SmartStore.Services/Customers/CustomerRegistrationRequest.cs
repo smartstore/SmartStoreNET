@@ -12,7 +12,7 @@ namespace SmartStore.Services.Customers
         public bool IsApproved { get; set; }
 
         public CustomerRegistrationRequest(Customer customer, string email, string username,
-            string password, 
+            string password,
             PasswordFormat passwordFormat,
             bool isApproved = true)
         {

@@ -264,11 +264,23 @@
 	<LocaleResource Name="Account.Fields.Password">
 		<Value>Password</Value>
 	</LocaleResource>
+	<LocaleResource Name="Account.Fields.Password.Digits">
+		<Value>{0} digits</Value>
+	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Password.EnteredPasswordsDoNotMatch">
 		<Value>The password and confirmation password do not match.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Password.LengthValidation">
 		<Value>The password should have at least {0} characters.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Account.Fields.Password.MustContainChars">
+		<Value>The password must contain at least {0}.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Account.Fields.Password.SpecialChars">
+		<Value>{0} special characters</Value>
+	</LocaleResource>
+	<LocaleResource Name="Account.Fields.Password.UppercaseChars">
+		<Value>{0} uppercase letters</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Phone">
 		<Value>Phone</Value>
@@ -368,6 +380,9 @@
 	</LocaleResource>
 	<LocaleResource Name="account.login.newcustomertext">
 		<Value>As a registered customer you will be able to shop faster, be up to date on an orders status, and keep track of the orders you have previously made.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Account.Login.NotRegisteredYet">
+		<Value>Not registered yet?</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Login.ReturningCustomer">
 		<Value>I am already registered</Value>
@@ -1056,6 +1071,12 @@
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields">
 		<Value>Display order</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.Color">
+		<Value>RGB color</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.Color.Hint">
+		<Value>Specifies a color for the color squares control.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.DisplayOrder.Hint">
 		<Value>The display order of the attribute value. 1 represents the first item in attribute value list.</Value>
 	</LocaleResource>
@@ -1064,6 +1085,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.IsPreSelected.Hint">
 		<Value>Determines whether this attribute value is pre selected for the customer.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.MediaFile">
+		<Value>Picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.MediaFile.Hint">
+		<Value>Specifies an image to be displayed as the selection element for the attribute.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.Name">
 		<Value>Name</Value>
@@ -1455,24 +1482,6 @@
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.FullName.Hint">
 		<Value>Complete name displayed as title on the category page.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to category page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to category page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the name of the category.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.Name">
 		<Value>Name</Value>
 	</LocaleResource>
@@ -1517,12 +1526,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.Published.Hint">
 		<Value>Check the box to publish this category (visible in store). Uncheck to unpublish (category not available in store).</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.SeName">
-		<Value>URL alias</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Categories.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-category' to make your page URL 'http://www.yourStore.com/the-best-category'. Leave empty to generate it automatically based on the name of the category.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.ShowOnHomePage">
 		<Value>Show on home page</Value>
@@ -1644,24 +1647,6 @@
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.ManufacturerTemplate.Hint">
 		<Value>Choose a manufacturer template. This template defines how this manufacturer (and its products) will be displayed.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to manufacturer page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to manufacturer page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the name of the manufacturer.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.Name">
 		<Value>Name</Value>
 	</LocaleResource>
@@ -1697,12 +1682,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.Published.Hint">
 		<Value>Check the box to publish this manufacturer (visible in store). Uncheck to unpublish (manufacturer not available in store).</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.SeName">
-		<Value>URL alias</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-manufacturer' to make your page URL 'http://www.yourStore.com/the-best-manufacturer'. Leave empty to generate it automatically based on the name of the manufacturer.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Info">
 		<Value>Manufacturer Info</Value>
@@ -2089,6 +2068,12 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AssociatedToProductName.Hint">
 		<Value>The parent product which this one is associated to.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AttributeChoiceBehaviour">
+		<Value>Attribute choice behaviour</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.AttributeChoiceBehaviour.Hint">
+		<Value>Specifies the behaviour when selecting attributes.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProducts">
 		<Value>Automatically add these products to the cart</Value>
 	</LocaleResource>
@@ -2398,24 +2383,6 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.MaxNumberOfDownloads.Hint">
 		<Value>The maximum number of downloads.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to product page header</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to product page header</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the name of the product.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.MinimumCustomerEnteredPrice">
 		<Value>Minimum amount</Value>
 	</LocaleResource>
@@ -2565,12 +2532,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.SampleDownload.Hint">
 		<Value>The sample download file.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.SeName">
-		<Value>URL Alias</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Catalog.Products.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-product' to make your page URL 'http://www.yourStore.com/the-best-product'. Leave empty to generate it automatically based on the name of the product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.ShortDescription">
 		<Value>Short description</Value>
@@ -2848,6 +2809,12 @@
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.Attribute">
 		<Value>Attribute</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.CustomData">
+		<Value>Custom data</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.CustomData.Hint">
+		<Value>Specifies user-defined data. For free usage, e.g. for individual shop extensions.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.IsRequired">
 		<Value>Is Required</Value>
 	</LocaleResource>
@@ -3030,6 +2997,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.SpecificationAttributes.SaveBeforeEdit">
 		<Value>You need to save the product before you can add product specification attributes for this product page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.StockQuantityNotChanged">
+		<Value>The stock quantity has not been updated because the value has changed since the page was loaded (e.g. due to a placed order). Current value is {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices">
 		<Value>Tier prices</Value>
@@ -3736,6 +3706,12 @@
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.AllowsShipping.Hint">
 		<Value>Allow shipping to customers located in this country.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DefaultCurrency">
+		<Value>Default currency</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Countries.Fields.DefaultCurrency.Hint">
+		<Value>Specifies the default currency. Preselects the default currency in the shop according to the country to which the current IP address belongs.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries.Fields.DisplayCookieManager">
 		<Value>Display Cookie Manager</Value>
 	</LocaleResource>
@@ -4029,6 +4005,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.IsDefault.Hint">
 		<Value>Specifies the default delivery time.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.MaxDays">
+		<Value>Delivery not later than (in days)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.MaxDays.Hint">
+		<Value>Specifies the maximum number of days for the delivery.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.MinDays">
+		<Value>Delivery not before (in days)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.MinDays.Hint">
+		<Value>Specifies the minimum number of days for the delivery.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.DeliveryTimes.Fields.Name">
 		<Value>Display name</Value>
@@ -4648,6 +4636,33 @@
 	<LocaleResource Name="Admin.Configuration.Restriction.SaveBeforeEdit">
 		<Value>You need to save before you can specify restrictions.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaDescription">
+		<Value>Meta description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaDescription.Hint">
+		<Value>Defines the meta description of the site. An extract of this description is displayed in search engine results below the title.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaKeywords">
+		<Value>Meta keywords</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaKeywords.Hint">
+		<Value>Defines the meta keywords of the site. Enter the keywords as a comma separated list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaTitle">
+		<Value>Title tag</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.MetaTitle.Hint">
+		<Value>Defines the title of the page, which is displayed in search engine results. If possible, enter a unique, concise title here.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.SeName">
+		<Value>URL alias</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Seo.SeName.Hint">
+		<Value>Set a search engine friendly page name e.g. 'my-landing-page' to make the page URL 'http://www.yourStore.com/my-landing-page'. Leave empty to generate it automatically based on the name of the entity.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.SeoTab.Title">
+		<Value>SEO settings</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings">
 		<Value>Settings</Value>
 	</LocaleResource>
@@ -4815,6 +4830,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock.Hint">
 		<Value>Delivery time to be dislayed when the stock quantity of a product is equal or less 0.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimesInLists">
+		<Value>Presentation of delivery times</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimesInLists.Hint">
+		<Value>Specifies the way delivery times are displayed in product lists. Due to lack of space, the grid view does not show a date for the delivery time.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail">
+		<Value>Presentation of delivery times</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimesInProductDetail.Hint">
+		<Value>Specifies the way delivery times are displayed on product detail pages.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber">
 		<Value>Number from which images are only displayed on variation change</Value>
@@ -5108,18 +5135,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit.Hint">
 		<Value>Show default quantity unit if the product has no quantity unit set.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail">
-		<Value>Show delivery times</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail.Hint">
-		<Value>Determines whether delivery times should be display on product detail page.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists">
-		<Value>Show delivery times in product lists</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists.Hint">
-		<Value>Determines whether delivery times are shown in product lists.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDescriptionInSubPages">
 		<Value>Show page description also in subpages</Value>
 	</LocaleResource>
@@ -5136,7 +5151,7 @@
 		<Value>Show discount sign</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign.Hint">
-		<Value>Rabattzeichen anzeigen</Value>
+		<Value>Specifies whether a discount sign should be displayed on product pictures when discounts were applied.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowGtin">
 		<Value>Show GTIN</Value>
@@ -5303,134 +5318,8 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields">
 		<Value>Addresses</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled">
-		<Value>'City' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled.Hint">
-		<Value>Set if 'City' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired">
-		<Value>'City' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired.Hint">
-		<Value>Check the box if 'City' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled">
-		<Value>'Company' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled.Hint">
-		<Value>Set if 'Company' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired">
-		<Value>'Company' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired.Hint">
-		<Value>Check the box if 'Company' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled">
-		<Value>'Country' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled.Hint">
-		<Value>Set if 'Country' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired">
-		<Value>'Country' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired.Hint">
-		<Value>Check the box if 'Country' is required.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description">
 		<Value>Manage form fields that are displayed during checkout and on "My account" page.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled">
-		<Value>'Fax number' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxEnabled.Hint">
-		<Value>Set if 'Fax number' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired">
-		<Value>'Fax number' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired.Hint">
-		<Value>Check the box if 'Fax number' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled">
-		<Value>'Phone number' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled.Hint">
-		<Value>Set if 'Phone number' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired">
-		<Value>'Phone number' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired.Hint">
-		<Value>Check the box if 'Phone number' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled">
-		<Value>'Salutation' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled.Hint">
-		<Value>Set if 'Salutation' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations">
-		<Value>Salutations</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations.Hint">
-		<Value>Comma separated list of salutations (e.g. Mr., Mrs). Define the entries which will populate the dropdown list for salutation when entering addresses.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled">
-		<Value>'State/province' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled.Hint">
-		<Value>Set if 'State/province' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired">
-		<Value>'State/province' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired.Hint">
-		<Value>Check the box if 'State/province' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Enabled">
-		<Value>'Street address 2' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Enabled.Hint">
-		<Value>Set if 'Street address 2' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required">
-		<Value>'Street address 2' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required.Hint">
-		<Value>Check the box if 'Street address 2' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled">
-		<Value>'Street address' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled.Hint">
-		<Value>'Street address' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired">
-		<Value>'Street address' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired.Hint">
-		<Value>Check the box if 'Street address' is required.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled">
-		<Value>'Title' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled.Hint">
-		<Value>Set if 'Title' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled">
-		<Value>'Zip / postal code' enabled</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled.Hint">
-		<Value>Set if 'Zip / postal code' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired">
-		<Value>'Zip / postal code' required</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired.Hint">
-		<Value>Check the box if 'Zip / postal code' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AllowCustomersToSetTimeZone">
 		<Value>Allow customers to select time zone</Value>
@@ -5466,31 +5355,37 @@
 		<Value>'City' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CityEnabled.Hint">
-		<Value>Set if 'City' is enabled.</Value>
+		<Value>Defines whether the input of 'City' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CityRequired">
 		<Value>'City' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CityRequired.Hint">
-		<Value>Check the box if 'City' is required.</Value>
+		<Value>Defines whether the input of 'City' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyEnabled">
 		<Value>'Company' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyEnabled.Hint">
-		<Value>Set if 'Company' is enabled.</Value>
+		<Value>Defines whether the input of 'Company' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyRequired">
 		<Value>'Company' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyRequired.Hint">
-		<Value>Check the box if 'Company' is required.</Value>
+		<Value>Defines whether the input of 'Company' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CountryEnabled">
 		<Value>'Country' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CountryEnabled.Hint">
-		<Value>Set if 'Country' is enabled.</Value>
+		<Value>Defines whether the input of 'Country' is enabled.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CountryRequired">
+		<Value>'Country' required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CountryRequired.Hint">
+		<Value>Defines whether the input of 'Country' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerCanEditNumberIfEmpty">
 		<Value>Customers can enter a customer number</Value>
@@ -5502,7 +5397,7 @@
 		<Value>Registration</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description">
-		<Value>Manage form fields that are displayed during registration.</Value>
+		<Value>Manage form fields that are displayed during registration.&lt;br&gt;In order to ensure the address transfer from the registration form, it is necessary that the following fields are activated and filled in by the customer: &lt;ul&gt;&lt;li&gt;First name&lt;/li&gt;&lt;li&gt;Last name&lt;/li&gt;&lt;li&gt;E-mail&lt;/li&gt;&lt;li&gt;and all fields that are selected as required in the tab 'Addresses'&lt;/li&gt;&lt;/ul&gt;</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerLoginType">
 		<Value>Customer login type</Value>
@@ -5544,10 +5439,10 @@
 		<Value>Customer settings</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled">
-		<Value>'Date of Birth' enabled</Value>
+		<Value>'Date of birth' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled.Hint">
-		<Value>Set if 'Date of Birth' is enabled.</Value>
+		<Value>Defines whether the input of 'Date of birth' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DateTimeSettings">
 		<Value>DateTime settings</Value>
@@ -5586,25 +5481,25 @@
 		<Value>'Fax number' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FaxEnabled.Hint">
-		<Value>Set if 'Fax number' is enabled.</Value>
+		<Value>Defines whether the input of 'Fax number' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FaxRequired">
 		<Value>'Fax number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FaxRequired.Hint">
-		<Value>Check the box if 'Fax number' is required</Value>
+		<Value>Defines whether the input of 'Fax number' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FirstNameRequired">
-		<Value>First name required</Value>
+		<Value>'First name' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FirstNameRequired.Hint">
-		<Value>Check the box if 'First name' is required.</Value>
+		<Value>Defines whether the input of 'First name' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.GenderEnabled">
 		<Value>'Gender' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.GenderEnabled.Hint">
-		<Value>Set if 'Gender' is enabled.</Value>
+		<Value>Defines whether the input of 'Gender' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideBackInStockSubscriptionsTab">
 		<Value>Hide 'Back in stock subscriptions' tab</Value>
@@ -5625,16 +5520,34 @@
 		<Value>Check the box if you want to hide the newsletter subscription box.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.LastNameRequired">
-		<Value>Last name required</Value>
+		<Value>'Last name' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.LastNameRequired.Hint">
-		<Value>Check the box if 'Last name' is required.</Value>
+		<Value>Defines whether the input of 'Last name' is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinDigitsInPassword">
+		<Value>Minimum digits in password</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinDigitsInPassword.Hint">
+		<Value>Specifies the minimum number of digits for a password.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinSpecialCharsInPassword">
+		<Value>Minimum special characters in password</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinSpecialCharsInPassword.Hint">
+		<Value>Specifies the minimum number of special characters for a password.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinUppercaseCharsInPassword">
+		<Value>Minimum uppercase letters in password</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.MinUppercaseCharsInPassword.Hint">
+		<Value>Specifies the minimum number of uppercase letters for a password.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NewsletterEnabled">
 		<Value>'Newsletter' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NewsletterEnabled.Hint">
-		<Value>Set if 'Newsletter' is enabled</Value>
+		<Value>Displays the newsletter registration form.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NotifyNewCustomerRegistration">
 		<Value>Notify about new customer registration</Value>
@@ -5642,20 +5555,69 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NotifyNewCustomerRegistration.Hint">
 		<Value>Notify the store owner when a new customer is registered.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PasswordMinLength">
+		<Value>Minimum password length</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PasswordMinLength.Hint">
+		<Value>Specifies the minimum length of a password.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneEnabled">
 		<Value>'Phone number' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneEnabled.Hint">
-		<Value>Set if 'Phone number' is enabled.</Value>
+		<Value>Defines whether the input of 'Phone number' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneRequired">
 		<Value>'Phone number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneRequired.Hint">
-		<Value>Check the box if 'Phone number' is required.</Value>
+		<Value>Defines whether the input of 'Phone number' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy">
 		<Value>Privacy</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType">
+		<Value>Cookie type</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType.Hint">
+		<Value>Specifies the usage type of the cookie (Required, Analytics, ThirdParty).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description">
+		<Value>Description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description.Hint">
+		<Value>Specifies the description of the cookie information.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.IsPluginInfo">
+		<Value>System cookie</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name">
+		<Value>Name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Name.Hint">
+		<Value>Specifies the display name of the cookie information.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AddCookieInfo.Title">
+		<Value>Add new cookie information</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.AdminInstruction">
+		<Value>&lt;p&gt;
+					If you have included third-party scripts in your shop that use cookies and are not integrated into Smartstore via a plugin,
+					you can provide your own information about these cookies for the Cookie Manager in the following table.
+					The added information is displayed in the Cookie Manager of the front end, corresponding to the type.
+					Cookie information provided to the Cookie Manager by active plug-ins is displayed in this table,
+					but cannot be edited. The texts of this information can be edited using the language resources
+					&lt;b&gt;Admin &gt; Configuration &gt; Regional Settings &gt; Languages&lt;/b&gt;.
+				&lt;/p&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.CookieInfoNotFound">
+		<Value>Cookie information wasn't found.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.EditCookieInfo.Title">
+		<Value>Edit new cookie information</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.Cookies.RegisterCookieInfo.Title">
+		<Value>Register your own cookie information</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms">
 		<Value>Get privacy consent for form submissions</Value>
@@ -5664,10 +5626,10 @@
 		<Value>Specifies whether a checkbox is displayed in forms that prompts the user to agree to the processing of his data.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent">
-		<Value>Enable cookie consent</Value>
+		<Value>Enable Cookie Manager</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent.Hint">
-		<Value>Specifies whether the cookie consent box will be displayed in the frontend.</Value>
+		<Value>Specifies whether the Cookie Manager will be displayed in the frontend.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired">
 		<Value>Name in the contact form is required</Value>
@@ -5681,6 +5643,30 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired.Hint">
 		<Value>Specifies whether the name is required in the product request form.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.ModalCookieConsent">
+		<Value>Modal Cookie Manager</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.ModalCookieConsent.Hint">
+		<Value>Specifies whether the Cookie Manager is displayed in a modal dialog in the frontend. The modal mode requires a customer interaction with the dialog before the customer can navigate in the store.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.SameSiteMode">
+		<Value>'SameSite' mode</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.SameSiteMode.AdminInstruction">
+		<Value>&lt;h5&gt;SameSite Mode&lt;/h5&gt;
+                    &lt;p&gt;
+                        The SameSite setting for cookies specifies the level of security for cookies when they are requested by other sites (e.g. in a cross-site request or in an iframe).
+                        The recommended setting is &lt;b&gt;Lax&lt;/b&gt;, as cookies are sent with most secure actions.
+                        &lt;br /&gt;
+                        If the store should also be embedded in an iframe, it is necessary to select the setting &lt;b&gt;None&lt;/b&gt;. Additionally SSL must be set up in the store.
+                    &lt;/p&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;&lt;b&gt;Unspecified:&lt;/b&gt; No SameSite header is transmitted to requests.&lt;/li&gt;
+                        &lt;li&gt;&lt;b&gt;None:&lt;/b&gt; No mode specified. This setting must be used if the store should also be embedded in an iframe (SSL must be set up).&lt;/li&gt;
+                        &lt;li&gt;&lt;b&gt;Lax:&lt;/b&gt; Recommended setting. Cookies are sent at the highest level for requests on the same website and for cross-site requests.&lt;/li&gt;
+                        &lt;li&gt;&lt;b&gt;Strict:&lt;/b&gt; Cookies are only sent to requests from the same website.&lt;/li&gt;
+                    &lt;/ul&gt;</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress">
 		<Value>Store IP address</Value>
 	</LocaleResource>
@@ -5692,6 +5678,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole.Hint">
 		<Value>Specifies a customer role that will be assigned to newly registered customers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.SalutationEnabled">
+		<Value>'Salutation' enabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.SalutationEnabled.Hint">
+		<Value>Defines whether the input of 'Salutation' is enabled.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Salutations">
+		<Value>Salutations</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Salutations.Hint">
+		<Value>Comma separated list of salutations (e.g. Mr., Mrs). Define the entries which will populate the dropdown list for salutation when entering addresses.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ShowCustomersJoinDate">
 		<Value>Show customers' join date</Value>
@@ -5706,10 +5704,16 @@
 		<Value>A value indicating whether customers' location is shown.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled">
-		<Value>'State/province' enabled</Value>
+		<Value>'State / province' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled.Hint">
-		<Value>Set if 'State/province' is enabled.</Value>
+		<Value>Defines whether the input of 'State / province' is enabled.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StateProvinceRequired">
+		<Value>'State / province' required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StateProvinceRequired.Hint">
+		<Value>Defines whether the input of 'State / province' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage">
 		<Value>Store last visited page</Value>
@@ -5718,34 +5722,34 @@
 		<Value>When enabled, the last visited page will be stored. Disable this option to improve performance.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled">
-		<Value>'Street address 2' enabled</Value>
+		<Value>'Street address addition' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddress2Enabled.Hint">
-		<Value>Set if 'Street address 2' is enabled.</Value>
+		<Value>Defines whether the input of 'street address addition' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddress2Required">
-		<Value>'Street address 2' required</Value>
+		<Value>'Street address addition' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddress2Required.Hint">
-		<Value>Check the box if 'Street address 2' is required.</Value>
+		<Value>Defines whether the input of 'street address addition' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled">
 		<Value>'Street address' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled.Hint">
-		<Value>Set if 'Street address' is enabled.</Value>
+		<Value>Defines whether the input of 'Street adress' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressRequired">
 		<Value>'Street address' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressRequired.Hint">
-		<Value>Check the box if 'Street address' is required.</Value>
+		<Value>Defines whether the input of 'Street adress' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.TitleEnabled">
 		<Value>'Title' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.TitleEnabled.Hint">
-		<Value>Set if 'Title' is enabled.</Value>
+		<Value>Defines whether the input of 'Title' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UsernamesEnabled">
 		<Value>'Usernames' enabled</Value>
@@ -5769,13 +5773,13 @@
 		<Value>'Zip / postal code' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ZipPostalCodeEnabled.Hint">
-		<Value>Set if 'Zip / postal code' is enabled.</Value>
+		<Value>Defines whether the input of 'Zip / postal code' is enabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired">
 		<Value>'Zip / postal code' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired.Hint">
-		<Value>Check the box if 'Zip / postal code' is required.</Value>
+		<Value>Defines whether the input of 'Zip / postal code' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.DataExchange.ImageDownloadTimeout">
 		<Value>Timeout for image download (minutes)</Value>
@@ -6291,19 +6295,19 @@
 		<Value>Default meta description</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultMetaDescription.Hint">
-		<Value>The default meta description for pages in your store. You can override this for individual categories / products / manufacturer pages.</Value>
+		<Value>Defines the default meta description for pages in your store. You can override this for individual categories, products, manufacturer and topic pages.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords">
 		<Value>Default meta keywords</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultMetaKeywords.Hint">
-		<Value>The default meta keywords for pages in your store. You can override these for individual categories / products / manufacturer pages.</Value>
+		<Value>Defines the default meta keywords for pages in your store. You can override these for individual categories, products, manufacturer and topic pages.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultTitle">
-		<Value>Default title</Value>
+		<Value>Default title tag</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultTitle.Hint">
-		<Value>The default title for pages in your store.</Value>
+		<Value>Defines the default title for pages in your store. You can override this for individual categories, products, manufacturer and topic pages.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage">
 		<Value>Detect browser user language</Value>
@@ -6347,6 +6351,24 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions.Hint">
 		<Value>Hide admin menu items when access to them is denied according to access control list (permissions).</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription">
+		<Value>Meta description (Homepage)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageMetaDescription.Hint">
+		<Value>Defines the meta description for the homepage. An extract of this description is displayed in search engine results below the title.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords">
+		<Value>Meta keywords (Homepage)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageMetaKeywords.Hint">
+		<Value>Defines the meta keywords for the homepage. Enter the keywords as a comma separated list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageTitle">
+		<Value>Title tag (Homepage)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.HomepageTitle.Hint">
+		<Value>Defines the title tag for the homepage, which is displayed in search engine results.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.InvalidLanguageRedirectBehaviour">
 		<Value>Invalid language redirect behaviour</Value>
 	</LocaleResource>
@@ -6369,16 +6391,16 @@
 		<Value>Specifies if and how search engines indexing the pages of your store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment">
-		<Value>Page title SEO adjustment</Value>
+		<Value>Title tag order</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PageTitleSeoAdjustment.Hint">
-		<Value>Select a page title SEO adjustment. For example, generated page title could be (PAGE NAME | YOURSTORE.COM) instead of (YOURSTORE.COM | PAGE NAME).</Value>
+		<Value>Select the page title order. The generated title tag can be (PAGE NAME | YOURSTORE.COM) or (YOURSTORE.COM | PAGE NAME).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator">
 		<Value>Page title separator</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PageTitleSeparator.Hint">
-		<Value>Specify page title separator.</Value>
+		<Value>Specify page title tag separator.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PdfEnabled">
 		<Value>Enabled</Value>
@@ -6434,6 +6456,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings">
 		<Value>Social networks</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookAppId">
+		<Value>Facebook App ID</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookAppId.Hint">
+		<Value>A Facebook App ID is a unique number that identifies your application and connects it to your Facebook account. It is used when sharing products, category and manufacturer pages on Facebook.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.FacebookLink">
 		<Value>Facebook link</Value>
 	</LocaleResource>
@@ -6460,6 +6488,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterLink.Hint">
 		<Value>Leave this field blank if twitter should not be displayed.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite">
+		<Value>Twitter Username</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite.Hint">
+		<Value>Twitter Username that gets displayed on Twitter cards when a product, category and manufacturer page is shared on Twitter. Starts with a '@'.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink">
 		<Value>Youtube Link</Value>
@@ -6552,10 +6586,7 @@
 		<Value>Media settings</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize">
-		<Value>Associated product image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.AssociatedProductPictureSize.Hint">
-		<Value>The default size (pixels) for associated product images (part of "grouped" products).</Value>
+		<Value>Associated (grouped) product</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls">
 		<Value>Generate absolute URLs</Value>
@@ -6564,40 +6595,31 @@
 		<Value>Generates absolute URLs for media files by prepending the current host name (e.g. http://myshop.com/media/image/1.jpg instead of /media/image/1.jpg). Has no effect if a CDN URL has been applied to the store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.AvatarPictureSize">
-		<Value>Avatar image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.AvatarPictureSize.Hint">
-		<Value>The default size (pixels) for avatar images.</Value>
+		<Value>Customer avatar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.BundledProductPictureSize">
-		<Value>Bundled product image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.BundledProductPictureSize.Hint">
-		<Value>The default size (pixels) for bundled product images.</Value>
+		<Value>Bundle items</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize">
-		<Value>Cart/Wishlist thumbnail image size for bundle items</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbBundleItemPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images of bundle items on the shopping cart and wishlist.</Value>
+		<Value>Bundle items in cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbPictureSize">
-		<Value>Cart/Wishlist thumbnail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.CartThumbPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images on the shopping cart and wishlist.</Value>
+		<Value>Cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.CategoryThumbPictureSize">
-		<Value>Category thumbnail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.CategoryThumbPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images on category pages.</Value>
+		<Value>Categories</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.CurrentStorageLocation">
 		<Value>The current storage location is</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.DefaultPictureZoomEnabled">
-		<Value>Enable picture zoom</Value>
+		<Value>Enable image zoom</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.DefaultPictureZoomEnabled.Hint">
+		<Value>Adds 'zoom on hover' functionality to product detail images.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.ImageSizes">
+		<Value>Image/thumbnail sizes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MakeFilesTransientWhenOrphaned">
 		<Value>Automatically delete orphaned files</Value>
@@ -6606,10 +6628,7 @@
 		<Value>Specifies whether orphaned media files should be automatically deleted during the next cleanup operation.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.ManufacturerThumbPictureSize">
-		<Value>Manufacturer thumbnail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.ManufacturerThumbPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images on manufacturer pages.</Value>
+		<Value>Brands</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MaximumImageSize">
 		<Value>Maximum image size</Value>
@@ -6633,16 +6652,10 @@
 		<Value>Media types control which files can be uploaded. All other media types are generally rejected. Please enter types separated by spaces and without dots.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MessageProductThumbPictureSize">
-		<Value>Thumbnail size of products in emails</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MessageProductThumbPictureSize.Hint">
-		<Value>Specifies the thumbnail image size (pixels) of products in emails. Enter 0 to not display thumbnails.</Value>
+		<Value>Products in e-mails</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MiniCartThumbPictureSize">
-		<Value>Mini-shopping cart thumbnail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.MiniCartThumbPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images in the mini-shopping cart block.</Value>
+		<Value>Mini cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MoveMediaNote">
 		<Value>Do not forget to backup your database before changing this option. Please bear in mind that this operation can take several minutes depending on the amount of media files.</Value>
@@ -6663,22 +6676,13 @@
 		<Value>Window</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductDetailsPictureSize">
-		<Value>Product detail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductDetailsPictureSize.Hint">
-		<Value>The default size (pixels) for product detail images.</Value>
+		<Value>Product detail</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductThumbPictureSize">
-		<Value>Product thumbnail image size (catalog)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductThumbPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail images displayed on category or manufacturer pages.</Value>
+		<Value>Product list</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage">
-		<Value>Product thumbnail image size (product page)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage.Hint">
-		<Value>The default size (pixels) for product thumbnail images displayed on product details page when you have more than one product image.</Value>
+		<Value>Gallery thumbnail</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.StorageProvider">
 		<Value>New storage location</Value>
@@ -6767,6 +6771,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed.Hint">
 		<Value>Check the box to enable anonymous checkout (customers are not required to login/register when purchasing products)</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal">
+		<Value>Order total restriction in relation to subtotal</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal.Hint">
+		<Value>Determines whether the min/max order value refers to the order subtotal, otherwise it refers to the total amount.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.DisableOrderCompletedPage">
 		<Value>Disable "Order completed" page</Value>
 	</LocaleResource>
@@ -6803,17 +6813,17 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.IsReOrderAllowed.Hint">
 		<Value>Check the box if you want to allow customers to make re-orders.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderSubtotalAmount">
-		<Value>Min order sub-total amount</Value>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MaxOrderTotal">
+		<Value>Maximum order total</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint">
-		<Value>Min order total amount.</Value>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MaxOrderTotal.Hint">
+		<Value>Defines the default maximum order total for the shop. Overridden by customer group restrictions.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotalAmount">
-		<Value>Min order total amount</Value>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotal">
+		<Value>Minimum order total</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint">
-		<Value>Enter minimum order total amount.</Value>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotal.Hint">
+		<Value>Defines the default minimum order total for the shop. Overridden by customer group restrictions.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable">
 		<Value>Number of days that the return request is available</Value>
@@ -6841,6 +6851,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderSettings">
 		<Value>Order settings</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType">
+		<Value>Restrictions in customer groups are cumulative</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType.Hint">
+		<Value>Determines whether multiple order total restrictions are cumulated by customer group assignments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.ReturnRequestActions">
 		<Value>Return action</Value>
@@ -7031,6 +7047,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Search.SearchMode.Hint">
 		<Value>Specifies the search mode. Please keep in mind that the search mode can - depending on number of objects - strongly affect search performance. 'Is equal to' is the fastest, 'Contains' the slowest.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.SearchProductByIdentificationNumber">
+		<Value>Open product directly at SKU, MPN or GTIN</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Search.SearchProductByIdentificationNumber.Hint">
+		<Value>Specifies whether the product page should be opened directly if the search term matches a SKU, MPN or GTIN.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Search.ShowProductImagesInInstantSearch">
 		<Value>Show product images</Value>
 	</LocaleResource>
@@ -7048,6 +7070,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge.Hint">
 		<Value>Specifies  whether to charge only the highest additional shipping surcharge of products.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.DeliveryOnWorkweekDaysOnly">
+		<Value>Delivery on workweek days only</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.DeliveryOnWorkweekDaysOnly.Hint">
+		<Value>Specifies whether delivery takes place only on workweek days.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.DisplayShipmentEventsToCustomers">
 		<Value>Display shipment events</Value>
@@ -7091,6 +7119,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption.Hint">
 		<Value>Display shipping options during the checkout process only if more then one shipping option is available.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.TodayShipmentHour">
+		<Value>Order before x o'clock for same day shipment</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Shipping.TodayShipmentHour.Hint">
+		<Value>Specifies the hour by which the order will be shipped the same day.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart">
 		<Value>Shopping cart settings</Value>
 	</LocaleResource>
@@ -7117,6 +7151,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber.Hint">
 		<Value>The number of 'Cross-Sells' to display on shopping cart page; 0 if you don't want to load cross-sells</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart">
+		<Value>Presentation of delivery times</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.DeliveryTimesInShoppingCart.Hint">
+		<Value>Specifies the way delivery times are displayed in shopping cart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.DisplayCartAfterAddingProduct">
 		<Value>Display cart after adding product</Value>
@@ -7186,12 +7226,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint.Hint">
 		<Value>Specifies whether to show hints in order summary on the confirm order page. This text can be altered in the language resources.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes">
-		<Value>Display delivery times</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDeliveryTimes.Hint">
-		<Value>Determines whether delivery times should be displayed in shopping cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox">
 		<Value>Show discount box</Value>
@@ -7559,6 +7593,12 @@
 	<LocaleResource Name="Admin.Configuration.Stores.EditStoreDetails">
 		<Value>Edit store details</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.AppleTouchIconMediaFileId">
+		<Value>Apple Touch icon</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.AppleTouchIconMediaFileId.Hint">
+		<Value>Defines the icon used by Apple devices as shortcut icon. Optimal dimensions for this icon are 180x180.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.ContentDeliveryNetwork">
 		<Value>Content Delivery Network URL</Value>
 	</LocaleResource>
@@ -7567,6 +7607,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.DisplayOrder.Hint">
 		<Value>The display order for this store. 1 represents the top of the list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.FavIconMediaFileId">
+		<Value>Favicon</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.FavIconMediaFileId.Hint">
+		<Value>Defines the favicon for the store. This icon should contain graphics in the dimensions 16×16, 32×32 and 48×48.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.ForceSslForAllPages">
 		<Value>Always use SSL</Value>
@@ -7589,11 +7635,29 @@
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId.Validation">
 		<Value>Please only use letters, digits, underscores or hyphens. The first character should be a letter.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.MsTileColor">
+		<Value>Microsoft tile color</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.MsTileColor.Hint">
+		<Value>Defines the color used by Microsoft devices as tile color when shortcuts to your store are created.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.MsTileImageMediaFileId">
+		<Value>Microsoft tile picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.MsTileImageMediaFileId.Hint">
+		<Value>Defines the icon that is used by Microsoft devices as a tile picture when shortcuts to your store are created. Optimal dimensions for the picture are 310x310.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.Name">
 		<Value>Store name</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.Name.Hint">
 		<Value>Enter the name of your store e.g. Your Store.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.PngIconMediaFileId">
+		<Value>PNG icon</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Stores.Fields.PngIconMediaFileId.Hint">
+		<Value>Defines the PNG icon for the store. This icon is recognized as favicon by up-to-date devices and used when shortcuts to your store are created. Optimal dimensions for this icon are 196x196.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.PrimaryExchangeRateCurrencyId">
 		<Value>Exchange rate currency</Value>
@@ -7871,29 +7935,8 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro.Hint">
 		<Value>Specifies the intro of the blog post.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language">
-		<Value>Language</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language.Hint">
 		<Value>The language of this blog entry. A customer will only see the blog entries for their selected language.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to blog post page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to blog post page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the title of the blog post.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture">
 		<Value>Picture</Value>
@@ -7912,12 +7955,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SectionBg.Hint">
 		<Value>Specifies the background color of the blog post.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-blog-post' to make your page URL 'http://www.yourStore.com/the-best-blog-post'. Leave empty to generate it automatically based on the title of the blog post.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.StartDate">
 		<Value>Start date</Value>
@@ -8018,12 +8055,6 @@
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.Name.Hint">
 		<Value>The name of this forum. This is the name that the customer will see.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName">
-		<Value>URL-Alias</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-forum' to make your page URL 'http://www.yourStore.com/the-best-forum'. Leave empty to generate it automatically based on the name of the forum.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Updated">
 		<Value>The forum has been updated successfully.</Value>
 	</LocaleResource>
@@ -8062,12 +8093,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.Name.Hint">
 		<Value>The name of this forum group. This is the name that the customer will see.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName">
-		<Value>URL-Alias</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-forumgroup' to make your page URL 'http://www.yourStore.com/the-best-forumgroup'. Leave empty to generate it automatically based on the name of the forum group.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Updated">
 		<Value>The forum group has been updated successfully.</Value>
@@ -8405,29 +8430,8 @@
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Full.Hint">
 		<Value>The full description of this news entry.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language">
-		<Value>Language</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language.Hint">
 		<Value>The language of this news entry. A customer will only see the news entries for their selected language.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to news page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to news page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the title of the news.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture">
 		<Value>Picture</Value>
@@ -8446,12 +8450,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Published.Hint">
 		<Value>Determines whether the news item is published (visible) in your store.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'the-best-news' to make your page URL 'http://www.yourStore.com/the-best-news'. Leave empty to generate it automatically based on the title of the news.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Short">
 		<Value>Short description</Value>
@@ -8606,6 +8604,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.BodyCssClass.Hint">
 		<Value>Specifies the CSS class of the body element.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.CookieType">
+		<Value>Cookie type</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.CookieType.Hint">
+		<Value>Specifies whether this widget is displayed according to the customer's settings in the cookie manager.  This option should be used if you add a third-party script that sets cookies.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.HtmlId">
 		<Value>Html Id</Value>
 	</LocaleResource>
@@ -8630,24 +8634,6 @@
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.IsPasswordProtected.Hint">
 		<Value>Check the box if this topic is password protected</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaDescription">
-		<Value>Meta description</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaDescription.Hint">
-		<Value>Meta description to be added to topic page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaKeywords">
-		<Value>Meta keywords</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaKeywords.Hint">
-		<Value>Meta keywords to be added to topic page header.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaTitle">
-		<Value>Meta title</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaTitle.Hint">
-		<Value>Override the page title. The default is the name of the topic.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.Password">
 		<Value>Password</Value>
 	</LocaleResource>
@@ -8665,12 +8651,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.RenderAsWidget.Hint">
 		<Value>Specifies whether the content should be displayed as an HTML widget.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.SeName.Hint">
-		<Value>Set a search engine friendly page name e.g. 'The Best Computers' to make your page name '##-the-best-computers.aspx' (## represents the category ID). The default is the name of topic.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.ShortTitle">
 		<Value>Short title</Value>
@@ -8728,6 +8708,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Updated">
 		<Value>The topic has been updated successfully.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Validation.NoEmptyPassword">
+		<Value>Password must have a value.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Validation.NoPasswordAllowed">
+		<Value>HTML widgets cannot have a password protection.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Validation.NoWhiteSpace">
 		<Value>Whitespace isn't allowed.</Value>
@@ -8833,6 +8819,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.IsSystemRole.Hint">
 		<Value>A value indicating whether it's a system role</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.MaxOrderTotal">
+		<Value>Maximum order total</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.MaxOrderTotal.Hint">
+		<Value>Defines the maximum order total for customers in this group.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.MinOrderTotal">
+		<Value>Minimum order total</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.MinOrderTotal.Hint">
+		<Value>Defines the minimum order total for customers in this group.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.Name">
 		<Value>Name</Value>
@@ -9347,9 +9345,6 @@
 	<LocaleResource Name="Admin.Customers.Reports.BestBy">
 		<Value>Top 20 customers by number of orders</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Reports.BestBy.BestByNumberOfOrders">
-		<Value>Top 20 customers by number of orders</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Reports.BestBy.BestByOrderTotal">
 		<Value>Top 20 customers by order total</Value>
 	</LocaleResource>
@@ -9395,6 +9390,9 @@
 	<LocaleResource Name="Admin.Customers.Reports.BestBy.StartDate.Hint">
 		<Value>The start date for the search</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.Reports.BestCustomers">
+		<Value>Top customers</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Reports.RegisteredCustomers">
 		<Value>Registered customers</Value>
 	</LocaleResource>
@@ -9418,9 +9416,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Reports.RegisteredCustomers.Fields.Period.year">
 		<Value>In the last year</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Reports.RunReport">
-		<Value>Run report</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Dashboard">
 		<Value>Dashboard</Value>
@@ -11219,6 +11214,9 @@
 	<LocaleResource Name="Admin.Orders.List.StartDate.Hint">
 		<Value>The start date for the search</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.NoOrdersSelected">
+		<Value>No orders are selected. Please select the desired orders.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.OrderItem.AutoUpdate.AdjustInventory">
 		<Value>Adjust inventory</Value>
 	</LocaleResource>
@@ -11281,6 +11279,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.PdfInvoice">
 		<Value>Order as PDF</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.ProcessingResult">
+		<Value>&lt;div&gt;{0} of {1} orders were successfully processed.&lt;/div&gt;&lt;div{3}&gt;{2} orders cannot be changed as desired due to their current status and were skipped.&lt;/div&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.ProcessSelectedOrders">
+		<Value>There are {0} orders selected. Would you like to proceed?</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products">
 		<Value>Products</Value>
@@ -12323,6 +12327,9 @@
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.Gender">
 		<Value>Gender</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.Group.BrowserUserAgent">
+		<Value>Browser User Agent</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.HasPurchasedAllProducts">
 		<Value>Has purchased all products</Value>
 	</LocaleResource>
@@ -12381,7 +12388,7 @@
 		<Value>Paid by</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentMethod">
-		<Value>Selected payment method</Value>
+		<Value>Payment method</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.PaymentStatus">
 		<Value>Payment status</Value>
@@ -12710,9 +12717,6 @@
 	<LocaleResource Name="Admin.SalesReport.Bestsellers.PaymentStatus.Hint">
 		<Value>Search by a specific payment status e.g. Paid.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.Bestsellers.RunReport">
-		<Value>Run report</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Bestsellers.StartDate">
 		<Value>Start date</Value>
 	</LocaleResource>
@@ -12763,9 +12767,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.NeverSold.Fields.Name">
 		<Value>Name</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.SalesReport.NeverSold.RunReport">
-		<Value>Run report</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.NeverSold.StartDate">
 		<Value>Start date</Value>
@@ -12982,6 +12983,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Maintenance.SqlQueryTitle">
 		<Value>Execute SQL query directly on database</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.MetaInfos">
+		<Value>Meta tags</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails">
 		<Value>Message Queue</Value>
@@ -14103,6 +14107,12 @@
 	<LocaleResource Name="Checkout.EsdRevocationWaiverConfirmation.PleaseAgree">
 		<Value>Please confirm that you would like access to the digital content immediately.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Checkout.MaxOrderSubtotalAmount">
+		<Value>The maximum order value for the subtotal is {0}.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Checkout.MaxOrderTotalAmount">
+		<Value>The maximum order value for the total is {0}.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Checkout.MinOrderPlacementInterval">
 		<Value>Please wait several seconds before placing a new order (already placed another order several seconds ago).</Value>
 	</LocaleResource>
@@ -14513,6 +14523,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.Category">
 		<Value>Category</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Entity.CheckoutAttributeValue">
+		<Value>Checkout attribute option</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Entity.Customer">
 		<Value>Customer</Value>
@@ -15150,6 +15163,9 @@
 	<LocaleResource Name="CookieManager.Dialog.Heading">
 		<Value>Yes, we use cookies</Value>
 	</LocaleResource>
+	<LocaleResource Name="CookieManager.Dialog.Hide">
+		<Value>Hide</Value>
+	</LocaleResource>
 	<LocaleResource Name="CookieManager.Dialog.Intro">
 		<Value>You decide which cookies you allow or reject. You can change your decision at any time in your &lt;a href='{0}'&gt;My Account area&lt;/a&gt;. Further information can also be found in our &lt;a href='{1}'&gt;privacy policy&lt;/a&gt;.</Value>
 	</LocaleResource>
@@ -15194,6 +15210,24 @@
 	</LocaleResource>
 	<LocaleResource Name="Customer.UserAgreement.ProductNotFound">
 		<Value>The corresponding product could not be found.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.Between">
+		<Value>&lt;b&gt;{0}&lt;/b&gt; - &lt;b&gt;{1}&lt;/b&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.DeliveryOn">
+		<Value>&lt;b&gt;{0}&lt;/b&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.NotBefore">
+		<Value>not before &lt;b&gt;{0}&lt;/b&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.OnTomorrow">
+		<Value>Tomorrow</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.Tomorrow">
+		<Value>tomorrow</Value>
+	</LocaleResource>
+	<LocaleResource Name="DeliveryTimes.Dates.Until">
+		<Value>until &lt;b&gt;{0}&lt;/b&gt;</Value>
 	</LocaleResource>
 	<LocaleResource Name="Disclaimer">
 		<Value>Disclaimer</Value>
@@ -15245,6 +15279,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Blogs.PreviewDisplayType.SectionBg">
 		<Value>Background color</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeChoiceBehaviour.GrayOutUnavailable">
+		<Value>Gray out unavailable attributes</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeChoiceBehaviour.None">
+		<Value>None</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes">
 		<Value>Boxes (color &amp; image)</Value>
@@ -15626,6 +15666,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Directory.CurrencyRoundingRule.RoundMidpointUp">
 		<Value>Round midpoint up (e.g. 0.05 rounding: 9.225 will round to 9.25)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.DateOnly">
+		<Value>Date only (if possible)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelAndDate">
+		<Value>Label and date</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.LabelOnly">
+		<Value>Label only</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Directory.DeliveryTimesPresentation.None">
+		<Value>Do not display</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Discounts.DiscountLimitationType.NTimesOnly">
 		<Value>N times only</Value>
@@ -16758,7 +16810,7 @@
 		<Value>The payment is pending. The buyer can make the payment by clicking on the &lt;b&gt;Complete payment&lt;/b&gt; button on the &lt;a href='{0}'&gt;order details page&lt;/a&gt;.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.CompletePayment.Hint">
-		<Value>This order is not yet paid for. To pay now click the "Complete payment" button.</Value>
+		<Value>Click 'Complete payment' if you have not yet paid and wish to start the payment process again.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.CountryNotAllowedForBilling">
 		<Value>The country '{0}' is not allowed for billing.</Value>
@@ -17528,8 +17580,14 @@
 	<LocaleResource Name="Products.AskQuestion">
 		<Value>Question about product?</Value>
 	</LocaleResource>
-	<LocaleResource Name="Products.AskQuestion.Question.Text">
+	<LocaleResource Name="Products.AskQuestion.CallHotline">
+		<Value>or call directly</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.AskQuestion.Question.GeneralInquiry">
 		<Value>I have following questions concerning the product {0}:</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.AskQuestion.Question.QuoteRequest">
+		<Value>I would like to request price information on the following article: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.AskQuestion.Sent">
 		<Value>Thank you. Your inquiry has been sent successfully.</Value>
@@ -17539,6 +17597,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.AskQuestion.Title">
 		<Value>Question about product</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.AskQuestion.TitleQuoteRequest">
+		<Value>Request for quotation</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Availability">
 		<Value>Availability</Value>
@@ -17626,6 +17687,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Deleted">
 		<Value>The product with ID {0} has been deleted.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.DeliveryDate">
+		<Value>Arrives:</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.DeliveryTime">
 		<Value>Delivery time:</Value>

@@ -447,7 +447,7 @@ namespace SmartStore.Services.Customers
                 IQueryable<Customer> query;
                 if (DataSettings.Current.IsSqlServer)
                 {
-                    query = from a in _gaRepository.TableUntracked
+                    query = from a in _gaRepository.Table
                             join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
                             from c in Customers.DefaultIfEmpty()
                             where c.LastActivityDateUtc >= dateFrom
@@ -460,7 +460,7 @@ namespace SmartStore.Services.Customers
                 }
                 else
                 {
-                    query = from a in _gaRepository.TableUntracked
+                    query = from a in _gaRepository.Table
                             join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
                             from c in Customers.DefaultIfEmpty()
                             where c.LastActivityDateUtc >= dateFrom

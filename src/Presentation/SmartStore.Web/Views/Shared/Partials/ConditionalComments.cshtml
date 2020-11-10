@@ -13,3 +13,20 @@
 <!--[if IE 9]><script>try{html.className+=' ie ie9 iepost8 iepre10'}catch(e){};navigator.isIE=9</script><![endif]-->
 <!--[if gt IE 9]><script>try{html.className+=' ie ie10 iepost8'}catch(e){};navigator.isIE=10</script><![endif]-->
 <!--[if !IE]>--><script>var ieMode = 0; try { if (document.documentMode) { ieMode = document.documentMode; html.className += ' ie iepost8 ie' + document.documentMode } else { html.className += ' not-ie' }; } catch (e) { }; navigator.isIE = ieMode</script><!-- <![endif]-->
+
+@{
+    var clientRes = new KeyValuePair<string, string>("unsupportedBrowser", T("Common.UnsupportedBrowser"));
+}
+
+<script>
+    if (navigator.isIE) {
+        document.addEventListener('DOMContentLoaded', function () {
+            window.Res.Browser = { @{<text> "@(Html.Raw(clientRes.Key))": @Html.Raw(clientRes.Value.EncodeJsString()),</text>} };
+
+            // Add html alert after header
+            const alert = '<div class="container alert alert-warning mt-3">' + window.Res.Browser.unsupportedBrowser + '</div>';
+            const header = document.getElementById('header');
+            header.innerHTML += alert;
+        });
+    }
+</script>

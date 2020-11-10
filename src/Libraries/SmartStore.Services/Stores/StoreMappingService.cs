@@ -87,10 +87,15 @@ namespace SmartStore.Services.Stores
         {
             var existingStoreMappings = GetStoreMappings(entity);
             var allStores = _storeService.GetAllStores();
+            var selectedIds = selectedStoreIds ?? Array.Empty<int>();
+
+            entity.LimitedToStores = selectedIds.Length == 1 && selectedIds[0] == 0
+                ? false
+                : selectedIds.Any();
 
             foreach (var store in allStores)
             {
-                if (selectedStoreIds != null && selectedStoreIds.Contains(store.Id))
+                if (selectedIds.Contains(store.Id))
                 {
                     if (!existingStoreMappings.Any(x => x.StoreId == store.Id))
                         InsertStoreMapping(entity, store.Id);
@@ -102,6 +107,8 @@ namespace SmartStore.Services.Stores
                         DeleteStoreMapping(storeMappingToDelete);
                 }
             }
+
+            _storeMappingRepository.Context.SaveChanges();
         }
 
         public virtual void InsertStoreMapping(StoreMapping storeMapping)

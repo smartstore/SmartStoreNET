@@ -92,7 +92,8 @@ Merging the contents of different languages must be done manually (migration is 
 * Google Analytics: Fixed script error in conjunction with CookieManager
 * #2085 RTL: searchbar button wasn't aligned correctly
 * #2068 RTL: Fixed Page Builder slider positioning, dropdown and other alignments
-* #2019 OffCancas compare: hide horizontal scrollbar 
+* #2019 OffCancas compare: hide horizontal scrollbar
+* #2146 LimitedToStores property was not set in a rare case.
 
 ## Smartstore 4.0.1
 ### New Features

@@ -25,6 +25,7 @@ Merging the contents of different languages must be done manually (migration is 
 	* #2036 Added block to display content slider.
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
+* **PostFinance**: added new payment methods "Checkout All-in-one" and "Checkout Flex".
 * #1644 Graying out unavailable attribute combinations.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.

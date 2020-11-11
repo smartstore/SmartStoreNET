@@ -11,6 +11,7 @@
 	<fieldset>
 		@Html.AntiForgeryToken()
 		@Html.HiddenFor(model => model.Id)
+		@Html.HiddenFor(model => model.ProviderSystemName)
 
 		<div class="section-header">
 			<div class="title">
@@ -415,7 +416,8 @@
 		$('#ProfileExportButton').click(function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: @(T("Admin.Common.AskToProceed").JsText)
+				ask: @(T("Admin.Common.AskToProceed").JsText),
+                data: { "__RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() }
 			});
 			return false;
 		});

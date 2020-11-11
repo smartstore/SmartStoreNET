@@ -11,6 +11,7 @@
 	<fieldset>
 		@Html.AntiForgeryToken()
 		@Html.HiddenFor(model => model.Id)
+		@Html.HiddenFor(model => model.ProviderSystemName)
 
 		<div class="section-header">
 			<div class="title">

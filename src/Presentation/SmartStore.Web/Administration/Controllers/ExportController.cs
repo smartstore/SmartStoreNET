@@ -755,12 +755,19 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
 
-            MiniMapper.Map(profile, model);
-
+            profile.Name = model.Name;
+            profile.FileNamePattern = model.FileNamePattern;
+            profile.FolderName = model.FolderName;
+            profile.Enabled = model.Enabled;
+            profile.ExportRelatedData = model.ExportRelatedData;
+            profile.Offset = model.Offset;
             profile.Limit = model.Limit ?? 0;
             profile.BatchSize = model.BatchSize ?? 0;
+            profile.PerStore = model.PerStore;
             profile.CompletedEmailAddresses = string.Join(",", model.CompletedEmailAddresses ?? new string[0]);
             profile.EmailAccountId = model.EmailAccountId ?? 0;
+            profile.CreateZipArchive = model.CreateZipArchive;
+            profile.Cleanup = model.Cleanup;
             
             if (profile.Name.IsEmpty())
                 profile.Name = provider.Metadata.FriendlyName;
@@ -779,6 +786,7 @@ namespace SmartStore.Admin.Controllers
                 projection.AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText ?? new string[0]);
                 projection.RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters;
                 projection.CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters ?? new string[0]);
+
                 profile.Projection = XmlHelper.Serialize(projection);
             }
 
@@ -791,6 +799,7 @@ namespace SmartStore.Admin.Controllers
 
                 filter.StoreId = model.Filter.StoreId ?? 0;
                 filter.CategoryIds = model.Filter.CategoryIds?.Where(x => x != 0)?.ToArray() ?? new int[0];
+
                 profile.Filtering = XmlHelper.Serialize(filter);
             }
 

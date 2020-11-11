@@ -58,10 +58,6 @@ namespace SmartStore.Web.Framework.Controllers
         {
             Guard.NotNull(entity, nameof(entity));
 
-            entity.LimitedToStores = (selectedStoreIds?.Length ?? 0) == 1 && selectedStoreIds[0] == 0
-                ? false
-                : selectedStoreIds?.Any() ?? false;
-
             Services.Resolve<IStoreMappingService>().SaveStoreMappings(entity, selectedStoreIds);
         }
 

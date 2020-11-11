@@ -25,6 +25,7 @@ Merging the contents of different languages must be done manually (migration is 
 	* #2036 Added block to display content slider.
 	* #2035 Added block to display news.
 	* #1729 Added option for title and intro inline background color.
+* **PostFinance**: added new payment methods "Checkout All-in-one" and "Checkout Flex".
 * #1644 Graying out unavailable attribute combinations.
 * #1744 Added 'Orders' tab to the product editor to display all orders in which the product has been purchased.
 * #1735 Added a setting to open a product directly if the search term matches a SKU, MPN or GTIN.
@@ -92,7 +93,8 @@ Merging the contents of different languages must be done manually (migration is 
 * Google Analytics: Fixed script error in conjunction with CookieManager
 * #2085 RTL: searchbar button wasn't aligned correctly
 * #2068 RTL: Fixed Page Builder slider positioning, dropdown and other alignments
-* #2019 OffCancas compare: hide horizontal scrollbar 
+* #2019 OffCancas compare: hide horizontal scrollbar
+* #2146 LimitedToStores property was not set in a rare case.
 
 ## Smartstore 4.0.1
 ### New Features

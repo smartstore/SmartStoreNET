@@ -331,6 +331,7 @@ namespace SmartStore.Admin.Controllers
         {
             MiniMapper.Map(profile, model);
 
+            model.ScheduleTaskId = profile.SchedulingTaskId;
             model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
             model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
             model.IsTaskEnabled = profile.ScheduleTask.Enabled;

@@ -1358,6 +1358,9 @@ namespace SmartStore.Admin.Controllers
 
             #region POST mapping
 
+            // Set CountryId explicitly else it can't be resetted.
+            companySettings.CountryId = model.CompanyInformationSettings.CountryId ?? 0; 
+
             // (Un)track PDF logo id
             _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);
 

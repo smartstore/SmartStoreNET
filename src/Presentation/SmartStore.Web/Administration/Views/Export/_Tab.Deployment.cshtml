@@ -276,6 +276,7 @@
 		// delete deployment
 		$('#export-deployment-list').find('.delete-depoyment').click(function () {
 			$(this).doPostData({
+                data: { "__RequestVerificationToken": token },
 				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 		});

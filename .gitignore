@@ -322,3 +322,6 @@ Kopie von*
 src/SmartStoreNET.Packager.sln
 Log.txt
 src/Presentation/SmartStore.Web/Themes/FlexMuseo/
+
+# Used by SSL certificates management tools (e.g. Certify The Web).
+/src/Presentation/SmartStore.Web/.well-known

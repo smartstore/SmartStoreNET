@@ -1416,28 +1416,18 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        [Permission(Permissions.Catalog.Product.Delete)]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteSelected(string selectedIds)
+        [Permission(Permissions.Catalog.Product.Delete)]
+        public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
-            var products = new List<Product>();
-            if (selectedIds != null)
+            if (selectedIds?.Any() ?? false)
             {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-
-                products.AddRange(_productService.GetProductsByIds(ids));
-
-                for (var i = 0; i < products.Count; i++)
-                {
-                    var product = products[i];
-                    _productService.DeleteProduct(product);
-                }
+                var products = _productService.GetProductsByIds(selectedIds.ToArray());
+                products.Each(x => _productService.DeleteProduct(x));
             }
 
-            return RedirectToAction("List");
+            return Json(new { Result = true });
         }
 
         [HttpPost]

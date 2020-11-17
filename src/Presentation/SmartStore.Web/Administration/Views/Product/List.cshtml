@@ -204,14 +204,27 @@
 				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
 			});
 
-			//"Delete (selected)" button
-            $('#delete-selected').click(function (e) {
-                if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
-                    e.preventDefault();
-                    //redirect to required URL
-                    setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-                    return false;
-                }
+			// "Delete (selected)" button.
+			$('#delete-selected').click(function (e) {
+				e.preventDefault();
+
+				var token = $('input[name="__RequestVerificationToken"]').val();
+
+				$({}).doAjax({
+					type: 'POST',
+					url: '@Url.Action("DeleteSelected", "Product")',
+					ask: @T("Admin.Common.AskToProceed").JsText,
+					data: { selectedIds: selectedIds, __RequestVerificationToken: token },
+					callbackSuccess: function (data) {
+						var grid = $('#products-grid').data('tGrid');
+						grid.currentPage = 1;
+						grid.ajaxRequest();
+						$('.checkboxGroups').attr('checked', false).change();
+						selectedIds = [];
+					}
+				});
+
+				return false;
 			});
 
 			//wire up checkboxes.

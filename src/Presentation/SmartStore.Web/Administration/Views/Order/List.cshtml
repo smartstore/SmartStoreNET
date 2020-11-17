@@ -209,8 +209,9 @@
 						if (!accepted)
 							return;
 
-						var form = '<form class="order-processing-form" action="' + link.data('url') + '" method="post">';
-						form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+                        var form = '<form class="order-processing-form" action="' + link.data('url') + '" method="post">';
+                        form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+                        form += '<input type="hidden" name="__RequestVerificationToken" value="' + $('input[name="__RequestVerificationToken"]').val() + '" />';
 						form += '</form>';
 
 						$('body').append(form);

@@ -155,7 +155,7 @@ namespace SmartStore.Web.Framework.Seo
 						{
 							activeSlug = urlPrefix + "/" + activeSlug;
 						}
-                        response.RedirectLocation = string.Format("{0}{1}", webHelper.GetStoreLocation(false), activeSlug);
+                        response.RedirectLocation = string.Format("{0}{1}", webHelper.GetStoreLocation(), activeSlug);
                         response.End();
                         return null;
                     }

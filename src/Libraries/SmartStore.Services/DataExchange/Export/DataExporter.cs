@@ -334,12 +334,20 @@ namespace SmartStore.Services.DataExchange.Export
                     ctx.CustomerExportContext.Clear();
                 }
 
-                if (ctx.Request.Provider.Value.EntityType == ExportEntityType.ShoppingCartItem)
+                switch (ctx.Request.Provider.Value.EntityType)
                 {
-                    _dbContext.DetachEntities(x =>
-                    {
-                        return x is ShoppingCartItem || x is Customer || x is Product || x is ProductVariantAttributeCombination;
-                    });
+                    case ExportEntityType.ShoppingCartItem:
+                        _dbContext.DetachEntities(x =>
+                        {
+                            return x is ShoppingCartItem || x is Customer || x is Product || x is ProductVariantAttributeCombination;
+                        });
+                        break;
+                    case ExportEntityType.NewsLetterSubscription:
+                        _dbContext.DetachEntities(x =>
+                        {
+                            return x is NewsLetterSubscription || x is Customer;
+                        });
+                        break;
                 }
             }
             catch (Exception ex)
@@ -1322,16 +1330,26 @@ namespace SmartStore.Services.DataExchange.Export
                 skipValue = Math.Max(ctx.Request.Profile.Offset, 0);
             }
 
-            var query = _subscriptionRepository.Value.TableUntracked;
+            var customerQuery = _customerRepository.Value.TableUntracked.Where(x => !x.Deleted);
+
+            var query =
+                from ns in _subscriptionRepository.Value.TableUntracked
+                join c in customerQuery on ns.Email equals c.Email into customers
+                from c in customers.DefaultIfEmpty()
+                select new NewsletterSubscriber
+                {
+                    Subscription = ns,
+                    Customer = c
+                };
 
             if (storeId > 0)
             {
-                query = query.Where(x => x.StoreId == storeId);
+                query = query.Where(x => x.Subscription.StoreId == storeId);
             }
 
             if (ctx.Filter.IsActiveSubscriber.HasValue)
             {
-                query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
+                query = query.Where(x => x.Subscription.Active == ctx.Filter.IsActiveSubscriber.Value);
             }
 
             if (ctx.Filter.WorkingLanguageId != null && ctx.Filter.WorkingLanguageId != 0)
@@ -1341,32 +1359,37 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (isDefaultLanguage)
                 {
-                    query = query.Where(x => x.WorkingLanguageId == 0 || x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                    query = query.Where(x => x.Subscription.WorkingLanguageId == 0 || x.Subscription.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
                 }
                 else
                 {
-                    query = query.Where(x => x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                    query = query.Where(x => x.Subscription.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
                 }
             }
 
             if (ctx.Filter.CreatedFrom.HasValue)
             {
                 var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
-                query = query.Where(x => createdFrom <= x.CreatedOnUtc);
+                query = query.Where(x => createdFrom <= x.Subscription.CreatedOnUtc);
             }
 
             if (ctx.Filter.CreatedTo.HasValue)
             {
                 var createdTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone);
-                query = query.Where(x => createdTo >= x.CreatedOnUtc);
+                query = query.Where(x => createdTo >= x.Subscription.CreatedOnUtc);
+            }
+
+            if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
+            {
+                query = query.Where(x => x.Customer.CustomerRoleMappings.Select(y => y.CustomerRoleId).Intersect(ctx.Filter.CustomerRoleIds).Any());
             }
 
             if (ctx.Request.EntitiesToExport.Any())
             {
-                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Subscription.Id));
             }
 
-            query = query.OrderBy(x => x.Id);
+            query = query.OrderBy(x => x.Subscription.Id);
 
             if (skipValue > 0)
             {
@@ -1374,7 +1397,7 @@ namespace SmartStore.Services.DataExchange.Export
             }
             else if (ctx.LastId > 0)
             {
-                query = query.Where(x => x.Id > ctx.LastId);
+                query = query.Where(x => x.Subscription.Id > ctx.LastId);
             }
 
             if (take != int.MaxValue)
@@ -1382,7 +1405,7 @@ namespace SmartStore.Services.DataExchange.Export
                 query = query.Take(() => take);
             }
 
-            return query;
+            return query.Select(x => x.Subscription);
         }
 
         private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExporterContext ctx)

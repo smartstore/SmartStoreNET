@@ -6,18 +6,18 @@
     function enableRuleValueControl(el) {
         var rule = el.closest('.rule');
         var ruleId = rule.data('rule-id');
-        var valCtrl = rule.find(':input[name="rule-value-' + ruleId + '"]');
         var op = rule.find('.rule-operator').data('value');
+        var inputElements = rule.find(':input[name="rule-value-' + ruleId + '"]');
 
         switch (op) {
             case 'IsEmpty':
             case 'IsNotEmpty':
             case 'IsNotNull':
             case 'IsNull':
-                valCtrl.prop('disabled', true);
+                inputElements.prop('disabled', true);
                 break;
             default:
-                valCtrl.prop('disabled', false);
+                inputElements.prop('disabled', false);
                 break;
         }
     }
@@ -38,12 +38,13 @@
         root.find('.rule').each(function () {
             var rule = $(this);
             var ruleId = rule.data('rule-id');
-            var op = rule.find(".rule-operator").data("value");
+            var op = rule.find('.rule-operator').data('value');
+            var inputElements = rule.find(':input[name="rule-value-' + ruleId + '"]');
 
-            var value = rule.find(':input[name="rule-value-' + ruleId + '"]').val();
-            if (Array.isArray(value)) {
-                value = value.join(',');
-            }
+            var value = inputElements.map(function () {
+                var val = $(this).val();
+                return Array.isArray(val) ? val.join(',') : val;
+            }).get().join('|');
 
             data.push({ ruleId: ruleId, op: op, value: value });
         });

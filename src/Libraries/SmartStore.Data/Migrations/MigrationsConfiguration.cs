@@ -49,6 +49,10 @@
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
+            builder.AddOrUpdate("Admin.Rules.FilterDescriptor.CartItemQuantity", 
+                "Product quantity is in range", 
+                "Produktmenge liegt in folgendem Bereich");
+
             builder.AddOrUpdate("Common.UnsupportedBrowser",
                 "You are using an unsupported browser! Please consider switching to a modern browser such as Google Chrome, Firefox or Opera to fully enjoy your shopping experience.",
                 "Sie verwenden einen nicht unterstützten Browser! Bitte ziehen Sie in Betracht, zu einem modernen Browser wie Google Chrome, Firefox oder Opera zu wechseln, um Ihr Einkaufserlebnis in vollen Zügen genießen zu können.");

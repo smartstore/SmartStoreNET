@@ -1,0 +1,57 @@
+﻿@using SmartStore.Rules
+@using SmartStore.Admin.Models.Rules
+@model IRuleExpression
+@{
+    var id = string.Concat("rule-value-", Model.Id);
+    var remoteUrl = Url.Action("RuleOptions", "Rule", new { reason = RuleOptionsRequestReason.SelectListOptions, ruleId = Model.Id, rootRuleSetId = (int)ViewBag.RootRuleSetId });
+   
+    var rawValues = Model.RawValue.SplitSafe("|");
+    var productId = rawValues.Length > 0 ? rawValues[0] : "";
+    var minQuantity = rawValues.Length > 1 && rawValues[1].HasValue() ? rawValues[1].ToInt() : (int?)null;
+    var maxQuantity = rawValues.Length > 2 && rawValues[2].HasValue() ? rawValues[2].ToInt() : (int?)null;
+    string fromStr = T("Common.From");
+    string toStr = T("Common.To");
+
+    var selectedItems = Model.Metadata.TryGetValue("SelectedItems", out var objSelectedItems)
+        ? (Dictionary<string, RuleSelectItem>)objSelectedItems
+        : new Dictionary<string, RuleSelectItem>();
+
+    selectedItems.TryGetValue(productId, out var selectedItem);
+}
+<select id="@id" name="@id" data-placeholder="@T("Common.Unspecified")" data-remote-url="@remoteUrl">
+    <option value="@productId" selected="selected" @Html.Attr("data-hint", selectedItem?.Hint, selectedItem?.Hint?.HasValue() ?? false)>
+    @(selectedItem?.Text.NullEmpty() ?? productId)</option>
+</select>
+<div class="numerictextbox-group flex-grow-1 ml-2" style="max-width: 140px;">
+	@(Html.Telerik().IntegerTextBox()
+        .Name(id + "_1")
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .IncrementStep(1)
+        .MinValue(0)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
+        .EmptyMessage(fromStr)
+        .HtmlAttributes(new { title = fromStr })
+        .InputHtmlAttributes(new { name = id })
+        .Value(maxQuantity))
+</div>
+<div class="numerictextbox-group flex-grow-1 ml-2 mr-2" style="max-width: 140px;">
+	@(Html.Telerik().IntegerTextBox()
+        .Name(id + "_2")
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .IncrementStep(1)
+        .MinValue(0)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
+        .EmptyMessage(toStr)
+        .HtmlAttributes(new { title = toStr })
+        .InputHtmlAttributes(new { name = id })
+        .Value(maxQuantity))
+</div>
+<script>
+    $(function () {
+        $('#@id').selectWrapper();
+    });
+</script>

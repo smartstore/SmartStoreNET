@@ -283,6 +283,15 @@ namespace SmartStore.Services.Cart.Rules
                 },
                 new CartRuleDescriptor
                 {
+                    Name = "CartItemQuantity",
+                    DisplayName = T("Admin.Rules.FilterDescriptor.CartItemQuantity"),
+                    RuleType = RuleType.String,
+                    ProcessorType = typeof(CartItemQuantityRule),
+                    Operators = new[] { RuleOperator.IsEqualTo },
+                    SelectList = new RemoteRuleValueSelectList("Product")
+                },
+                new CartRuleDescriptor
+                {
                     Name = "ProductInCart",
                     DisplayName = T("Admin.Rules.FilterDescriptor.ProductInCart"),
                     RuleType = RuleType.IntArray,
@@ -444,6 +453,8 @@ namespace SmartStore.Services.Cart.Rules
             descriptors
                 .Where(x => x.RuleType == RuleType.Money)
                 .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
+
+            descriptors.First(x => x.Name == "CartItemQuantity").Metadata["ValueTemplateName"] = "ValueTemplates/CartItemQuantity";
 
             return descriptors;
         }

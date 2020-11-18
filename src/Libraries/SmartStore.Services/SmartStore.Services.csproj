@@ -189,6 +189,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\CartItemQuantityRule.cs" />
     <Compile Include="Cart\Rules\Impl\CartProductCountRule.cs" />
     <Compile Include="Cart\Rules\Impl\WeekdayRule.cs" />
     <Compile Include="Cart\Rules\Impl\ProductFromCategoryInCartRule.cs" />

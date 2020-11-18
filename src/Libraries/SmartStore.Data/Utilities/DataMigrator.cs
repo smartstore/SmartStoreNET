@@ -27,6 +27,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
 using SmartStore.Rules;
 using SmartStore.Rules.Domain;
@@ -1441,19 +1442,43 @@ DELETE TOP(20000) [c]
                                 case "discountrequirement.purchasedallproducts":
                                 case "discountrequirement.purchasedoneproduct":
                                     var productIds = new HashSet<int>();
+                                    var failedRequirements = new List<OldDiscountRequirement>();
+
                                     foreach (var requirement in requirements[name].Where(x => x.RestrictedProductIds.HasValue()))
                                     {
-                                        productIds.AddRange(requirement.RestrictedProductIds.ToIntArray());
+                                        try
+                                        {
+                                            productIds.AddRange(requirement.RestrictedProductIds.ToIntArray());
+                                        }
+                                        catch
+                                        {
+                                            failedRequirements.Add(requirement);
+                                        }
                                     }
 
-                                    if (productIds.Any())
+                                    if (!failedRequirements.Any())
                                     {
-                                        ruleSet.Rules.Add(new RuleEntity
+                                        if (productIds.Any())
                                         {
-                                            RuleType = name == "discountrequirement.hasallproducts" || name == "discountrequirement.hasoneproduct" ? "ProductInCart" : "CartPurchasedProduct",
-                                            Operator = name == "discountrequirement.hasallproducts" || name == "discountrequirement.purchasedallproducts" ? RuleOperator.Contains : RuleOperator.In,
-                                            Value = string.Join(",", productIds)
-                                        });
+                                            ruleSet.Rules.Add(new RuleEntity
+                                            {
+                                                RuleType = name == "discountrequirement.hasallproducts" || name == "discountrequirement.hasoneproduct" ? "ProductInCart" : "CartPurchasedProduct",
+                                                Operator = name == "discountrequirement.hasallproducts" || name == "discountrequirement.purchasedallproducts" ? RuleOperator.Contains : RuleOperator.In,
+                                                Value = string.Join(",", productIds)
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var sb = PooledStringBuilder.Rent();
+                                        sb.AppendLine($"Cannnot create a rule for '{name}'.");
+                                        sb.AppendLine($"Discount name: {discount.Name.NaIfEmpty()}");
+                                        sb.AppendLine($"Discount ID: {discount.Id}");
+                                        sb.AppendLine();
+                                        sb.AppendLine("Unsupported expressions for restricted product IDs:");
+                                        failedRequirements.Each(x => sb.AppendLine(x.RestrictedProductIds));
+
+                                        LogWarning($"Cannot migrate requirements for discount '{discount.Name.NaIfEmpty()}'.", sb.ToStringAndReturn());
                                     }
                                     break;
                                 case "discountrequirement.store":
@@ -1502,7 +1527,7 @@ DELETE TOP(20000) [c]
                                     }
                                     break;
                                 default:
-                                    $"Cannot add rule set for unknown discount requirement type ({name}).".Dump();
+                                    LogWarning($"Cannot add rule set for unknown discount requirement type ({name}).", null);
                                     break;
                             }
                         }
@@ -1690,7 +1715,6 @@ DELETE TOP(20000) [c]
                 }
             }
 
-            /*static*/
             T GetExtraData<T>(OldDiscountRequirement req, string name)
             {
                 try
@@ -1712,7 +1736,6 @@ DELETE TOP(20000) [c]
                 return default(T);
             }
 
-            /*static*/
             PluginFilterConfigModel GetFilterData(Dictionary<int, SyncMapping> syncMappings, int entityId, string rootNodeName)
             {
                 try
@@ -1734,7 +1757,6 @@ DELETE TOP(20000) [c]
                 return null;
             }
 
-            /*static*/
             void AddRulesForCommonFilters(SmartObjectContext _ctx, RuleSetEntity ruleSet, PluginFilterConfigModel model, string pluginSystemName)
             {
                 // Store id (if plugin is limited to stores).
@@ -1806,6 +1828,20 @@ DELETE TOP(20000) [c]
                         });
                     }
                 }
+            }
+
+            /*static*/
+            static void LogWarning(string message, string fullDescription)
+            {
+                try
+                {
+                    var logger = EngineContext.Current.Resolve<ILoggerFactory>().GetLogger(typeof(DataMigrator));
+                    if (logger != null)
+                    {
+                        logger.Warn(fullDescription.HasValue() ? new SmartException(fullDescription) : null, message);
+                    }
+                }
+                catch { }
             }
         }
 

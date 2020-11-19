@@ -7,7 +7,7 @@
         var rule = el.closest('.rule');
         var ruleId = rule.data('rule-id');
         var op = rule.find('.rule-operator').data('value');
-        var inputElements = rule.find(':input[name="rule-value-' + ruleId + '"]');
+        var inputElements = rule.find(':input[name="rule-value-' + ruleId + '"], :input[name^="rule-value-' + ruleId + '-"]');
 
         switch (op) {
             case 'IsEmpty':
@@ -39,12 +39,28 @@
             var rule = $(this);
             var ruleId = rule.data('rule-id');
             var op = rule.find('.rule-operator').data('value');
-            var inputElements = rule.find(':input[name="rule-value-' + ruleId + '"]');
+            var multipleNamePrefix = 'rule-value-' + ruleId + '-';
+            var multipleInputElements = rule.find(':input[name^="' + multipleNamePrefix + '"]');
+            var value = '';
 
-            var value = inputElements.map(function () {
-                var val = $(this).val();
-                return Array.isArray(val) ? val.join(',') : val;
-            }).get().join('|');
+            if (multipleInputElements.length > 0) {
+                var valueObj = {};
+                multipleInputElements.each(function () {
+                    var el = $(this);
+                    var val = el.val();
+                    var name = el.attr('name') || '';
+
+                    if (!_.isEmpty(name)) {
+                        valueObj[name.replace(multipleNamePrefix, '')] = Array.isArray(val) ? val.join(',') : val;
+                    }
+                });
+
+                value = JSON.stringify(valueObj);
+            }
+            else {
+                var val = rule.find(':input[name="rule-value-' + ruleId + '"]').val();
+                value = Array.isArray(val) ? val.join(',') : val;
+            }
 
             data.push({ ruleId: ruleId, op: op, value: value });
         });
@@ -149,6 +165,7 @@
             type: 'POST',
             success: function (result) {
                 if (result.Success) {
+                    operator.find('input[name=LogicalOperator]').val(op);
                     operator.find('.logical-operator-chooser').removeClass('show');
                     operator.find('.ruleset-op-one').toggleClass('hide', op == 'And').toggleClass('d-flex', op != 'And');
                     operator.find('.ruleset-op-all').toggleClass('hide', op != 'And').toggleClass('d-flex', op == 'And');

@@ -112,17 +112,29 @@ namespace SmartStore.Services.Rules
             string searchTerm)
         {
             Guard.NotNull(expression, nameof(expression));
-            Guard.NotNull(expression.Descriptor, nameof(expression.Descriptor));
+
+            return GetOptions(reason, expression.Descriptor, expression.RawValue, pageIndex, pageSize, searchTerm);
+        }
+
+        public virtual RuleOptionsResult GetOptions(
+            RuleOptionsRequestReason reason,
+            RuleDescriptor descriptor,
+            string value,
+            int pageIndex,
+            int pageSize,
+            string searchTerm)
+        {
+            Guard.NotNull(descriptor, nameof(descriptor));
 
             var result = new RuleOptionsResult();
 
-            if (!(expression.Descriptor.SelectList is RemoteRuleValueSelectList list))
+            if (!(descriptor.SelectList is RemoteRuleValueSelectList list))
             {
                 return result;
             }
 
             var language = _services.WorkContext.WorkingLanguage;
-            var byId = expression.Descriptor.RuleType == RuleType.Int || expression.Descriptor.RuleType == RuleType.IntArray;
+            var byId = descriptor.RuleType == RuleType.Int || descriptor.RuleType == RuleType.IntArray;
             List<RuleValueSelectListOption> options = null;
 
             switch (list.DataSource)
@@ -130,7 +142,7 @@ namespace SmartStore.Services.Rules
                 case "Product":
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        options = _productService.Value.GetProductsByIds(expression.RawValue.ToIntArray())
+                        options = _productService.Value.GetProductsByIds(value.ToIntArray())
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false), Hint = x.Sku })
                             .ToList();
                     }
@@ -174,13 +186,13 @@ namespace SmartStore.Services.Rules
                 case "TargetGroup":
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        options = _ruleStorage.Value.GetRuleSetsByIds(expression.RawValue.ToIntArray(), false)
+                        options = _ruleStorage.Value.GetRuleSetsByIds(value.ToIntArray(), false)
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                             .ToList();
                     }
                     else
                     {
-                        var ruleSets = _ruleStorage.Value.GetAllRuleSets(false, false, expression.Descriptor.Scope, pageIndex, pageSize, false, true);
+                        var ruleSets = _ruleStorage.Value.GetAllRuleSets(false, false, descriptor.Scope, pageIndex, pageSize, false, true);
                         result.IsPaged = true;
                         result.HasMoreData = ruleSets.HasNextPage;
 
@@ -192,7 +204,7 @@ namespace SmartStore.Services.Rules
                 case "Category":
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        options = _categoryService.Value.GetCategoriesByIds(expression.RawValue.ToIntArray())
+                        options = _categoryService.Value.GetCategoriesByIds(value.ToIntArray())
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetCategoryPath(_categoryService.Value).NullEmpty() ?? x.Name })
                             .ToList();
                     }
@@ -237,7 +249,7 @@ namespace SmartStore.Services.Rules
                 case "VariantValue":
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        var ids = expression.RawValue.ToIntArray();
+                        var ids = value.ToIntArray();
                         var variantValues = _variantValueRepository.Value.TableUntracked
                             .Where(x => ids.Contains(x.Id))
                             .ToList();
@@ -246,7 +258,7 @@ namespace SmartStore.Services.Rules
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                             .ToList();
                     }
-                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
+                    else if (descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
                     {
                         options = new List<RuleValueSelectListOption>();
                         var pIndex = -1;
@@ -264,13 +276,13 @@ namespace SmartStore.Services.Rules
                         while (true)
                         {
                             var variantValues = PagedList.Create(query, ++pIndex, 500);
-                            foreach (var value in variantValues)
+                            foreach (var variantValue in variantValues)
                             {
-                                var name = value.GetLocalized(x => x.Name, language, true, false);
+                                var name = variantValue.GetLocalized(x => x.Name, language, true, false);
                                 if (!existingValues.Contains(name))
                                 {
                                     existingValues.Add(name);
-                                    options.Add(new RuleValueSelectListOption { Value = value.Id.ToString(), Text = name });
+                                    options.Add(new RuleValueSelectListOption { Value = variantValue.Id.ToString(), Text = name });
                                 }
                             }
                             if (!variantValues.HasNextPage)
@@ -283,7 +295,7 @@ namespace SmartStore.Services.Rules
                 case "AttributeOption":
                     if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                     {
-                        var ids = expression.RawValue.ToIntArray();
+                        var ids = value.ToIntArray();
                         var attributeOptions = _attrOptionRepository.Value.TableUntracked
                             .Where(x => ids.Contains(x.Id))
                             .ToList();
@@ -292,7 +304,7 @@ namespace SmartStore.Services.Rules
                             .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.GetLocalized(y => y.Name, language, true, false) })
                             .ToList();
                     }
-                    else if (expression.Descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
+                    else if (descriptor.Metadata.TryGetValue("ParentId", out var objParentId))
                     {
                         var query = _attrOptionRepository.Value.TableUntracked
                             .Where(x => x.SpecificationAttributeId == (int)objParentId)
@@ -317,9 +329,9 @@ namespace SmartStore.Services.Rules
                 if (reason == RuleOptionsRequestReason.SelectedDisplayNames)
                 {
                     // Get display names of selected options.
-                    if (expression.RawValue.HasValue())
+                    if (value.HasValue())
                     {
-                        var selectedValues = expression.RawValue.SplitSafe(",");
+                        var selectedValues = value.SplitSafe(",");
                         result.Options.AddRange(options.Where(x => selectedValues.Contains(x.Value)));
                     }
                 }

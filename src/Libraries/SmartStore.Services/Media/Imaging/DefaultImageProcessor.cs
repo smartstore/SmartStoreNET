@@ -152,21 +152,20 @@ namespace SmartStore.Services.Media.Imaging
                 // Format
                 if (query.Format != null)
                 {
-                    var format = query.Format as IImageFormat;
+                    var requestedFormat = query.Format as IImageFormat;
 
-                    if (format == null && query.Format is string)
+                    if (requestedFormat == null && query.Format is string)
                     {
-                        var requestedFormat = ((string)query.Format).ToLowerInvariant();
-                        format = Factory.GetImageFormat(requestedFormat);
+                        requestedFormat = Factory.GetImageFormat(((string)query.Format).ToLowerInvariant());
                     }
 
-                    if (format != null)
+                    if (requestedFormat != null && requestedFormat.DefaultMimeType != image.Format.DefaultMimeType)
                     {
-                        transformer.Format(format);
+                        transformer.Format(requestedFormat);
                     }
                 }
 
-                // QUality
+                // Quality
                 if (query.Quality.HasValue)
                 {
                     transformer.Quality(query.Quality.Value);

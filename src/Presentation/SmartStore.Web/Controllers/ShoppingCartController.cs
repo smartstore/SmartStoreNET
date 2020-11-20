@@ -38,6 +38,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Seo;
+using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
 
@@ -606,7 +607,7 @@ namespace SmartStore.Web.Controllers
 
             var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer, item.ShoppingCartType, product, item.StoreId,
                 item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, childItems: sci.ChildItems);
-            
+
             itemWarnings.Each(x => model.Warnings.Add(x));
 
             if (sci.ChildItems != null)
@@ -708,7 +709,6 @@ namespace SmartStore.Web.Controllers
                 _checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, customer)
             ));
 
-            model.IsInOrderTotalsRange = _orderProcessingService.IsInOrderTotalsRange(cart, customer.GetRoleIds());
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 
             // Gift card and gift card boxes.
@@ -1093,8 +1093,7 @@ namespace SmartStore.Web.Controllers
                     checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
                 }
 
-                var isInOrderTotalsRange = _orderProcessingService.IsInOrderTotalsRange(cart, _workContext.CurrentCustomer.GetRoleIds());
-                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0 && isInOrderTotalsRange;
+                model.DisplayCheckoutButton = checkoutAttributes.Where(x => x.IsRequired).Count() == 0;
 
                 // Products. sort descending (recently added products)
                 cart = cart.ToList(); // TBD: (mc) Why?
@@ -1689,7 +1688,6 @@ namespace SmartStore.Web.Controllers
             var cartHtml = String.Empty;
             var totalsHtml = String.Empty;
             var cartItemCount = 0;
-            var displayCheckoutButtons = true;
 
             if (cartType == ShoppingCartType.Wishlist)
             {
@@ -1705,7 +1703,6 @@ namespace SmartStore.Web.Controllers
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
                 totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
-                displayCheckoutButtons = model.IsInOrderTotalsRange;
             }
 
             // Updated cart.
@@ -1716,7 +1713,7 @@ namespace SmartStore.Web.Controllers
                 message = _localizationService.GetResource("ShoppingCart.DeleteCartItem.Success"),
                 cartHtml = cartHtml,
                 totalsHtml = totalsHtml,
-                displayCheckoutButtons = displayCheckoutButtons
+                displayCheckoutButtons = true
             });
         }
 
@@ -1732,11 +1729,11 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("startcheckout")]
         public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
         {
+            var model = new ShoppingCartModel();
             var customer = _workContext.CurrentCustomer;
             var warnings = ValidateAndSaveCartData(query, useRewardPoints);
             if (warnings.Any())
             {
-                var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id), validateCheckoutAttributes: true);
                 return View(model);
             }
@@ -2104,33 +2101,6 @@ namespace SmartStore.Web.Controllers
                 model.DisplayWeight = _shoppingCartSettings.ShowWeight;
                 model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 
-                var customerRoleIds = customer.GetRoleIds();
-                var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(cart, customerRoleIds);
-                if (!isAboveMinimumOrderTotal)
-                {
-                    orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        orderTotalMinimum,
-                        currency);
-
-                    var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
-                    model.OrderAmountWarning = string.Format(
-                        _localizationService.GetResource(resource),
-                        _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
-                }
-
-                var (isBelowOrderTotalMaximum, orderTotalMaximum) = _orderProcessingService.IsBelowOrderTotalMaximum(cart, customerRoleIds);
-                if (isAboveMinimumOrderTotal && !isBelowOrderTotalMaximum)
-                {
-                    orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(
-                        orderTotalMaximum,
-                        currency);
-
-                    var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";
-                    model.OrderAmountWarning = string.Format(
-                       _localizationService.GetResource(resource),
-                       _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
-                }
-
                 // Cart total
                 var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
                 if (cartTotal.ConvertedFromPrimaryStoreCurrency.TotalAmount.HasValue)
@@ -2213,7 +2183,7 @@ namespace SmartStore.Web.Controllers
                 success = true,
                 totalsHtml,
                 discountHtml,
-                displayCheckoutButtons = model.IsInOrderTotalsRange
+                displayCheckoutButtons = true
             });
         }
 
@@ -2239,7 +2209,7 @@ namespace SmartStore.Web.Controllers
             {
                 success = true,
                 totalsHtml,
-                displayCheckoutButtons = model.IsInOrderTotalsRange
+                displayCheckoutButtons = true
             });
         }
 
@@ -2319,7 +2289,6 @@ namespace SmartStore.Web.Controllers
 
             var cartHtml = string.Empty;
             var totalsHtml = string.Empty;
-            var displayCheckoutButtons = true;
 
             if (isCartPage)
             {
@@ -2337,7 +2306,6 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
-                    displayCheckoutButtons = model.IsInOrderTotalsRange;
                 }
             }
 
@@ -2348,7 +2316,7 @@ namespace SmartStore.Web.Controllers
                 message = warnings,
                 cartHtml,
                 totalsHtml,
-                displayCheckoutButtons
+                displayCheckoutButtons = true
             });
         }
 
@@ -2491,7 +2459,6 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            var displayCheckoutButtons = true;
             var customer = _workContext.CurrentCustomer;
             var storeId = _storeContext.CurrentStore.Id;
             var cart = customer.GetCartItems(cartType, storeId);
@@ -2547,7 +2514,6 @@ namespace SmartStore.Web.Controllers
                             totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = T("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
-                            displayCheckoutButtons = model.IsInOrderTotalsRange;
                         }
                     }
 
@@ -2559,7 +2525,7 @@ namespace SmartStore.Web.Controllers
                         cartHtml,
                         totalsHtml,
                         cartItemCount,
-                        displayCheckoutButtons
+                        displayCheckoutButtons = true
                     });
                 }
             }

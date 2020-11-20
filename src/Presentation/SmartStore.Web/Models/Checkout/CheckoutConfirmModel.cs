@@ -11,8 +11,6 @@ namespace SmartStore.Web.Models.Checkout
             Warnings = new List<string>();
         }
 
-        public string OrderAmountWarning { get; set; }
-
         public bool TermsOfServiceEnabled { get; set; }
 
         public IList<string> Warnings { get; set; }

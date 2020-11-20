@@ -1,13 +1,6 @@
 ﻿@model OrderTotalsModel
 @using SmartStore.Web.Models.ShoppingCart;
 
-@if (Model.OrderAmountWarning.HasValue() && Model.IsEditable)
-{
-	<div class="alert alert-warning">
-		@Model.OrderAmountWarning
-	</div>
-}
-
 @if (Model.ShowConfirmOrderLegalHint && !Model.IsEditable)
 {
     <div class="alert alert-warning confirm-order-legal-hint">

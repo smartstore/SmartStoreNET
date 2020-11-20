@@ -43,7 +43,6 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string WeightMeasureUnitName { get; set; }
 
         public bool ShowConfirmOrderLegalHint { get; set; }
-        public string OrderAmountWarning { get; set; }
 
         #region Nested classes
 

@@ -540,10 +540,7 @@ namespace SmartStore.Services.Orders
                         orderTotalMinimum,
                         _workContext.WorkingCurrency);
 
-                    var msg = _orderSettings.ApplyToSubtotal
-                        ? T("Checkout.MinOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMinimum, true, false))
-                        : T("Checkout.MinOrderTotalAmount", _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
-
+                    var msg = T("Checkout.MinOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
                     warnings.Add(msg);
                     return warnings;
                 }
@@ -556,10 +553,7 @@ namespace SmartStore.Services.Orders
                         orderTotalMaximum,
                         _workContext.WorkingCurrency);
 
-                    var msg = _orderSettings.ApplyToSubtotal
-                        ? T("Checkout.MaxOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMaximum, true, false))
-                        : T("Checkout.MaxOrderTotalAmount", _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
-
+                    var msg = T("Checkout.MaxOrderSubtotalAmount", _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
                     warnings.Add(msg);
                     return warnings;
                 }
@@ -1535,7 +1529,7 @@ namespace SmartStore.Services.Orders
                                 }
                             }
                         }
-                        
+
                         // Uncomment this line to support transactions.
                         //scope.Complete();
 
@@ -2685,11 +2679,12 @@ namespace SmartStore.Services.Orders
 
         public virtual (bool valid, decimal orderTotalMinimum) IsAboveOrderTotalMinimum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
-            var query = _customerService.GetAllCustomerRoles().SourceQuery;
-            var customerRole = query
-                .Where(x => x.OrderTotalMinimum > decimal.Zero && customerRoleIds.Contains(x.Id))
-                .OrderByDescending(x => x.OrderTotalMinimum)
-                .FirstOrDefault();
+            var query = _customerService.GetAllCustomerRoles().SourceQuery
+                .Where(x => x.OrderTotalMinimum > decimal.Zero && customerRoleIds.Contains(x.Id));
+
+            var customerRole = _orderSettings.MultipleOrderTotalRestrictionsExpandRange
+                ? query.OrderBy(x => x.OrderTotalMinimum).FirstOrDefault()
+                : query.OrderByDescending(x => x.OrderTotalMinimum).FirstOrDefault();
 
             var minimumOrderTotal = customerRole == null
                 ? _orderSettings.OrderTotalMinimum : customerRole.OrderTotalMinimum;
@@ -2698,7 +2693,7 @@ namespace SmartStore.Services.Orders
         }
 
         /// <summary>
-        /// Valdiate order total minimum.
+        /// Validate order total minimum.
         /// </summary>
         /// <param name="cart">Shopping cart, minimum order total</param>
         /// <returns>true - OK; false - minimum order total is not reached</returns>
@@ -2709,20 +2704,11 @@ namespace SmartStore.Services.Orders
 
             if (cart.Count > 0 && minimumOrderTotal > decimal.Zero)
             {
-                if (_orderSettings.ApplyToSubtotal)
-                {
-                    _orderTotalCalculationService.GetShoppingCartSubTotal(
-                        cart, out _, out _, out var cartSubtotal, out _);
+                _orderTotalCalculationService.GetShoppingCartSubTotal(
+                    cart, out _, out _, out var cartSubtotal, out _);
 
-                    if (cartSubtotal < minimumOrderTotal)
-                        return (false, minimumOrderTotal);
-                }
-                else
-                {
-                    decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                    if (cartTotal.HasValue && cartTotal.Value < minimumOrderTotal)
-                        return (false, minimumOrderTotal);
-                }
+                if (cartSubtotal < minimumOrderTotal)
+                    return (false, minimumOrderTotal);
             }
 
             return (true, minimumOrderTotal);
@@ -2730,11 +2716,12 @@ namespace SmartStore.Services.Orders
 
         public virtual (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
         {
-            var query = _customerService.GetAllCustomerRoles().SourceQuery;
-            var customerRole = query
-                .Where(x => x.OrderTotalMaximum > decimal.Zero && customerRoleIds.Contains(x.Id))
-                .OrderBy(x => x.OrderTotalMaximum)
-                .FirstOrDefault();
+            var query = _customerService.GetAllCustomerRoles().SourceQuery
+                .Where(x => x.OrderTotalMaximum > decimal.Zero && customerRoleIds.Contains(x.Id));
+
+            var customerRole = _orderSettings.MultipleOrderTotalRestrictionsExpandRange
+                ? query.OrderByDescending(x => x.OrderTotalMaximum).FirstOrDefault()
+                : query.OrderBy(x => x.OrderTotalMaximum).FirstOrDefault();
 
             var maximumOrderTotal = customerRole == null
                 ? _orderSettings.OrderTotalMaximum : customerRole.OrderTotalMaximum;
@@ -2743,7 +2730,7 @@ namespace SmartStore.Services.Orders
         }
 
         /// <summary>
-        /// Valdiate order total maximum.
+        /// Validate order total maximum.
         /// </summary>
         /// <param name="cart">Shopping cart, maximum order total</param>
         /// <returns>true - OK; false - maximum order total is exceeded</returns>
@@ -2754,29 +2741,14 @@ namespace SmartStore.Services.Orders
 
             if (cart.Count > 0 && maximumOrderTotal > decimal.Zero)
             {
-                if (_orderSettings.ApplyToSubtotal)
-                {
-                    _orderTotalCalculationService.GetShoppingCartSubTotal(
-                        cart, out _, out _, out var cartSubtotal, out _);
+                _orderTotalCalculationService.GetShoppingCartSubTotal(
+                    cart, out _, out _, out var cartSubtotal, out _);
 
-                    if (cartSubtotal > maximumOrderTotal)
-                        return (false, maximumOrderTotal);
-                }
-                else
-                {
-                    decimal? cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
-                    if (cartTotal.HasValue && cartTotal.Value > maximumOrderTotal)
-                        return (false, maximumOrderTotal);
-                }
+                if (cartSubtotal > maximumOrderTotal)
+                    return (false, maximumOrderTotal);
             }
 
             return (true, maximumOrderTotal);
-        }
-
-        public virtual bool IsInOrderTotalsRange(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds)
-        {
-            return IsAboveOrderTotalMinimum(cart, customerRoleIds).valid
-                && IsBelowOrderTotalMaximum(cart, customerRoleIds).valid;
         }
 
         public virtual Shipment AddShipment(

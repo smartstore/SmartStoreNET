@@ -4,19 +4,19 @@
 @using SmartStore.Core.Domain.Orders;
 
 @{
-	Layout = "_Checkout";
-	Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	Html.AddBodyCssClass("no-offcanvas-cart");
+    Layout = "_Checkout";
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Html.AddBodyCssClass("no-offcanvas-cart");
     Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 
-	var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	var termsLink = termsLinkTemplate.FormatInvariant(Url.Topic("conditionsofuse", true));
-	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.Topic("disclaimer", true));
-	var privacyLink = termsLinkTemplate.FormatInvariant(Url.Topic("privacyinfo", true));
-	var terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
+    var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
+    var termsLink = termsLinkTemplate.FormatInvariant(Url.Topic("conditionsofuse", true));
+    var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.Topic("disclaimer", true));
+    var privacyLink = termsLinkTemplate.FormatInvariant(Url.Topic("privacyinfo", true));
+    var terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
-	var consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
-	var consentZoneHasValue = consentZoneContent.HasValue();
+    var consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
+    var consentZoneHasValue = consentZoneContent.HasValue();
 }
 
 @section orderProgress{
@@ -29,264 +29,250 @@
     </div>
     <div class="page-body checkout-data">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
-		{
-			Html.RenderWidget("checkout_confirm_top");
+        {
+            Html.RenderWidget("checkout_confirm_top");
 
-			<p class="page-intro lead">
-				@Html.Raw(@T("Checkout.ConfirmHint"))
-			</p>
+            <p class="page-intro lead">
+                @Html.Raw(@T("Checkout.ConfirmHint"))
+            </p>
 
-			<input type="hidden" id="customercommenthidden" name="customercommenthidden" />
+            <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
 
-			if (Model.TermsOfServiceEnabled ||
-				Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None ||
-				Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None ||
-				consentZoneHasValue)
-			{
-				<div id="terms-of-service-consent-box" class="card mb-3">
-					<div class="card-body">
+            if (Model.TermsOfServiceEnabled ||
+                Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None ||
+                Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None ||
+                consentZoneHasValue)
+            {
+                <div id="terms-of-service-consent-box" class="card mb-3">
+                    <div class="card-body">
 
-						@if (Model.TermsOfServiceEnabled)
-						{
-							<script>
-								$(function () {
-									var modal = $("#terms-of-service-modal .modal-body");
-									$(".terms-trigger").on("click", function (e) {
-										e.preventDefault();
-										modal.html('<iframe id="iframe-terms-of-service" src="' + $(this).attr('href') + '" frameBorder="0" class="h-100" />');
-									});
-								});
-							</script>
+                        @if (Model.TermsOfServiceEnabled)
+                        {
+                            <script>
+                                $(function () {
+                                    var modal = $("#terms-of-service-modal .modal-body");
+                                    $(".terms-trigger").on("click", function (e) {
+                                        e.preventDefault();
+                                        modal.html('<iframe id="iframe-terms-of-service" src="' + $(this).attr('href') + '" frameBorder="0" class="h-100" />');
+                                    });
+                                });
+                            </script>
 
-							<div class="form-check">
-								<input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
-								<label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
-							</div>
+                            <div class="form-check">
+                                <input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
+                                <label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
+                            </div>
 
-							using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
-							{
-								Html.SmartStore().Window()
-									.Name("terms-of-service-modal")
-									.Size(WindowSize.FlexSmall)
-									.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
-									.Render();
-							}
-						}
+                            using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
+                            {
+                                Html.SmartStore().Window()
+                                    .Name("terms-of-service-modal")
+                                    .Size(WindowSize.FlexSmall)
+                                    .FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
+.Render();
+}
+}
 
-						@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
-						{
-							<div class="form-check">
-								<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
-								<label class="form-check-label" for="SubscribeToNewsLetter">
-									<span>@T("Checkout.SubscribeToNewsLetter")</span>
-								</label>
-							</div>
-						}
+                        @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+                                <label class="form-check-label" for="SubscribeToNewsLetter">
+                                    <span>@T("Checkout.SubscribeToNewsLetter")</span>
+                                </label>
+                            </div>
+                        }
 
-						@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
-						{
-							<div class="form-check">
-								<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
-								<label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
-									<span>@Model.ThirdPartyEmailHandOverLabel</span>
-								</label>
-							</div>
-						}
+                        @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+                                <label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
+                                    <span>@Model.ThirdPartyEmailHandOverLabel</span>
+                                </label>
+                            </div>
+                        }
 
-						@Html.Raw(consentZoneContent)
-					</div>
-				</div>
-			}
+                        @Html.Raw(consentZoneContent)
+                    </div>
+                </div>
+            }
 
             <div id="confirm-warnings" class="confirm-order">
                 @if (Model.Warnings.Any())
-				{
-					<div class="alert alert-danger mb-3">
-						<ul>
-							@foreach (var warning in Model.Warnings)
-							{
-								<li>@Html.Raw(warning)</li>
-							}
-						</ul>
-					</div>
-				}
-            </div>  
-		}
-        
+                {
+                    <div class="alert alert-danger mb-3">
+                        <ul>
+                            @foreach (var warning in Model.Warnings)
+                            {
+                                <li>@Html.Raw(warning)</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
+
         @{ Html.RenderWidget("checkout_confirm_before_summary"); }
 
         <div class="order-summary-body mb-4">
             @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
-		@if (Model.OrderAmountWarning.HasValue())
-		{
-			<div class="alert alert-danger">
-				@Model.OrderAmountWarning
-			</div>
-		}
-
         <div class="cart-buttons my-4 row">
-			<div class="col-sm-6 col-lg-4 order-last order-sm-first mt-3 mt-sm-0">
-				<a class="btn btn-secondary btn-lg btn-block" href="@Url.Action("PaymentMethod")">
-					<i class="fa fa-angle-left mr-3"></i>
-					<span>@T("Common.Back")</span>
-				</a>
-			</div>
-			
-			@if (!Model.OrderAmountWarning.HasValue())
-            {
-				<div class="col-sm-6 col-lg-4 ml-lg-auto">
-					<button class="btn btn-danger btn-lg btn-block btn-buy" onclick="return false;">
-						<span>@T("Checkout.ConfirmButton")</span>
-						<i class="fa fa-angle-right ml-3"></i>
-					</button>
-				</div>
-            }
+            <div class="col-sm-6 col-lg-4 order-last order-sm-first mt-3 mt-sm-0">
+                <a class="btn btn-secondary btn-lg btn-block" href="@Url.Action("PaymentMethod")">
+                    <i class="fa fa-angle-left mr-3"></i>
+                    <span>@T("Common.Back")</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 ml-lg-auto">
+                <button class="btn btn-danger btn-lg btn-block btn-buy" onclick="return false;">
+                    <span>@T("Checkout.ConfirmButton")</span>
+                    <i class="fa fa-angle-right ml-3"></i>
+                </button>
+            </div>
         </div>
 
-		@{ Html.RenderWidget("checkout_confirm_bottom"); }
+        @{ Html.RenderWidget("checkout_confirm_bottom"); }
     </div>
 </div>
 
-@if (!Model.OrderAmountWarning.HasValue())
-{
-	<script>
-        $(function () {
-            var buyButton = $(".btn-buy");
+<script>
+    $(function () {
+        var buyButton = $(".btn-buy");
 
-            function setBuyButtonState(disable) {
-                buyButton.prop('disabled', disable);
-                buyButton.find('.fa')
-                    .removeClass('fa-angle-right fa-spinner fa-spin')
-                    .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
+        function setBuyButtonState(disable) {
+            buyButton.prop('disabled', disable);
+            buyButton.find('.fa')
+                .removeClass('fa-angle-right fa-spinner fa-spin')
+                .addClass(disable ? 'fa-spinner fa-spin' : 'fa-angle-right');
+        }
+
+        function processBuyButtonClick(customerAgreed, showThrobber) {
+            var termOfServiceOk = true,
+                userAgreementsOk = true,
+                esdRevocationWaiverOk = true,
+                cartItems = $('#cart-items');
+
+            if (_.isTrue(customerAgreed)) {
+                // Reverse apply. We do that just to indicate that no entered data is lost.
+                $("#CustomerComment").val($("#customercommenthidden").val());
+            }
+            else {
+                $("#customercommenthidden").val($("#CustomerComment").val());
             }
 
-            function processBuyButtonClick(customerAgreed, showThrobber) {
-                var termOfServiceOk = true,
-                    userAgreementsOk = true,
-                    esdRevocationWaiverOk = true,
-                    cartItems = $('#cart-items');
-
-                if (_.isTrue(customerAgreed)) {
-                    // Reverse apply. We do that just to indicate that no entered data is lost.
-                    $("#CustomerComment").val($("#customercommenthidden").val());                    
+			// Terms of services.
+            @if (Model.TermsOfServiceEnabled)
+            {
+				<text>
+                if (!$('#termsofservice').is(':checked')) {
+                    displayNotification(@T("Checkout.TermsOfService.PleaseAccept").JsText, "error");
+                    termOfServiceOk = false;
+                    $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                 }
                 else {
-                    $("#customercommenthidden").val($("#CustomerComment").val());
+                    termOfServiceOk = true;
                 }
-                
-				// Terms of services.
-                @if (Model.TermsOfServiceEnabled)
-                {
-					<text>
-                    if (!$('#termsofservice').is(':checked')) {
-                        displayNotification(@T("Checkout.TermsOfService.PleaseAccept").JsText, "error");
-                        termOfServiceOk = false;
-                        $.scrollTo($('#termsofservice'), 800, { offset: -70 });
-                    }
-                    else {
-                        termOfServiceOk = true;
-                    }
-					</text>
-                }
+				</text>
+            }
 
-                // Agree user agreement for downloadable products.
-                cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
+            // Agree user agreement for downloadable products.
+            cartItems.find('input[name^=AgreeUserAgreement]').each(function () {
+                if (_.isTrue(customerAgreed)) {
+                    $(this).prop('checked', true);
+                }
+                else if (!$(this).is(':checked')) {
+                    userAgreementsOk = false;
+                    displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                    if (termOfServiceOk) {
+                        $.scrollTo(cartItems, 800, { offset: -20 });
+                    }
+                    return false;
+                }
+            });
+
+            // Agree ESD revocation waiver.
+			@if(Model.ShowEsdRevocationWaiverBox)
+			{
+				<text>
+                cartItems.find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
                     if (_.isTrue(customerAgreed)) {
                         $(this).prop('checked', true);
                     }
                     else if (!$(this).is(':checked')) {
-                        userAgreementsOk = false;
-                        displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                        esdRevocationWaiverOk = false;
+                        displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
                         if (termOfServiceOk) {
                             $.scrollTo(cartItems, 800, { offset: -20 });
                         }
                         return false;
                     }
                 });
+                </text>
+			}
 
-                // Agree ESD revocation waiver.
-				@if(Model.ShowEsdRevocationWaiverBox)
-				{
-					<text>
-                    cartItems.find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
-                        if (_.isTrue(customerAgreed)) {
-                            $(this).prop('checked', true);
-                        }
-                        else if (!$(this).is(':checked')) {
-                            esdRevocationWaiverOk = false;
-                            displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
-                            if (termOfServiceOk) {
-                            	$.scrollTo(cartItems, 800, { offset: -20 });
-                            }
-                            return false;
-                        }
-                    });
-                    </text>
-				}
+            if (termOfServiceOk && userAgreementsOk && esdRevocationWaiverOk) {
+                var submitOrderEvent = jQuery.Event('submitOrder');
+                submitOrderEvent.isOrderValid = true;
+                submitOrderEvent.isMobile = false;
+                submitOrderEvent.disableBuyButton = false;
 
-                if (termOfServiceOk && userAgreementsOk && esdRevocationWaiverOk) {
-                    var submitOrderEvent = jQuery.Event('submitOrder');
-                    submitOrderEvent.isOrderValid = true;
-                    submitOrderEvent.isMobile = false;
-                    submitOrderEvent.disableBuyButton = false;
+                $(document).trigger(submitOrderEvent);
 
-                    $(document).trigger(submitOrderEvent);
-
-                    if (true === submitOrderEvent.isOrderValid) {
-                        try {
-                            setBuyButtonState(true);
-
-                            if (_.isTrue(showThrobber)) {
-                                $.throbber.show({ white: true, small: false, speed: 0, message: '@T("Checkout.OrderCompletes").ToString().EncodeJsString('"', false)' });
-                            }
-                        }
-                        catch (e) { }
-
-                        $('#confirm-order-form').submit();
-                    }
-                    else if (true === submitOrderEvent.disableBuyButton) {
-                        setBuyButtonState(true);
-                    }
-                }
-            }
-
-            // Buy button has been clicked.
-            buyButton.on("click", function () {
-                processBuyButtonClick(false);
-            });
-
-            // Simulate buy button click.
-            $(document).on('clickBuyButton', function (e) {
-                processBuyButtonClick(e.customerAgreed, e.showThrobber);
-            });
-
-            // Report error.
-            $(document).on('reportError', function (e) {
-                if (!_.isEmpty(e.message)) {
-                    var str = '<div class="alert alert-danger mb-3"><ul>';
-                    if (_.isArray(e.message)) {
-                        $.each(e.message, function (index, value) {
-                            str += '<li>' + value + '</li>';  
-                        });
-                    }
-                    else {
-                        str += '<li>' + e.message + '</li>';
-                    }
-                    str += '</ul></div>';
-
-                    var warnings = $('#confirm-warnings');
-                    warnings.html(str);
-
+                if (true === submitOrderEvent.isOrderValid) {
                     try {
-                        setBuyButtonState(false);
-                        $.throbber.hide(true);
-                        $.scrollTo(warnings, 800, { offset: -20 });
+                        setBuyButtonState(true);
+
+                        if (_.isTrue(showThrobber)) {
+                            $.throbber.show({ white: true, small: false, speed: 0, message: '@T("Checkout.OrderCompletes").ToString().EncodeJsString('"', false)' });
+                        }
                     }
                     catch (e) { }
+
+                    $('#confirm-order-form').submit();
                 }
-            });
+                else if (true === submitOrderEvent.disableBuyButton) {
+                    setBuyButtonState(true);
+                }
+            }
+        }
+
+        // Buy button has been clicked.
+        buyButton.on("click", function () {
+            processBuyButtonClick(false);
         });
-	</script>
-}
+
+        // Simulate buy button click.
+        $(document).on('clickBuyButton', function (e) {
+            processBuyButtonClick(e.customerAgreed, e.showThrobber);
+        });
+
+        // Report error.
+        $(document).on('reportError', function (e) {
+            if (!_.isEmpty(e.message)) {
+                var str = '<div class="alert alert-danger mb-3"><ul>';
+                if (_.isArray(e.message)) {
+                    $.each(e.message, function (index, value) {
+                        str += '<li>' + value + '</li>';
+                    });
+                }
+                else {
+                    str += '<li>' + e.message + '</li>';
+                }
+                str += '</ul></div>';
+
+                var warnings = $('#confirm-warnings');
+                warnings.html(str);
+
+                try {
+                    setBuyButtonState(false);
+                    $.throbber.hide(true);
+                    $.scrollTo(warnings, 800, { offset: -20 });
+                }
+                catch (e) { }
+            }
+        });
+    });
+</script>

@@ -180,23 +180,29 @@
             </div>
         </div>
         <div class="offcanvas-cart-footer-col row sm-gutters d-flex flex-wrap">
-            <div class="col@(Model.DisplayCheckoutButton ? " d-none" : "")" id="mini-cart-basket-check">
-                <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
-                    <i class="fa fa-check"></i>
-                    <span>@T("ShoppingCart.Mini.ViewCart")</span>
-                </a>
-            </div>
-            <div class="col" id="mini-cart-basket">
-                <a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
-                    <span>@T("ShoppingCart.Mini.ViewCart")</span>
-                </a>
-            </div>
-            <div class="col" id="mini-cart-checkout">
-                <a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
-                    <i class="fa fa-check"></i>
-                    <span>@T("Checkout.Button")</span>
-                </a>
-            </div>
+            @if (Model.DisplayCheckoutButton)
+            {
+                <div class="col">
+                    <a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+                        @T("ShoppingCart.Mini.ViewCart")
+                    </a>
+                </div>
+                <div class="col">
+                    <a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
+                        <i class="fa fa-check"></i>
+                        <span>@T("Checkout.Button")</span>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col">
+                    <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+                        <i class="fa fa-check"></i>
+                        <span>@T("ShoppingCart.Mini.ViewCart")</span>
+                    </a>
+                </div>
+            }
         </div>
     </div>
 

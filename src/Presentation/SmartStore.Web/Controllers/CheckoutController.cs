@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Cart;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -351,42 +352,14 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
         {
-            var model = new CheckoutConfirmModel();
-
-            // Minimum order totals validation
-            var customerRoleIds = _workContext.CurrentCustomer.GetRoleIds();
-            var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(cart, customerRoleIds);
-            if (!isAboveMinimumOrderTotal)
+            var model = new CheckoutConfirmModel
             {
-                orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(
-                    orderTotalMinimum,
-                    _workContext.WorkingCurrency);
-
-                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MinOrderSubtotalAmount" : "Checkout.MinOrderTotalAmount";
-                model.OrderAmountWarning = string.Format(
-                    _localizationService.GetResource(resource),
-                    _priceFormatter.FormatPrice(orderTotalMinimum, true, false));
-            }
-
-            // Maximum order totals validation
-            var (isBelowOrderTotalMaximum, orderTotalMaximum) = _orderProcessingService.IsBelowOrderTotalMaximum(cart, customerRoleIds);
-            if (isAboveMinimumOrderTotal && !isBelowOrderTotalMaximum)
-            {
-                orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(
-                    orderTotalMaximum,
-                    _workContext.WorkingCurrency);
-
-                var resource = _orderSettings.ApplyToSubtotal ? "Checkout.MaxOrderSubtotalAmount" : "Checkout.MaxOrderTotalAmount";
-                model.OrderAmountWarning = string.Format(
-                    _localizationService.GetResource(resource),
-                    _priceFormatter.FormatPrice(orderTotalMaximum, true, false));
-            }
-
-            model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
-            model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
-            model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
-            model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
-            model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
+                TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled,
+                ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox,
+                BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo,
+                NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription,
+                ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver
+            };
 
             if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
             {
@@ -453,7 +426,17 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("ShoppingCart");
             }
 
-            // Valiadate each shopping cart item.
+            var validatingCartEvent = new ValidatingCartEvent(_workContext.OriginalCustomerIfImpersonated ?? customer, scWarnings, cart);
+            Services.EventPublisher.Publish(validatingCartEvent);
+            if (scWarnings.Any())
+            {
+                if (validatingCartEvent.Result != null) return validatingCartEvent.Result;
+
+                NotifyWarning(string.Join(Environment.NewLine, scWarnings.Take(3)));
+                return RedirectToRoute("ShoppingCart");
+            }
+
+            // Validate each shopping cart item.
             foreach (var sci in cart)
             {
                 var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer,
@@ -860,6 +843,17 @@ namespace SmartStore.Web.Controllers
             if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
             {
                 return new HttpUnauthorizedResult();
+            }
+
+            var scWarnings = new List<string>();
+            var validatingCartEvent = new ValidatingCartEvent(_workContext.OriginalCustomerIfImpersonated ?? customer, scWarnings, cart);
+            Services.EventPublisher.Publish(validatingCartEvent);
+            if (scWarnings.Any())
+            {
+                if (validatingCartEvent.Result != null) return validatingCartEvent.Result;
+
+                NotifyWarning(string.Join(Environment.NewLine, scWarnings.Take(3)));
+                return RedirectToRoute("ShoppingCart");
             }
 
             var model = new CheckoutConfirmModel();

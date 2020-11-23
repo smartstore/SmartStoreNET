@@ -30,7 +30,7 @@ namespace SmartStore.Services.Orders
             _workContext = workContext;
         }
 
-        public void HandleEvent(ValidatingCartEvent message) // services // customer groups
+        public void HandleEvent(ValidatingCartEvent message)
         {
             // Default Order Totals restriction
             if (message.Customer == null || message.Warnings == null || message.Cart == null)

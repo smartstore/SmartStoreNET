@@ -23,6 +23,6 @@ namespace SmartStore.Services.Cart
 
         public IList<string> Warnings { get; set; }
 
-        public ViewResult Result { get; set; }
+        public ActionResult Result { get; set; }
     }
 }

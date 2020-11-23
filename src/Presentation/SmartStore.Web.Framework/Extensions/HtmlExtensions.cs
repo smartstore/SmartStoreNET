@@ -977,10 +977,12 @@ namespace SmartStore.Web.Framework
                 return MvcHtmlString.Empty;
             }
 
+            var mediaType = file.MediaType.NullEmpty() ?? "image";
+
             // Validate size parameter.
-            if (file.MediaType != "image" && !renderViewer)
+            if (mediaType != "image" && !renderViewer)
             {
-                Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{file.MediaType.NaIfEmpty()}'.");
+                Guard.IsPositive(size, nameof(size), $"The size must be greater than 0 to get a thumbnail for type '{mediaType.NaIfEmpty()}'.");
             }
 
             var f = file?.File;
@@ -1006,7 +1008,7 @@ namespace SmartStore.Web.Framework
             model.Alt = (string)(alt ?? f?.GetLocalized(x => x.Alt).Value);
             model.Title = (string)(title ?? f?.GetLocalized(x => x.Title).Value);
 
-            return helper.Partial("MediaTemplates/" + file.MediaType, model);
+            return helper.Partial("MediaTemplates/" + mediaType, model);
         }
 
         #endregion

@@ -426,7 +426,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("ShoppingCart");
             }
 
-            var validatingCartEvent = new ValidatingCartEvent(_workContext.OriginalCustomerIfImpersonated ?? customer, scWarnings, cart);
+            var validatingCartEvent = new ValidatingCartEvent(customer, scWarnings, cart);
             Services.EventPublisher.Publish(validatingCartEvent);
             if (scWarnings.Any())
             {
@@ -846,7 +846,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var scWarnings = new List<string>();
-            var validatingCartEvent = new ValidatingCartEvent(_workContext.OriginalCustomerIfImpersonated ?? customer, scWarnings, cart);
+            var validatingCartEvent = new ValidatingCartEvent(customer, scWarnings, cart);
             Services.EventPublisher.Publish(validatingCartEvent);
             if (scWarnings.Any())
             {

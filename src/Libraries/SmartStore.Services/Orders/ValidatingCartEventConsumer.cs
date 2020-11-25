@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.Core;
+﻿using SmartStore.Core;
 using SmartStore.Core.Events;
 using SmartStore.Services.Cart;
 using SmartStore.Services.Catalog;
@@ -33,34 +32,29 @@ namespace SmartStore.Services.Orders
         public void HandleEvent(ValidatingCartEvent message)
         {
             // Default Order Totals restriction
-            if (message.Customer == null || message.Warnings == null || message.Cart == null)
-                throw new NullReferenceException("message of " + typeof(ValidatingCartEvent).ToString());
-
-            var customerRoleIds = message.Customer.GetRoleIds();
+            var roleIds = _workContext.OriginalCustomerIfImpersonated?.GetRoleIds() ?? message.Customer.GetRoleIds();
 
             // Minimum order totals validation
-            var (isAboveMinimumOrderTotal, orderTotalMinimum) = _orderProcessingService.IsAboveOrderTotalMinimum(message.Cart, customerRoleIds);
-            if (!isAboveMinimumOrderTotal)
+            var (isAboveMin, min) = _orderProcessingService.IsAboveOrderTotalMinimum(message.Cart, roleIds);
+            if (!isAboveMin)
             {
-                orderTotalMinimum = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotalMinimum, _workContext.WorkingCurrency);
-
+                min = _currencyService.ConvertFromPrimaryStoreCurrency(min, _workContext.WorkingCurrency);
                 message.Warnings.Add(string.Format(
                     _localizationService.GetResource("Checkout.MinOrderSubtotalAmount"),
-                    _priceFormatter.FormatPrice(orderTotalMinimum, true, false))
+                    _priceFormatter.FormatPrice(min, true, false))
                     );
 
                 return;
             }
 
             // Maximum order totals validation
-            var (isBelowOrderTotalMaximum, orderTotalMaximum) = _orderProcessingService.IsBelowOrderTotalMaximum(message.Cart, customerRoleIds);
-            if (!isBelowOrderTotalMaximum)
+            var (isBelowMax, max) = _orderProcessingService.IsBelowOrderTotalMaximum(message.Cart, roleIds);
+            if (!isBelowMax)
             {
-                orderTotalMaximum = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotalMaximum, _workContext.WorkingCurrency);
-
+                max = _currencyService.ConvertFromPrimaryStoreCurrency(max, _workContext.WorkingCurrency);
                 message.Warnings.Add(string.Format(
                    _localizationService.GetResource("Checkout.MaxOrderSubtotalAmount"),
-                   _priceFormatter.FormatPrice(orderTotalMaximum, true, false))
+                   _priceFormatter.FormatPrice(max, true, false))
                     );
             }
         }

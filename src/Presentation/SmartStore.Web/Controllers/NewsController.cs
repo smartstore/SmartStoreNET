@@ -394,7 +394,7 @@ namespace SmartStore.Web.Controllers
             var pictureModel = new PictureModel
             {
                 PictureId = newsItem.MediaFileId.GetValueOrDefault(),
-                Size = 512,
+                Size = MediaSettings.ThumbnailSizeLg,
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
                 Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? newsItem.GetLocalized(x => x.Title),

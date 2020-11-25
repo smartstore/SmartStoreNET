@@ -110,8 +110,8 @@ namespace SmartStore.Web.Controllers
             var pictureModel = new PictureModel
             {
                 PictureId = blogPost.MediaFileId.GetValueOrDefault(),
-                Size = 512,
-                ImageUrl = _mediaService.GetUrl(file, 512, null, false),
+                Size = MediaSettings.ThumbnailSizeLg,
+                ImageUrl = _mediaService.GetUrl(file, MediaSettings.ThumbnailSizeLg, null, false),
                 FullSizeImageUrl = _mediaService.GetUrl(file, 0, null, false),
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,

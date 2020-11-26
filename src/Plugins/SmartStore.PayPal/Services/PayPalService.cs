@@ -896,7 +896,7 @@ namespace SmartStore.PayPal.Services
 
             var result = CallApi("PATCH", "/v1/payments/payment/{0}".FormatInvariant(session.PaymentId), settings, session, JsonConvert.SerializeObject(data));
 
-            //Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
+            //Logger.Log(LogLevel.Information, new Exception(JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : "")), "PayPal API", null);
 
             return result;
         }

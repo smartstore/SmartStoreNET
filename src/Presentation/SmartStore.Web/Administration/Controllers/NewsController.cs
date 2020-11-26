@@ -155,7 +155,7 @@ namespace SmartStore.Admin.Controllers
                 model.SearchStoreId,
                 command.Page - 1,
                 command.PageSize,
-                !model.SearchIsPublished ?? true,
+                true,
                 null,
                 model.SearchTitle, 
                 model.SearchShort, 
@@ -183,7 +183,7 @@ namespace SmartStore.Admin.Controllers
                 m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
 
                 return m;
-            });
+            }).Where(x => x.Published == model.SearchIsPublished || model.SearchIsPublished == null);
 
             return new JsonResult
             {

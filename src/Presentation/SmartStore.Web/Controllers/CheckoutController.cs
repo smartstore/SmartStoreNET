@@ -428,10 +428,14 @@ namespace SmartStore.Web.Controllers
 
             var validatingCartEvent = new ValidatingCartEvent(customer, scWarnings, cart);
             Services.EventPublisher.Publish(validatingCartEvent);
+
+            if (validatingCartEvent.Result != null)
+            {
+                return validatingCartEvent.Result;
+            }
+
             if (scWarnings.Any())
             {
-                if (validatingCartEvent.Result != null) return validatingCartEvent.Result;
-
                 NotifyWarning(string.Join(Environment.NewLine, scWarnings.Take(3)));
                 return RedirectToRoute("ShoppingCart");
             }

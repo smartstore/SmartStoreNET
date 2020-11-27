@@ -76,7 +76,7 @@
 					.ClientTemplate(Html.SymbolForBool("RenderAsWidget"))
 					.Centered();
 				columns.Bound(x => x.WidgetZone)
-					.ClientTemplate("<span style='word-break: break-all'><#= WidgetZone #></span>");
+					.HtmlAttributes(new { style = "word-break: break-all" });
 				columns.Bound(x => x.LimitedToStores)
 					.ClientTemplate(Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.AvailableStores.Count <= 1)

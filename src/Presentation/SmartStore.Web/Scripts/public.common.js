@@ -124,7 +124,10 @@
                             }
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            resultDisplay.empty().text("Failed to subscribe").removeClass("alert-success d-none").addClass("alert-danger d-block");
+                            resultDisplay.empty()
+                                .text(newsletterContainer.data('subscription-failure'))
+                                .removeClass("alert-success d-none")
+                                .addClass("alert-danger d-block");
                         }
                     });
                     return false;

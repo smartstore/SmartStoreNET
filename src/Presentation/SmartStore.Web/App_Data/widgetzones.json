@@ -41,7 +41,9 @@
 				"blogpost_page_after_comments",
 				"bloglist_page_before_posts",
 				"bloglist_page_inside_post",
-				"bloglist_page_after_posts"
+				"bloglist_page_after_posts",
+				"blog_right_months_after",
+				"blog_right_bottom"
 			]
 		},
 		{

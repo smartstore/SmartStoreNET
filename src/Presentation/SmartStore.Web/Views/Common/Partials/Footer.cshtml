@@ -106,7 +106,7 @@
 				
 				@if (!Model.HideNewsletterBlock)
 				{
-					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
+					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))" data-subscription-failure="@T("Newsletter.SubscriptionFailed")">
 						<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-newsletter" aria-controls="footer-newsletter" aria-expanded="false">@T("Newsletter.Title")</h4>
 						<div class="collapse nav-collapse" id="footer-newsletter">
 							<div id="newsletter-subscribe-block">

@@ -53,6 +53,10 @@
                 "Product quantity is in range", 
                 "Produktmenge liegt in folgendem Bereich");
 
+            builder.AddOrUpdate("Newsletter.SubscriptionFailed",
+                "The subscription or unsubscription has failed.",
+                "Die Abonnierung bzw. Abbestellung ist fehlgeschlagen.");
+
             builder.AddOrUpdate("Common.UnsupportedBrowser",
                 "You are using an unsupported browser! Please consider switching to a modern browser such as Google Chrome, Firefox or Opera to fully enjoy your shopping experience.",
                 "Sie verwenden einen nicht unterstützten Browser! Bitte ziehen Sie in Betracht, zu einem modernen Browser wie Google Chrome, Firefox oder Opera zu wechseln, um Ihr Einkaufserlebnis in vollen Zügen genießen zu können.");

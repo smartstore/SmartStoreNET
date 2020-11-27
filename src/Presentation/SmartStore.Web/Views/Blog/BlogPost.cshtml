@@ -13,7 +13,9 @@
 @section right {
     @{
         Html.RenderAction("BlogMonths", "Blog");
+		Html.RenderWidget("blog_right_months_after");
         Html.RenderAction("BlogTags", "Blog");
+		Html.RenderWidget("blog_right_bottom");
     }
 }
 

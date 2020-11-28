@@ -1,5 +1,22 @@
 # Release Notes
 
+## Smartstore 4.1.1
+### New Features
+* **Page Builder**
+	* Added newsletter block to subscribe/unsubscribe to the newsletter.
+* Rule Builder: added CartItemQuantity rule to specify conditions for the quantity per cart product.
+
+### Improvements
+* WebDAVModule is removed in Web.config because it disables PUT and DELETE requests (required by Web API).
+* Newsletter subscriptions: added filter for customer roles in export profile and backend list.
+	
+### Bugfixes
+* #2162 A plugin could not be uninstalled if it's the only one installed.
+* Sometimes no picture was displayed when navigating in the product details' image gallery.
+* Deactivated slugs were falsely always redirected without SSL.
+* Selected products could no be deleted in the backend product list.
+
+
 ## Smartstore 4.1.0
 ### Highlights
 * **Web API:** now supports the widely extended version 4 of OData. New endpoints for uploading and managing media files have been added to the API.

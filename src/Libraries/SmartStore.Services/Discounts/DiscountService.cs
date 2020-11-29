@@ -103,29 +103,25 @@ namespace SmartStore.Services.Discounts
 
         public virtual IEnumerable<Discount> GetAllDiscounts(DiscountType? discountType, string couponCode = "", bool showHidden = false)
         {
-            int? discountTypeId = null;
-            if (discountType.HasValue)
-                discountTypeId = (int)discountType.Value;
+            var discountTypeId = discountType.HasValue ? (int)discountType.Value : 0;
 
-            // we load all discounts, and filter them by passed "discountType" parameter later
-            // we do it because we know that this method is invoked several times per HTTP request with distinct "discountType" parameter
-            // that's why we access the database only once
-            string key = string.Format(DISCOUNTS_ALL_KEY, showHidden, couponCode);
+            // We load all discounts and filter them by passed "discountType" parameter later because
+            // this method is invoked several times per HTTP request with distinct "discountType" parameter.
+            var key = string.Format(DISCOUNTS_ALL_KEY, showHidden, couponCode);
             var result = _requestCache.Get(key, () =>
             {
                 var query = _discountRepository.Table;
 
                 if (!showHidden)
                 {
-                    // The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
-                    // That's why we pass the date value
-                    var nowUtc = DateTime.UtcNow.Date;
+                    var utcNow = DateTime.UtcNow;
+
                     query = query.Where(d =>
-                        (!d.StartDateUtc.HasValue || d.StartDateUtc <= nowUtc)
-                        && (!d.EndDateUtc.HasValue || d.EndDateUtc >= nowUtc));
+                        (!d.StartDateUtc.HasValue || d.StartDateUtc <= utcNow) &&
+                        (!d.EndDateUtc.HasValue || d.EndDateUtc >= utcNow));
                 }
 
-                if (!String.IsNullOrWhiteSpace(couponCode))
+                if (!string.IsNullOrWhiteSpace(couponCode))
                 {
                     couponCode = couponCode.Trim();
                     query = query.Where(d => d.CouponCode == couponCode);
@@ -143,7 +139,7 @@ namespace SmartStore.Services.Discounts
 
             if (discountTypeId > 0)
             {
-                return result[discountTypeId.Value];
+                return result[discountTypeId];
             }
 
             return result.SelectMany(x => x.Value);

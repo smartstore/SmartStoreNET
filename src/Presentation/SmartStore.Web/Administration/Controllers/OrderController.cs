@@ -3048,12 +3048,12 @@ namespace SmartStore.Admin.Controllers
             foreach (var report in model)
             {
                 report.QuantityTotal = report.Quantity.ToString("N0");
-                report.AmountTotal = report.Amount.ToString("C0");
+                report.AmountTotal = _priceFormatter.FormatPrice(report.Amount, true, false);
                 for (int i = 0; i < report.Data.Count; i++)
                 {
                     var data = report.Data[i];
                     data.QuantityFormatted = data.Quantity.ToString("N0");
-                    data.AmountFormatted = data.Amount.ToString("C0");
+                    data.AmountFormatted = _priceFormatter.FormatPrice(data.Amount, true, false);
                 }
             }
 
@@ -3072,7 +3072,7 @@ namespace SmartStore.Admin.Controllers
                         order.CustomerId,
                         order.Customer.FindEmail() ?? order.Customer.FormatUserName(),
                         order.OrderItems.Sum(x => x.Quantity),
-                        order.OrderTotal.ToString("C0"),
+                        _priceFormatter.FormatPrice(order.OrderTotal, true, false),
                         _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc).ToString("g"),
                         order.OrderStatus,
                         order.Id)
@@ -3154,7 +3154,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var dataPoint in orderDataPoints)
             {
-                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);
+                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);                
                 SetOrderReportData(model, dataPoint);
             }
 
@@ -3166,14 +3166,14 @@ namespace SmartStore.Admin.Controllers
                 {
                     for (int j = 0; j < data.Amount.Length; j++)
                     {
-                        data.AmountFormatted[j] = data.Amount[j].ToString("C0");
+                        data.AmountFormatted[j] = _priceFormatter.FormatPrice(data.Amount[j], true, false);
                         data.QuantityFormatted[j] = data.Quantity[j].ToString("N0");
                     }
                     data.TotalAmount = data.Amount.Sum();
-                    data.TotalAmountFormatted = data.TotalAmount.ToString("C0");
+                    data.TotalAmountFormatted = _priceFormatter.FormatPrice(data.TotalAmount, true, false);
                 }
                 model[i].TotalAmount = model[i].DataSets.Sum(x => x.TotalAmount);
-                model[i].TotalAmountFormatted = model[i].TotalAmount.ToString("C0");
+                model[i].TotalAmountFormatted = _priceFormatter.FormatPrice(model[i].TotalAmount, true, false);
 
                 // Create labels for all dataPoints
                 for (int j = 0; j < model[i].Labels.Length; j++)

@@ -71,6 +71,11 @@ namespace SmartStore.Services.Media.Imaging
                 stream.Position = 0;
             }
 
+            if (InStream.CanSeek)
+            {
+                InStream.Position = 0;
+            }
+
             return this;
         }
 

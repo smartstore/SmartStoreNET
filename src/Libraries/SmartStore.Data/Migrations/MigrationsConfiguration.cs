@@ -40,6 +40,9 @@
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
             MigrateSettings(context);
+
+            var logTypeMigrator = new ActivityLogTypeMigrator(context);
+            logTypeMigrator.AddActivityLogType("EditOrder", "Edit an order", "Auftrag bearbeitet");
         }
 
         public void MigrateSettings(SmartObjectContext context)
@@ -80,6 +83,10 @@
                 "Kundengruppen erweitern den Wertebereich",
                 "Determines whether multiple order total restrictions through customer group assignments extend the allowed order value range.",
                 "Bestimmt, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen den erlaubten Bestellwertbereich erweitern.");
+
+            builder.AddOrUpdate("ActivityLog.EditOrder",
+                "Edited order {0}",
+                "Auftrag {0} bearbeitet");
         }
     }
 }

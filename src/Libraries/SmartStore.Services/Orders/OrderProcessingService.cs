@@ -70,7 +70,6 @@ namespace SmartStore.Services.Orders
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IDownloadService _downloadService;
 
-        private readonly PaymentSettings _paymentSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly OrderSettings _orderSettings;
         private readonly TaxSettings _taxSettings;
@@ -114,7 +113,6 @@ namespace SmartStore.Services.Orders
             IGenericAttributeService genericAttributeService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             IDownloadService downloadService,
-            PaymentSettings paymentSettings,
             RewardPointsSettings rewardPointsSettings,
             OrderSettings orderSettings,
             TaxSettings taxSettings,
@@ -153,20 +151,16 @@ namespace SmartStore.Services.Orders
             _genericAttributeService = genericAttributeService;
             _newsLetterSubscriptionService = newsLetterSubscriptionService;
             _downloadService = downloadService;
-            _paymentSettings = paymentSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _orderSettings = orderSettings;
             _taxSettings = taxSettings;
             _localizationSettings = localizationSettings;
             _shoppingCartSettings = shoppingCartSettings;
             _catalogSettings = catalogSettings;
-
-            T = NullLocalizer.Instance;
-            Logger = NullLogger.Instance;
         }
 
-        public Localizer T { get; set; }
-        public ILogger Logger { get; set; }
+        public Localizer T { get; set; } = NullLocalizer.Instance;
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         #endregion
 

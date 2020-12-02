@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Localization;
@@ -32,7 +31,7 @@ namespace SmartStore.Services.Seo
         public virtual XmlSitemapNode CreateNode(UrlHelper urlHelper, string baseUrl, NamedEntity entity, UrlRecordCollection slugs, Language language)
         {
             var slug = slugs.GetSlug(language.Id, entity.Id, true);
-            var path = urlHelper.RouteUrl(entity.EntityName, new { SeName = slug }).TrimStart('/');
+            var path = urlHelper.RouteUrl(entity.EntityName, new { SeName = slug }).EmptyNull().TrimStart('/');
             var loc = baseUrl + path;
 
             return new XmlSitemapNode

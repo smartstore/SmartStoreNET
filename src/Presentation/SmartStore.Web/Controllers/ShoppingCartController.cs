@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
@@ -1646,9 +1647,11 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData)
+        public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData, Customer customer = null)
         {
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            customer = customer == null || customer.Id == 0 ? Services.WorkContext.CurrentCustomer : customer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+
             var model = new ShoppingCartModel();
 
             PrepareShoppingCartModel(model, cart,
@@ -1977,9 +1980,9 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-            var customer = _workContext.CurrentCustomer;
-            var currency = _workContext.WorkingCurrency;
-            var store = _storeContext.CurrentStore;
+            var customer = ViewData["CurrentCustomer"] as Customer ?? _workContext.CurrentCustomer;
+            var currency = ViewData["WorkingCurrency"] as Currency ?? _workContext.WorkingCurrency;
+            var store = ViewData["CurrentStore"] as Store ?? _storeContext.CurrentStore;
             var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
             var model = new OrderTotalsModel();

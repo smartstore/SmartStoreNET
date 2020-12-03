@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -35,6 +36,7 @@ namespace SmartStore.WebApi.Controllers.Api
     {
         private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
+        private readonly IDbContext _dbContext;
         private readonly Lazy<IProductService> _productService;
         private readonly Lazy<IMediaService> _mediaService;
         private readonly Lazy<IFolderService> _folderService;
@@ -47,6 +49,7 @@ namespace SmartStore.WebApi.Controllers.Api
         private readonly Lazy<MediaSettings> _mediaSettings;
 
         public UploadsController(
+            IDbContext dbContext,
             Lazy<IProductService> productService,
             Lazy<IMediaService> mediaService,
             Lazy<IFolderService> folderService,
@@ -58,6 +61,7 @@ namespace SmartStore.WebApi.Controllers.Api
             Lazy<IStoreContext> storeContext,
             Lazy<MediaSettings> mediaSettings)
         {
+            _dbContext = dbContext;
             _productService = productService;
             _mediaService = mediaService;
             _folderService = folderService;
@@ -142,13 +146,13 @@ namespace SmartStore.WebApi.Controllers.Api
                     : 0;
 
                 var files = entity.ProductPictures.Select(x => x.MediaFile);
+                var catalogAlbumId = _folderService.Value.GetNodeByPath(SystemAlbumProvider.Catalog).Value.Id;
 
                 foreach (var content in provider.Contents)
                 {
                     if (content.IsFileContent())
                     {
                         var image = new UploadImage(content.Headers);
-
                         if (image.FileName.IsEmpty())
                         {
                             image.FileName = Path.GetRandomFileName();
@@ -171,45 +175,49 @@ namespace SmartStore.WebApi.Controllers.Api
                             }
                             else
                             {
-                                // If TinyImage compresses the image, FindEqualFile will never find an equal image here.
+                                // Important notes to avoid image duplicates:
+                                // a) if TinyImage compresses the image, FindEqualFile will never find an equal image here.
                                 // We have to live with that. There is no ad-hoc solution for it.
-                                if (_mediaService.Value.FindEqualFile(stream, files, true, out var equalFile))
+                                // b) MediaSettings.MaximumImageSize (default is 2048 pixel) must be large enough to prevent the image processor from resizing it.
+
+                                MediaFile sourceFile = null;
+
+                                if (_mediaService.Value.FindEqualFile(stream, files, true, out var assignedFile))
                                 {
                                     image.Exists = true;
-                                    image.Picture = equalFile;
+                                    image.Picture = assignedFile;
+                                }
+                                else if (_mediaService.Value.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out sourceFile))
+                                {
+                                    image.Exists = true;
+                                    image.Picture = sourceFile;
                                 }
                                 else
                                 {
-                                    var catalogAlbumId = _folderService.Value.GetNodeByPath(SystemAlbumProvider.Catalog).Value.Id;
+                                    var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
+                                    var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
+                                    sourceFile = newFile?.File;
 
-                                    if (_mediaService.Value.FindEqualFile(stream, image.FileName, catalogAlbumId, true, out equalFile))
+                                    image.Inserted = sourceFile != null;
+                                    image.Picture = sourceFile;
+                                }
+
+                                if (sourceFile?.Id > 0)
+                                {
+                                    _productService.Value.InsertProductPicture(new ProductMediaFile
                                     {
-                                        image.Exists = true;
-                                        image.Picture = equalFile;
-                                    }
-                                    else
-                                    {
-                                        var path = _mediaService.Value.CombinePaths(SystemAlbumProvider.Catalog, image.FileName);
-                                        var newFile = await _mediaService.Value.SaveFileAsync(path, stream, false, DuplicateFileHandling.Rename);
-
-                                        if (newFile?.Id > 0)
-                                        {
-                                            _productService.Value.InsertProductPicture(new ProductMediaFile
-                                            {
-                                                MediaFileId = newFile.Id,
-                                                ProductId = entity.Id,
-                                                DisplayOrder = ++displayOrder
-                                            });
-
-                                            image.Inserted = true;
-                                            image.Picture = newFile.File;
-                                        }
-                                    }
+                                        MediaFileId = sourceFile.Id,
+                                        ProductId = entity.Id,
+                                        DisplayOrder = ++displayOrder
+                                    });
                                 }
                             }
 
                             if (image.Picture != null)
                             {
+                                // Prevent "failed to serialize the response body".
+                                _dbContext.LoadCollection(image.Picture, (MediaFile x) => x.ProductMediaFiles);
+
                                 image.PictureId = image.Picture.Id;
                                 image.ImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductDetailsPictureSize, storeUrl, false);
                                 image.ThumbImageUrl = _mediaService.Value.GetUrl(image.Picture, _mediaSettings.Value.ProductThumbPictureSize, storeUrl, false);

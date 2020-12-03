@@ -16,6 +16,7 @@
 * Sometimes no picture was displayed when navigating in the product details' image gallery.
 * Deactivated slugs were falsely always redirected without SSL.
 * Selected products could no be deleted in the backend product list.
+* Web-API: fixed "failed to serialize the response body" when uploading product images and missing product media file mapping if an equal image was found in catalog folder.
 
 
 ## Smartstore 4.1.0

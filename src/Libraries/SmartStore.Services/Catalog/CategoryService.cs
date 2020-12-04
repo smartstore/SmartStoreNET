@@ -196,6 +196,8 @@ namespace SmartStore.Services.Catalog
 
                 _aclRepository.Context.SaveChanges();
             }
+
+            _cache.RemoveByPattern(AclService.ACL_SEGMENT_PATTERN);
         }
 
         public virtual void InheritStoresIntoChildren(
@@ -284,6 +286,8 @@ namespace SmartStore.Services.Catalog
 
                 _storeMappingRepository.Context.SaveChanges();
             }
+
+            _cache.RemoveByPattern(StoreMappingService.STOREMAPPING_SEGMENT_PATTERN);
         }
 
         public virtual void DeleteCategory(Category category, bool deleteChilds = false)

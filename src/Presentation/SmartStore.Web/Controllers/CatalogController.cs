@@ -415,7 +415,8 @@ namespace SmartStore.Web.Controllers
             // Load report from cache
             var report = Services.Cache.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, Services.StoreContext.CurrentStore.Id), () =>
             {
-                return _orderReportService.BestSellersReport(Services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
+                var bestSellers = _orderReportService.BestSellersReport(Services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
+                return bestSellers.Load();
             });
 
             // Load products

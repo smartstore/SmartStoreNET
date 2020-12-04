@@ -1649,15 +1649,28 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData, Customer customer = null)
         {
-            customer = customer == null || customer.Id == 0 ? Services.WorkContext.CurrentCustomer : customer;
-            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var storeId = _storeContext.CurrentStore.Id;
+            if (customer == null || customer.Id == 0)
+            {
+                customer = Services.WorkContext.CurrentCustomer;
+            }
+            else
+            {
+                var buyerStoreId = _genericAttributeService.GetAttribute<int>("Customer", customer.Id, "CustomerStoreId");
+                if (buyerStoreId != default)
+                {
+                    storeId = buyerStoreId;
+                }
+            }
 
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
             var model = new ShoppingCartModel();
 
-            PrepareShoppingCartModel(model, cart,
+            PrepareShoppingCartModel(
+                model, cart,
                 isEditable: false,
                 prepareEstimateShippingIfEnabled: false,
-                prepareAndDisplayOrderReviewData: prepareAndDisplayOrderReviewData.HasValue ? prepareAndDisplayOrderReviewData.Value : false);
+                prepareAndDisplayOrderReviewData: prepareAndDisplayOrderReviewData ?? false);
 
             return PartialView(model);
         }
@@ -1980,11 +1993,29 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-            var customer = ViewData["CurrentCustomer"] as Customer ?? _workContext.CurrentCustomer;
-            var currency = ViewData["WorkingCurrency"] as Currency ?? _workContext.WorkingCurrency;
-            var store = ViewData["CurrentStore"] as Store ?? _storeContext.CurrentStore;
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+            var currency = _workContext.WorkingCurrency;
+            var storeId = _storeContext.CurrentStore.Id;
+            var customer = ViewData["CurrentCustomer"] as Customer;
+            if (customer != null)
+            {
+                var buyerStoreId = _genericAttributeService.GetAttribute<int>("Customer", customer.Id, "CustomerStoreId");
+                if (buyerStoreId != default)
+                {
+                    storeId = buyerStoreId;
+                }
 
+                var currencyId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId);
+                if (currencyId != default)
+                {
+                    currency = _currencyService.GetCurrencyById(currencyId);
+                }
+            }
+            else
+            {
+                customer = _workContext.CurrentCustomer;
+            }
+
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
             var model = new OrderTotalsModel();
             model.IsEditable = isEditable;
 
@@ -2042,14 +2073,14 @@ namespace SmartStore.Web.Controllers
                         model.Shipping = _priceFormatter.FormatShippingPrice(shoppingCartShipping, true);
 
                         //selected shipping method
-                        var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
+                        var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, storeId);
                         if (shippingOption != null)
                             model.SelectedShippingMethod = shippingOption.Name;
                     }
                 }
 
                 //payment method fee
-                string paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, store.Id);
+                string paymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, storeId);
                 decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
                 decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, customer);
 

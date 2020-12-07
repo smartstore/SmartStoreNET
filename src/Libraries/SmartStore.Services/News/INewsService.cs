@@ -51,9 +51,10 @@ namespace SmartStore.Services.News
         /// <summary>
         /// Gets all news.
         /// </summary>
-		/// <param name="storeId">Store identifier; 0 if you want to get all records.</param>
+		/// <param name="storeId">Store identifier. 0 to get all news items.</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
+        /// <param name="languageId">Filter by a language identifier. 0 to get all news items.</param>
         /// <param name="showHidden">A value indicating whether to show hidden records.</param>
 		/// <param name="maxAge">The maximum age of returned news.</param>
         /// <param name="title">Search for a term or phrase in the title.</param>
@@ -65,6 +66,7 @@ namespace SmartStore.Services.News
             int storeId, 
             int pageIndex,
             int pageSize,
+            int languageId = 0,
             bool showHidden = false,
             DateTime? maxAge = null,
             string title = "", 

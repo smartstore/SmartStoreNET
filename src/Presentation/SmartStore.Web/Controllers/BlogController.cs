@@ -214,6 +214,7 @@ namespace SmartStore.Web.Controllers
             Guard.NotNull(command, nameof(command));
 
             var storeId = _services.StoreContext.CurrentStore.Id;
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
             var isAdmin = _services.WorkContext.CurrentCustomer.IsAdmin();
 
             var model = new BlogPostListModel();
@@ -231,11 +232,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!command.Tag.HasValue())
             {
-                blogPosts = _blogService.GetAllBlogPosts(storeId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, isAdmin);
+                blogPosts = _blogService.GetAllBlogPosts(storeId, dateFrom, dateTo, command.PageNumber - 1, command.PageSize, languageId, isAdmin);
             }
             else
             {
-                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, command.Tag, command.PageNumber - 1, command.PageSize, isAdmin);
+                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, command.Tag, command.PageNumber - 1, command.PageSize, languageId, isAdmin);
             }
 
             model.PagingFilteringContext.LoadPagedList(blogPosts);
@@ -281,6 +282,7 @@ namespace SmartStore.Web.Controllers
         protected BlogPostListModel PrepareBlogPostListModel(int? maxPostAmount, int? maxAgeInDays, bool renderHeading, string blogHeading, bool disableCommentCount, string postsWithTag)
         {
             var storeId = _services.StoreContext.CurrentStore.Id;
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
             var isAdmin = _services.WorkContext.CurrentCustomer.IsAdmin();
 
             var model = new BlogPostListModel
@@ -300,11 +302,11 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (!postsWithTag.IsEmpty())
             {
-                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, postsWithTag, 0, maxPostAmount ?? 100, isAdmin, maxAge);
+                blogPosts = _blogService.GetAllBlogPostsByTag(storeId, postsWithTag, 0, maxPostAmount ?? 100, languageId, isAdmin, maxAge);
             }
             else
             {
-                blogPosts = _blogService.GetAllBlogPosts(storeId, null, null, 0, maxPostAmount ?? 100, isAdmin, maxAge);
+                blogPosts = _blogService.GetAllBlogPosts(storeId, null, null, 0, maxPostAmount ?? 100, languageId, isAdmin, maxAge);
             }
 
             Services.DisplayControl.AnnounceRange(blogPosts);
@@ -397,6 +399,7 @@ namespace SmartStore.Web.Controllers
             var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
             var selfLink = Url.RouteUrl("BlogRSS", null, protocol);
             var blogLink = Url.RouteUrl("Blog", null, protocol);
+            var language = _services.WorkContext.WorkingLanguage;
             var store = _services.StoreContext.CurrentStore;
             var title = "{0} - Blog".FormatInvariant(store.Name);
 
@@ -407,7 +410,7 @@ namespace SmartStore.Web.Controllers
 
             var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
             feed.AddNamespaces(false);
-            feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
+            feed.Init(selfLink, language);
 
             if (!_blogSettings.Enabled)
             {
@@ -415,7 +418,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var items = new List<SyndicationItem>();
-            var blogPosts = _blogService.GetAllBlogPosts(store.Id, null, null, 0, int.MaxValue, false, maxAge);
+            var blogPosts = _blogService.GetAllBlogPosts(store.Id, null, null, 0, int.MaxValue, language.Id, false, maxAge);
 
             foreach (var blogPost in blogPosts)
             {
@@ -454,17 +457,21 @@ namespace SmartStore.Web.Controllers
             }
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
-            if (blogPost == null || 
-                (!blogPost.IsPublished && !_services.WorkContext.CurrentCustomer.IsAdmin()) ||
-                (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
-                (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
+            if (blogPost == null)
             {
                 return HttpNotFound();
             }
 
-            if (!_storeMappingService.Authorize(blogPost))
+            if (!blogPost.IsPublished ||
+                (blogPost.LanguageId.HasValue && blogPost.LanguageId != _services.WorkContext.WorkingLanguage.Id) ||
+                (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
+                (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow) ||
+                !_storeMappingService.Authorize(blogPost))
             {
-                return HttpNotFound();
+                if (!_services.WorkContext.CurrentCustomer.IsAdmin())
+                {
+                    return HttpNotFound();
+                }
             }
 
             var model = new BlogPostModel();
@@ -556,13 +563,14 @@ namespace SmartStore.Web.Controllers
             }
 
             var storeId = _services.StoreContext.CurrentStore.Id;
-            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_TAGS_MODEL_KEY, storeId);
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
+            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_TAGS_MODEL_KEY, languageId, storeId);
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new BlogPostTagListModel();
 
-                var tags = _blogService.GetAllBlogPostTags(storeId)
+                var tags = _blogService.GetAllBlogPostTags(storeId, languageId)
                     .OrderByDescending(x => x.BlogPostCount)
                     .Take(_blogSettings.NumberOfTags)
                     .ToList();
@@ -594,12 +602,13 @@ namespace SmartStore.Web.Controllers
             }
 
             var storeId = _services.StoreContext.CurrentStore.Id;
-            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_MONTHS_MODEL_KEY, storeId);
+            var languageId = _services.WorkContext.WorkingLanguage.Id;
+            var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_MONTHS_MODEL_KEY, languageId, storeId);
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var model = new List<BlogPostYearModel>();
-                var blogPosts = _blogService.GetAllBlogPosts(storeId, null, null, 0, int.MaxValue);
+                var blogPosts = _blogService.GetAllBlogPosts(storeId, null, null, 0, int.MaxValue, languageId);
 
                 if (blogPosts.Count > 0)
                 {

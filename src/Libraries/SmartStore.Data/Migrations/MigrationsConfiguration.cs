@@ -81,12 +81,26 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange",
                 "Customer groups extend the value range",
                 "Kundengruppen erweitern den Wertebereich",
-                "Determines whether multiple order total restrictions through customer group assignments extend the allowed order value range.",
-                "Bestimmt, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen den erlaubten Bestellwertbereich erweitern.");
+                "Specifies whether multiple order total restrictions through customer group assignments extend the allowed order value range.",
+                "Legt fest, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen den erlaubten Bestellwertbereich erweitern.");
 
             builder.AddOrUpdate("ActivityLog.EditOrder",
                 "Edited order {0}",
                 "Auftrag {0} bearbeitet");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Blog.BlogPosts.Fields.Language",
+                "Regional relevance",
+                "Regionale Relevanz",
+                "Specifies the language for which the post is displayed. If limited to one language, blog contents need only be edited in that language (no multilingualism).",
+                "Legt fest, für welche Sprache der Beitrag angezeigt wird. Bei einer Begrenzung auf eine Sprache brauchen Blog-Inhalte nur in dieser Sprache eingegeben zu werden (keine Mehrsprachigkeit).");
+
+            builder.AddOrUpdate("Admin.ContentManagement.News.NewsItems.Fields.Language",
+                "Regional relevance",
+                "Regionale Relevanz",
+                "Specifies the language for which the news is displayed. If limited to one language, news contents need only be edited in that language (no multilingualism).",
+                "Legt fest, für welche Sprache die News angezeigt wird. Bei einer Begrenzung auf eine Sprache brauchen News-Inhalte nur in dieser Sprache eingegeben zu werden (keine Mehrsprachigkeit).");
+
+            builder.AddOrUpdate("Common.International", "International", "International");
         }
     }
 }

@@ -5,6 +5,7 @@
 * **Page Builder**
 	* Added newsletter block to subscribe/unsubscribe to the newsletter.
 * Rule Builder: added CartItemQuantity rule to specify conditions for the quantity per cart product.
+* Added an option to display blog posts and news only for a certain language.
 
 ### Improvements
 * WebDAVModule is removed in Web.config because it disables PUT and DELETE requests (required by Web API).

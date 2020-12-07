@@ -69,12 +69,12 @@
             builder.Delete("Checkout.MinOrderTotalAmount");
 
             builder.AddOrUpdate("Checkout.MaxOrderSubtotalAmount",
-                "The maximum order total allowed is {0}.",
-                "Der zulässige Höchstbestellwert beträgt {0}.");
+                "Your maximum order total allowed is {0}.",
+                "Ihr zulässige Höchstbestellwert beträgt {0}.");
 
             builder.AddOrUpdate("Checkout.MinOrderSubtotalAmount",
-                "The minimum order total allowed is {0}.",
-                "Der zulässige Mindestbestellwert beträgt {0}.");
+                "Your minimum order total allowed is {0}.",
+                "Ihr zulässige Mindestbestellwert beträgt {0}.");
 
             builder.Delete("Admin.Configuration.Settings.Order.OrderTotalRestrictionType");
 

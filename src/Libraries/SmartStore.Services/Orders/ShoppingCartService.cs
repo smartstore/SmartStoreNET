@@ -359,6 +359,7 @@ namespace SmartStore.Services.Orders
             Customer customer,
             ShoppingCartType shoppingCartType,
             Product product,
+            int storeId,
             string selectedAttributes,
             decimal customerEnteredPrice,
             int quantity)
@@ -401,7 +402,7 @@ namespace SmartStore.Services.Orders
             }
 
             // Store mapping
-            if (!_storeMappingService.Authorize(product, _storeContext.CurrentStore.Id))
+            if (!_storeMappingService.Authorize(product, storeId))
             {
                 warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
@@ -471,7 +472,7 @@ namespace SmartStore.Services.Orders
                         break;
                     case ManageInventoryMethod.ManageStock:
                         {
-                            if ((BackorderMode)product.BackorderMode == BackorderMode.NoBackorders)
+                            if (product.BackorderMode == BackorderMode.NoBackorders)
                             {
                                 if (product.StockQuantity < quantity)
                                 {
@@ -833,7 +834,7 @@ namespace SmartStore.Services.Orders
 
             // standard properties
             if (getStandardWarnings)
-                warnings.AddRange(GetStandardWarnings(customer, shoppingCartType, product, selectedAttributes, customerEnteredPrice, quantity));
+                warnings.AddRange(GetStandardWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity));
 
             // selected attributes
             if (getAttributesWarnings)

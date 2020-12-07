@@ -87,6 +87,7 @@ namespace SmartStore.Services.Orders
             Customer customer,
             ShoppingCartType shoppingCartType,
             Product product,
+            int storeId,
             string selectedAttributes,
             decimal customerEnteredPrice,
             int quantity);

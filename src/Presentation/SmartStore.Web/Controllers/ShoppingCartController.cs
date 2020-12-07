@@ -14,11 +14,11 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Security;
+using SmartStore.Services.Cart;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
@@ -39,7 +39,6 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Seo;
-using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
 
@@ -1647,23 +1646,10 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData, Customer customer = null)
-        {
-            var storeId = _storeContext.CurrentStore.Id;
-            if (customer == null || customer.Id == 0)
-            {
-                customer = Services.WorkContext.CurrentCustomer;
-            }
-            else
-            {
-                var buyerStoreId = _genericAttributeService.GetAttribute<int>("Customer", customer.Id, "CustomerStoreId");
-                if (buyerStoreId != default)
-                {
-                    storeId = buyerStoreId;
-                }
-            }
-
-            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+        public ActionResult OrderSummary(bool? prepareAndDisplayOrderReviewData, Customer customer = null, int? storeId = null)
+        {            
+            customer = customer == null || customer.Id == 0 ? _workContext.CurrentCustomer : customer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId ?? _storeContext.CurrentStore.Id);
             var model = new ShoppingCartModel();
 
             PrepareShoppingCartModel(
@@ -1993,27 +1979,12 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-            var currency = _workContext.WorkingCurrency;
-            var storeId = _storeContext.CurrentStore.Id;
-            var customer = ViewData["CurrentCustomer"] as Customer;
-            if (customer != null)
-            {
-                var buyerStoreId = _genericAttributeService.GetAttribute<int>("Customer", customer.Id, "CustomerStoreId");
-                if (buyerStoreId != default)
-                {
-                    storeId = buyerStoreId;
-                }
+            var orderTotalsEvent = new OrderTotalsEvent();
+            Services.EventPublisher.Publish(orderTotalsEvent);
 
-                var currencyId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId);
-                if (currencyId != default)
-                {
-                    currency = _currencyService.GetCurrencyById(currencyId);
-                }
-            }
-            else
-            {
-                customer = _workContext.CurrentCustomer;
-            }
+            var currency = _workContext.WorkingCurrency;
+            var customer = orderTotalsEvent.Customer ?? _workContext.CurrentCustomer;
+            var storeId = orderTotalsEvent.StoreId ?? _storeContext.CurrentStore.Id;            
 
             var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
             var model = new OrderTotalsModel();

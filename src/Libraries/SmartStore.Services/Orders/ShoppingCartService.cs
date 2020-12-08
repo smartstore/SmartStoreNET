@@ -359,14 +359,15 @@ namespace SmartStore.Services.Orders
             Customer customer,
             ShoppingCartType shoppingCartType,
             Product product,
-            int storeId,
             string selectedAttributes,
             decimal customerEnteredPrice,
-            int quantity)
+            int quantity,
+            int? storeId = null)
         {
             Guard.NotNull(customer, nameof(customer));
             Guard.NotNull(product, nameof(product));
 
+            storeId ??= _storeContext.CurrentStore.Id;
             var warnings = new List<string>();
 
             // deleted?
@@ -402,7 +403,7 @@ namespace SmartStore.Services.Orders
             }
 
             // Store mapping
-            if (!_storeMappingService.Authorize(product, storeId))
+            if (!_storeMappingService.Authorize(product, storeId.Value))
             {
                 warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
@@ -834,7 +835,7 @@ namespace SmartStore.Services.Orders
 
             // standard properties
             if (getStandardWarnings)
-                warnings.AddRange(GetStandardWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity));
+                warnings.AddRange(GetStandardWarnings(customer, shoppingCartType, product, selectedAttributes, customerEnteredPrice, quantity, storeId));
 
             // selected attributes
             if (getAttributesWarnings)

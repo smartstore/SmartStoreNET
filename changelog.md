@@ -11,6 +11,7 @@
 * WebDAVModule is removed in Web.config because it disables PUT and DELETE requests (required by Web API).
 * Newsletter subscriptions: added filter for customer roles in export profile and backend list.
 * #2167 Added an activity log for order editing.
+* Inherit ACL and store mappings into all sub-categories, not only into direct sub-categories.
 	
 ### Bugfixes
 * #2162 A plugin could not be uninstalled if it's the only one installed.

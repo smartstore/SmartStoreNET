@@ -1,11 +1,10 @@
 ﻿using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Cart
 {
-    public class OrderTotalsEvent
+    public class RenderingOrderTotalsEvent
     {
-        public OrderTotalsEvent()
+        public RenderingOrderTotalsEvent()
         {
         }
 

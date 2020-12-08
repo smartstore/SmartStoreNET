@@ -1979,7 +1979,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult OrderTotals(bool isEditable)
         {
-            var orderTotalsEvent = new OrderTotalsEvent();
+            var orderTotalsEvent = new RenderingOrderTotalsEvent();
             Services.EventPublisher.Publish(orderTotalsEvent);
 
             var currency = _workContext.WorkingCurrency;

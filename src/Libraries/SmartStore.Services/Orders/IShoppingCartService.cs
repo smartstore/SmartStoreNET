@@ -90,7 +90,7 @@ namespace SmartStore.Services.Orders
             string selectedAttributes,
             decimal customerEnteredPrice,
             int quantity,
-            int? storeId = null);
+            int storeId = 0);
 
         /// <summary>
         /// Validates shopping cart item attributes

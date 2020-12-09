@@ -362,12 +362,16 @@ namespace SmartStore.Services.Orders
             string selectedAttributes,
             decimal customerEnteredPrice,
             int quantity,
-            int? storeId = null)
+            int storeId = 0)
         {
             Guard.NotNull(customer, nameof(customer));
             Guard.NotNull(product, nameof(product));
 
-            storeId ??= _storeContext.CurrentStore.Id;
+            if (storeId == 0)
+            {
+                storeId = _storeContext.CurrentStore.Id;
+            }
+
             var warnings = new List<string>();
 
             // deleted?
@@ -403,7 +407,7 @@ namespace SmartStore.Services.Orders
             }
 
             // Store mapping
-            if (!_storeMappingService.Authorize(product, storeId.Value))
+            if (!_storeMappingService.Authorize(product, storeId))
             {
                 warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }

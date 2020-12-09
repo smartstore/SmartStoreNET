@@ -202,7 +202,12 @@ namespace SmartStore.Services.Catalog
                 }
 
                 scope.Commit();
-                scope.DbContext.DetachEntities(x => x is Product || x is Category || x is AclRecord, false);
+
+                try
+                {
+                    scope.DbContext.DetachEntities(x => x is Product || x is Category || x is AclRecord, false);
+                }
+                catch { }
 
                 foreach (var subCategory in subCategories)
                 {
@@ -302,7 +307,12 @@ namespace SmartStore.Services.Catalog
                 }
 
                 scope.Commit();
-                scope.DbContext.DetachEntities(x => x is Product || x is Category || x is StoreMapping, false);
+
+                try
+                {
+                    scope.DbContext.DetachEntities(x => x is Product || x is Category || x is StoreMapping, false);
+                }
+                catch { }
 
                 foreach (var subCategory in subCategories)
                 {

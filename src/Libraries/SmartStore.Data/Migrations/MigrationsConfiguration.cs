@@ -101,6 +101,8 @@
                 "Legt fest, für welche Sprache die News angezeigt wird. Bei einer Begrenzung auf eine Sprache brauchen News-Inhalte nur in dieser Sprache eingegeben zu werden (keine Mehrsprachigkeit).");
 
             builder.AddOrUpdate("Common.International", "International", "International");
+
+            builder.AddOrUpdate("Admin.Plugins.KnownGroup.B2B", "B2B", "B2B");
         }
     }
 }

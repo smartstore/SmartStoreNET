@@ -157,12 +157,15 @@
 
 					var optionsUrl = link.data('options-url'),
 						initText = link.text(),
-						selectedId = link.data('value');
+                        selectedId = link.data('value');
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
 
                     link.editable({
                         tpl: '<select class="skin select-editable drop-editable"></select>',
-						type: 'select2',
-						url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
+                        type: 'select2',
+                        url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
+                        params: { "__RequestVerificationToken": token },
 						unsavedclass: null,
                         inputclass: 'form-control form-control-sm',
 						mode: 'popup',

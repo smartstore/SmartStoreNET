@@ -481,7 +481,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost, ActionName("BlogPost")]
-        [ValidateCaptcha]
+        [ValidateCaptcha, ValidateHoneypot]
         [GdprConsent]
         public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, string captchaError)
         {

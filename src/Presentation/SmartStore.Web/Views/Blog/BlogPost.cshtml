@@ -92,6 +92,13 @@
 									@Html.ValidationSummary(true)
 								}
 
+								@if (this.EnableHoneypotProtection)
+								{
+									<div class="d-none">
+										@Html.HoneypotField()
+									</div>
+								}
+
 								<div class="form-group">
 									@Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
 									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)

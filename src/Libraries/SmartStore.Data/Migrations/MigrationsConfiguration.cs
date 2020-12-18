@@ -103,6 +103,10 @@
             builder.AddOrUpdate("Common.International", "International", "International");
 
             builder.AddOrUpdate("Admin.Plugins.KnownGroup.B2B", "B2B", "B2B");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ReCaptchaTypeChangeWarning",
+                "When changing the reCAPTCHA type, the public and private key must also be changed.",
+                "Beim Ändern des reCAPTCHA Typs müssen auch die beiden Zugangsschlüssel (public\\private key) geändert werden.");
         }
     }
 }

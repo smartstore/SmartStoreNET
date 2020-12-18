@@ -34,6 +34,16 @@
 					    $('#TestSeoNameCreationResult').html('<p class="alert alert-info">' + resp + '</p>');
 				    }
 			    });
+            });
+
+            // Show warning when ReCaptcha type changed.
+            $('#@(Html.FieldIdFor(x => x.CaptchaSettings.UseInvisibleReCaptcha))').change(function () {
+                var publicKey = $('#@(Html.FieldIdFor(x => x.CaptchaSettings.ReCaptchaPublicKey))').val();
+                var privateKey = $('#@(Html.FieldIdFor(x => x.CaptchaSettings.ReCaptchaPrivateKey))').val();
+
+                if (!_.isEmpty(publicKey) && !_.isEmpty(privateKey)) {
+                    $('#UseInvisibleReCaptchaWarning').removeClass('d-none');
+                }
 		    });
 	    });
     </script>
@@ -400,9 +410,31 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
                 </td>
-                <td class="adminData">
+                <td class="adminData wide">
                     @Html.SettingEditorFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
                     @Html.ValidationMessageFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+
+				    <span id="UseInvisibleReCaptchaWarning" class="d-none ml-2 text-warning">
+					    @T("Admin.Configuration.Settings.GeneralCommon.ReCaptchaTypeChangeWarning")
+				    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+                    @Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
+                    @Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
                 </td>
             </tr>
             <tr>
@@ -493,24 +525,6 @@
                 <td class="adminData">
                     @Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
                     @Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
-                </td>
-                <td class="adminData">
-                    @Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
-                    @Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
-                </td>
-                <td class="adminData">
-                    @Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
-                    @Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
                 </td>
             </tr>
         </tbody>

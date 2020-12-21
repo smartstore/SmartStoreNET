@@ -15,8 +15,8 @@ namespace SmartStore.Web.Framework.UI
         private readonly IApplicationEnvironment _env;
         private readonly HttpRequestBase _httpRequest;
 
-        private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
-        private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap = new Multimap<Regex, WidgetRouteInfo>();
+        private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap;
+        private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap;
 
         public WidgetProvider(IApplicationEnvironment env, HttpRequestBase httpRequest)
         {
@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (_zoneWidgetsMap == null)
             {
-                _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
+                _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>(StringComparer.OrdinalIgnoreCase);
             }
 
             foreach (var zone in widgetZones)

@@ -1,4 +1,4 @@
-| <div align="left">:information_source: **Announcement: Porting Smartstore to cross-platform ASP.NET Core!**</div> |
+| <div align="left">:information_source: **[Announcement: Porting Smartstore to cross-platform ASP.NET Core 5!](https://github.com/smartstore/Smartstore)**</div> |
 | --- |
 | We are currently working hard on porting Smartstore from classic ASP.NET MVC to ASP.NET Core 5. For best code quality we decided to port class by class and adapt the existing code to the new environment. Therefore we have created a **[new repository](https://github.com/smartstore/Smartstore)** where we do all the work. Of course, work in this repository continues as usual. **Give our new repository a star** to stay up-to-date, get involved or just watch how we're doing. Learn all about the latest development, participate actively and last but not least, don't miss the day of release. |
 

@@ -77,7 +77,7 @@ namespace SmartStore.Services.Media
                     }
                 }
             }
-
+            
             return new MediaFolderInfo(_folderService.GetNodeById(folderId));
         }
 

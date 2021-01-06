@@ -5,8 +5,6 @@ using System.IO;
 using System.Collections.Specialized;
 using SmartStore.Collections;
 using System.Drawing;
-using ImageProcessor.Imaging.Formats;
-using System.Windows.Input;
 
 namespace SmartStore.Services.Media.Imaging
 {
@@ -219,13 +217,13 @@ namespace SmartStore.Services.Media.Imaging
             {
                 return null;
             }
-            else if (Format is ISupportedImageFormat)
+            else if (Format is IImageFormat imageFormat)
             {
-                return ((ISupportedImageFormat)Format).DefaultExtension;
+                return imageFormat.DefaultExtension;
             }
-            else if (Format is string)
+            else if (Format is string str)
             {
-                return (string)Format;
+                return str;
             }
 
             return null;

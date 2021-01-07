@@ -17,9 +17,10 @@
 * #2162 A plugin could not be uninstalled if it's the only one installed.
 * Sometimes no picture was displayed when navigating in the product details' image gallery.
 * Deactivated slugs were falsely always redirected without SSL.
-* Selected products could no be deleted in the backend product list.
+* Selected products could not be deleted in the backend product list.
 * Web-API: fixed "failed to serialize the response body" when uploading product images and missing product media file mapping if an equal image was found in catalog folder.
 * Categories: fixed missing cache invalidation when inheriting ACL or stores into child categories and products.
+* Link Builder: the selected media file was not applied.
 
 
 ## Smartstore 4.1.0

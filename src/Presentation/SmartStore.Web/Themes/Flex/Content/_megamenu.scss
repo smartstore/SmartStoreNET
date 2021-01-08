@@ -267,6 +267,8 @@ $mixed-megamenu-bg:             $megamenu-bg;
             right: 0;
             bottom: 0;
             pointer-events: none;
+            
+            > a { pointer-events: initial; }
         }
 
         .below-preview-pic-text {

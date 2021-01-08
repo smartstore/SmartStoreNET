@@ -116,6 +116,10 @@
 
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayAllows", "Show items for 'Allow'", "Einträge für 'Allow' anzeigen");
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayDisallows", "Show items for 'Disallow'", "Einträge für 'Disallow' anzeigen");
+           
+            builder.AddOrUpdate("Admin.Customers.CustomerRoles.OnlyAdminsAllowed",
+                "You do not have administrator rights, therefore you are not allowed to modify administrators.",
+                "Sie verfügen über keine Administratorenrechte, daher dürfen Sie Administratoren nicht modifzieren.");
         }
     }
 }

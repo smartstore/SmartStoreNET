@@ -261,7 +261,7 @@ namespace SmartStore.Admin.Controllers
             model.LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = model.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
-            
+
             foreach (var tzi in Services.DateTimeHelper.GetSystemTimeZones())
             {
                 model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = tzi.Id == model.TimeZoneId });
@@ -635,6 +635,12 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
+            if (customer.IsAdmin() && !Services.WorkContext.CurrentCustomer.IsAdmin())
+            {
+                NotifyError(T("Admin.Customers.CustomerRoles.OnlyAdminsAllowed"));
+                return RedirectToAction("Edit", new { customer.Id });
+            }
+
             // Validate customer roles.
             var allowManagingCustomerRoles = Services.Permissions.Authorize(Permissions.Customer.EditRole);
 
@@ -906,11 +912,11 @@ namespace SmartStore.Admin.Controllers
             if (customer == null)
                 return RedirectToAction("List");
 
-            // ensure that a non-admin user cannot impersonate as an administrator
-            // otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
+            // Ensure that a non-admin user cannot impersonate as an administrator
+            // Otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
             if (!Services.WorkContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
             {
-                NotifyError("A non-admin user cannot impersonate as an administrator");
+                NotifyError(T("Admin.Customers.CustomerRoles.OnlyAdminsAllowed"));
                 return RedirectToAction("Edit", customer.Id);
             }
 
@@ -1207,7 +1213,7 @@ namespace SmartStore.Admin.Controllers
             model.Address.LastNameRequired = true;
             model.Address.EmailEnabled = true;
             model.Address.EmailRequired = true;
-            
+
             MiniMapper.Map(_addressSettings, model.Address);
 
             model.Address.AvailableCountries = _countryService.GetAllCountries(true)

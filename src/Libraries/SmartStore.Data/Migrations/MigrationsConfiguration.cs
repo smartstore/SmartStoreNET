@@ -107,6 +107,15 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ReCaptchaTypeChangeWarning",
                 "When changing the reCAPTCHA type, the public and private key must also be changed.",
                 "Beim Ändern des reCAPTCHA Typs müssen auch die beiden Zugangsschlüssel (public\\private key) geändert werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows",
+                "Extra Allows for robots.txt",
+                "Extra Allows für robots.txt",
+                "Enter additional paths that should be included as Allow entries in your robots.txt. Each entry has to be entered in a new line.",
+                "Geben Sie hier zusätzliche Pfade an, die als Allow-Einträge zur robots.txt hinzugefügt werden sollen. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayAllows", "Show items for 'Allow'", "Einträge für 'Allow' anzeigen");
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayDisallows", "Show items for 'Disallow'", "Einträge für 'Disallow' anzeigen");
         }
     }
 }

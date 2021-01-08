@@ -44,7 +44,12 @@
                 if (!_.isEmpty(publicKey) && !_.isEmpty(privateKey)) {
                     $('#UseInvisibleReCaptchaWarning').removeClass('d-none');
                 }
-		    });
+            });
+
+            // Toggle robots settings for allow & disallow.
+            $('.robots-toggle-button').click(function () {
+                $('.robots-container, .robots-toggle-button > span').toggleClass("d-none");
+            });
 	    });
     </script>
 
@@ -157,13 +162,33 @@
                 @Html.ValidationMessageFor(model => model.SeoSettings.CanonicalHostNameRule)
             </td>
         </tr>
-        <tr>
+        <tr class="robots-container">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
             <td class="adminData">
                 @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { style = "height:250px" })
                 @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
+            </td>
+        </tr>
+        <tr class="robots-container d-none">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeoSettings.ExtraRobotsAllows)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsAllows, new { style = "height:250px" })
+                @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsAllows)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+            </td>
+            <td class="adminData">
+                <button type="button" class="btn btn-secondary robots-toggle-button">
+                    <i class="fa fa-exchange-alt"></i>
+                    <span>@T("Admin.Configuration.Settings.GeneralCommon.DisplayAllows")</span>
+                    <span class="d-none">@T("Admin.Configuration.Settings.GeneralCommon.DisplayDisallows")</span>
+                </button>
             </td>
         </tr>
         <tr>

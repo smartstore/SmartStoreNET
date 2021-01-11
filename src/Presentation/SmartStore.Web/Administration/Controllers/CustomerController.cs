@@ -637,7 +637,7 @@ namespace SmartStore.Admin.Controllers
 
             if (customer.IsAdmin() && !Services.WorkContext.CurrentCustomer.IsAdmin())
             {
-                NotifyError(T("Admin.Customers.CustomerRoles.OnlyAdminsAllowed"));
+                NotifyAccessDenied();
                 return RedirectToAction("Edit", new { customer.Id });
             }
 
@@ -916,7 +916,7 @@ namespace SmartStore.Admin.Controllers
             // Otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
             if (!Services.WorkContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
             {
-                NotifyError(T("Admin.Customers.CustomerRoles.OnlyAdminsAllowed"));
+                NotifyAccessDenied();
                 return RedirectToAction("Edit", customer.Id);
             }
 

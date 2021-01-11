@@ -115,11 +115,7 @@
                 "Geben Sie hier zusätzliche Pfade an, die als Allow-Einträge zur robots.txt hinzugefügt werden sollen. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayAllows", "Show items for 'Allow'", "Einträge für 'Allow' anzeigen");
-            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayDisallows", "Show items for 'Disallow'", "Einträge für 'Disallow' anzeigen");
-           
-            builder.AddOrUpdate("Admin.Customers.CustomerRoles.OnlyAdminsAllowed",
-                "You do not have administrator rights, therefore you are not allowed to modify administrators.",
-                "Sie verfügen über keine Administratorenrechte, daher dürfen Sie Administratoren nicht modifzieren.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayDisallows", "Show items for 'Disallow'", "Einträge für 'Disallow' anzeigen");           
         }
     }
 }

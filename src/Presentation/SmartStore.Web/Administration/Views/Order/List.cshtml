@@ -165,6 +165,15 @@
 		var reportAggregates = "";
 
         $(function() {
+
+            // Filter (enter) key listener.
+            $('.grid-filter').on('keypress', function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    $('#btnSearch').click();
+                }
+            });
+
 			// Filter toggler.
 			$('.btn-toggle-filter').on('click', function (e) {
 				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });

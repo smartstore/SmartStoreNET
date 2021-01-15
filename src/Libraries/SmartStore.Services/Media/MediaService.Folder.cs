@@ -31,7 +31,7 @@ namespace SmartStore.Services.Media
             ValidateFolderPath(path, "CreateFolder", nameof(path));
 
             var dupe = _folderService.GetNodeByPath(path);
-            if (_folderService.GetNodeByPath(path) != null)
+            if (dupe) != null)
             {
                 throw _exceptionFactory.DuplicateFolder(path, dupe.Value);
             }

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Linq.Dynamic.Core;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Media;
 using System.Runtime.CompilerServices;
 using SmartStore.Collections;
-using SmartStore.Core.Localization;
-using System.Data.Entity;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
@@ -31,7 +29,7 @@ namespace SmartStore.Services.Media
             ValidateFolderPath(path, "CreateFolder", nameof(path));
 
             var dupe = _folderService.GetNodeByPath(path);
-            if (dupe) != null)
+            if (dupe != null)
             {
                 throw _exceptionFactory.DuplicateFolder(path, dupe.Value);
             }

@@ -606,6 +606,11 @@ namespace SmartStore.Services.Customers.Importer
                 }
 
                 var image = CreateDownloadImage(context, urlOrPath, 1);
+                if (image == null)
+                {
+                    continue;
+                }
+
                 if (image.Url.HasValue() && !image.Success.HasValue)
                 {
                     AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));

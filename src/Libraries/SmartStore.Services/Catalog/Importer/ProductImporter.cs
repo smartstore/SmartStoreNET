@@ -886,20 +886,14 @@ namespace SmartStore.Services.Catalog.Importer
                 // Collect required image file infos.
                 foreach (var urlOrPath in imageUrls)
                 {
-                    try
+                    var image = CreateDownloadImage(context, urlOrPath, ++imageNumber);
+                    if (image != null)
                     {
-                        var image = CreateDownloadImage(context, urlOrPath, ++imageNumber);
+                        imageFiles.Add(image);
 
-                        if (image != null)
-                            imageFiles.Add(image);
+                        if (imageFiles.Count >= numberOfPictures)
+                            break;
                     }
-                    catch
-                    {
-                        context.Result.AddWarning($"Failed to prepare image download for '{urlOrPath.NaIfEmpty()}'. Skipping file.", row.GetRowInfo(), "ImageUrls");
-                    }
-
-                    if (imageFiles.Count >= numberOfPictures)
-                        break;
                 }
 
                 // Download images.

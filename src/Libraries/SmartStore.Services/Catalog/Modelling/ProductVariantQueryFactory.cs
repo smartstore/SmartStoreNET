@@ -41,7 +41,6 @@ namespace SmartStore.Services.Catalog.Modelling
                     if (_httpContext.Request?.Unvalidated != null)
                     {
                         var form = _httpContext.Request.Unvalidated.Form;
-
                         if (form != null)
                         {
                             foreach (var key in form.AllKeys)
@@ -54,7 +53,6 @@ namespace SmartStore.Services.Catalog.Modelling
                         }
 
                         var query = _httpContext.Request.Unvalidated.QueryString;
-
                         if (query != null)
                         {
                             foreach (var key in query.AllKeys)
@@ -141,8 +139,18 @@ namespace SmartStore.Services.Catalog.Modelling
                 // Convert from three form controls.
                 var dateKey = key.Replace("-year", "");
                 year = value.ToInt();
-                month = QueryItems[dateKey + "-month"].FirstOrDefault()?.ToInt() ?? 0;
-                day = QueryItems[dateKey + "-day"].FirstOrDefault()?.ToInt() ?? 0;
+
+                if (QueryItems.ContainsKey(dateKey + "-month"))
+                {
+                    var str = QueryItems[dateKey + "-month"].FirstOrDefault();
+                    month = str?.ToInt() ?? 0;
+                }
+
+                if (QueryItems.ContainsKey(dateKey + "-day"))
+                {
+                    var str = QueryItems[dateKey + "-day"].FirstOrDefault();
+                    day = str?.ToInt() ?? 0;
+                }
             }
 
             if (year > 0 && month > 0 && day > 0)

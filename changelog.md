@@ -21,6 +21,7 @@
 * Web-API: fixed "failed to serialize the response body" when uploading product images and missing product media file mapping if an equal image was found in catalog folder.
 * Categories: fixed missing cache invalidation when inheriting ACL or stores into child categories and products.
 * Link Builder: the selected media file was not applied.
+* Selecting an attribute of type date caused an error on the product detail page.
 
 
 ## Smartstore 4.1.0

@@ -22,6 +22,7 @@
 * Categories: fixed missing cache invalidation when inheriting ACL or stores into child categories and products.
 * Link Builder: the selected media file was not applied.
 * Selecting an attribute of type date caused an error on the product detail page.
+* AmazonPay: fixed rare "client ID is a required parameter and is not set" when using the login function.
 
 
 ## Smartstore 4.1.0

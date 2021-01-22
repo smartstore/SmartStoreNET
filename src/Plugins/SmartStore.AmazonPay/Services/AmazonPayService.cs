@@ -1665,7 +1665,7 @@ namespace SmartStore.AmazonPay.Services
 
             if (accessToken.HasValue())
             {
-                var settings = _services.Settings.LoadSetting<AmazonPaySettings>();
+                var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
                 var client = CreateClient(settings);
                 var jsonString = client.GetUserInfo(accessToken);
                 if (jsonString.HasValue())

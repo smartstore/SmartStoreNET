@@ -507,7 +507,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Permission(Permissions.Catalog.Variant.EditSet)]
         public ActionResult OptionDelete(int id)
         {

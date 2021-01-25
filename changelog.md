@@ -6,12 +6,15 @@
 	* Added newsletter block to subscribe/unsubscribe to the newsletter.
 * Rule Builder: added CartItemQuantity rule to specify conditions for the quantity per cart product.
 * Added an option to display blog posts and news only for a certain language.
+* #2171 Created SEO setting for ExtraAllows.
 
 ### Improvements
 * WebDAVModule is removed in Web.config because it disables PUT and DELETE requests (required by Web API).
 * Newsletter subscriptions: added filter for customer roles in export profile and backend list.
 * #2167 Added an activity log for order editing.
 * Inherit ACL and store mappings into all sub-categories, not only into direct sub-categories.
+* #2186 MegaMenu: link for background image had no effect.
+* Added honeypot protection to blog post comments.
 	
 ### Bugfixes
 * #2162 A plugin could not be uninstalled if it's the only one installed.
@@ -23,7 +26,9 @@
 * Link Builder: the selected media file was not applied.
 * Selecting an attribute of type date caused an error on the product detail page.
 * AmazonPay: fixed rare "client ID is a required parameter and is not set" when using the login function.
-
+* Various fixes for anti forgery request handling.
+* Used mediasettings value for picture rendering in MegaMenu (pictures weren't displayed in MegaMenu dropdowns).
+* Mediamanager uploads were marked as being transient. 
 
 ## Smartstore 4.1.0
 ### Highlights

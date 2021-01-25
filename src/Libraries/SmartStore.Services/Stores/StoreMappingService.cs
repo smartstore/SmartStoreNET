@@ -14,7 +14,7 @@ namespace SmartStore.Services.Stores
         /// 0 = segment (EntityName.IdRange)
         /// </summary>
         const string STOREMAPPING_SEGMENT_KEY = "storemapping:range-{0}";
-        const string STOREMAPPING_SEGMENT_PATTERN = "storemapping:range-*";
+        internal const string STOREMAPPING_SEGMENT_PATTERN = "storemapping:range-*";
 
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IStoreContext _storeContext;

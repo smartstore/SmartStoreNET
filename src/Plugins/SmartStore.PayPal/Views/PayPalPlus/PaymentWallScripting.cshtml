@@ -6,8 +6,6 @@
 	Html.AddLinkPart("preconnect", "https://www.paypalobjects.com");
 }
 
-@Html.AntiForgeryToken()
-
 <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript"></script>
 <script>
 	$(function () {
@@ -63,12 +61,9 @@
 		$('#PayPalPlusNextCheckoutStep').click(function (e) {
 			e.preventDefault();
 
-            var token = $('input[name="__RequestVerificationToken"]').val();
-
 			// patch shipping data
 			$({}).doAjax({
                 type: 'POST',
-				data: { "__RequestVerificationToken": token },
 				url: '@Url.Action("PatchShipping", "PayPalPlus", new { area = Plugin.SystemName })',
 				callbackSuccess: function (resp) {
 					if (resp.success) {

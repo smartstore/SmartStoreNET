@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -29,7 +31,12 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.Common.IsPublished")]
         public bool? SearchIsPublished { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
+        public int SearchLanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
+
         public bool IsSingleStoreMode { get; set; }
+        public bool IsSingleLanguageMode { get; set; }
         public int GridPageSize { get; set; }
     }
 }

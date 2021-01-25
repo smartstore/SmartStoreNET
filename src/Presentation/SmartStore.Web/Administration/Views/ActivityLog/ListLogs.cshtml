@@ -74,6 +74,7 @@
 				columns.Bound(x => x.ActivityLogTypeName)
 					.Width("20%");
 				columns.Bound(x => x.Comment)
+					.HtmlAttributes(new { style = "word-break: break-all" })
 					.Width("50%");
 				columns.Bound(x => x.CustomerId)
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");

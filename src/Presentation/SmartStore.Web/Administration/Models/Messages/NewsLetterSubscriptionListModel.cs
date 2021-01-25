@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -19,6 +20,11 @@ namespace SmartStore.Admin.Models.Messages
 
         [SmartResourceDisplayName("Admin.Customers.Customers.List.SearchEmail")]
         public string SearchEmail { get; set; }
+
+        [UIHint("CustomerRoles")]
+        [AdditionalMetadata("multiple", true)]
+        [SmartResourceDisplayName("Admin.Customers.Customers.List.CustomerRoles")]
+        public int[] SearchCustomerRoleIds { get; set; }
 
         [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
         public int StoreId { get; set; }

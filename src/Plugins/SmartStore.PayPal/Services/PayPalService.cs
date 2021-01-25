@@ -896,7 +896,7 @@ namespace SmartStore.PayPal.Services
 
             var result = CallApi("PATCH", "/v1/payments/payment/{0}".FormatInvariant(session.PaymentId), settings, session, JsonConvert.SerializeObject(data));
 
-            //Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
+            //Logger.Log(LogLevel.Information, new Exception(JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : "")), "PayPal API", null);
 
             return result;
         }
@@ -1022,7 +1022,15 @@ namespace SmartStore.PayPal.Services
             }
 
             inpuFields.Add("allow_note", false);
+            
+            // Settings for no_shipping and address_override would not be suitable. The merchant always delivers to the address selected in the shop.
+            // He will not be aware of a different address selected at PP.
+            // https://developer.paypal.com/docs/api/payment-experience/v1#definition-input_fields
+
+            // "0" means display the shipping address on PP pages. If no shipping is required, no address will be transmitted.
             inpuFields.Add("no_shipping", 0);
+
+            // "1" means display the shipping address specified in patch shipping call. The customer cannot edit it at PP.
             inpuFields.Add("address_override", 1);
 
             data.Add("name", name);

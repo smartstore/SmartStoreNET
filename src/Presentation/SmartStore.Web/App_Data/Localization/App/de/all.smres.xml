@@ -618,6 +618,9 @@
 	<LocaleResource Name="ActivityLog.EditManufacturer">
 		<Value>Hersteller ('{0}') bearbeitet</Value>
 	</LocaleResource>
+	<LocaleResource Name="ActivityLog.EditOrder">
+		<Value>Auftrag {0} bearbeitet</Value>
+	</LocaleResource>
 	<LocaleResource Name="ActivityLog.EditProduct">
 		<Value>Produkt ('{0}') bearbeitet</Value>
 	</LocaleResource>
@@ -6153,6 +6156,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage.Hint">
 		<Value>Legt fest, ob beim Erstbesuch die Browsersprache des Besuchers automatisch erkannt und zugewiesen werden soll (wenn inaktiv, wird die Standardsprache des Stores zugewiesen)</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DisplayAllows">
+		<Value>Einträge für 'Allow' anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DisplayDisallows">
+		<Value>Einträge für 'Disallow' anzeigen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection">
 		<Value>Honeypot aktivieren</Value>
 	</LocaleResource>
@@ -6173,6 +6182,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TooShort">
 		<Value>Der Sicherheitsschlüssel muss 16 Zeichen haben.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows">
+		<Value>Extra Allows für robots.txt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows.Hint">
+		<Value>Geben Sie hier zusätzliche Pfade an, die als Allow-Einträge zur robots.txt hinzugefügt werden sollen. Jeder Eintrag muss in einer neuen Zeile erfolgen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows">
 		<Value>Extra Disallows für robots.txt</Value>
@@ -6272,6 +6287,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey.Hint">
 		<Value>reCAPTCHA public key eingeben, falls aktiviert.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ReCaptchaTypeChangeWarning">
+		<Value>Beim Ändern des reCAPTCHA Typs müssen auch die beiden Zugangsschlüssel (public\private key) geändert werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SecuritySettings">
 		<Value>Sicherheit</Value>
@@ -6609,9 +6627,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed.Hint">
 		<Value>Gästen erlauben, ohne sich zu Registrieren Bestellungen aufzugeben.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal">
-		<Value>Beschränkung bezogen auf Zwischensumme</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal.Hint">
 		<Value>Bestimmt, ob sich der Mindest-/Höchstbetrag auf die Auftragszwischensumme bezieht, andernfalls bezieht er sich auf den Gesamtbetrag.</Value>
 	</LocaleResource>
@@ -6663,6 +6678,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotal.Hint">
 		<Value>Legt den standardmäßigen Mindestbestellwert für den Shop fest. Wird von Beschränkungen in Kundengruppen überschrieben.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange">
+		<Value>Kundengruppen erweitern den Wertebereich</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange.Hint">
+		<Value>Legt fest, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen den erlaubten Bestellwertbereich erweitern.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable">
 		<Value>Erlaubter Zeitraum für Retourenwünsche in Tagen</Value>
 	</LocaleResource>
@@ -6689,9 +6710,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderSettings">
 		<Value>Auftragseinstellungen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType">
-		<Value>Beschränkungen in Kundengruppen sind kumulativ</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType.Hint">
 		<Value>Bestimmt, ob mehrfache Bestellwertbeschränkungen durch Kundengruppenzuordnungen kumuliert werden.</Value>
@@ -7752,8 +7770,11 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro.Hint">
 		<Value>Legt das Intro des Blog-Posts fest.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language">
+		<Value>Regionale Relevanz</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language.Hint">
-		<Value>Legt die Sprache dieses Blog-Eintrages fest. Der Kunde sieht nur Blog-Einträge in seiner Sprache.</Value>
+		<Value>Legt fest, für welche Sprache der Beitrag angezeigt wird. Bei einer Begrenzung auf eine Sprache brauchen Blog-Inhalte nur in dieser Sprache eingegeben zu werden (keine Mehrsprachigkeit).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture">
 		<Value>Bild</Value>
@@ -8229,8 +8250,11 @@
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Full.Hint">
 		<Value>Langer Beschreibungstext.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language">
+		<Value>Regionale Relevanz</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language.Hint">
-		<Value>Die Sprache dieses Newseintrags. Ein Kunde sieht nur Einträge in seiner eigenen Sprache.</Value>
+		<Value>Legt fest, für welche Sprache die News angezeigt wird. Bei einer Begrenzung auf eine Sprache brauchen News-Inhalte nur in dieser Sprache eingegeben zu werden (keine Mehrsprachigkeit).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture">
 		<Value>Bild</Value>
@@ -11376,6 +11400,9 @@
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Api">
 		<Value>API</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.KnownGroup.B2B">
+		<Value>B2B</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.CMS">
 		<Value>Content Management</Value>
 	</LocaleResource>
@@ -12005,6 +12032,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
 		<Value>Anzahl stornierter Bestellungen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartItemQuantity">
+		<Value>Produktmenge liegt in folgendem Bereich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartProductCount">
 		<Value>Anzahl der Produkte</Value>
@@ -13754,19 +13784,13 @@
 		<Value>Bitte bestätigen Sie, dass Sie sofort Zugang zu dem digitalen Inhalt wünschen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MaxOrderSubtotalAmount">
-		<Value>Der Höchstbestellwert für die Zwischensumme ist {0}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Checkout.MaxOrderTotalAmount">
-		<Value>Der Höchstbestellwert der Gesamtsumme ist {0}.</Value>
+		<Value>Ihr zulässiger Höchstbestellwert beträgt {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MinOrderPlacementInterval">
 		<Value>Bitte warten Sie einige Sekunden, bevor Sie einen neuen Auftrag platzieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MinOrderSubtotalAmount">
-		<Value>Der Mindestbestellwert für die Zwischensumme ist {0}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Checkout.MinOrderTotalAmount">
-		<Value>Der Mindestbestellwert für den Auftragsgesamtwert ist {0}.</Value>
+		<Value>Ihr zulässiger Mindestbestellwert beträgt {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.NewAddress">
 		<Value>Neue Anschrift</Value>
@@ -14356,6 +14380,9 @@
 	<LocaleResource Name="Common.IncreaseValue">
 		<Value>Wert erhöhen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.International">
+		<Value>International</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.IsActive">
 		<Value>Aktiv</Value>
 	</LocaleResource>
@@ -14709,6 +14736,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Unspecified">
 		<Value>Nicht spezifiziert</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.UnsupportedBrowser">
+		<Value>Sie verwenden einen nicht unterstützten Browser! Bitte ziehen Sie in Betracht, zu einem modernen Browser wie Google Chrome, Firefox oder Opera zu wechseln, um Ihr Einkaufserlebnis in vollen Zügen genießen zu können.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.UpdatedOn">
 		<Value>Geändert am</Value>
@@ -16411,6 +16441,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Newsletter.SubscribeEmailSent">
 		<Value>Danke für Ihr Abonnement. Eine Bestätigungs-E-Mail wurde versandt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Newsletter.SubscriptionFailed">
+		<Value>Die Abonnierung bzw. Abbestellung ist fehlgeschlagen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Newsletter.Title">
 		<Value>Newsletter abonnieren</Value>

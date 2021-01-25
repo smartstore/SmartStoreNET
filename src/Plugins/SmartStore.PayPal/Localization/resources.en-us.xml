@@ -58,7 +58,7 @@
         <Value>The PayPal session expired. Please try again.</Value>
     </LocaleResource>
     <LocaleResource Name="PayPalValidationFailure">
-        <Value>PayPal was unable to verify the transmitted data.</Value>
+        <Value>PayPal was unable to verify the transmitted data. Please check your data (especially billing and shipping address) and try again.</Value>
     </LocaleResource>
     <LocaleResource Name="Promotion">
         <Value>Promotion</Value>

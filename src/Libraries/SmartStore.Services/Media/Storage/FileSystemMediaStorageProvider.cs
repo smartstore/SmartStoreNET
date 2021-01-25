@@ -280,8 +280,8 @@ namespace SmartStore.Services.Media.Storage
 
                 if ((!toFileSystem && succeeded) || (toFileSystem && !succeeded))
                 {
-                    // FS > DB sucessful OR DB > FS failed: delete all physical files
-                    // run a background task for the deletion of files (fire & forget)
+                    // FS > DB sucessful OR DB > FS failed/aborted: delete all physical files.
+                    // Run a background task for the deletion of files (fire & forget)
 
                     Task.Factory.StartNew(state =>
                     {

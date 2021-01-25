@@ -267,6 +267,16 @@ $mixed-megamenu-bg:             $megamenu-bg;
             right: 0;
             bottom: 0;
             pointer-events: none;
+            
+            > a {
+                pointer-events: initial;
+                display: inline-block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+            }
         }
 
         .below-preview-pic-text {

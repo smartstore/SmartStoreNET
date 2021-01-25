@@ -142,15 +142,6 @@
     }
 }
 
-.offcanvas-cart-footer {
-    #mini-cart-basket-check:not(.d-none) {
-        & ~ #mini-cart-basket,
-        & ~ #mini-cart-checkout {
-            display: none;
-        }
-    }
-}
-
 .offcanvas-cart-footer-row {
     display: flex; 
     justify-content: space-between;

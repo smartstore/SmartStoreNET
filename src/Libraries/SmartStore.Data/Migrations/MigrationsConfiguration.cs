@@ -40,6 +40,12 @@
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
             MigrateSettings(context);
+
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                var logTypeMigrator = new ActivityLogTypeMigrator(context);
+                logTypeMigrator.AddActivityLogType("EditOrder", "Edit an order", "Auftrag bearbeitet");
+            }
         }
 
         public void MigrateSettings(SmartObjectContext context)
@@ -49,9 +55,7 @@
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-            builder.AddOrUpdate("Common.UnsupportedBrowser",
-                "You are using an unsupported browser! Please consider switching to a modern browser such as Google Chrome, Firefox or Opera to fully enjoy your shopping experience.",
-                "Sie verwenden einen nicht unterstützten Browser! Bitte ziehen Sie in Betracht, zu einem modernen Browser wie Google Chrome, Firefox oder Opera zu wechseln, um Ihr Einkaufserlebnis in vollen Zügen genießen zu können.");
+    
         }
     }
 }

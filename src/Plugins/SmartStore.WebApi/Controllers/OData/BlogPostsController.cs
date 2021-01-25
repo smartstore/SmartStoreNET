@@ -118,6 +118,13 @@ namespace SmartStore.WebApi.Controllers.OData
 
         [WebApiQueryable]
         [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
+        public IHttpActionResult GetLanguage(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.Language));
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Cms.Blog.Read)]
         public IHttpActionResult GetBlogComments(int key)
         {
             return Ok(GetRelatedCollection(key, x => x.BlogComments));

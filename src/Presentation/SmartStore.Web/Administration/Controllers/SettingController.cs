@@ -1278,8 +1278,9 @@ namespace SmartStore.Admin.Controllers
 
             #region SEO custom mapping
 
-            // Fix Disallows joined with comma in MiniMapper (we need NewLine).
+            // Fix for Disallows & Allows joined with comma in MiniMapper (we need NewLine).
             model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
+            model.SeoSettings.ExtraRobotsAllows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsAllows);
 
             model.SeoSettings.MetaTitle = seoSettings.MetaTitle;
             model.SeoSettings.MetaDescription = seoSettings.MetaDescription;
@@ -1357,6 +1358,9 @@ namespace SmartStore.Admin.Controllers
             MiniMapper.Map(model.HomepageSettings, homePageSeoSettings);
 
             #region POST mapping
+
+            // Set CountryId explicitly else it can't be resetted.
+            companySettings.CountryId = model.CompanyInformationSettings.CountryId ?? 0; 
 
             // (Un)track PDF logo id
             _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);

@@ -14,11 +14,13 @@
 @section right {
     @{
         Html.RenderAction("BlogMonths", "Blog");
+        Html.RenderWidget("blog_right_months_after");
         Html.RenderAction("BlogTags", "Blog");
 
         <div class="d-none d-lg-block">
             @{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "Blog" }); }
         </div>
+        Html.RenderWidget("blog_right_bottom");
     }
 }
 

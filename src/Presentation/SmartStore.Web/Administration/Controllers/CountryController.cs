@@ -118,7 +118,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        [ValidateAntiForgeryToken]
         [Permission(Permissions.Configuration.Country.Update)]
         public ActionResult CountryUpdate(CountryModel model, GridCommand command)
         {

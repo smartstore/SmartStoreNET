@@ -20,6 +20,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Utilities.ObjectPools;
 using SmartStore.Services.Seo;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Data.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -116,85 +117,102 @@ namespace SmartStore.Services.Catalog
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
         {
-            var category = GetCategoryById(categoryId);
-            var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccessTo(category);
+            var referenceCategory = GetCategoryById(categoryId);
+            var referenceRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(referenceCategory);
 
-            var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
-            categoryIds.Add(categoryId);
-
-            var searchQuery = new CatalogSearchQuery()
-                .WithCategoryIds(null, categoryIds.ToArray());
-
-            var query = _catalogSearchService.PrepareQuery(searchQuery);
-            var products = query.OrderBy(p => p.Id).ToList();
-
-            using (var scope = new DbContextScope(ctx: _aclRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+            using (var scope = new DbContextScope(ctx: _aclRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
             {
-                _aclRepository.AutoCommitEnabled = false;
+                ProcessCategory(scope, referenceCategory);
+            }
 
-                foreach (var subcategory in subcategories)
+            _cache.RemoveByPattern(AclService.ACL_SEGMENT_PATTERN);
+
+
+            void ProcessCategory(DbContextScope scope, Category c)
+            {
+                // Process sub-categories.
+                var subCategories = GetAllCategoriesByParentCategoryId(c.Id, true);
+
+                foreach (var subCategory in subCategories)
                 {
-                    if (subcategory.SubjectToAcl != category.SubjectToAcl)
+                    if (subCategory.SubjectToAcl != referenceCategory.SubjectToAcl)
                     {
-                        subcategory.SubjectToAcl = category.SubjectToAcl;
-                        _categoryRepository.Update(subcategory);
+                        subCategory.SubjectToAcl = referenceCategory.SubjectToAcl;
+                        _categoryRepository.Update(subCategory);
                     }
 
-                    var existingAclRecords = _aclService.GetAclRecords(subcategory).ToDictionarySafe(x => x.CustomerRoleId);
-
-                    foreach (var customerRole in allCustomerRoles)
+                    var existingAclRecords = _aclService.GetAclRecords(subCategory).ToDictionarySafe(x => x.CustomerRoleId);
+                    
+                    foreach (var role in allCustomerRoles)
                     {
-                        if (categoryCustomerRoles.Contains(customerRole.Id))
+                        if (referenceRoleIds.Contains(role.Id))
                         {
-                            if (!existingAclRecords.ContainsKey(customerRole.Id))
+                            if (!existingAclRecords.ContainsKey(role.Id))
                             {
-                                _aclRepository.Insert(new AclRecord { CustomerRole = customerRole, CustomerRoleId = customerRole.Id, EntityId = subcategory.Id, EntityName = "Category" });
+                                _aclRepository.Insert(new AclRecord { CustomerRoleId = role.Id, EntityId = subCategory.Id, EntityName = "Category" });
                             }
                         }
-                        else
+                        else if (existingAclRecords.TryGetValue(role.Id, out var aclRecordToDelete))
                         {
-                            if (existingAclRecords.TryGetValue(customerRole.Id, out var aclRecordToDelete))
+                            _aclRepository.Delete(aclRecordToDelete);
+                        }
+                    }
+                }
+
+                scope.Commit();
+
+                // Process products.
+                var categoryIds = new HashSet<int>(subCategories.Select(x => x.Id));
+                categoryIds.Add(c.Id);
+
+                var searchQuery = new CatalogSearchQuery().WithCategoryIds(null, categoryIds.ToArray());
+                var productsQuery = _catalogSearchService.PrepareQuery(searchQuery);
+                var productsPager = new FastPager<Product>(productsQuery, 500);
+
+                while (productsPager.ReadNextPage(out var products))
+                {
+                    foreach (var product in products)
+                    {
+                        if (product.SubjectToAcl != referenceCategory.SubjectToAcl)
+                        {
+                            product.SubjectToAcl = referenceCategory.SubjectToAcl;
+                            _productRepository.Update(product);
+                        }
+
+                        var existingAclRecords = _aclService.GetAclRecords(product).ToDictionarySafe(x => x.CustomerRoleId);
+
+                        foreach (var role in allCustomerRoles)
+                        {
+                            if (referenceRoleIds.Contains(role.Id))
+                            {
+                                if (!existingAclRecords.ContainsKey(role.Id))
+                                {
+                                    _aclRepository.Insert(new AclRecord { CustomerRoleId = role.Id, EntityId = product.Id, EntityName = "Product" });
+                                }
+                            }
+                            else if (existingAclRecords.TryGetValue(role.Id, out var aclRecordToDelete))
                             {
                                 _aclRepository.Delete(aclRecordToDelete);
                             }
                         }
                     }
+
+                    scope.Commit();
                 }
 
-                _aclRepository.Context.SaveChanges();
+                scope.Commit();
 
-                foreach (var product in products)
+                try
                 {
-                    if (product.SubjectToAcl != category.SubjectToAcl)
-                    {
-                        product.SubjectToAcl = category.SubjectToAcl;
-                        _productRepository.Update(product);
-                    }
-
-                    var existingAclRecords = _aclService.GetAclRecords(product).ToDictionarySafe(x => x.CustomerRoleId);
-
-                    foreach (var customerRole in allCustomerRoles)
-                    {
-                        if (categoryCustomerRoles.Contains(customerRole.Id))
-                        {
-                            if (!existingAclRecords.ContainsKey(customerRole.Id))
-                            {
-                                _aclRepository.Insert(new AclRecord { CustomerRole = customerRole, CustomerRoleId = customerRole.Id, EntityId = product.Id, EntityName = "Product" });
-                            }
-                        }
-                        else
-                        {
-                            if (existingAclRecords.TryGetValue(customerRole.Id, out var aclRecordToDelete))
-                            {
-                                _aclRepository.Delete(aclRecordToDelete);
-                            }
-                        }
-                    }
+                    scope.DbContext.DetachEntities(x => x is Product || x is Category || x is AclRecord, false);
                 }
+                catch { }
 
-                _aclRepository.Context.SaveChanges();
+                foreach (var subCategory in subCategories)
+                {
+                    ProcessCategory(scope, subCategory);
+                }
             }
         }
 
@@ -204,85 +222,102 @@ namespace SmartStore.Services.Catalog
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
         {
-            var category = GetCategoryById(categoryId);
-            var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
             var allStores = _storeService.GetAllStores();
-            var categoryStoreMappings = _storeMappingService.GetStoresIdsWithAccess(category);
+            var referenceCategory = GetCategoryById(categoryId);
+            var referenceStoreMappings = _storeMappingService.GetStoresIdsWithAccess(referenceCategory);
 
-            var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
-            categoryIds.Add(categoryId);
-
-            var searchQuery = new CatalogSearchQuery()
-                .WithCategoryIds(null, categoryIds.ToArray());
-
-            var query = _catalogSearchService.PrepareQuery(searchQuery);
-            var products = query.OrderBy(p => p.Id).ToList();
-
-            using (var scope = new DbContextScope(ctx: _storeMappingRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+            using (var scope = new DbContextScope(ctx: _storeMappingRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
             {
-                _storeMappingRepository.AutoCommitEnabled = false;
+                ProcessCategory(scope, referenceCategory);
+            }
 
-                foreach (var subcategory in subcategories)
+            _cache.RemoveByPattern(StoreMappingService.STOREMAPPING_SEGMENT_PATTERN);
+
+            
+            void ProcessCategory(DbContextScope scope, Category c)
+            {
+                // Process sub-categories.
+                var subCategories = GetAllCategoriesByParentCategoryId(c.Id, true);
+
+                foreach (var subCategory in subCategories)
                 {
-                    if (subcategory.LimitedToStores != category.LimitedToStores)
+                    if (subCategory.LimitedToStores != referenceCategory.LimitedToStores)
                     {
-                        subcategory.LimitedToStores = category.LimitedToStores;
-                        _categoryRepository.Update(subcategory);
+                        subCategory.LimitedToStores = referenceCategory.LimitedToStores;
+                        _categoryRepository.Update(subCategory);
                     }
 
-                    var existingStoreMappingsRecords = _storeMappingService.GetStoreMappings(subcategory).ToDictionary(x => x.StoreId);
+                    var existingStoreMappingsRecords = _storeMappingService.GetStoreMappings(subCategory).ToDictionary(x => x.StoreId);
 
                     foreach (var store in allStores)
                     {
-                        if (categoryStoreMappings.Contains(store.Id))
+                        if (referenceStoreMappings.Contains(store.Id))
                         {
                             if (!existingStoreMappingsRecords.ContainsKey(store.Id))
                             {
-                                _storeMappingRepository.Insert(new StoreMapping { StoreId = store.Id, EntityId = subcategory.Id, EntityName = "Category" });
+                                _storeMappingRepository.Insert(new StoreMapping { StoreId = store.Id, EntityId = subCategory.Id, EntityName = "Category" });
                             }
                         }
-                        else
+                        else if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
                         {
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
+                            _storeMappingRepository.Delete(storeMappingToDelete);
+                        }
+                    }
+                }
+
+                scope.Commit();
+
+                // Process products.
+                var categoryIds = new HashSet<int>(subCategories.Select(x => x.Id));
+                categoryIds.Add(c.Id);
+
+                var searchQuery = new CatalogSearchQuery().WithCategoryIds(null, categoryIds.ToArray());
+                var productsQuery = _catalogSearchService.PrepareQuery(searchQuery);
+                var productsPager = new FastPager<Product>(productsQuery, 500);
+
+                while (productsPager.ReadNextPage(out var products))
+                {
+                    foreach (var product in products)
+                    {
+                        if (product.LimitedToStores != referenceCategory.LimitedToStores)
+                        {
+                            product.LimitedToStores = referenceCategory.LimitedToStores;
+                            _productRepository.Update(product);
+                        }
+
+                        var existingStoreMappingsRecords = _storeMappingService.GetStoreMappings(product).ToDictionary(x => x.StoreId);
+
+                        foreach (var store in allStores)
+                        {
+                            if (referenceStoreMappings.Contains(store.Id))
+                            {
+                                if (!existingStoreMappingsRecords.ContainsKey(store.Id))
+                                {
+                                    _storeMappingRepository.Insert(new StoreMapping { StoreId = store.Id, EntityId = product.Id, EntityName = "Product" });
+                                }
+                            }
+                            else if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
                             {
                                 _storeMappingRepository.Delete(storeMappingToDelete);
                             }
                         }
                     }
+
+                    scope.Commit();
                 }
 
-                _storeMappingRepository.Context.SaveChanges();
+                scope.Commit();
 
-                foreach (var product in products)
+                try
                 {
-                    if (product.LimitedToStores != category.LimitedToStores)
-                    {
-                        product.LimitedToStores = category.LimitedToStores;
-                        _productRepository.Update(product);
-                    }
-
-                    var existingStoreMappingsRecords = _storeMappingService.GetStoreMappings(product).ToDictionary(x => x.StoreId);
-
-                    foreach (var store in allStores)
-                    {
-                        if (categoryStoreMappings.Contains(store.Id))
-                        {
-                            if (!existingStoreMappingsRecords.ContainsKey(store.Id))
-                            {
-                                _storeMappingRepository.Insert(new StoreMapping { StoreId = store.Id, EntityId = product.Id, EntityName = "Product" });
-                            }
-                        }
-                        else
-                        {
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
-                            {
-                                _storeMappingRepository.Delete(storeMappingToDelete);
-                            }
-                        }
-                    }
+                    scope.DbContext.DetachEntities(x => x is Product || x is Category || x is StoreMapping, false);
                 }
+                catch { }
 
-                _storeMappingRepository.Context.SaveChanges();
+                foreach (var subCategory in subCategories)
+                {
+                    ProcessCategory(scope, subCategory);
+                }
             }
         }
 

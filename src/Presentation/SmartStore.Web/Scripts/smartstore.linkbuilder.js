@@ -120,19 +120,15 @@
             // browse files
             $el.on("click", ".browse-files", function (e) {
                 e.preventDefault();
-                var el = $(this),
-                    url = el.data('url');
+                var fieldId = $(this).data('field-id');
 
-                url = modifyUrl(url, 'type', '#');
-                url = modifyUrl(url, 'field', el.data('field-id'));
-                url = modifyUrl(url, 'mid', 'modal-browse-files');
-
-                openPopup({
-                    id: 'modal-browse-files',
-                    url: url,
-                    flex: true,
-                    large: true,
-                    backdrop: false
+                SmartStore.media.openFileManager({
+                    el: this,
+                    backdrop: false,
+                    onSelect: function (files) {
+                        if (!files.length) return;
+                        $('#' + fieldId).val(files[0].url).trigger('change');
+                    }
                 });
             });
         },

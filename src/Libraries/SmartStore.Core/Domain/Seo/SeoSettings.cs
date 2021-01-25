@@ -9,6 +9,7 @@ namespace SmartStore.Core.Domain.Seo
         public SeoSettings()
         {
             ExtraRobotsDisallows = new List<string> { "/blog/tag/", "/blog/month/", "/producttags/" };
+            ExtraRobotsAllows = new List<string>();
 
             ReservedUrlRecordSlugs = new List<string>
             {
@@ -79,6 +80,8 @@ namespace SmartStore.Core.Domain.Seo
         public List<string> ReservedUrlRecordSlugs { get; set; }
 
         public List<string> ExtraRobotsDisallows { get; set; }
+
+        public List<string> ExtraRobotsAllows { get; set; }
 
         /// <summary>
         /// A value indicating whether to load all URL records and active slugs on application startup

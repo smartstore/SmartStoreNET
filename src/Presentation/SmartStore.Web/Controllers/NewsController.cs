@@ -178,7 +178,7 @@ namespace SmartStore.Web.Controllers
 
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
-                var newsItems = _newsService.GetAllNews(storeId, 0, _newsSettings.MainPageNewsCount, includeHidden);
+                var newsItems = _newsService.GetAllNews(storeId, 0, _newsSettings.MainPageNewsCount, languageId, includeHidden);
 
                 Services.DisplayControl.AnnounceRange(newsItems);
 
@@ -232,6 +232,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ListRss()
         {
             DateTime? maxAge = null;
+            var language = _services.WorkContext.WorkingLanguage;
             var store = _services.StoreContext.CurrentStore;
             var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
             var selfLink = Url.Action("rss", "News", null, protocol);
@@ -254,7 +255,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var items = new List<SyndicationItem>();
-            var newsItems = _newsService.GetAllNews(store.Id, 0, int.MaxValue, false, maxAge);
+            var newsItems = _newsService.GetAllNews(store.Id, 0, int.MaxValue, language.Id, false, maxAge);
 
             foreach (var news in newsItems)
             {
@@ -298,6 +299,7 @@ namespace SmartStore.Web.Controllers
             }
 
             if (!newsItem.Published ||
+                (newsItem.LanguageId.HasValue && newsItem.LanguageId != _services.WorkContext.WorkingLanguage.Id) ||
                 (newsItem.StartDateUtc.HasValue && newsItem.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (newsItem.EndDateUtc.HasValue && newsItem.EndDateUtc.Value <= DateTime.UtcNow) ||
                 !_storeMappingService.Authorize(newsItem))
@@ -394,7 +396,7 @@ namespace SmartStore.Web.Controllers
             var pictureModel = new PictureModel
             {
                 PictureId = newsItem.MediaFileId.GetValueOrDefault(),
-                Size = 512,
+                Size = MediaSettings.ThumbnailSizeLg,
                 FullSizeImageWidth = file?.Dimensions.Width,
                 FullSizeImageHeight = file?.Dimensions.Height,
                 Title = file?.File?.GetLocalized(x => x.Title)?.Value.NullEmpty() ?? newsItem.GetLocalized(x => x.Title),
@@ -432,7 +434,6 @@ namespace SmartStore.Web.Controllers
             bool displayPaging = false,
             int? maxAgeInDays = null)
         {
-            var storeId = _services.StoreContext.CurrentStore.Id;
             var model = new NewsItemListModel
             {
                 NewsHeading = newsHeading,
@@ -447,9 +448,10 @@ namespace SmartStore.Web.Controllers
             }
 
             var newsItems = _newsService.GetAllNews(
-                storeId, 
+                _services.StoreContext.CurrentStore.Id, 
                 pageIndex ?? 0, 
-                maxPostAmount ?? _newsSettings.NewsArchivePageSize, 
+                maxPostAmount ?? _newsSettings.NewsArchivePageSize,
+                _services.WorkContext.WorkingLanguage.Id,
                 _services.WorkContext.CurrentCustomer.IsAdmin(), 
                 maxAge);
 

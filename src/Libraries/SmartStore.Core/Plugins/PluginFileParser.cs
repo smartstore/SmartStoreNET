@@ -88,7 +88,7 @@ namespace SmartStore.Core.Plugins
 
         public static void SaveInstalledPluginsFile(ICollection<string> pluginSystemNames, string filePath = null)
         {
-            if (pluginSystemNames == null || pluginSystemNames.Count == 0)
+            if (pluginSystemNames == null)
                 return;
 
             filePath = filePath ?? InstalledPluginsFilePath;

@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
                     return continueEditing ? RedirectToAction("Edit", new { id = customerRole.Id }) : RedirectToAction("List");
                 }
 
-                return View(model);
+                return RedirectToAction("Edit", new { id = customerRole.Id });
             }
             catch (Exception ex)
             {

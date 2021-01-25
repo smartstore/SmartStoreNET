@@ -60,8 +60,11 @@ namespace SmartStore.Services.Media
             if (entityId > 0)
             {
                 var downloads = (from x in _downloadRepository.Table.Expand(x => x.MediaFile)
-                                 where x.EntityId == entityId && x.EntityName == entityName && (!string.IsNullOrEmpty(x.FileVersion) && versionedFilesOnly)
+                                 where x.EntityId == entityId && x.EntityName == entityName
                                  select x).ToList();
+
+                if (versionedFilesOnly)
+                    downloads = downloads.Where(x => !string.IsNullOrEmpty(x.FileVersion)).ToList();
 
                 if (downloads.Any())
                 {

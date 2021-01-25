@@ -54,7 +54,6 @@
                 }
                 else
                 {
-                    @Html.HiddenFor(model => model.Template)
                     @Html.TextBoxFor(model => model.Template, new { @readonly = "readonly" })
                 }
                 @Html.ValidationMessageFor(model => model.Template)

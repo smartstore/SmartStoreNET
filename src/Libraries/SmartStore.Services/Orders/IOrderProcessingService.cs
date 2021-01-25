@@ -59,7 +59,6 @@ namespace SmartStore.Services.Orders
         /// <param name="order">The order</param>
         void DeleteOrder(Order order);
 
-
         /// <summary>
         /// Process next recurring psayment
         /// </summary>
@@ -80,10 +79,6 @@ namespace SmartStore.Services.Orders
         /// <returns>value indicating whether a customer can cancel recurring payment</returns>
         bool CanCancelRecurringPayment(Customer customerToValidate, RecurringPayment recurringPayment);
 
-
-
-
-
         /// <summary>
         /// Send a shipment
         /// </summary>
@@ -97,8 +92,6 @@ namespace SmartStore.Services.Orders
         /// <param name="shipment">Shipment</param>
         /// <param name="notifyCustomer">True to notify customer</param>
         void Deliver(Shipment shipment, bool notifyCustomer);
-
-
 
         /// <summary>
         /// Gets a value indicating whether cancel is allowed
@@ -120,7 +113,6 @@ namespace SmartStore.Services.Orders
         /// <param name="context">Context parameters</param>
         void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
 
-
         /// <summary>
         /// Gets a value indicating whether order can be marked as authorized
         /// </summary>
@@ -134,7 +126,6 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         void MarkAsAuthorized(Order order);
 
-
         /// <summary>
         /// Gets a value indicating whether the order can be marked as completed
         /// </summary>
@@ -147,7 +138,6 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">Order</param>
         void CompleteOrder(Order order);
-
 
         /// <summary>
         /// Gets a value indicating whether capture from admin panel is allowed
@@ -175,8 +165,6 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">Order</param>
         void MarkOrderAsPaid(Order order);
-
-
 
         /// <summary>
         /// Gets a value indicating whether refund from admin panel is allowed
@@ -236,8 +224,6 @@ namespace SmartStore.Services.Orders
         /// <param name="amountToRefund">Amount to refund</param>
         void PartiallyRefundOffline(Order order, decimal amountToRefund);
 
-
-
         /// <summary>
         /// Gets a value indicating whether void from admin panel is allowed
         /// </summary>
@@ -265,9 +251,6 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         void VoidOffline(Order order);
 
-
-
-
         /// <summary>
         /// Place order items in current user shopping cart.
         /// </summary>
@@ -284,7 +267,7 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Valdiate minimum order amount.
         /// Gets min order amount from customer role.
-        /// When no min order amount is defined in customer role, default order settings are used as fallback.
+        /// When no min order amount is defined in customer role, default order settings are used as fallback if present.
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order amount is not reached</returns>
@@ -293,20 +276,11 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Valdiate maximum order amount.
         /// Gets max order amount from customer role.
-        /// When no max order amount is defined in customer role, default order settings are used as fallback.
+        /// When no max order amount is defined in customer role, default order settings are used as fallback if present.
         /// </summary>
         /// <param name="cart">Shopping cart, customer role ids</param>
         /// <returns>true - OK; false - maximum order amount is exceeded</returns>
         (bool valid, decimal orderTotalMaximum) IsBelowOrderTotalMaximum(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
-
-        /// <summary>
-        /// Valdiate minimum and maximum order amount.
-        /// Gets min/max order amount from customer role.
-        /// When no min or max order amount is defined in customer role, default order settings are used as fallback.
-        /// </summary>
-        /// <param name="cart">Shopping cart, customer role ids</param>
-        /// <returns>true - OK; false - minimum amount is not reached or maximum amount is exceeded</returns>
-        bool IsInOrderTotalsRange(IList<OrganizedShoppingCartItem> cart, int[] customerRoleIds);
 
         /// <summary>
         /// Adds a shipment to an order.

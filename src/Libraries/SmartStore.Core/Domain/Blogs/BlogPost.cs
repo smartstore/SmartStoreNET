@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
@@ -163,10 +164,23 @@ namespace SmartStore.Core.Domain.Blogs
         public bool LimitedToStores { get; set; }
 
         /// <summary>
+        /// Gets or sets a language identifier for which the blog post should be displayed.
+        /// </summary>
+        [DataMember]
+        [Index]
+        public int? LanguageId { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time of entity creation
         /// </summary>
         [DataMember]
         public virtual DateTime CreatedOnUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language.
+        /// </summary>
+        [DataMember]
+        public virtual Language Language { get; set; }
 
         /// <summary>
         /// Gets or sets the blog comments

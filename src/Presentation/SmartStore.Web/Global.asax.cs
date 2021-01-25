@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -18,6 +19,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Filters;
@@ -90,6 +92,11 @@ namespace SmartStore.Web
             var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)
                 DisplayModeProvider.Instance.Modes.Remove(mobileDisplayMode);
+
+            // Some hosters have configured their hosting packages to run on a web farm and thus require a machine key.
+            // On each app restart a new machine key will be created by IIS and decryption of AntiForgeryToken fails if no explicit machine key is set in the web.config.
+            // With SuppressIdentityHeuristicChecks = true we turn the machine key check off.
+            AntiForgeryConfig.SuppressIdentityHeuristicChecks = CommonHelper.GetAppSetting<bool>("sm:AntiForgerySuppressHeuristicChecks"); 
 
             bool installed = DataSettings.DatabaseIsInstalled();
 

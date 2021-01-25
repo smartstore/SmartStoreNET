@@ -189,6 +189,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Blogs\BlogMessageFactoryExtensions.cs" />
+    <Compile Include="Cart\Rules\Impl\CartItemQuantityRule.cs" />
     <Compile Include="Cart\Rules\Impl\CartProductCountRule.cs" />
     <Compile Include="Cart\Rules\Impl\WeekdayRule.cs" />
     <Compile Include="Cart\Rules\Impl\ProductFromCategoryInCartRule.cs" />
@@ -214,6 +215,8 @@
     <Compile Include="Cart\Rules\Impl\UserAgent\OSRule.cs" />
     <Compile Include="Cart\Rules\Impl\UserAgent\DeviceRule.cs" />
     <Compile Include="Cart\Rules\Impl\UserAgent\IsMobileRule.cs" />
+    <Compile Include="Cart\RenderingOrderTotalsEvent.cs" />
+    <Compile Include="Cart\ValidatingCartEvent.cs" />
     <Compile Include="Catalog\CategoryTreeChangeHandler.cs" />
     <Compile Include="Catalog\CatalogMessageFactoryExtensions.cs" />
     <Compile Include="Catalog\Extensions\ProductUrlHelper.cs" />
@@ -456,6 +459,7 @@
     <Compile Include="Cart\Rules\Impl\RuleSetRule.cs" />
     <Compile Include="Cart\Rules\Impl\StoreRule.cs" />
     <Compile Include="Orders\ShoppingCartTotal.cs" />
+    <Compile Include="Orders\ValidatingCartEventConsumer.cs" />
     <Compile Include="Payments\CapturePaymentHook.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />

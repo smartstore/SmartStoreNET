@@ -170,10 +170,29 @@ namespace SmartStore.Services.Cart.Rules
         protected override IEnumerable<RuleDescriptor> LoadDescriptors()
         {
             var language = _services.WorkContext.WorkingLanguage;
+            var currencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             var stores = _services.StoreService.GetAllStores()
                 .Select(x => new RuleValueSelectListOption { Value = x.Id.ToString(), Text = x.Name })
                 .ToArray();
+
+            var cartItemQuantity = new CartRuleDescriptor
+            {
+                Name = "CartItemQuantity",
+                DisplayName = T("Admin.Rules.FilterDescriptor.CartItemQuantity"),
+                RuleType = RuleType.String,
+                ProcessorType = typeof(CartItemQuantityRule),
+                Operators = new[] { RuleOperator.IsEqualTo }
+            };
+            cartItemQuantity.Metadata["ValueTemplateName"] = "ValueTemplates/CartItemQuantity";
+            cartItemQuantity.Metadata["ProductRuleDescriptor"] = new CartRuleDescriptor
+            {
+                Name = "CartItemQuantity-Product",
+                RuleType = RuleType.Int,
+                ProcessorType = typeof(CartItemQuantityRule),
+                Operators = new[] { RuleOperator.IsEqualTo },
+                SelectList = new RemoteRuleValueSelectList("Product")
+            };
 
             var descriptors = new List<CartRuleDescriptor>
             {
@@ -281,6 +300,7 @@ namespace SmartStore.Services.Cart.Rules
                     RuleType = RuleType.Int,
                     ProcessorType = typeof(CartProductCountRule)
                 },
+                cartItemQuantity,
                 new CartRuleDescriptor
                 {
                     Name = "ProductInCart",
@@ -443,7 +463,7 @@ namespace SmartStore.Services.Cart.Rules
 
             descriptors
                 .Where(x => x.RuleType == RuleType.Money)
-                .Each(x => x.Metadata["postfix"] = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode);
+                .Each(x => x.Metadata["postfix"] = currencyCode);
 
             return descriptors;
         }

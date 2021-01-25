@@ -665,6 +665,7 @@
     <Content Include="Views\Shared\EditorTemplates\DeliveryTimes.cshtml" />
     <Content Include="Views\Product\_CreateOrUpdate.Orders.cshtml" />
     <Content Include="Views\Order\Partials\OrderGrid.cshtml" />
+    <Content Include="Views\Rule\ValueTemplates\CartItemQuantity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

@@ -343,7 +343,6 @@ namespace SmartStore.PayPal.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult PatchShipping()
         {
             var store = Services.StoreContext.CurrentStore;

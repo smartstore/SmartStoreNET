@@ -79,14 +79,27 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        private void PrepareStoresMappingModel(BlogPostModel model, BlogPost blogPost, bool excludeProperties)
+        private void PrepareBlogPostModel(BlogPostModel model, BlogPost blogPost)
         {
-            Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
+            if (blogPost != null)
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(blogPost);
+                
+                model.Tags = blogPost.Tags
+                    .SplitSafe(",")
+                    .Select(x => x = x.Trim())
+                    .ToArray();
             }
+
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true);
+            model.AvailableTags = new MultiSelectList(allTags.Select(x => x.Name).ToList(), model.AvailableTags);
+
+            var allLanguages = _languageService.GetAllLanguages(true);
+            model.AvailableLanguages = allLanguages
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
+
+            model.IsSingleLanguageMode = allLanguages.Count <= 1;
         }
 
         #endregion
@@ -96,7 +109,7 @@ namespace SmartStore.Admin.Controllers
         // AJAX.
         public ActionResult AllBlogPosts(string selectedIds)
         {
-            var query = _blogService.GetAllBlogPosts(0, null, null, 0, int.MaxValue, true).SourceQuery;
+            var query = _blogService.GetAllBlogPosts(0, null, null, 0, int.MaxValue, 0, true).SourceQuery;
             var pager = new FastPager<BlogPost>(query, 500);
             var allBlogPosts = new List<dynamic>();
             var ids = selectedIds.ToIntArray().ToList();
@@ -137,17 +150,24 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.Blog.Read)]
         public ActionResult List()
         {
-            var allTags = _blogService.GetAllBlogPostTags(0, true)
+            var allTags = _blogService.GetAllBlogPostTags(0, 0, true)
                 .Select(x => x.Name)
                 .ToList();
+
+            var allLanguages = _languageService.GetAllLanguages(true);
 
             var model = new BlogListModel
             {
                 GridPageSize = _adminAreaSettings.GridPageSize,
                 IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                IsSingleLanguageMode = allLanguages.Count <= 1,
                 SearchEndDate = DateTime.UtcNow,
                 SearchAvailableTags = new MultiSelectList(allTags)
             };
+
+            model.AvailableLanguages = allLanguages
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
 
             return View(model);
         }
@@ -162,7 +182,8 @@ namespace SmartStore.Admin.Controllers
                 model.SearchEndDate, 
                 command.Page - 1, 
                 command.PageSize,
-                !model.SearchIsPublished ?? true,
+                model.SearchLanguageId,
+                true,
                 null,
                 model.SearchTitle,
                 model.SearchIntro,
@@ -190,8 +211,13 @@ namespace SmartStore.Admin.Controllers
                 m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
                 m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
 
+                if (x.LanguageId.HasValue)
+                {
+                    m.LanguageName = x.Language?.Name;
+                }
+
                 return m;
-            });
+            }).Where(x => x.IsPublished == model.SearchIsPublished || model.SearchIsPublished == null);
 
             return new JsonResult
             {
@@ -208,14 +234,8 @@ namespace SmartStore.Admin.Controllers
                 AllowComments = true
             };
 
-            var allTags = _blogService.GetAllBlogPostTags(0, true)
-                .Select(x => x.Name)
-                .ToList();
-
-            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-
+            PrepareBlogPostModel(model, null);
             AddLocales(_languageService, model.Locales);
-            PrepareStoresMappingModel(model, null, false);
 
             return View(model);
         }
@@ -248,10 +268,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
-            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-
-            PrepareStoresMappingModel(model, null, true);
+            PrepareBlogPostModel(model, null);
 
             return View(model);
         }
@@ -282,11 +299,7 @@ namespace SmartStore.Admin.Controllers
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
 
-            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
-            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            model.Tags = blogPost.Tags.SplitSafe(",").Select(x => x = x.Trim()).ToArray();
-
-            PrepareStoresMappingModel(model, blogPost, false);
+            PrepareBlogPostModel(model, blogPost);
 
             return View(model);
         }
@@ -325,11 +338,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
             }
 
-            var allTags = _blogService.GetAllBlogPostTags(0, true).Select(x => x.Name).ToList();
-            model.AvailableTags = new MultiSelectList(allTags, model.AvailableTags);
-            model.Tags = blogPost.Tags.SplitSafe(",");
-
-            PrepareStoresMappingModel(model, blogPost, true);
+            PrepareBlogPostModel(model, blogPost);
 
             return View(model);
         }
@@ -340,14 +349,13 @@ namespace SmartStore.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var blogPost = _blogService.GetBlogPostById(id);
-            if (blogPost == null)
+            if (blogPost != null)
             {
-                return RedirectToAction("List");
+                _blogService.DeleteBlogPost(blogPost);
+
+                NotifySuccess(T("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
             }
 
-            _blogService.DeleteBlogPost(blogPost);
-
-            NotifySuccess(T("Admin.ContentManagement.Blog.BlogPosts.Deleted"));
             return RedirectToAction("List");
         }
 

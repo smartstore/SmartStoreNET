@@ -59,6 +59,13 @@
             @Html.EditorFor(model => model.SearchStoreId)
         </div>
     }
+    @if (!Model.IsSingleLanguageMode)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchLanguageId)
+            @Html.DropDownListFor(model => model.SearchLanguageId, Model.AvailableLanguages, T("Common.International"))
+        </div>
+    }
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
         @Html.SmartLabelFor(model => model.SearchIsPublished)
         @Html.EditorFor(model => model.SearchIsPublished)
@@ -81,6 +88,8 @@
             columns.Bound(x => x.IsPublished)
                 .ClientTemplate(Html.SymbolForBool("IsPublished"))
                 .Centered();
+            columns.Bound(x => x.LanguageName)
+                .Hidden(Model.IsSingleLanguageMode);
             columns.Bound(x => x.Comments)
                 .ClientTemplate("<div><a href=\"Comments?filterByBlogPostId=<#= Id #>\"><#= Comments #></a></div>")
                 .Centered();
@@ -133,7 +142,8 @@
             SearchStartDate: $('#SearchStartDate').val(),
 			SearchEndDate: $('#SearchEndDate').val(),
             SearchStoreId: $('#SearchStoreId').val(),
-			SearchIsPublished: $('#SearchIsPublished').val()
+            SearchIsPublished: $('#SearchIsPublished').val(),
+            SearchLanguageId: $('#SearchLanguageId').val()
 		};
 		e.data = searchModel;
     }

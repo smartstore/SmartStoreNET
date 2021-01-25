@@ -91,6 +91,15 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
+        public int? LanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
+        public string LanguageName { get; set; }
+
+        public bool IsSingleLanguageMode { get; set; }
+
         // Store mapping.
         [UIHint("Stores")]
         [AdditionalMetadata("multiple", true)]

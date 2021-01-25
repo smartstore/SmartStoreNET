@@ -450,7 +450,7 @@
             }
 
             function pauseVideos() {
-                pswpContainer.find('.video-item').each((i, el), function() {
+                pswpContainer.find('.video-item').each(function (i, el) {
                     el.pause();
                 });
             }

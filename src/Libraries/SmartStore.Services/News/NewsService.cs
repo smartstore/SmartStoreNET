@@ -101,6 +101,7 @@ namespace SmartStore.Services.News
             int storeId,
             int pageIndex,
             int pageSize,
+            int languageId = 0,
             bool showHidden = false,
             DateTime? maxAge = null,
             string title = "", 
@@ -116,15 +117,20 @@ namespace SmartStore.Services.News
             }
             if (title.HasValue())
             {
-                query = query.Where(b => b.Title.Contains(title));
+                query = query.Where(n => n.Title.Contains(title));
             }
             if (intro.HasValue())
             {
-                query = query.Where(b => b.Short.Contains(intro));
+                query = query.Where(n => n.Short.Contains(intro));
             }
             if (full.HasValue())
             {
-                query = query.Where(b => b.Full.Contains(full));
+                query = query.Where(n => n.Full.Contains(full));
+            }
+
+            if (languageId != 0)
+            {
+                query = query.Where(n => !n.LanguageId.HasValue || n.LanguageId == languageId);
             }
 
             if (!showHidden)
@@ -183,10 +189,11 @@ namespace SmartStore.Services.News
 
             public override IEnumerable<NamedEntity> Enlist()
             {
-                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc }).ToList();
-                foreach (var x in topics)
+                var newsItems = Query.Select(x => new { x.Id, x.CreatedOnUtc, x.LanguageId }).ToList();
+
+                foreach (var x in newsItems)
                 {
-                    yield return new NamedEntity { EntityName = "NewsItem", Id = x.Id, LastMod = x.CreatedOnUtc };
+                    yield return new NamedEntity { EntityName = "NewsItem", Id = x.Id, LastMod = x.CreatedOnUtc, LanguageId = x.LanguageId };
                 }
             }
 

@@ -165,6 +165,15 @@
 		var reportAggregates = "";
 
         $(function() {
+
+            // Filter (enter) key listener.
+            $('.grid-filter').on('keypress', function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    $('#btnSearch').click();
+                }
+            });
+
 			// Filter toggler.
 			$('.btn-toggle-filter').on('click', function (e) {
 				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
@@ -209,8 +218,9 @@
 						if (!accepted)
 							return;
 
-						var form = '<form class="order-processing-form" action="' + link.data('url') + '" method="post">';
-						form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+                        var form = '<form class="order-processing-form" action="' + link.data('url') + '" method="post">';
+                        form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+                        form += '<input type="hidden" name="__RequestVerificationToken" value="' + $('input[name="__RequestVerificationToken"]').val() + '" />';
 						form += '</form>';
 
 						$('body').append(form);

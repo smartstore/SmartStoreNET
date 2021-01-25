@@ -252,6 +252,12 @@ namespace SmartStore.Data.Setup
                     },
                 new ActivityLogType
                     {
+                        SystemKeyword = "EditOrder",
+                        Enabled = true,
+                        Name = "Edit an order"
+                    },
+                new ActivityLogType
+                    {
                         SystemKeyword = "ResetThemeVars",
                         Enabled = true,
                         Name = "Reset theme variables to defaults"

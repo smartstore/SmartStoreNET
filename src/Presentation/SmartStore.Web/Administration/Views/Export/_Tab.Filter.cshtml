@@ -327,12 +327,21 @@
 				@Html.ValidationMessageFor(x => x.Filter.IsActiveSubscriber)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.CustomerRoleIds)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.CustomerRoleIds)
+				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(x => x.Filter.WorkingLanguageId)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.Filter.WorkingLanguageId, Model.Filter.AvailableLanguages)
+                @Html.DropDownListFor(x => x.Filter.WorkingLanguageId, Model.Filter.AvailableLanguages)
                 @Html.ValidationMessageFor(x => x.Filter.WorkingLanguageId)
             </td>
         </tr>

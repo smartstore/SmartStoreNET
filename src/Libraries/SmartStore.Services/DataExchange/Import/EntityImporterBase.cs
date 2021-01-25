@@ -91,52 +91,61 @@ namespace SmartStore.Services.DataExchange.Import
 
         public FileDownloadManagerItem CreateDownloadImage(ImportExecuteContext context, string urlOrPath, int displayOrder)
         {
-            var item = new FileDownloadManagerItem
+            try
             {
-                Id = displayOrder,
-                DisplayOrder = displayOrder
-            };
-
-            if (urlOrPath.IsWebUrl())
-            {
-                // We append quality to avoid importing of image duplicates.
-                item.Url = context.Services.WebHelper.ModifyQueryString(urlOrPath, "q=100", null);
-
-                if (DownloadedItems.ContainsKey(urlOrPath))
+                var item = new FileDownloadManagerItem
                 {
-                    // URL has already been downloaded.
-                    item.Success = true;
-                    item.FileName = DownloadedItems[urlOrPath];
+                    Id = displayOrder,
+                    DisplayOrder = displayOrder
+                };
+
+                if (urlOrPath.IsWebUrl())
+                {
+                    // We append quality to avoid importing of image duplicates.
+                    item.Url = context.Services.WebHelper.ModifyQueryString(urlOrPath, "q=100", null);
+
+                    if (DownloadedItems.ContainsKey(urlOrPath))
+                    {
+                        // URL has already been downloaded.
+                        item.Success = true;
+                        item.FileName = DownloadedItems[urlOrPath];
+                    }
+                    else
+                    {
+                        var localPath = string.Empty;
+
+                        try
+                        {
+                            // Exclude query string parts!
+                            localPath = new Uri(urlOrPath).LocalPath;
+                        }
+                        catch { }
+
+                        item.FileName = Path.GetFileName(localPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
+                    }
+
+                    item.Path = Path.Combine(ImageDownloadFolder, item.FileName);
                 }
                 else
                 {
-                    var localPath = string.Empty;
+                    item.Success = true;
+                    item.FileName = Path.GetFileName(urlOrPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
 
-                    try
-                    {
-                        // Exclude query string parts!
-                        localPath = new Uri(urlOrPath).LocalPath;
-                    }
-                    catch { }
-
-                    item.FileName = Path.GetFileName(localPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
+                    item.Path = Path.IsPathRooted(urlOrPath)
+                        ? urlOrPath
+                        : Path.Combine(ImageFolder, urlOrPath);
                 }
 
-                item.Path = Path.Combine(ImageDownloadFolder, item.FileName);
+                item.MimeType = MimeTypes.MapNameToMimeType(item.FileName);
+
+                return item;
             }
-            else
+            catch
             {
-                item.Success = true;
-                item.FileName = Path.GetFileName(urlOrPath).ToValidFileName().NullEmpty() ?? Path.GetRandomFileName();
+                context.Result.AddWarning($"Failed to prepare image download for '{urlOrPath.NaIfEmpty()}'. Skipping file.");
 
-                item.Path = Path.IsPathRooted(urlOrPath)
-                    ? urlOrPath
-                    : Path.Combine(ImageFolder, urlOrPath);
+                return null;
             }
-
-            item.MimeType = MimeTypes.MapNameToMimeType(item.FileName);
-
-            return item;
         }
 
         public void Succeeded(FileDownloadManagerItem item)

@@ -93,6 +93,7 @@ namespace SmartStore.Services.Blogs
             DateTime? dateTo, 
             int pageIndex, 
             int pageSize, 
+            int languageId = 0,
             bool showHidden = false,
             DateTime? maxAge = null,
             string title = "", 
@@ -123,6 +124,11 @@ namespace SmartStore.Services.Blogs
 
             if (tag.HasValue())
                 query = query.Where(b => b.Tags.Contains(tag));
+
+            if (languageId != 0)
+            {
+                query = query.Where(b => !b.LanguageId.HasValue || b.LanguageId == languageId);
+            }
 
             if (!showHidden)
             {
@@ -160,13 +166,14 @@ namespace SmartStore.Services.Blogs
             string tag,
             int pageIndex,
             int pageSize,
+            int languageId = 0,
             bool showHidden = false,
             DateTime? maxAge = null)
         {
             tag = tag.Trim();
 
-            // We laod all records and only then filter them by tag.
-            var blogPostsAll = GetAllBlogPosts(storeId, null, null, 0, int.MaxValue, showHidden, maxAge);
+            // We load all records and only then filter them by tag.
+            var blogPostsAll = GetAllBlogPosts(storeId, null, null, 0, int.MaxValue, languageId, showHidden, maxAge);
             var taggedBlogPosts = new List<BlogPost>();
 
             foreach (var blogPost in blogPostsAll)
@@ -185,11 +192,11 @@ namespace SmartStore.Services.Blogs
             return result;
         }
 
-        public virtual IList<BlogPostTag> GetAllBlogPostTags(int storeId, bool showHidden = false)
+        public virtual IList<BlogPostTag> GetAllBlogPostTags(int storeId, int languageId = 0, bool showHidden = false)
         {
             var blogPostTags = new List<BlogPostTag>();
 
-            var blogPosts = GetAllBlogPosts(storeId, null, null, 0, int.MaxValue, showHidden);
+            var blogPosts = GetAllBlogPosts(storeId, null, null, 0, int.MaxValue, languageId, showHidden);
             foreach (var blogPost in blogPosts)
             {
                 var tags = blogPost.ParseTags();
@@ -238,10 +245,11 @@ namespace SmartStore.Services.Blogs
 
             public override IEnumerable<NamedEntity> Enlist()
             {
-                var topics = Query.Select(x => new { x.Id, x.CreatedOnUtc }).ToList();
-                foreach (var x in topics)
+                var blogPosts = Query.Select(x => new { x.Id, x.CreatedOnUtc, x.LanguageId }).ToList();
+
+                foreach (var x in blogPosts)
                 {
-                    yield return new NamedEntity { EntityName = "BlogPost", Id = x.Id, LastMod = x.CreatedOnUtc };
+                    yield return new NamedEntity { EntityName = "BlogPost", Id = x.Id, LastMod = x.CreatedOnUtc, LanguageId = x.LanguageId };
                 }
             }
 

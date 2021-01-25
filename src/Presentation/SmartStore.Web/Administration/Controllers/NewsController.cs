@@ -79,14 +79,19 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        private void PrepareStoresMappingModel(NewsItemModel model, NewsItem newsItem, bool excludeProperties)
+        private void PrepareNewsItemModel(NewsItemModel model, NewsItem newsItem)
         {
-            Guard.NotNull(model, nameof(model));
-
-            if (!excludeProperties)
+            if (newsItem != null)
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(newsItem);
             }
+
+            var allLanguages = _languageService.GetAllLanguages(true);
+            model.AvailableLanguages = allLanguages
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
+
+            model.IsSingleLanguageMode = allLanguages.Count <= 1;
         }
 
         #endregion
@@ -96,7 +101,7 @@ namespace SmartStore.Admin.Controllers
         // AJAX.
         public ActionResult AllNews(string selectedIds)
         {
-            var query = _newsService.GetAllNews(0, 0, int.MaxValue, true).SourceQuery;
+            var query = _newsService.GetAllNews(0, 0, int.MaxValue, 0, true).SourceQuery;
             var pager = new FastPager<NewsItem>(query, 500);
             var allNewsItems = new List<dynamic>();
             var ids = selectedIds.ToIntArray().ToList();
@@ -137,12 +142,19 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Cms.News.Read)]
         public ActionResult List()
         {
+            var allLanguages = _languageService.GetAllLanguages(true);
+
             var model = new NewsItemListModel
             {
                 IsSingleStoreMode = _storeService.IsSingleStoreMode(),
+                IsSingleLanguageMode = allLanguages.Count <= 1,
                 GridPageSize = _adminAreaSettings.GridPageSize,
                 SearchEndDate = DateTime.UtcNow
             };
+
+            model.AvailableLanguages = allLanguages
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
 
             return View(model);
         }
@@ -155,7 +167,7 @@ namespace SmartStore.Admin.Controllers
                 model.SearchStoreId,
                 command.Page - 1,
                 command.PageSize,
-                true,
+                !model.SearchIsPublished ?? true,
                 null,
                 model.SearchTitle, 
                 model.SearchShort, 
@@ -182,6 +194,11 @@ namespace SmartStore.Admin.Controllers
                 m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
                 m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
 
+                if (x.LanguageId.HasValue)
+                {
+                    m.LanguageName = x.Language?.Name;
+                }
+
                 return m;
             }).Where(x => x.Published == model.SearchIsPublished || model.SearchIsPublished == null);
 
@@ -197,16 +214,12 @@ namespace SmartStore.Admin.Controllers
             var model = new NewsItemModel
             {
                 Published = true,
-                AllowComments = true
+                AllowComments = true,
+                CreatedOn = DateTime.UtcNow
             };
 
             AddLocales(_languageService, model.Locales);
-            PrepareStoresMappingModel(model, null, false);
-
-            // Default values.
-            model.Published = true;
-            model.AllowComments = true;
-            model.CreatedOn = DateTime.UtcNow;
+            PrepareNewsItemModel(model, null);
 
             return View(model);
         }
@@ -240,7 +253,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            PrepareStoresMappingModel(model, null, true);
+            PrepareNewsItemModel(model, null);
 
             return View(model);
         }
@@ -271,7 +284,7 @@ namespace SmartStore.Admin.Controllers
             model.EndDate = newsItem.EndDateUtc;
             model.CreatedOn = newsItem.CreatedOnUtc;
 
-            PrepareStoresMappingModel(model, newsItem, false);
+            PrepareNewsItemModel(model, newsItem);
 
             return View(model);
         }
@@ -283,7 +296,9 @@ namespace SmartStore.Admin.Controllers
         {
             var newsItem = _newsService.GetNewsById(model.Id);
             if (newsItem == null)
+            {
                 return RedirectToAction("List");
+            }
 
             if (ModelState.IsValid)
             {
@@ -309,7 +324,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            PrepareStoresMappingModel(model, newsItem, true);
+            PrepareNewsItemModel(model, newsItem);
 
             return View(model);
         }

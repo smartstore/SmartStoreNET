@@ -13,7 +13,9 @@
 @section right {
     @{
         Html.RenderAction("BlogMonths", "Blog");
+		Html.RenderWidget("blog_right_months_after");
         Html.RenderAction("BlogTags", "Blog");
+		Html.RenderWidget("blog_right_bottom");
     }
 }
 
@@ -88,6 +90,13 @@
 								@if (ViewContext.ViewData.ModelState.ContainsKey(""))
 								{
 									@Html.ValidationSummary(true)
+								}
+
+								@if (this.EnableHoneypotProtection)
+								{
+									<div class="d-none">
+										@Html.HoneypotField()
+									</div>
 								}
 
 								<div class="form-group">

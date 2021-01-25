@@ -549,13 +549,15 @@ namespace SmartStore.Admin.Controllers
             });
         }
 
-        // Ajax.
+        // AJAX.
         public ActionResult RuleOptions(
             RuleOptionsRequestReason reason,
             int ruleId,
             int rootRuleSetId,
             string term,
-            int? page)
+            int? page,
+            string descriptorMetadataKey,
+            string rawValue)
         {
             var rule = _ruleStorage.GetRuleById(ruleId, false);
             if (rule == null)
@@ -566,15 +568,26 @@ namespace SmartStore.Admin.Controllers
             var provider = _ruleProvider(rule.RuleSet.Scope);
             var expression = provider.VisitRule(rule);
 
-            RuleOptionsResult options = null;
             Func<RuleValueSelectListOption, bool> optionsPredicate = x => true;
+            RuleOptionsResult options = null;
+            RuleDescriptor descriptor = null;
 
-            if (expression.Descriptor.SelectList is RemoteRuleValueSelectList list)
+            if (descriptorMetadataKey.HasValue() && expression.Descriptor.Metadata.TryGetValue(descriptorMetadataKey, out var obj))
+            {
+                descriptor = obj as RuleDescriptor;
+            }
+            if (descriptor == null)
+            {
+                descriptor = expression.Descriptor;
+                rawValue = expression.RawValue;
+            }
+
+            if (descriptor.SelectList is RemoteRuleValueSelectList list)
             {
                 var optionsProvider = _ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
                 if (optionsProvider != null)
                 {
-                    options = optionsProvider.GetOptions(reason, expression, page ?? 0, 100, term);
+                    options = optionsProvider.GetOptions(reason, descriptor, rawValue, page ?? 0, 100, term);
                     if (list.DataSource == "CartRule" || list.DataSource == "TargetGroup")
                     {
                         optionsPredicate = x => x.Value != rootRuleSetId.ToString();
@@ -593,7 +606,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             // Mark selected items.
-            var selectedValues = expression.RawValue.SplitSafe(",");
+            var selectedValues = rawValue.SplitSafe(",");
 
             data.Each(x => x.Selected = selectedValues.Contains(x.Id));
 

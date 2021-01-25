@@ -39,11 +39,11 @@
 					<div>
 						<span class="header text-smallest">
 							@{
-								var countryService = EngineContext.Current.Resolve<ICountryService>();
-								var country = countryService.GetCountryById(company.CountryId);
-
-								var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
-								var countryAndState = JoinValues(new string[] { country.GetLocalized(x => x.Name), company.StateName }, ", ").ToString();
+                                var countryService = EngineContext.Current.Resolve<ICountryService>();
+                                var country = countryService.GetCountryById(company.CountryId);
+                                var countryName = country != null ? country.GetLocalized(x => x.Name) : "";
+                                var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
+                                var countryAndState = JoinValues(new string[] { countryName, company.StateName }, ", ").ToString();
 							}
 							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, countryAndState }, " &middot; ")
 						</span>

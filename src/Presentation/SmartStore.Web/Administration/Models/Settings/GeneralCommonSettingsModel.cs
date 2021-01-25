@@ -144,6 +144,9 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows")]
             public string ExtraRobotsDisallows { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows")]
+            public string ExtraRobotsAllows { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.XmlSitemapEnabled")]
             public bool XmlSitemapEnabled { get; set; }
 

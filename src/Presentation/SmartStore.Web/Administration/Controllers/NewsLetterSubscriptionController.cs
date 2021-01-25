@@ -76,12 +76,14 @@ namespace SmartStore.Admin.Controllers
         {
             var gridModel = new GridModel<NewsLetterSubscriptionModel>();
             var allStores = Services.StoreService.GetAllStores().ToDictionary(x => x.Id);
+
             var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(
                 model.SearchEmail,
                 command.Page - 1,
                 command.PageSize,
                 true,
-                model.StoreId != 0 ? new int[] { model.StoreId } : null);
+                model.StoreId != 0 ? new int[] { model.StoreId } : null,
+                model.SearchCustomerRoleIds);
 
             gridModel.Data = newsletterSubscriptions.Select(x =>
             {

@@ -978,7 +978,7 @@ namespace SmartStore.Services.Catalog
 
         private void UnassignDeletedPictureFromVariantCombinations(ProductMediaFile productPicture)
         {
-            var picId = productPicture.Id;
+            var picId = productPicture.MediaFileId;
             bool touched = false;
 
             var combinations =

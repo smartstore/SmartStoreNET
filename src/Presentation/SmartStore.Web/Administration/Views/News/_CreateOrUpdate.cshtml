@@ -7,6 +7,11 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
+@if (Model.IsSingleLanguageMode)
+{
+    Html.HiddenFor(model => model.LanguageId);
+}
+
 @Html.SmartStore().TabStrip().Name("news-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
@@ -117,6 +122,18 @@
                 @Html.ValidationMessageFor(model => model.Published)
             </td>
         </tr>
+        @if (!Model.IsSingleLanguageMode)
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.LanguageId)
+                </td>
+                <td class="adminData">
+                    @Html.DropDownListFor(model => model.LanguageId, Model.AvailableLanguages, T("Common.International"))
+                    @Html.ValidationMessageFor(model => model.LanguageId)
+                </td>
+            </tr>
+        }
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SelectedStoreIds)

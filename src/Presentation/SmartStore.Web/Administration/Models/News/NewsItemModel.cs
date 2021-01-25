@@ -84,6 +84,15 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
+        public int? LanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
+        public string LanguageName { get; set; }
+
+        public bool IsSingleLanguageMode { get; set; }
+
         public IList<NewsItemLocalizedModel> Locales { get; set; }
     }
 

@@ -1127,18 +1127,21 @@ namespace SmartStore.Admin.Controllers
             var skipped = 0;
             var errors = 0;
             var errorMessages = new HashSet<string>();
+            var succeededOrderNumbers = new HashSet<string>();
 
             foreach (var o in orders)
             {
                 try
                 {
+                    var succeeded = false;
+
                     switch (operation)
                     {
                         case "cancel":
                             if (_orderProcessingService.CanCancelOrder(o))
                             {
                                 _orderProcessingService.CancelOrder(o, true);
-                                ++success;
+                                succeeded = true;
                             }
                             else
                             {
@@ -1149,7 +1152,7 @@ namespace SmartStore.Admin.Controllers
                             if (_orderProcessingService.CanCompleteOrder(o))
                             {
                                 _orderProcessingService.CompleteOrder(o);
-                                ++success;
+                                succeeded = true;
                             }
                             else
                             {
@@ -1160,7 +1163,7 @@ namespace SmartStore.Admin.Controllers
                             if (_orderProcessingService.CanMarkOrderAsPaid(o))
                             {
                                 _orderProcessingService.MarkOrderAsPaid(o);
-                                ++success;
+                                succeeded = true;
                             }
                             else
                             {
@@ -1173,7 +1176,7 @@ namespace SmartStore.Admin.Controllers
                                 var captureErrors = _orderProcessingService.Capture(o);
                                 errorMessages.AddRange(captureErrors);
                                 if (!captureErrors.Any())
-                                    ++success;
+                                    succeeded = true;
                             }
                             else
                             {
@@ -1184,7 +1187,7 @@ namespace SmartStore.Admin.Controllers
                             if (_orderProcessingService.CanRefundOffline(o))
                             {
                                 _orderProcessingService.RefundOffline(o);
-                                ++success;
+                                succeeded = true;
                             }
                             else
                             {
@@ -1197,7 +1200,7 @@ namespace SmartStore.Admin.Controllers
                                 var refundErrors = _orderProcessingService.Refund(o);
                                 errorMessages.AddRange(refundErrors);
                                 if (!refundErrors.Any())
-                                    ++success;
+                                    succeeded = true;
                             }
                             else
                             {
@@ -1208,7 +1211,7 @@ namespace SmartStore.Admin.Controllers
                             if (_orderProcessingService.CanVoidOffline(o))
                             {
                                 _orderProcessingService.VoidOffline(o);
-                                ++success;
+                                succeeded = true;
                             }
                             else
                             {
@@ -1221,13 +1224,19 @@ namespace SmartStore.Admin.Controllers
                                 var voidErrors = _orderProcessingService.Void(o);
                                 errorMessages.AddRange(voidErrors);
                                 if (!voidErrors.Any())
-                                    ++success;
+                                    succeeded = true;
                             }
                             else
                             {
                                 ++skipped;
                             }
                             break;
+                    }
+
+                    if (succeeded)
+                    {
+                        ++success;
+                        succeededOrderNumbers.Add(o.GetOrderNumber());
                     }
                 }
                 catch (Exception ex)
@@ -1245,6 +1254,11 @@ namespace SmartStore.Admin.Controllers
             errorMessages.Take(maxErrors).Each(x => msg.Append($"<div class='text-danger mt-2'>{x}</div>"));
 
             NotifyInfo(msg.ToString());
+
+            if (succeededOrderNumbers.Any())
+            {
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", string.Join(", ", succeededOrderNumbers.OrderBy(x => x))));
+            }
 
             return RedirectToAction("List");
         }
@@ -1281,6 +1295,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.CancelOrder(order, true);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -1305,6 +1321,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.CompleteOrder(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -1333,6 +1351,11 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifyError(error);
                 }
+
+                if (!errors.Any())
+                {
+                    _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+                }
             }
             catch (Exception ex)
             {
@@ -1357,6 +1380,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.MarkOrderAsPaid(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -1385,6 +1410,11 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifyError(error);
                 }
+
+                if (!errors.Any())
+                {
+                    _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+                }
             }
             catch (Exception ex)
             {
@@ -1409,6 +1439,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.RefundOffline(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -1437,6 +1469,11 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifyError(error);
                 }
+
+                if (!errors.Any())
+                {
+                    _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+                }
             }
             catch (Exception ex)
             {
@@ -1461,6 +1498,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.VoidOffline(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -1523,6 +1562,8 @@ namespace SmartStore.Admin.Controllers
 
                 if (errors.Count == 0)
                 {
+                    _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
                     ViewBag.RefreshPage = true;
                     ViewBag.btnId = btnId;
                     ViewBag.formId = formId;
@@ -1578,9 +1619,9 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            _orderProcessingService.DeleteOrder(order);
-
             var msg = T("ActivityLog.DeleteOrder", order.GetOrderNumber());
+
+            _orderProcessingService.DeleteOrder(order);
 
             _customerActivityService.InsertActivity("DeleteOrder", msg);
             NotifySuccess(msg);
@@ -1615,7 +1656,10 @@ namespace SmartStore.Admin.Controllers
                 order.CardCvv2 = _encryptionService.EncryptText(model.CardCvv2);
                 order.CardExpirationMonth = _encryptionService.EncryptText(model.CardExpirationMonth);
                 order.CardExpirationYear = _encryptionService.EncryptText(model.CardExpirationYear);
+
                 _orderService.UpdateOrder(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
 
             PrepareOrderDetailsModel(model, order);
@@ -1645,6 +1689,8 @@ namespace SmartStore.Admin.Controllers
                 order.DirectDebitIban = _encryptionService.EncryptText(model.DirectDebitIban);
 
                 _orderService.UpdateOrder(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
             }
 
             PrepareOrderDetailsModel(model, order);
@@ -1678,7 +1724,10 @@ namespace SmartStore.Admin.Controllers
             order.CreditBalance = model.CreditBalanceValue;
             order.OrderTotalRounding = model.OrderTotalRoundingValue;
             order.OrderTotal = model.OrderTotalValue;
+
             _orderService.UpdateOrder(order);
+
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
 
             PrepareOrderDetailsModel(model, order);
             return View(model);
@@ -1730,6 +1779,8 @@ namespace SmartStore.Admin.Controllers
                 //	_orderService.DeleteOrderItem(oi);
                 //}
 
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", oi.Order.GetOrderNumber()));
+
                 TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
             }
 
@@ -1747,7 +1798,9 @@ namespace SmartStore.Admin.Controllers
                 return HttpNotFound();
             }
 
-            int orderId = oi.Order.Id;
+            var orderId = oi.Order.Id;
+            var orderNumber = oi.Order.GetOrderNumber();
+
             var context = new AutoUpdateOrderItemContext
             {
                 OrderItem = oi,
@@ -1761,6 +1814,8 @@ namespace SmartStore.Admin.Controllers
             _orderProcessingService.AutoUpdateOrderDetails(context);
 
             _orderService.DeleteOrderItem(oi);
+
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", orderNumber));
 
             TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
 
@@ -1852,8 +1907,11 @@ namespace SmartStore.Admin.Controllers
             orderItem.DownloadCount = 0;
             _orderService.UpdateOrder(order);
 
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
             var model = new OrderModel();
             PrepareOrderDetailsModel(model, order);
+
             return View(model);
         }
 
@@ -1887,8 +1945,11 @@ namespace SmartStore.Admin.Controllers
             orderItem.IsDownloadActivated = !orderItem.IsDownloadActivated;
             _orderService.UpdateOrder(order);
 
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
             var model = new OrderModel();
             PrepareOrderDetailsModel(model, order);
+
             return View(model);
         }
 
@@ -1986,6 +2047,8 @@ namespace SmartStore.Admin.Controllers
             
             _orderService.UpdateOrder(order);
 
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
             ViewBag.RefreshPage = true;
             ViewBag.btnId = btnId;
             ViewBag.formId = formId;
@@ -2019,6 +2082,8 @@ namespace SmartStore.Admin.Controllers
             // Detach license.
             orderItem.LicenseDownloadId = null;
             _orderService.UpdateOrder(order);
+
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
 
             ViewBag.RefreshPage = true;
             ViewBag.btnId = btnId;
@@ -2246,6 +2311,8 @@ namespace SmartStore.Admin.Controllers
                     TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
                 }
 
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
                 // Redirect to order details page.
                 return RedirectToAction("Edit", "Order", new { id = order.Id });
             }
@@ -2307,6 +2374,8 @@ namespace SmartStore.Admin.Controllers
                 _addressService.UpdateAddress(address);
 
                 _eventPublisher.PublishOrderUpdated(order);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
 
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
@@ -2465,6 +2534,8 @@ namespace SmartStore.Admin.Controllers
                 {
                     NotifySuccess(T("Admin.Orders.Shipments.Added"));
 
+                    _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
                     return continueEditing
                        ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
                        : RedirectToAction("Edit", new { id = order.Id });
@@ -2535,9 +2606,12 @@ namespace SmartStore.Admin.Controllers
             }
 
             var orderId = shipment.OrderId;
+            var orderNumber = shipment.Order.GetOrderNumber();
 
             NotifySuccess(T("Admin.Orders.Shipments.Deleted"));
             _shipmentService.DeleteShipment(shipment);
+
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", orderNumber));
 
             return RedirectToAction("Edit", new { id = orderId });
         }
@@ -2556,6 +2630,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.Ship(shipment, true);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", shipment.Order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -2579,6 +2655,8 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.Deliver(shipment, true);
+
+                _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", shipment.Order.GetOrderNumber()));
             }
             catch (Exception ex)
             {
@@ -2722,6 +2800,8 @@ namespace SmartStore.Admin.Controllers
                 Services.MessageFactory.SendNewOrderNoteAddedCustomerNotification(orderNote, _workContext.WorkingLanguage.Id);
             }
 
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
+
             return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
         }
 
@@ -2733,6 +2813,8 @@ namespace SmartStore.Admin.Controllers
             var orderNote = order.OrderNotes.Where(on => on.Id == orderNoteId).FirstOrDefault();
 
             _orderService.DeleteOrderNote(orderNote);
+
+            _customerActivityService.InsertActivity("EditOrder", T("ActivityLog.EditOrder", order.GetOrderNumber()));
 
             return OrderNotesSelect(orderId, command);
         }
@@ -3048,12 +3130,12 @@ namespace SmartStore.Admin.Controllers
             foreach (var report in model)
             {
                 report.QuantityTotal = report.Quantity.ToString("N0");
-                report.AmountTotal = report.Amount.ToString("C0");
+                report.AmountTotal = _priceFormatter.FormatPrice(report.Amount, true, false);
                 for (int i = 0; i < report.Data.Count; i++)
                 {
                     var data = report.Data[i];
                     data.QuantityFormatted = data.Quantity.ToString("N0");
-                    data.AmountFormatted = data.Amount.ToString("C0");
+                    data.AmountFormatted = _priceFormatter.FormatPrice(data.Amount, true, false);
                 }
             }
 
@@ -3072,7 +3154,7 @@ namespace SmartStore.Admin.Controllers
                         order.CustomerId,
                         order.Customer.FindEmail() ?? order.Customer.FormatUserName(),
                         order.OrderItems.Sum(x => x.Quantity),
-                        order.OrderTotal.ToString("C0"),
+                        _priceFormatter.FormatPrice(order.OrderTotal, true, false),
                         _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc).ToString("g"),
                         order.OrderStatus,
                         order.Id)
@@ -3154,7 +3236,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var dataPoint in orderDataPoints)
             {
-                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);
+                dataPoint.CreatedOn = _dateTimeHelper.ConvertToUserTime(dataPoint.CreatedOn, DateTimeKind.Utc);                
                 SetOrderReportData(model, dataPoint);
             }
 
@@ -3166,14 +3248,14 @@ namespace SmartStore.Admin.Controllers
                 {
                     for (int j = 0; j < data.Amount.Length; j++)
                     {
-                        data.AmountFormatted[j] = data.Amount[j].ToString("C0");
+                        data.AmountFormatted[j] = _priceFormatter.FormatPrice(data.Amount[j], true, false);
                         data.QuantityFormatted[j] = data.Quantity[j].ToString("N0");
                     }
                     data.TotalAmount = data.Amount.Sum();
-                    data.TotalAmountFormatted = data.TotalAmount.ToString("C0");
+                    data.TotalAmountFormatted = _priceFormatter.FormatPrice(data.TotalAmount, true, false);
                 }
                 model[i].TotalAmount = model[i].DataSets.Sum(x => x.TotalAmount);
-                model[i].TotalAmountFormatted = model[i].TotalAmount.ToString("C0");
+                model[i].TotalAmountFormatted = _priceFormatter.FormatPrice(model[i].TotalAmount, true, false);
 
                 // Create labels for all dataPoints
                 for (int j = 0; j < model[i].Labels.Length; j++)

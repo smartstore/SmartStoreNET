@@ -11,6 +11,10 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Url.RouteUrl("NewsItem", new { SeName = Model.SeName })', 1000, 600, true); return false;" class="btn btn-secondary">
+				<i class="far fa-eye"></i>
+				<span>@T("Admin.Common.Preview")</span>
+			</button>
             <button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>

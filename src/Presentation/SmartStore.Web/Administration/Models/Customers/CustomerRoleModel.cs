@@ -72,7 +72,20 @@ namespace SmartStore.Admin.Models.Customers
         {
             RuleFor(x => x.Name).NotNull();
 
-            RuleFor(x => x.OrderTotalMaximum).GreaterThan(x => x.OrderTotalMinimum ?? 0);
+            //RuleFor(x => x.OrderTotalMinimum).GreaterThan(0).When(x => x.OrderTotalMinimum.HasValue)
+            //    .WithMessage(T("Admin.Validation.ValueGreaterZero"));
+
+            //RuleFor(x => x.OrderTotalMaximum).GreaterThan(0).When(x => x.OrderTotalMaximum.HasValue)
+            //    .WithMessage(T("Admin.Validation.ValueGreaterZero"));
+
+            //RuleFor(x => x.OrderTotalMaximum).GreaterThan(x => x.OrderTotalMinimum ?? 0)
+            //    .When(x => x.OrderTotalMaximum.HasValue && x.OrderTotalMinimum.HasValue)
+            //    .WithMessage(string.Format(
+            //        T("Admin.Validation.ValueGreaterThan"),
+            //        T("Admin.Customers.CustomerRoles.Fields.MinOrderTotal"))
+            //    );
+            RuleFor(x => x.OrderTotalMaximum)
+                .GreaterThan(x => x.OrderTotalMinimum ?? 0);
         }
     }
 }

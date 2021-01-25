@@ -77,7 +77,6 @@ namespace SmartStore.Services.Tests.Orders
         IMessageFactory _messageFactory;
         ICustomerActivityService _customerActivityService;
         ICurrencyService _currencyService;
-        PaymentSettings _paymentSettings;
         OrderSettings _orderSettings;
         LocalizationSettings _localizationSettings;
         ShoppingCartSettings _shoppingCartSettings;
@@ -193,15 +192,7 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
             _downloadService = MockRepository.GenerateMock<IDownloadService>();
 
-            _paymentSettings = new PaymentSettings()
-            {
-                ActivePaymentMethodSystemNames = new List<string>()
-                {
-                    "Payments.TestMethod"
-                }
-            };
             _orderSettings = new OrderSettings();
-
             _localizationSettings = new LocalizationSettings();
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
@@ -219,7 +210,7 @@ namespace SmartStore.Services.Tests.Orders
                 _messageFactory, _customerActivityService, _currencyService, _affiliateService,
                 _eventPublisher, _genericAttributeService,
                 _newsLetterSubscriptionService, _downloadService,
-                _paymentSettings, _rewardPointsSettings,
+                _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
                 _shoppingCartSettings,
                 _catalogSettings);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
@@ -125,6 +126,17 @@ namespace SmartStore.Core.Domain.News
         /// Gets or sets the meta title
         /// </summary>
         public string MetaTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets a language identifier for which the news item should be displayed.
+        /// </summary>
+        [Index]
+        public int? LanguageId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language.
+        /// </summary>
+        public virtual Language Language { get; set; }
 
         /// <summary>
         /// Gets or sets the news comments

@@ -868,12 +868,15 @@ namespace SmartStore.Services.Catalog.Importer
 
             foreach (var row in batch)
             {
-                var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
-                if (imageUrls.IsNullOrEmpty())
+                var rawImageUrls = row.GetDataValue<string>("ImageUrls");
+
+                // Force pipe symbol as separator because file names can contain commas or semicolons.
+                var imageUrls = rawImageUrls.SplitSafe("|");
+                if (imageUrls.Length == 0)
                 {
                     continue;
                 }
-
+                
                 var productId = row.Entity.Id;
                 var imageNumber = 0;
                 var displayOrder = -1;
@@ -884,12 +887,13 @@ namespace SmartStore.Services.Catalog.Importer
                 foreach (var urlOrPath in imageUrls)
                 {
                     var image = CreateDownloadImage(context, urlOrPath, ++imageNumber);
-
                     if (image != null)
+                    {
                         imageFiles.Add(image);
 
-                    if (imageFiles.Count >= numberOfPictures)
-                        break;
+                        if (imageFiles.Count >= numberOfPictures)
+                            break;
+                    }
                 }
 
                 // Download images.

@@ -307,7 +307,7 @@
                     <div class="alert alert-danger">
                         @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint")
                     </div>
-                    <button type="submit" name="inherit-stores-into-children" value="inherit-stores-into-children" class="btn btn-danger">
+                    <button type="submit" name="inherit-stores-into-children" value="inherit-stores-into-children" class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
                         <i class="fa fa-bolt"></i>
                         <span>@T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts")</span>
                     </button>
@@ -326,7 +326,7 @@
                     <div class="alert alert-danger">
                         @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
                     </div>
-                    <button type="submit" name="inherit-acl-into-children" value="inherit-acl-into-children" class="btn btn-danger">
+                    <button type="submit" name="inherit-acl-into-children" value="inherit-acl-into-children" class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
                         <i class="fa fa-bolt"></i>
                         <span>@T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")</span>
                     </button>
@@ -443,10 +443,9 @@
                                     <td class="adminData">
                                         @Html.EditorFor(x => x.SeName)
                                         @if (Model.Id != 0)
-                                                        {
+                                        {
                                             @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = Model.Id })
-                                                        }
-                                        /**/
+                                        }
                                         @Html.ValidationMessageFor(model => model.SeName)
                                     </td>
                                 </tr>

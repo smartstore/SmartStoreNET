@@ -36,8 +36,8 @@ namespace SmartStore.Core.Email
 
             if (original.AltText.HasValue())
             {
-                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.AltText, new ContentType("text/html")));
-                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.Body, new ContentType("text/plain")));
+                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.Body, new ContentType("text/html")));
+                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.AltText, new ContentType("text/plain")));
             }
             else
             {

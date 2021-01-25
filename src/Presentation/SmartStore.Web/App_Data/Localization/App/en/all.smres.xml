@@ -618,6 +618,9 @@
 	<LocaleResource Name="ActivityLog.EditManufacturer">
 		<Value>Edited a manufacturer ('{0}')</Value>
 	</LocaleResource>
+	<LocaleResource Name="ActivityLog.EditOrder">
+		<Value>Edited order {0}</Value>
+	</LocaleResource>
 	<LocaleResource Name="ActivityLog.EditProduct">
 		<Value>Edited a product ('{0}')</Value>
 	</LocaleResource>
@@ -6315,6 +6318,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage.Hint">
 		<Value>Specifies whether the browser language of the visitor should be detected and assigned on his first visit (when inactive, the default store language will be assigned)</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DisplayAllows">
+		<Value>Show items for 'Allow'</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DisplayDisallows">
+		<Value>Show items for 'Disallow'</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection">
 		<Value>Enable Honeypot protection</Value>
 	</LocaleResource>
@@ -6335,6 +6344,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EncryptionKey.TooShort">
 		<Value>Encryption private key must be 16 characters long</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows">
+		<Value>Extra Allows for robots.txt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsAllows.Hint">
+		<Value>Enter additional paths that should be included as Allow entries in your robots.txt. Each entry has to be entered in a new line.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows">
 		<Value>Extra Disallows for robots.txt</Value>
@@ -6434,6 +6449,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey.Hint">
 		<Value>Enter reCAPTCHA public key (if enabled)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ReCaptchaTypeChangeWarning">
+		<Value>When changing the reCAPTCHA type, the public and private key must also be changed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.SecuritySettings">
 		<Value>Security settings</Value>
@@ -6771,9 +6789,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed.Hint">
 		<Value>Check the box to enable anonymous checkout (customers are not required to login/register when purchasing products)</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal">
-		<Value>Order total restriction in relation to subtotal</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.ApplyToSubtotal.Hint">
 		<Value>Determines whether the min/max order value refers to the order subtotal, otherwise it refers to the total amount.</Value>
 	</LocaleResource>
@@ -6825,6 +6840,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotal.Hint">
 		<Value>Defines the default minimum order total for the shop. Overridden by customer group restrictions.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange">
+		<Value>Customer groups extend the value range</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange.Hint">
+		<Value>Specifies whether multiple order total restrictions through customer group assignments extend the allowed order value range.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable">
 		<Value>Number of days that the return request is available</Value>
 	</LocaleResource>
@@ -6851,9 +6872,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderSettings">
 		<Value>Order settings</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType">
-		<Value>Restrictions in customer groups are cumulative</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderTotalRestrictionType.Hint">
 		<Value>Determines whether multiple order total restrictions are cumulated by customer group assignments.</Value>
@@ -7935,8 +7953,11 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Intro.Hint">
 		<Value>Specifies the intro of the blog post.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language">
+		<Value>Regional relevance</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Language.Hint">
-		<Value>The language of this blog entry. A customer will only see the blog entries for their selected language.</Value>
+		<Value>Specifies the language for which the post is displayed. If limited to one language, blog contents need only be edited in that language (no multilingualism).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.Picture">
 		<Value>Picture</Value>
@@ -8430,8 +8451,11 @@
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Full.Hint">
 		<Value>The full description of this news entry.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language">
+		<Value>Regional relevance</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Language.Hint">
-		<Value>The language of this news entry. A customer will only see the news entries for their selected language.</Value>
+		<Value>Specifies the language for which the news is displayed. If limited to one language, news contents need only be edited in that language (no multilingualism).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.News.NewsItems.Fields.Picture">
 		<Value>Picture</Value>
@@ -11652,6 +11676,9 @@
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Api">
 		<Value>API</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.KnownGroup.B2B">
+		<Value>B2B</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.CMS">
 		<Value>Content Management</Value>
 	</LocaleResource>
@@ -12296,6 +12323,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CancelledOrderCount">
 		<Value>Cancelled order count</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartItemQuantity">
+		<Value>Product quantity is in range</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Rules.FilterDescriptor.CartProductCount">
 		<Value>Number of products</Value>
@@ -14108,19 +14138,13 @@
 		<Value>Please confirm that you would like access to the digital content immediately.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MaxOrderSubtotalAmount">
-		<Value>The maximum order value for the subtotal is {0}.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Checkout.MaxOrderTotalAmount">
-		<Value>The maximum order value for the total is {0}.</Value>
+		<Value>Your maximum order total allowed is {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MinOrderPlacementInterval">
 		<Value>Please wait several seconds before placing a new order (already placed another order several seconds ago).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.MinOrderSubtotalAmount">
-		<Value>Minimum order sub-total amount is {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="Checkout.MinOrderTotalAmount">
-		<Value>Minimum order total amount is {0}</Value>
+		<Value>Your minimum order total allowed is {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.NewAddress">
 		<Value>New Address</Value>
@@ -14710,6 +14734,9 @@
 	<LocaleResource Name="Common.IncreaseValue">
 		<Value>Increase value</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.International">
+		<Value>International</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.IsActive">
 		<Value>Is active</Value>
 	</LocaleResource>
@@ -15063,6 +15090,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Unspecified">
 		<Value>Unspecified</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.UnsupportedBrowser">
+		<Value>You are using an unsupported browser! Please consider switching to a modern browser such as Google Chrome, Firefox or Opera to fully enjoy your shopping experience.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.UpdatedOn">
 		<Value>Updated on</Value>
@@ -16742,6 +16772,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Newsletter.SubscribeEmailSent">
 		<Value>Thank you for signing up! A verification email has been sent. We appreciate your interest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Newsletter.SubscriptionFailed">
+		<Value>The subscription or unsubscription has failed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Newsletter.Title">
 		<Value>Subscribe to newsletters</Value>

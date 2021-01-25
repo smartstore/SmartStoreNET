@@ -782,19 +782,31 @@ namespace SmartStore.Web.Controllers
 
             var seoSettings = EngineContext.Current.Resolve<SeoSettings>();
 
-            // append extra disallows
+            // Append extra allows & disallows.
             disallows = disallows.Concat(seoSettings.ExtraRobotsDisallows.Select(x => x.Trim()));
 
-            // Append all lowercase variants (at least Google is case sensitive)
-            disallows = disallows.Union(disallows.Select(x => x.ToLower()));
-
-            foreach (var disallow in disallows)
-            {
-                sb.AppendFormat("Disallow: {0}", disallow);
-                sb.Append(newLine);
-            }
+            AddRobotsLines(sb, disallows, false);
+            AddRobotsLines(sb, seoSettings.ExtraRobotsAllows.Select(x => x.Trim()), true);
 
             return Content(sb.ToStringAndReturn(), "text/plain");
+        }
+
+        /// <summary>
+        /// Adds Allow & Disallow lines to robots.txt .
+        /// </summary>
+        /// <param name="lines">Lines to add.</param>
+        /// <param name="allow">Specifies whether new lines are Allows or Disallows.</param>
+        [NonAction]
+        private void AddRobotsLines(PooledStringBuilder sb, IEnumerable<string> lines, bool allow)
+        {
+            // Append all lowercase variants (at least Google is case sensitive).
+            lines = lines.Union(lines.Select(x => x.ToLower()));
+
+            foreach (var line in lines)
+            {
+                sb.AppendFormat("{0}: {1}", allow ? "Allow" : "Disallow", line);
+                sb.Append("\r\n");
+            }
         }
 
         public ActionResult BrowserConfigXmlFile()

@@ -60,13 +60,20 @@
             @Html.EditorFor(model => model.SearchStoreId)
         </div>
     }
+    @if (!Model.IsSingleLanguageMode)
+    {
+        <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+            @Html.SmartLabelFor(model => model.SearchLanguageId)
+            @Html.DropDownListFor(model => model.SearchLanguageId, Model.AvailableLanguages, T("Common.International"))
+        </div>
+    }
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
         @Html.SmartLabelFor(model => model.SearchIsPublished)
         @Html.EditorFor(model => model.SearchIsPublished)
     </div>
     <div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
         @Html.SmartLabel(string.Empty, string.Empty)
-        <button type="submit" id="search-newsitem" value="search-newsitem" class="btn btn-secondary btn-block">
+        <button type="submit" id="search-newsitem" value="search-newsitem" class="btn btn-warning btn-block">
             <span>@T("Admin.Common.ApplyFilter")</span>
         </button>
     </div>
@@ -87,6 +94,8 @@
                 columns.Bound(x => x.Published)
                     .ClientTemplate(Html.SymbolForBool("Published"))
                     .Centered();
+                columns.Bound(x => x.LanguageName)
+                    .Hidden(Model.IsSingleLanguageMode);
                 columns.Bound(x => x.Comments)
                     .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
                 columns.Bound(x => x.StartDate);
@@ -193,7 +202,8 @@
             SearchStartDate: $('#SearchStartDate').val(),
 			SearchEndDate: $('#SearchEndDate').val(),
             SearchStoreId: $('#SearchStoreId').val(),
-			SearchIsPublished: $('#SearchIsPublished').val()
+            SearchIsPublished: $('#SearchIsPublished').val(),
+            SearchLanguageId: $('#SearchLanguageId').val()
         };
         e.data = searchModel;
     }

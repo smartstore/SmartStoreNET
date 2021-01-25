@@ -14,7 +14,7 @@
     var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
     if (canonicalUrlsEnabled)
     {
-        var forumUrl = Url.RouteUrl("Forum", this.Request.Url.Scheme);
+        var forumUrl = Url.RouteUrl("Boards", this.Request.Url.Scheme);
         Html.AddCanonicalUrlParts(forumUrl);
     }
 

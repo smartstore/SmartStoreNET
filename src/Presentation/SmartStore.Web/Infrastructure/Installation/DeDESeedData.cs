@@ -2130,7 +2130,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                     })
                 .Alter("EditPromotionProviders", x =>
                     {
-                        x.Name = "Edit promotion providers";
+                        x.Name = "Promotion-Provider bearbeiten";
                     })
                 .Alter("EditReturnRequest", x =>
                     {
@@ -2148,6 +2148,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                     {
                         x.Name = "Widget bearbeitet";
                     })
+                .Alter("EditOrder", x =>
+                {
+                    x.Name = "Auftrag bearbeitet";
+                })
                 .Alter("PublicStore.ViewCategory", x =>
                     {
                         x.Name = "Öffentlicher Shop. Hat eine Warengruppen-Detailseite angesehen";

@@ -23,6 +23,7 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class StoreController : AdminControllerBase
     {
+        private readonly IPriceFormatter _priceFormatter;
         private readonly ICurrencyService _currencyService;
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
@@ -35,6 +36,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ICatalogSearchService _catalogSearchService;
 
         public StoreController(
+            IPriceFormatter priceFormatter,
             ICurrencyService currencyService,
             IProductService productService,
             IProductAttributeService productAttributeService,
@@ -46,6 +48,7 @@ namespace SmartStore.Admin.Controllers
             IShoppingCartService shoppingCartService,
             ICatalogSearchService catalogSearchService)
         {
+            _priceFormatter = priceFormatter;
             _currencyService = currencyService;
             _productService = productService;
             _productAttributeService = productAttributeService;
@@ -272,10 +275,10 @@ namespace SmartStore.Admin.Controllers
                     }
                 ).TotalCount.ToString("N0"),
                 OrdersCount = allOrders.Count().ToString("N0"),
-                Sales = (allOrders.Sum(x => (decimal?)x.OrderTotal) ?? 0).ToString("C0"),
+                Sales = _priceFormatter.FormatPrice(allOrders.Sum(x => (decimal?)x.OrderTotal) ?? 0, true, false),
                 OnlineCustomersCount = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-15), null, 0, int.MaxValue).TotalCount.ToString("N0"),
-                CartsValue = _shoppingCartService.GetAllOpenCartSubTotal().ToString("C0"),
-                WishlistsValue = _shoppingCartService.GetAllOpenWishlistSubTotal().ToString("C0")
+                CartsValue = _priceFormatter.FormatPrice(_shoppingCartService.GetAllOpenCartSubTotal(), true, false),
+                WishlistsValue = _priceFormatter.FormatPrice(_shoppingCartService.GetAllOpenWishlistSubTotal(), true, false)
             };
 
             return new JsonResult

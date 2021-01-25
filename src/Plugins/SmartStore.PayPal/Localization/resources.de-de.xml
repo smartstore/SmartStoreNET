@@ -57,7 +57,7 @@
         <Value>Die PayPal Sitzung ist abgelaufen. Bitte versuchen Sie es erneut.</Value>
     </LocaleResource>
     <LocaleResource Name="PayPalValidationFailure">
-        <Value>PayPal konnte die übermittelten Daten nicht verifizieren.</Value>
+        <Value>PayPal konnte die übermittelten Daten nicht verifizieren. Bitte überprüfen Sie Ihre Daten (insb. Rechnungs- und Versandadresse) und versuchen Sie es erneut.</Value>
     </LocaleResource>
     <LocaleResource Name="Promotion">
         <Value>Promotion</Value>

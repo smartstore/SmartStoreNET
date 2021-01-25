@@ -1,0 +1,84 @@
+﻿@using SmartStore.Rules
+@using Newtonsoft.Json.Linq;
+@model IRuleExpression
+@{
+    var id = "rule-value-" + Model.Id;
+    string fromStr = T("Common.From");
+    string toStr = T("Common.To");
+    string productId = null;
+    string minQuantity = null;
+    string maxQuantity = null;
+    RuleValueSelectListOption selectedProduct = null;
+
+    try
+    {
+        if (Model.RawValue.HasValue())
+        {
+            dynamic json = JObject.Parse(Model.RawValue);
+            productId = (string)json.ProductId;
+            minQuantity = (string)json.MinQuantity;
+            maxQuantity = (string)json.MaxQuantity;
+        }
+    }
+    catch { }
+
+    var remoteUrl = Url.Action("RuleOptions", "Rule", new
+    {
+        reason = RuleOptionsRequestReason.SelectListOptions,
+        ruleId = Model.Id,
+        rootRuleSetId = (int)ViewBag.RootRuleSetId,
+        descriptorMetadataKey = "ProductRuleDescriptor",
+        rawValue = productId
+    });
+
+    if (productId.HasValue() &&
+        Model.Descriptor.Metadata.TryGetValue("ProductRuleDescriptor", out var descriptorObj) && descriptorObj is RuleDescriptor productRuleDescriptor &&
+        productRuleDescriptor.SelectList is RemoteRuleValueSelectList list)
+    {
+        var ruleOptionsProviders = CommonServices.Resolve<IEnumerable<IRuleOptionsProvider>>();
+        var productOptionsProvider = ruleOptionsProviders.FirstOrDefault(x => x.Matches(list.DataSource));
+        if (productOptionsProvider != null)
+        {
+            var productOptions = productOptionsProvider.GetOptions(RuleOptionsRequestReason.SelectedDisplayNames, productRuleDescriptor, productId, 0, int.MaxValue, null);
+            selectedProduct = productOptions.Options.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual(productId));
+        }
+    }
+}
+<select id="@(id)-ProductId" name="@(id)-ProductId" data-placeholder="@T("Common.Unspecified")" data-remote-url="@remoteUrl">
+    @if (selectedProduct != null)
+    {
+        <option value="@selectedProduct.Value" selected="selected" @Html.Attr("data-hint", selectedProduct.Hint, selectedProduct.Hint?.HasValue() ?? false)>
+        @(selectedProduct.Text.NullEmpty() ?? selectedProduct.Value)</option>
+    }
+</select>
+<div class="numerictextbox-group flex-grow-1 ml-2" style="max-width: 140px;">
+	@(Html.Telerik().IntegerTextBox()
+        .Name(id + "-MinQuantity")
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .IncrementStep(1)
+        .MinValue(0)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
+        .EmptyMessage(fromStr)
+        .HtmlAttributes(new { title = fromStr })
+        .Value(minQuantity.HasValue() ? minQuantity.ToInt() : (int?)null))
+</div>
+<div class="numerictextbox-group flex-grow-1 ml-2 mr-2" style="max-width: 140px;">
+	@(Html.Telerik().IntegerTextBox()
+        .Name(id + "-MaxQuantity")
+        .EmptyMessage(T("Common.EnterValue"))
+        .ButtonTitleUp(T("Common.IncreaseValue"))
+        .ButtonTitleDown(T("Common.DecreaseValue"))
+        .IncrementStep(1)
+        .MinValue(0)
+        .ClientEvents(x => x.OnChange("onRuleValueChanged"))
+        .EmptyMessage(toStr)
+        .HtmlAttributes(new { title = toStr })
+        .Value(maxQuantity.HasValue() ? maxQuantity.ToInt() : (int?)null))
+</div>
+<script>
+    $(function () {
+        $('#@(id)-ProductId').selectWrapper();
+    });
+</script>

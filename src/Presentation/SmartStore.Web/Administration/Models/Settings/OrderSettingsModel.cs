@@ -30,11 +30,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MaxOrderTotal")]
         public decimal? OrderTotalMaximum { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ApplyToSubtotal")]
-        public bool ApplyToSubtotal { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderTotalRestrictionType")]
-        public bool OrderTotalRestrictionType { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.MultipleOrderTotalRestrictionsExpandRange")]
+        public bool MultipleOrderTotalRestrictionsExpandRange { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed")]
         public bool AnonymousCheckoutAllowed { get; set; }

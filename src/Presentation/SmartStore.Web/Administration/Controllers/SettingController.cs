@@ -1278,8 +1278,9 @@ namespace SmartStore.Admin.Controllers
 
             #region SEO custom mapping
 
-            // Fix Disallows joined with comma in MiniMapper (we need NewLine).
+            // Fix for Disallows & Allows joined with comma in MiniMapper (we need NewLine).
             model.SeoSettings.ExtraRobotsDisallows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
+            model.SeoSettings.ExtraRobotsAllows = string.Join(Environment.NewLine, seoSettings.ExtraRobotsAllows);
 
             model.SeoSettings.MetaTitle = seoSettings.MetaTitle;
             model.SeoSettings.MetaDescription = seoSettings.MetaDescription;

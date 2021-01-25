@@ -203,7 +203,6 @@ $(function () {
                     var type = el.data("type");
                     ShopBar.loadSummary(type, true);
                     el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
-                    $("#mini-cart-basket-check").toggleClass("d-none", data.displayCheckoutButtons);
                 }
                 else {
                     $(data.message).each(function (index, value) {

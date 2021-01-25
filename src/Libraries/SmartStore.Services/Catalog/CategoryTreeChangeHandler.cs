@@ -48,7 +48,7 @@ namespace SmartStore.Services.Catalog
         // Visibility affecting category prop names
         private static readonly string[] _a = new string[] { "LimitedToStores", "SubjectToAcl" };
         // Data affecting category prop names
-        private static readonly string[] _d = new string[] { "Name", "Alias", "ExternalLink", "PictureId", "BadgeText", "BadgeStyle" };
+        private static readonly string[] _d = new string[] { "Name", "Alias", "ExternalLink", "MediaFileId", "BadgeText", "BadgeStyle" };
 
         private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>
         {

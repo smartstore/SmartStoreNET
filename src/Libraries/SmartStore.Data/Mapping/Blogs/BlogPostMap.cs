@@ -16,6 +16,11 @@ namespace SmartStore.Data.Mapping.Blogs
             Property(bp => bp.MediaFileId).HasColumnName("MediaFileId");
             Property(bp => bp.PreviewMediaFileId).HasColumnName("PreviewMediaFileId");
 
+            HasOptional(bp => bp.Language)
+                .WithMany()
+                .HasForeignKey(bp => bp.LanguageId)
+                .WillCascadeOnDelete(false);
+
             HasOptional(bp => bp.MediaFile)
                 .WithMany()
                 .HasForeignKey(bp => bp.MediaFileId)

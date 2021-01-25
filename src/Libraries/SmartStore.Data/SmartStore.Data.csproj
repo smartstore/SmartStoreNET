@@ -537,6 +537,10 @@
     <Compile Include="Migrations\202012051645539_AddBlogAndNewsLanguage.designer.cs">
       <DependentUpon>202012051645539_AddBlogAndNewsLanguage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101251149352_V411Resources.cs" />
+    <Compile Include="Migrations\202101251149352_V411Resources.designer.cs">
+      <DependentUpon>202101251149352_V411Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -967,6 +971,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202012051645539_AddBlogAndNewsLanguage.resx">
       <DependentUpon>202012051645539_AddBlogAndNewsLanguage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101251149352_V411Resources.resx">
+      <DependentUpon>202101251149352_V411Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

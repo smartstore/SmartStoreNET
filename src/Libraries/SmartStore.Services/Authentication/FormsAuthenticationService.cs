@@ -139,6 +139,7 @@ namespace SmartStore.Services.Authentication
 
             return customerResolvers
                 .Select(x => x.Invoke(usernameOrEmail))
+                .Where(x => x != null)
                 .FirstOrDefault();
         }
     }

@@ -399,6 +399,8 @@ namespace SmartStore.WebApi.Controllers.OData
         {
             var entityConfig = configData.ModelBuilder.EntityType<Product>();
 
+            entityConfig.Ignore(x => x.MergedDataValues);
+
             entityConfig.Collection
                 .Action("Search")
                 .ReturnsCollectionFromEntitySet<Product>("Products");

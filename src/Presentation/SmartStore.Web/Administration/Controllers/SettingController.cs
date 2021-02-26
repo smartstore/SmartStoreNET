@@ -1061,7 +1061,7 @@ namespace SmartStore.Admin.Controllers
                             Description = x.Description,
                             IsPluginInfo = systemCookies.Contains(x.Name),
                             CookieTypeName = x.CookieType.ToString(),
-                            id=x.Id
+                            id = x.Id
                         };
                     })
                     .ToList(),
@@ -1075,13 +1075,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [GridAction(EnableCustomBinding = true)]
-        public ActionResult CookieInfoDelete(string name, GridCommand command)
+        public ActionResult CookieInfoDelete(int Id, GridCommand command)
         {
             // First deserialize setting.
             var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
 
             var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
-            ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(name));
+            ciList.Remove(x => x.Id == Id);
 
             // Now serialize again.
             privacySettings.CookieInfos = JsonConvert.SerializeObject(ciList, Formatting.None);
@@ -1190,7 +1190,7 @@ namespace SmartStore.Admin.Controllers
             var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
             var cookieInfo = ciList
                 .Select(x => x)
-                .Where(x => x.Id==model.id)
+                .Where(x => x.Id == model.id)
                 .FirstOrDefault();
 
             if (cookieInfo == null)

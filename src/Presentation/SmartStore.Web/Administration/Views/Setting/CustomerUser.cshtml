@@ -929,8 +929,6 @@
 			e.preventDefault();
 			var grid = $('#cookie-infos-grid').data('tGrid');
             var tr = $(this).closest('tr');
-            console.log(grid.dataItem(tr));
-			var name = grid.dataItem(tr).Name;
 			var id = grid.dataItem(tr).id;
 			var href = '@Url.Action("CookieInfoEditPopup", "Setting")/' + id + '?btnId=btnRefreshCookieInfos&formId=cookie-infos-form';
 

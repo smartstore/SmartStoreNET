@@ -1060,7 +1060,8 @@ namespace SmartStore.Admin.Controllers
                             Name = x.Name,
                             Description = x.Description,
                             IsPluginInfo = systemCookies.Contains(x.Name),
-                            CookieTypeName = x.CookieType.ToString()
+                            CookieTypeName = x.CookieType.ToString(),
+                            id=x.Id
                         };
                     })
                     .ToList(),
@@ -1105,6 +1106,7 @@ namespace SmartStore.Admin.Controllers
         [AdminAuthorize]
         public ActionResult CookieInfoCreatePopup(string btnId, string formId, CookieInfoModel model)
         {
+            ModelState["id"].Errors.Clear();
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -1114,25 +1116,14 @@ namespace SmartStore.Admin.Controllers
 
             if (ciList == null)
                 ciList = new List<CookieInfo>();
-
-            var cookieInfo = ciList
-                .Select(x => x)
-                .Where(x => x.Name.IsCaseInsensitiveEqual(model.Name))
-                .FirstOrDefault();
-
-            if (cookieInfo != null)
-            {
-                // Remove item if it's already there.
-                ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(cookieInfo.Name));
-            }
-
-            cookieInfo = new CookieInfo
+            var cookieInfo = new CookieInfo
             {
                 // TODO: Use MiniMapper
                 CookieType = model.CookieType,
                 Name = model.Name,
                 Description = model.Description,
-                SelectedStoreIds = model.SelectedStoreIds
+                SelectedStoreIds = model.SelectedStoreIds,
+                Id = (ciList.Count > 0 ? ciList.Max(x => x.Id) + 1 : 0),
             };
 
             ciList.Add(cookieInfo);
@@ -1157,13 +1148,13 @@ namespace SmartStore.Admin.Controllers
         }
 
         [AdminAuthorize]
-        public ActionResult CookieInfoEditPopup(string name)
+        public ActionResult CookieInfoEditPopup(int Id)
         {
             var privacySettings = Services.Settings.LoadSetting<PrivacySettings>();
             var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
             var cookieInfo = ciList
                 .Select(x => x)
-                .Where(x => x.Name.IsCaseInsensitiveEqual(name))
+                .Where(x => x.Id == Id)
                 .FirstOrDefault();
 
             if (cookieInfo == null)
@@ -1177,7 +1168,8 @@ namespace SmartStore.Admin.Controllers
                 CookieType = cookieInfo.CookieType,
                 Name = cookieInfo.Name,
                 Description = cookieInfo.Description,
-                SelectedStoreIds = cookieInfo.SelectedStoreIds
+                SelectedStoreIds = cookieInfo.SelectedStoreIds,
+                id = cookieInfo.Id
             };
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -1198,7 +1190,7 @@ namespace SmartStore.Admin.Controllers
             var ciList = JsonConvert.DeserializeObject<List<CookieInfo>>(privacySettings.CookieInfos);
             var cookieInfo = ciList
                 .Select(x => x)
-                .Where(x => x.Name.IsCaseInsensitiveEqual(model.Name))
+                .Where(x => x.Id==model.id)
                 .FirstOrDefault();
 
             if (cookieInfo == null)
@@ -1216,9 +1208,6 @@ namespace SmartStore.Admin.Controllers
                 cookieInfo.Description = model.Description;
                 cookieInfo.CookieType = model.CookieType;
                 cookieInfo.SelectedStoreIds = model.SelectedStoreIds;
-
-                ciList.Remove(x => x.Name.IsCaseInsensitiveEqual(cookieInfo.Name));
-                ciList.Add(cookieInfo);
 
                 privacySettings.CookieInfos = JsonConvert.SerializeObject(ciList, Formatting.None);
 
@@ -1360,7 +1349,7 @@ namespace SmartStore.Admin.Controllers
             #region POST mapping
 
             // Set CountryId explicitly else it can't be resetted.
-            companySettings.CountryId = model.CompanyInformationSettings.CountryId ?? 0; 
+            companySettings.CountryId = model.CompanyInformationSettings.CountryId ?? 0;
 
             // (Un)track PDF logo id
             _mediaTracker.Value.Track(pdfSettings, prevPdfLogoId, x => x.LogoPictureId);

@@ -303,6 +303,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Description")]
         public string Description { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.Id")]
+        public int id { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieInfo.CookieType")]
         public CookieType CookieType { get; set; }
 

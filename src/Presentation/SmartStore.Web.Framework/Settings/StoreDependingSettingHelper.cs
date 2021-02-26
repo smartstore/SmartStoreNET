@@ -205,7 +205,7 @@ namespace SmartStore.Web.Framework.Settings
             {
                 var name = propertyNameMapper?.Invoke(prop.Name) ?? prop.Name;
 
-                if (string.IsNullOrWhiteSpace(name))
+                if (string.IsNullOrWhiteSpace(name) || name == "CookieInfos")
                 {
                     continue;
                 }

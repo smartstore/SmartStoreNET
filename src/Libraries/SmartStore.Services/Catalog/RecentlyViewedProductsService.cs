@@ -128,8 +128,7 @@ namespace SmartStore.Services.Catalog
                 maxProducts = 8;
             }
 
-            var skip = Math.Max(0, newProductIds.Count - maxProducts);
-            newProductIds.Skip(skip).Take(maxProducts).Each(x =>
+            newProductIds.Take(maxProducts).Each(x =>
             {
                 recentlyViewedCookie.Values.Add("RecentlyViewedProductIds", x.ToString());
             });

@@ -105,22 +105,19 @@ namespace SmartStore.WebApi.Controllers.OData
 
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
-            var entityConfig = configData.ModelBuilder.EntityType<FileItemInfo>();
+            const string infoSetName = "FileItemInfos";
+            configData.ModelBuilder.EntitySet<FileItemInfo>(infoSetName);
+
+            var entityConfig = configData.ModelBuilder.EntityType<MediaFile>();
 
             entityConfig.Collection
                 .Action("GetFileByPath")
-                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
+                .ReturnsFromEntitySet<FileItemInfo>(infoSetName)
                 .Parameter<string>("Path");
-
-            //entityConfig.Collection
-            //    .Action("GetFileByName")
-            //    .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
-            //    .AddParameter<string>("FileName")
-            //    .AddParameter<int>("FolderId");
 
             entityConfig.Collection
                 .Function("GetFilesByIds")
-                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
+                .ReturnsFromEntitySet<FileItemInfo>(infoSetName)
                 .CollectionParameter<int>("Ids");
 
             entityConfig.Collection
@@ -130,7 +127,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("SearchFiles")
-                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
+                .ReturnsFromEntitySet<FileItemInfo>(infoSetName)
                 .Parameter<MediaSearchQuery>("Query");
 
             entityConfig.Collection
@@ -155,7 +152,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig
                 .Action("MoveFile")
-                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles")
+                .ReturnsFromEntitySet<FileItemInfo>(infoSetName)
                 .AddParameter<string>("DestinationFileName")
                 .AddParameter<DuplicateFileHandling>("DuplicateFileHandling", true);
 
@@ -172,7 +169,7 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("SaveFile")
-                .ReturnsFromEntitySet<FileItemInfo>("MediaFiles");
+                .ReturnsFromEntitySet<FileItemInfo>(infoSetName);
         }
 
         /// POST /MediaFiles/GetFileByPath {"Path":"content/my-file.jpg"}

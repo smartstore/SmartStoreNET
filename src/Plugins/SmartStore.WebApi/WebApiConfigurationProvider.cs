@@ -54,8 +54,8 @@ namespace SmartStore.WebApi
             m.EntitySet<MeasureDimension>("MeasureDimensions");
             m.EntitySet<MeasureWeight>("MeasureWeights");
 
-            m.EntitySet<FileItemInfo>("MediaFiles");
-            m.EntitySet<FolderNodeInfo>("MediaFolders");
+            m.EntitySet<MediaFile>("MediaFiles");
+            m.EntitySet<MediaFolder>("MediaFolders");
             m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
 

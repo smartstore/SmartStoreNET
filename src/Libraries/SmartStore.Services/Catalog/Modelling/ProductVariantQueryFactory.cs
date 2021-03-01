@@ -159,7 +159,9 @@ namespace SmartStore.Services.Catalog.Modelling
                 {
                     return new DateTime(year, month, day);
                 }
-                catch { }
+                catch 
+                { 
+                }
             }
 
             return null;

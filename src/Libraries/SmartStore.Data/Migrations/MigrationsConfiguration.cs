@@ -55,7 +55,9 @@
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-    
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SocialSettings.TwitterSite.Error",
+                "The Twitter username must begin with an '@'.",
+                "Der Twitter-Benutzername muss mit einem '@' beginnen.");
         }
     }
 }

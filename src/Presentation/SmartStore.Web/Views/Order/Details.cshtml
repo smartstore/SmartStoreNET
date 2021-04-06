@@ -472,7 +472,7 @@
                                 @if (Model.ShowProductBundleImages)
                                 {
                                     <div class="mr-3" style="@("width: {0}px;".FormatInvariant(Math.Min(Model.BundleThumbSize, 60)))">
-                                        @if (item.Picture.ImageUrl.HasValue() && !item.HideThumbnail)
+                                        @if (item.Picture != null && item.Picture.ImageUrl.HasValue() && !item.HideThumbnail)
                                         {
                                             <img class="img-fluid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
                                         }

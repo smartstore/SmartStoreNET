@@ -246,7 +246,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [Permission(Permissions.Configuration.Currency.Update)]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult ApplyRate(string currencyCode, decimal rate)
         {
             var currency = _currencyService.GetCurrencyByCode(currencyCode);

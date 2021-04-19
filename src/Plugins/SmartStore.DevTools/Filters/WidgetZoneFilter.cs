@@ -101,6 +101,10 @@ namespace SmartStore.DevTools.Filters
         {
             if (!_services.WorkContext.CurrentCustomer.IsAdmin())
             {
+                if (ctx.Request.Url.AbsolutePath == "/common/pdfreceiptfooter" || ctx.Request.Url.AbsolutePath == "/common/pdfreceiptheader")
+                {
+                    return false;
+                }
                 return ctx.Request.IsLocal;
             }
 

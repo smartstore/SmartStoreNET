@@ -1,4 +1,6 @@
 ﻿@using SmartStore.Web.Models.Boards;
+@using SmartStore.Core.Html;
+
 @model ForumPostModel
 @Html.Raw("<a name=\"{0}\"></a>".FormatInvariant(Model.Id))
 
@@ -22,7 +24,7 @@
                 <i class="far fa-edit"></i>
                 @Html.ActionLink(T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
             }
-                
+
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
                 <i class="fa fa-times"></i>
@@ -49,38 +51,38 @@
                     @if (Model.IsCustomerForumModerator)
                     {
                         <div class="status">
-							<span class="pr-1">@T("Forum.Status"):</span>
-							<span class="stat-value">@T("Forum.Moderator")</span>
+                            <span class="pr-1">@T("Forum.Status"):</span>
+                            <span class="stat-value">@T("Forum.Moderator")</span>
                         </div>
                     }
                     @if (Model.ShowCustomersPostCount)
                     {
                         <div class="totalposts">
-							<span class="pr-1">@T("Forum.TotalPosts"):</span>
-							<span class="stat-value">@Model.ForumPostCount.ToString("N0")</span>
+                            <span class="pr-1">@T("Forum.TotalPosts"):</span>
+                            <span class="stat-value">@Model.ForumPostCount.ToString("N0")</span>
                         </div>
                     }
                     @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
                     {
                         <div class="joined">
                             <span class="pr-1">@T("Forum.Joined"):</span>
-							<span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
+                            <span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
                         </div>
                     }
                     @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest && Model.CustomerLocation.HasValue())
                     {
                         <div class="location">
                             <span class="pr-1">@T("Forum.Location"):</span>
-							<span class="stat-value">@Model.CustomerLocation</span>
+                            <span class="stat-value">@Model.CustomerLocation</span>
                         </div>
                     }
                     @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
-				    {
+                    {
                         <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href="@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })">
                             <i class="fa fa-user"></i>
                             <span>@T("Forum.PrivateMessages.PM")</span>
                         </a>
-				    }
+                    }
                 </div>
             </div>
         </div>
@@ -88,17 +90,17 @@
             <div class="post-stats text-muted mb-1">
                 <span class="posttime">
                     <span class="pr-1">@T("Forum.Posted"):</span>
-				    <span class="stat-value">@Model.PostCreatedOnStr</span>
+                    <span class="stat-value">@Model.PostCreatedOnStr</span>
                 </span>
                 <span class="votes@(Model.VoteCount > 0 ? "" : " hide")" title="@T("Common.Liked")">
                     <span class="pl-1 pr-1">&middot;</span>
                     <span><i class="fa fa-thumbs-up"></i></span>
-				    <span class="vote-count stat-value">@Model.VoteCount.ToString("N0")</span>
+                    <span class="vote-count stat-value">@Model.VoteCount.ToString("N0")</span>
                 </span>
             </div>
             <div class="post-body">
                 <div class="posttext" dir="auto">
-                    @Html.Raw(Model.FormattedText)
+                    @Html.Raw(HtmlUtils.SanitizeHtml(Model.FormattedText))
                 </div>
                 @Html.Hidden("Id", Model.Id)
             </div>

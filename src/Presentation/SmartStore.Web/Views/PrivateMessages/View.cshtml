@@ -1,5 +1,6 @@
 ﻿@model PrivateMessageModel
 @using SmartStore.Web.Models.PrivateMessages;
+@using SmartStore.Core.Html;
 @{
     Layout = "_Layout";
     Html.AddTitleParts(T("PageTitle.ViewPM").Text);
@@ -28,7 +29,7 @@
             <div class="col-sm-9">
                 <div class="card">
                     <div class="card-body" dir="auto">
-                        @Html.Raw(Model.Message)
+                        @Html.Raw(HtmlUtils.SanitizeHtml(Model.Message, true))
                     </div>
                 </div>
             </div>

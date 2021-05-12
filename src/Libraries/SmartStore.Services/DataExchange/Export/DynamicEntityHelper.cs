@@ -353,7 +353,7 @@ namespace SmartStore.Services.DataExchange.Export
                 dynamic sp = new DynamicEntity(address.StateProvince);
                 var translations = ctx.Translations[nameof(StateProvince)];
 
-                sp.Name = translations.GetValue(ctx.LanguageId, address.StateProvince.Id, nameof(StateProvince)) ?? address.StateProvince.Name;
+                sp.Name = translations.GetValue(ctx.LanguageId, address.StateProvince.Id, nameof(StateProvince.Name)) ?? address.StateProvince.Name;
                 sp._Localized = GetLocalized(ctx, translations, null, address.StateProvince, x => x.Name);
 
                 result.StateProvince = sp;

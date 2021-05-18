@@ -338,7 +338,7 @@ namespace SmartStore.Web.Controllers
 
             if (_seoSettings.CanonicalUrlsEnabled)
             {
-                var url = Url.RouteUrl("Blog", Request.Url.Scheme);
+                var url = Url.RouteUrl("Blog", null, Request.Url.Scheme);
                 _pageAssetsBuilder.AddCanonicalUrlParts(url);
             }
 

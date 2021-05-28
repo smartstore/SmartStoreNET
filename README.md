@@ -29,7 +29,7 @@
 
 <p align="center">
 	<a href="#try-it-online">Try Online</a> ∙
-    <a href="http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home">Docs</a> ∙ 
+    <a href="http://docs.smartstore.com/display/SMNET">Docs</a> ∙ 
 	<a href="http://community.smartstore.com">Forum</a> ∙ 
 	<a href="http://community.smartstore.com/marketplace">Marketplace</a> ∙ 
 	<a href="http://translate.smartstore.com/">Translations</a>
@@ -54,7 +54,7 @@ The state-of-the-art architecture of Smartstore - with `ASP.NET 4.5` + `MVC 5`, 
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Translations:** [http://translate.smartstore.com/](http://translate.smartstore.com/)
-* **Documentation:** [Smartstore Documentation in English](http://docs.smartstore.com/display/SMNET/Smartstore+Documentation+Home)
+* **Documentation:** [Smartstore Documentation in English](http://docs.smartstore.com/display/SMNET)
 * **Developer Extension:** [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SmartStoreAG.Smartstore)
 
 <p>&nbsp;</p>

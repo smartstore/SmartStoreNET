@@ -145,7 +145,7 @@ namespace SmartStore.Services.Catalog
 
                                     if (allowHyperlinks)
                                     {
-                                        var downloadLink = string.Format("{0}download/getfileupload/?downloadId={1}", _webHelper.GetStoreLocation(false), download.DownloadGuid);
+                                        var downloadLink = string.Format("{0}download/getfileupload/?downloadId={1}", _webHelper.GetStoreLocation(), download.DownloadGuid);
                                         attributeText = string.Format("<a href=\"{0}\" class=\"fileuploadattribute\">{1}</a>", downloadLink, fileName);
                                     }
                                     else

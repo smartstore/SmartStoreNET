@@ -499,10 +499,6 @@ namespace SmartStore.Admin.Controllers
                         .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
                         .ToList();
 
-                    model.Filter.AvailableManufacturers = allManufacturers
-                        .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-                        .ToList();
-
                     model.Filter.AvailableProductTags = allProductTags
                         .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
                         .ToList();

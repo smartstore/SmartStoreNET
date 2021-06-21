@@ -728,8 +728,14 @@ namespace SmartStore.Services.DataExchange.Export
             product.MergeWithCombination(productContext.Combination);
 
             var numberOfPictures = ctx.Projection.NumberOfMediaFiles ?? int.MaxValue;
-            var productDetailsPictureSize = ctx.Projection.PictureSize > 0 ? ctx.Projection.PictureSize : _mediaSettings.Value.ProductDetailsPictureSize;
-            var imageQuery = ctx.Projection.PictureSize > 0 ? new ProcessImageQuery { MaxWidth = ctx.Projection.PictureSize } : null;
+            var productDetailsPictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
+            ProcessImageQuery imageQuery = null;
+
+            if (ctx.Projection.PictureSize > 0)
+            {
+                productDetailsPictureSize = _mediaSettings.Value.GetNextValidThumbnailSize(ctx.Projection.PictureSize);
+                imageQuery = new ProcessImageQuery { MaxWidth = productDetailsPictureSize };
+            }
 
             IEnumerable<ProductMediaFile> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(product.Id);
             var productManufacturers = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);

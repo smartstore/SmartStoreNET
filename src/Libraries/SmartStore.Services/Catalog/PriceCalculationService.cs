@@ -1035,7 +1035,7 @@ namespace SmartStore.Services.Catalog
 
                 if (linkedProduct != null)
                 {
-                    var productPrice = GetFinalPrice(linkedProduct, true) * attributeValue.Quantity;
+                    var productPrice = GetFinalPrice(linkedProduct, false) * attributeValue.Quantity;
                     return productPrice;
                 }
             }

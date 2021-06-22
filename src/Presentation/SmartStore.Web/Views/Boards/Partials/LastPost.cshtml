@@ -20,7 +20,7 @@
 					<span class="pr-1">@T("Forum.By"):</span>
 					@if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
 					{
-						@Html.RouteLink(Model.CustomerName, "CustomerProfile", new { Id = Model.CustomerId })
+						@Html.RouteLink(Model.CustomerName.NaIfEmpty(), "CustomerProfile", new { Id = Model.CustomerId })
 					}
 					else
 					{

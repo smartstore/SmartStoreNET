@@ -119,7 +119,7 @@ namespace SmartStore.Utilities.Threading
                     _item.Semaphore.Release();
                 }
 
-                _item.Semaphore.Dispose();
+                //_item.Semaphore.Dispose();
                 _item = null;
             }
         }

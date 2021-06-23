@@ -1225,12 +1225,12 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Any())
             {
-                query = query.Where(x => x.BillingAddress != null && ctx.Filter.BillingCountryIds.Contains(x.BillingAddress.Id));
+                query = query.Where(x => x.BillingAddress != null && ctx.Filter.BillingCountryIds.Contains(x.BillingAddress.CountryId ?? 0));
             }
 
             if (ctx.Filter.ShippingCountryIds != null && ctx.Filter.ShippingCountryIds.Any())
             {
-                query = query.Where(x => x.ShippingAddress != null && ctx.Filter.ShippingCountryIds.Contains(x.ShippingAddress.Id));
+                query = query.Where(x => x.ShippingAddress != null && ctx.Filter.ShippingCountryIds.Contains(x.ShippingAddress.CountryId ?? 0));
             }
 
             if (ctx.Filter.LastActivityFrom.HasValue)
@@ -2060,8 +2060,11 @@ namespace SmartStore.Services.DataExchange.Export
             var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
             var ctx = new DataExporterContext(request, cancellation.Token, true);
 
-            var unused = Init(ctx);
-            var skip = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
+            Init(ctx);
+
+            var limit = Math.Max(request.Profile.Limit, 0);
+            var take = limit > 0 && limit < PageSize ? limit : PageSize;
+            var skip = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * take);
 
             if (!HasPermission(ctx))
             {
@@ -2074,43 +2077,43 @@ namespace SmartStore.Services.DataExchange.Export
             {
                 case ExportEntityType.Product:
                     {
-                        var items = GetProductQuery(ctx, skip, PageSize).ToList();
+                        var items = GetProductQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.Order:
                     {
-                        var items = GetOrderQuery(ctx, skip, PageSize).ToList();
+                        var items = GetOrderQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.Category:
                     {
-                        var items = GetCategoryQuery(ctx, skip, PageSize).ToList();
+                        var items = GetCategoryQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.Manufacturer:
                     {
-                        var items = GetManufacturerQuery(ctx, skip, PageSize).ToList();
+                        var items = GetManufacturerQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.Customer:
                     {
-                        var items = GetCustomerQuery(ctx, skip, PageSize).ToList();
+                        var items = GetCustomerQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.NewsLetterSubscription:
                     {
-                        var items = GetNewsLetterSubscriptionQuery(ctx, skip, PageSize).ToList();
+                        var items = GetNewsLetterSubscriptionQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;
                 case ExportEntityType.ShoppingCartItem:
                     {
-                        var items = GetShoppingCartItemQuery(ctx, skip, PageSize).ToList();
+                        var items = GetShoppingCartItemQuery(ctx, skip, take).ToList();
                         items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
                     }
                     break;

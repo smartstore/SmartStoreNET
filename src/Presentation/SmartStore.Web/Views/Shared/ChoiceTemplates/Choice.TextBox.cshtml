@@ -7,4 +7,4 @@
 	var placeholder = Model.Description.RemoveHtml().TrimSafe();
 }
 
-<input name="@(controlId)" type="text" class="form-control" id="@(controlId)" placeholder="@placeholder" value="@Model.TextValue" @Html.Attr("disabled", "disabled", Model.IsDisabled) />
+<input name="@(controlId)-text" type="text" class="form-control" id="@(controlId)" placeholder="@placeholder" value="@Model.TextValue" @Html.Attr("disabled", "disabled", Model.IsDisabled) />

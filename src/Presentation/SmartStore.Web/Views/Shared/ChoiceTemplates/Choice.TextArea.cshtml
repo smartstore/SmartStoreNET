@@ -7,4 +7,4 @@
 	var placeholder = Model.Description.RemoveHtml().TrimSafe();
 }
 
-<textarea cols="20" rows="2" id="@(controlId)" name="@(controlId)" class="form-control" placeholder="@placeholder" @Html.Attr("disabled", "disabled", Model.IsDisabled)>@Model.TextValue</textarea>
+<textarea cols="20" rows="2" id="@(controlId)" name="@(controlId)-text" class="form-control" placeholder="@placeholder" @Html.Attr("disabled", "disabled", Model.IsDisabled)>@Model.TextValue</textarea>

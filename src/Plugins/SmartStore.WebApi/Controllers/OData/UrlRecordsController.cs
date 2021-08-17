@@ -8,6 +8,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     [WebApiAuthenticate]
+    [IEEE754Compatible]
     public class UrlRecordsController : WebApiEntityController<UrlRecord, IUrlRecordService>
     {
         [WebApiQueryable]

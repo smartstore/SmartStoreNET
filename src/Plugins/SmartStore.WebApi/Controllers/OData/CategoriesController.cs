@@ -13,6 +13,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class CategoriesController : WebApiEntityController<Category, ICategoryService>
     {
         private readonly Lazy<IUrlRecordService> _urlRecordService;

@@ -14,6 +14,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class CustomersController : WebApiEntityController<Customer, ICustomerService>
     {
         private readonly Lazy<IAddressService> _addressService;

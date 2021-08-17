@@ -26,6 +26,7 @@ namespace SmartStore.WebApi.Controllers.OData
     /// Some endpoints are accessible via POST where you would expect GET.
     /// That's because a function like GET /MediaFiles/FileExists(Path='content/my-file.jpg') would never work (HTTP status 404).
     /// </remarks>
+    [IEEE754Compatible]
     public class MediaFilesController : WebApiEntityController<MediaFile, IMediaService>
     {
         public static MediaLoadFlags _defaultLoadFlags = MediaLoadFlags.AsNoTracking | MediaLoadFlags.WithTags | MediaLoadFlags.WithTracks | MediaLoadFlags.WithFolder;

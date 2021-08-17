@@ -15,6 +15,7 @@ using SmartStore.WebApi.Models.OData.Media;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class MediaFoldersController : WebApiEntityController<MediaFolder, IFolderService>
     {
         private readonly IMediaService _mediaService;

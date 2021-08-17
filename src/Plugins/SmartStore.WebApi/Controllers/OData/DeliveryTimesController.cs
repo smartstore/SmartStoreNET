@@ -12,6 +12,7 @@ using SmartStore.WebApi.Models.OData;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class DeliveryTimesController : WebApiEntityController<DeliveryTime, IDeliveryTimeService>
     {
         [WebApiQueryable]

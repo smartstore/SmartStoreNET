@@ -284,6 +284,7 @@
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Filters\IEEE754CompatibleAttribute.cs" />
     <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
     <Compile Include="Models\Api\UploadImportFile.cs" />

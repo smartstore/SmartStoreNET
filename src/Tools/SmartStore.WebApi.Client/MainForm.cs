@@ -110,6 +110,11 @@ namespace SmartStore.WebApi.Client
                 AdditionalHeaders = cboHeaders.Text
             };
 
+            if (chkIEEE754Compatible.Checked)
+            {
+                context.HttpAcceptType += ";IEEE754Compatible=true";
+            }
+
             if (cboQuery.Text.HasValue())
             {
                 context.Url = string.Format("{0}?{1}", context.Url, cboQuery.Text);

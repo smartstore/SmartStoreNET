@@ -17,6 +17,7 @@ using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class OrdersController : WebApiEntityController<Order, IOrderService>
     {
         private readonly Lazy<IOrderProcessingService> _orderProcessingService;

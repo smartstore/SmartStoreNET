@@ -16,6 +16,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class AddressesController : WebApiEntityController<Address, IAddressService>
     {
         private readonly Lazy<IRepository<Order>> _orderRepository;

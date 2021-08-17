@@ -21,6 +21,7 @@ using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class ProductsController : WebApiEntityController<Product, IProductService>
     {
         private readonly Lazy<IPriceCalculationService> _priceCalculationService;

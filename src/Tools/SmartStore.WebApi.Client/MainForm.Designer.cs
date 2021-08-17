@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+            this.chkIEEE754Compatible = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -72,6 +73,16 @@
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // chkIEEE754Compatible
+            // 
+            this.chkIEEE754Compatible.AutoSize = true;
+            this.chkIEEE754Compatible.Location = new System.Drawing.Point(1023, 357);
+            this.chkIEEE754Compatible.Name = "chkIEEE754Compatible";
+            this.chkIEEE754Compatible.Size = new System.Drawing.Size(119, 17);
+            this.chkIEEE754Compatible.TabIndex = 50;
+            this.chkIEEE754Compatible.Text = "IEEE754Compatible";
+            this.chkIEEE754Compatible.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -333,7 +344,7 @@
             // 
             this.panel2.Controls.Add(this.radioXml);
             this.panel2.Controls.Add(this.radioJson);
-            this.panel2.Location = new System.Drawing.Point(1013, 353);
+            this.panel2.Location = new System.Drawing.Point(873, 353);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(135, 23);
             this.panel2.TabIndex = 26;
@@ -381,7 +392,7 @@
             this.lblResponse.Location = new System.Drawing.Point(19, 361);
             this.lblResponse.Name = "lblResponse";
             this.lblResponse.ReadOnly = true;
-            this.lblResponse.Size = new System.Drawing.Size(988, 14);
+            this.lblResponse.Size = new System.Drawing.Size(813, 14);
             this.lblResponse.TabIndex = 32;
             this.lblResponse.Text = "Response";
             // 
@@ -481,6 +492,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1154, 811);
+            this.Controls.Add(this.chkIEEE754Compatible);
             this.Controls.Add(this.btnDeleteFileUpload);
             this.Controls.Add(this.cboFileUpload);
             this.Controls.Add(this.btnDeleteHeaders);
@@ -576,6 +588,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox cboFileUpload;
         private System.Windows.Forms.Button btnDeleteFileUpload;
+        private System.Windows.Forms.CheckBox chkIEEE754Compatible;
     }
 }
 

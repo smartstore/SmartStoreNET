@@ -1992,12 +1992,7 @@ namespace SmartStore.Web.Controllers
 
             if (cart.Count > 0)
             {
-                model.Weight = decimal.Zero;
-
-                foreach (var sci in cart)
-                {
-                    model.Weight += sci.Item.Product.Weight * sci.Item.Quantity;
-                }
+                model.Weight = _shippingService.GetShoppingCartTotalWeight(cart);
 
                 var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
                 if (measure != null)

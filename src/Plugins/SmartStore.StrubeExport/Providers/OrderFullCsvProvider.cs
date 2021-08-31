@@ -72,6 +72,7 @@ namespace SmartStore.StrubeExport.Providers
         {
             dynamic currency = context.Currency;
             //string _FormatString = "{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13}";
+            var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
 
             //Create Streamwriter
             StreamWriter _sw = new StreamWriter(context.DataStream);
@@ -110,7 +111,7 @@ namespace SmartStore.StrubeExport.Providers
                     {
                         foreach (OrderItem item in orderItem)
                         {
-                            OrderDetail orderDetail = new OrderDetail(item,_encryptionService,_encryptionKey);
+                            OrderDetail orderDetail = new OrderDetail(item,config,_encryptionService,_encryptionKey);
                             _sw.WriteLine(orderDetail.GetCSVLine());
                             //Product itemProduct = item.Product;
                             //_sw.WriteLine(String.Format(_FormatString,

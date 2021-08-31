@@ -89,6 +89,7 @@ namespace SmartStore.StrubeExport.Providers
         {
             dynamic currency = context.Currency;
             OrderDetails orderDetails = new OrderDetails();
+            var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
             // convert the lines
             while (context.Abort == DataExchangeAbortion.None && context.DataSegmenter.ReadNextSegment())
             {
@@ -107,7 +108,7 @@ namespace SmartStore.StrubeExport.Providers
                     {
                         foreach (OrderItem item in orderItem)
                         {
-                            OrderDetail tmp = new OrderDetail(item,_encryptionService,_encryptionKey);
+                            OrderDetail tmp = new OrderDetail(item,config,_encryptionService,_encryptionKey);
                             orderDetails.Add(tmp);
                             ++context.RecordsSucceeded;
                         }
@@ -119,7 +120,7 @@ namespace SmartStore.StrubeExport.Providers
                 }
             }
             //create ExcelPackage
-
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excelPackage = new ExcelPackage(context.DataStream))
             {
                 var workSheet = excelPackage.Workbook.Worksheets.Add(

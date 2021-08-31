@@ -69,21 +69,47 @@ namespace SmartStore.StrubeExport.Models
 
         }
 
-        public OrderDetail(OrderItem orderItem, IEncryptionService encryptionService=null,string encryptionKey="")
+        public OrderDetail(OrderItem orderItem, ProfileConfigurationModel _config,IEncryptionService encryptionService=null,string encryptionKey="")
         {
             this.Id = orderItem.Order.OrderGuid.ToString();
             this.OrderId = orderItem.Order.GetOrderNumber();
             this.Comment = orderItem.Order.CustomerOrderComment;
-            this.Company = orderItem.Order.ShippingAddress.Company;
-            this.Name = orderItem.Order.ShippingAddress.LastName;
-            this.Surname = orderItem.Order.ShippingAddress.FirstName;
-            this.Address1 = orderItem.Order.ShippingAddress.Address1;
-            this.Address2 = orderItem.Order.ShippingAddress.Address2;
-            this.ZipCode = orderItem.Order.ShippingAddress.ZipPostalCode;
-            this.City = orderItem.Order.ShippingAddress.City;
-            this.Country = orderItem.Order.ShippingAddress.Country.Name;
-            this.CustomerEmail = orderItem.Order.Customer.Email;
-            this.OrderAmount = orderItem.Order.OrderTotal;
+            if(_config.ExportShipAddress)
+            {
+                this.Company = orderItem.Order.ShippingAddress.Company;
+                this.Name = orderItem.Order.ShippingAddress.LastName;
+                this.Surname = orderItem.Order.ShippingAddress.FirstName;
+                this.Address1 = orderItem.Order.ShippingAddress.Address1;
+                this.Address2 = orderItem.Order.ShippingAddress.Address2;
+                this.ZipCode = orderItem.Order.ShippingAddress.ZipPostalCode;
+                this.City = orderItem.Order.ShippingAddress.City;
+                this.Country = orderItem.Order.ShippingAddress.Country.Name;
+                this.CustomerEmail = orderItem.Order.ShippingAddress.Email;
+            }
+            else
+            {
+                this.Company = orderItem.Order.BillingAddress.Company;
+                this.Name = orderItem.Order.BillingAddress.LastName;
+                this.Surname = orderItem.Order.BillingAddress.FirstName;
+                this.Address1 = orderItem.Order.BillingAddress.Address1;
+                this.Address2 = orderItem.Order.BillingAddress.Address2;
+                this.ZipCode = orderItem.Order.BillingAddress.ZipPostalCode;
+                this.City = orderItem.Order.BillingAddress.City;
+                this.Country = orderItem.Order.BillingAddress.Country.Name;
+                this.CustomerEmail = orderItem.Order.BillingAddress.Email;
+            }
+            if(string.IsNullOrEmpty(this.CustomerEmail))
+            {
+                this.CustomerEmail = orderItem.Order.Customer.Email;
+            }
+            if(!_config.SuppressPrice)
+            {
+                this.OrderAmount = orderItem.Order.OrderTotal;
+            }
+            else
+            {
+                this.OrderAmount = 0;
+            }
             this.ItemId = orderItem.Product.ManufacturerPartNumber;
             this.SKU = orderItem.Product.Sku;
             this.Gtin = orderItem.Product.Gtin;
@@ -93,18 +119,18 @@ namespace SmartStore.StrubeExport.Models
             this.ShipDateTime = null;
             this.PaymentType = orderItem.Order.PaymentMethodSystemName;
             // some fields ar encrypted. Try to decrypt only if Service available
-            if(encryptionService!=null)
+            if(encryptionService!=null && !_config.SuppressBank)
             {
                 this.DirectDebitAccountHolder = encryptionService.DecryptText(orderItem.Order.DirectDebitAccountHolder, encryptionKey);
                 this.DirectDebitBIC = encryptionService.DecryptText(orderItem.Order.DirectDebitBIC,encryptionKey);
                 this.DirectDebitIBAN = encryptionService.DecryptText(orderItem.Order.DirectDebitIban,encryptionKey);
             }
-            else
-            {
-                this.DirectDebitAccountHolder = orderItem.Order.DirectDebitAccountHolder;
-                this.DirectDebitBIC = orderItem.Order.DirectDebitBIC;
-                this.DirectDebitIBAN = orderItem.Order.DirectDebitIban;
-            }
+            //else
+            //{
+            //    this.DirectDebitAccountHolder = orderItem.Order.DirectDebitAccountHolder;
+            //    this.DirectDebitBIC = orderItem.Order.DirectDebitBIC;
+            //    this.DirectDebitIBAN = orderItem.Order.DirectDebitIban;
+            //}
         }
 
         /// <summary>

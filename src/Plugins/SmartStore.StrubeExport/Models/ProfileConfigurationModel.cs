@@ -12,7 +12,7 @@ namespace SmartStore.StrubeExport.Models
     public class ProfileConfigurationModel
     {
         [SmartResourceDisplayName("Plugins.SmartStore.StrubeExport.ExportShipAddress")]
-        public bool ExportShipAddress { get; set; } = false;
+        public bool ExportShipAddress { get; set; } = true;
 
         [SmartResourceDisplayName("Plugins.SmartStore.StrubeExport.SuppressPrice")]
         public bool SuppressPrice { get; set; } = false;

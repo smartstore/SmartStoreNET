@@ -1,0 +1,10 @@
+﻿FriendlyName: StrubeExport
+SystemName: SmartStore.StrubeExport
+Group: Analytics
+Version: 4.1.1
+MinAppVersion: 4.1.1
+Author: Strube D&S GmbH
+DisplayOrder: 1
+FileName: SmartStore.StrubeExport.dll
+ResourceRootKey: Plugins.SmartStore.StrubeExport
+Url: 

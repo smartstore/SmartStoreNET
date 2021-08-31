@@ -1,0 +1,10 @@
+﻿FriendlyName: Strube-Order-Export
+Description: Provides Export Formats for Strube Companies
+SystemName: Strube.Export
+Group: Developer
+Version: 4.1.1
+MinAppVersion: 4.1.1
+Author: Strube DuS GmbH
+DisplayOrder: 1
+FileName: Strube.Export.dll
+ResourceRootKey: Plugins.Strube.Export

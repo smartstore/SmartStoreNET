@@ -1,0 +1,67 @@
+﻿@model SmartStore.ConfigurableExportTest.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+@{
+    Layout = "";
+}
+
+<div class="plugin-actions">
+    <button type="submit" name="save" value="save" class="btn btn-warning">
+        <i class="fa fa-check"></i>
+        <span>@T("Admin.Common.Save")</span>
+    </button>
+</div>	
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.SmartStore.ConfigurableExportTest.AdminInstruction"))
+</div>
+
+@using (Html.BeginForm())
+{
+    <div class="adminContent">
+		<div class="adminRow">
+			<div class="adminTitle">
+                @Html.SmartLabelFor(model => model.MyFirstSetting)
+            </div>
+			<div class="adminData">
+                @Html.SettingEditorFor(model => model.MyFirstSetting)
+                @Html.ValidationMessageFor(model => model.MyFirstSetting)
+            </div>
+        </div>
+
+        
+        <div class="adminRow">
+	        <div class="adminTitle">
+               	@Html.SmartLabelFor(model => model.PictureId)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.PictureId, new { transientUpload = true, validate = true })
+                @Html.ValidationMessageFor(model => model.PictureId)
+            </div>
+        </div>
+        <div class="adminRow">
+			<div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Color)
+            </div>
+			<div class="adminData">
+                @Html.SettingEditorFor(model => model.Color)
+                @Html.ValidationMessageFor(model => model.Color)
+            </div>
+        </div>
+        <div class="adminRow">
+			<div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Text)
+            </div>
+			<div class="adminData">
+                @Html.SettingEditorFor(model => model.Text)
+                @Html.ValidationMessageFor(model => model.Text)
+            </div>
+        </div>
+        
+
+        
+
+        
+    </div>
+}

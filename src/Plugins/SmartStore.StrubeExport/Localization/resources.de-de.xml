@@ -3,7 +3,7 @@
     <Value>StrubeExport</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.StrubeExport" AppendRootKey="false">
-    <Value>Detaillierte Beschreibung zu StrubeExport</Value>
+    <Value>Konfigurierbarer Order Export in verschiednene Formaten</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.SmartStore.StrubeExport" AppendRootKey="false">
@@ -21,11 +21,25 @@
       <LocaleResource Name="MyFirstSetting.Hint">
         <Value>Hilfstext zur Konfigurationsmöglichkeit.</Value>
       </LocaleResource>
-      
-      
 
-      
-      
+      <LocaleResource Name="GeneralSettings">
+        <Value>Allgemeine Einstellungen</Value>
+      </LocaleResource>
+
+      <LocaleResource Name="ExportShipAddress">
+        <Value>Lieferadresse exportieren</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressPrice">
+        <Value>Preise und Summen unterdrücken</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressBank">
+        <Value>Bankdaten unterdrücken</Value>
+      </LocaleResource>
+
+
+
+
+
     </Children>
   </LocaleResource>
 </Language>

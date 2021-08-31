@@ -69,6 +69,22 @@ namespace SmartStore.StrubeExport.Providers
             get { return "xlsx"; }
         }
 
+        public override ExportConfigurationInfo ConfigurationInfo => new ExportConfigurationInfo
+        {
+            PartialViewName = "~/Plugins/SmartStore.StrubeExport/Views/StrubeExport/ProfileConfiguration.cshtml",
+            ModelType = typeof(ProfileConfigurationModel),
+            Initialize = obj =>
+            {
+                var model = (obj as ProfileConfigurationModel);
+
+                //model.LanguageSeoCode = _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+
+                //model.AvailableCategories = model.DefaultGoogleCategory.HasValue()
+                //    ? new List<SelectListItem> { new SelectListItem { Text = model.DefaultGoogleCategory, Value = model.DefaultGoogleCategory, Selected = true } }
+                //    : new List<SelectListItem>();
+            }
+        };
+
         protected override void Export(ExportExecuteContext context)
         {
             dynamic currency = context.Currency;

@@ -1,8 +1,8 @@
-﻿using SmartStore.Core.Plugins;
+﻿using SmartStore.ConfigurableExportTest;
+using SmartStore.ConfigurableExportTest.Settings;
+using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
-using SmartStore.StrubeExport;
-using SmartStore.StrubeExport.Settings;
 using System;
 using System.Collections.Generic;
 using System.Web.Routing;
@@ -10,7 +10,7 @@ using System.Web.Routing;
 
 
 
-namespace SmartStore.StrubeExport
+namespace SmartStore.ConfigurableExportTest
 {
     public class Plugin : BasePlugin, IConfigurable
     {
@@ -29,18 +29,18 @@ namespace SmartStore.StrubeExport
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
-            controllerName = "StrubeExport";
-            routeValues = new RouteValueDictionary() { { "area", "SmartStore.StrubeExport" } };
+            controllerName = "ConfigurableExport";
+            routeValues = new RouteValueDictionary() { { "area", "SmartStore.ConfigurableExportTest" } };
         }
 
-        public static string SystemName = "Strube_Export_Plugin";
+
 
 
 
         public override void Install()
         {
             // Save settings with default values.
-            _services.Settings.SaveSetting(new StrubeExportSettings());
+            _services.Settings.SaveSetting(new ConfigurableExportSettings());
 
             // Import localized plugin resources (you can edit or add these in /Localization/resources.[Culture].xml).
             _services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -51,7 +51,7 @@ namespace SmartStore.StrubeExport
 
         public override void Uninstall()
         {
-            _services.Settings.DeleteSetting<StrubeExportSettings>();
+            _services.Settings.DeleteSetting<ConfigurableExportSettings>();
             _services.Localization.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
 

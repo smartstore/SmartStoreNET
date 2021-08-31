@@ -1,39 +1,35 @@
 ﻿using SmartStore.ComponentModel;
+using SmartStore.ConfigurableExportTest.Models;
+using SmartStore.ConfigurableExportTest.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Common;
-using SmartStore.Services.DataExchange.Export;
-using SmartStore.StrubeExport.Models;
-using SmartStore.StrubeExport.Settings;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
-using System;
 using System.Web.Mvc;
 
 
 
 namespace SmartStore.Controllers
 {
-    public class StrubeExportController : AdminControllerBase
+    public class ConfigurableExportController : AdminControllerBase
     {
         private readonly ICommonServices _services;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly Lazy<IExportProfileService> _exportService;
 
-        public StrubeExportController(
+        public ConfigurableExportController(
             ICommonServices services,
-            IGenericAttributeService genericAttributeService,Lazy<IExportProfileService> exportProfileService)
+            IGenericAttributeService genericAttributeService)
         {
             _services = services;
             _genericAttributeService = genericAttributeService;
-            _exportService = exportProfileService;
         }
 
 
         [AdminAuthorize]
         [ChildActionOnly]
         [LoadSetting]
-        public ActionResult Configure(StrubeExportSettings settings)
+        public ActionResult Configure(ConfigurableExportSettings settings)
         {
             var model = new ConfigurationModel();
             MiniMapper.Map(settings, model);
@@ -48,7 +44,7 @@ namespace SmartStore.Controllers
         [AdminAuthorize]
         [ChildActionOnly]
         [SaveSetting]
-        public ActionResult Configure(StrubeExportSettings settings, ConfigurationModel model, FormCollection form)
+        public ActionResult Configure(ConfigurableExportSettings settings, ConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
             {
@@ -57,7 +53,7 @@ namespace SmartStore.Controllers
 
 
             MiniMapper.Map(model, settings);
-            return RedirectToConfiguration("SmartStore.StrubeExport");
+            return RedirectToConfiguration("SmartStore.ConfigurableExportTest");
         }
 
 

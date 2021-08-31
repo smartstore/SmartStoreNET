@@ -3,7 +3,7 @@
     <Value>StrubeExport</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.StrubeExport" AppendRootKey="false">
-    <Value>Detailed description for StrubeExport</Value>
+    <Value>configurable exporte for orders in different formats</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.SmartStore.StrubeExport" AppendRootKey="false">
@@ -22,9 +22,22 @@
         <Value>Help text for the setting</Value>
       </LocaleResource>
 
-      
+      <LocaleResource Name="GeneralSettings">
+        <Value>General Settings</Value>
+      </LocaleResource>
 
-      
+      <LocaleResource Name="ExportShipAddress">
+        <Value>export ship address</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressPrice">
+        <Value>suppress price and amount</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressBank">
+        <Value>suppress Banking information's</Value>
+      </LocaleResource>
+
+
+
 
     </Children>
   </LocaleResource>

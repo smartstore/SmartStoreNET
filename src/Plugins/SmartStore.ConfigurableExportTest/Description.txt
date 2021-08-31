@@ -1,0 +1,10 @@
+﻿FriendlyName: ConfigurableExport
+SystemName: SmartStore.ConfigurableExportTest
+Group: Misc
+Version: 4.1.1
+MinAppVersion: 4.1.1
+Author: Strube DuS GmbH
+DisplayOrder: 1
+FileName: SmartStore.ConfigurableExportTest.dll
+ResourceRootKey: Plugins.SmartStore.ConfigurableExportTest
+Url: 

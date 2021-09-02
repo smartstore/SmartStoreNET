@@ -30,6 +30,7 @@ namespace SmartStore.WebApi.Client
                 txtPublicKey.Text = s.ApiPublicKey;
                 txtSecretKey.Text = s.ApiSecretKey;
                 txtUrl.Text = s.ApiUrl;
+                txtProxyPort.Text = s.ApiProxyPort;
                 txtVersion.Text = s.ApiVersion;
                 cboPath.Items.FromString(s.ApiPaths);
                 cboQuery.Items.FromString(s.ApiQuery);
@@ -77,6 +78,7 @@ namespace SmartStore.WebApi.Client
                 s.ApiPublicKey = txtPublicKey.Text;
                 s.ApiSecretKey = txtSecretKey.Text;
                 s.ApiUrl = txtUrl.Text;
+                s.ApiProxyPort = txtProxyPort.Text;
                 s.ApiVersion = txtVersion.Text;
                 Settings.Default[radioOdata.Checked ? "ApiPaths" : "ApiPaths2"] = cboPath.Items.IntoString();
                 s.ApiQuery = cboQuery.Items.IntoString();
@@ -100,11 +102,14 @@ namespace SmartStore.WebApi.Client
                 cboPath.Text = "/" + cboPath.Text;
             }
 
+            int.TryParse(txtProxyPort.Text, out var proxyPort);
+
             var context = new WebApiRequestContext
             {
                 PublicKey = txtPublicKey.Text,
                 SecretKey = txtSecretKey.Text,
                 Url = txtUrl.Text + (radioOdata.Checked ? "odata/" : "api/") + txtVersion.Text + cboPath.Text,
+                ProxyPort = proxyPort,
                 HttpMethod = cboMethod.Text,
                 HttpAcceptType = radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType,
                 AdditionalHeaders = cboHeaders.Text

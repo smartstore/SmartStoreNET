@@ -1,5 +1,6 @@
 ﻿@model NewsItemModel
 @using SmartStore.Web.Models.News;
+@using SmartStore.Core.Domain.Seo;
 
 @{
     Layout = "_Layout";
@@ -8,19 +9,26 @@
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	var imageUrl = Url.Media(Model.PictureModel.File, 0, null, false);
+    var newsItemUrl = Url.RouteUrl("NewsItem", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        Html.AddCanonicalUrlParts(newsItemUrl);
+    }
+
+    var imageUrl = Url.Media(Model.PictureModel.File, 0, null, false);
 }
 
 @{ Html.RenderAction("MetaPropertiesNews", "Common", new { newsItem = Model }); }
 
 <article class="page news-item-page" itemscope itemtype="http://schema.org/NewsArticle">
     @if (Model.DisplayAdminLink)
-	{
-		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
-			<i class="fa fa-cog"></i>
-			<span>@T("Common.Cms.EditNewsItem")</span>
-		</a>
-	}
+    {
+        <a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "News", new { id = Model.Id, area = "admin" })" target="admin-newsitem" rel="nofollow">
+            <i class="fa fa-cog"></i>
+            <span>@T("Common.Cms.EditNewsItem")</span>
+        </a>
+    }
 
     @if (imageUrl.HasValue())
     {
@@ -60,52 +68,52 @@
 
         @if (Model.Comments.AllowComments)
         {
-			<div class="row">
-				<div class="col-12">
-					<div class="block news-comment-form mt-5">
-						@using (Html.BeginForm())
-						{
-							<fieldset class="news-comment-form content-group mt-5">
-								<legend><span>@T("News.Comments.LeaveYourComment")</span></legend>
-								
-								@if (ViewContext.ViewData.ModelState.ContainsKey(""))
-								{
-									@Html.ValidationSummary(true)
-								}
+            <div class="row">
+                <div class="col-12">
+                    <div class="block news-comment-form mt-5">
+                        @using (Html.BeginForm())
+                        {
+                            <fieldset class="news-comment-form content-group mt-5">
+                                <legend><span>@T("News.Comments.LeaveYourComment")</span></legend>
 
-								<div class="form-group">
-									@Html.TextBoxFor(model => model.AddNewComment.CommentTitle, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentTitle) })
-									@Html.ValidationMessageFor(model => model.AddNewComment.CommentTitle)
-								</div>
+                                @if (ViewContext.ViewData.ModelState.ContainsKey(""))
+                                {
+                                    @Html.ValidationSummary(true)
+                                }
 
-								<div class="form-group">
-									@Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
-									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
-								</div>
+                                <div class="form-group">
+                                    @Html.TextBoxFor(model => model.AddNewComment.CommentTitle, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentTitle) })
+                                    @Html.ValidationMessageFor(model => model.AddNewComment.CommentTitle)
+                                </div>
 
-								@{ Html.RenderWidget("gdpr_consent"); }
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
+                                    @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
+                                </div>
 
-								@if (Model.AddNewComment.DisplayCaptcha)
-								{
-									<div class="form-group">
-										<div class="captcha-box">
-											@Html.Raw(Html.GenerateCaptcha())
-										</div>
-									</div>
-								}
+                                @{ Html.RenderWidget("gdpr_consent"); }
 
-								<div class="form-group">
-									<button type="submit" name="add-comment" value="add-comment" class="btn btn-primary btn-lg">
-										@T("News.Comments.SubmitButton")
-									</button>
-								</div>
-							</fieldset>
-						}
-					</div>
+                                @if (Model.AddNewComment.DisplayCaptcha)
+                                {
+                                    <div class="form-group">
+                                        <div class="captcha-box">
+                                            @Html.Raw(Html.GenerateCaptcha())
+                                        </div>
+                                    </div>
+                                }
 
-					@{ Html.RenderPartial("Comment.List", Model.Comments); }
-				</div>
-			</div>
+                                <div class="form-group">
+                                    <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary btn-lg">
+                                        @T("News.Comments.SubmitButton")
+                                    </button>
+                                </div>
+                            </fieldset>
+                        }
+                    </div>
+
+                    @{ Html.RenderPartial("Comment.List", Model.Comments); }
+                </div>
+            </div>
         }
 
         @{ Html.RenderWidget("newsitem_page_after_comments"); }

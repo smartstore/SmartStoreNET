@@ -1,11 +1,19 @@
 ﻿@model BlogPostModel
 @using SmartStore.Web.Models.Blogs;
+@using SmartStore.Core.Domain.Seo;
 @{
     Layout = "_Layout";
 
     Html.AddTitleParts(Model.MetaTitle.HasValue() ? Model.MetaTitle : Model.Title);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        Html.AddCanonicalUrlParts(blogPostUrl);
+    }
 }
 
 @{ Html.RenderAction("MetaPropertiesBlog", "Common", new { blogPost = Model }); }
@@ -13,21 +21,21 @@
 @section right {
     @{
         Html.RenderAction("BlogMonths", "Blog");
-		Html.RenderWidget("blog_right_months_after");
+        Html.RenderWidget("blog_right_months_after");
         Html.RenderAction("BlogTags", "Blog");
-		Html.RenderWidget("blog_right_bottom");
+        Html.RenderWidget("blog_right_bottom");
     }
 }
 
 <article class="page blogpost-page" itemprop="mainEntity" itemscope itemtype="http://schema.org/BlogPosting">
 
     @if (Model.DisplayAdminLink)
-	{
-		<a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
-			<i class="fa fa-cog"></i>
-			<span>@T("Common.Cms.EditBlogpost")</span>
-		</a>
-	}
+    {
+        <a class="btn btn-secondary btn-flat btn-admin-edit" href="@Url.Action("Edit", "Blog", new { id = Model.Id, area = "admin" })" target="admin-blogpost" rel="nofollow">
+            <i class="fa fa-cog"></i>
+            <span>@T("Common.Cms.EditBlogpost")</span>
+        </a>
+    }
 
     @if (Model.PictureModel.FullSizeImageUrl.HasValue())
     {
@@ -48,11 +56,11 @@
     <meta itemprop="url" content="@Request.Url.AbsoluteUri" />
 
     <div class="page-title mb-4 mt-3">
-		<h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
+        <h1 class="fs-h2" itemprop="headline">@Model.Title</h1>
     </div>
 
     <div class="blogpost-body">
-		
+
         @{ Html.RenderWidget("blogpost_page_before_body"); }
 
         <div class="blogpost-content long-text html-editor-content" itemprop="articleBody">
@@ -73,62 +81,62 @@
             <meta itemprop="articleSection" content="@keywords" />
             <meta itemprop="keywords" content="@keywords" />
 
-        }        
+        }
 
-		@{ Html.RenderWidget("blogpost_page_before_comments"); }
+        @{ Html.RenderWidget("blogpost_page_before_comments"); }
 
-		@if (Model.Comments.AllowComments)
-		{
-			<div class="row">
-				<div class="col-12">
-					<div class="block blog-comment-form mt-5">
-						@using (Html.BeginForm())
-						{
-							<fieldset class="blog-comment-form content-group mt-5">
-								<legend><span>@T("Blog.Comments.LeaveYourComment")</span></legend>
+        @if (Model.Comments.AllowComments)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="block blog-comment-form mt-5">
+                        @using (Html.BeginForm())
+                        {
+                            <fieldset class="blog-comment-form content-group mt-5">
+                                <legend><span>@T("Blog.Comments.LeaveYourComment")</span></legend>
 
-								@if (ViewContext.ViewData.ModelState.ContainsKey(""))
-								{
-									@Html.ValidationSummary(true)
-								}
+                                @if (ViewContext.ViewData.ModelState.ContainsKey(""))
+                                {
+                                    @Html.ValidationSummary(true)
+                                }
 
-								@if (this.EnableHoneypotProtection)
-								{
-									<div class="d-none">
-										@Html.HoneypotField()
-									</div>
-								}
+                                @if (this.EnableHoneypotProtection)
+                                {
+                                    <div class="d-none">
+                                        @Html.HoneypotField()
+                                    </div>
+                                }
 
-								<div class="form-group">
-									@Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
-									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
-								</div>
+                                <div class="form-group">
+                                    @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
+                                    @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
+                                </div>
 
-								@{ Html.RenderWidget("gdpr_consent"); }
+                                @{ Html.RenderWidget("gdpr_consent"); }
 
-								@if (Model.AddNewComment.DisplayCaptcha)
-								{
-									<div class="form-group">
-										<div class="captcha-box">
-											@Html.Raw(Html.GenerateCaptcha())
-										</div>
-									</div>
-								}
+                                @if (Model.AddNewComment.DisplayCaptcha)
+                                {
+                                    <div class="form-group">
+                                        <div class="captcha-box">
+                                            @Html.Raw(Html.GenerateCaptcha())
+                                        </div>
+                                    </div>
+                                }
 
-								<div class="form-group">
-									<button type="submit" name="add-comment" value="add-comment" class="btn btn-primary btn-lg">
-										@T("Blog.Comments.SubmitButton")
-									</button>
-								</div>
-							</fieldset>
-						}
-					</div>
+                                <div class="form-group">
+                                    <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary btn-lg">
+                                        @T("Blog.Comments.SubmitButton")
+                                    </button>
+                                </div>
+                            </fieldset>
+                        }
+                    </div>
 
-					@{ Html.RenderPartial("Comment.List", Model.Comments); }
-				</div>
-			</div>
-		}
+                    @{ Html.RenderPartial("Comment.List", Model.Comments); }
+                </div>
+            </div>
+        }
 
-		@{ Html.RenderWidget("blogpost_page_after_comments"); }
+        @{ Html.RenderWidget("blogpost_page_after_comments"); }
     </div>
 </article>

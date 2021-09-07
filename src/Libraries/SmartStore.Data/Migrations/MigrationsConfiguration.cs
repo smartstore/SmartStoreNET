@@ -56,6 +56,12 @@
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
     
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.AddProductsToBasketInSinglePositions",
+                "Add products to cart in single positions",
+                "Produkte in einzelnen Positionen in den Warenkorb legen",
+                "Enable this option if you want products with different quantities to be added to the shopping cart in single position.",
+                "Aktivieren Sie diese Option, wenn Produkte mit verschiedenen Mengenangaben als Einzelpositionen in den Warenkorb gelegt werden sollen.");
         }
     }
 }

@@ -85,8 +85,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox")]
         public bool ShowCommentBox { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
-        public bool ShowEsdRevocationWaiverBox { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
+		public bool ShowEsdRevocationWaiverBox { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
         public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
@@ -99,13 +100,17 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
         public string ThirdPartyEmailHandOverLabel { get; set; }
 
-        public IList<ShoppingCartSettingsLocalizedModel> Locales { get; set; }
+		public IList<ShoppingCartSettingsLocalizedModel> Locales { get; set; }
+	
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AddProductsToBasketInSinglePositions")]
+        public bool AddProductsToBasketInSinglePositions { get; set; }
     }
 
 
-    public class ShoppingCartSettingsLocalizedModel : ILocalizedModelLocal
-    {
-        public int LanguageId { get; set; }
+	public class ShoppingCartSettingsLocalizedModel : ILocalizedModelLocal
+	{
+		public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
         public string ThirdPartyEmailHandOverLabel { get; set; }

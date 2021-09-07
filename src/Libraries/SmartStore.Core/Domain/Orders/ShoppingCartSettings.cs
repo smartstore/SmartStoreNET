@@ -26,10 +26,11 @@ namespace SmartStore.Core.Domain.Orders
             ShowBasePrice = true;
             DeliveryTimesInShoppingCart = DeliveryTimesPresentation.DateOnly;
             ShowShortDesc = true;
-            AllowAnonymousUsersToEmailWishlist = false;
-        }
-
-        /// <summary>
+			AllowAnonymousUsersToEmailWishlist = false;
+            AddProductsToBasketInSinglePositions = false;
+		}
+		
+		/// <summary>
         /// Gets or sets a value indicating whether a custoemr should be redirected to the shopping cart page after adding a product to the cart/wishlist
         /// </summary>
         public bool DisplayCartAfterAddingProduct { get; set; }
@@ -172,5 +173,10 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show the quantity of linked attribute value product
         /// </summary>
         public bool ShowLinkedAttributeValueQuantity { get; set; }
+
+        /// <summary>
+		/// Gets or sets a value indicating whether to add products to the basket in single positions
+		/// </summary>
+        public bool AddProductsToBasketInSinglePositions { get; set; }
     }
 }

@@ -19,7 +19,7 @@
             this.createGallery(opts.galleryStartIndex);
 
             // Update product data and gallery
-            $(el).on('change', ':input', function (e) {
+            $(el).on('change', ':input:not(.skip-update)', function (e) {
                 var inputCtrl = $(this);
                 var ctx = inputCtrl.closest('.update-container');
                 var isTouchSpin = inputCtrl.parent(".bootstrap-touchspin").length > 0;

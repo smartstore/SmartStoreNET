@@ -74,11 +74,11 @@
                 // Iterate all elems with [data-partial] attribute...
                 var $el = $(el);
                 var partial = $el.data('partial');
-
+                
                 if (partial && !(isTouchSpin && partial === 'OfferActions') && !(isDateTime && partial === 'Variants')) {
                     // ...fetch the updated html from the corresponding AJAX result object's properties
                     if (data.Partials && data.Partials.hasOwnProperty(partial)) {
-                        if (partial === 'Variants') {
+                        if (partial === 'Variants' || partial === 'BundleItemVariants') {
                             $el.find('[data-toggle=tooltip], .tooltip-toggle').tooltip('hide');
                         }
 

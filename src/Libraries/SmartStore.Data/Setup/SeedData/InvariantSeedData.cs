@@ -517,7 +517,7 @@ namespace SmartStore.Data.Setup
                         RenderAsWidget = true,
                         WidgetWrapContent = false,
                         Title = "Welcome to our store",
-                        Body = "<p>Online shopping is the process consumers go through to purchase products or services over the Internet. You can edit this in the admin site.</p></p>"
+                        Body = "<p>Online shopping is the process consumers go through to purchase products or services over the Internet. You can edit this in the admin site.</p>"
                     },
                 new Topic
                     {
@@ -553,7 +553,7 @@ namespace SmartStore.Data.Setup
                         IncludeInSitemap = false,
                         IsPasswordProtected = false,
                         Title = "Imprint",
-                        Body = @"<p>Put your imprint information here. YOu can edit this in the admin site.</p>"
+                        Body = "<p>Put your imprint information here. You can edit this in the admin site.</p>"
                     },
                 new Topic
                     {

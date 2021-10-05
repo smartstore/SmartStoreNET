@@ -136,6 +136,13 @@ namespace SmartStore.WebApi.Controllers.OData
             return Ok(GetRelatedCollection(key, x => x.OrderItems));
         }
 
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Read)]
+        public IHttpActionResult GetRedeemedRewardPointsEntry(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.RedeemedRewardPointsEntry));
+        }
+
         #endregion
 
         #region Actions

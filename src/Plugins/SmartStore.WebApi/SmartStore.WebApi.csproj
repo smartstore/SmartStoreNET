@@ -264,6 +264,7 @@
     <Compile Include="Controllers\OData\ProductVariantAttributesController.cs" />
     <Compile Include="Controllers\OData\QuantityUnitsController.cs" />
     <Compile Include="Controllers\OData\PaymentMethodsController.cs" />
+    <Compile Include="Controllers\OData\RewardPointsHistoryController.cs" />
     <Compile Include="Controllers\OData\ShipmentItemsController.cs" />
     <Compile Include="Controllers\OData\TaxCategoriesController.cs" />
     <Compile Include="Controllers\OData\SyncMappingsController.cs" />

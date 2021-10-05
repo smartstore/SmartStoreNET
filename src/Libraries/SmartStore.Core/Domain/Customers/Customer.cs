@@ -247,6 +247,7 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets reward points history
         /// </summary>
+        [DataMember]
         public virtual ICollection<RewardPointsHistory> RewardPointsHistory
         {
             get => _rewardPointsHistory ?? (_rewardPointsHistory = new HashSet<RewardPointsHistory>());

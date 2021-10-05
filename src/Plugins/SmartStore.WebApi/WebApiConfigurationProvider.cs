@@ -80,6 +80,7 @@ namespace SmartStore.WebApi
             m.EntitySet<QuantityUnit>("QuantityUnits");
             m.EntitySet<RelatedProduct>("RelatedProducts");
             m.EntitySet<ReturnRequest>("ReturnRequests");
+            m.EntitySet<RewardPointsHistory>("RewardPointsHistory");
             m.EntitySet<Setting>("Settings");
             m.EntitySet<Shipment>("Shipments");
             m.EntitySet<ShipmentItem>("ShipmentItems");

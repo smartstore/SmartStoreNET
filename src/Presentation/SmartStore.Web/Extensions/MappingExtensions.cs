@@ -88,7 +88,6 @@ namespace SmartStore.Web
                 Id = customer.Id,
                 Large = large,
                 UserName = userName,
-                AllowViewingProfiles = customerSettings.AllowViewingProfiles,
                 AvatarPictureSize = mediaSettings.AvatarPictureSize
             };
 
@@ -99,6 +98,8 @@ namespace SmartStore.Web
             }
             else
             {
+                model.AllowViewingProfiles = customerSettings.AllowViewingProfiles;
+
                 if (customer.FirstName.HasValue())
                 {
                     model.AvatarLetter = customer.FirstName.First();

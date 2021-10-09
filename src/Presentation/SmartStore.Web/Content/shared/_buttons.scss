@@ -464,42 +464,37 @@ $btn-size-sm: $input-height-sm;
 
 // btn-to-[danger|primary]
 // --------------------------------------------------
+
+@mixin button-hybrid-variant($background, $border, $hover-background: darken($background, 7.5%), $hover-border: darken($border, 10%), $active-background: darken($background, 10%), $active-border: darken($border, 12.5%)) {
+    // The mixin parameters were copied over from Bootstrap's original button-variant() mixin
+    transition: box-shadow .15s ease-in-out;
+
+    &:not([disabled]):not(.disabled):hover {
+        color: color-yiq($hover-background);
+        @include gradient-bg($hover-background);
+        border-color: $hover-border;
+
+        > i {
+            opacity: 1;
+        }
+    }
+
+    &:hover:focus {
+        box-shadow: $btn-box-shadow, 0 0 0 $btn-focus-width rgba($border, .5) !important;
+    }
+}
+
 .btn.btn-to-danger,
 .btn.btn-to-primary {
 	transition: box-shadow .15s ease-in-out;
 }
 
 .btn.btn-to-danger {
-	&:not([disabled]):not(.disabled):hover {
-		@extend .btn-danger:hover;
-		> i { opacity: 1; }
-	}
-
-	&:focus:hover {
-		@extend .btn-danger:focus;
-		> i { opacity: 1; }
-	}
-
-	&:not([disabled]):not(.disabled):active,
-	.show > &.dropdown-toggle {
-		@extend .btn-danger:active;
-		> i { opacity: 1; }
-	}
+    @include button-hybrid-variant($danger, $danger);
 }
 
 .btn.btn-to-primary {
-	&:not([disabled]):not(.disabled):hover {
-		@extend .btn-primary:hover;
-	}
-
-	&:focus:hover {
-		@extend .btn-primary:focus;
-	}
-
-	&:not([disabled]):not(.disabled):active,
-	.show > &.dropdown-toggle {
-		@extend .btn-primary:active;
-	}
+    @include button-hybrid-variant($primary, $primary);
 }
 
 // btn-no-border

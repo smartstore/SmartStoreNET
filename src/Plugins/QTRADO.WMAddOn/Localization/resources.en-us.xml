@@ -1,0 +1,50 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.QTRADO.WMAddOn" AppendRootKey="false">
+    <Value>QTRADO Merchandising Tools AddOn</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.QTRADO.WMAddOn" AppendRootKey="false">
+    <Value>Detailed description for WMAddOn</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="Plugins.QTRADO.WMAddOn" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[
+            Enter your data below to configure this plugin.
+          ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="MyFirstSetting">
+        <Value>Setting</Value>
+      </LocaleResource>
+      <LocaleResource Name="MyFirstSetting.Hint">
+        <Value>Help text for the setting</Value>
+      </LocaleResource>
+
+      
+      <LocaleResource Name="PictureId">
+        <Value>Picture</Value>
+      </LocaleResource>
+      <LocaleResource Name="PictureId.Hint">
+        <Value>Here the shop administrator can upload an image that can be displayed in a widget, for example.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Color">
+        <Value>Color</Value>
+      </LocaleResource>
+      <LocaleResource Name="Color.Hint">
+        <Value>Here the shop administrator can specify a color.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Text">
+        <Value>Text</Value>
+      </LocaleResource>
+      <LocaleResource Name="Text.Hint">
+        <Value>Simple text input field that allows a maximum length of 3 via the [String-Length] attribute.</Value>
+      </LocaleResource>
+      
+
+      
+
+    </Children>
+  </LocaleResource>
+</Language>

@@ -1,0 +1,27 @@
+﻿@model QTRADO.WMAddOn.Models.AdminEditTabModel
+
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.Plugins;
+@using SmartStore.Web.Framework.UI;
+
+@{
+    Layout = "";
+}
+
+@* VERY IMPORTANT for proper model binding *@
+@Html.Hidden("__Type__", Model.GetType().AssemblyQualifiedName)
+
+@Html.HiddenFor(m => m.EntityId)
+@Html.HiddenFor(m => m.EntityName)
+
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IsActive)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.IsActive)
+            @Html.ValidationMessageFor(model => model.IsActive)
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,10 @@
+﻿FriendlyName: QTRADO Werbemittel-AddOn
+SystemName: QTRADO.WMAddOn
+Group: Admin
+Version: 4.1.0
+MinAppVersion: 4.1.0
+Author: QTRADO GmbH & Co. KG
+DisplayOrder: 1
+FileName: QTRADO.WMAddOn.dll
+ResourceRootKey: Plugins.QTRADO.WMAddOn
+Url: 

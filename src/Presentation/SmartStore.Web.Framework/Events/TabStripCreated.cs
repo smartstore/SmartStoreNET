@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.Localization;

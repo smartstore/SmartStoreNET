@@ -31,6 +31,14 @@
         }
     }
 
+    private DuplicateFileHandling DuplicateFileHandling
+    {
+        get
+        {
+            return GetMetadata<DuplicateFileHandling?>("duplicateFileHandling") ?? DuplicateFileHandling.ThrowError;
+        }
+    }
+
     private string TypeFilter
     {
         get
@@ -117,7 +125,7 @@
 
         <div class="fu-controls">
             @(Html.SmartStore().FileUploader()
-                .UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin" }))
+                .UploadUrl(Url.Action("Upload", "Media", new { isTransient = TransientUpload, path = Path, area = "Admin", duplicateFileHandling = DuplicateFileHandling }))
                 .Path(Path)
                 .TypeFilter(TypeFilter)
                 .ShowRemoveButton(!MultiFile && Model.HasValue) // Multifile uploads don't need a remove button.

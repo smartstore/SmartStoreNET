@@ -513,7 +513,7 @@ namespace SmartStore.Admin.Controllers
                     Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), storeUrl, _services.WebHelper.GetStoreLocation(false))
                 });
             }
-
+            
             // TaskScheduler reachability
             // ====================================
             string taskSchedulerUrl = null;

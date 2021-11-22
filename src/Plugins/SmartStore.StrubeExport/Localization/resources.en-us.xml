@@ -1,0 +1,44 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.StrubeExport" AppendRootKey="false">
+    <Value>StrubeExport</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.StrubeExport" AppendRootKey="false">
+    <Value>configurable exporte for orders in different formats</Value>
+  </LocaleResource>
+  
+  <LocaleResource Name="Plugins.SmartStore.StrubeExport" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[
+            Enter your data below to configure this plugin.
+          ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="MyFirstSetting">
+        <Value>Setting</Value>
+      </LocaleResource>
+      <LocaleResource Name="MyFirstSetting.Hint">
+        <Value>Help text for the setting</Value>
+      </LocaleResource>
+
+      <LocaleResource Name="GeneralSettings">
+        <Value>General Settings</Value>
+      </LocaleResource>
+
+      <LocaleResource Name="ExportShipAddress">
+        <Value>export ship address</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressPrice">
+        <Value>suppress price and amount</Value>
+      </LocaleResource>
+      <LocaleResource Name="SuppressBank">
+        <Value>suppress Banking information's</Value>
+      </LocaleResource>
+
+
+
+
+    </Children>
+  </LocaleResource>
+</Language>

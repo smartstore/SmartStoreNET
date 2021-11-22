@@ -1,0 +1,44 @@
+﻿@using SmartStore.StrubeExport;
+@using SmartStore.StrubeExport.Providers
+@using SmartStore.StrubeExport.Models;
+@model ProfileConfigurationModel
+@{
+    Layout = null;
+}
+
+<table class="adminContent">
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="head">@T("Plugins.SmartStore.StrubeExport.GeneralSettings")</div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ExportShipAddress)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ExportShipAddress)
+            @Html.ValidationMessageFor(m => m.ExportShipAddress)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.SuppressPrice)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.SuppressPrice)
+            @Html.ValidationMessageFor(m => m.SuppressPrice)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.SuppressBank)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.SuppressBank)
+            @Html.ValidationMessageFor(m => m.SuppressBank)
+        </td>
+    </tr>
+</table>

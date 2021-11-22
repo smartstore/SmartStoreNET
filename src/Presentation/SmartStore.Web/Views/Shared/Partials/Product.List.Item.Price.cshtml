@@ -78,9 +78,10 @@
 @if (list.ShowPrice)
 {
 	<div class="art-price-block">
-		<span class="@artPriceClasses">
-            @(Model.Price.SavingAmount.HasValue() ? "% " : "")@Model.Price.Price
-		</span>
+        <span class="@artPriceClasses">
+            @*@(Model.Price.SavingAmount.HasValue() ? "% " : "")@Model.Price.Price*@
+            @(Model.Price.SavingAmount.HasValue() ? "" : "")@Model.Price.Price
+        </span>
 		@if (Model.Price.RegularPrice.HasValue())
 		{
 			if (list.ViewMode == ProductSummaryViewMode.List)

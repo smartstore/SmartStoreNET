@@ -39,8 +39,6 @@
 * Fixed the uploaded file of a product attribute is lost as soon as another attribute is selected
 * Fixes display problem with uploaded media files which contain a + character
 
-# Release Notes
-
 ## Smartstore 4.1.1
 ### New Features
 * **Page Builder**

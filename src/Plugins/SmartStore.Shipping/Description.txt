@@ -2,8 +2,8 @@
 Description: Provides shipping methods for fixed rate shipping and computation based on weight.
 SystemName: SmartStore.Shipping
 Group: Shipping
-Version: 4.1.1
-MinAppVersion: 4.1.1
+Version: 4.2.0
+MinAppVersion: 4.2.0
 DisplayOrder: 1
 FileName: SmartStore.Shipping.dll
 ResourceRootKey: Plugins.SmartStore.Shipping

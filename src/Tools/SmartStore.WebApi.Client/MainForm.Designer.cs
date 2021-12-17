@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+            this.chkIEEE754Compatible = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -69,9 +70,21 @@
             this.txtVersion = new System.Windows.Forms.TextBox();
             this.txtUrl = new System.Windows.Forms.TextBox();
             this.btnDeleteFileUpload = new System.Windows.Forms.Button();
+            this.txtProxyPort = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // chkIEEE754Compatible
+            // 
+            this.chkIEEE754Compatible.AutoSize = true;
+            this.chkIEEE754Compatible.Location = new System.Drawing.Point(1023, 405);
+            this.chkIEEE754Compatible.Name = "chkIEEE754Compatible";
+            this.chkIEEE754Compatible.Size = new System.Drawing.Size(119, 17);
+            this.chkIEEE754Compatible.TabIndex = 50;
+            this.chkIEEE754Compatible.Text = "IEEE754Compatible";
+            this.chkIEEE754Compatible.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -104,7 +117,7 @@
             // callApi
             // 
             this.callApi.AutoSize = true;
-            this.callApi.Location = new System.Drawing.Point(17, 784);
+            this.callApi.Location = new System.Drawing.Point(17, 832);
             this.callApi.Name = "callApi";
             this.callApi.Size = new System.Drawing.Size(75, 23);
             this.callApi.TabIndex = 8;
@@ -133,7 +146,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(20, 98);
+            this.label6.Location = new System.Drawing.Point(20, 139);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(60, 13);
             this.label6.TabIndex = 13;
@@ -161,18 +174,18 @@
             this.txtResponse.DetectUrls = false;
             this.txtResponse.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtResponse.HideSelection = false;
-            this.txtResponse.Location = new System.Drawing.Point(18, 376);
+            this.txtResponse.Location = new System.Drawing.Point(18, 424);
             this.txtResponse.Name = "txtResponse";
             this.txtResponse.ReadOnly = true;
             this.txtResponse.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtResponse.Size = new System.Drawing.Size(1126, 405);
+            this.txtResponse.Size = new System.Drawing.Size(1126, 402);
             this.txtResponse.TabIndex = 10;
             this.txtResponse.Text = "";
             // 
             // clear
             // 
             this.clear.AutoSize = true;
-            this.clear.Location = new System.Drawing.Point(1074, 784);
+            this.clear.Location = new System.Drawing.Point(1074, 832);
             this.clear.Name = "clear";
             this.clear.Size = new System.Drawing.Size(70, 23);
             this.clear.TabIndex = 9;
@@ -199,7 +212,7 @@
             // cboContent
             // 
             this.cboContent.FormattingEnabled = true;
-            this.cboContent.Location = new System.Drawing.Point(84, 95);
+            this.cboContent.Location = new System.Drawing.Point(84, 136);
             this.cboContent.Name = "cboContent";
             this.cboContent.Size = new System.Drawing.Size(1038, 21);
             this.cboContent.TabIndex = 7;
@@ -220,7 +233,7 @@
             // 
             this.btnDeleteContent.AutoSize = true;
             this.btnDeleteContent.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDeleteContent.Location = new System.Drawing.Point(1124, 95);
+            this.btnDeleteContent.Location = new System.Drawing.Point(1124, 136);
             this.btnDeleteContent.Name = "btnDeleteContent";
             this.btnDeleteContent.Size = new System.Drawing.Size(20, 22);
             this.btnDeleteContent.TabIndex = 9;
@@ -234,7 +247,7 @@
             this.txtRequest.DetectUrls = false;
             this.txtRequest.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtRequest.HideSelection = false;
-            this.txtRequest.Location = new System.Drawing.Point(18, 165);
+            this.txtRequest.Location = new System.Drawing.Point(18, 213);
             this.txtRequest.Name = "txtRequest";
             this.txtRequest.ReadOnly = true;
             this.txtRequest.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -333,7 +346,7 @@
             // 
             this.panel2.Controls.Add(this.radioXml);
             this.panel2.Controls.Add(this.radioJson);
-            this.panel2.Location = new System.Drawing.Point(1013, 353);
+            this.panel2.Location = new System.Drawing.Point(873, 401);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(135, 23);
             this.panel2.TabIndex = 26;
@@ -368,7 +381,7 @@
             // lblRequest
             // 
             this.lblRequest.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lblRequest.Location = new System.Drawing.Point(19, 150);
+            this.lblRequest.Location = new System.Drawing.Point(19, 197);
             this.lblRequest.Name = "lblRequest";
             this.lblRequest.ReadOnly = true;
             this.lblRequest.Size = new System.Drawing.Size(1123, 14);
@@ -378,17 +391,17 @@
             // lblResponse
             // 
             this.lblResponse.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lblResponse.Location = new System.Drawing.Point(19, 361);
+            this.lblResponse.Location = new System.Drawing.Point(19, 409);
             this.lblResponse.Name = "lblResponse";
             this.lblResponse.ReadOnly = true;
-            this.lblResponse.Size = new System.Drawing.Size(988, 14);
+            this.lblResponse.Size = new System.Drawing.Size(813, 14);
             this.lblResponse.TabIndex = 32;
             this.lblResponse.Text = "Response";
             // 
             // lblFile
             // 
             this.lblFile.AutoSize = true;
-            this.lblFile.Location = new System.Drawing.Point(22, 125);
+            this.lblFile.Location = new System.Drawing.Point(22, 166);
             this.lblFile.Name = "lblFile";
             this.lblFile.Size = new System.Drawing.Size(58, 13);
             this.lblFile.TabIndex = 34;
@@ -397,7 +410,7 @@
             // btnFileOpen
             // 
             this.btnFileOpen.AutoSize = true;
-            this.btnFileOpen.Location = new System.Drawing.Point(1075, 120);
+            this.btnFileOpen.Location = new System.Drawing.Point(1075, 161);
             this.btnFileOpen.Name = "btnFileOpen";
             this.btnFileOpen.Size = new System.Drawing.Size(69, 24);
             this.btnFileOpen.TabIndex = 35;
@@ -441,7 +454,7 @@
             // cboFileUpload
             // 
             this.cboFileUpload.FormattingEnabled = true;
-            this.cboFileUpload.Location = new System.Drawing.Point(84, 122);
+            this.cboFileUpload.Location = new System.Drawing.Point(84, 163);
             this.cboFileUpload.Name = "cboFileUpload";
             this.cboFileUpload.Size = new System.Drawing.Size(965, 21);
             this.cboFileUpload.TabIndex = 48;
@@ -468,7 +481,7 @@
             // 
             this.btnDeleteFileUpload.AutoSize = true;
             this.btnDeleteFileUpload.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDeleteFileUpload.Location = new System.Drawing.Point(1051, 121);
+            this.btnDeleteFileUpload.Location = new System.Drawing.Point(1051, 162);
             this.btnDeleteFileUpload.Name = "btnDeleteFileUpload";
             this.btnDeleteFileUpload.Size = new System.Drawing.Size(20, 22);
             this.btnDeleteFileUpload.TabIndex = 49;
@@ -476,11 +489,32 @@
             this.btnDeleteFileUpload.UseVisualStyleBackColor = true;
             this.btnDeleteFileUpload.Click += new System.EventHandler(this.btnDeleteFileUpload_Click);
             // 
+            // txtProxyPort
+            // 
+            this.txtProxyPort.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStore.WebApi.Client.Properties.Settings.Default, "ApiProxyPort", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtProxyPort.Location = new System.Drawing.Point(84, 89);
+            this.txtProxyPort.Name = "txtProxyPort";
+            this.txtProxyPort.Size = new System.Drawing.Size(63, 21);
+            this.txtProxyPort.TabIndex = 51;
+            this.txtProxyPort.Text = global::SmartStore.WebApi.Client.Properties.Settings.Default.ApiVersion;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(23, 92);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(58, 13);
+            this.label11.TabIndex = 52;
+            this.label11.Text = "Proxy Port";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1154, 811);
+            this.ClientSize = new System.Drawing.Size(1154, 861);
+            this.Controls.Add(this.txtProxyPort);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.chkIEEE754Compatible);
             this.Controls.Add(this.btnDeleteFileUpload);
             this.Controls.Add(this.cboFileUpload);
             this.Controls.Add(this.btnDeleteHeaders);
@@ -518,8 +552,8 @@
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1170, 850);
-            this.MinimumSize = new System.Drawing.Size(1170, 850);
+            this.MaximumSize = new System.Drawing.Size(1170, 900);
+            this.MinimumSize = new System.Drawing.Size(1170, 900);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
@@ -576,6 +610,9 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox cboFileUpload;
         private System.Windows.Forms.Button btnDeleteFileUpload;
+        private System.Windows.Forms.CheckBox chkIEEE754Compatible;
+        private System.Windows.Forms.TextBox txtProxyPort;
+        private System.Windows.Forms.Label label11;
     }
 }
 

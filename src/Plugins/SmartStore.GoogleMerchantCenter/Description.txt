@@ -1,8 +1,8 @@
 ﻿FriendlyName: Google Merchant Center (GMC) feed
 SystemName: SmartStore.GoogleMerchantCenter
 Group: Marketing
-Version: 4.1.1
-MinAppVersion: 4.1.1
+Version: 4.2.0
+MinAppVersion: 4.2.0
 Author: SmartStore AG
 DisplayOrder: 1
 FileName: SmartStore.GoogleMerchantCenter.dll

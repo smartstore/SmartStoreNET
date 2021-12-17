@@ -15,6 +15,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class BlogCommentsController : WebApiEntityController<BlogComment, ICustomerContentService>
     {
         private readonly IRepository<CustomerContent> _contentRepository;

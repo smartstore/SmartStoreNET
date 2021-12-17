@@ -343,6 +343,12 @@ namespace SmartStore.WebApi.Client
                 request.Headers.Add(HttpRequestHeader.ContentMd5, contentMd5Hash);
             }
 
+            // API behind a reverse proxy?
+            if (context.ProxyPort > 0)
+            {
+                context.Url = new UriBuilder(context.Url) { Port = context.ProxyPort }.Uri.ToString();
+            }
+
             var messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp, true);
             //Debug.WriteLine(messageRepresentation);
             var signature = CreateSignature(context.SecretKey, messageRepresentation);

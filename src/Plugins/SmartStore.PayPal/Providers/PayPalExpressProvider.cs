@@ -123,7 +123,17 @@ namespace SmartStore.PayPal
             {
                 result.NewPaymentStatus = PaymentStatus.Pending;
 
-                result.Errors.Each(x => result.AddError(x));
+                if (doPayment?.Errors?.Any() ?? false)
+                {
+                    foreach (var error in doPayment.Errors)
+                    {
+                        result.AddError(string.Format("{0} | {1} | {2}", error.ErrorCode, error.ShortMessage, error.LongMessage));
+                    }
+                }
+                else
+                {
+                    result.AddError(T("Admin.Common.UnknownError") + " " + doPayment.Ack.ToString());
+                }
             }
 
             return result;

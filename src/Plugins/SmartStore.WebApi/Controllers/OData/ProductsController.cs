@@ -21,6 +21,7 @@ using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class ProductsController : WebApiEntityController<Product, IProductService>
     {
         private readonly Lazy<IPriceCalculationService> _priceCalculationService;
@@ -398,6 +399,8 @@ namespace SmartStore.WebApi.Controllers.OData
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
             var entityConfig = configData.ModelBuilder.EntityType<Product>();
+
+            entityConfig.Ignore(x => x.MergedDataValues);
 
             entityConfig.Collection
                 .Action("Search")

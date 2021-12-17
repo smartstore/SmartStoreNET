@@ -14,6 +14,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class CustomersController : WebApiEntityController<Customer, ICustomerService>
     {
         private readonly Lazy<IAddressService> _addressService;
@@ -212,6 +213,13 @@ namespace SmartStore.WebApi.Controllers.OData
         public IHttpActionResult GetCustomerRoleMappings(int key)
         {
             return Ok(GetRelatedCollection(key, x => x.CustomerRoleMappings));
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Read)]
+        public IHttpActionResult GetRewardPointsHistory(int key)
+        {
+            return Ok(GetRelatedCollection(key, x => x.RewardPointsHistory));
         }
 
         #endregion

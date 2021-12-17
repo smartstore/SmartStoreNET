@@ -1099,7 +1099,7 @@ namespace SmartStore.Services.Orders
                 existingCartItem = FindShoppingCartItemInTheCart(cart, cartType, product, selectedAttributes, customerEnteredPrice);
             }
 
-            if (existingCartItem != null)
+            if (existingCartItem != null && !_shoppingCartSettings.AddProductsToBasketInSinglePositions)
             {
                 // update existing shopping cart item
                 int newQuantity = existingCartItem.Item.Quantity + quantity;

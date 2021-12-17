@@ -114,7 +114,12 @@ namespace SmartStore.Utilities.Threading
                     _locks.TryRemove(_item.Key, out _);
                 }
 
-                _item.Semaphore.Release();
+                if (_item.Semaphore.CurrentCount == 0)
+                {
+                    _item.Semaphore.Release();
+                }
+
+                //_item.Semaphore.Dispose();
                 _item = null;
             }
         }

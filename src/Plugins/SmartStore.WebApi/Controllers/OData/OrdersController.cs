@@ -17,6 +17,7 @@ using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class OrdersController : WebApiEntityController<Order, IOrderService>
     {
         private readonly Lazy<IOrderProcessingService> _orderProcessingService;
@@ -133,6 +134,13 @@ namespace SmartStore.WebApi.Controllers.OData
         public IHttpActionResult GetOrderItems(int key)
         {
             return Ok(GetRelatedCollection(key, x => x.OrderItems));
+        }
+
+        [WebApiQueryable]
+        [WebApiAuthenticate(Permission = Permissions.Order.Read)]
+        public IHttpActionResult GetRedeemedRewardPointsEntry(int key)
+        {
+            return Ok(GetRelatedEntity(key, x => x.RedeemedRewardPointsEntry));
         }
 
         #endregion

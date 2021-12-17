@@ -264,6 +264,7 @@
     <Compile Include="Controllers\OData\ProductVariantAttributesController.cs" />
     <Compile Include="Controllers\OData\QuantityUnitsController.cs" />
     <Compile Include="Controllers\OData\PaymentMethodsController.cs" />
+    <Compile Include="Controllers\OData\RewardPointsHistoryController.cs" />
     <Compile Include="Controllers\OData\ShipmentItemsController.cs" />
     <Compile Include="Controllers\OData\TaxCategoriesController.cs" />
     <Compile Include="Controllers\OData\SyncMappingsController.cs" />
@@ -284,6 +285,7 @@
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Filters\IEEE754CompatibleAttribute.cs" />
     <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
     <Compile Include="Models\Api\UploadImportFile.cs" />

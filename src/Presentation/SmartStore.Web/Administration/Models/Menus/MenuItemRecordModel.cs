@@ -128,7 +128,7 @@ namespace SmartStore.Admin.Models.Menus
                     }
                     catch { }
 
-                    return true;
+                    return false;
                 })
                 .When(x => x.ProviderName.IsCaseInsensitiveEqual("route"))
                 .WithMessage(T("Admin.ContentManagement.Menus.Item.InvalidRouteValues"));

@@ -33,6 +33,20 @@ namespace SmartStore.Services.Media.Storage
         public abstract void SaveTo(Stream stream, MediaFile mediaFile);
         public abstract Task SaveToAsync(Stream stream, MediaFile mediaFile);
 
+        protected static int GetLength(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                return (int)stream.Length;
+            }
+            else if (stream.Position > 0) 
+            {
+                return (int)stream.Position;
+            }
+
+            return 0;
+        }
+
         public virtual void Dispose()
         {
             if (_sourceStream != null)
@@ -82,13 +96,13 @@ namespace SmartStore.Services.Media.Storage
             public override void SaveTo(Stream stream, MediaFile mediaFile)
             {
                 _image.Save(stream);
-                mediaFile.Size = (int)stream.Length;
+                mediaFile.Size = GetLength(stream);
             }
 
             public override Task SaveToAsync(Stream stream, MediaFile mediaFile)
             {
                 _image.Save(stream);
-                mediaFile.Size = (int)stream.Length;
+                mediaFile.Size = GetLength(stream);
                 return Task.CompletedTask;
             }
         }
@@ -121,7 +135,7 @@ namespace SmartStore.Services.Media.Storage
                     stream.Position = 0;
                 }
 
-                mediaFile.Size = (int)stream.Length;
+                mediaFile.Size = GetLength(stream);
             }
 
             public override async Task SaveToAsync(Stream stream, MediaFile mediaFile)
@@ -138,7 +152,7 @@ namespace SmartStore.Services.Media.Storage
                     stream.Position = 0;
                 }
 
-                mediaFile.Size = (int)stream.Length;
+                mediaFile.Size = GetLength(stream);
             }
         }
 

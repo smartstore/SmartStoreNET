@@ -1,5 +1,46 @@
 # Release Notes
 
+## Smartstore 4.2.0
+
+### New Features
+**Dimension Pricing** (commercial plugin)
+
+* Freely configurable dimension templates
+* Price calculation based on user input for predefined product dimensions 
+* Shipping rates based on dimension and weight calculation
+* Freely configurable shipping formulas for irregular shapes
+
+**File Manager** (commercial plugin)
+
+* Freely configurable tabs for product detail pages
+* Unlimited upload of documents for each product tab
+* CSV Import
+
+**Digital Product Advisor** (commercial plugin)
+
+* Product presentation based on configurable questions and predefined answers
+* Product filter based on rule builder rules
+
+### Improvements
+* Web API: added RewardPointsHistory entity
+* Added canonical HTML link for blog, forum and news page
+* Better semaphore handling
+* Several OpenTrans improvements
+* BMEcat: use stream writer to write large xml files & fixed catalog structure
+
+### Bugfixes
+
+* #379 & #264 Login failed if login type is user and email and if both username and email are an email address and are not identical.
+* #2197 Web API error "The specified type member 'MergedDataValues' is not supported in LINQ to Entities..."
+* Web API: fixes OData Connected Service error when accessing MediaFiles and MediaFolders lists
+* PayPal Express: fixed order may have been placed even if DoExpressCheckoutPayment failed
+* Roxy Filemanager: icons were not displayed anymore
+* Azure CloudBlockBlob stream throws on Length access. Fetch Position instead.
+* Fixed the uploaded file of a product attribute is lost as soon as another attribute is selected
+* Fixes display problem with uploaded media files which contain a + character
+
+# Release Notes
+
 ## Smartstore 4.1.1
 ### New Features
 * **Page Builder**

@@ -8,7 +8,7 @@
 @if (Model.AvailableCurrencies.Count > 1)
 {
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-    var activeCurr = Model.AvailableCurrencies.Where(x => x.Id == Model.CurrentCurrencyId).FirstOrDefault();
+    var activeCurr = Model.AvailableCurrencies.FirstOrDefault(x => x.Id == Model.CurrentCurrencyId) ?? Model.AvailableCurrencies.FirstOrDefault();
 
     <div class="dropdown currency-selector">
         <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">

@@ -54,8 +54,8 @@ namespace SmartStore.WebApi
             m.EntitySet<MeasureDimension>("MeasureDimensions");
             m.EntitySet<MeasureWeight>("MeasureWeights");
 
-            m.EntitySet<FileItemInfo>("MediaFiles");
-            m.EntitySet<FolderNodeInfo>("MediaFolders");
+            m.EntitySet<MediaFile>("MediaFiles");
+            m.EntitySet<MediaFolder>("MediaFolders");
             m.EntitySet<MediaTag>("MediaTags");
             m.EntitySet<MediaTrack>("MediaTracks");
 
@@ -80,6 +80,7 @@ namespace SmartStore.WebApi
             m.EntitySet<QuantityUnit>("QuantityUnits");
             m.EntitySet<RelatedProduct>("RelatedProducts");
             m.EntitySet<ReturnRequest>("ReturnRequests");
+            m.EntitySet<RewardPointsHistory>("RewardPointsHistory");
             m.EntitySet<Setting>("Settings");
             m.EntitySet<Shipment>("Shipments");
             m.EntitySet<ShipmentItem>("ShipmentItems");

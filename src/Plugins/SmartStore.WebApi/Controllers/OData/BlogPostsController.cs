@@ -13,6 +13,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class BlogPostsController : WebApiEntityController<BlogPost, IBlogService>
     {
         private readonly Lazy<IUrlRecordService> _urlRecordService;

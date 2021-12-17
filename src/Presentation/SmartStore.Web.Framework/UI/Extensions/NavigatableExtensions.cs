@@ -164,7 +164,14 @@ namespace SmartStore.Web.Framework.UI
 
             if (!string.IsNullOrEmpty(navigatable.RouteName))
             {
-                return urlHelper.RouteUrl(navigatable.RouteName, routeValues);
+                try
+                {
+                    return urlHelper.RouteUrl(navigatable.RouteName, routeValues);
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             if (!string.IsNullOrEmpty(navigatable.ControllerName) && !string.IsNullOrEmpty(navigatable.ActionName))

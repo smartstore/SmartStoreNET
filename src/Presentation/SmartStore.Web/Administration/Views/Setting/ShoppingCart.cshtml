@@ -294,24 +294,44 @@
                 @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowEsdRevocationWaiverBox)
+				@Html.ValidationMessageFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+		</tr>
+
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ThirdPartyEmailHandOver, Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver))
+				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowEsdRevocationWaiverBox)
+                @Html.SmartLabelFor(model => model.ShowCommentBox)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowEsdRevocationWaiverBox)
-                @Html.ValidationMessageFor(model => model.ShowEsdRevocationWaiverBox)
+                @Html.SettingEditorFor(model => model.ShowCommentBox)
+                @Html.ValidationMessageFor(model => model.ShowCommentBox)
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
+                @Html.SmartLabelFor(model => model.AddProductsToBasketInSinglePositions)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ThirdPartyEmailHandOver, Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver))
-                @Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
+                @Html.SettingEditorFor(model => model.AddProductsToBasketInSinglePositions)
+                @Html.ValidationMessageFor(model => model.AddProductsToBasketInSinglePositions)
             </td>
         </tr>
+
     </table>
 
     <div id="ThirdPartyEmailHandOverTextLocalized">

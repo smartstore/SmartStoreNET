@@ -141,6 +141,8 @@
                             }
                         </div>
                     }
+
+                    @{ Html.RenderWidget("cartitem_desc_after", item.Id); }
                 </div>
 				
 				@if (Model.IsEditable)

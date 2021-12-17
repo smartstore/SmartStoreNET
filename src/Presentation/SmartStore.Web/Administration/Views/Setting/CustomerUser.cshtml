@@ -920,7 +920,7 @@
 <script>
     $(function () {
         $("#add-cookie-info-button").on("click", function (e) {
-            openPopup('@(Url.Action("CookieInfoCreatePopup", "Setting", new { btnId = "btnRefreshCookieInfos", formId = "faq-form" }))', false);
+            openPopup('@(Url.Action("CookieInfoCreatePopup", "Setting", new { btnId = "btnRefreshCookieInfos", formId = "cookie-infos-form" }))', false);
             return false;
         });
 

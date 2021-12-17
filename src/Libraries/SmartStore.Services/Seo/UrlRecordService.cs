@@ -70,7 +70,7 @@ namespace SmartStore.Services.Seo
 
         protected override void OnClearCache()
         {
-            _cacheManager.Remove(URLRECORD_ALL_PATTERN);
+            _cacheManager.RemoveByPattern(URLRECORD_ALL_PATTERN);
         }
 
         public virtual void DeleteUrlRecord(UrlRecord urlRecord)

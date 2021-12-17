@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core.Async;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -26,6 +27,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IFolderService _folderService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly FileDownloadManager _fileDownloadManager;
+        private readonly ICacheManager _cache;
 
         private static readonly Dictionary<string, Expression<Func<Category, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Category, string>>>
         {
@@ -44,7 +46,8 @@ namespace SmartStore.Services.Catalog.Importer
             IMediaService mediaService,
             IFolderService folderService,
             ILocalizedEntityService localizedEntityService,
-            FileDownloadManager fileDownloadManager)
+            FileDownloadManager fileDownloadManager,
+            ICacheManager cache)
         {
             _categoryRepository = categoryRepository;
             _categoryTemplateService = categoryTemplateService;
@@ -52,6 +55,7 @@ namespace SmartStore.Services.Catalog.Importer
             _folderService = folderService;
             _localizedEntityService = localizedEntityService;
             _fileDownloadManager = fileDownloadManager;
+            _cache = cache;
         }
 
         protected override void Import(ImportExecuteContext context)
@@ -175,6 +179,9 @@ namespace SmartStore.Services.Catalog.Importer
                     }
                 }
             }
+
+            // Hooks are disabled but category tree may have changed.
+            _cache.Clear();
         }
 
         protected virtual int ProcessPictures(ImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)

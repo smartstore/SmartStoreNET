@@ -12,7 +12,7 @@
     var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
     if (canonicalUrlsEnabled)
     {
-        var newsUrl = Url.RouteUrl("NewsArchive", this.Request.Url.Scheme);
+        var newsUrl = Url.RouteUrl("NewsArchive", null, this.Request.Url.Scheme);
         Html.AddCanonicalUrlParts(newsUrl);
     }
 }

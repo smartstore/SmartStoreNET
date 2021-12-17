@@ -118,6 +118,11 @@ namespace SmartStore.Core
                                 break;
                             }
                         }
+                    }      
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        break;
                     }
                 }
             }

@@ -279,6 +279,10 @@ namespace SmartStore.Services.Customers
                 AnonymizeData(customer, x => x.Username, IdentifierDataType.UserName, language);
                 AnonymizeData(customer, x => x.Email, IdentifierDataType.EmailAddress, language);
                 AnonymizeData(customer, x => x.LastIpAddress, IdentifierDataType.IpAddress, language);
+                AnonymizeData(customer, x => x.FirstName, IdentifierDataType.Name, language);
+                AnonymizeData(customer, x => x.LastName, IdentifierDataType.Name, language);
+                AnonymizeData(customer, x => x.BirthDate, IdentifierDataType.DateTime, language);
+
                 if (pseudomyzeContent)
                 {
                     AnonymizeData(customer, x => x.AdminComment, IdentifierDataType.LongText, language);

@@ -15,7 +15,6 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
     public class MediaController : AdminControllerBase
     {
         private readonly IMediaService _mediaService;
@@ -116,6 +115,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         //[ChildActionOnly]
+        [AdminAuthorize]
         [HttpPost]
         public ActionResult FileConflictResolutionDialog()
         {
@@ -127,6 +127,7 @@ namespace SmartStore.Admin.Controllers
             return PartialView();
         }
 
+        [AdminAuthorize]
         public ActionResult MoveFsMedia()
         {
             var count = DataMigrator.MoveFsMedia(Services.DbContext);

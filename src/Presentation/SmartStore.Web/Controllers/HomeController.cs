@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
@@ -23,19 +24,22 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<PrivacySettings> _privacySettings;
         private readonly Lazy<HomePageSettings> _homePageSettings;
+        private readonly Lazy<StoreInformationSettings> _storeInformationSettings;
 
         public HomeController(
             Lazy<ITopicService> topicService,
             Lazy<CaptchaSettings> captchaSettings,
             Lazy<CommonSettings> commonSettings,
             Lazy<PrivacySettings> privacySettings,
-            Lazy<HomePageSettings> homePageSettings)
+            Lazy<HomePageSettings> homePageSettings,
+            Lazy<StoreInformationSettings> storeInformationSettings)
         {
             _topicService = topicService;
             _captchaSettings = captchaSettings;
             _commonSettings = commonSettings;
             _privacySettings = privacySettings;
             _homePageSettings = homePageSettings;
+            _storeInformationSettings = storeInformationSettings;
         }
 
         [RewriteUrl(SslRequirement.No)]
@@ -51,6 +55,11 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult StoreClosed()
         {
+            if (!_storeInformationSettings.Value.StoreClosed)
+            {
+                return RedirectToRoute("HomePage");
+            }
+
             return View();
         }
 

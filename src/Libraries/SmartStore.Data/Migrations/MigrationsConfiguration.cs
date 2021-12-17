@@ -40,12 +40,6 @@
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
             MigrateSettings(context);
-
-            if (DataSettings.DatabaseIsInstalled())
-            {
-                var logTypeMigrator = new ActivityLogTypeMigrator(context);
-                logTypeMigrator.AddActivityLogType("EditOrder", "Edit an order", "Auftrag bearbeitet");
-            }
         }
 
         public void MigrateSettings(SmartObjectContext context)
@@ -55,7 +49,6 @@
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
-    
         }
     }
 }

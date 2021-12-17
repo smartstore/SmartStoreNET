@@ -9,6 +9,7 @@ using SmartStore.Web.Framework.WebApi.Security;
 namespace SmartStore.WebApi.Controllers.OData
 {
     [WebApiAuthenticate]
+    [IEEE754Compatible]
     public class GenericAttributesController : WebApiEntityController<GenericAttribute, IGenericAttributeService>
     {
         [WebApiQueryable]

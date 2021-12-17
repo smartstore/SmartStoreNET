@@ -15,6 +15,7 @@ using SmartStore.WebApi.Models.OData.Media;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
+    [IEEE754Compatible]
     public class MediaFoldersController : WebApiEntityController<MediaFolder, IFolderService>
     {
         private readonly IMediaService _mediaService;
@@ -83,9 +84,10 @@ namespace SmartStore.WebApi.Controllers.OData
 
         public static void Init(WebApiConfigurationBroadcaster configData)
         {
-            var entityConfig = configData.ModelBuilder.EntityType<FolderNodeInfo>();
+            const string infoSetName = "FolderNodeInfos";
+            configData.ModelBuilder.EntitySet<FolderNodeInfo>(infoSetName);
 
-            configData.ModelBuilder.ComplexType<FolderNodeInfo.FolderChildNodeInfo>();
+            var entityConfig = configData.ModelBuilder.EntityType<MediaFolder>();
 
             entityConfig.Collection
                 .Action("FolderExists")
@@ -94,12 +96,12 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Action("CreateFolder")
-                .ReturnsFromEntitySet<FolderNodeInfo>("MediaFolders")
+                .ReturnsFromEntitySet<FolderNodeInfo>(infoSetName)
                 .Parameter<string>("Path");
 
             entityConfig.Collection
                 .Action("MoveFolder")
-                .ReturnsFromEntitySet<FolderNodeInfo>("MediaFolders")
+                .ReturnsFromEntitySet<FolderNodeInfo>(infoSetName)
                 .AddParameter<string>("Path")
                 .AddParameter<string>("DestinationPath");
 
@@ -123,11 +125,11 @@ namespace SmartStore.WebApi.Controllers.OData
 
             entityConfig.Collection
                 .Function("GetRootNode")
-                .ReturnsCollectionFromEntitySet<FolderNodeInfo>("MediaFolders");
+                .ReturnsCollectionFromEntitySet<FolderNodeInfo>(infoSetName);
 
             entityConfig.Collection
                 .Action("GetNodeByPath")
-                .ReturnsCollectionFromEntitySet<FolderNodeInfo>("MediaFolders")
+                .ReturnsCollectionFromEntitySet<FolderNodeInfo>(infoSetName)
                 .Parameter<string>("Path");
         }
 

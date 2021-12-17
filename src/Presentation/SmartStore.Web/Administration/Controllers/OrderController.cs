@@ -852,11 +852,12 @@ namespace SmartStore.Admin.Controllers
             model.Address.PhoneRequired = _addressSettings.PhoneRequired;
             model.Address.FaxEnabled = _addressSettings.FaxEnabled;
             model.Address.FaxRequired = _addressSettings.FaxRequired;
+            model.Address.TitleEnabled = _addressSettings.TitleEnabled;
 
             //countries
             foreach (var c in _countryService.GetAllCountries(true))
             {
-                model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == address.CountryId) });
+                model.Address.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == address.CountryId });
             }
 
             //states
@@ -865,12 +866,12 @@ namespace SmartStore.Admin.Controllers
             {
                 foreach (var s in states)
                 {
-                    model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == address.StateProvinceId) });
+                    model.Address.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = s.Id == address.StateProvinceId });
                 }
             }
             else
             {
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+                model.Address.AvailableStates.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
             }
         }
 

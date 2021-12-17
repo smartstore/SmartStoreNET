@@ -954,7 +954,7 @@ namespace SmartStore.AmazonPay.Services
                 .WithStoreName(store.Name);
 
             var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-            if (paymentRequest != null)
+            if (paymentRequest != null && paymentRequest.OrderGuid != Guid.Empty)
             {
                 setOrderRequest = setOrderRequest.WithSellerOrderId(paymentRequest.OrderGuid.ToString());
             }

@@ -188,10 +188,12 @@ namespace SmartStore.Services.Payments
 
             if (providers.Any() && !QuerySettings.IgnoreMultiStore && storeId > 0)
             {
-                var paymentMethods = GetAllPaymentMethods(storeId);
+                var unauthorizedMethods = _paymentMethodRepository.TableUntracked
+                    .Where(x => x.LimitedToStores)
+                    .ToList();
 
-                var unauthorizedMethodNames = paymentMethods.Values
-                    .Where(x => x.LimitedToStores && !_storeMappingService.Authorize(x, storeId))
+                var unauthorizedMethodNames = unauthorizedMethods
+                    .Where(x => !_storeMappingService.Authorize(x, storeId))
                     .Select(x => x.PaymentMethodSystemName)
                     .ToList();
 

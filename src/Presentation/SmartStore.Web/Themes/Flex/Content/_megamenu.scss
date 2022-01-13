@@ -462,8 +462,12 @@ $mixed-megamenu-bg:             $megamenu-bg;
         left: 10px;
     }
 }
-.megamenu.simple .navbar-nav .nav-item.active:before { 
-    border-bottom: 10px solid $dropdown-bg;
+.megamenu.simple .navbar-nav .nav-item {
+    line-height: 1;
+
+    &.active:before {
+        border-bottom: 10px solid $dropdown-bg;
+    }
 }
 
 @media screen {

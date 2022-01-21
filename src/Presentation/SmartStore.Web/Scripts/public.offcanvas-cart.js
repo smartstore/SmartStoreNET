@@ -203,6 +203,9 @@ $(function () {
                     var type = el.data("type");
                     ShopBar.loadSummary(type, true);
                     el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
+                    if (data.newItemPrice != "") {
+                        el.closest(".offcanvas-cart-item").find(".unit-price").html(data.newItemPrice);
+                    }
                 }
                 else {
                     $(data.message).each(function (index, value) {

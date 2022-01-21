@@ -2289,6 +2289,7 @@ namespace SmartStore.Web.Controllers
 
             var cartHtml = string.Empty;
             var totalsHtml = string.Empty;
+            var newItemPrice = string.Empty;
 
             if (isCartPage)
             {
@@ -2306,6 +2307,9 @@ namespace SmartStore.Web.Controllers
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
                     totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
+
+                    var sci = model.Items.Where(x => x.Id == sciItemId).FirstOrDefault();
+                    newItemPrice = sci.UnitPrice;
                 }
             }
 
@@ -2316,7 +2320,8 @@ namespace SmartStore.Web.Controllers
                 message = warnings,
                 cartHtml,
                 totalsHtml,
-                displayCheckoutButtons = true
+                displayCheckoutButtons = true,
+                newItemPrice
             });
         }
 

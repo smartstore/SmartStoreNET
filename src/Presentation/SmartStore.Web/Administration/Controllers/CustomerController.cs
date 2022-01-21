@@ -259,7 +259,7 @@ namespace SmartStore.Admin.Controllers
             model.VatNumberStatusNote = ((VatNumberStatus)customer.VatNumberStatusId).GetLocalizedEnum(Services.Localization, Services.WorkContext);
             model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = Services.DateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
-            model.LastIpAddress = model.LastIpAddress;
+            model.LastIpAddress = customer.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
 
             foreach (var tzi in Services.DateTimeHelper.GetSystemTimeZones())

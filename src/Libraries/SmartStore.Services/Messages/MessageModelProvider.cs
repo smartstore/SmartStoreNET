@@ -1152,7 +1152,7 @@ namespace SmartStore.Services.Messages
             return node;
         }
 
-        private IEnumerable<TreeNode<ModelTreeMember>> BuildModelTreePartForClass(object instance)
+        private IEnumerable<TreeNode<ModelTreeMember>> BuildModelTreePartForClass(object instance, HashSet<object> instanceLookup = null)
         {
             var type = instance?.GetType();
 
@@ -1179,9 +1179,21 @@ namespace SmartStore.Services.Messages
                 }
                 else
                 {
-                    var node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Complex });
-                    node.AppendRange(BuildModelTreePartForClass(prop.GetValue(instance)));
-                    yield return node;
+                    if (instanceLookup == null)
+                    {
+                        instanceLookup = new HashSet<object>(ReferenceEqualityComparer.Default);
+                    }
+
+                    var exists = !type.IsValueType && instanceLookup.Contains(instance);
+
+                    if (!exists)
+                    {
+                        instanceLookup.Add(instance);
+
+                        var node = new TreeNode<ModelTreeMember>(new ModelTreeMember { Name = prop.Name, Kind = ModelTreeMemberKind.Complex });
+                        node.AppendRange(BuildModelTreePartForClass(prop.GetValue(instance), instanceLookup));
+                        yield return node;
+                    }
                 }
             }
         }

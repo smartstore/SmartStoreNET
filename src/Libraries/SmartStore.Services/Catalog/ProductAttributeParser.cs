@@ -181,6 +181,11 @@ namespace SmartStore.Services.Catalog
 
         public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
         {
+            return DeserializeAttributesXml(attributesXml, null);
+        }
+
+        private Multimap<int, string> DeserializeAttributesXml(string attributesXml, int[] includeAttributesIds = null)
+        {
             var attrs = new Multimap<int, string>();
             if (String.IsNullOrEmpty(attributesXml))
                 return attrs;
@@ -195,7 +200,8 @@ namespace SmartStore.Services.Catalog
                     string sid = node1.Attribute("ID").Value;
                     if (sid.HasValue())
                     {
-                        if (int.TryParse(sid, out var id))
+                        if (int.TryParse(sid, out var id) &&
+                            (includeAttributesIds == null || includeAttributesIds.Contains(id)))
                         {
                             // ProductVariantAttributeValue/Value
                             foreach (var node2 in node1.Descendants("Value"))
@@ -326,6 +332,11 @@ namespace SmartStore.Services.Catalog
             var attributes1 = DeserializeProductVariantAttributes(attributeXml1);
             var attributes2 = DeserializeProductVariantAttributes(attributeXml2);
 
+            return AreProductAttributesEqual(attributes1, attributes2);
+        }
+
+        private bool AreProductAttributesEqual(Multimap<int, string> attributes1, Multimap<int, string> attributes2)
+        {
             if (attributes1.Count != attributes2.Count)
                 return false;
 
@@ -383,9 +394,14 @@ namespace SmartStore.Services.Catalog
                 if (combinations.Count == 0)
                     return null;
 
+                var listTypeValues = ParseProductVariantAttributeValues(attributesXml);
+                var listTypeAttributesIds = listTypeValues.Select(x => x.ProductVariantAttributeId).ToArray();
+                var listTypeAttributesMap = DeserializeAttributesXml(attributesXml, listTypeAttributesIds);
+
                 foreach (var combination in combinations)
                 {
-                    bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml);
+                    var combinationAttributesMap = DeserializeProductVariantAttributes(combination.AttributesXml);
+                    bool attributesEqual = AreProductAttributesEqual(combinationAttributesMap, listTypeAttributesMap);
                     if (attributesEqual)
                         return _productAttributeService.GetProductVariantAttributeCombinationById(combination.Id);
                 }

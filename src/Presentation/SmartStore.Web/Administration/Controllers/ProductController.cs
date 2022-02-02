@@ -2970,18 +2970,21 @@ namespace SmartStore.Admin.Controllers
             {
                 ProductId = model.ProductId,
                 // Use ProductAttribute property (not ProductAttributeId) because appropriate property is stored in it.
-                ProductAttributeId = int.Parse(model.ProductAttribute),
+                ProductAttributeId = model.ProductAttribute.ToInt(),
                 TextPrompt = model.TextPrompt,
                 CustomData = model.CustomData,
                 IsRequired = model.IsRequired,
                 // Use AttributeControlType property (not AttributeControlTypeId) because appropriate property is stored in it.
-                AttributeControlTypeId = int.Parse(model.AttributeControlType),
+                AttributeControlTypeId = model.AttributeControlType.ToInt((int)AttributeControlType.DropdownList),
                 DisplayOrder = model.DisplayOrder1
             };
 
             try
             {
-                _productAttributeService.InsertProductVariantAttribute(pva);
+                if (pva.ProductAttributeId != 0)
+                {
+                    _productAttributeService.InsertProductVariantAttribute(pva);
+                }
             }
             catch (Exception ex)
             {

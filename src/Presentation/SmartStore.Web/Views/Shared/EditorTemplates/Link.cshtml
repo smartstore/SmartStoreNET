@@ -118,7 +118,7 @@
         @if (allowedTypes.Contains(LinkType.File))
         {
             <div class="input-group-append link-control@(link.Type == LinkType.File ? "" : " hide")" data-type="file">
-                <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
+                <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-file-manager-url="@base.FileManagerUrl" data-field-id="lb-file-url-@rnd">
                     <i class="fa fa-upload"></i>
                     <span>@(T("Common.BrowseFiles"))&hellip;</span>
                 </a>

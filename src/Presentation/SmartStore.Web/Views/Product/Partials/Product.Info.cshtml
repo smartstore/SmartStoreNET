@@ -7,60 +7,59 @@
 }
 
 <div class="pd-info pd-group">
-	<!-- Brand -->
-	@if (brand != null)
-	{
-    <div class="pd-brand-block">
-        <a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
-            @if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
+    @if (Model.Sku.HasValue())
+    {
+        <meta itemprop="sku" content="@Model.Sku" />
+    }
+
+    @if (Model.Gtin.HasValue())
+    {
+        <meta itemprop="gtin" content="@Model.Gtin" />
+    }
+
+    @if (Model.ManufacturerPartNumber.HasValue())
+    {
+        <meta itemprop="mpn" content="@Model.ManufacturerPartNumber" />
+    }
+    <!-- Brand -->
+    @if (brand != null)
+    {
+        <div class="pd-brand-block" itemprop="brand">
+            <a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
+                @if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
+                {
+                    <img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
+                }
+                else
+                {
+                    <span @Html.LanguageAttributes(brand.Name)>@brand.Name</span>
+                }
+            </a>
+            <meta itemprop="name" content="@brand.Name.Value">
+        </div>
+    }
+
+    <!-- Title -->
+    <div class="page-title">
+        <h1 @Html.LanguageAttributes(Model.Name) class="pd-name" itemprop="name">
+            @if (Model.IsAssociatedProduct && Model.VisibleIndividually)
             {
-                <img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
+                <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
             }
             else
             {
-                <span @Html.LanguageAttributes(brand.Name)>@brand.Name</span>
+                @Model.Name
             }
-        </a>
-        <meta itemprop="brand" content="@brand.Name.Value">
-
-        @if (Model.Sku.HasValue())
-        {
-            <meta itemprop="sku" content="@Model.Sku" />
-        }
-
-        @if (Model.Gtin.HasValue())
-        {
-            <meta itemprop="gtin" content="@Model.Gtin" />
-        }
-
-        @if (Model.ManufacturerPartNumber.HasValue())
-        {
-            <meta itemprop="mpn" content="@Model.ManufacturerPartNumber" />
-        }
+        </h1>
     </div>
-	}
 
-	<!-- Title -->
-	<div class="page-title">
-		<h1 @Html.LanguageAttributes(Model.Name) class="pd-name" itemprop="name">
-			@if (Model.IsAssociatedProduct && Model.VisibleIndividually)
-			{
-				<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
-			}
-			else
-			{
-				@Model.Name
-			}	
-		</h1>
-	</div>
-
-	<!-- Short description -->
-	@if (Model.ShortDescription.Value.HasValue())
-	{
-		<div @Html.LanguageAttributes(Model.ShortDescription) class="pd-description" itemprop="description">
-			@Html.Raw(Model.ShortDescription)
-		</div>
-	}
+    <!-- Short description -->
+    @if (Model.ShortDescription.Value.HasValue())
+    {
+        <div @Html.LanguageAttributes(Model.ShortDescription) class="pd-description" itemprop="description">
+            @Html.Raw(Model.ShortDescription)
+        </div>
+    }
 </div>
 
 <!-- Review Overview -->

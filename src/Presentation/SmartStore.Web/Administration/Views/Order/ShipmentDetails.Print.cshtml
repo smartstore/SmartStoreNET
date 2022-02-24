@@ -50,6 +50,10 @@
 					</div>
 					<div class="mt-2">
 						@Html.Raw(shipment.FormattedShippingAddress)
+						<p>
+							@shipment.ShippingAddress.Email <br />
+							@shipment.ShippingAddress.PhoneNumber
+						</p>
 					</div>
 				</div>
 
@@ -115,7 +119,7 @@
 								<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.Gtin")</th>
 							}
 							<th class="text-center" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
-							<th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>
+							@*<th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>*@
 						</tr>
 					</thead>
 					@foreach (var shipmentItem in shipment.Items)
@@ -162,9 +166,9 @@
 		<td class="text-center">
 			@item.QuantityInThisShipment
 		</td>
-		<td class="text-right">
+		@*<td class="text-right">
 			@item.ItemWeight
-		</td>
+		</td>*@
 	</tr>
 }
 

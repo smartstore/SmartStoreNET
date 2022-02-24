@@ -16,7 +16,8 @@ namespace SmartStore.Services.Tests.Security
         {
             _securitySettings = new SecuritySettings()
             {
-                EncryptionKey = "273ece6f97dd844d"
+                //EncryptionKey = "273ece6f97dd844d",
+                EncryptionKey = "3742404997253102"
             };
             _encryptionService = new EncryptionService(_securitySettings);
         }
@@ -38,6 +39,20 @@ namespace SmartStore.Services.Tests.Security
             string encryptedPassword = _encryptionService.EncryptText(password);
             var decryptedPassword = _encryptionService.DecryptText(encryptedPassword);
             decryptedPassword.ShouldEqual(password);
+        }
+
+        [Test]
+        public void Can_encrypt_and_decrypt2()
+        {
+            var test = "3345786499234591";
+
+            var encrypted = _encryptionService.EncryptText(test);
+            var decrypted = _encryptionService.DecryptText(encrypted);
+
+            decrypted.ShouldEqual(test);
+
+            encrypted = "zY0jkmIwNfU=";
+            decrypted = _encryptionService.DecryptText(encrypted);
         }
     }
 }

@@ -1031,7 +1031,7 @@ namespace SmartStore.Web.Controllers
                         var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
                         if (model.CustomerNumber != customer.CustomerNumber && numberExists)
                         {
-                            NotifyError("Common.CustomerNumberAlreadyExists");
+                            NotifyError(T("Common.CustomerNumberAlreadyExists"));
                         }
                         else
                         {

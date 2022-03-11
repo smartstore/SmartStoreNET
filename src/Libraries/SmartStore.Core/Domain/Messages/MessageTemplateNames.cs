@@ -33,5 +33,6 @@
         public const string BackInStockCustomer = "Customer.BackInStock";
         public const string SystemCampaign = "System.Campaign";
         public const string SystemContactUs = "System.ContactUs";
+        public const string SystemGeneric = "System.Generic";
     }
 }

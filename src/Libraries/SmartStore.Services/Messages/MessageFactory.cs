@@ -515,6 +515,14 @@ namespace SmartStore.Services.Messages
                             ["Address"] = "VatAddress"
                         });
                         break;
+                    case MessageTemplateNames.SystemGeneric:
+                        result.Add(new NamedModelPart("Generic")
+                        {
+                            ["Email"] = "john@doe.com",
+                            ["Subject"] = "Subject",
+                            ["Body"] = LoremIpsum
+                        });
+                        break;
                 }
             }
 

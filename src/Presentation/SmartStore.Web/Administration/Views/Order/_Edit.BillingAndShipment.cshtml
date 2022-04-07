@@ -8,7 +8,7 @@
 				<h6 class="card-title">@T("Order.BillingAddress")</h6>
 				@RenderAddress(Model.BillingAddress)
 			</div>
-			<div class="card-footer d-flex p-0">
+			<div class="card-footer p-0">
 				<a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
 					<i class="far fa-edit"></i>
 					<span>@T("Admin.Common.Edit")</span>
@@ -23,7 +23,7 @@
 					<h6 class="card-title">@T("Order.ShippingAddress")</h6>
 					@RenderAddress(Model.ShippingAddress)
 				</div>
-				<div class="card-footer d-flex p-0">
+				<div class="card-footer p-0">
 					<a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
 						<i class="far fa-edit"></i>
 						<span>@T("Admin.Common.Edit")</span>

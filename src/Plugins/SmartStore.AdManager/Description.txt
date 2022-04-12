@@ -1,0 +1,10 @@
+﻿FriendlyName: AdManager
+SystemName: SmartStore.AdManager
+Group: Api
+Version: 4.2.0
+MinAppVersion: 4.2.0
+Author: bk Group
+DisplayOrder: 1
+FileName: SmartStore.AdManager.dll
+ResourceRootKey: Plugins.SmartStore.AdManager
+Url: 

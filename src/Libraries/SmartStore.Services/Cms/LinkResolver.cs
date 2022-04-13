@@ -86,7 +86,16 @@ namespace SmartStore.Services.Cms
             var d = Parse(linkExpression);
             var queryString = d.QueryString;
 
-            if (d.Type == LinkType.Url || d.Type == LinkType.File)
+            if (d.Type == LinkType.Url)
+            {
+                var url = d.Value.ToString();
+                if (url.EmptyNull().StartsWith("~"))
+                {
+                    url = VirtualPathUtility.ToAbsolute(url);
+                }
+                d.Link = d.Label = url;
+            }
+            else if (d.Type == LinkType.File)
             {
                 d.Link = d.Label = d.Value.ToString();
             }

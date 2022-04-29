@@ -42,6 +42,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IShippingService _shippingService;
         private readonly ICountryService _countryService;
+        private readonly OrderSettings _orderSettings;
 
         #endregion
 
@@ -57,7 +58,8 @@ namespace SmartStore.Web.Controllers
             IOrderProcessingService orderProcessingService,
             IPaymentService paymentService,
             IShippingService shippingService,
-            ICountryService countryService)
+            ICountryService countryService,
+            OrderSettings orderSettings)
         {
             _dateTimeHelper = dateTimeHelper;
             _pdfConverter = pdfConverter;
@@ -69,6 +71,7 @@ namespace SmartStore.Web.Controllers
             _paymentService = paymentService;
             _shippingService = shippingService;
             _countryService = countryService;
+            _orderSettings = orderSettings;
         }
 
         #endregion
@@ -366,6 +369,11 @@ namespace SmartStore.Web.Controllers
             if (!Services.Permissions.Authorize(Permissions.Order.Read))
             {
                 result = result || (order.StoreId != 0 && order.StoreId != Services.StoreContext.CurrentStore.Id);
+
+                if (_orderSettings.DisplayOrdersOfAllStores)
+                {
+                    result = false;
+                }
             }
 
             return result;

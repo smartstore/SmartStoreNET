@@ -1148,10 +1148,9 @@ namespace SmartStore.Web.Controllers
 
             if (!product.IsShipEnabled || (addShippingPrice == 0 && product.IsFreeShipping))
             {
-                model.LegalInfo += "{0} {1}, {2}".FormatInvariant(
-                    product.IsTaxExempt ? "" : taxInfo,
-                    product.IsTaxExempt ? "" : defaultTaxRate,
-                    T("Common.FreeShipping"));
+                model.LegalInfo += product.IsTaxExempt
+                    ? T("Common.FreeShipping")
+                    : "{0} {1}, {2}".FormatInvariant(taxInfo, defaultTaxRate, T("Common.FreeShipping"));
             }
             else
             {
@@ -1173,6 +1172,8 @@ namespace SmartStore.Web.Controllers
                         shippingInfoUrl);
                 }
             }
+
+            model.LegalInfo = model.LegalInfo.TrimSafe();
 
             var dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.SystemKeyword ?? string.Empty;
 

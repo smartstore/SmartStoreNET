@@ -218,6 +218,7 @@ namespace SmartStore.Services.Localization
                             where x.LocaleKeyGroup == localeKeyGroup
                             select x;
 
+                var splitEntityIds = false;
                 var requestedSet = entityIds;
 
                 if (entityIds != null && entityIds.Length > 0)
@@ -243,7 +244,15 @@ namespace SmartStore.Services.Localization
                     else
                     {
                         requestedSet = entityIds;
-                        query = query.Where(x => entityIds.Contains(x.EntityId));
+
+                        if (entityIds.Length > 5000)
+                        {
+                            splitEntityIds = true;
+                        }
+                        else
+                        {
+                            query = query.Where(x => entityIds.Contains(x.EntityId));
+                        }
                     }
                 }
 
@@ -252,7 +261,20 @@ namespace SmartStore.Services.Localization
                     query = query.Where(x => x.LanguageId == languageId);
                 }
 
-                return new LocalizedPropertyCollection(localeKeyGroup, requestedSet, query.ToList());
+                if (splitEntityIds)
+                {
+                    var items = new List<LocalizedProperty>();
+                    foreach (var chunk in entityIds.Slice(5000))
+                    {
+                        items.AddRange(query.Where(x => chunk.Contains(x.EntityId)).ToList());
+                    }
+
+                    return new LocalizedPropertyCollection(localeKeyGroup, requestedSet, items);
+                }
+                else
+                {
+                    return new LocalizedPropertyCollection(localeKeyGroup, requestedSet, query.ToList());
+                }
             }
         }
 

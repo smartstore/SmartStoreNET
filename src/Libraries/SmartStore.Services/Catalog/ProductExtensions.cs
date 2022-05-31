@@ -377,7 +377,7 @@ namespace SmartStore.Services.Catalog
             {
                 var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
                 var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
-                var amountFormatted = Math.Round(product.BasePriceAmount.Value, 2).ToString("G29");
+                var amountFormatted = product.BasePriceAmount.Value.ToString("G29");
                 var infoTemplate = localizationService.GetResource("Products.BasePriceInfo");
 
                 var result = infoTemplate.FormatInvariant(

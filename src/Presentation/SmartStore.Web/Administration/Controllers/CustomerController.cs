@@ -1403,6 +1403,7 @@ namespace SmartStore.Admin.Controllers
         /// Evaluates and displays customer registrations of this year as line chart
         /// </summary>
         /// <returns>Customers registrations chart</returns>
+        [Permission(Permissions.Customer.Read, false)]
         public ActionResult RegisteredCustomersDashboardReport()
         {
             // Get customers of at least last 28 days (if year is younger)

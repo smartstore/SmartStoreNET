@@ -913,7 +913,7 @@ namespace SmartStore.Admin.Controllers
         [Permission(Permissions.Configuration.Setting.Update)]
         [ValidateAntiForgeryToken]
         [HttpPost, FormValueRequired("save")]
-        [SaveSetting(UpdateParameterFromStore = false)]
+        [SaveSetting]
         public ActionResult Media(MediaSettings settings, MediaSettingsModel model)
         {
             if (!ModelState.IsValid)
@@ -922,7 +922,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             ModelState.Clear();
-            settings = model.ToEntity();
+            model.ToEntity(settings);
 
             return NotifyAndRedirect("Media");
         }

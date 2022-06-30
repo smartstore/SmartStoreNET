@@ -396,6 +396,11 @@ var ShopBar = (function ($) {
                     cnt.find('.offcanvas-cart-footer').remove();
                     cnt.find('.offcanvas-cart-external-checkout').remove();
                     cnt.prepend(data);
+
+                    // INFO: Hack to force redrawing for edge on androids. Else the body element shifts over the whole page and nothing can be seen or clicked anymore.
+                    if (Modernizr.touchevents && /Edg/.test(navigator.userAgent)) {
+                        $('#footer').toggleClass('force-redraw');
+                    }
                 },
                 complete: function (jqXHR, textStatus) {
                     tool.removeClass("loading").addClass("loaded");

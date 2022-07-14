@@ -44,7 +44,7 @@ namespace SmartStore.Core.Domain.Localization
         public InvalidLanguageRedirectBehaviour InvalidLanguageRedirectBehaviour { get; set; }
 
         /// <summary>
-        /// Specifies the format of language display name in language selector.
+        /// Whether to display region/country name in language selector (e.g. "Deutsch (Deutschland)" instead of "Deutsch")
         /// </summary>
         public bool DisplayRegionInLanguageSelector { get; set; }
     }

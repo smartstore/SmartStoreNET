@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Xml.Linq;
@@ -137,16 +138,29 @@ namespace SmartStore.Web.Controllers
             {
                 var result = _languageService.Value
                     .GetAllLanguages(storeId: Services.StoreContext.CurrentStore.Id)
-                    .Select(x => new LanguageModel
+                    .Select(x => 
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        NativeName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture)) ?? x.Name,
-                        NativeShortName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture, false, true)) ?? x.Name,
-                        NativeEnglishName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture, true)) ?? x.Name,
-                        ISOCode = x.LanguageCulture,
-                        SeoCode = x.UniqueSeoCode,
-                        FlagImageFileName = x.FlagImageFileName
+                        LocalizationHelper.TryGetCultureInfoForLocale(x.LanguageCulture, out var culture);
+                        LocalizationHelper.TryGetCultureInfoForLocale(x.GetTwoLetterISOLanguageName(), out var neutralCulture);
+
+                        neutralCulture ??= culture?.Parent ?? culture;
+
+                        var nativeName = culture?.NativeName ?? x.Name;
+                        var shortNativeName = neutralCulture?.NativeName ?? x.Name;
+
+                        var model = new LanguageModel
+                        {
+                            Id = x.Id,
+                            ISOCode = x.LanguageCulture,
+                            SeoCode = x.UniqueSeoCode,
+                            FlagImageFileName = x.FlagImageFileName,
+                            Name = LocalizationHelper.NormalizeLanguageDisplayName(x.Name, stripRegion: false, culture: culture),
+                            ShortName = LocalizationHelper.NormalizeLanguageDisplayName(x.Name, stripRegion: true, culture: culture),
+                            NativeName = LocalizationHelper.NormalizeLanguageDisplayName(nativeName, stripRegion: false, culture: culture),
+                            ShortNativeName = LocalizationHelper.NormalizeLanguageDisplayName(shortNativeName, stripRegion: true, culture: culture)
+                        };
+
+                        return model;
                     })
                     .ToList();
                 return result;
@@ -185,21 +199,6 @@ namespace SmartStore.Web.Controllers
             }
 
             return model;
-        }
-
-        private string PrepareLanguageDisplayName(string languageName)
-        {
-            // First char to upper.
-            languageName = languageName[0].ToString().ToUpper() + languageName.Substring(1);
-
-            // Remove everything after ','
-            int index = languageName.IndexOf(",");
-            if (index >= 0)
-            {
-                languageName = languageName.Substring(0, index) + ")";
-            }
-            
-            return languageName;
         }
 
         private LocalizedUrlHelper CreateUrlHelperForLanguageSelector(LanguageModel model, int currentLanguageId)

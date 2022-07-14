@@ -54,7 +54,32 @@ namespace SmartStore.Core.Localization
             }
         }
 
-        public static string GetLanguageNativeName(string locale, bool englishName = false, bool shortName = false)
+        public static bool TryGetCultureInfoForLocale(string locale, out CultureInfo culture)
+        {
+            culture = null;
+
+            try
+            {
+                culture = CultureInfo.GetCultureInfoByIetfLanguageTag(locale);
+                return culture != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static string GetLanguageNativeName(string locale)
+        {
+            if (TryGetCultureInfoForLocale(locale, out var culture))
+            {
+                return culture.NativeName;
+            }
+
+            return null;
+        }
+
+        public static string GetLanguageNativeName(string locale, bool englishName, bool shortName = false)
         {
             try
             {
@@ -80,9 +105,54 @@ namespace SmartStore.Core.Localization
                     }
                 }
             }
-            catch { }
+            catch 
+            { 
+            }
 
             return null;
+        }
+
+        public static string NormalizeLanguageDisplayName(string languageName, bool stripRegion = false, CultureInfo culture = null)
+        {
+            if (string.IsNullOrEmpty(languageName) || languageName.Length == 0)
+            {
+                return languageName;
+            }
+
+            // First char to upper.
+            if (char.IsLower(languageName[0]))
+            {
+                languageName = (culture ?? CultureInfo.InvariantCulture).TextInfo.ToTitleCase(languageName);
+            }
+
+            var bracketIndex = languageName.IndexOfAny(new[] { '(', '[' });
+            var hasRegion = bracketIndex > -1;
+            var endBracket = ')';
+
+            if (hasRegion)
+            {
+                if (languageName[bracketIndex] == '[') 
+                {
+                    endBracket = ']';
+                }
+                
+                if (stripRegion)
+                {
+                    languageName = languageName.Substring(0, bracketIndex).TrimEnd();
+                }
+            }
+
+            // Remove everything after ',' within Region part
+            if (hasRegion && !stripRegion)
+            {
+                var commaIndex = languageName.IndexOf(',');
+                if (commaIndex > -1)
+                {
+                    languageName = languageName.Substring(0, commaIndex) + endBracket;
+                }
+            }
+
+            return languageName;
         }
 
         public static string GetCurrencySymbol(string locale)

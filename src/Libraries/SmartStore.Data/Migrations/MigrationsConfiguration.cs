@@ -49,6 +49,11 @@
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.DisplayRegionInLanguageSelector",
+                "Language display including region",
+                "Sprachanzeige inklusive Region",
+                "Enable this option if the display of the language in the language selector should be shown including region e.g.: Englisch (United States).",
+                "Aktivieren Sie diese Option, wenn die Anzeige der Sprache in der Sprachauswahl inklusive Region angezeigt werden soll z.B.: Deutsch (Deutschland).");        
         }
     }
 }

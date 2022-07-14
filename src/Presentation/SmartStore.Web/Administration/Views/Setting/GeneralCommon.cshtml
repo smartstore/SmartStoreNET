@@ -665,6 +665,15 @@
                 @Html.ValidationMessageFor(model => model.LocalizationSettings.DetectBrowserUserLanguage)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LocalizationSettings.DisplayRegionInLanguageSelector)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.LocalizationSettings.DisplayRegionInLanguageSelector)
+                @Html.ValidationMessageFor(model => model.LocalizationSettings.DisplayRegionInLanguageSelector)
+            </td>
+        </tr>
     </table>
 }
 @helper TabCompanyInformationSettings()

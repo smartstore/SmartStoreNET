@@ -54,7 +54,7 @@ namespace SmartStore.Core.Localization
             }
         }
 
-        public static string GetLanguageNativeName(string locale)
+        public static string GetLanguageNativeName(string locale, bool englishName = false, bool shortName = false)
         {
             try
             {
@@ -62,7 +62,22 @@ namespace SmartStore.Core.Localization
                 {
                     var info = CultureInfo.GetCultureInfoByIetfLanguageTag(locale);
                     if (info != null)
-                        return info.NativeName;
+                    {
+                        if (shortName)
+                        {
+                            info = info.Parent;
+                        }
+
+                        if (englishName)
+                        {
+                            return info.EnglishName;
+                        }
+                        else
+                        {
+                            return info.NativeName;
+                        }
+                        
+                    }
                 }
             }
             catch { }

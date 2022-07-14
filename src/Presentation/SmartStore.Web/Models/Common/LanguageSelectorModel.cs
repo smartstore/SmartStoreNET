@@ -18,5 +18,7 @@ namespace SmartStore.Web.Models.Common
         public int CurrentLanguageId { get; set; }
 
         public bool UseImages { get; set; }
+
+        public bool DisplayLongName { get; set; }
     }
 }

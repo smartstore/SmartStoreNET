@@ -271,6 +271,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage")]
             public bool DetectBrowserUserLanguage { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DisplayRegionInLanguageSelector")]
+            public bool DisplayRegionInLanguageSelector { get; set; }
         }
 
         public partial class CompanyInformationSettingsModel

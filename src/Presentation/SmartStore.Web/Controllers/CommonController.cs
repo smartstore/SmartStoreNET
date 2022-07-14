@@ -141,7 +141,9 @@ namespace SmartStore.Web.Controllers
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        NativeName = LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
+                        NativeName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture)) ?? x.Name,
+                        NativeShortName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture, false, true)) ?? x.Name,
+                        NativeEnglishName = PrepareLanguageDisplayName(LocalizationHelper.GetLanguageNativeName(x.LanguageCulture, true)) ?? x.Name,
                         ISOCode = x.LanguageCulture,
                         SeoCode = x.UniqueSeoCode,
                         FlagImageFileName = x.FlagImageFileName
@@ -156,7 +158,8 @@ namespace SmartStore.Web.Controllers
             {
                 CurrentLanguageId = workingLanguage.Id,
                 AvailableLanguages = availableLanguages,
-                UseImages = _localizationSettings.UseImagesForLanguageSelection
+                UseImages = _localizationSettings.UseImagesForLanguageSelection,
+                DisplayLongName = _localizationSettings.DisplayRegionInLanguageSelector
             };
 
             string defaultSeoCode = _languageService.Value.GetDefaultLanguageSeoCode();
@@ -182,6 +185,21 @@ namespace SmartStore.Web.Controllers
             }
 
             return model;
+        }
+
+        private string PrepareLanguageDisplayName(string languageName)
+        {
+            // First char to upper.
+            languageName = languageName[0].ToString().ToUpper() + languageName.Substring(1);
+
+            // Remove everything after ','
+            int index = languageName.IndexOf(",");
+            if (index >= 0)
+            {
+                languageName = languageName.Substring(0, index) + ")";
+            }
+            
+            return languageName;
         }
 
         private LocalizedUrlHelper CreateUrlHelperForLanguageSelector(LanguageModel model, int currentLanguageId)

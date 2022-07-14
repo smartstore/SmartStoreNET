@@ -9,6 +9,7 @@ namespace SmartStore.Web.Models.Common
         public string SeoCode { get; set; }
         public string NativeName { get; set; }
         public string FlagImageFileName { get; set; }
-
+        public string NativeShortName { get; set; }
+        public string NativeEnglishName { get; set; }
     }
 }

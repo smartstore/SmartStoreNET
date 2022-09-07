@@ -1,22 +1,8 @@
-| <div align="left">:information_source: **[Announcement: Smartstore 5 is now available!](https://github.com/smartstore/Smartstore)**</div> |
-| --- |
-| We are thrilled to announce that we've published the first stable release of Smartstore 5, one of the fastest full-featured e-commerce solutions of the world. Smartstore 5 is a port of Smartstore 4 - which is based on the classic .NET Framework 4.7.2 – to the new ASP.NET Core 6 platform. To try it out, head over to our **[new repository](https://github.com/smartstore/Smartstore)** and download the first release. **Give our new repository a star** to stay up-to-date, get involved or just watch how we're doing.|
-
-<br/>
-
 <p align="center">
-	<a href="https://www.smartstore.com" target="_blank" rel="noopener noreferrer">
-		<img src="assets/smartstore-icon.png" alt="Smartstore.NET" width="200">
+	<a href="https://github.com/smartstore/Smartstore">
+		<img src="assets/ready.set.go.jpg" alt="Announcing Smartstore 5">
 	</a>
 </p>
-
-<br/>
-<br/>
-
-<h1 align="center">
-	<img src="assets/smartstore-text.png" alt="Smartstore.NET" width="300">
-</h1>
-<p align="center"><strong>Ready. Sell. Grow.</strong></p>
 
 <p align="center">
 	<img alt="GitHub release" src="https://img.shields.io/github/release/smartstore/SmartStoreNET.svg?color=%2344b284">

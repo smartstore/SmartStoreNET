@@ -130,7 +130,7 @@ namespace SmartStore.Services.Customers
 
             if (q.CustomerNumber.HasValue())
             {
-                query = query.Where(c => c.CustomerNumber.Contains(q.CustomerNumber));
+                query = query.Where(c => c.CustomerNumber == q.CustomerNumber);
             }
 
             if (q.AffiliateId.GetValueOrDefault() > 0)

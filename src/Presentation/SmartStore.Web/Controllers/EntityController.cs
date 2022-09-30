@@ -244,7 +244,7 @@ namespace SmartStore.Web.Controllers
                     }
                     else if (model.EntityType.IsCaseInsensitiveEqual("category"))
                     {
-                        var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
+                        var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true, ignoreDetachedCategories: false);
 
                         var fileIds = categories
                             .Select(x => x.MediaFileId ?? 0)

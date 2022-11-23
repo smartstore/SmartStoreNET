@@ -77,10 +77,9 @@ namespace SmartStore.Services.Media
                             {
                                 return new { x.Id, Version = version };
                             }
-
-                            return null;
+                            
+                            return new { x.Id, Version = new SemanticVersion(0, 0, 0, 0) };
                         })
-                        .Where(x => x != null)
                         .OrderByDescending(x => x.Version)
                         .Select(x => x.Id);
 

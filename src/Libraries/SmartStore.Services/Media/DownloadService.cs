@@ -64,12 +64,23 @@ namespace SmartStore.Services.Media
                                  select x).ToList();
 
                 if (versionedFilesOnly)
+                {
                     downloads = downloads.Where(x => !string.IsNullOrEmpty(x.FileVersion)).ToList();
+                }
 
                 if (downloads.Any())
                 {
                     var idsOrderedByVersion = downloads
-                        .Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
+                        .Select(x =>
+                        {
+                            if (SemanticVersion.TryParse(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0", out var version))
+                            {
+                                return new { x.Id, Version = version };
+                            }
+
+                            return null;
+                        })
+                        .Where(x => x != null)
                         .OrderByDescending(x => x.Version)
                         .Select(x => x.Id);
 
@@ -178,7 +189,7 @@ namespace SmartStore.Services.Media
                 return false;
 
             var product = orderItem.Product;
-            if (product == null || !product.IsDownload)
+            if (product == null || product.Deleted || !product.IsDownload)
                 return false;
 
             //payment status

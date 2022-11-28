@@ -1715,6 +1715,7 @@ namespace SmartStore.Services.DataExchange.Export
             var publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
 
             ctx.Store = store;
+            ctx.LastId = 0;
             context.FileIndex = 0;
             context.Store = ToDynamic(ctx, ctx.Store);
             context.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;

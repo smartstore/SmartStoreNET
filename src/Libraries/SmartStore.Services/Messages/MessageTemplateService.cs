@@ -145,7 +145,8 @@ namespace SmartStore.Services.Messages
                 Body = messageTemplate.Body,
                 IsActive = messageTemplate.IsActive,
                 EmailAccountId = messageTemplate.EmailAccountId,
-                LimitedToStores = messageTemplate.LimitedToStores
+                LimitedToStores = messageTemplate.LimitedToStores,
+                ModelTypes = messageTemplate.ModelTypes
                 // INFO: we do not copy attachments
             };
 

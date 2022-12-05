@@ -68,7 +68,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
                 if (validationMode || !TryGetCachedAsset(asset, out result))
                 {
-                    using (KeyedLock.Lock("CachedAsset:" + asset.VirtualPath))
+                    using (KeyedLock.Instance.Lock("CachedAsset:" + asset.VirtualPath))
                     {
                         if (validationMode || !TryGetCachedAsset(asset, out result))
                         {

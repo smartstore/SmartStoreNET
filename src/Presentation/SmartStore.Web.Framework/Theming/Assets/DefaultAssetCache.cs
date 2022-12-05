@@ -101,7 +101,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
                     var content = CacheFolder.ReadFile(CacheFolder.Combine(cacheDirectoryName, "asset.css"));
                     if (content == null)
                     {
-                        using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
+                        using (KeyedLock.Instance.Lock(BuildLockKey(cacheDirectoryName)))
                         {
                             InvalidateAssetInternal(cacheDirectoryName, themeName, storeId);
                             return null;
@@ -147,7 +147,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
             var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
 
-            using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
+            using (KeyedLock.Instance.Lock(BuildLockKey(cacheDirectoryName)))
             {
                 CacheFolder.CreateDirectory(cacheDirectoryName);
 
@@ -212,7 +212,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
             var cacheDirectoryName = ResolveCacheDirectoryName(virtualPath, out string themeName, out int storeId);
 
-            using (KeyedLock.Lock(BuildLockKey(cacheDirectoryName)))
+            using (KeyedLock.Instance.Lock(BuildLockKey(cacheDirectoryName)))
             {
                 if (CacheFolder.DirectoryExists(cacheDirectoryName))
                 {

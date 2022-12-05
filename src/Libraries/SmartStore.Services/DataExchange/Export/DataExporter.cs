@@ -2040,13 +2040,13 @@ namespace SmartStore.Services.DataExchange.Export
             }
 
             var lockKey = $"dataexporter:profile:{request.Profile.Id}";
-            if (KeyedLock.IsLockHeld(lockKey))
+            if (KeyedLock.Instance.IsInUse(lockKey))
             {
                 ctx.Result.LastError = $"The execution of the profile \"{request.Profile.Name.NaIfEmpty()}\" (ID {request.Profile.Id}) is locked.";
                 return ctx.Result;
             }
 
-            using (KeyedLock.Lock(lockKey))
+            using (KeyedLock.Instance.Lock(lockKey))
             {
                 ExportCoreOuter(ctx);
             }

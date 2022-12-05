@@ -57,7 +57,7 @@ namespace SmartStore.Services.Media
             if (!exists)
             {
                 // Lock concurrent requests to same resource
-                using (await KeyedLock.LockAsync("ImageHandlerBase.Execute." + cachedImage.Path))
+                using (await KeyedLock.Instance.LockAsync("ImageHandlerBase.Execute." + cachedImage.Path).ConfigureAwait(false))
                 {
                     ImageCache.RefreshInfo(cachedImage);
 

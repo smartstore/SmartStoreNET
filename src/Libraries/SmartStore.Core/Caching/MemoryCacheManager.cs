@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
@@ -84,7 +83,7 @@ namespace SmartStore.Core.Caching
             }
 
             // Get the (semaphore) locker specific to this key
-            using (KeyedLock.Lock("cache:" + key, TimeSpan.FromSeconds(5)))
+            using (KeyedLock.Instance.Lock("cache:" + key, TimeSpan.FromSeconds(5)))
             {
                 // Atomic operation must be outer locked
                 if (!TryGet(key, independent, out value))
@@ -116,7 +115,7 @@ namespace SmartStore.Core.Caching
             }
 
             // Get the async (semaphore) locker specific to this key
-            using (await KeyedLock.LockAsync("cache:" + key, TimeSpan.FromMinutes(1)))
+            using (await KeyedLock.Instance.LockAsync("cache:" + key, TimeSpan.FromMinutes(1)).ConfigureAwait(false))
             {
                 if (!TryGet(key, independent, out value))
                 {

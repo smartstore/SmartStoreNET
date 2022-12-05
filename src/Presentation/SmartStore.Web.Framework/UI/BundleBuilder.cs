@@ -48,7 +48,7 @@ namespace SmartStore.Web.Framework.UI
             var bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
             if (bundleFor == null)
             {
-                using (KeyedLock.Lock("BundleBuilder.Build." + bundleVirtualPath))
+                using (KeyedLock.Instance.Lock("BundleBuilder.Build." + bundleVirtualPath))
                 {
                     bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
                     if (bundleFor == null)

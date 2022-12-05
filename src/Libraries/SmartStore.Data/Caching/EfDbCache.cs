@@ -196,7 +196,7 @@ namespace SmartStore.Data.Caching
             {
                 if (entry.HasExpired(now))
                 {
-                    using (KeyedLock.Lock(key))
+                    using (KeyedLock.Instance.Lock(key))
                     {
                         InvalidateItemUnlocked(entry);
                     }
@@ -220,7 +220,7 @@ namespace SmartStore.Data.Caching
 
             key = HashKey(key);
 
-            using (KeyedLock.Lock(key))
+            using (KeyedLock.Instance.Lock(key))
             {
                 var entitySets = dependentEntitySets.Distinct().ToArray();
                 var entry = new DbCacheEntry
@@ -288,7 +288,7 @@ namespace SmartStore.Data.Caching
 
             Guard.NotEmpty(key, nameof(key));
 
-            using (KeyedLock.Lock(key))
+            using (KeyedLock.Instance.Lock(key))
             {
                 InvalidateItemUnlocked(key);
             }

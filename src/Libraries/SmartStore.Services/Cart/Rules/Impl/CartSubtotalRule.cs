@@ -21,14 +21,14 @@ namespace SmartStore.Services.Cart.Rules.Impl
             var sessionKey = context.SessionKey;
             var lockKey = "rule:cart:cartsubtotalrule:" + sessionKey.ToString();
 
-            if (KeyedLock.IsLockHeld(lockKey))
+            if (KeyedLock.Instance.IsInUse(lockKey))
             {
                 //$"locked expression {expression.Id}: {lockKey}".Dump();
                 return false;
             }
 
             // We must prevent the rule from indirectly calling itself. It would cause a stack overflow on cart page.
-            using (KeyedLock.Lock(lockKey))
+            using (KeyedLock.Instance.Lock(lockKey))
             {
                 var cart = _shoppingCartService.GetCartItems(context.Customer, ShoppingCartType.ShoppingCart, context.Store.Id);
 

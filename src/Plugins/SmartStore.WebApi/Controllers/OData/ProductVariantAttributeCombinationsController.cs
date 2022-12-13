@@ -73,7 +73,7 @@ namespace SmartStore.WebApi.Controllers.OData
         }
 
         [WebApiQueryable]
-        [WebApiAuthenticate(Permission = Permissions.Configuration.DeliveryTime.Read)]
+        [WebApiAuthenticate(Permission = Permissions.Configuration.Measure.Read)]
         public IHttpActionResult GetQuantityUnit(int key)
         {
             return Ok(GetRelatedEntity(key, x => x.QuantityUnit));

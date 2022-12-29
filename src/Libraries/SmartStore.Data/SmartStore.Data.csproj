@@ -67,8 +67,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncKeyedLock, Version=6.0.2.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AsyncKeyedLock.6.0.2\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
+    <Reference Include="AsyncKeyedLock, Version=6.0.3.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AsyncKeyedLock.6.0.3\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
     </Reference>
     <Reference Include="Autofac, Version=5.2.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.5.2.0\lib\net461\Autofac.dll</HintPath>

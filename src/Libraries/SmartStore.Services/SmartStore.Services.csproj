@@ -69,8 +69,8 @@
     <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AngleSharp.0.9.11\lib\net45\AngleSharp.dll</HintPath>
     </Reference>
-    <Reference Include="AsyncKeyedLock, Version=6.0.3.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AsyncKeyedLock.6.0.3\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
+    <Reference Include="AsyncKeyedLock, Version=6.0.4.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AsyncKeyedLock.6.0.4\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
     </Reference>
     <Reference Include="Autofac, Version=5.2.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.5.2.0\lib\net461\Autofac.dll</HintPath>

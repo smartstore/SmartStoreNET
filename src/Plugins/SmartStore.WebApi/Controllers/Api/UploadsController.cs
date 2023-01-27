@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Security;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Media;
@@ -228,6 +229,8 @@ namespace SmartStore.WebApi.Controllers.Api
                         result.Add(image);
                     }
                 }
+
+                DataMigrator.FixProductMainPictureId(_dbContext, entity);
             });
 
             return Ok(result.AsQueryable());

@@ -148,7 +148,7 @@ namespace SmartStore.Services.Media.Imaging
         public override QueryString Add(string name, string value, bool isUnique)
         {
             // Keep away invalid tokens from underlying query
-            if (_supportedTokens.TryGetValue(name, out var validator) && validator(name, value))
+            if (name != null && _supportedTokens.TryGetValue(name, out var validator) && validator(name, value))
             {
                 return base.Add(name, value, isUnique);
             }

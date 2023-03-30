@@ -869,7 +869,7 @@
         <div>
             @(Html.Telerik().Grid<CookieInfoModel>()
                 .Name("cookie-infos-grid")
-                .DataKeys(keys => keys.Add(x => x.Name).RouteKey("Name"))
+                .DataKeys(keys => keys.Add(x => x.id).RouteKey("Id"))
                 .ClientEvents(events => events
                     .OnRowDataBound("onRowDataBound"))
                 .DataBinding(dataBinding => dataBinding
@@ -927,9 +927,9 @@
         $('#cookie-infos-grid').on('click', '.t-grid-edit-cookie-infos', function (e) {
 			e.preventDefault();
 			var grid = $('#cookie-infos-grid').data('tGrid');
-			var tr = $(this).closest('tr');
-			var name = grid.dataItem(tr).Name;
-			var href = '@Url.Action("CookieInfoEditPopup", "Setting")?name=' + name + '&btnId=btnRefreshCookieInfos&formId=cookie-infos-form';
+            var tr = $(this).closest('tr');
+			var id = grid.dataItem(tr).id;
+			var href = '@Url.Action("CookieInfoEditPopup", "Setting")/' + id + '?btnId=btnRefreshCookieInfos&formId=cookie-infos-form';
 
 			openPopup(href, false);
 

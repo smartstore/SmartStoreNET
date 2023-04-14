@@ -23,3 +23,7 @@ Users & developers are encouraged to check out the successor built on **ASP.NET 
 ## License
 
 Smartstore Community Edition is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).
+
+## Website
+
+https://smartstore.com
